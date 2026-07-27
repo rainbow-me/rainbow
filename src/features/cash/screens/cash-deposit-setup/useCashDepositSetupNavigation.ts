@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-import { useCashDepositSetupStore } from '../../stores/cashDepositSetupStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getNextSetupStep } from './steps';
 
@@ -18,8 +17,6 @@ export function useCashDepositSetupNavigation() {
       return;
     }
 
-    // Linking the wallet is the last fact; it flips the derived status to `ready`.
-    useCashDepositSetupStore.getState().setFact('hasLinkedWallet', true);
     dismissScreen();
     navigate(Routes.ADD_CASH_SHEET);
   }, [dismissScreen, navigate]);

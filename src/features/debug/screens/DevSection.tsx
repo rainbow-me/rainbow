@@ -11,7 +11,7 @@ import Restart from 'react-native-restart';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { IS_STORE_INSTALL } from '@/env';
-import { useCashDepositSetupStore } from '@/features/cash/stores/cashDepositSetupStore';
+import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
 import {
   CASH_MOCK_ORDER_OUTCOMES,
   isCashMockOrderOutcome,
@@ -20,7 +20,6 @@ import {
 } from '@/features/cash/stores/cashMockOrderOutcomeStore';
 import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { useCashSetupSessionStore } from '@/features/cash/stores/cashSetupSessionStore';
-import { EMPTY_CASH_DEPOSIT_SETUP_FACTS, type CashDepositSetupFacts } from '@/features/cash/stores/deriveCashDepositSetupStatus';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
@@ -98,8 +97,7 @@ export const DevSection = () => {
   const config = useExperimentalConfigStore(state => state.config);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
-  const cashDepositSetupFacts = useCashDepositSetupStore(state => state.facts);
-  const setCashDepositSetupFact = useCashDepositSetupStore(state => state.setFact);
+  const cashUserId = useCashAccountStore(state => state.userId);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -524,15 +522,20 @@ export const DevSection = () => {
             })}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
-            {(Object.keys(EMPTY_CASH_DEPOSIT_SETUP_FACTS) as (keyof CashDepositSetupFacts)[]).map(key => (
-              <MenuItem
-                key={key}
-                onPress={() => setCashDepositSetupFact(key, !cashDepositSetupFacts[key])}
-                rightComponent={cashDepositSetupFacts[key] && <MenuItem.StatusIcon status="selected" />}
-                size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_deposit_setup_facts[key])} />}
-              />
-            ))}
+            <MenuItem
+              onPress={async () => {
+                const userId = (await Clipboard.getString()).trim();
+                if (userId) useCashAccountStore.getState().setUserId(userId);
+              }}
+              rightComponent={cashUserId != null && <MenuItem.StatusIcon status="selected" />}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_set_user_id_from_clipboard)} />}
+            />
+            <MenuItem
+              onPress={() => useCashAccountStore.getState().clearUserId()}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
+            />
             <MenuItem
               onPress={() =>
                 useCashSetupSessionStore.setState({

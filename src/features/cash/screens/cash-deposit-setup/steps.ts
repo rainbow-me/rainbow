@@ -25,7 +25,6 @@ export function getNextSetupStep(current: CashDepositSetupRoute): CashDepositSet
 const SETUP_STEP_FOR_STATUS: Record<Exclude<CashDepositSetupStatus, 'ready'>, CashDepositSetupRoute> = {
   needsIdentity: Routes.CASH_SETUP_PHONE,
   needsCard: Routes.CASH_SETUP_CARD_DETAILS,
-  needsWallet: Routes.CASH_SETUP_CARD_DETAILS,
 };
 
 export function getFirstSetupStep(status: CashDepositSetupStatus): CashDepositSetupRoute | undefined {

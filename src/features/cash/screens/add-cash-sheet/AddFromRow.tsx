@@ -27,7 +27,7 @@ export function AddFromRow({ card, onPress }: { card: LinkedCard; onPress: () =>
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   return (
-    <Box paddingTop="12px" paddingBottom="24px">
+    <Box paddingTop="12px">
       <Box style={[styles.separator, { backgroundColor: separatorTertiary }]} />
       <ButtonPressAnimation onPress={onPress} scaleTo={0.96} testID="cash-deposit-add-cash-add-from">
         <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingHorizontal="28px" paddingTop="20px">

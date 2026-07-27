@@ -82,3 +82,9 @@ jest.mock('react-native-nitro-modules', () => ({
     createHybridObject: jest.fn(() => ({})),
   },
 }));
+
+jest.mock('react-native-passkeys', () => ({
+  create: jest.fn(),
+  get: jest.fn(),
+  isSupported: jest.fn(() => true),
+}));

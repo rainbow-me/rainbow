@@ -7,6 +7,7 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
 import { linkCardWithVault } from '../../../services/cardLinkService';
+import { isPasskeyCancellation } from '../../../services/cashPasskeyService';
 import { useCashPaymentMethodStore } from '../../../stores/cashPaymentMethodStore';
 
 export type CardLinkState = 'entry' | 'submitting' | 'submitError' | 'success';
@@ -56,6 +57,11 @@ export function useCardLinkFlow(): UseCardLinkFlow {
       setFlowState('success');
     } catch (e) {
       if (controller.signal.aborted) return;
+      // Sign-in cancellation is a deliberate dismissal, not a failure: back to the form, silently.
+      if (isPasskeyCancellation(e)) {
+        setFlowState('entry');
+        return;
+      }
       logger.error(new RainbowError('[useCardLinkFlow]: Failed to link card', e));
       analytics.track(analytics.event.cashCardLinkFailed, { reason: e instanceof Error ? e.message : String(e) });
       setFlowState('submitError');

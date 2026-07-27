@@ -1,25 +1,10 @@
 appId: ${APP_ID}
 ---
 - runFlow:
-    file: SetCashPhoneVerified.yaml
+    file: SetCashAccount.yaml
     env:
-      VALUE: 'true'
-- runFlow:
-    file: SetCashDepositSetupFact.yaml
-    env:
-      FACT: kycPassed
-      VALUE: 'true'
-- runFlow:
-    file: SetCashDepositSetupFact.yaml
-    env:
-      FACT: passkeyRegistered
       VALUE: 'true'
 - runFlow:
     file: SetCashLinkedCard.yaml
     env:
-      VALUE: 'true'
-- runFlow:
-    file: SetCashDepositSetupFact.yaml
-    env:
-      FACT: hasLinkedWallet
       VALUE: 'true'

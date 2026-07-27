@@ -4,7 +4,6 @@ import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
-import { useCashDepositSetupStore } from '../../../stores/cashDepositSetupStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_BUDGET_MS, KYC_POLL_INTERVAL_MS, useSubmitKycFlowStore } from './useSubmitKycFlow';
 
@@ -40,10 +39,6 @@ jest.mock('../../../services/userClient', () => ({
   submitOnboarding: jest.fn(),
 }));
 
-jest.mock('../../../stores/cashDepositSetupStore', () => ({
-  useCashDepositSetupStore: { getState: jest.fn() },
-}));
-
 jest.mock('../useCashDepositSetupNavigation', () => ({
   useCashDepositSetupNavigation: jest.fn(),
 }));
@@ -52,7 +47,6 @@ const mockSubmitOnboarding = submitOnboarding as jest.Mock;
 const mockGetUserStatus = getUserStatus as jest.Mock;
 const mockDelay = delay as jest.Mock;
 const track = analytics.track as jest.Mock;
-const setFact = jest.fn();
 
 const TOKEN = 'bst_1';
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1990, month: 1, day: 2 } };
@@ -71,7 +65,6 @@ const challenge = () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (useCashDepositSetupStore.getState as jest.Mock).mockReturnValue({ setFact });
   session().reset();
   session().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
@@ -82,7 +75,7 @@ beforeEach(() => {
 });
 
 describe('useSubmitKycFlowStore.submit', () => {
-  it('submits, flips the fact, tracks, and resolves approved — in order', async () => {
+  it('submits, tracks, and resolves approved — in order', async () => {
     await expect(flow().submit()).resolves.toBe('approved');
 
     expect(mockSubmitOnboarding).toHaveBeenCalledWith({
@@ -91,16 +84,13 @@ describe('useSubmitKycFlowStore.submit', () => {
       identity: IDENTITY,
       governmentId: GOVERNMENT_ID,
     });
-    expect(setFact).toHaveBeenCalledWith('kycPassed', true);
     expect(track).toHaveBeenNthCalledWith(1, 'cash.kyc_submitted');
     expect(track).toHaveBeenNthCalledWith(2, 'cash.kyc_approved');
 
     const [trackSubmittedOrder, trackApprovedOrder] = track.mock.invocationCallOrder;
     const [submitOrder] = mockSubmitOnboarding.mock.invocationCallOrder;
-    const [setFactOrder] = setFact.mock.invocationCallOrder;
     expect(trackSubmittedOrder).toBeLessThan(submitOrder);
-    expect(submitOrder).toBeLessThan(setFactOrder);
-    expect(setFactOrder).toBeLessThan(trackApprovedOrder);
+    expect(submitOrder).toBeLessThan(trackApprovedOrder);
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
     expect(flow().state).toBe('entry');
@@ -115,7 +105,6 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(mockGetUserStatus).toHaveBeenCalledWith({ bootstrapToken: TOKEN });
     expect(mockDelay).toHaveBeenCalledWith(KYC_POLL_INTERVAL_MS);
-    expect(setFact).toHaveBeenCalledWith('kycPassed', true);
   });
 
   it('fails with timeout when pending never resolves within the poll budget', async () => {
@@ -126,7 +115,6 @@ describe('useSubmitKycFlowStore.submit', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(POLL_ATTEMPTS);
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'timeout' });
-    expect(setFact).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('entry');
   });
@@ -142,7 +130,6 @@ describe('useSubmitKycFlowStore.submit', () => {
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason });
-    expect(setFact).not.toHaveBeenCalled();
   });
 
   it('fails with the error message when the submission throws', async () => {
@@ -151,7 +138,6 @@ describe('useSubmitKycFlowStore.submit', () => {
     await expect(flow().submit()).resolves.toBe('failed');
 
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'network down' });
-    expect(setFact).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('entry');
   });

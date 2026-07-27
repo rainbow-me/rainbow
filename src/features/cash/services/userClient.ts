@@ -4,13 +4,26 @@ import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 
 import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from '../stores/cashSetupSessionStore';
-import { getCashPlatformClient } from './rampClient';
+import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
 
 export const US_COUNTRY_CALLING_CODE = '1';
 
 const BOOTSTRAP_TOKEN_PATTERN = /^bst_.+/;
 // ProtoJSON encoding of google.protobuf.Duration, e.g. "600s" or "0.5s".
 const PROTO_DURATION_PATTERN = /^(?:0|[1-9]\d*)(?:\.\d{1,9})?s$/;
+
+function parseProtoDurationMs(value: unknown): number | null {
+  if (typeof value !== 'string' || !PROTO_DURATION_PATTERN.test(value)) return null;
+  return Number(value.slice(0, -1)) * 1000;
+}
+
+function parseExpiresAt(expiresIn: unknown, errorMessage: string): number {
+  const expiresInMs = parseProtoDurationMs(expiresIn);
+  if (expiresInMs == null || expiresInMs <= 0 || expiresInMs > Number.MAX_SAFE_INTEGER - Date.now()) {
+    throw new Error(errorMessage);
+  }
+  return Date.now() + expiresInMs;
+}
 
 function parseBootstrapCredential({ bootstrapToken, expiresIn }: { bootstrapToken: unknown; expiresIn: unknown }): {
   bootstrapToken: string;
@@ -19,23 +32,23 @@ function parseBootstrapCredential({ bootstrapToken, expiresIn }: { bootstrapToke
   if (typeof bootstrapToken !== 'string' || !BOOTSTRAP_TOKEN_PATTERN.test(bootstrapToken)) {
     throw new Error('UserService returned an invalid bootstrap token');
   }
-  if (typeof expiresIn !== 'string' || !PROTO_DURATION_PATTERN.test(expiresIn)) {
-    throw new Error('UserService returned an invalid bootstrap token expiry');
+  return { bootstrapToken, expiresAt: parseExpiresAt(expiresIn, 'UserService returned an invalid bootstrap token expiry') };
+}
+
+function parseAccessCredential({ accessToken, expiresIn }: { accessToken: unknown; expiresIn: unknown }): {
+  accessToken: string;
+  expiresAt: number;
+} {
+  if (typeof accessToken !== 'string' || !accessToken) {
+    throw new Error('UserService returned an invalid access token');
   }
-  const expiresInMs = Number(expiresIn.slice(0, -1)) * 1000;
-  if (expiresInMs <= 0 || expiresInMs > Number.MAX_SAFE_INTEGER - Date.now()) {
-    throw new Error('UserService returned an invalid bootstrap token expiry');
-  }
-  return { bootstrapToken, expiresAt: Date.now() + expiresInMs };
+  return { accessToken, expiresAt: parseExpiresAt(expiresIn, 'UserService returned an invalid access token expiry') };
 }
 
 // Absent means a resend is already allowed; the server enforces the real rate
 // limit, so a malformed duration degrades to no client-side cooldown.
 function parseResendAfter(resendAfter: unknown): number {
-  if (typeof resendAfter === 'string' && PROTO_DURATION_PATTERN.test(resendAfter)) {
-    return Date.now() + Number(resendAfter.slice(0, -1)) * 1000;
-  }
-  return Date.now();
+  return Date.now() + (parseProtoDurationMs(resendAfter) ?? 0);
 }
 
 export enum KycStatus {
@@ -85,6 +98,26 @@ type AddPasskeyResponse = {
   passkeyId: string;
   /** WebAuthn PublicKeyCredentialCreationOptions, JSON-encoded. */
   publicKeyOptionsJson: string;
+  userId: string;
+};
+
+type StartLoginResponse = {
+  sessionId: string;
+  sessionToken: string;
+  /** WebAuthn PublicKeyCredentialRequestOptions, JSON-encoded. */
+  publicKeyOptionsJson: string;
+};
+
+type FinishLoginParams = {
+  sessionId: string;
+  sessionToken: string;
+  /** WebAuthn assertion, JSON-encoded. */
+  credentialAssertionJson: string;
+};
+
+type FinishLoginResponse = {
+  sessionId: string;
+  sessionToken: string;
 };
 
 type FinishAddPasskeyParams = {
@@ -102,10 +135,6 @@ type GetUserStatusResponse = {
     };
   };
 };
-
-function buildAuthenticatedHeader(token: string) {
-  return { Authorization: `Bearer ${token}` };
-}
 
 export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResponse> {
   if (IS_TESTING === 'true') {
@@ -172,7 +201,7 @@ export async function submitOnboarding({
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    return { passkeyId: 'e2e-passkey-id', publicKeyOptionsJson: '{}' };
+    return { passkeyId: 'e2e-passkey-id', publicKeyOptionsJson: '{}', userId: 'e2e-user-id' };
   }
 
   const { data } = await getCashPlatformClient().post<AddPasskeyResponse>(
@@ -199,6 +228,49 @@ export async function finishAddPasskey({
     { passkeyId, credentialCreationJson, passkeyName },
     { headers: buildAuthenticatedHeader(bootstrapToken) }
   );
+}
+
+export async function startLogin({ userId }: { userId: string }): Promise<StartLoginResponse> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { sessionId: 'e2e-session-id', sessionToken: 'e2e-session-token', publicKeyOptionsJson: '{}' };
+  }
+
+  const { data } = await getCashPlatformClient().post<StartLoginResponse>('/auth/StartLogin', { userId });
+  return { sessionId: data.sessionId, sessionToken: data.sessionToken, publicKeyOptionsJson: data.publicKeyOptionsJson };
+}
+
+export async function finishLogin({ sessionId, sessionToken, credentialAssertionJson }: FinishLoginParams): Promise<FinishLoginResponse> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { sessionId, sessionToken };
+  }
+
+  const { data } = await getCashPlatformClient().post<FinishLoginResponse>('/auth/FinishLogin', {
+    sessionId,
+    sessionToken,
+    credentialAssertionJson,
+  });
+  return { sessionId: data.sessionId, sessionToken: data.sessionToken };
+}
+
+export async function finalizeAuth({
+  sessionId,
+  sessionToken,
+}: {
+  sessionId: string;
+  sessionToken: string;
+}): Promise<{ accessToken: string; expiresAt: number }> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { accessToken: 'e2e-access-token', expiresAt: Date.now() + time.hours(1) };
+  }
+
+  const { data } = await getCashPlatformClient().post<{ accessToken: unknown; expiresIn: unknown }>('/auth/FinalizeAuth', {
+    sessionId,
+    sessionToken,
+  });
+  return parseAccessCredential(data);
 }
 
 export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {

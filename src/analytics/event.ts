@@ -5,6 +5,7 @@ import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
@@ -137,6 +138,10 @@ export const event = {
   cashPasskeyFailed: 'cash.passkey_failed',
   cashCardLinked: 'cash.card_linked',
   cashCardLinkFailed: 'cash.card_link_failed',
+  cashSignInSubmitted: 'cash.sign_in_submitted',
+  cashSignInSucceeded: 'cash.sign_in_succeeded',
+  cashSignInFailed: 'cash.sign_in_failed',
+  cashSignInCancelled: 'cash.sign_in_cancelled',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
   rewardsPressedAvailableCard: 'rewards.pressed_available_card',
   rewardsPressedPositionCard: 'rewards.pressed_position_card',
@@ -566,6 +571,19 @@ export type EventProperties = {
   };
   [event.cashCardLinkFailed]: {
     reason: string;
+  };
+  [event.cashSignInSubmitted]: {
+    trigger: CashSignInTrigger;
+  };
+  [event.cashSignInSucceeded]: {
+    trigger: CashSignInTrigger;
+  };
+  [event.cashSignInFailed]: {
+    trigger: CashSignInTrigger;
+    reason: string;
+  };
+  [event.cashSignInCancelled]: {
+    trigger: CashSignInTrigger;
   };
   [event.rewardsPressedPendingEarningsCard]: undefined;
   [event.rewardsPressedAvailableCard]: undefined;

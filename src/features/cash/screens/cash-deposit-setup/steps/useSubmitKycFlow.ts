@@ -11,7 +11,6 @@ import { delay } from '@/utils/delay';
 
 import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
-import { useCashDepositSetupStore } from '../../../stores/cashDepositSetupStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
@@ -62,7 +61,6 @@ export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, g
         return 'failed';
       }
 
-      useCashDepositSetupStore.getState().setFact('kycPassed', true);
       analytics.track(analytics.event.cashKycApproved);
       return 'approved';
     } catch (e) {

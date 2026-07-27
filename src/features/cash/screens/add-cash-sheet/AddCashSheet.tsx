@@ -188,35 +188,49 @@ function getActionButtonLabel(canSubmitAmount: boolean): string {
 
 function AddCashActionButton({
   canSubmitAmount,
+  hasLinkedCard,
   isKeypad,
   isProcessing,
+  onAddCard,
   onHoldToAdd,
 }: {
   canSubmitAmount: boolean;
+  hasLinkedCard: boolean;
   isKeypad: boolean;
   isProcessing: boolean;
+  onAddCard: () => void;
   onHoldToAdd: () => void;
 }) {
   const { isDarkMode } = useColorMode();
   const accent = useForegroundColor('accent');
 
   return (
-    <Box paddingHorizontal="20px" style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}>
-      <HoldToActivateButton
-        backgroundColor="accent"
-        color={canSubmitAmount ? 'label' : 'labelTertiary'}
-        disabled={!canSubmitAmount || isProcessing}
-        disabledBackgroundColor={isDarkMode ? opacity(accent, 0.1) : 'fillTertiary'}
-        height={48}
-        isProcessing={isProcessing}
-        label={getActionButtonLabel(canSubmitAmount)}
-        onLongPress={onHoldToAdd}
-        processingLabel={i18n.t(i18n.l.cash.add_cash_screen.adding_cash)}
-        showBiometryIcon={false}
-        size="22pt"
-        testID="cash-deposit-add-cash-hold-to-add"
-        weight="heavy"
-      />
+    <Box paddingHorizontal="20px" paddingTop="24px" style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}>
+      {hasLinkedCard ? (
+        <HoldToActivateButton
+          backgroundColor="accent"
+          color={canSubmitAmount ? 'label' : 'labelTertiary'}
+          disabled={!canSubmitAmount || isProcessing}
+          disabledBackgroundColor={isDarkMode ? opacity(accent, 0.1) : 'fillTertiary'}
+          height={48}
+          isProcessing={isProcessing}
+          label={getActionButtonLabel(canSubmitAmount)}
+          onLongPress={onHoldToAdd}
+          processingLabel={i18n.t(i18n.l.cash.add_cash_screen.adding_cash)}
+          showBiometryIcon={false}
+          size="22pt"
+          testID="cash-deposit-add-cash-hold-to-add"
+          weight="heavy"
+        />
+      ) : (
+        <ButtonPressAnimation onPress={onAddCard} scaleTo={0.97} testID="cash-deposit-add-cash-add-card">
+          <Box alignItems="center" borderRadius={48} height={{ custom: 48 }} justifyContent="center" background="blue" width="full">
+            <Text align="center" color="label" size="22pt" weight="heavy">
+              {i18n.t(i18n.l.cash.add_cash_screen.add_credit_card)}
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
+      )}
     </Box>
   );
 }
@@ -226,6 +240,7 @@ function PresetAmountContent({
   canSubmitAmount,
   isProcessing,
   linkedCard,
+  onAddCard,
   onAddFrom,
   onHoldToAdd,
   onMore,
@@ -235,7 +250,8 @@ function PresetAmountContent({
   amount: AddCashAmount;
   canSubmitAmount: boolean;
   isProcessing: boolean;
-  linkedCard: LinkedCard;
+  linkedCard: LinkedCard | null;
+  onAddCard: () => void;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
   onMore: () => void;
@@ -246,8 +262,15 @@ function PresetAmountContent({
     <>
       <AddCashHeader onSettings={onSettings} topPadding="28px" />
       <AmountPresetGrid onMore={onMore} onSelectPreset={onSelectPreset} selectedAmount={amount.selectedPresetAmount} />
-      <AddFromRow card={linkedCard} onPress={onAddFrom} />
-      <AddCashActionButton canSubmitAmount={canSubmitAmount} isKeypad={false} isProcessing={isProcessing} onHoldToAdd={onHoldToAdd} />
+      {linkedCard && <AddFromRow card={linkedCard} onPress={onAddFrom} />}
+      <AddCashActionButton
+        canSubmitAmount={canSubmitAmount}
+        hasLinkedCard={linkedCard != null}
+        isKeypad={false}
+        isProcessing={isProcessing}
+        onAddCard={onAddCard}
+        onHoldToAdd={onHoldToAdd}
+      />
     </>
   );
 }
@@ -257,6 +280,7 @@ function KeypadAmountContent({
   canSubmitAmount,
   isProcessing,
   linkedCard,
+  onAddCard,
   onAddFrom,
   onHoldToAdd,
   onSettings,
@@ -264,7 +288,8 @@ function KeypadAmountContent({
   amount: AddCashAmount;
   canSubmitAmount: boolean;
   isProcessing: boolean;
-  linkedCard: LinkedCard;
+  linkedCard: LinkedCard | null;
+  onAddCard: () => void;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
   onSettings: () => void;
@@ -277,7 +302,7 @@ function KeypadAmountContent({
         <AmountDisplay displayedAmount={amount.displayedAmount} />
       </Box>
       <KeypadFundingCaption />
-      <AddFromRow card={linkedCard} onPress={onAddFrom} />
+      {linkedCard && <AddFromRow card={linkedCard} onPress={onAddFrom} />}
       <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px">
         <NumberPad
           activeFieldId={amount.activeFieldId}
@@ -286,24 +311,20 @@ function KeypadAmountContent({
           stripFormatting={sanitizeAmount}
         />
       </Box>
-      <AddCashActionButton canSubmitAmount={canSubmitAmount} isKeypad isProcessing={isProcessing} onHoldToAdd={onHoldToAdd} />
+      <AddCashActionButton
+        canSubmitAmount={canSubmitAmount}
+        hasLinkedCard={linkedCard != null}
+        isKeypad
+        isProcessing={isProcessing}
+        onAddCard={onAddCard}
+        onHoldToAdd={onHoldToAdd}
+      />
     </>
   );
 }
 
 export const AddCashSheet = memo(function AddCashSheet() {
   const linkedCard = useCashLinkedCard();
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    if (!linkedCard) navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);
-  }, [linkedCard, navigation]);
-
-  if (!linkedCard) return null;
-  return <AddCashSheetContent linkedCard={linkedCard} />;
-});
-
-const AddCashSheetContent = memo(function AddCashSheetContent({ linkedCard }: { linkedCard: LinkedCard }) {
   const [mode, setMode] = useState<AddCashMode>('presets');
   const amount = useAddCashAmount(DEFAULT_SELECTED_AMOUNT);
   const { resetKeypadAmount } = amount;
@@ -370,11 +391,16 @@ const AddCashSheetContent = memo(function AddCashSheetContent({ linkedCard }: { 
   }, [mode, amount.canSubmit, amount.amount]);
 
   const handleHoldToAdd = useCallback(() => {
+    if (!linkedCard) return;
     cashBuyOrderActions.submitBuyOrder({ cardId: linkedCard.id, depositAmount: amount.amount, walletAddress: accountAddress });
-  }, [accountAddress, amount.amount, linkedCard.id]);
+  }, [accountAddress, amount.amount, linkedCard]);
+
+  const handleAddCard = useCallback(() => {
+    navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);
+  }, [navigation]);
 
   const handleAddFrom = useCallback(() => {
-    // TODO(cash): open the payment-method picker once card linking lands (APP-3780).
+    // TODO(cash): open the payment-method picker (APP-3780)
   }, []);
 
   const handleSettings = useCallback(() => {
@@ -403,6 +429,7 @@ const AddCashSheetContent = memo(function AddCashSheetContent({ linkedCard }: { 
             canSubmitAmount={amount.canSubmit}
             isProcessing={isProcessing}
             linkedCard={linkedCard}
+            onAddCard={handleAddCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
             onSettings={handleSettings}
@@ -413,6 +440,7 @@ const AddCashSheetContent = memo(function AddCashSheetContent({ linkedCard }: { 
             canSubmitAmount={amount.canSubmit}
             isProcessing={isProcessing}
             linkedCard={linkedCard}
+            onAddCard={handleAddCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
             onMore={handleMore}

@@ -1,21 +1,9 @@
-import { CASH_PLATFORM_API_KEY, CASH_PLATFORM_BASE_URL } from 'react-native-dotenv';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
-
+import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import type { LinkedCard } from '../stores/cashPaymentMethodStore';
-
-let platformClient: RainbowFetchClient | undefined;
-
-// TODO: replace with src/resources/platform/client.ts
-// once cash related backend is completely deployed to production
-export function getCashPlatformClient(): RainbowFetchClient {
-  return (platformClient ??= new RainbowFetchClient({
-    baseURL: `${CASH_PLATFORM_BASE_URL}/v1`,
-    headers: {
-      Authorization: `Bearer ${CASH_PLATFORM_API_KEY}`,
-    },
-  }));
-}
+import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
+import { ensureAccessToken, type CashSignInTrigger } from './cashSignInService';
 
 // ---- Wire enums (values mirror the platform `/v1/ramp` OpenAPI spec) --------
 
@@ -106,18 +94,13 @@ export interface RampClient {
 
 type StartCardLinkSessionResponse = { linkUrl: string; token: string; tokenExpiresTime: string };
 
-type RampPaymentMethod = {
+type RampCard = {
   id: string;
-  type: 'PAYMENT_METHOD_TYPE_CARD';
-  card: {
-    brand: CardBrand;
-    // Only the last 4 digits, despite the name — the backend returns no mask characters.
-    maskedNumber: string;
-  };
+  lastFourDigits: string;
   createdTime: string;
 };
 
-type CompleteCardLinkSessionResponse = { paymentMethod: RampPaymentMethod };
+type CompleteCardLinkSessionResponse = { card: RampCard };
 
 const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Unspecified]: 'Card',
@@ -125,11 +108,28 @@ const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Mastercard]: 'Mastercard',
 };
 
+function isUnauthorized(error: unknown): boolean {
+  return error instanceof RainbowFetchError && error.response?.status === 401;
+}
+
+// The user JWT replaces the shared app key on these calls. On 401 the cached
+// token is assumed stale: drop it, run one fresh sign-in ceremony, retry once.
+// Tokens are acquired outside the try so a 401 from the ceremony's own RPCs
+// propagates instead of triggering a second ceremony.
+async function authorizedRequest<T>(trigger: CashSignInTrigger, send: (headers: { Authorization: string }) => Promise<T>): Promise<T> {
+  const headers = buildAuthenticatedHeader(await ensureAccessToken(trigger));
+  try {
+    return await send(headers);
+  } catch (error) {
+    if (!isUnauthorized(error)) throw error;
+    useCashAuthTokenStore.getState().clearToken();
+    return send(buildAuthenticatedHeader(await ensureAccessToken(trigger)));
+  }
+}
+
 export async function startCardLinkSession(abortController?: AbortController | null): Promise<StartCardLinkSessionResponse> {
-  const { data } = await getCashPlatformClient().post<StartCardLinkSessionResponse>(
-    '/ramp/payment-methods/link-card-session',
-    {},
-    { abortController }
+  const { data } = await authorizedRequest('cardLink', headers =>
+    getCashPlatformClient().post<StartCardLinkSessionResponse>('/ramp/payment-methods/link-card-session', {}, { abortController, headers })
   );
   return data;
 }
@@ -138,13 +138,16 @@ export async function completeCardLinkSession(
   { providerCardId }: { providerCardId: string },
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
-  const { data } = await getCashPlatformClient().post<CompleteCardLinkSessionResponse>(
-    '/ramp/payment-methods/link-card-session/complete',
-    {
-      providerCardId,
-    },
-    { abortController }
+  const { data } = await authorizedRequest('cardLink', headers =>
+    getCashPlatformClient().post<CompleteCardLinkSessionResponse>(
+      '/ramp/payment-methods/link-card-session/complete',
+      {
+        providerCardId,
+      },
+      { abortController, headers }
+    )
   );
-  const { id, card } = data.paymentMethod;
-  return { id, brand: CARD_BRAND_LABELS[card.brand], last4: card.maskedNumber };
+  const { id, lastFourDigits } = data.card;
+  // TODO: Replace it with actual CC brands once APP-3934 is resolved
+  return { id, brand: CARD_BRAND_LABELS[CardBrand.Visa], last4: lastFourDigits };
 }

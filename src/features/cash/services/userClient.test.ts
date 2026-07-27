@@ -1,10 +1,11 @@
-import { getCashPlatformClient } from './rampClient';
+import { getCashPlatformClient } from './cashPlatformClient';
 import { verifyPhone } from './userClient';
 
 jest.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
 
-jest.mock('./rampClient', () => ({
+jest.mock('./cashPlatformClient', () => ({
   getCashPlatformClient: jest.fn(),
+  buildAuthenticatedHeader: (token: string) => ({ Authorization: `Bearer ${token}` }),
 }));
 
 const post = jest.fn();

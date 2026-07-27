@@ -7,7 +7,6 @@ describe('Cash Deposit Setup steps', () => {
   it('maps a setup status to its first step', () => {
     expect(getFirstSetupStep('needsIdentity')).toBe(Routes.CASH_SETUP_PHONE);
     expect(getFirstSetupStep('needsCard')).toBe(Routes.CASH_SETUP_CARD_DETAILS);
-    expect(getFirstSetupStep('needsWallet')).toBe(Routes.CASH_SETUP_CARD_DETAILS);
   });
 
   it('has no first step for a ready member', () => {

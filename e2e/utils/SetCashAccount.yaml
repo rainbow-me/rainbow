@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 ---
-- openLink: rainbow://e2e/setCashPhoneVerified?value=${VALUE}
+- openLink: rainbow://e2e/setCashAccount?value=${VALUE}
 - runFlow:
     when:
       visible: 'Open in .*'

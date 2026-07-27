@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '../../../services/cashPasskeyService';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
-import { useCashDepositSetupStore } from '../../../stores/cashDepositSetupStore';
+import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
@@ -34,11 +34,11 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
     analytics.track(analytics.event.cashPasskeySubmitted);
     try {
       const { bootstrapToken } = session;
-      const { passkeyId, publicKeyOptionsJson } = await addPasskey({ bootstrapToken });
+      const { passkeyId, publicKeyOptionsJson, userId } = await addPasskey({ bootstrapToken });
       const credentialCreationJson = await createPasskeyCredential(publicKeyOptionsJson);
       await finishAddPasskey({ bootstrapToken, passkeyId, credentialCreationJson, passkeyName: getPasskeyName() });
 
-      useCashDepositSetupStore.getState().setFact('passkeyRegistered', true);
+      useCashAccountStore.getState().setUserId(userId);
       analytics.track(analytics.event.cashPasskeyAdded);
       return 'completed';
     } catch (e) {

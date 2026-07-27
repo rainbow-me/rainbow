@@ -501,11 +501,8 @@
       },
       "restart_app": "Restart App",
       "reset_experimental_config": "Reset Experimental Config",
-      "cash_deposit_setup_facts": {
-        "kycPassed": "KYC passed",
-        "passkeyRegistered": "Passkey registered",
-        "hasLinkedWallet": "Has linked wallet"
-      },
+      "cash_set_user_id_from_clipboard": "Set cash user id from clipboard",
+      "cash_clear_account": "Clear cash account",
       "cash_set_phone_verified": "Set phone verified",
       "cash_clear_linked_card": "Clear linked card",
       "cash_order_outcome": {
@@ -1573,6 +1570,7 @@
       },
       "add_cash_screen": {
         "add_from": "Add From",
+        "add_credit_card": "Add Credit Card",
         "hold_to_add": "Hold to Add",
         "enter_amount": "Enter Amount",
         "money_is_added_in": "Money is added in",

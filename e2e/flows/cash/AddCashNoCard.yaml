@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- runFlow:
+    file: ../../utils/SetCashAccount.yaml
+    env:
+      VALUE: 'true'
+# An account holder with no linked card lands on the sheet: no Add From row,
+# the action button is a plain Add Credit Card that opens Setup at the card step.
+- tapOn:
+    id: buy-button
+- assertVisible:
+    id: cash-deposit-add-cash-add-card
+- assertNotVisible:
+    id: cash-deposit-add-cash-add-from
+- tapOn:
+    id: cash-deposit-add-cash-add-card
+- assertVisible:
+    text: 'Enter card details'
