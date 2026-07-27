@@ -58,7 +58,6 @@ curl -sf -H "Authorization: token $TOKEN" \
      "https://api.github.com/repos/rainbow-me/rainbow-env/contents/$REPO_PATH" \
     || fail "could not fetch $REPO_PATH from rainbow-env"
 
-mkdir -p "$(dirname "$DEST")"
-mv "$TMP" "$DEST"
-chmod 644 "$DEST"
+mkdir -p "$(dirname "$DEST")" || { echo "error: cannot create $(dirname "$DEST")" >&2; exit 1; }
+mv "$TMP" "$DEST" || { echo "error: cannot write $DEST" >&2; exit 1; }
 echo "$DEST installed from rainbow-env"
