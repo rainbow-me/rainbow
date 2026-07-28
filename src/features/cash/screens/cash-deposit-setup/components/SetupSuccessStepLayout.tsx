@@ -5,9 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, useColorMode } from '@/design-system';
+import { CashActionButton } from '@/features/cash/components/CashActionButton';
 
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { SetupActionButton } from './SetupActionButton';
 import { SetupCancelButton } from './SetupCancelButton';
 
 type SetupSuccessStepAccessory =
@@ -83,7 +83,7 @@ export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({
       </Box>
 
       <Box bottom={{ custom: actionBottom }} left={{ custom: 20 }} position="absolute" right={{ custom: 20 }}>
-        <SetupActionButton label={actionLabel} onPress={onAction ?? next} shadow testID="cash-setup-success-action" />
+        <CashActionButton label={actionLabel} onPress={onAction ?? next} shadow testID="cash-setup-success-action" />
       </Box>
     </Box>
   );

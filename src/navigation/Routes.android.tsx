@@ -9,6 +9,7 @@ import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
+import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -288,6 +289,7 @@ function BSNavigator() {
       <BSStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} />
       <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} />
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
+      <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
       <BSStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />

@@ -9,6 +9,7 @@ import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
+import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -313,6 +314,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
       <NativeStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} {...perpsAccountStackConfig} />
       <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}

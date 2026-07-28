@@ -659,6 +659,12 @@ type RouteParams = {
         initialStep?: CashDepositSetupRoute;
       }
     | undefined;
+  [Routes.CASH_ADD_WALLET_SHEET]: {
+    walletAddress: Address;
+    cardId: string;
+    /** Fiat amount as a decimal string, e.g. "50". */
+    depositAmount: string;
+  };
   [Routes.PERPS_ACCOUNT_SCREEN]:
     | {
         scrollToTop?: boolean;
