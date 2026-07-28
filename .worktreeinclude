@@ -5,12 +5,18 @@
 
 # Required before anything can typecheck or build.
 .env
-.xcode.env.local
-ios/*.xcconfig
 src/config/debug.ts
 src/graphql/config.js
+
+# Generated output, copied as a snapshot rather than regenerated. Re-run
+# `yarn graphql-codegen` in the worktree if the branch changes queries, schemas
+# or codegen config.
 src/graphql/__generated__/
 
-# node_modules is deliberately absent: scripts/worktree-setup.sh copies it
-# instead, which is far cheaper (copy-on-write, ~46MB) and checks the lockfile
-# first so a branch that changes dependencies installs rather than clones.
+# Deliberately absent:
+#   ios/*.xcconfig, .xcode.env.local  postinstall.sh appends to these, so copying
+#     them yields duplicate keys. Worktrees don't build the app anyway, since
+#     pods and simulators are single-instance.
+#   node_modules  scripts/worktree-setup.sh runs `yarn install` instead, so the
+#     tree comes from this branch's own lockfile and patches/ rather than from
+#     whatever branch another checkout happens to be sitting on.

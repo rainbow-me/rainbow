@@ -7,33 +7,24 @@
 # GraphQL types, node_modules) are all absent and every yarn script fails until
 # they are put in place.
 #
-# Runs automatically, once per worktree:
-#   - Claude Code, via the SessionStart / SubagentStart hooks in .claude/settings.json
-#   - Codex, via .codex/setup.sh
+# Runs automatically via the SessionStart / SubagentStart hooks in
+# .claude/settings.json and .codex/config.toml. Those fire on resume, /clear and
+# compaction as well as on a new session, so this returns early once a worktree
+# is set up.
 #
-# Safe to run by hand and safe to run repeatedly; it no-ops once a worktree is
-# set up, and no-ops entirely in the main checkout.
+# Safe to run by hand. No-ops entirely in the main checkout.
 
 set -eo pipefail
 
 MAIN=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 HERE=$(git rev-parse --show-toplevel)
 
-# The main checkout owns its own dependencies; there is nothing to prepare.
+# The main checkout owns its own dependencies.
 if [ "$MAIN" = "$HERE" ]; then
   exit 0
 fi
 
 cd "$HERE"
-
-# Copy-on-write where the filesystem supports it (APFS clone, btrfs/XFS
-# reflink), plain copy elsewhere. Cloning node_modules costs about 46MB and 30s
-# rather than 2.2GB and several minutes.
-clone() {
-  cp -c -R "$1" "$2" 2>/dev/null ||
-    cp -R --reflink=auto "$1" "$2" 2>/dev/null ||
-    cp -R "$1" "$2"
-}
 
 # Gitignored files declared in .worktreeinclude. Claude Code copies these itself
 # before this script runs, so the loop is a no-op there; it does the real work
@@ -42,7 +33,7 @@ if [ -f .worktreeinclude ]; then
   while IFS= read -r pattern || [ -n "$pattern" ]; do
     case "$pattern" in '' | '#'*) continue ;; esac
     pattern=${pattern%/}
-    # Deliberately unquoted so patterns such as ios/*.xcconfig glob.
+    # Deliberately unquoted so glob patterns expand.
     for src in "$MAIN"/$pattern; do
       [ -e "$src" ] || continue
       rel=${src#"$MAIN"/}
@@ -50,25 +41,31 @@ if [ -f .worktreeinclude ]; then
       # Mirror .worktreeinclude semantics: never copy a git-tracked file.
       git -C "$MAIN" check-ignore -q "$rel" || continue
       mkdir -p "$(dirname "$rel")"
-      clone "$src" "$rel"
+      cp -R "$src" "$rel"
     done
   done <.worktreeinclude
 fi
 
+# Any worktree that already has dependencies is left alone. yarn runs the root
+# postinstall on every install, and postinstall appends to the ios/*.xcconfig
+# files, so installing on every session would grow them without bound.
 if [ -d node_modules ]; then
   exit 0
 fi
 
-# The main checkout's node_modules is a valid tree only for the main checkout's
-# lockfile. An identical lockfile makes cloning correct by construction; a
-# different one means this branch resolves different packages (or different
-# entries in patches/) and has to install.
-if cmp -s yarn.lock "$MAIN/yarn.lock"; then
-  echo "🌱 Lockfiles match; cloning node_modules from $MAIN..."
-  clone "$MAIN/node_modules" node_modules
-else
-  echo "🌱 Lockfile differs from the main checkout; installing..."
-  yarn install --immutable
+# Installing from this branch's own lockfile and patches/ makes the tree correct
+# by construction, with no reasoning about any other checkout's state. Around
+# 23s against the warm global cache, though not a quick relink: yarn runs
+# postinstall.sh, which rewrites the tree with rn-nodeify, applies patch-package
+# and fires the RAINBOW_SCRIPTS_APP_*_PREBUILD_HOOK commands when set. Those
+# hooks warn and continue here, since they point into rainbow-scripts, which a
+# worktree doesn't have.
+echo "🌱 Installing dependencies for $HERE..."
+yarn install --immutable
+
+if [ ! -d node_modules ]; then
+  echo "✖ node_modules is still missing after install. Run 'yarn install' here to see why." >&2
+  exit 1
 fi
 
 echo "✅ Worktree ready: $HERE"

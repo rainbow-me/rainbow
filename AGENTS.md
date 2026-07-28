@@ -16,7 +16,7 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesj
 
 Worktree setup is automatic and needs no action: `scripts/worktree-setup.sh` runs once per worktree, via the `SessionStart` hooks in `.claude/settings.json` and `.codex/config.toml`.
 
-- **Worktree missing dependencies:** run `bash scripts/worktree-setup.sh`. Idempotent, and no-ops in the main checkout.
+- **Worktree missing dependencies:** run `bash scripts/worktree-setup.sh`. It skips worktrees that already have `node_modules`, so use `yarn install` if a tree is present but broken.
 - **Never run the app from a worktree** -- Metro, simulators and pods are single-instance. Use the main checkout.
 
 ## Architecture
