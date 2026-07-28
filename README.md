@@ -30,13 +30,12 @@
 Set up these **before** running `yarn install`, as the postinstall script reads
 `.env` and `rainbow-scripts` to generate build configs and run prebuild hooks.
 
-1. Copy `dotenv` from [`rainbow-me/rainbow-env`](https://github.com/rainbow-me/rainbow-env)
-   to `.env` in the project root.
-2. Copy `android/app/google-services.json` from the same repo to `android/app/`
-   in this project.
+1. Authenticate the [GitHub CLI](https://cli.github.com/) (`gh auth login`), or
+   export a `GITHUB_TOKEN` with access to our private repos.
+2. Run `yarn update-env` to install `.env` (overwrites any existing local `.env`).
 3. Clone [`rainbow-me/rainbow-scripts`](https://github.com/rainbow-me/rainbow-scripts)
    into the project root (the postinstall prebuild hooks depend on it).
-4. Install dependencies and run setup: `yarn install && yarn setup`
+4. Install dependencies and run setup: `yarn install && yarn setup`.
 
 ### External contributors
 
@@ -48,7 +47,10 @@ Set up these **before** running `yarn install`, as the postinstall script reads
    - ETH Gas Station: https://docs.ethgasstation.info/
    - Imgix: https://www.imgix.com/
 2. Provide your own `google-services.json` in `android/app/` from a personal
-   Firebase project registered under the package name `me.rainbow`.
+   Firebase project registered under the package name `me.rainbow`. For Google
+   Drive backup/restore to work in your builds, also register your signing
+   keystore's SHA-1 fingerprint as an Android OAuth client in that project's
+   Google Cloud console.
 3. Install dependencies and run setup: `yarn install && yarn setup`
 
 The iOS `GoogleService-Info.plist` is already in the repo and gets its API key
