@@ -1,0 +1,16 @@
+# Gitignored files copied into every worktree an agent creates. Paths only, so
+# nothing sensitive lives here; the file contents stay gitignored. Consumed
+# natively by Claude Code, and by Codex via scripts/worktree-setup.sh.
+# https://code.claude.com/docs/en/worktrees
+
+# Required before anything can typecheck or build.
+.env
+.xcode.env.local
+ios/*.xcconfig
+src/config/debug.ts
+src/graphql/config.js
+src/graphql/__generated__/
+
+# node_modules is deliberately absent: scripts/worktree-setup.sh copies it
+# instead, which is far cheaper (copy-on-write, ~46MB) and checks the lockfile
+# first so a branch that changes dependencies installs rather than clones.
