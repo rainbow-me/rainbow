@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Alert } from 'react-native';
 
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
@@ -31,6 +32,32 @@ function extractNationalDigits(text: string): string {
   return digits.slice(0, NATIONAL_NUMBER_LENGTH);
 }
 
+function formatError(error: unknown): string {
+  if (!(error instanceof Error)) {
+    try {
+      return JSON.stringify(error, null, 2) ?? String(error);
+    } catch {
+      return String(error);
+    }
+  }
+
+  try {
+    return JSON.stringify(
+      {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        cause: error.cause,
+        ...error,
+      },
+      null,
+      2
+    );
+  } catch {
+    return `${error.name}: ${error.message}\n\n${error.stack ?? ''}`;
+  }
+}
+
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
   state: 'entry',
   digits: '',
@@ -52,6 +79,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return true;
     } catch (e) {
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
+      Alert.alert('Create user error', formatError(e));
       set({ state: 'error' });
       return false;
     }
