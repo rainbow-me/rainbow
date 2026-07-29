@@ -35,20 +35,6 @@
         "default_label": "No transactions yet"
       }
     },
-    "add_funds": {
-      "eth": {
-        "or_send_eth": "or send ETH to your wallet",
-        "send_from_another_source": "Send from Coinbase or another exchange—or ask a friend!"
-      },
-      "test_eth": {
-        "add_from_faucet": "Add from faucet",
-        "or_send_test_eth": "or send test ETH to your wallet",
-        "request_test_eth": "Request test ETH through the %{testnetName} faucet",
-        "send_test_eth_from_another_source": "Send test ETH from another %{testnetName} wallet—or ask a friend!"
-      },
-      "to_get_started_android": "To get started, buy some ETH",
-      "to_get_started_ios": "To get started, buy some ETH with Apple Pay"
-    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Activities",
@@ -2526,11 +2512,6 @@
         "unpin": "Unpin",
         "value": "Value",
         "view_on": "View on %{blockExplorerName}"
-      },
-      "add_cash": {
-        "interstitial": {
-          "other_amount": "Other amount"
-        }
       },
       "add_cash_v2": {
         "sheet_title": "Choose a payment option to buy crypto",
