@@ -136,8 +136,8 @@
     "@rainbow-me/provider/@ethersproject/abstract-provider": "5.8.0",
     "@rainbow-me/provider/@ethersproject/bignumber": "5.8.0",
     "@rainbow-me/provider/@ethersproject/providers": "5.8.0",
-    "@rainbow-me/provider/viem": "2.55.2",
-    "@rainbow-me/sdk/viem": "2.55.2",
+    "@rainbow-me/provider/viem": "2.55.10",
+    "@rainbow-me/sdk/viem": "2.55.10",
     "@rainbow-me/swaps/@ethersproject/abi": "5.8.0",
     "@rainbow-me/swaps/@ethersproject/abstract-signer": "5.8.0",
     "@rainbow-me/swaps/@ethersproject/bignumber": "5.8.0",
@@ -156,9 +156,9 @@
     "axios": "^1.16.0",
     "cross-fetch": "3.1.5",
     "ethers": "5.8.0",
-    "mipd/viem": "2.55.2",
+    "mipd/viem": "2.55.10",
     "react": "19.1.4",
-    "viem": "2.55.2"
+    "viem": "2.55.10"
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
@@ -387,7 +387,7 @@
     "use-debounce": "10.0.0",
     "use-deep-compare": "1.3.0",
     "use-memo-one": "1.1.1",
-    "viem": "2.55.2",
+    "viem": "2.55.10",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
     "zeego": "1.10.0",
