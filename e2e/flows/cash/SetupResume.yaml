@@ -1,0 +1,70 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- tapOn:
+    id: buy-button
+- assertVisible:
+    id: cash-deposit-intro-set-up-account
+- tapOn:
+    id: cash-deposit-intro-set-up-account
+- assertVisible:
+    text: 'Connect your phone number'
+# A phone registered with a passkey (mock 1303) dead-ends with the already-registered message.
+- tapOn:
+    id: cash-setup-phone-input
+- inputText: '5550001303'
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'This number is already connected to an account.'
+    timeout: 10000
+- tapOn:
+    id: cash-setup-phone-input
+- eraseText
+- inputText: '5550001304'
+- assertNotVisible:
+    text: 'This number is already connected to an account.'
+# A phone registered without a passkey (mock 1304) silently resumes into the same OTP screen.
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Confirm your phone'
+    timeout: 10000
+- waitForAnimationToEnd
+# The 1322 guardrail (mock code 001322) pops back to the phone step with the message.
+- inputText: '001322'
+- extendedWaitUntil:
+    visible:
+      text: 'Connect your phone number'
+    timeout: 10000
+- assertVisible:
+    text: 'This number is already connected to an account.'
+# The kept digits resume again; the mock OTP finishes the resume and lands on Identity.
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Confirm your phone'
+    timeout: 10000
+- waitForAnimationToEnd
+- inputText: '000000'
+- extendedWaitUntil:
+    visible:
+      text: 'Enter some information about yourself'
+    timeout: 10000

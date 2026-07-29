@@ -68,7 +68,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   (useCashAccountStore.getState as jest.Mock).mockReturnValue({ setUserId });
   session().reset();
-  session().setPhoneSubmitted({ userId: 'user-1', phoneNationalNumber: '4155550100', resendAfter: 0 });
+  session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
   mockAddPasskey.mockResolvedValue({ passkeyId: 'pk-1', publicKeyOptionsJson: OPTIONS_JSON, userId: 'user-1' });
   mockCreatePasskeyCredential.mockResolvedValue(CREDENTIAL_JSON);

@@ -1,12 +1,28 @@
 import { IS_TESTING } from 'react-native-dotenv';
 
 import { time } from '@/framework/core/utils/time';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
 
 import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from '../stores/cashSetupSessionStore';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
 
 export const US_COUNTRY_CALLING_CODE = '1';
+
+const PHONE_ALREADY_REGISTERED = 1300;
+const REGISTERED_WITH_PASSKEY = 1303;
+const REGISTERED_WITHOUT_PASSKEY = 1304;
+const SIGNUP_ALREADY_COMPLETE = 1322;
+
+const MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER = '5550001304';
+const MOCK_REGISTERED_WITH_PASSKEY_NUMBER = '5550001303';
+const MOCK_SIGNUP_ALREADY_COMPLETE_CODE = '001322';
+
+function getPlatformErrorCode(error: unknown): number | null {
+  if (!(error instanceof RainbowFetchError)) return null;
+  const code = error.responseBody?.code;
+  return typeof code === 'number' ? code : null;
+}
 
 const BOOTSTRAP_TOKEN_PATTERN = /^bst_.+/;
 // ProtoJSON encoding of google.protobuf.Duration, e.g. "600s" or "0.5s".
@@ -59,10 +75,11 @@ export enum KycStatus {
   Review = 'KYC_STATUS_REVIEW',
 }
 
-type CreateUserWithPhoneResponse = {
-  userId: string;
-  resendAfter: number;
-};
+export type CreateUserWithPhoneResult =
+  | { outcome: 'created'; userId: string; resendAfter: number }
+  | { outcome: 'registeredWithoutPasskey' }
+  | { outcome: 'registeredWithPasskey' }
+  | { outcome: 'alreadyRegistered' };
 
 type ResendPhoneCodeResponse = {
   resendAfter: number;
@@ -136,16 +153,31 @@ type GetUserStatusResponse = {
   };
 };
 
-export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResponse> {
+export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    return { userId: 'e2e-user-id', resendAfter: Date.now() + time.seconds(30) };
+    if (nationalNumber === MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER) return { outcome: 'registeredWithoutPasskey' };
+    if (nationalNumber === MOCK_REGISTERED_WITH_PASSKEY_NUMBER) return { outcome: 'registeredWithPasskey' };
+    return { outcome: 'created', userId: 'e2e-user-id', resendAfter: Date.now() + time.seconds(30) };
   }
 
-  const { data } = await getCashPlatformClient().post<{ userId: string; resendAfter: unknown }>('/signup/CreateUserWithPhone', {
-    phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
-  });
-  return { userId: data.userId, resendAfter: parseResendAfter(data.resendAfter) };
+  try {
+    const { data } = await getCashPlatformClient().post<{ userId: string; resendAfter: unknown }>('/signup/CreateUserWithPhone', {
+      phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+    });
+    return { outcome: 'created', userId: data.userId, resendAfter: parseResendAfter(data.resendAfter) };
+  } catch (e) {
+    switch (getPlatformErrorCode(e)) {
+      case REGISTERED_WITHOUT_PASSKEY:
+        return { outcome: 'registeredWithoutPasskey' };
+      case REGISTERED_WITH_PASSKEY:
+        return { outcome: 'registeredWithPasskey' };
+      case PHONE_ALREADY_REGISTERED:
+        return { outcome: 'alreadyRegistered' };
+      default:
+        throw e;
+    }
+  }
 }
 
 export async function verifyPhone({
@@ -283,4 +315,44 @@ export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Pr
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
   return { kycStatus: data.status.kyc.status };
+}
+
+export async function startSignupResume({
+  nationalNumber,
+}: {
+  nationalNumber: string;
+}): Promise<{ resumeId: string; resendAfter: number }> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { resumeId: 'e2e-resume-id', resendAfter: Date.now() + time.seconds(30) };
+  }
+
+  const { data } = await getCashPlatformClient().post<{ resumeId: string; resendAfter: unknown }>('/signup/resume/StartSignupResume', {
+    phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+  });
+  return { resumeId: data.resumeId, resendAfter: parseResendAfter(data.resendAfter) };
+}
+
+export type FinishSignupResumeResult =
+  | { outcome: 'verified'; bootstrapToken: string; expiresAt: number }
+  | { outcome: 'signupAlreadyComplete' };
+
+export async function finishSignupResume({ resumeId, code }: { resumeId: string; code: string }): Promise<FinishSignupResumeResult> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    if (code === MOCK_SIGNUP_ALREADY_COMPLETE_CODE) return { outcome: 'signupAlreadyComplete' };
+    if (code !== '000000') throw new Error('Invalid verification code');
+    return { outcome: 'verified', bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
+  }
+
+  try {
+    const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>(
+      '/signup/resume/FinishSignupResume',
+      { resumeId, code }
+    );
+    return { outcome: 'verified', ...parseBootstrapCredential(data) };
+  } catch (e) {
+    if (getPlatformErrorCode(e) === SIGNUP_ALREADY_COMPLETE) return { outcome: 'signupAlreadyComplete' };
+    throw e;
+  }
 }

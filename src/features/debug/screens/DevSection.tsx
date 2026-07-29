@@ -541,7 +541,6 @@ export const DevSection = () => {
                 useCashSetupSessionStore.setState({
                   session: {
                     status: 'phoneVerified',
-                    userId: 'dev-user-id',
                     phoneNationalNumber: '4155550100',
                     bootstrapToken: 'bst_dev',
                     bootstrapTokenExpiresAt: Date.now() + time.hours(1),
