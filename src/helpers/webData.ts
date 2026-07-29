@@ -1,5 +1,4 @@
 import WalletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
@@ -51,22 +50,4 @@ export const updateWebProfile = async (address: string, name: string, accountCol
     accountSymbol: (name ? getFirstEmoji(name) : accountSymbol ? getValidatedEmoji(accountSymbol) : null) || null,
   };
   await setPreference(PreferenceActionType.update, 'profile', address, data);
-};
-
-export const initializeShowcaseIfNeeded = async (
-  address: string,
-  showcaseTokens: string[],
-  hiddenTokens: string[],
-  accountColorHex: string,
-  accountSymbol: string | null
-) => {
-  try {
-    const response = await getPreference('showcase', address);
-    if (!response || !response.showcase.ids.length) {
-      await initWebData(address, showcaseTokens, hiddenTokens, accountColorHex, accountSymbol);
-      return;
-    }
-  } catch (e) {
-    logger.error(new RainbowError(`[webData]: error while trying to initialize showcase: ${e}`));
-  }
 };

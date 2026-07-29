@@ -53,7 +53,6 @@ import { TabPointsInner } from './svg/TabPointsInner';
 import { TabPointsInnerFill } from './svg/TabPointsInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
-import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 import { XIcon } from './svg/XIcon';
@@ -111,7 +110,6 @@ const IconTypes = {
   tabKingOfTheHill: TabKingOfTheHill,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
-  walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
   x: XIcon,

@@ -8,7 +8,7 @@ import deviceUtils from '@/utils/deviceUtils';
 
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
 import { ListFooter } from '../../../list';
-import { AssetListHeaderHeight } from '../../AssetListHeader';
+import { SectionHeaderHeight } from './ViewDimensions';
 import { type RecyclerListViewRef } from './ViewTypes';
 
 const easingAnimation: LayoutAnimationConfig = {
@@ -48,7 +48,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
     const hasScrollOffset = !!this.ref?.getCurrentScrollOffset;
     const hasContentDimension = !!this.ref?.getContentDimension;
 
-    const globalDeviceDimensions = deviceUtils.dimensions.height - this.topMargin - AssetListHeaderHeight - 10;
+    const globalDeviceDimensions = deviceUtils.dimensions.height - this.topMargin - SectionHeaderHeight - 10;
     const shouldConfigureNext =
       hasScrollOffset &&
       hasContentDimension &&

@@ -1241,12 +1241,6 @@
       "message": "This allows Rainbow to use your photos from your library",
       "title": "Rainbow would like to access your photos"
     },
-    "list": {
-      "share": {
-        "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
-        "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
-      }
-    },
     "loading": {
       "backing_up": "Backing up...",
       "creating_wallet": "Creating wallet...",

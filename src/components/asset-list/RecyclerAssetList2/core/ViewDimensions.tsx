@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 
-import { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
 import { AssetListItemSkeletonHeight } from '@/components/asset-list/AssetListItemSkeleton';
 import { POLYMARKET_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PolymarketFeatureCard';
 import { RNBW_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/RnbwFeatureCard';
@@ -22,6 +21,8 @@ import { CoinRowHeight } from '@/components/coin-row';
 import { TokenFamilyHeaderHeight } from '@/components/token-family';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import deviceUtils from '@/utils/deviceUtils';
+
+export const SectionHeaderHeight = 48;
 
 type Dim = {
   width?: number;
@@ -52,7 +53,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },
   [CellType.PROFILE_BALANCE_ROW]: { height: ProfileBalanceRowHeight },
   [CellType.PROFILE_BALANCE_ROW_SPACE_AFTER]: { height: 24 },
-  [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.NFTS_HEADER]: { height: SectionHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },
   [CellType.NFTS_HEADER_SPACE_AFTER]: { height: 6 },
   [CellType.LEGACY_FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
@@ -70,21 +71,21 @@ const ViewDimensions: Record<CellType, Dim> = {
   },
   [CellType.NFT_SPACE_AFTER]: { height: 5 },
   [CellType.LOADING_ASSETS]: { height: AssetListItemSkeletonHeight },
-  [CellType.POSITIONS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.POSITIONS_HEADER]: { height: SectionHeaderHeight },
   [CellType.POSITIONS_SPACE_BEFORE]: { height: 10 },
   [CellType.POSITIONS_SPACE_AFTER]: { height: 24 },
   [CellType.POSITION]: {
     height: 130,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
-  [CellType.CLAIMABLES_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.CLAIMABLES_HEADER]: { height: SectionHeaderHeight },
   [CellType.CLAIMABLES_SPACE_BEFORE]: { height: 10 },
   [CellType.CLAIMABLES_SPACE_AFTER]: { height: 3 },
   [CellType.CLAIMABLE]: {
     height: 60,
     width: deviceUtils.dimensions.width,
   },
-  [CellType.PERPS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.PERPS_HEADER]: { height: SectionHeaderHeight },
   [CellType.PERPS_BALANCE]: {
     height: 48,
     width: deviceUtils.dimensions.width,
@@ -93,7 +94,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 65,
     width: deviceUtils.dimensions.width,
   },
-  [CellType.POLYMARKET_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.POLYMARKET_HEADER]: { height: SectionHeaderHeight },
   [CellType.POLYMARKET_BALANCE]: {
     height: 48,
     width: deviceUtils.dimensions.width,
@@ -104,7 +105,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   },
   [CellType.POLYMARKET_FEATURE_CARD]: { height: POLYMARKET_FEATURE_CARD_HEIGHT },
   [CellType.RNBW_FEATURE_CARD]: { height: RNBW_FEATURE_CARD_HEIGHT },
-  [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.TOKENS_HEADER]: { height: SectionHeaderHeight },
   [CellType.SPACER]: { height: 0 }, // Height is set from data
 };
 
