@@ -26,7 +26,6 @@ const allowedBarrelFiles = [
   'src/components/3d/index.ts',
   'src/components/activity-list/index.ts',
   'src/components/animations/ButtonPressAnimation/index.ts',
-  'src/components/animations/index.ts',
   'src/components/asset-list/index.ts',
   'src/components/asset-list/RecyclerAssetList/index.tsx',
   'src/components/asset-list/RecyclerAssetList2/index.tsx',
