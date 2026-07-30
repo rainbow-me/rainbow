@@ -28,6 +28,7 @@ export enum RampCryptoAsset {
 export enum RampNetwork {
   Unspecified = 'NETWORK_UNSPECIFIED',
   Arbitrum = 'NETWORK_ARBITRUM',
+  ArbitrumTestnet = 'NETWORK_ARBITRUM_TESTNET',
   Base = 'NETWORK_BASE',
 }
 
@@ -42,10 +43,6 @@ export enum WalletSignatureMethod {
   EthPersonalSign = 'WALLET_SIGNATURE_METHOD_ETH_PERSONAL_SIGN',
 }
 
-export function isTerminalOrderStatus(status: OrderStatus): boolean {
-  return status === OrderStatus.Completed || status === OrderStatus.Failed;
-}
-
 // ---- Request / response shapes ---------------------------------------------
 
 export type RampAsset = { asset: RampCryptoAsset; network: RampNetwork };
@@ -56,13 +53,19 @@ export type BuyOrderSpec = {
   cardId: string;
   /** Fiat amount as a decimal string, e.g. "50". */
   depositAmount: string;
-  /** Client-generated order id. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
+  /** Client-generated UUID. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
   id: string;
   walletAddress: string;
 };
 
 export type CreateBuyOrderParams = BuyOrderSpec & {
   cryptoAsset: RampAsset;
+};
+
+export type CreatedBuyOrder = {
+  id: string;
+  status: OrderStatus;
+  createdTime: string;
 };
 
 type BuyOrderCommon = {
@@ -80,19 +83,17 @@ export type BuyOrder =
   | (BuyOrderCommon & { status: OrderStatus.Completed; transactionHash: string; completedTime: string })
   | (BuyOrderCommon & { status: OrderStatus.Failed; failureReason: OrderFailureReason });
 
+export type TerminalBuyOrder = Extract<BuyOrder, { status: OrderStatus.Completed | OrderStatus.Failed }>;
+
+export function isTerminalBuyOrder(order: BuyOrder): order is TerminalBuyOrder {
+  return order.status === OrderStatus.Completed || order.status === OrderStatus.Failed;
+}
+
 export class RampError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'RampError';
   }
-}
-
-/**
- * The seam over the platform `/v1/ramp/orders/*` surface.
- */
-export interface RampClient {
-  createBuyOrder(params: CreateBuyOrderParams): Promise<BuyOrder>;
-  getOrder(orderId: string): Promise<BuyOrder>;
 }
 
 // ---- Card link session -----------------------------------------------------
@@ -193,4 +194,22 @@ export async function linkWallet(
     getCashPlatformClient().post<LinkWalletResponse>('/ramp/wallets/link', { address, signature }, { abortController, headers })
   );
   return data.wallet;
+}
+
+// ---- Buy orders ------------------------------------------------------------
+
+type GetOrderResponse = { order: BuyOrder };
+
+export async function createBuyOrder(params: CreateBuyOrderParams): Promise<CreatedBuyOrder> {
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().post<CreatedBuyOrder>('/ramp/orders/buy', params, { headers })
+  );
+  return data;
+}
+
+export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().get<GetOrderResponse>(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+  );
+  return data.order;
 }

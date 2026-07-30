@@ -1,12 +1,14 @@
 import { time } from '@/framework/core/utils/time';
 
-import { RampNetwork } from './services/rampClient';
+import { RampCryptoAsset, RampNetwork, type RampAsset } from './services/rampClient';
 
 export const USDC_NAME = 'USD Coin';
 export const USDC_SYMBOL = 'USDC';
 export const USDC_DECIMALS = 6;
 
 export const ORDER_POLL_INTERVAL_MS = time.seconds(2);
+
+export const CASH_BUY_DESTINATION_ASSET: RampAsset = { asset: RampCryptoAsset.USDC, network: RampNetwork.ArbitrumTestnet };
 
 /**
  * USDC deployments the ramp can deposit to, keyed by the wire `RampNetwork`. The
@@ -17,5 +19,6 @@ export const ORDER_POLL_INTERVAL_MS = time.seconds(2);
  */
 export const CASH_USDC_BY_NETWORK: Partial<Record<RampNetwork, { chainName: string; address: string }>> = {
   [RampNetwork.Arbitrum]: { chainName: 'arbitrum', address: '0xaf88d065e77c8cc2239327c5edb3a432268e5831' },
+  [RampNetwork.ArbitrumTestnet]: { chainName: 'arbitrum-sepolia', address: '0x75faf114eafb1bdbe2f0316df893fd58ce46aa4d' },
   [RampNetwork.Base]: { chainName: 'base', address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' },
 };

@@ -489,13 +489,7 @@
       "reset_experimental_config": "Reset Experimental Config",
       "cash_set_user_id_from_clipboard": "Set cash user id from clipboard",
       "cash_clear_account": "Clear cash account",
-      "cash_set_phone_verified": "Set phone verified",
       "cash_clear_linked_card": "Clear linked card",
-      "cash_order_outcome": {
-        "title": "Cash order outcome",
-        "succeed": "Will succeed",
-        "fail": "Will fail"
-      },
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -1556,6 +1550,9 @@
         "money_is_added_in": "Money is added in",
         "usdc": "USDC",
         "adding_cash": "Adding Cash",
+        "pending_title": "Adding Cash...",
+        "pending_description": "Adding cash is in progress.\nThis may take up to a few minutes.",
+        "contact_support": "Contact Support",
         "buy_error_title": "Purchase Failed",
         "buy_error_generic": "Something went wrong. Try again",
         "payment_rejected": "Your card declined this payment",

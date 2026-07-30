@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,17 +9,9 @@ import { getAllInternetCredentials, resetInternetCredentials } from 'react-nativ
 import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
-import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { IS_STORE_INSTALL } from '@/env';
 import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
-import {
-  CASH_MOCK_ORDER_OUTCOMES,
-  isCashMockOrderOutcome,
-  useCashMockOrderOutcomeStore,
-  type CashMockOrderOutcome,
-} from '@/features/cash/stores/cashMockOrderOutcomeStore';
 import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
-import { useCashSetupSessionStore } from '@/features/cash/stores/cashSetupSessionStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
@@ -28,7 +20,6 @@ import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
-import { time } from '@/framework/core/utils/time';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -52,45 +43,6 @@ import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore'
 import { delegation, type DelegationWithChainId } from '@rainbow-me/sdk';
 
 import { analyzeUserAssets } from '../utils/analyzeUserAssets';
-
-// Dev-only select that drives the mock buy-order outcome (success vs PAYMENT_REJECTED failure).
-function CashMockOrderOutcomeMenuItem() {
-  const outcome = useCashMockOrderOutcomeStore(state => state.outcome);
-  const setOutcome = useCashMockOrderOutcomeStore(state => state.setOutcome);
-
-  const outcomeLabel = useCallback((value: CashMockOrderOutcome) => i18n.t(i18n.l.developer_settings.cash_order_outcome[value]), []);
-
-  const menuConfig = useMemo<MenuConfig>(
-    () => ({
-      menuTitle: i18n.t(i18n.l.developer_settings.cash_order_outcome.title),
-      menuItems: CASH_MOCK_ORDER_OUTCOMES.map(value => ({
-        actionKey: value,
-        actionTitle: outcomeLabel(value),
-        menuState: value === outcome ? 'on' : 'off',
-      })),
-    }),
-    [outcome, outcomeLabel]
-  );
-
-  const onPressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
-      if (isCashMockOrderOutcome(actionKey)) setOutcome(actionKey);
-    },
-    [setOutcome]
-  );
-
-  return (
-    <ContextMenuButton menuConfig={menuConfig} isMenuPrimaryAction onPressMenuItem={onPressMenuItem} useActionSheetFallback={false}>
-      <MenuItem
-        hasChevron
-        rightComponent={<MenuItem.Selection>{outcomeLabel(outcome)}</MenuItem.Selection>}
-        size={52}
-        testID="cash-mock-order-outcome-select"
-        titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_order_outcome.title)} />}
-      />
-    </ContextMenuButton>
-  );
-}
 
 export const DevSection = () => {
   const { navigate } = useNavigation();
@@ -537,27 +489,10 @@ export const DevSection = () => {
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
             />
             <MenuItem
-              onPress={() =>
-                useCashSetupSessionStore.setState({
-                  session: {
-                    status: 'phoneVerified',
-                    phoneNationalNumber: '4155550100',
-                    bootstrapToken: 'bst_dev',
-                    bootstrapTokenExpiresAt: Date.now() + time.hours(1),
-                    identity: null,
-                    governmentId: null,
-                  },
-                })
-              }
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_set_phone_verified)} />}
-            />
-            <MenuItem
               onPress={() => useCashPaymentMethodStore.getState().clearLinkedCard()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_linked_card)} />}
             />
-            <CashMockOrderOutcomeMenuItem />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {(Object.keys(config) as ExperimentalConfigKey[])
