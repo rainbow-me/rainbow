@@ -6,10 +6,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, useBackgroundColor } from '@/design-system';
+import { CashActionButton } from '@/features/cash/components/CashActionButton';
 import * as i18n from '@/languages';
 
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { SetupActionButton } from './SetupActionButton';
 
 type SetupStepLayoutProps = {
   title: string;
@@ -80,7 +80,7 @@ export const SetupStepLayout = memo(function SetupStepLayout({
 
         <Box style={styles.body}>{children}</Box>
 
-        <SetupActionButton
+        <CashActionButton
           disabled={actionDisabled}
           label={actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
           loading={actionLoading}

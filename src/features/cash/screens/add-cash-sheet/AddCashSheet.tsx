@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,6 +14,8 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
+import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { cashBuyOrderActions, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
 import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -21,6 +23,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { USDC_ADDRESS } from '@/references/constants';
@@ -334,7 +337,15 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const phase = useCashBuyPhase();
   const previousPhase = usePrevious(phase);
   const errorCode = useCashBuyOrderStore(state => state.errorCode);
-  const isProcessing = phase === 'pending';
+  const [isCheckingWallet, setIsCheckingWallet] = useState(false);
+  const walletCheckRef = useRef<AbortController | null>(null);
+  const isProcessing = isCheckingWallet || phase === 'pending';
+
+  useEffect(() => {
+    return () => {
+      walletCheckRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     if (previousPhase !== undefined) return;
@@ -390,10 +401,40 @@ export const AddCashSheet = memo(function AddCashSheet() {
     analytics.track(analytics.event.cashAmountEntered, { amount: amount.amount, entryMode: 'keypad' });
   }, [mode, amount.canSubmit, amount.amount]);
 
-  const handleHoldToAdd = useCallback(() => {
-    if (!linkedCard) return;
-    cashBuyOrderActions.submitBuyOrder({ cardId: linkedCard.id, depositAmount: amount.amount, walletAddress: accountAddress });
-  }, [accountAddress, amount.amount, linkedCard]);
+  // A deposit can only credit a wallet the Cash account has linked, so resolve that first: the token
+  // it mints also authorizes the order that follows.
+  const handleHoldToAdd = useCallback(async () => {
+    if (!linkedCard || walletCheckRef.current) return;
+
+    const controller = new AbortController();
+    walletCheckRef.current = controller;
+    setIsCheckingWallet(true);
+    try {
+      const status = await checkWalletLink(accountAddress, controller);
+      if (controller.signal.aborted) return;
+      if (status === 'needsLink') {
+        navigation.navigate(Routes.CASH_ADD_WALLET_SHEET, {
+          walletAddress: accountAddress,
+          cardId: linkedCard.id,
+          depositAmount: amount.amount,
+        });
+        return;
+      }
+      cashBuyOrderActions.submitBuyOrder({ cardId: linkedCard.id, depositAmount: amount.amount, walletAddress: accountAddress });
+    } catch (error) {
+      if (controller.signal.aborted || isPasskeyCancellation(error)) return;
+      logger.error(new RainbowError('[AddCashSheet]: Failed to resolve the deposit wallet', error));
+      Alert.alert(
+        i18n.t(i18n.l.cash.add_cash_screen.wallet_check_error_title),
+        i18n.t(i18n.l.cash.add_cash_screen.wallet_check_error_generic)
+      );
+    } finally {
+      if (walletCheckRef.current === controller) {
+        walletCheckRef.current = null;
+      }
+      setIsCheckingWallet(false);
+    }
+  }, [accountAddress, amount.amount, linkedCard, navigation]);
 
   const handleAddCard = useCallback(() => {
     navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);

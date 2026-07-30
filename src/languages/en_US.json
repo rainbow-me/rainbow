@@ -1558,7 +1558,21 @@
         "adding_cash": "Adding Cash",
         "buy_error_title": "Purchase Failed",
         "buy_error_generic": "Something went wrong. Try again",
-        "payment_rejected": "Your card declined this payment"
+        "payment_rejected": "Your card declined this payment",
+        "wallet_check_error_title": "Couldn’t Continue",
+        "wallet_check_error_generic": "We couldn’t check your wallet. Try again"
+      },
+      "add_wallet": {
+        "title": "Connect new wallet",
+        "description": "Connect %{address} to enable cash balance.",
+        "confirm": "Connect Wallet",
+        "cancel": "Cancel",
+        "error_title": "Couldn’t Add Wallet",
+        "error_description": "Something went wrong. Try again",
+        "retry": "Try Again",
+        "unsupported_title": "Can’t Add This Wallet",
+        "watching_description": "You’re watching this wallet, so it can’t sign. Import it to deposit into it.",
+        "hardware_description": "Hardware wallets can’t be added yet."
       },
       "deposit_setup": {
         "next": "Next",

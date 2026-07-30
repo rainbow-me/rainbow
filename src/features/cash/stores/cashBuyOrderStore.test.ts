@@ -1,3 +1,4 @@
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
@@ -11,6 +12,7 @@ import {
   type CashBuyErrorCode,
   type CashBuyPhase,
 } from './cashBuyOrderStore';
+import { useCashWalletStore } from './cashWalletStore';
 
 jest.mock('@/logger', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
@@ -64,6 +66,11 @@ const FAILED_PAYMENT_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Fa
 const FAILED_GENERIC_ORDER: BuyOrder = { ...ORDER_COMMON, status: OrderStatus.Failed, failureReason: OrderFailureReason.Unspecified };
 
 const SUBMIT_INPUT = { cardId: 'card-1', depositAmount: '50', walletAddress: '0xabc' };
+const LINKED_WALLET = { id: 'wallet-1', address: '0xabc' };
+
+function fetchError(status: number): RainbowFetchError {
+  return new RainbowFetchError({ message: 'not found', response: { status } as Response });
+}
 
 const store = useCashBuyOrderStore;
 const getState = () => store.getState();
@@ -72,6 +79,7 @@ const phase = () => selectCashBuyPhase(getState());
 beforeEach(() => {
   jest.clearAllMocks();
   store.setState({ spec: null, order: null, errorCode: null });
+  useCashWalletStore.getState().clear();
   createBuyOrderSpec.mockImplementation(({ cardId, depositAmount, walletAddress }) => ({
     cardId,
     depositAmount,
@@ -160,6 +168,33 @@ describe('submitBuyOrder', () => {
     expect(logger.error).toHaveBeenCalled();
     expect(getState()).toMatchObject({ errorCode: 'GENERIC', order: null, spec: null });
     expect(phase()).toBe('error');
+  });
+
+  // A 404 is the only handle the ramp surface gives on "the wallet you named is not linked", so it
+  // is the one failure that invalidates the cache. Every other failure leaves it alone.
+  const cacheOutcomes: { label: string; failure: unknown; cleared: boolean }[] = [
+    { label: 'a 404', failure: fetchError(404), cleared: true },
+    { label: 'a 500', failure: fetchError(500), cleared: false },
+    { label: 'a transport error with no response', failure: new Error('network down'), cleared: false },
+  ];
+
+  it.each(cacheOutcomes)('$label leaves the linked-wallet cache cleared=$cleared', async ({ failure, cleared }) => {
+    useCashWalletStore.setState({ linkedWallets: [LINKED_WALLET] });
+    createBuyOrder.mockRejectedValue(failure);
+
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+
+    expect(useCashWalletStore.getState().linkedWallets).toEqual(cleared ? [] : [LINKED_WALLET]);
+    expect(phase()).toBe('error');
+  });
+
+  it('keeps the linked-wallet cache when the order is created', async () => {
+    useCashWalletStore.setState({ linkedWallets: [LINKED_WALLET] });
+    createBuyOrder.mockResolvedValue(PENDING_ORDER);
+
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+
+    expect(useCashWalletStore.getState().linkedWallets).toEqual([LINKED_WALLET]);
   });
 
   it('ignores a second submission while one is already in flight', async () => {

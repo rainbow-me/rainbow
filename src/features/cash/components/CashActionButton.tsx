@@ -5,7 +5,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
 
-type SetupActionButtonProps = {
+type CashActionButtonProps = {
   disabled?: boolean;
   label: string;
   loading?: boolean;
@@ -15,7 +15,7 @@ type SetupActionButtonProps = {
   textSize?: TextProps['size'];
 };
 
-export const SetupActionButton = memo(function SetupActionButton({
+export const CashActionButton = memo(function CashActionButton({
   disabled = false,
   label,
   loading = false,
@@ -23,7 +23,7 @@ export const SetupActionButton = memo(function SetupActionButton({
   shadow = false,
   testID,
   textSize = '22pt',
-}: SetupActionButtonProps) {
+}: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
   const isDisabled = disabled || loading;
 

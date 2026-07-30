@@ -5,8 +5,16 @@ import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { cashOrderService } from '../services/cashOrderService';
-import { isTerminalOrderStatus, OrderFailureReason, OrderStatus, type BuyOrder, type BuyOrderSpec } from '../services/rampClient';
+import {
+  isNotFoundError,
+  isTerminalOrderStatus,
+  OrderFailureReason,
+  OrderStatus,
+  type BuyOrder,
+  type BuyOrderSpec,
+} from '../services/rampClient';
 import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
+import { useCashWalletStore } from './cashWalletStore';
 
 export type CashBuyPhase = 'idle' | 'pending' | 'error' | 'success';
 export type CashBuyErrorCode = 'PAYMENT_REJECTED' | 'GENERIC';
@@ -88,6 +96,11 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed'), { error });
         analytics.track(analytics.event.cashBuyOrderFailed, { orderId: orderSpec.id, failureReason: null, errorCode: 'GENERIC' });
         set({ errorCode: 'GENERIC', order: null, spec: null });
+        // A 404 says the backend did not recognise something this order named, and the linked wallet
+        // is the part of that we cache — persisted, so a stale entry would fail every retry. Dropping
+        // it costs the next attempt one GET and lets that attempt gate on the truth; absence only
+        // ever means "ask the server".
+        if (isNotFoundError(error)) useCashWalletStore.getState().clear();
       }
     }
 

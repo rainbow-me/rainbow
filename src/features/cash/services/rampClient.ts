@@ -37,6 +37,11 @@ export enum CardBrand {
   Mastercard = 'CARD_BRAND_MASTERCARD',
 }
 
+export enum WalletSignatureMethod {
+  Unspecified = 'WALLET_SIGNATURE_METHOD_UNSPECIFIED',
+  EthPersonalSign = 'WALLET_SIGNATURE_METHOD_ETH_PERSONAL_SIGN',
+}
+
 export function isTerminalOrderStatus(status: OrderStatus): boolean {
   return status === OrderStatus.Completed || status === OrderStatus.Failed;
 }
@@ -112,6 +117,10 @@ function isUnauthorized(error: unknown): boolean {
   return error instanceof RainbowFetchError && error.response?.status === 401;
 }
 
+export function isNotFoundError(error: unknown): boolean {
+  return error instanceof RainbowFetchError && error.response?.status === 404;
+}
+
 // The user JWT replaces the shared app key on these calls. On 401 the cached
 // token is assumed stale: drop it, run one fresh sign-in ceremony, retry once.
 // Tokens are acquired outside the try so a 401 from the ceremony's own RPCs
@@ -150,4 +159,38 @@ export async function completeCardLinkSession(
   const { id, lastFourDigits } = data.card;
   // TODO: Replace it with actual CC brands once APP-3934 is resolved
   return { id, brand: CARD_BRAND_LABELS[CardBrand.Visa], last4: lastFourDigits };
+}
+
+// ---- Wallet link -----------------------------------------------------------
+
+export type RampWallet = { id: string; address: string };
+
+export type WalletSignature = {
+  /** EIP-191 signature of the link message, 0x-prefixed. */
+  hexSignature: string;
+  method: WalletSignatureMethod;
+  /** Unix seconds as a string (the wire type is int64). Must equal the timestamp inside the signed message. */
+  timestamp: string;
+};
+
+type ListWalletsResponse = { wallets?: RampWallet[] };
+
+type LinkWalletResponse = { wallet: RampWallet };
+
+export async function listWallets(abortController?: AbortController | null): Promise<RampWallet[]> {
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().get<ListWalletsResponse>('/ramp/wallets', { abortController, headers })
+  );
+  // protojson drops empty repeated fields, so an account with no wallets responds `{}`.
+  return data.wallets ?? [];
+}
+
+export async function linkWallet(
+  { address, signature }: { address: string; signature: WalletSignature },
+  abortController?: AbortController | null
+): Promise<RampWallet> {
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().post<LinkWalletResponse>('/ramp/wallets/link', { address, signature }, { abortController, headers })
+  );
+  return data.wallet;
 }

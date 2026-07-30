@@ -139,6 +139,9 @@ export const event = {
   cashPasskeyFailed: 'cash.passkey_failed',
   cashCardLinked: 'cash.card_linked',
   cashCardLinkFailed: 'cash.card_link_failed',
+  cashWalletLinkPrompted: 'cash.wallet_link_prompted',
+  cashWalletLinked: 'cash.wallet_linked',
+  cashWalletLinkFailed: 'cash.wallet_link_failed',
   cashSignInSubmitted: 'cash.sign_in_submitted',
   cashSignInSucceeded: 'cash.sign_in_succeeded',
   cashSignInFailed: 'cash.sign_in_failed',
@@ -579,6 +582,11 @@ export type EventProperties = {
     brand: string;
   };
   [event.cashCardLinkFailed]: {
+    reason: string;
+  };
+  [event.cashWalletLinkPrompted]: undefined;
+  [event.cashWalletLinked]: undefined;
+  [event.cashWalletLinkFailed]: {
     reason: string;
   };
   [event.cashSignInSubmitted]: {

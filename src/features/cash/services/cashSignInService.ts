@@ -6,7 +6,7 @@ import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
-export type CashSignInTrigger = 'cardLink';
+export type CashSignInTrigger = 'cardLink' | 'addCash';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 
