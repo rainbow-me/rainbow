@@ -34,7 +34,13 @@ tags:
 # Select DAI as output token
 - tapOn: 'Find a token to buy'
 - inputText: 'DAI'
-- hideKeyboard
+# On Android the keyboard outlives this sheet and covers the swap settings panel
+# we open next. iOS dismisses it on its own, and Maestro can't dismiss it there.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
 - tapOn:
     id: token-to-buy-dai-1
 - assertVisible: 'DAI.*'

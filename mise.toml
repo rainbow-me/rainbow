@@ -1,5 +1,5 @@
 [tools]
-maestro = "cli-2.0.10"
+maestro = "cli-2.7.0"
 
 [settings]
 # Node and Ruby stay pinned in .node-version/.ruby-version so actions/setup-node
