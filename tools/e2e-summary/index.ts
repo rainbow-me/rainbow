@@ -76,21 +76,6 @@ function formatDuration(seconds: number): string {
   return `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`;
 }
 
-function slowestShard(rows: Row[]): number | null {
-  const totals = new Map<number, number>();
-  for (const row of rows) {
-    if (row.duration === null) continue;
-    totals.set(row.shard, (totals.get(row.shard) ?? 0) + row.duration);
-  }
-  return totals.size === 0 ? null : Math.max(...totals.values());
-}
-
-function artifactsLink(): string | null {
-  const { GITHUB_SERVER_URL, GITHUB_REPOSITORY, GITHUB_RUN_ID } = process.env;
-  if (!GITHUB_SERVER_URL || !GITHUB_REPOSITORY || !GITHUB_RUN_ID) return null;
-  return `[artifacts](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}#artifacts)`;
-}
-
 function render(rows: Row[]): string {
   if (rows.length === 0) {
     return 'No e2e results were reported. Look into the shard jobs instead.\n';
@@ -100,12 +85,6 @@ function render(rows: Row[]): string {
   const headline = ORDER.filter(status => counts[status])
     .map(status => `${counts[status]} ${LABEL[status]}`)
     .join(' · ');
-
-  const slowest = slowestShard(rows);
-  const parts = [`**${headline}**`];
-  if (slowest !== null) parts.push(`slowest shard ${formatDuration(slowest)}`);
-  const link = artifactsLink();
-  if (link) parts.push(link);
 
   const table = [
     '|  | Test | Shard | Attempts | Time |',
@@ -122,7 +101,7 @@ function render(rows: Row[]): string {
     }),
   ];
 
-  return `${parts.join(' · ')}\n\n${table.join('\n')}\n`;
+  return `**${headline}**\n\n${table.join('\n')}\n`;
 }
 
 function main(): void {

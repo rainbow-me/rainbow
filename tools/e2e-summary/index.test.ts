@@ -54,16 +54,6 @@ describe('rendering', () => {
     expect(result.stdout).toMatchSnapshot();
   });
 
-  it('links the run artifacts when running inside Actions', () => {
-    const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })] });
-    const stdout = run([dir], {
-      GITHUB_SERVER_URL: 'https://github.com',
-      GITHUB_REPOSITORY: 'rainbow-me/rainbow',
-      GITHUB_RUN_ID: '30336051803',
-    }).stdout;
-    expect(stdout).toMatchSnapshot();
-  });
-
   it('says so plainly when no shard reported anything', () => {
     expect(run([ledgers({})]).stdout).toMatchSnapshot();
   });
@@ -115,8 +105,8 @@ function ledgers(files: Record<string, string[]>): string {
   return dir;
 }
 
-// GitHub sets GITHUB_* in CI, which would change the rendered output and split
-// snapshots between local and CI runs, so every case declares what it wants.
+// GitHub sets GITHUB_STEP_SUMMARY in CI, which would divert output to a file and
+// empty every snapshot, so each case declares the environment it wants.
 function run(args: string[], extraEnv: Record<string, string> = {}) {
   const env: NodeJS.ProcessEnv = { ...process.env, ...extraEnv };
   for (const key of Object.keys(env)) {

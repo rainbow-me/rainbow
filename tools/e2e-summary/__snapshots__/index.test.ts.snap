@@ -1,17 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`rendering links the run artifacts when running inside Actions 1`] = `
-"**1 passed** · slowest shard 1m 14s · [artifacts](https://github.com/rainbow-me/rainbow/actions/runs/30336051803#artifacts)
-
-|  | Test | Shard | Attempts | Time |
-| :-- | :-- | --: | --: | --: |
-| ✅ | \`screens/Home\` | 1 | 1 | 1m 14s |
-
-"
-`;
-
 exports[`rendering names the tests a killed shard never got to 1`] = `
-"**1 did not run · 1 passed** · slowest shard 1m 14s
+"**1 did not run · 1 passed**
 
 |  | Test | Shard | Attempts | Time |
 | :-- | :-- | --: | --: | --: |
@@ -22,7 +12,7 @@ exports[`rendering names the tests a killed shard never got to 1`] = `
 `;
 
 exports[`rendering reports an all-green run 1`] = `
-"**2 passed** · slowest shard 3m 26s
+"**2 passed**
 
 |  | Test | Shard | Attempts | Time |
 | :-- | :-- | --: | --: | --: |
@@ -39,7 +29,7 @@ exports[`rendering says so plainly when no shard reported anything 1`] = `
 `;
 
 exports[`rendering skips a half-written row without losing the rest of the file 1`] = `
-"**1 passed** · slowest shard 1m 14s
+"**1 passed**
 
 |  | Test | Shard | Attempts | Time |
 | :-- | :-- | --: | --: | --: |
@@ -49,7 +39,7 @@ exports[`rendering skips a half-written row without losing the rest of the file 
 `;
 
 exports[`rendering sorts failures and retries above passes, merging every shard file 1`] = `
-"**1 failed · 1 retried · 1 passed** · slowest shard 4m 52s
+"**1 failed · 1 retried · 1 passed**
 
 |  | Test | Shard | Attempts | Time |
 | :-- | :-- | --: | --: | --: |
