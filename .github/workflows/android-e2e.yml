@@ -101,6 +101,7 @@ jobs:
       ANDROID_EMULATOR_CORES: 4
       ANDROID_EMULATOR_RAM_SIZE: 8192
       ARTIFACTS_FOLDER: e2e-artifacts
+      RESULTS_FOLDER: e2e-results
       ARCH: x86_64
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
     steps:
@@ -171,6 +172,41 @@ jobs:
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
+
+      - name: Upload results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-results-${{ matrix.shard-index }}
+          path: ${{ env.RESULTS_FOLDER }}
+          if-no-files-found: warn
+
+  results:
+    name: E2E results
+    needs: e2e-tests
+    if: ${{ !cancelled() && needs.e2e-tests.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+
+      - name: Download shard results
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: e2e-results-*
+          merge-multiple: true
+          path: e2e-results
+
+      - name: Render summary
+        run: node tools/e2e-summary/index.ts e2e-results
 
   perf-tests:
     name: Perf Tests

@@ -132,6 +132,7 @@ web-build/
 
 # E2E CI
 e2e-artifacts/
+e2e-results/
 anvil.log
 
 .rnef/
