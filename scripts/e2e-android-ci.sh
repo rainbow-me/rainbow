@@ -2,13 +2,10 @@
 
 set -euo pipefail
 
-export PATH="$PATH":"$HOME/.maestro/bin"
 export MAESTRO_DISABLE_UPDATE_CHECK=true
 export MAESTRO_CLI_NO_ANALYTICS=true
 export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000
-
-ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
 # Install the app
 echo "Install app"
