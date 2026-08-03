@@ -68,7 +68,17 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   enableAutoSessionTracking: true,
   environment: ENVIRONMENT,
   ignoreErrors: IGNORED_ERRORS,
-  integrations: [Sentry.httpClientIntegration()], // http client integration will help us see payload / response from errored out requests to better understand the issue
+
+  // Sentry's automatic HTTP failure capture, off deliberately. It reports every failed response
+  // as `handled: false`, which native session accounting reads as an app crash, so our
+  // dependencies' 5xx responses would depress crash-free rate and, on iOS, end the session and
+  // start a replacement, inflating session counts too. The events it produces also carry no
+  // operation, no attempt count and no app context.
+  //
+  // HTTP failures should be reported by the code that makes the request instead, where the
+  // operation and the response are actually known and can be classified properly.
+  enableCaptureFailedRequests: false,
+
   maxBreadcrumbs: 10,
   tracesSampleRate: 0,
 };
