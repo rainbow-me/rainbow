@@ -1,5 +1,6 @@
 [tools]
 maestro = "cli-2.7.0"
+foundry = "1.7.1"
 
 [settings]
 # Node and Ruby stay pinned in .node-version/.ruby-version so actions/setup-node
