@@ -4379,7 +4379,7 @@ PODS:
     - Yoga
   - RNDateTimePicker (9.1.0):
     - React-Core
-  - RNDeviceInfo (15.0.1):
+  - RNDeviceInfo (15.0.2):
     - React-Core
   - RNFastImage (8.5.11):
     - React-Core
@@ -5627,7 +5627,7 @@ SPEC CHECKSUMS:
   RNCClipboard: e1d17c9d093d8129ef50b39b63a17a0e8ccd0ade
   RNCMaskedView: 84430d0d76eff7473af742c3c2298ed23cc4a296
   RNDateTimePicker: a4679e6488003e5fb68502b50ffb1b74b8b31ca0
-  RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
+  RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e
   RNFastImage: b4741be7fc96457586f610a1a454817518376819
   RNFBApp: a82d90b5d0bdf193b5ea570323df8ad2729c1326
   RNFBFirestore: 9d908cb86b0a255c6cda7bf4dbe9524385c2e65e

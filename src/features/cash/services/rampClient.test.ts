@@ -4,6 +4,7 @@ import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getCashPlatformClient } from './cashPlatformClient';
 import { ensureAccessToken } from './cashSignInService';
 import {
+  CardBrand,
   completeCardLinkSession,
   createBuyOrder,
   getOrder,
@@ -103,13 +104,17 @@ describe('startCardLinkSession', () => {
 });
 
 describe('completeCardLinkSession', () => {
-  it('sends the provider card id and bearer', async () => {
-    post.mockResolvedValue({ data: { card: { id: 'card-1', lastFourDigits: '8990' } } });
+  it('sends the detected brand and uses the response brand', async () => {
+    post.mockResolvedValue({ data: { card: { brand: CardBrand.Visa, id: 'card-1', lastFourDigits: '8990' } } });
 
-    await completeCardLinkSession({ providerCardId: 'prov-1' });
+    await expect(completeCardLinkSession({ brand: CardBrand.Visa, providerCardId: 'prov-1' })).resolves.toEqual({
+      brand: 'Visa',
+      id: 'card-1',
+      last4: '8990',
+    });
     expect(post).toHaveBeenCalledWith(
       '/ramp/payment-methods/link-card-session/complete',
-      { providerCardId: 'prov-1' },
+      { brand: CardBrand.Visa, providerCardId: 'prov-1' },
       { abortController: undefined, headers: { Authorization: 'Bearer jwt-1' } }
     );
   });

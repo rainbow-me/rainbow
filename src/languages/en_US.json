@@ -1650,6 +1650,7 @@
           "expiry": "MM / YY",
           "cvc": "CVC",
           "zip": "ZIP code",
+          "only_visa": "Only Visa cards are supported",
           "adding_title": "Adding card...",
           "adding_description": "Talking to your card issuer...",
           "error_title": "Error adding card",

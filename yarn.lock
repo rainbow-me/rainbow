@@ -1799,13 +1799,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bivoglobal/payment-react-native@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@bivoglobal/payment-react-native@npm:0.0.2"
+"@bivoglobal/payment-react-native@npm:0.0.5":
+  version: 0.0.5
+  resolution: "@bivoglobal/payment-react-native@npm:0.0.5"
+  dependencies:
+    react-native-device-info: "npm:^15.0.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/8925b5d3dfcf0c997128975ccb64ea576db93f30e8ba94e7817e0cf6a11c10e9771a8e6bbad79f9313295b5a07dd19099ad335bd34e10e2651236a9d9b65e498
+  checksum: 10c0/6a3a4af1ed7847cb7e98764355f3f047366cbb2f887e6322c304bca4ab823959de6a23775e8f73719417d090d90dbb1bef2e6182c64d01bd39f81009c6765e94
   languageName: node
   linkType: hard
 
@@ -9056,7 +9058,7 @@ __metadata:
     "@babel/plugin-transform-runtime": "npm:^7.25.0"
     "@babel/runtime": "npm:^7.25.0"
     "@bankify/react-native-animate-number": "npm:0.2.1"
-    "@bivoglobal/payment-react-native": "npm:0.0.2"
+    "@bivoglobal/payment-react-native": "npm:0.0.5"
     "@bradgarropy/use-countdown": "npm:1.4.1"
     "@candlefinance/faster-image": "npm:1.6.2"
     "@capsizecss/core": "npm:3.0.0"
@@ -9259,7 +9261,7 @@ __metadata:
     react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb"
     react-native-crypto: "npm:2.2.0"
     react-native-dark-mode: "npm:0.2.2"
-    react-native-device-info: "npm:15.0.1"
+    react-native-device-info: "npm:15.0.2"
     react-native-dotenv: "npm:2.4.2"
     react-native-edge-to-edge: "npm:1.6.2"
     react-native-fast-image: "npm:8.5.11"
@@ -22075,12 +22077,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-device-info@npm:15.0.1":
-  version: 15.0.1
-  resolution: "react-native-device-info@npm:15.0.1"
+"react-native-device-info@npm:15.0.2, react-native-device-info@npm:^15.0.2":
+  version: 15.0.2
+  resolution: "react-native-device-info@npm:15.0.2"
   peerDependencies:
     react-native: "*"
-  checksum: 10c0/f33a28b44bc9a67939f2c837ea55c6f59f3096323b5ccc834093bece941d343bad3d86b0faa9340004c2e657abe47fac6cee539d9274f5fabfb5745bfdc77c92
+  checksum: 10c0/c4a1d9ae049f42f0aa3c5aba539a9826d2400cb15a6d17815824204e4e842fbc15c80afec7387acd07e02f80a1fa49aaef1d4d6e96bc9ec53c42ba63046e8ce1
   languageName: node
   linkType: hard
 

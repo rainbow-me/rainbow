@@ -4,6 +4,7 @@ import { analytics } from '@/analytics';
 
 import { linkCardWithVault } from '../services/cardLinkService';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
+import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
 import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
@@ -35,6 +36,7 @@ const mockIsPasskeyCancellation = isPasskeyCancellation as jest.Mock;
 const track = analytics.track as jest.Mock;
 
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
+const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const BIVO_STORE = {} as BivoSecureStore;
 
 const flow = () => useCardLinkFlowStore.getState();
@@ -63,7 +65,7 @@ beforeEach(() => {
 
 describe('cardLinkFlowStore', () => {
   it('stores the card and reports success', async () => {
-    await flow().submit(BIVO_STORE);
+    await flow().submit(BIVO_STORE, CARD_BRAND);
 
     expect(flow().state).toBe('success');
     expect(linkedCard()).toEqual(CARD);
@@ -74,7 +76,7 @@ describe('cardLinkFlowStore', () => {
     mockLinkCardWithVault.mockRejectedValue(new Error('user cancelled'));
     mockIsPasskeyCancellation.mockReturnValue(true);
 
-    await flow().submit(BIVO_STORE);
+    await flow().submit(BIVO_STORE, CARD_BRAND);
 
     expect(flow().state).toBe('entry');
     expect(linkedCard()).toBeNull();
@@ -84,7 +86,7 @@ describe('cardLinkFlowStore', () => {
   it('reports a failure without storing a card', async () => {
     mockLinkCardWithVault.mockRejectedValue(new Error('vault exploded'));
 
-    await flow().submit(BIVO_STORE);
+    await flow().submit(BIVO_STORE, CARD_BRAND);
 
     expect(flow().state).toBe('submitError');
     expect(linkedCard()).toBeNull();
@@ -94,8 +96,8 @@ describe('cardLinkFlowStore', () => {
   it('ignores a second submit while one is in flight', async () => {
     const settle = deferLink();
 
-    const first = flow().submit(BIVO_STORE);
-    await flow().submit(BIVO_STORE);
+    const first = flow().submit(BIVO_STORE, CARD_BRAND);
+    await flow().submit(BIVO_STORE, CARD_BRAND);
     expect(mockLinkCardWithVault).toHaveBeenCalledTimes(1);
 
     settle({ card: CARD });
@@ -106,7 +108,7 @@ describe('cardLinkFlowStore', () => {
   it('discards a response that resolves after a reset', async () => {
     const settle = deferLink();
 
-    const submitted = flow().submit(BIVO_STORE);
+    const submitted = flow().submit(BIVO_STORE, CARD_BRAND);
     expect(flow().state).toBe('submitting');
 
     flow().reset();
@@ -121,7 +123,7 @@ describe('cardLinkFlowStore', () => {
   it('discards a rejection that arrives after a reset', async () => {
     const settle = deferLink();
 
-    const submitted = flow().submit(BIVO_STORE);
+    const submitted = flow().submit(BIVO_STORE, CARD_BRAND);
     flow().reset();
     settle({ error: new Error('vault exploded') });
     await submitted;

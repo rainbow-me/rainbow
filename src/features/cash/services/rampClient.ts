@@ -38,6 +38,8 @@ export enum CardBrand {
   Unspecified = 'CARD_BRAND_UNSPECIFIED',
   Visa = 'CARD_BRAND_VISA',
   Mastercard = 'CARD_BRAND_MASTERCARD',
+  Amex = 'CARD_BRAND_AMEX',
+  Discover = 'CARD_BRAND_DISCOVER',
 }
 
 export enum WalletSignatureMethod {
@@ -103,11 +105,13 @@ export class RampError extends Error {
 type StartCardLinkSessionResponse = { linkUrl: string; token: string; tokenExpiresTime: string };
 
 type RampCard = {
+  brand: CardBrand;
   id: string;
   lastFourDigits: string;
   createdTime: string;
 };
 
+type CompleteCardLinkSessionRequest = { providerCardId: string; brand: CardBrand };
 type CompleteCardLinkSessionResponse = { card: RampCard };
 
 type ListCardsResponse = { cards?: RampCard[] };
@@ -116,11 +120,12 @@ const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Unspecified]: 'Card',
   [CardBrand.Visa]: 'Visa',
   [CardBrand.Mastercard]: 'Mastercard',
+  [CardBrand.Amex]: 'American Express',
+  [CardBrand.Discover]: 'Discover',
 };
 
-// TODO: Replace it with actual CC brands once APP-3934 is resolved
-function toLinkedCard({ id, lastFourDigits }: RampCard): LinkedCard {
-  return { id, brand: CARD_BRAND_LABELS[CardBrand.Visa], last4: lastFourDigits };
+function toLinkedCard({ brand, id, lastFourDigits }: RampCard): LinkedCard {
+  return { id, brand: CARD_BRAND_LABELS[brand], last4: lastFourDigits };
 }
 
 function isUnauthorized(error: unknown): boolean {
@@ -160,13 +165,14 @@ export async function startCardLinkSession(abortController?: AbortController | n
 }
 
 export async function completeCardLinkSession(
-  { providerCardId }: { providerCardId: string },
+  { providerCardId, brand }: CompleteCardLinkSessionRequest,
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
   const { data } = await authorizedRequest('cardLink', headers =>
     getCashPlatformClient().post<CompleteCardLinkSessionResponse>(
       '/ramp/payment-methods/link-card-session/complete',
       {
+        brand,
         providerCardId,
       },
       { abortController, headers }
