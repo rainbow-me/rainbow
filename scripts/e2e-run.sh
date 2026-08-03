@@ -4,10 +4,12 @@ set -euo pipefail
 source .env
 
 ARTIFACTS_FOLDER=e2e-artifacts
+RESULTS_FOLDER=e2e-results
 FLOW="e2e/flows"
 ARGS=()
 SHARD_TOTAL=1
 SHARD_INDEX=0
+SHARD_LABEL=1
 TEST_FILES=()
 ANVIL_PID=""
 PLATFORM=""
@@ -98,6 +100,7 @@ while [[ $# -gt 0 ]]; do
     --shard-index)
       # Ensure SHARD_INDEX is zero-based.
       SHARD_INDEX=$(( $2 - 1 ))
+      SHARD_LABEL="$2"
       shift
       ;;
     --platform)
@@ -118,8 +121,47 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+RESULTS_FILE="$RESULTS_FOLDER/shard-$SHARD_LABEL.jsonl"
+
+json_string() {
+  local s=${1//\\/\\\\}
+  printf '"%s"' "${s//\"/\\\"}"
+}
+
+json_string_or_null() {
+  if [ -z "${1:-}" ]; then printf 'null'; else json_string "$1"; fi
+}
+
+json_number_or_null() {
+  if [ -z "${1:-}" ]; then printf 'null'; else printf '%s' "$1"; fi
+}
+
+test_id() {
+  local id=${1#e2e/flows/}
+  printf '%s' "${id%.yaml}"
+}
+
+# Every test is recorded as "planned" before the run starts, then superseded by
+# an appended row when it finishes; the reader keeps the last row per test. So a
+# shard killed partway through leaves its unrun tests as "planned" rather than
+# leaving them out of the file altogether.
+record() {
+  printf '{"shard":%s,"platform":%s,"test":%s,"status":%s,"attempts":%s,"duration":%s,"failure_class":null,"artifact_dir":%s}\n' \
+    "$SHARD_LABEL" "$(json_string "$PLATFORM")" "$(json_string "$1")" "$(json_string "$2")" \
+    "$(json_number_or_null "${3:-}")" "$(json_number_or_null "${4:-}")" "$(json_string_or_null "${5:-}")" \
+    >> "$RESULTS_FILE"
+}
+
+record_planned() {
+  local file
+  for file in ${TEST_FILES[@]+"${TEST_FILES[@]}"}; do
+    record "$(test_id "$file")" planned
+  done
+}
+
 # Cleanup previous artifacts.
-rm -rf "$ARTIFACTS_FOLDER"
+rm -rf "$ARTIFACTS_FOLDER" "$RESULTS_FOLDER"
+mkdir -p "$RESULTS_FOLDER"
 
 # Handle test discovery and sharding.
 if [[ -f "$FLOW" ]]; then
@@ -135,13 +177,15 @@ else
 
   if [[ $SHARD_TOTAL -gt 1 ]]; then
     if [[ ${#TEST_FILES[@]} -eq 0 ]]; then
-      echo "⚠️ No tests selected for shard $SHARD_INDEX out of $SHARD_TOTAL"
+      echo "⚠️ No tests selected for shard $SHARD_LABEL out of $SHARD_TOTAL"
       exit 0
     fi
     echo "🧪 Running shard $((SHARD_INDEX + 1))/$SHARD_TOTAL:"
     printf ' - %s\n' "${TEST_FILES[@]}"
   fi
 fi
+
+record_planned
 
 # Start Anvil only if any test path includes "transaction".
 NEEDS_ANVIL=false
@@ -169,10 +213,13 @@ fi
 EXIT_CODE=0
 for TEST_FILE in "${TEST_FILES[@]}"; do
   TEST_NAME=$(basename "${TEST_FILE%.*}")
+  TEST_ID=$(test_id "$TEST_FILE")
   echo "🚀 Running test: $TEST_NAME"
 
   SUCCESS=false
   SHOULD_RECORD=false
+  RESULT_DIR=""
+  TEST_START_TIME=$(date +%s)
   for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
 
@@ -209,7 +256,8 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
         stop_recording "$DEBUG_OUTPUT"
       fi
 
-      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT"
+      RESULT_DIR="✅-$TEST_NAME-$ATTEMPT"
+      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/$RESULT_DIR"
       break
     else
       END_TIME=$(date +%s)
@@ -222,7 +270,8 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
         stop_recording "$DEBUG_OUTPUT"
       fi
 
-      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT"
+      RESULT_DIR="❌-$TEST_NAME-$ATTEMPT"
+      mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/$RESULT_DIR"
 
       # Enable recording for subsequent attempts after failure
       if [ "$RECORD_ON_FAILURE" = "true" ]; then
@@ -232,11 +281,18 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
   done
 
 
-  if ! $SUCCESS; then
+  TEST_DURATION=$(( $(date +%s) - TEST_START_TIME ))
+
+  if $SUCCESS; then
+    if [[ $ATTEMPT -eq 1 ]]; then STATUS=passed; else STATUS=retried; fi
+  else
+    STATUS=failed
     echo "❌ Failed after $MAX_ATTEMPTS attempt(s): $TEST_NAME"
     echo
     EXIT_CODE=1
   fi
+
+  record "$TEST_ID" "$STATUS" "$ATTEMPT" "$TEST_DURATION" "$RESULT_DIR"
 done
 
 
