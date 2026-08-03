@@ -26,7 +26,16 @@ tags:
 # A phone registered with a passkey (mock 1303) dead-ends with the already-registered message.
 - tapOn:
     id: cash-setup-phone-input
-- inputText: '5550001303'
+- inputText: '5'
+- inputText: '5'
+- inputText: '5'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '1'
+- inputText: '3'
+- inputText: '0'
+- inputText: '3'
 - tapOn:
     id: cash-setup-next
 - extendedWaitUntil:
@@ -36,7 +45,31 @@ tags:
 - tapOn:
     id: cash-setup-phone-input
 - eraseText
-- inputText: '5550001304'
+# Erasing the reformatting input can strand the cursor mid-string and leave digits behind,
+# which then scrambles the retyped number. Re-tap to move the cursor to the end and erase
+# again until the field is empty, then verify the retyped number before submitting.
+- repeat:
+    times: 3
+    while:
+      visible:
+        text: '\(.*'
+    commands:
+      - tapOn:
+          id: cash-setup-phone-input
+      - eraseText
+      - waitForAnimationToEnd
+- inputText: '5'
+- inputText: '5'
+- inputText: '5'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '1'
+- inputText: '3'
+- inputText: '0'
+- inputText: '4'
+- assertVisible:
+    text: '\(555\) 000-1304'
 - assertNotVisible:
     text: 'This number is already connected to an account.'
 # A phone registered without a passkey (mock 1304) silently resumes into the same OTP screen.
@@ -48,7 +81,12 @@ tags:
     timeout: 10000
 - waitForAnimationToEnd
 # The 1322 guardrail (mock code 001322) pops back to the phone step with the message.
-- inputText: '001322'
+- inputText: '0'
+- inputText: '0'
+- inputText: '1'
+- inputText: '3'
+- inputText: '2'
+- inputText: '2'
 - extendedWaitUntil:
     visible:
       text: 'Connect your phone number'
@@ -63,7 +101,12 @@ tags:
       text: 'Confirm your phone'
     timeout: 10000
 - waitForAnimationToEnd
-- inputText: '000000'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
 - extendedWaitUntil:
     visible:
       text: 'Enter some information about yourself'
