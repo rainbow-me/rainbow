@@ -63,15 +63,15 @@ export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletB
 };
 
 export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
-  [CloudBackupState.Initializing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
-    cloudPlatformName: cloudPlatform,
-  }),
-  [CloudBackupState.Syncing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
-    cloudPlatformName: cloudPlatform,
-  }),
-  [CloudBackupState.Fetching]: i18n.t(i18n.l.back_up.cloud.fetching_backups, {
-    cloudPlatformName: cloudPlatform,
-  }),
+  get [CloudBackupState.Initializing]() {
+    return i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, { cloudPlatformName: cloudPlatform });
+  },
+  get [CloudBackupState.Syncing]() {
+    return i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, { cloudPlatformName: cloudPlatform });
+  },
+  get [CloudBackupState.Fetching]() {
+    return i18n.t(i18n.l.back_up.cloud.fetching_backups, { cloudPlatformName: cloudPlatform });
+  },
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {

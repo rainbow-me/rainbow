@@ -117,7 +117,9 @@ const FamilyActionsEnum = {
 const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
     actionKey: FamilyActionsEnum.viewCollection,
-    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_collection),
+    get actionTitle() {
+      return i18n.t(i18n.l.expanded_state.unique_expanded.view_collection);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'rectangle.grid.2x2.fill',
@@ -125,7 +127,9 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
-    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.collection_website),
+    get actionTitle() {
+      return i18n.t(i18n.l.expanded_state.unique_expanded.collection_website);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -133,7 +137,9 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.discord]: {
     actionKey: FamilyActionsEnum.discord,
-    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.discord),
+    get actionTitle() {
+      return i18n.t(i18n.l.expanded_state.unique_expanded.discord);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'ellipsis.bubble.fill',
@@ -141,7 +147,9 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.twitter]: {
     actionKey: FamilyActionsEnum.twitter,
-    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.twitter),
+    get actionTitle() {
+      return i18n.t(i18n.l.expanded_state.unique_expanded.twitter);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'at.circle.fill',

@@ -16,8 +16,6 @@ const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const PANEL_INNER_WIDTH = 332;
 
 const translations = i18n.l.king_of_hill.explain_sheet;
-const nextButtonLabel = i18n.t(translations.next);
-const gotItButtonLabel = i18n.t(translations.got_it);
 
 const STEPS: ExplainerSheetStep[] = [
   {
@@ -83,8 +81,8 @@ export function KingOfTheHillExplainSheet() {
           </GradientText>
         )}
         gradientColors={GRADIENT_COLORS}
-        nextButtonLabel={nextButtonLabel}
-        completeButtonLabel={gotItButtonLabel}
+        nextButtonLabel={i18n.t(translations.next)}
+        completeButtonLabel={i18n.t(translations.got_it)}
       />
     </ColorModeProvider>
   );

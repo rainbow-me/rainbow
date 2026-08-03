@@ -20,7 +20,9 @@ type Action = 'library' | 'nft';
 const items = {
   library: {
     actionKey: 'library',
-    actionTitle: i18n.t(i18n.l.profiles.create.upload_photo),
+    get actionTitle() {
+      return i18n.t(i18n.l.profiles.create.upload_photo);
+    },
     icon: {
       imageValue: {
         systemName: 'photo.on.rectangle.angled',
@@ -30,7 +32,9 @@ const items = {
   },
   nft: {
     actionKey: 'nft',
-    actionTitle: i18n.t(i18n.l.profiles.create.choose_nft),
+    get actionTitle() {
+      return i18n.t(i18n.l.profiles.create.choose_nft);
+    },
     icon: {
       imageValue: {
         systemName: 'square.grid.2x2',
@@ -41,7 +45,9 @@ const items = {
   },
   remove: {
     actionKey: 'remove',
-    actionTitle: i18n.t(i18n.l.profiles.create.remove),
+    get actionTitle() {
+      return i18n.t(i18n.l.profiles.create.remove);
+    },
     icon: {
       imageValue: {
         systemName: 'trash',

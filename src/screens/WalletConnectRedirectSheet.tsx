@@ -35,13 +35,27 @@ const emojisMap = {
 };
 
 const titlesMap = {
-  'connect': i18n.t(i18n.l.walletconnect.titles.connect),
-  'timedOut': i18n.t(i18n.l.walletconnect.titles.reject),
-  'reject': i18n.t(i18n.l.walletconnect.titles.reject),
-  'sign': i18n.t(i18n.l.walletconnect.titles.sign),
-  'sign-canceled': i18n.t(i18n.l.walletconnect.titles.sign_canceled),
-  'transaction': i18n.t(i18n.l.walletconnect.titles.transaction_sent),
-  'transaction-canceled': i18n.t(i18n.l.walletconnect.titles.transaction_canceled),
+  get 'connect'() {
+    return i18n.t(i18n.l.walletconnect.titles.connect);
+  },
+  get 'timedOut'() {
+    return i18n.t(i18n.l.walletconnect.titles.reject);
+  },
+  get 'reject'() {
+    return i18n.t(i18n.l.walletconnect.titles.reject);
+  },
+  get 'sign'() {
+    return i18n.t(i18n.l.walletconnect.titles.sign);
+  },
+  get 'sign-canceled'() {
+    return i18n.t(i18n.l.walletconnect.titles.sign_canceled);
+  },
+  get 'transaction'() {
+    return i18n.t(i18n.l.walletconnect.titles.transaction_sent);
+  },
+  get 'transaction-canceled'() {
+    return i18n.t(i18n.l.walletconnect.titles.transaction_canceled);
+  },
 };
 
 function WalletConnectRedirectSheet() {

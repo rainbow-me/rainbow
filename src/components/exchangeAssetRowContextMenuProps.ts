@@ -33,7 +33,9 @@ const CoinRowActionsEnum = {
 const CoinRowActions = {
   [CoinRowActionsEnum.copyAddress]: {
     actionKey: CoinRowActionsEnum.copyAddress,
-    actionTitle: i18n.t(i18n.l.wallet.action.copy_contract_address),
+    get actionTitle() {
+      return i18n.t(i18n.l.wallet.action.copy_contract_address);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: Platform.OS === 'ios' ? 'doc.on.doc' : null,

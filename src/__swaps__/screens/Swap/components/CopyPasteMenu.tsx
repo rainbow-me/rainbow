@@ -22,9 +22,6 @@ const menuOptionStyle = (pressed: boolean) =>
     opacity: pressed ? 0.9 : 1,
   }) as const;
 
-const copy = i18n.t(i18n.l.copy);
-const paste = i18n.t(i18n.l.paste);
-
 function CopyPasteMenuBubble({
   x,
   y,
@@ -54,7 +51,7 @@ function CopyPasteMenuBubble({
               onPress={onCopy}
               style={({ pressed }) => [onPaste && { borderTopRightRadius: 0, borderBottomRightRadius: 0 }, menuOptionStyle(pressed)]}
             >
-              <Text style={{ color: 'white' }}>{copy}</Text>
+              <Text style={{ color: 'white' }}>{i18n.t(i18n.l.copy)}</Text>
 
               <View style={{ position: 'absolute', bottom: -6, left: layout.width / 2 - 6 - arrowOffset }}>
                 <Svg width="12" height="6" viewBox="0 0 12 6">
@@ -71,7 +68,7 @@ function CopyPasteMenuBubble({
                   menuOptionStyle(pressed),
                 ]}
               >
-                <Text style={{ color: 'white' }}>{paste}</Text>
+                <Text style={{ color: 'white' }}>{i18n.t(i18n.l.paste)}</Text>
               </Pressable>
             )}
           </Animated.View>

@@ -44,7 +44,6 @@ type DepositTokenListProps = {
 // ============ Constants ====================================================== //
 
 const COIN_ROW_HEIGHT = 60;
-const allText = i18n.t(i18n.l.exchange.all_networks);
 
 // ============ Chain Selection ================================================ //
 
@@ -64,7 +63,7 @@ const ChainSelection = memo(function ChainSelection({ onChainSelected, selectedC
     }
   }, [accountColor, isDarkMode]);
 
-  const chainName = !selectedChainId ? allText : chainLabels[selectedChainId];
+  const chainName = !selectedChainId ? i18n.t(i18n.l.exchange.all_networks) : chainLabels[selectedChainId];
 
   const navigateToNetworkSelector = useCallback(() => {
     Keyboard.dismiss();

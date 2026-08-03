@@ -40,7 +40,6 @@ type SwapSliderProps = {
 
 const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
-const MAX_LABEL = i18n.t(i18n.l.swap.max);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
 
 export const SwapSlider = ({
@@ -460,7 +459,7 @@ export const SwapSlider = ({
                   style={{ margin: -12, padding: 12 }}
                 >
                   <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
-                    {MAX_LABEL}
+                    {i18n.t(i18n.l.swap.max)}
                   </AnimatedText>
                 </GestureHandlerButton>
               </Column>

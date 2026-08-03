@@ -8,9 +8,6 @@ import { SearchInput as BaseSearchInput } from '@/components/token-search/Search
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
-const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
-const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);
-
 const onOutputSearchQueryChange = (text: string) => useSwapsSearchStore.setState({ searchQuery: text });
 
 export const SearchInput = ({
@@ -44,7 +41,7 @@ export const SearchInput = ({
       onCancelOrClosePressWorklet={onCancelOrClosePressWorklet}
       onSearchFocusWorklet={onSearchFocusWorklet}
       onSearchQueryChange={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
-      placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
+      placeholder={output ? i18n.t(i18n.l.swap.find_a_token_to_buy) : i18n.t(i18n.l.swap.search_your_tokens)}
       enablePaste={output}
       showButtonWhenNoAsset={output}
       isSearchFocused={isSearchFocused}

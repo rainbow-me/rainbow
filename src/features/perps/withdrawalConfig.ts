@@ -19,10 +19,16 @@ export const PERPS_WITHDRAWAL_CONFIG = createWithdrawalConfig({
   executor: executePerpsWithdrawal,
 
   infoCard: {
-    description: i18n.t(i18n.l.perps.withdraw.info_card_subtitle),
+    get description() {
+      return i18n.t(i18n.l.perps.withdraw.info_card_subtitle);
+    },
     title: {
-      highlighted: i18n.t(i18n.l.perps.withdraw.info_card_title_suffix),
-      prefix: i18n.t(i18n.l.perps.withdraw.info_card_title_prefix),
+      get highlighted() {
+        return i18n.t(i18n.l.perps.withdraw.info_card_title_suffix);
+      },
+      get prefix() {
+        return i18n.t(i18n.l.perps.withdraw.info_card_title_prefix);
+      },
     },
   },
 

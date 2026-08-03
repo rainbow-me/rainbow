@@ -51,22 +51,16 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
-const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
-const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
-const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
 const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
 const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_sold);
-const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
-const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
-const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
-const SMART_WALLET_ACTIVATION_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.smart_wallet_activation_fee);
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
   const { isFetching, isQuoteStale, quote } = useSwapContext();
 
+  const unknownLabel = i18n.t(i18n.l.swap.unknown);
   const index = useSharedValue(0);
-  const rainbowFee = useSharedValue<string[]>([UNKNOWN_LABEL, UNKNOWN_LABEL]);
+  const rainbowFee = useSharedValue<string[]>([unknownLabel, unknownLabel]);
 
   const feeToDisplay = useDerivedValue(() => {
     return rainbowFee.value[index.value];
@@ -164,7 +158,7 @@ export const SlippageRow = () => {
           </TextIcon>
           <Inline horizontalSpace="4px" alignVertical="center">
             <Text color="labelTertiary" weight="semibold" size="15pt">
-              {MAX_SLIPPAGE_LABEL}
+              {i18n.t(i18n.l.exchange.slippage_tolerance)}
             </Text>
             <Bleed space="12px">
               <ButtonPressAnimation onPress={openSlippageExplainer} scaleTo={0.8}>
@@ -303,7 +297,7 @@ export function ReviewPanel() {
     <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles, { flex: 1 }]} testID="review-panel" width="full">
       <Stack alignHorizontal="center" space="24px">
         <Text align="center" weight="heavy" color="label" size="20pt" style={{ paddingBottom: 4 }}>
-          {REVIEW_LABEL}
+          {i18n.t(i18n.l.expanded_state.swap_details.review)}
         </Text>
 
         <Box gap={24} justifyContent="space-between" width="full">
@@ -313,7 +307,7 @@ export function ReviewPanel() {
                 􀤆
               </TextIcon>
               <Text color="labelTertiary" weight="semibold" size="15pt">
-                {NETWORK_LABEL}
+                {i18n.t(i18n.l.settings.network)}
               </Text>
             </Inline>
 
@@ -359,7 +353,7 @@ export function ReviewPanel() {
                   􀘾
                 </TextIcon>
                 <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {RAINBOW_FEE_LABEL}
+                  {i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee)}
                 </Text>
               </Box>
             </Column>
@@ -454,7 +448,7 @@ function GasLabel() {
 
   return (
     <Text color="labelTertiary" size="13pt" weight="bold">
-      {willDelegate ? SMART_WALLET_ACTIVATION_FEE_LABEL : ESTIMATED_NETWORK_FEE_LABEL}
+      {willDelegate ? i18n.t(i18n.l.expanded_state.swap_details_v2.smart_wallet_activation_fee) : i18n.t(i18n.l.gas.network_fee)}
     </Text>
   );
 }

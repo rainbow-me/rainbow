@@ -81,7 +81,6 @@ const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
-const sponsorshipUnavailable = i18n.t(i18n.l.swap.sponsorship_unavailable);
 
 type ConfirmButtonProps = {
   label: string;
@@ -355,7 +354,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
           if (isInsufficientSponsorBalanceError(errorMessage)) {
             backendNetworksActions.disableSponsorshipUntilNextFetch(parameters.chainId);
-            Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), sponsorshipUnavailable);
+            Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), i18n.t(i18n.l.swap.sponsorship_unavailable));
             return;
           }
 

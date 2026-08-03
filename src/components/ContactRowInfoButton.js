@@ -65,7 +65,9 @@ const ContactRowActionsEnum = {
 const ContactRowActions = {
   [ContactRowActionsEnum.copyAddress]: {
     actionKey: ContactRowActionsEnum.copyAddress,
-    actionTitle: i18n.t(i18n.l.wallet.copy_address),
+    get actionTitle() {
+      return i18n.t(i18n.l.wallet.copy_address);
+    },
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',

@@ -258,10 +258,6 @@ const setGasPanelState = (update: Partial<GasPanelState>) => {
   });
 };
 
-const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
-const higher_than_suggested = i18n.t(i18n.l.gas.higher_than_suggested);
-const lower_than_suggested = i18n.t(i18n.l.gas.lower_than_suggested);
-
 const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: !!maxBaseFee });
@@ -270,14 +266,14 @@ const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   if (!maxBaseFee) return null;
 
   // likely to get stuck if less than 20% of current base fee
-  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.2))) return likely_to_fail;
+  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.2))) return i18n.t(i18n.l.gas.likely_to_fail);
 
   // suggestions
   const { urgent, normal } = suggestions || {};
   const highThreshold = urgent?.maxBaseFee && multiply(urgent.maxBaseFee, 1.1);
   const lowThreshold = normal?.maxBaseFee && multiply(normal.maxBaseFee, 0.9);
-  if (highThreshold && greaterThan(maxBaseFee, highThreshold)) return higher_than_suggested;
-  if (lowThreshold && lessThan(maxBaseFee, lowThreshold)) return lower_than_suggested;
+  if (highThreshold && greaterThan(maxBaseFee, highThreshold)) return i18n.t(i18n.l.gas.higher_than_suggested);
+  if (lowThreshold && lessThan(maxBaseFee, lowThreshold)) return i18n.t(i18n.l.gas.lower_than_suggested);
 
   return null;
 };
