@@ -33,8 +33,6 @@ const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
 export const WALLET_CONNECT_LIST_ITEM_HEIGHT = VENDOR_LOGO_ICON_SIZE + CONTAINER_PADDING * 2;
 
-const androidContextMenuActions = [i18n.t(i18n.l.walletconnect.switch_wallet), i18n.t(i18n.l.walletconnect.disconnect)];
-
 const SessionRow = styled(Row)({
   alignItems: 'center',
   justifyContent: 'flex-start',
@@ -109,7 +107,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
       {
-        options: androidContextMenuActions,
+        options: [i18n.t(i18n.l.walletconnect.switch_wallet), i18n.t(i18n.l.walletconnect.disconnect)],
         title: dappName,
       },
       async index => {

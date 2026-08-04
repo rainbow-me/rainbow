@@ -13,10 +13,6 @@ import deviceUtils from '@/utils/deviceUtils';
 
 import { NAVBAR_HORIZONTAL_INSET } from '../navbar/Navbar';
 
-const placeholderText = deviceUtils.isNarrowPhone
-  ? i18n.t(i18n.l.discover.search.search_ethereum_short)
-  : i18n.t(i18n.l.discover.search.search_ethereum);
-
 export function DiscoverSearchBar() {
   const { colors } = useTheme();
   const { onTapSearch, cancelSearch } = useDiscoverScreenContext();
@@ -36,7 +32,11 @@ export function DiscoverSearchBar() {
             clearTextOnFocus={false}
             isDiscover
             onFocus={onTapSearch}
-            placeholderText={placeholderText}
+            placeholderText={
+              deviceUtils.isNarrowPhone
+                ? i18n.t(i18n.l.discover.search.search_ethereum_short)
+                : i18n.t(i18n.l.discover.search.search_ethereum)
+            }
             testID="discover-search"
           />
         </Box>

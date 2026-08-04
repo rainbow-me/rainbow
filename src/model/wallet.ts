@@ -187,7 +187,11 @@ export const allWalletsVersion = 1.0;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
-const authenticationPrompt = { title: i18n.t(i18n.l.wallet.authenticate.please) };
+const authenticationPrompt = {
+  get title() {
+    return i18n.t(i18n.l.wallet.authenticate.please);
+  },
+};
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 

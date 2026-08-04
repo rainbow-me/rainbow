@@ -100,14 +100,22 @@ const SPEED_UP = 'speed_up';
 // i18n
 
 const title = {
-  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_title),
-  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_title),
+  get [CANCEL_TX]() {
+    return i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_title);
+  },
+  get [SPEED_UP]() {
+    return i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_title);
+  },
 };
 // i18n
 
 const text = {
-  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_text),
-  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_text),
+  get [CANCEL_TX]() {
+    return i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_text);
+  },
+  get [SPEED_UP]() {
+    return i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_text);
+  },
 };
 
 const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {

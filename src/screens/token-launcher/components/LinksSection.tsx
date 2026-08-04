@@ -35,8 +35,12 @@ export const LINK_SETTINGS = {
     Icon: () => <Icon name="x" color={'white'} size={26} />,
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: i18n.t(i18n.l.token_launcher.links.x.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.x.name),
+    get placeholder() {
+      return i18n.t(i18n.l.token_launcher.links.x.placeholder);
+    },
+    get displayName() {
+      return i18n.t(i18n.l.token_launcher.links.x.name);
+    },
     type: 'x',
   },
   telegram: {
@@ -49,8 +53,12 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#24A1DE',
     primaryColor: '#24A1DE',
-    placeholder: i18n.t(i18n.l.token_launcher.links.telegram.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.telegram.name),
+    get placeholder() {
+      return i18n.t(i18n.l.token_launcher.links.telegram.placeholder);
+    },
+    get displayName() {
+      return i18n.t(i18n.l.token_launcher.links.telegram.name);
+    },
     type: 'telegram',
   },
   farcaster: {
@@ -61,8 +69,12 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#855DCD',
     primaryColor: '#855DCD',
-    placeholder: i18n.t(i18n.l.token_launcher.links.farcaster.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.farcaster.name),
+    get placeholder() {
+      return i18n.t(i18n.l.token_launcher.links.farcaster.placeholder);
+    },
+    get displayName() {
+      return i18n.t(i18n.l.token_launcher.links.farcaster.name);
+    },
     type: 'farcaster',
   },
   website: {
@@ -80,8 +92,12 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: colors.appleBlue,
     primaryColor: '#fff',
-    placeholder: i18n.t(i18n.l.token_launcher.links.website.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.website.name),
+    get placeholder() {
+      return i18n.t(i18n.l.token_launcher.links.website.placeholder);
+    },
+    get displayName() {
+      return i18n.t(i18n.l.token_launcher.links.website.name);
+    },
     type: 'website',
   },
   other: {
@@ -92,8 +108,12 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: i18n.t(i18n.l.token_launcher.links.other.placeholder),
-    displayName: i18n.t(i18n.l.token_launcher.links.other.name),
+    get placeholder() {
+      return i18n.t(i18n.l.token_launcher.links.other.placeholder);
+    },
+    get displayName() {
+      return i18n.t(i18n.l.token_launcher.links.other.name);
+    },
     type: 'other' as const,
   },
 } satisfies Record<

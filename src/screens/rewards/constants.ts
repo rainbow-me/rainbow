@@ -15,6 +15,10 @@ export const LIGHT_RANK_1_GRADIENT_COLORS = ['#E2B730', '#CF9500'] as const;
 export const LIGHT_RANK_2_GRADIENT_COLORS = ['#ABAFB6', '#81858B'] as const;
 export const LIGHT_RANK_3_GRADIENT_COLORS = ['#D48834', '#AA5820'] as const;
 export const STATS_TITLES = {
-  [RewardStatsActionType.Swap]: i18n.t(i18n.l.rewards.swapped),
-  [RewardStatsActionType.Bridge]: i18n.t(i18n.l.rewards.bridged),
+  get [RewardStatsActionType.Swap]() {
+    return i18n.t(i18n.l.rewards.swapped);
+  },
+  get [RewardStatsActionType.Bridge]() {
+    return i18n.t(i18n.l.rewards.bridged);
+  },
 };

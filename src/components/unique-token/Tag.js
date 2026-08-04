@@ -39,7 +39,9 @@ const getViewTraitOnNftMarketplaceAction = marketplaceName => {
 
 const openTraitURLInBrowserAction = {
   actionKey: PropertyActionsEnum.openURL,
-  actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.open_in_web_browser),
+  get actionTitle() {
+    return i18n.t(i18n.l.expanded_state.unique_expanded.open_in_web_browser);
+  },
   icon: {
     iconType: 'SYSTEM',
     iconValue: 'safari.fill',

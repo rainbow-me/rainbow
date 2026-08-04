@@ -70,20 +70,28 @@ const GAS_EMOJIS: {
 const GAS_TRENDS = {
   [FALLING]: {
     color: colors.green,
-    label: `􀄱 ${i18n.t(i18n.l.gas.card.falling)}`,
+    get label() {
+      return `􀄱 ${i18n.t(i18n.l.gas.card.falling)}`;
+    },
   },
   [NO_TREND]: { color: colors.appleBlue, label: '' },
   [RISING]: {
     color: colors.orange,
-    label: `􀰾  ${i18n.t(i18n.l.gas.card.rising)}`,
+    get label() {
+      return `􀰾  ${i18n.t(i18n.l.gas.card.rising)}`;
+    },
   },
   [STABLE]: {
     color: colors.yellowFavorite,
-    label: `􀆮  ${i18n.t(i18n.l.gas.card.stable)}`,
+    get label() {
+      return `􀆮  ${i18n.t(i18n.l.gas.card.stable)}`;
+    },
   },
   [SURGING]: {
     color: colors.red,
-    label: `􀇿  ${i18n.t(i18n.l.gas.card.surging)}`,
+    get label() {
+      return `􀇿  ${i18n.t(i18n.l.gas.card.surging)}`;
+    },
   },
 };
 

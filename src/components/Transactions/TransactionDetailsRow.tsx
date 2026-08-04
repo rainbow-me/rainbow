@@ -60,30 +60,44 @@ export const TransactionDetailsRow = ({ chainId, detailType, onPress, value }: T
 const infoForDetailType: { [key: string]: DetailInfo } = {
   chain: {
     icon: '􀤆',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.chain),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.chain);
+    },
   },
   contract: {
     icon: '􀉆',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract);
+    },
   },
   to: {
     icon: '􀉩',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.to),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.to);
+    },
   },
   function: {
     icon: '􀡅',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.function),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.function);
+    },
   },
   sourceCodeVerification: {
     icon: '􀕹',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.source_code),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.source_code);
+    },
   },
   dateCreated: {
     icon: '􀉉',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract_created),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract_created);
+    },
   },
   nonce: {
     icon: '􀆃',
-    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.nonce),
+    get label() {
+      return i18n.t(i18n.l.walletconnect.simulation.details_card.types.nonce);
+    },
   },
 };
