@@ -59,6 +59,41 @@ describe('rendering', () => {
   });
 });
 
+describe('shards that never reported', () => {
+  it('names the shard whose ledger never arrived, and warns the table is partial', () => {
+    const dir = ledgers({
+      'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })],
+      'shard-2.jsonl': [row('cash/SetupResume', 'passed', { shard: 2, attempts: 1, duration: 91 })],
+    });
+    expect(run([dir, '3']).stdout).toMatchSnapshot();
+  });
+
+  it('lists every missing shard when more than one is gone', () => {
+    const dir = ledgers({ 'shard-2.jsonl': [row('screens/Home', 'passed', { shard: 2, attempts: 1, duration: 74 })] });
+    expect(run([dir, '4']).stdout).toMatchSnapshot();
+  });
+
+  it('treats an empty ledger as having reported, since the shard wrote it before running anything', () => {
+    const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })], 'shard-2.jsonl': [] });
+    const result = run([dir, '2']);
+    expect(result.stdout).not.toContain('did not report');
+    expect(result.stdout).toMatchSnapshot();
+  });
+
+  it('checks nothing when no shard count is given, so local single runs are unaffected', () => {
+    const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })] });
+    expect(run([dir]).stdout).not.toContain('did not report');
+  });
+
+  it('still reports the shards it does have when the count is wrong in the other direction', () => {
+    const dir = ledgers({
+      'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })],
+      'shard-9.jsonl': [row('cash/SetupResume', 'passed', { shard: 9, attempts: 1, duration: 91 })],
+    });
+    expect(run([dir, '1']).stdout).toContain('cash/SetupResume');
+  });
+});
+
 describe('reporting is never fatal', () => {
   it('exits 0 and explains itself when the results directory is missing', () => {
     const result = run([join(tmpdir(), 'summary-does-not-exist')]);
@@ -79,7 +114,13 @@ describe('being called wrong is fatal', () => {
   it('exits non-zero with usage when no results directory is given', () => {
     const result = run([]);
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('usage: node tools/e2e-summary/index.ts <resultsDir>');
+    expect(result.stderr).toContain('usage: node tools/e2e-summary/index.ts <resultsDir> [expectedShards]');
+  });
+
+  it('exits non-zero when the shard count is not a number', () => {
+    const result = run([ledgers({}), 'four']);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('expectedShards must be a non-negative integer');
   });
 });
 
