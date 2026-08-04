@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
+import { opacity } from '@/framework/ui/utils/opacity';
 
 type CashActionButtonProps = {
   disabled?: boolean;
@@ -13,6 +14,7 @@ type CashActionButtonProps = {
   shadow?: boolean;
   testID: string;
   textSize?: TextProps['size'];
+  variant?: 'solid' | 'tinted' | 'plain';
 };
 
 export const CashActionButton = memo(function CashActionButton({
@@ -23,9 +25,11 @@ export const CashActionButton = memo(function CashActionButton({
   shadow = false,
   testID,
   textSize = '22pt',
+  variant = 'solid',
 }: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
   const isDisabled = disabled || loading;
+  const textColor = variant === 'solid' ? 'white' : 'blue';
 
   return (
     <ButtonPressAnimation
@@ -38,17 +42,22 @@ export const CashActionButton = memo(function CashActionButton({
     >
       <Box
         alignItems="center"
-        background="blue"
+        background={variant === 'solid' ? 'blue' : undefined}
         borderRadius={24}
         height={{ custom: 48 }}
         justifyContent="center"
-        style={[shadow && styles.shadow, shadow && { shadowColor: blue }, isDisabled && styles.disabled]}
+        style={[
+          variant === 'tinted' && { backgroundColor: opacity(blue, 0.12), borderColor: opacity(blue, 0.04), borderWidth: 1.66 },
+          shadow && styles.shadow,
+          shadow && { shadowColor: blue },
+          isDisabled && styles.disabled,
+        ]}
         width="full"
       >
         {loading ? (
-          <Spinner color="white" size={24} />
+          <Spinner color={variant === 'solid' ? 'white' : blue} size={24} />
         ) : (
-          <Text align="center" color="white" size={textSize} weight="heavy">
+          <Text align="center" color={textColor} size={textSize} weight="heavy">
             {label}
           </Text>
         )}

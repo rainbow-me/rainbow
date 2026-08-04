@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useListen } from '@storesjs/stores';
 
+import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
@@ -25,6 +26,8 @@ import { PasskeyStep } from './steps/PasskeyStep';
 import { PhoneStep } from './steps/PhoneStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { SsnStep } from './steps/SsnStep';
+import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
+import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
@@ -61,6 +64,8 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();
     useSubmitPhoneFlowStore.getState().reset();
+    useSubmitKycFlowStore.getState().reset();
+    useAddPasskeyFlowStore.getState().reset();
   });
 
   return (
@@ -84,6 +89,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
           ))}
         </SmoothPager>
       ))}
+      <AbsolutePortalRoot />
     </Box>
   );
 });

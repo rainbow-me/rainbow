@@ -1609,13 +1609,21 @@
           "date_of_birth": "Date of Birth",
           "ssn": "Social Security Number",
           "edit": "Edit",
-          "error": "We couldn’t verify your details. Please try again."
+          "verifying_title": "Verifying your identity...",
+          "verifying_description": "This can take up to a few minutes.",
+          "verified_title": "Identity verified",
+          "verified_description": "We found a match based on your details. Please review and confirm everything looks correct.",
+          "error_title": "We couldn’t verify your details",
+          "error_description": "Please double-check your details and try again.",
+          "edit_details": "Edit Details"
         },
         "passkey": {
           "title": "Add a Passkey",
           "subtitle": "Add a secure passkey to make signing in easier and keep your account protected.",
           "action": "Add Passkey",
-          "error": "We couldn’t add your passkey. Please try again."
+          "error_title": "Error adding passkey",
+          "error_description": "We couldn’t add your passkey. Please try again.",
+          "try_again": "Try Again"
         },
         "email": { "title": "Enter email" },
         "all_done": {
@@ -1629,8 +1637,11 @@
           "expiry": "MM / YY",
           "cvc": "CVC",
           "zip": "ZIP code",
-          "try_again": "Try again",
-          "submit_error": "We couldn't link your card. Please try again."
+          "adding_title": "Adding card...",
+          "adding_description": "Talking to your card issuer...",
+          "error_title": "Error adding card",
+          "error_description": "Couldn’t add your card. Please check your details and try again.",
+          "edit_details": "Edit Card Details"
         },
         "card_added": {
           "title": "Card added",

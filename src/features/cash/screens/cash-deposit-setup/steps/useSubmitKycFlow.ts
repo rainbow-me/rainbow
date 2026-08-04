@@ -1,18 +1,13 @@
-import { useCallback } from 'react';
-
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
 import { time } from '@/framework/core/utils/time';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 export const KYC_POLL_INTERVAL_MS = time.seconds(3);
 export const KYC_POLL_BUDGET_MS = time.seconds(30);
@@ -26,20 +21,23 @@ const KYC_FAILURE_REASONS: Record<Exclude<KycStatus, KycStatus.Approved>, string
   [KycStatus.Review]: 'review',
 };
 
-export type SubmitKycState = 'entry' | 'submitting';
+export type SubmitKycState = 'entry' | 'submitting' | 'success' | 'error';
 
 export type SubmitKycResult = 'approved' | 'failed' | 'skipped';
 
 type SubmitKycFlowStore = {
   state: SubmitKycState;
+  reset: () => void;
   submit: () => Promise<SubmitKycResult>;
 };
 
 export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, get) => ({
   state: 'entry',
 
+  reset: () => set({ state: 'entry' }),
+
   submit: async () => {
-    if (get().state !== 'entry') return 'skipped';
+    if (get().state === 'submitting') return 'skipped';
     const { session } = useCashSetupSessionStore.getState();
     if (session.status !== 'phoneVerified' || !session.identity || !session.governmentId) return 'skipped';
 
@@ -58,32 +56,30 @@ export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, g
         const reason = KYC_FAILURE_REASONS[kycStatus];
         logger.error(new RainbowError(`[useSubmitKycFlow]: KYC not approved: ${reason}`));
         analytics.track(analytics.event.cashKycFailed, { reason });
+        set({ state: 'error' });
         return 'failed';
       }
 
       analytics.track(analytics.event.cashKycApproved);
+      set({ state: 'success' });
       return 'approved';
     } catch (e) {
       logger.error(new RainbowError('[useSubmitKycFlow]: Failed to submit KYC', e));
       analytics.track(analytics.event.cashKycFailed, { reason: e instanceof Error ? e.message : String(e) });
+      set({ state: 'error' });
       return 'failed';
-    } finally {
-      set({ state: 'entry' });
     }
   },
 }));
 
 const submitKycFlowActions = createStoreActions(useSubmitKycFlowStore);
 
-export function useSubmitKycFlow(): { submitting: boolean; submit: () => Promise<void> } {
-  const { next } = useCashDepositSetupNavigation();
-  const submitting = useSubmitKycFlowStore(state => state.state === 'submitting');
+export function useSubmitKycFlow(): {
+  reset: () => void;
+  state: SubmitKycState;
+  submit: () => Promise<SubmitKycResult>;
+} {
+  const state = useSubmitKycFlowStore(state => state.state);
 
-  const submit = useCallback(async () => {
-    const result = await submitKycFlowActions.submit();
-    if (result === 'approved') next();
-    else if (result === 'failed') Alert.alert(i18n.t(i18n.l.cash.deposit_setup.review.error));
-  }, [next]);
-
-  return { submitting, submit };
+  return { reset: submitKycFlowActions.reset, state, submit: submitKycFlowActions.submit };
 }

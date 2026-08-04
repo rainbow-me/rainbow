@@ -109,6 +109,7 @@ import {
   androidRecievePreset,
   appIconUnlockSheetPreset,
   bottomSheetPreset,
+  cashDepositSetupSheetPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
@@ -287,7 +288,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
       <BSStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} />
-      <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} />
+      <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} options={cashDepositSetupSheetPreset} />
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />

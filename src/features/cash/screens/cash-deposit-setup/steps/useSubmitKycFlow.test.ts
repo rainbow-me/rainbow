@@ -19,10 +19,6 @@ jest.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/helpers/alert', () => ({
-  WrappedAlert: { alert: jest.fn() },
-}));
-
 jest.mock('@/utils/delay', () => ({
   delay: jest.fn(() => Promise.resolve()),
 }));
@@ -37,10 +33,6 @@ jest.mock('../../../services/userClient', () => ({
   },
   getUserStatus: jest.fn(),
   submitOnboarding: jest.fn(),
-}));
-
-jest.mock('../useCashDepositSetupNavigation', () => ({
-  useCashDepositSetupNavigation: jest.fn(),
 }));
 
 const mockSubmitOnboarding = submitOnboarding as jest.Mock;
@@ -65,6 +57,7 @@ const challenge = () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
@@ -93,7 +86,7 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(submitOrder).toBeLessThan(trackApprovedOrder);
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
-    expect(flow().state).toBe('entry');
+    expect(flow().state).toBe('success');
   });
 
   it('polls while pending, then approves', async () => {
@@ -116,7 +109,7 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(mockGetUserStatus).toHaveBeenCalledTimes(POLL_ATTEMPTS);
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'timeout' });
     expect(logger.error).toHaveBeenCalled();
-    expect(flow().state).toBe('entry');
+    expect(flow().state).toBe('error');
   });
 
   it.each([
@@ -139,7 +132,7 @@ describe('useSubmitKycFlowStore.submit', () => {
 
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'network down' });
     expect(logger.error).toHaveBeenCalled();
-    expect(flow().state).toBe('entry');
+    expect(flow().state).toBe('error');
   });
 
   it('skips a second submit while one is in flight', async () => {
