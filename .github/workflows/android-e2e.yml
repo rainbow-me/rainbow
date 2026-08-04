@@ -10,6 +10,7 @@ permissions: {}
 
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
+  SHARD_TOTAL: 4
 
 jobs:
   build:
@@ -94,7 +95,6 @@ jobs:
       cancel-in-progress: false
 
     env:
-      SHARD_TOTAL: 4
       SHARD_INDEX: ${{ matrix.shard-index }}
       ANDROID_EMULATOR_API_LEVEL: 31
       ANDROID_EMULATOR_PROFILE: pixel_6
@@ -201,7 +201,7 @@ jobs:
           path: e2e-results
 
       - name: Render summary
-        run: node tools/e2e-summary/index.ts e2e-results
+        run: node tools/e2e-summary/index.ts e2e-results "$SHARD_TOTAL"
 
   perf-tests:
     name: Perf Tests

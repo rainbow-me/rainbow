@@ -49,3 +49,44 @@ exports[`rendering sorts failures and retries above passes, merging every shard 
 
 "
 `;
+
+exports[`shards that never reported lists every missing shard when more than one is gone 1`] = `
+"**3 did not report · 1 passed**
+
+> [!WARNING]
+> Shards 1, 3, 4 uploaded nothing, so their tests are missing from this table entirely.
+
+|  | Test | Shard | Attempts | Time |
+| :-- | :-- | --: | --: | --: |
+| ❓ | _no results uploaded_ | 1 |  |  |
+| ❓ | _no results uploaded_ | 3 |  |  |
+| ❓ | _no results uploaded_ | 4 |  |  |
+| ✅ | \`screens/Home\` | 2 | 1 | 1m 14s |
+
+"
+`;
+
+exports[`shards that never reported names the shard whose ledger never arrived, and warns the table is partial 1`] = `
+"**1 did not report · 2 passed**
+
+> [!WARNING]
+> Shard 3 uploaded nothing, so its tests are missing from this table entirely.
+
+|  | Test | Shard | Attempts | Time |
+| :-- | :-- | --: | --: | --: |
+| ❓ | _no results uploaded_ | 3 |  |  |
+| ✅ | \`cash/SetupResume\` | 2 | 1 | 1m 31s |
+| ✅ | \`screens/Home\` | 1 | 1 | 1m 14s |
+
+"
+`;
+
+exports[`shards that never reported treats an empty ledger as having reported, since the shard wrote it before running anything 1`] = `
+"**1 passed**
+
+|  | Test | Shard | Attempts | Time |
+| :-- | :-- | --: | --: | --: |
+| ✅ | \`screens/Home\` | 1 | 1 | 1m 14s |
+
+"
+`;

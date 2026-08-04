@@ -9,6 +9,7 @@ permissions: {}
 
 env:
   NODE_OPTIONS: '--max-old-space-size=6144'
+  SHARD_TOTAL: 4
 
 jobs:
   # iOS build job
@@ -63,7 +64,6 @@ jobs:
       cancel-in-progress: false
     timeout-minutes: 30
     env:
-      SHARD_TOTAL: 4
       SHARD_INDEX: ${{ matrix.shard-index }}
       ARTIFACTS_FOLDER: e2e-artifacts
       RESULTS_FOLDER: e2e-results
@@ -153,7 +153,7 @@ jobs:
           path: e2e-results
 
       - name: Render summary
-        run: node tools/e2e-summary/index.ts e2e-results
+        run: node tools/e2e-summary/index.ts e2e-results "$SHARD_TOTAL"
 
   notify-failure:
     name: Notify Slack on failure

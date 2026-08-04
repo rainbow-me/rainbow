@@ -163,6 +163,11 @@ record_planned() {
 rm -rf "$ARTIFACTS_FOLDER" "$RESULTS_FOLDER"
 mkdir -p "$RESULTS_FOLDER"
 
+# Created before anything can go wrong, so that a missing ledger means the shard
+# never got this far rather than that it had nothing to say. The summary reports
+# on that difference.
+: > "$RESULTS_FILE"
+
 # Handle test discovery and sharding.
 if [[ -f "$FLOW" ]]; then
   echo "🧪 Running single test file: $FLOW"
