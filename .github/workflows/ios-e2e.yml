@@ -85,15 +85,10 @@ jobs:
           mv rainbow-env/dotenv .env
           rm -rf rainbow-env
 
-      - name: Install Maestro
+      - name: Install Maestro and Anvil
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
         with:
-          install_args: maestro
-
-      - name: Install Anvil
-        uses: foundry-rs/foundry-toolchain@c7450ba673e133f5ee30098b3b54f444d3a2ca2d # v1.8.0
-        with:
-          version: stable
+          install_args: maestro foundry
 
       - name: Download and Unpack IPA artifact
         run: |
