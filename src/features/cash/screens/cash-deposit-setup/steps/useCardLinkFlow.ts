@@ -30,13 +30,13 @@ export type UseCardLinkFlow = {
   bivoStore: BivoSecureStore;
   isReady: boolean;
   onFieldStateChange: () => void;
+  reset: () => void;
   submit: () => void;
-  retry: () => void;
 };
 
 export function useCardLinkFlow(): UseCardLinkFlow {
   const [flowState, setFlowState] = useState<CardLinkState>('entry');
-  const [bivoStore, setBivoStore] = useState(createBivoStore);
+  const [bivoStore] = useState(createBivoStore);
   const [, onFieldStateChange] = useReducer(i => i + 1, 0);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -72,10 +72,7 @@ export function useCardLinkFlow(): UseCardLinkFlow {
     }
   }, [bivoStore]);
 
-  const retry = useCallback(() => {
-    setBivoStore(createBivoStore());
-    setFlowState('entry');
-  }, []);
+  const reset = useCallback(() => setFlowState('entry'), []);
 
   useEffect(() => {
     return () => {
@@ -88,7 +85,7 @@ export function useCardLinkFlow(): UseCardLinkFlow {
     bivoStore,
     isReady,
     onFieldStateChange,
+    reset,
     submit,
-    retry,
   };
 }

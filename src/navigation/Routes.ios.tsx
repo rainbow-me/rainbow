@@ -103,6 +103,7 @@ import {
   appIconUnlockSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  cashDepositSetupConfig,
   checkIdentifierSheetConfig,
   claimAirdropSheetConfig,
   customGasSheetConfig,
@@ -312,7 +313,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
       <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} {...perpsAccountStackConfig} />
+      <NativeStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} {...cashDepositSetupConfig} />
       <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
       <NativeStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen

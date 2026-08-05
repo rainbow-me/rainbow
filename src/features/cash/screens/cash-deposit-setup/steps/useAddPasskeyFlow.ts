@@ -3,8 +3,6 @@ import { useCallback } from 'react';
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 
 import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '../../../services/cashPasskeyService';
@@ -13,20 +11,23 @@ import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
-export type AddPasskeyState = 'entry' | 'submitting';
+export type AddPasskeyState = 'entry' | 'submitting' | 'error';
 
 export type AddPasskeyResult = 'completed' | 'cancelled' | 'failed' | 'skipped';
 
 type AddPasskeyFlowStore = {
   state: AddPasskeyState;
+  reset: () => void;
   submit: () => Promise<AddPasskeyResult>;
 };
 
 export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set, get) => ({
   state: 'entry',
 
+  reset: () => set({ state: 'entry' }),
+
   submit: async () => {
-    if (get().state !== 'entry') return 'skipped';
+    if (get().state === 'submitting') return 'skipped';
     const { session } = useCashSetupSessionStore.getState();
     if (session.status !== 'phoneVerified') return 'skipped';
 
@@ -40,29 +41,34 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
 
       useCashAccountStore.getState().setUserId(userId);
       analytics.track(analytics.event.cashPasskeyAdded);
+      set({ state: 'entry' });
       return 'completed';
     } catch (e) {
-      if (isPasskeyCancellation(e)) return 'cancelled';
+      if (isPasskeyCancellation(e)) {
+        set({ state: 'entry' });
+        return 'cancelled';
+      }
       logger.error(new RainbowError('[useAddPasskeyFlow]: Failed to add passkey', e));
       analytics.track(analytics.event.cashPasskeyFailed, { reason: e instanceof Error ? e.message : String(e) });
+      set({ state: 'error' });
       return 'failed';
-    } finally {
-      set({ state: 'entry' });
     }
   },
 }));
 
 const addPasskeyFlowActions = createStoreActions(useAddPasskeyFlowStore);
 
-export function useAddPasskeyFlow(): { submitting: boolean; submit: () => Promise<void> } {
+export function useAddPasskeyFlow(): {
+  reset: () => void;
+  state: AddPasskeyState;
+  submit: () => Promise<void>;
+} {
   const { next } = useCashDepositSetupNavigation();
-  const submitting = useAddPasskeyFlowStore(state => state.state === 'submitting');
+  const state = useAddPasskeyFlowStore(state => state.state);
 
   const submit = useCallback(async () => {
-    const result = await addPasskeyFlowActions.submit();
-    if (result === 'completed') next();
-    else if (result === 'failed') Alert.alert(i18n.t(i18n.l.cash.deposit_setup.passkey.error));
+    if ((await addPasskeyFlowActions.submit()) === 'completed') next();
   }, [next]);
 
-  return { submitting, submit };
+  return { reset: addPasskeyFlowActions.reset, state, submit };
 }

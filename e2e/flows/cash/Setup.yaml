@@ -83,9 +83,15 @@ tags:
     text: 'Review your information'
 - assertVisible:
     text: 'Ada Lovelace'
-# Confirm submits KYC; the mock approves after ~1s, then the repeat loop walks the placeholder steps.
+# Confirm submits KYC; the mock approves after ~1s and the success sheet's Continue advances the flow.
 - tapOn:
     id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      id: cash-setup-kyc-success-continue
+    timeout: 10000
+- tapOn:
+    id: cash-setup-kyc-success-continue
 - extendedWaitUntil:
     visible:
       text: 'Add a Passkey'

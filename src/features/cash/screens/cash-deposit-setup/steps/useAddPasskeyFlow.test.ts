@@ -23,10 +23,6 @@ jest.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/helpers/alert', () => ({
-  WrappedAlert: { alert: jest.fn() },
-}));
-
 jest.mock('../../../services/userClient', () => ({
   addPasskey: jest.fn(),
   finishAddPasskey: jest.fn(),
@@ -67,6 +63,7 @@ const challenge = () => {
 beforeEach(() => {
   jest.clearAllMocks();
   (useCashAccountStore.getState as jest.Mock).mockReturnValue({ setUserId });
+  flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
@@ -123,6 +120,7 @@ describe('useAddPasskeyFlowStore.submit', () => {
     expect(track).toHaveBeenCalledWith('cash.passkey_failed', { reason: 'ceremony broke' });
     expect(setUserId).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalled();
+    expect(flow().state).toBe('error');
   });
 
   it('fails without storing the userId when FinishAddPasskey throws', async () => {
