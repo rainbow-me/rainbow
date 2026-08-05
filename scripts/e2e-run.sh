@@ -6,6 +6,8 @@ source .env
 ARTIFACTS_FOLDER=e2e-artifacts
 RESULTS_FOLDER=e2e-results
 FLOW="e2e/flows"
+ANVIL_RPC="http://127.0.0.1:8545"
+TEST_WALLET_BALANCE_WEI="0x1158e460913d00000" # 20 ETH
 ARGS=()
 SHARD_TOTAL=1
 SHARD_INDEX=0
@@ -211,7 +213,28 @@ if $NEEDS_ANVIL; then
   mkdir -p "$ARTIFACTS_FOLDER/anvil"
   ./scripts/anvil.sh --host 0.0.0.0 > "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
   ANVIL_PID=$!
-  sleep 5
+
+  # Wait for the chain to answer rather than assuming it is up, since funding below
+  # depends on it. A fork can take a while to hydrate on a cold RPC cache.
+  ANVIL_READY=false
+  for _ in $(seq 1 60); do
+    if cast block-number --rpc-url "$ANVIL_RPC" > /dev/null 2>&1; then
+      ANVIL_READY=true
+      break
+    fi
+    sleep 1
+  done
+  if ! $ANVIL_READY; then
+    echo "❌ Anvil did not become ready. See $ARTIFACTS_FOLDER/anvil/mainnet.log"
+    exit 1
+  fi
+
+  # Fund the wallet the tests import. Derive the address from the key rather than
+  # hardcoding it, so changing the key cannot fund the wrong account and leave every
+  # transaction test failing on insufficient funds, several steps from the cause.
+  TEST_WALLET_ADDRESS=$(cast wallet address --private-key "$DEV_PKEY")
+  cast rpc anvil_setBalance "$TEST_WALLET_ADDRESS" "$TEST_WALLET_BALANCE_WEI" --rpc-url "$ANVIL_RPC" > /dev/null
+  echo "💰 Funded $TEST_WALLET_ADDRESS with $(cast to-unit "$TEST_WALLET_BALANCE_WEI" ether) ETH"
 fi
 
 # Run tests with retries.
