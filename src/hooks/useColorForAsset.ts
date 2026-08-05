@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { getDeterministicIndex } from '@/framework/core/utils/getDeterministicIndex';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isETH from '@/utils/isETH';
+import { hashCode } from '@/utils/profileUtils';
 
 import { lightModeThemeColors } from '../styles/colors';
 import { getHighContrastColor } from './useAccountAccentColor';
@@ -34,7 +34,7 @@ export default function useColorForAsset(
           ? colors.appleBlue
           : colors.brighten(lightModeThemeColors.dark)
         : colors.dark
-      : colors.avatarBackgrounds[getDeterministicIndex({ seed: resolvedAddress, length: colors.avatarBackgrounds.length })];
+      : colors.avatarBackgrounds[Math.abs(hashCode(resolvedAddress.toLowerCase())) % colors.avatarBackgrounds.length];
     return color;
   }, [colors, forceETHColor, isDarkMode, resolvedAddress]);
 
