@@ -1,6 +1,5 @@
 import { buildTransactionTitle, TransactionDirection, TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
-import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { convertAmountToRawAmount, convertRawAmountToBalance } from '@/helpers/utilities';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
@@ -23,12 +22,7 @@ export function buildCashPurchaseTransaction({
   const usdc = CASH_USDC_BY_NETWORK[rampNetwork];
   if (!usdc) throw new RampError(`Unsupported ramp network: ${rampNetwork}`);
 
-  const { address } = usdc;
-  const { getChainsIdByName, getChainsName } = useBackendNetworksStore.getState();
-  const chainId = getChainsIdByName()[usdc.chainName];
-  if (!chainId) throw new RampError(`Missing backend chain id mapping for: ${usdc.chainName}`);
-  const network = getChainsName()[chainId];
-  if (!network) throw new RampError(`Missing backend chain name mapping for chainId: ${String(chainId)}`);
+  const { address, chainId, chainName: network } = usdc;
   const fiatSymbol = supportedCurrencies[order.fiatAmount.currency as keyof typeof supportedCurrencies]?.symbol ?? '';
   const rawCryptoAmount = convertAmountToRawAmount(order.cryptoAmount.amount, USDC_DECIMALS);
   const asset = {

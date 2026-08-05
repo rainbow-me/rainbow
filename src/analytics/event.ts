@@ -122,7 +122,6 @@ export const event = {
   pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
   rewardsViewedSheet: 'rewards.viewed_sheet',
   cashDepositIntroViewed: 'cash.deposit_intro_viewed',
-  addCashViewed: 'cash.add_cash_viewed',
   cashAmountEntered: 'cash.amount_entered',
   cashBuyOrderSubmitted: 'cash.buy_submitted',
   cashBuyOrderCompleted: 'cash.buy_completed',
@@ -529,7 +528,6 @@ export type EventProperties = {
   };
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
-  [event.addCashViewed]: undefined;
   [event.cashAmountEntered]: {
     /** The chosen USD amount as a decimal string, e.g. "50". */
     amount: string;

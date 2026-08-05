@@ -6,6 +6,7 @@ import { foundry } from 'viem/chains';
 
 import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
+import { getMockCashTransactionByHash } from '@/features/cash/utils/mockCashTransactionByHash';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -82,6 +83,11 @@ export const fetchRawTransaction = async ({
   hash: string;
   originalType?: TransactionType;
 }): Promise<RainbowTransaction | null> => {
+  if (IS_TEST) {
+    const mockCashTransaction = await getMockCashTransactionByHash({ address, currency, chainId, hash });
+    if (mockCashTransaction) return mockCashTransaction;
+  }
+
   if (IS_TEST && localPublicClient && chainId === anvilChain.id) {
     try {
       if (!isHash(hash)) throw new Error('Invalid transaction hash');

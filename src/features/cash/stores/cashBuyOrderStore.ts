@@ -9,6 +9,7 @@ import { CASH_BUY_DESTINATION_ASSET } from '../constants';
 import {
   createBuyOrder,
   getOrder,
+  isDefinitiveRejection,
   isNotFoundError,
   isTerminalBuyOrder,
   OrderFailureReason,
@@ -40,7 +41,17 @@ export type CashBuyStatus =
       submittedAt: number;
     }
   | { step: 'success'; order: Extract<BuyOrder, { status: OrderStatus.Completed }> }
-  | { step: 'error'; errorCode: CashBuyErrorCode; order: Extract<BuyOrder, { status: OrderStatus.Failed }> | null };
+  | {
+      step: 'error';
+      errorCode: CashBuyErrorCode;
+      order: Extract<BuyOrder, { status: OrderStatus.Failed }> | null;
+      /**
+       * Retained when the submit failed ambiguously (the order may still exist under this id), so a
+       * retry with the same inputs replays the same id instead of risking a second order. Absent when
+       * the backend definitively rejected the create or the order itself reached a terminal failure.
+       */
+      spec?: BuyOrderSpec;
+    };
 
 type CashBuyOrderState = {
   status: CashBuyStatus;
@@ -98,14 +109,24 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       }
     }
 
+    // The same spec can be in flight more than once (a reopen replays it while the original POST
+    // still runs), so a result only lands while the store is still submitting that spec — whichever
+    // settles first wins, the straggler is dropped.
+    function isCurrentSubmission(spec: BuyOrderSpec): boolean {
+      const current = get().status;
+      return current.step === 'submitting' && current.spec.id === spec.id;
+    }
+
     async function submitBuyOrderSpec({ spec, submittedAt }: { spec: BuyOrderSpec; submittedAt: number }): Promise<void> {
       try {
         const created = await createBuyOrder({ ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
+        if (!isCurrentSubmission(spec)) return;
         set({ status: { step: 'polling', orderId: created.id, order: null, submittedAt } });
       } catch (error) {
+        if (!isCurrentSubmission(spec)) return;
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed'), { error });
         analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
-        set({ status: { step: 'error', errorCode: 'GENERIC', order: null } });
+        set({ status: { step: 'error', errorCode: 'GENERIC', order: null, spec: isDefinitiveRejection(error) ? undefined : spec } });
         // A 404 says the backend did not recognise something this order named, and the linked wallet
         // is the part of that we cache — persisted, so a stale entry would fail every retry. Dropping
         // it costs the next attempt one GET and lets that attempt gate on the truth; absence only
@@ -118,13 +139,23 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       status: { step: 'idle' },
 
       submitBuyOrder: async ({ cardId, depositAmount, walletAddress }) => {
-        if (selectCashBuyPhase(get()) === 'pending') return;
+        const { status } = get();
+        if (selectCashBuyPhase({ status }) === 'pending') return;
 
         analytics.track(analytics.event.cashBuyOrderSubmitted, { amount: depositAmount });
 
+        // decides whether the new submission should reuse the order id
+        // from a previous failed attempt with not definitive rejection
+        const retained =
+          status.step === 'error' &&
+          status.spec?.cardId === cardId &&
+          status.spec.depositAmount === depositAmount &&
+          status.spec.walletAddress === walletAddress
+            ? status.spec
+            : null;
         const submitting = {
           step: 'submitting',
-          spec: { cardId, depositAmount, walletAddress, id: uuidv4() },
+          spec: retained ?? { cardId, depositAmount, walletAddress, id: uuidv4() },
           submittedAt: Date.now(),
         } as const;
         set({ status: submitting });

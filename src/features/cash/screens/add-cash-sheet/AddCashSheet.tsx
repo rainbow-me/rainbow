@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
@@ -389,12 +388,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
     }
     if (phase === 'success') navigation.goBack();
   }, [phase, errorCode, navigation, previousPhase]);
-
-  useFocusEffect(
-    useCallback(() => {
-      analytics.track(analytics.event.addCashViewed);
-    }, [])
-  );
 
   // Sample the amount whenever the user taps a preset chip.
   const handleSelectPreset = useCallback(
