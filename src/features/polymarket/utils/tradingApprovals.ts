@@ -1,5 +1,5 @@
 import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { decodeFunctionResult, encodeFunctionData, erc1155Abi, maxUint256, type Address } from 'viem';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, maxUint256, type Address } from 'viem';
 
 import {
   POLYMARKET_CTF_ADDRESS,
@@ -12,7 +12,6 @@ import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { ensureTradingWalletDeployed, executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
-import { requireHex } from '@/framework/core/evm/hex';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -36,11 +35,12 @@ async function hasCtfApproval(owner: Address, operator: Address): Promise<boolea
     args: [owner, operator],
   });
   const result = await polygonProvider.call({ to: POLYMARKET_CTF_ADDRESS, data });
+  if (!isHex(result)) throw new RainbowError('[polymarket] Provider returned non-hex call data');
 
   return decodeFunctionResult({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
-    data: requireHex(result, new RainbowError('[polymarket] Provider returned non-hex call data')),
+    data: result,
   });
 }
 

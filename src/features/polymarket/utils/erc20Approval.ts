@@ -2,8 +2,8 @@ import { type BigNumberish } from '@ethersproject/bignumber';
 import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { maxUint256, type Address } from 'viem';
 
-import { encodeErc20Approve } from '@/framework/core/evm/erc20Calldata';
-import { hasSufficientErc20Allowance, type EvmCallProvider } from '@/framework/data/evm/erc20Read';
+import { encodeErc20Approve } from '@/features/token/core/services/erc20Calldata';
+import { hasSufficientErc20Allowance, type EvmCallProvider } from '@/features/token/data/api/erc20Read';
 
 const DEFAULT_ERC20_APPROVAL_AMOUNT = maxUint256;
 

@@ -4,11 +4,11 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
+import { requireAddress } from '@/features/address/core/requireAddress';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { requireAddress } from '@/framework/core/evm/address';
-import { encodeErc20Transfer } from '@/framework/core/evm/erc20Calldata';
-import { parsePositiveRawAmount } from '@/framework/core/evm/units';
+import { encodeErc20Transfer } from '@/features/token/core/services/erc20Calldata';
+import { parsePositiveRawAmount } from '@/framework/core/utils/units';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';

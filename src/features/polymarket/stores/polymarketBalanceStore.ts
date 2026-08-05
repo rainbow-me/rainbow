@@ -10,9 +10,9 @@ import {
   POLYMARKET_PUSD_DECIMALS,
 } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getErc20Balance } from '@/features/token/data/api/erc20Read';
 import { truncateToDecimals } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { getErc20Balance } from '@/framework/data/evm/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
