@@ -26,10 +26,25 @@ type SwapActionButtonProps = {
   inputType: SwapAssetType;
   textColor?: string;
   label?: string;
+  /**
+   * Distinguishes multiple swap entry points rendered side by side, e.g. the buy/sell
+   * pair on the expanded asset sheet footer.
+   */
+  testID?: string;
   weight?: string;
 };
 
-function SwapActionButton({ asset, color: givenColor, height, icon, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
+function SwapActionButton({
+  asset,
+  color: givenColor,
+  height,
+  icon,
+  inputType,
+  label,
+  testID = 'swap',
+  weight = 'heavy',
+  ...props
+}: SwapActionButtonProps) {
   const { colors } = useTheme();
 
   const color = givenColor || colors.swapPurple;
@@ -138,7 +153,7 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
       newShadows
       onPress={goToSwap}
       size={height}
-      testID="swap"
+      testID={testID}
       weight={weight}
       truncate
     >

@@ -17,10 +17,13 @@ import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import { AssetContextMenu } from './AssetContextMenu';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
+
+const BUTTON_SIZE = 48;
+// Matches the arrow used by the send button on the wallet screen
+const SEND_ICON = '􀈟';
 
 export function SheetFooter() {
   const { accentColors, basicAsset: asset, accountAsset, isOwnedAsset } = useExpandedAssetSheetContext();
@@ -34,7 +37,8 @@ export function SheetFooter() {
   const chainsWithBalance = useUserAssetsStore(state => state.getChainsWithBalance());
   const hasSwappableAssets = chainsWithBalance.length > 0;
 
-  const isSwapButtonVisible = swapEnabled && isOwnedAsset && !isTestnet;
+  // Owning the asset splits the single swap button into a buy/sell pair
+  const isBuySellPairVisible = swapEnabled && isOwnedAsset && !isTestnet;
   const isSendButtonVisible = isOwnedAsset && asset.transferable;
   const isBuyEthButtonVisible = !hasSwappableAssets && f2c_enabled;
   const isBuyAssetButtonVisible = !isOwnedAsset && swapEnabled && !isBuyEthButtonVisible;
@@ -57,24 +61,46 @@ export function SheetFooter() {
           width="full"
           paddingBottom={{ custom: safeAreaInsets.bottom + 12 }}
         >
-          <Columns space="16px">
-            <Column width="content">
-              <AssetContextMenu />
-            </Column>
-            {isSwapButtonVisible && (
-              <SwapActionButton asset={asset} color={accentColors.color} height={48} inputType={SwapAssetType.inputAsset} />
+          <Columns space="12px">
+            {isBuySellPairVisible && (
+              <SwapActionButton
+                asset={asset}
+                color={accentColors.color}
+                height={BUTTON_SIZE}
+                inputType={SwapAssetType.outputAsset}
+                label={i18n.t(i18n.l.button.buy)}
+                testID="buy"
+              />
             )}
-            {isSendButtonVisible && <SendActionButton asset={accountAsset as ParsedAddressAsset} color={accentColors.color} size={48} />}
-            {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} size={48} />}
+            {isBuySellPairVisible && (
+              <SwapActionButton
+                asset={asset}
+                color={accentColors.color}
+                height={BUTTON_SIZE}
+                inputType={SwapAssetType.inputAsset}
+                label={i18n.t(i18n.l.button.sell)}
+                testID="sell"
+              />
+            )}
+            {isSendButtonVisible && (
+              <Column width="content">
+                <SendActionButton
+                  asset={accountAsset as ParsedAddressAsset}
+                  color={accentColors.color}
+                  icon={SEND_ICON}
+                  isSquare
+                  size={BUTTON_SIZE}
+                />
+              </Column>
+            )}
+            {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} size={BUTTON_SIZE} />}
             {isBuyAssetButtonVisible && (
               <SwapActionButton
                 asset={asset}
                 color={accentColors.color}
-                height={48}
+                height={BUTTON_SIZE}
                 inputType={SwapAssetType.outputAsset}
-                label={i18n.t(i18n.l.expanded_state.asset.get_asset, {
-                  assetSymbol: asset?.symbol,
-                })}
+                label={i18n.t(i18n.l.button.buy)}
               />
             )}
           </Columns>

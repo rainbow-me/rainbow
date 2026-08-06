@@ -4,7 +4,6 @@ import { Platform, Share } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
-import { SheetActionButton } from '@/components/sheet';
 import { Box, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
@@ -12,12 +11,15 @@ import EditAction from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 
 // This is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;
+
+const BUTTON_SIZE = 44;
 
 const ContextMenuActions = {
   BlockExplorer: 'block_explorer',
@@ -176,11 +178,22 @@ export function AssetContextMenu() {
     <Box style={{ margin: Platform.OS === 'android' ? 0 : -HIT_SLOP }}>
       <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         <Box style={{ margin: Platform.OS === 'android' ? 0 : HIT_SLOP }}>
-          <SheetActionButton color={accentColors.opacity100} newShadows isSquare size={48}>
-            <TextIcon color="label" containerSize={48} size="icon 20px" weight="heavy">
+          <Box
+            alignItems="center"
+            height={BUTTON_SIZE}
+            justifyContent="center"
+            style={{
+              backgroundColor: accentColors.opacity6,
+              borderColor: accentColors.opacity6,
+              borderRadius: BUTTON_SIZE / 2,
+              borderWidth: THICK_BORDER_WIDTH,
+            }}
+            width={BUTTON_SIZE}
+          >
+            <TextIcon color={{ custom: accentColors.color }} containerSize={BUTTON_SIZE} size="icon 20px" weight="heavy">
               􀍠
             </TextIcon>
-          </SheetActionButton>
+          </Box>
         </Box>
       </DropdownMenu>
     </Box>
