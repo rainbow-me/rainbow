@@ -35,11 +35,23 @@ The codebase is mid-migration toward domain-organized architecture. New code goe
 
 Key non-obvious directories:
 
-- `src/framework/` -- app-agnostic infrastructure (http, safe math, UI primitives)
+- `src/framework/` -- app-agnostic infrastructure (http, safe math, UI primitives). The litmus test is "could this be copied into an app for a completely different business, unchanged?" -- crypto and chain knowledge fails it, so a CAIP parser, an address validator or a units helper is domain code in `src/features/{domain}/`, however pure it is. Framework-agnostic (no React) is not the same as domain-agnostic. `framework/core/evm/` predates this rule and is not precedent.
 - `src/__swaps__/` -- swap feature, aliased as `@/swaps` in tsconfig
 - `src/graphql/` -- separate yarn workspace for GraphQL codegen
 - `scripts/` -- flat, single-file scripts that orchestrate/wrap existing things
 - `tools/` -- standalone tooling with its own logic, modules, and tests
+
+### Feature flags
+
+Unfinished user-visible work ships behind a flag, default off. Add a label constant plus a `config` entry in `src/features/config/constants/experimental.ts`; `settings: true` puts a toggle in Developer Settings, and `needsRestart: true` restarts the app on toggle, which is required whenever the flag decides something memoized for the life of the process (store selectors, module-scope constants). Read it with `getExperimentalFlag(FLAG)` outside React and `useExperimentalFlag(FLAG)` inside. Toggling from an e2e test goes through `rainbow://e2e/setExperimentalFlag?flag=<label>&value=true`.
+
+**The persisted config replaces the declared one, so a declared default is not what decides the flag on a device that already has a config.** `config` is a single top-level key and hydration is a top-level shallow merge of persisted over declared, so the stored object replaces `defaultConfigValues` wholesale. Three consequences, all of them measured against the running app, on every build that reads persisted state:
+
+- **A declared default is dead once its key is persisted.** `getFlag` applies `?? defaultConfig[key].value` only for keys missing from the stored blob. Editing `value` in `experimental.ts` changes nothing on a device that already stored that key, so a flag shipped default-on and later flipped to default-off stays on there, and no code change turns it off. Change it with `setFlag`, a migration, or Reset Experimental Config; not by editing the default.
+- **The two read styles disagree for a newly added flag.** `getExperimentalFlag` and `useExperimentalFlag` apply the declared default; `useExperimentalConfig()` hands consumers the raw map, which they index directly and which has no entry for a key that was never persisted. A new flag declared `value: true` is therefore on for the first two and `undefined` for the third, silently.
+- **A newly added flag has no Developer Settings row at all** until something writes its key, because the list is built from `Object.keys(config)`, the persisted map. You cannot turn a new flag on there on any device with an existing config; tap Reset Experimental Config first, which writes every declared key at its declared default and makes the row appear.
+
+The bound: `getFlag`, `useExperimentalFlag` and `useExperimentalConfig` all short-circuit to the declared values when `IS_STORE_INSTALL`, so App Store and Play Store builds ignore persisted flag state entirely and none of the above reaches those users. TestFlight, internal and local builds do read persisted state, so all three reach testers and developers on them.
 
 ## Code conventions
 

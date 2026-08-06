@@ -5,6 +5,7 @@ import { IS_TEST } from '@/env';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ListTransactionsResponse, type Transaction } from '@/features/positions/types/generated/transaction/transaction';
+import { fetchSolanaTransactions } from '@/features/solana/data/fetchSolanaTransactions';
 import { logger, RainbowError } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type InfiniteQueryConfig, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
@@ -14,6 +15,8 @@ import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_LIMIT = 30;
+
+const EMPTY_SOLANA_TRANSACTIONS: Promise<RainbowTransaction[]> = Promise.resolve([]);
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -66,9 +69,21 @@ export async function consolidatedTransactionsQueryFunction({
   let transactionsFromGoldsky: RainbowTransaction[] = [];
   let nextPageFromGoldsky: string | undefined = pageParam;
   let cutoffFromGoldsky: number | undefined;
+
+  const cursor = typeof pageParam === 'string' ? pageParam : undefined;
+
+  // Started before the EVM request is awaited so it costs no extra wall-clock, and
+  // merged after it because a Solana failure must not cost the EVM rows: this
+  // function never rejects and returns an empty list when the flag is off. Only the
+  // first page asks, because the fake serves one page and this list is appended to
+  // rather than replaced; a cursor request would otherwise repeat the same rows on
+  // every page forever.
+  const solanaTransactions = cursor
+    ? EMPTY_SOLANA_TRANSACTIONS
+    : fetchSolanaTransactions({ currency, limit: CONSOLIDATED_TRANSACTIONS_LIMIT });
+
   try {
     const chainIdsString = chainIds.join(',');
-    const cursor = typeof pageParam === 'string' ? pageParam : undefined;
 
     const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
@@ -81,29 +96,36 @@ export async function consolidatedTransactionsQueryFunction({
       },
     });
 
+    // A resultless EVM response falls through rather than returning, so that the
+    // Solana rows are not lost with it. The EVM values it produces are the ones the
+    // early return this replaced produced: no transactions, no next page, no cutoff.
     if (!data.result || !Array.isArray(data.result)) {
-      return {
-        transactions: [],
-        nextPage: undefined,
-        cutoff: undefined,
-      };
+      nextPageFromGoldsky = undefined;
+    } else {
+      const chainsIdByName = backendNetworksActions.getChainsIdByName();
+
+      const parsedTransactions = data.result.map((tx: Transaction) => {
+        const chainId = chainsIdByName[tx.network];
+        return parseTransaction(tx, currency, chainId);
+      });
+      transactionsFromGoldsky = parsedTransactions.flat();
+      nextPageFromGoldsky = data?.pagination?.cursor;
     }
-
-    const chainsIdByName = backendNetworksActions.getChainsIdByName();
-
-    const parsedTransactions = data.result.map((tx: Transaction) => {
-      const chainId = chainsIdByName[tx.network];
-      return parseTransaction(tx, currency, chainId);
-    });
-    transactionsFromGoldsky = parsedTransactions.flat();
-    nextPageFromGoldsky = data?.pagination?.cursor;
   } catch (e) {
     logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Goldsky', e), {
       message: e,
     });
   }
 
-  let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
+  // Interleaved by mined time rather than appended, because the activity list's
+  // sections are time buckets: a Solana row appended after the EVM rows would sit at
+  // the bottom of its day instead of in date order. The sort runs only when Solana
+  // rows are present, so the EVM-only path is byte-for-byte what it was.
+  const solanaRows = await solanaTransactions;
+  let finalTransactions: RainbowTransaction[] =
+    solanaRows.length > 0
+      ? [...transactionsFromGoldsky, ...solanaRows].sort((a, b) => (b.minedAt ?? 0) - (a.minedAt ?? 0))
+      : [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
     const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();

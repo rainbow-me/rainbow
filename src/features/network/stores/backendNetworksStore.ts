@@ -10,6 +10,7 @@ import { colors as globalColors } from '@/styles';
 
 import { fetchBackendNetworks, type BackendNetworksResponse } from '../api/fetchBackendNetworks';
 import buildTimeNetworks from '../constants/networks.json';
+import { withSolanaNetwork } from '../constants/solanaNetwork';
 import { chainAnvil, chainAnvilOptimism, ChainId, type BackendNetwork, type BackendNetworkServices } from '../types/backendNetworks';
 import { filterSupportedNetworks, transformBackendNetworksToChains } from '../utils/transformBackendNetworks';
 
@@ -65,6 +66,15 @@ export interface BackendNetworksState {
   isSponsorshipEligible: (chainId: ChainId) => boolean;
 }
 
+/**
+ * Selectors reduce over `withSolanaNetwork(backendNetworks)` rather than
+ * `backendNetworks`, so a chain this app describes itself gets a name, a label, a
+ * badge and a native asset without every consumer learning it exists. The
+ * `transformed` argument is deliberately not extended: `backendChains` is what viem
+ * providers are built from, and an app-local non-EVM chain has no place in it.
+ * Nothing app-local is stored or persisted; the composition happens on read, and
+ * the memo key stays the fetched array's identity.
+ */
 function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
   const uninitialized = Symbol();
   let cachedResult: T | typeof uninitialized = uninitialized;
@@ -81,7 +91,7 @@ function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed:
     if (lastNetworks !== backendNetworks) lastNetworks = backendNetworks;
     if (!memoizedFn) memoizedFn = selectorFn;
 
-    cachedResult = memoizedFn(backendNetworks, backendChains);
+    cachedResult = memoizedFn(withSolanaNetwork(backendNetworks), backendChains);
     return cachedResult;
   };
 }
@@ -105,7 +115,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
 
     if (!memoizedFn || lastNetworks !== backendNetworks) {
       lastNetworks = backendNetworks;
-      memoizedFn = selectorFn(backendNetworks, backendChains);
+      memoizedFn = selectorFn(withSolanaNetwork(backendNetworks), backendChains);
     }
 
     lastArgs = args;
