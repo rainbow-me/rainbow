@@ -3,7 +3,18 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getCashPlatformClient } from './cashPlatformClient';
 import { ensureAccessToken } from './cashSignInService';
-import { completeCardLinkSession, startCardLinkSession } from './rampClient';
+import {
+  completeCardLinkSession,
+  createBuyOrder,
+  getOrder,
+  OrderStatus,
+  RampCryptoAsset,
+  RampNetwork,
+  startCardLinkSession,
+  type BuyOrder,
+  type CreateBuyOrderParams,
+  type CreatedBuyOrder,
+} from './rampClient';
 
 jest.mock('./cashPlatformClient', () => ({
   getCashPlatformClient: jest.fn(),
@@ -14,10 +25,30 @@ jest.mock('./cashSignInService', () => ({
   ensureAccessToken: jest.fn(),
 }));
 
+const get = jest.fn();
 const post = jest.fn();
 const mockEnsureAccessToken = ensureAccessToken as jest.Mock;
 
 const SESSION = { linkUrl: 'https://link', token: 'vault-token', tokenExpiresTime: '2026-07-24T00:00:00Z' };
+const CREATE_BUY_ORDER_PARAMS: CreateBuyOrderParams = {
+  id: '997b3d75-9f76-4038-a173-73c7ff37992f',
+  walletAddress: '0x4d957c58d081c1c8c8aafe1e08de047fff19eb88',
+  cryptoAsset: { asset: RampCryptoAsset.USDC, network: RampNetwork.ArbitrumTestnet },
+  depositAmount: '0.10',
+  cardId: '4a2dab9c-3bb6-4c32-8aea-e5fd4ad4c771',
+};
+const CREATED_BUY_ORDER: CreatedBuyOrder = {
+  id: CREATE_BUY_ORDER_PARAMS.id,
+  status: OrderStatus.Pending,
+  createdTime: '2026-07-29T16:07:57.965076Z',
+};
+const BUY_ORDER: BuyOrder = {
+  ...CREATED_BUY_ORDER,
+  cryptoAmount: { amount: '0.10', asset: CREATE_BUY_ORDER_PARAMS.cryptoAsset },
+  fiatAmount: { amount: '0.10', currency: 'USD' },
+  status: OrderStatus.Pending,
+  walletAddress: CREATE_BUY_ORDER_PARAMS.walletAddress,
+};
 
 function fetchError(status: number, message: string) {
   return new RainbowFetchError({ message, response: { status } as unknown as Response });
@@ -25,7 +56,7 @@ function fetchError(status: number, message: string) {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (getCashPlatformClient as jest.Mock).mockReturnValue({ post });
+  (getCashPlatformClient as jest.Mock).mockReturnValue({ get, post });
   mockEnsureAccessToken.mockResolvedValue('jwt-1');
   useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-1', expiresAt: Date.now() + 60_000 });
   post.mockResolvedValue({ data: SESSION });
@@ -81,5 +112,31 @@ describe('completeCardLinkSession', () => {
       { providerCardId: 'prov-1' },
       { abortController: undefined, headers: { Authorization: 'Bearer jwt-1' } }
     );
+  });
+});
+
+describe('buy orders', () => {
+  it('creates a buy order with the authenticated ramp endpoint', async () => {
+    post.mockResolvedValue({ data: CREATED_BUY_ORDER });
+
+    await expect(createBuyOrder(CREATE_BUY_ORDER_PARAMS)).resolves.toEqual(CREATED_BUY_ORDER);
+
+    expect(mockEnsureAccessToken).toHaveBeenCalledWith('addCash');
+    expect(post).toHaveBeenCalledWith('/ramp/orders/buy', CREATE_BUY_ORDER_PARAMS, {
+      headers: { Authorization: 'Bearer jwt-1' },
+    });
+  });
+
+  it('fetches and unwraps an order by id', async () => {
+    const abortController = new AbortController();
+    get.mockResolvedValue({ data: { order: BUY_ORDER } });
+
+    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id, abortController)).resolves.toEqual(BUY_ORDER);
+
+    expect(mockEnsureAccessToken).toHaveBeenCalledWith('addCash');
+    expect(get).toHaveBeenCalledWith(`/ramp/orders/${CREATE_BUY_ORDER_PARAMS.id}`, {
+      abortController,
+      headers: { Authorization: 'Bearer jwt-1' },
+    });
   });
 });

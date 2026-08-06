@@ -45,9 +45,9 @@ function LinkDescription({ walletAddress }: { walletAddress: string }) {
 
 function UnsupportedWallet({ description, onDismiss }: { description: string; onDismiss: () => void }) {
   return (
-    <Box paddingBottom="32px" paddingHorizontal="24px" paddingTop="28px">
+    <Box paddingBottom="32px" paddingHorizontal="24px" paddingTop="52px">
       <Stack space="24px">
-        <Stack space="12px">
+        <Stack space="24px">
           <Text align="center" color="label" size="22pt" weight="heavy">
             {i18n.t(i18n.l.cash.add_wallet.unsupported_title)}
           </Text>

@@ -1,24 +1,24 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import ContactAvatar from '@/components/contacts/ContactAvatar';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { ORDER_POLL_INTERVAL_MS } from '@/features/cash/constants';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
-import { cashBuyOrderActions, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
+import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
 import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useWatcher } from '@/framework/ui/hooks/useWatcher';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import usePrevious from '@/hooks/usePrevious';
@@ -27,14 +27,17 @@ import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { USDC_ADDRESS } from '@/references/constants';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { sanitizeAmount } from '@/worklets/strings';
 
+import { AccountAvatar } from './AccountAvatar';
 import { AddFromRow } from './AddFromRow';
 import { AmountDisplay } from './AmountDisplay';
+import { PendingOrderContent } from './PendingOrderContent';
+import { SettingsButton } from './SettingsButton';
 import { useAddCashAmount } from './useAddCashAmount';
 
 type AddCashMode = 'presets' | 'keypad';
@@ -58,16 +61,6 @@ const PANEL_LAYOUT = LinearTransition.springify()
   .damping(SPRING_CONFIGS.snappierSpringConfig.damping)
   .stiffness(SPRING_CONFIGS.snappierSpringConfig.stiffness);
 
-function AccountAvatar() {
-  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
-
-  return accountImage ? (
-    <ImageAvatar image={accountImage} size="header" />
-  ) : (
-    <ContactAvatar color={accountColor} size="small" value={accountSymbol} />
-  );
-}
-
 function AddCashHeader({ onSettings, topPadding }: { onSettings: () => void; topPadding: '8px' | '28px' }) {
   return (
     <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingHorizontal="24px" paddingTop={topPadding}>
@@ -75,13 +68,7 @@ function AddCashHeader({ onSettings, topPadding }: { onSettings: () => void; top
       <Text align="center" color="label" size="22pt" weight="heavy">
         {i18n.t(i18n.l.cash.add_cash)}
       </Text>
-      <ButtonPressAnimation onPress={onSettings} scaleTo={0.8} testID="cash-deposit-add-cash-settings">
-        <Box alignItems="center" height={{ custom: 36 }} justifyContent="center" width={{ custom: 36 }}>
-          <Text align="center" color="accent" size="20pt" weight="heavy">
-            {'􀣋'}
-          </Text>
-        </Box>
-      </ButtonPressAnimation>
+      <SettingsButton onPress={onSettings} />
     </Box>
   );
 }
@@ -336,10 +323,35 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const accountAddress = useAccountAddress();
   const phase = useCashBuyPhase();
   const previousPhase = usePrevious(phase);
-  const errorCode = useCashBuyOrderStore(state => state.errorCode);
+  const errorCode = useCashBuyOrderStore(state => (state.status.step === 'error' ? state.status.errorCode : null));
+  const isPolling = useCashBuyOrderStore(state => state.status.step === 'polling');
+  const submittedAt = useCashBuyOrderStore(state =>
+    state.status.step === 'submitting' || state.status.step === 'polling' ? state.status.submittedAt : null
+  );
+  const { cash_pending_view_delay_ms: pendingViewDelayMs } = useRemoteConfig('cash_pending_view_delay_ms');
   const [isCheckingWallet, setIsCheckingWallet] = useState(false);
   const walletCheckRef = useRef<AbortController | null>(null);
-  const isProcessing = isCheckingWallet || phase === 'pending';
+  const isPending = phase === 'pending';
+  const isProcessing = isCheckingWallet || isPending;
+
+  // The pending view takes over only once the order has been in flight longer than the configured
+  // delay; until then the hold-to-add button's processing state is the only affordance.
+  const pendingViewAt = submittedAt !== null ? submittedAt + pendingViewDelayMs : null;
+  const [showPendingView, setShowPendingView] = useState(() => pendingViewAt !== null && Date.now() >= pendingViewAt);
+
+  useEffect(() => {
+    if (pendingViewAt === null) {
+      setShowPendingView(false);
+      return;
+    }
+    const remaining = pendingViewAt - Date.now();
+    if (remaining <= 0) {
+      setShowPendingView(true);
+      return;
+    }
+    const timeoutId = setTimeout(() => setShowPendingView(true), remaining);
+    return () => clearTimeout(timeoutId);
+  }, [pendingViewAt]);
 
   useEffect(() => {
     return () => {
@@ -347,27 +359,24 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
+  // On open, replay a submit interrupted before an order id came back; otherwise clear the settled
+  // previous run so the sheet starts fresh.
   useEffect(() => {
-    if (previousPhase !== undefined) return;
-    // TODO(cash): Replace this block with the DES-133 pending-order flow once it is ready:
-    // https://linear.app/rainbow/issue/DES-133/if-when-creating-a-buy-cash-order-takes-a-lot-of-time
-    if (isProcessing) {
-      Alert.alert('Request Pending');
-      if (Platform.OS === 'android') {
-        // navigation.goBack() does not work immediately on Android,
-        // so this would do until we know for sure how pending-order flow
-        // is going to look like
-        setTimeout(() => navigation.goBack(), 500);
-      } else {
-        navigation.goBack();
-      }
+    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending') {
+      cashBuyOrderActions.resumePendingSubmission();
     } else {
       cashBuyOrderActions.reset();
     }
-  }, [isProcessing, navigation, previousPhase]);
+  }, []);
+
+  useWatcher({
+    enabled: isPolling,
+    interval: ORDER_POLL_INTERVAL_MS,
+    watchFunction: cashBuyOrderActions.syncActiveOrder,
+  });
 
   useEffect(() => {
-    if (previousPhase === undefined) return;
+    if (previousPhase === undefined || previousPhase === phase) return;
     if (phase === 'error') {
       // TODO(cash): replace this Alert with an in-place error state once the design is ready.
       Alert.alert(
@@ -379,12 +388,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
     }
     if (phase === 'success') navigation.goBack();
   }, [phase, errorCode, navigation, previousPhase]);
-
-  useFocusEffect(
-    useCallback(() => {
-      analytics.track(analytics.event.addCashViewed);
-    }, [])
-  );
 
   // Sample the amount whenever the user taps a preset chip.
   const handleSelectPreset = useCallback(
@@ -453,7 +456,8 @@ export const AddCashSheet = memo(function AddCashSheet() {
     setMode('keypad');
   }, [resetKeypadAmount]);
 
-  const isKeypad = mode === 'keypad';
+  const view = showPendingView ? 'pending' : mode;
+  const isKeypad = view === 'keypad';
 
   return (
     <PanelSheet
@@ -464,7 +468,9 @@ export const AddCashSheet = memo(function AddCashSheet() {
       showHandle={!isKeypad}
     >
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
-        {isKeypad ? (
+        {view === 'pending' ? (
+          <PendingOrderContent onSettings={handleSettings} />
+        ) : view === 'keypad' ? (
           <KeypadAmountContent
             amount={amount}
             canSubmitAmount={amount.canSubmit}

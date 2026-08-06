@@ -37,6 +37,7 @@ export interface RainbowConfig extends Record<
 
   /* Numbers */
   trace_call_block_number_offset: number;
+  cash_pending_view_delay_ms: number;
 
   /* Booleans */
   f2c_enabled: boolean;
@@ -170,6 +171,7 @@ export const DEFAULT_CONFIG = {
 
   /* Numbers */
   trace_call_block_number_offset: 20,
+  cash_pending_view_delay_ms: time.seconds(30),
 
   /* Booleans */
   f2c_enabled: true,

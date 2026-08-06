@@ -1,3 +1,5 @@
+import { IS_TESTING } from 'react-native-dotenv';
+
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
@@ -28,6 +30,7 @@ export enum RampCryptoAsset {
 export enum RampNetwork {
   Unspecified = 'NETWORK_UNSPECIFIED',
   Arbitrum = 'NETWORK_ARBITRUM',
+  ArbitrumTestnet = 'NETWORK_ARBITRUM_TESTNET',
   Base = 'NETWORK_BASE',
 }
 
@@ -42,10 +45,6 @@ export enum WalletSignatureMethod {
   EthPersonalSign = 'WALLET_SIGNATURE_METHOD_ETH_PERSONAL_SIGN',
 }
 
-export function isTerminalOrderStatus(status: OrderStatus): boolean {
-  return status === OrderStatus.Completed || status === OrderStatus.Failed;
-}
-
 // ---- Request / response shapes ---------------------------------------------
 
 export type RampAsset = { asset: RampCryptoAsset; network: RampNetwork };
@@ -56,13 +55,19 @@ export type BuyOrderSpec = {
   cardId: string;
   /** Fiat amount as a decimal string, e.g. "50". */
   depositAmount: string;
-  /** Client-generated order id. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
+  /** Client-generated UUID. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
   id: string;
   walletAddress: string;
 };
 
 export type CreateBuyOrderParams = BuyOrderSpec & {
   cryptoAsset: RampAsset;
+};
+
+export type CreatedBuyOrder = {
+  id: string;
+  status: OrderStatus;
+  createdTime: string;
 };
 
 type BuyOrderCommon = {
@@ -80,19 +85,17 @@ export type BuyOrder =
   | (BuyOrderCommon & { status: OrderStatus.Completed; transactionHash: string; completedTime: string })
   | (BuyOrderCommon & { status: OrderStatus.Failed; failureReason: OrderFailureReason });
 
+export type TerminalBuyOrder = Extract<BuyOrder, { status: OrderStatus.Completed | OrderStatus.Failed }>;
+
+export function isTerminalBuyOrder(order: BuyOrder): order is TerminalBuyOrder {
+  return order.status === OrderStatus.Completed || order.status === OrderStatus.Failed;
+}
+
 export class RampError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'RampError';
   }
-}
-
-/**
- * The seam over the platform `/v1/ramp/orders/*` surface.
- */
-export interface RampClient {
-  createBuyOrder(params: CreateBuyOrderParams): Promise<BuyOrder>;
-  getOrder(orderId: string): Promise<BuyOrder>;
 }
 
 // ---- Card link session -----------------------------------------------------
@@ -119,6 +122,12 @@ function isUnauthorized(error: unknown): boolean {
 
 export function isNotFoundError(error: unknown): boolean {
   return error instanceof RainbowFetchError && error.response?.status === 404;
+}
+
+/** The backend answered and refused, so the request definitively took no effect. Transport failures and 5xx stay ambiguous. */
+export function isDefinitiveRejection(error: unknown): boolean {
+  const status = error instanceof RainbowFetchError ? error.response?.status : undefined;
+  return status !== undefined && status >= 400 && status < 500;
 }
 
 // The user JWT replaces the shared app key on these calls. On 401 the cached
@@ -193,4 +202,84 @@ export async function linkWallet(
     getCashPlatformClient().post<LinkWalletResponse>('/ramp/wallets/link', { address, signature }, { abortController, headers })
   );
   return data.wallet;
+}
+
+// ---- Buy orders ------------------------------------------------------------
+
+type GetOrderResponse = { order: BuyOrder };
+
+export async function createBuyOrder(params: CreateBuyOrderParams): Promise<CreatedBuyOrder> {
+  if (IS_TESTING === 'true') return e2eCreateBuyOrder(params);
+
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().post<CreatedBuyOrder>('/ramp/orders/buy', params, { headers })
+  );
+  return data;
+}
+
+export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
+  if (IS_TESTING === 'true') return e2eGetOrder(orderId);
+
+  const { data } = await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().get<GetOrderResponse>(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+  );
+  return data.order;
+}
+
+// ---- E2E buy orders ----------------------------------------------------------
+// In-memory stand-in for the two order endpoints: `getOrder` advances one scripted
+// step per call, and a `createBuyOrder` replay with a known id returns the existing
+// order without re-creating — mirroring the backend's idempotency contract.
+
+const E2E_ORDER_PATH = [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Processing, OrderStatus.Completed] as const;
+
+type E2EOrderRecord = {
+  completedTime?: string;
+  createdTime: string;
+  cryptoAsset: RampAsset;
+  depositAmount: string;
+  step: number;
+  walletAddress: string;
+};
+
+const e2eOrders = new Map<string, E2EOrderRecord>();
+
+function e2eCreateBuyOrder(params: CreateBuyOrderParams): CreatedBuyOrder {
+  let record = e2eOrders.get(params.id);
+  if (!record) {
+    record = {
+      createdTime: new Date().toISOString(),
+      cryptoAsset: params.cryptoAsset,
+      depositAmount: params.depositAmount,
+      step: 0,
+      walletAddress: params.walletAddress,
+    };
+    e2eOrders.set(params.id, record);
+  }
+  return { id: params.id, status: E2E_ORDER_PATH[record.step], createdTime: record.createdTime };
+}
+
+function e2eGetOrder(orderId: string): BuyOrder {
+  const record = e2eOrders.get(orderId);
+  if (!record) throw new RampError(`Unknown order ${orderId}`);
+  if (record.step < E2E_ORDER_PATH.length - 1) record.step += 1;
+
+  const common = {
+    id: orderId,
+    // E2E treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
+    cryptoAmount: { amount: record.depositAmount, asset: record.cryptoAsset },
+    fiatAmount: { amount: record.depositAmount, currency: 'USD' },
+    createdTime: record.createdTime,
+    walletAddress: record.walletAddress,
+  };
+  const status = E2E_ORDER_PATH[record.step];
+  switch (status) {
+    case OrderStatus.Completed:
+      record.completedTime ??= new Date().toISOString();
+      return { ...common, status, transactionHash: `mock-tx-${orderId}`, completedTime: record.completedTime };
+    case OrderStatus.Processing:
+      return { ...common, status };
+    default:
+      return { ...common, status: OrderStatus.Pending };
+  }
 }

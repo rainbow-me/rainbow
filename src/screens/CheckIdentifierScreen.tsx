@@ -18,6 +18,7 @@ import { getHeightForStep } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { RAINBOW_SUPPORT_URL } from '@/references/constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 const imageSize = 40;
@@ -36,7 +37,7 @@ export default function CheckIdentifierScreen() {
     Alert({
       buttons: [
         {
-          onPress: () => openInBrowser('https://rainbow.me/support'),
+          onPress: () => openInBrowser(RAINBOW_SUPPORT_URL),
           text: i18n.t(i18n.l.check_identifier.error_alert.contact_support),
         },
         {
