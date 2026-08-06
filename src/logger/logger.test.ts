@@ -393,11 +393,11 @@ describe('redaction', () => {
 
   test('strips the query string from request breadcrumbs', () => {
     const breadcrumb = beforeBreadcrumb(
-      { category: 'xhr', type: 'http', data: { method: 'GET', url: `https://aha.rainbow.me/?address=0x${'a'.repeat(40)}` } },
+      { category: 'xhr', type: 'http', data: { method: 'GET', url: `https://api.example.com/?address=0x${'a'.repeat(40)}` } },
       {}
     );
 
-    expect(breadcrumb?.data?.url).toBe('https://aha.rainbow.me');
+    expect(breadcrumb?.data?.url).toBe('https://api.example.com');
   });
 
   test('drops a breadcrumb url it cannot parse rather than passing it through', () => {
@@ -418,7 +418,11 @@ describe('redaction', () => {
       breadcrumbs: [
         {
           category: 'http',
-          data: { 'method': 'GET', 'url': `https://api.rainbow.me/v1/wallets/0x${'a'.repeat(40)}/positions`, 'http.query': 'currency=USD' },
+          data: {
+            'method': 'GET',
+            'url': `https://api.example.com/v1/wallets/0x${'a'.repeat(40)}/positions`,
+            'http.query': 'currency=USD',
+          },
         },
       ],
     };
@@ -426,7 +430,7 @@ describe('redaction', () => {
     const result = beforeSend(event, {}) as Sentry.ErrorEvent;
     const data = result.breadcrumbs?.[0]?.data;
 
-    expect(data?.url).toBe('https://api.rainbow.me/v1/wallets/:id/positions');
+    expect(data?.url).toBe('https://api.example.com/v1/wallets/:id/positions');
     expect(data).not.toHaveProperty('http.query');
   });
 
@@ -466,7 +470,7 @@ describe('carrier coverage', () => {
           category: 'console',
           message: `breadcrumb ${ADDRESS}`,
           data: {
-            'url': `https://api.rainbow.me/v1/wallets/${ADDRESS}/nfts`,
+            'url': `https://api.example.com/v1/wallets/${ADDRESS}/nfts`,
             'http.query': `address=${ADDRESS}`,
             'arguments': [`console arg ${ADDRESS}`],
             'metadata': { nested: `nested ${ADDRESS}` },
@@ -485,7 +489,7 @@ describe('carrier coverage', () => {
     expect(result.message).toBe('message [address]');
     expect(result.exception?.values?.[0]?.value).toBe('exception [address]');
     expect(result.breadcrumbs?.[0]?.message).toBe('breadcrumb [address]');
-    expect(data?.url).toBe('https://api.rainbow.me/v1/wallets/:id/nfts');
+    expect(data?.url).toBe('https://api.example.com/v1/wallets/:id/nfts');
     expect(data?.metadata).toEqual({ nested: 'nested [address]' });
     expect(data?.arguments).toEqual(['console arg [address]']);
     expect(data).not.toHaveProperty('http.query');

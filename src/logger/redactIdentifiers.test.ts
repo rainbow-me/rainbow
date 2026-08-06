@@ -46,9 +46,7 @@ describe('redactIdentifiers', () => {
   });
 
   test('catches an identifier embedded in a composite key, where `\\b` would not', () => {
-    expect(redactIdentifiers(`[UniqueTokenImage] Error loading image: [object Object] for optimism_${ADDRESS}_0`)).toBe(
-      '[UniqueTokenImage] Error loading image: [object Object] for optimism_[address]_0'
-    );
+    expect(redactIdentifiers(`[ImageLoader] failed for optimism_${ADDRESS}_0`)).toBe('[ImageLoader] failed for optimism_[address]_0');
   });
 
   test('reaches into a base64url token, whose separators break it into short runs', () => {
@@ -65,6 +63,6 @@ describe('redactIdentifiers', () => {
   test('leaves ordinary prose, short values and punctuated text alone', () => {
     expect(redactIdentifiers('Failed to fetch NFT collections data')).toBe('Failed to fetch NFT collections data');
     expect(redactIdentifiers('unknown chainID: undefined')).toBe('unknown chainID: undefined');
-    expect(redactIdentifiers('GET arc-graphql.rainbow.me 500')).toBe('GET arc-graphql.rainbow.me 500');
+    expect(redactIdentifiers('GET graphql.example.com 500')).toBe('GET graphql.example.com 500');
   });
 });
