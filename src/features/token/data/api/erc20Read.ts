@@ -1,12 +1,16 @@
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
-import { decodeFunctionResult, encodeFunctionData, erc20Abi, type Address, type Hex } from 'viem';
+import { decodeFunctionResult, encodeFunctionData, erc20Abi, isHex, type Address, type Hex } from 'viem';
 
-import { toBigInt } from '@/framework/core/evm/erc20Calldata';
-import { requireHex } from '@/framework/core/evm/hex';
+import { toBigInt } from '../../core/services/erc20Calldata';
 
 export type EvmCallProvider = {
   call: (transaction: { to: Address; data: Hex }) => Promise<string>;
 };
+
+function requireHexResult(result: string): Hex {
+  if (isHex(result)) return result;
+  throw new Error('[erc20Read]: provider returned non-hex call data');
+}
 
 /**
  * Reads an ERC20 token balance through an ethers-compatible call provider.
@@ -29,7 +33,7 @@ export async function getErc20Balance({
   const balance = decodeFunctionResult({
     abi: erc20Abi,
     functionName: 'balanceOf',
-    data: requireHex(result, new Error('[erc20Read]: provider returned non-hex call data')),
+    data: requireHexResult(result),
   });
 
   return BigNumber.from(balance.toString());
@@ -59,7 +63,7 @@ export async function getErc20Allowance({
   return decodeFunctionResult({
     abi: erc20Abi,
     functionName: 'allowance',
-    data: requireHex(result, new Error('[erc20Read]: provider returned non-hex call data')),
+    data: requireHexResult(result),
   });
 }
 

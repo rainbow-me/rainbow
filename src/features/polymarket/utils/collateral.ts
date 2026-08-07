@@ -11,7 +11,7 @@ import {
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
-import { getErc20Balance } from '@/framework/data/evm/erc20Read';
+import { getErc20Balance } from '@/features/token/data/api/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';
 
