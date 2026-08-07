@@ -1,16 +1,27 @@
 import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
+import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
+import { delay } from '@/utils/delay';
 
-import { finishSignupResume, resendPhoneCode, startSignupResume, verifyPhone } from '../services/userClient';
+import { finishSignupResume, getUserStatus, KycStatus, resendPhoneCode, startSignupResume, verifyPhone } from '../services/userClient';
 import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
 
 export const OTP_LENGTH = 6;
 
 export type VerifyPhoneState = 'entry' | 'verifying' | 'error';
 
-export type VerifyPhoneResult = 'verified' | 'failed' | 'signupAlreadyComplete';
+export type VerifyPhoneResult = 'verified' | 'verifiedKycApproved' | 'failed' | 'signupAlreadyComplete';
+
+// Best-effort: failing only costs an approved user a redundant pass through
+// KYC entry, so a transient status failure gets one delayed retry.
+async function getIsKycApproved(bootstrapToken: string): Promise<boolean> {
+  const check = async () => (await getUserStatus({ bootstrapToken })).kycStatus === KycStatus.Approved;
+  return check()
+    .catch(() => delay(time.seconds(2)).then(check))
+    .catch(() => false);
+}
 
 type VerifyPhoneFlowStore = {
   state: VerifyPhoneState;
@@ -43,7 +54,10 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
         challenge.kind === 'signup'
           ? { outcome: 'verified' as const, ...(await verifyPhone({ userId: challenge.userId, code })) }
           : await finishSignupResume({ resumeId: challenge.resumeId, code });
-      if (!sessionStore.getIsCurrentChallenge(challenge)) return 'failed';
+      if (!sessionStore.getIsCurrentChallenge(challenge)) {
+        set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+        return 'failed';
+      }
 
       if (result.outcome === 'signupAlreadyComplete') {
         analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: 'signupAlreadyComplete' });
@@ -54,10 +68,17 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
       sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
-      set({ code: '', state: 'entry' });
-      return 'verified';
+      // A resumed account may have completed KYC in an earlier signup attempt.
+      const skipKyc = challenge.kind === 'resume' && (await getIsKycApproved(result.bootstrapToken));
+      // State stays 'verifying' for good — this step is never revisited, and
+      // re-enabling the kept-mounted OTP input would refocus it and flash the
+      // keyboard. Screen cleanup or a fresh phone submission resets the store.
+      return skipKyc ? 'verifiedKycApproved' : 'verified';
     } catch (e) {
-      if (!sessionStore.getIsCurrentChallenge(challenge)) return 'failed';
+      if (!sessionStore.getIsCurrentChallenge(challenge)) {
+        set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+        return 'failed';
+      }
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to verify phone', e));
       analytics.track(analytics.event.cashPhoneVerifyFailed, {
         reason: e instanceof Error ? e.message : String(e),

@@ -14,6 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute, type RootStackParamList } from '@/navigation/types';
 
 import { useCashDepositSetupStatusStore } from '../../stores/cashDepositSetupStore';
+import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getFirstSetupStep, SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
@@ -64,6 +65,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();
     useSubmitPhoneFlowStore.getState().reset();
+    useVerifyPhoneFlowStore.getState().reset();
     useSubmitKycFlowStore.getState().reset();
     useAddPasskeyFlowStore.getState().reset();
   });

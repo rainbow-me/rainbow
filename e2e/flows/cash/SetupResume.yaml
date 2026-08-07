@@ -93,7 +93,8 @@ tags:
     timeout: 10000
 - assertVisible:
     text: 'This number is already connected to an account.'
-# The kept digits resume again; the mock OTP finishes the resume and lands on Identity.
+# The kept digits resume again; the mock OTP finishes the resume, and the mock
+# account's approved KYC (mock GetUserStatus) skips straight to Add Passkey.
 - tapOn:
     id: cash-setup-next
 - extendedWaitUntil:
@@ -109,5 +110,5 @@ tags:
 - inputText: '0'
 - extendedWaitUntil:
     visible:
-      text: 'Enter some information about yourself'
+      text: 'Add a Passkey'
     timeout: 10000

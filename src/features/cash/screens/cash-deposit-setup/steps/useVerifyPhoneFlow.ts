@@ -3,9 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { createStoreActions } from '@storesjs/stores';
 
 import { time } from '@/framework/core/utils/time';
+import Routes from '@/navigation/routesNames';
 
 import { selectResendAfter, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore, type VerifyPhoneState } from '../../../stores/verifyPhoneFlowStore';
+import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const verifyPhoneFlowActions = createStoreActions(useVerifyPhoneFlowStore);
@@ -29,6 +31,7 @@ export function useVerifyPhoneFlow(): {
   const submit = useCallback(async () => {
     const result = await verifyPhoneFlowActions.submit();
     if (result === 'verified') next();
+    if (result === 'verifiedKycApproved') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
     if (result === 'signupAlreadyComplete') back();
   }, [back, next]);
 
