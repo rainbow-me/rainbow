@@ -665,13 +665,16 @@ export const cashDepositSetupConfig: PartialNavigatorConfigOptions = {
       ...params,
       backgroundOpacity: 1,
       cornerRadius: 'device',
-      headerHeight: safeAreaInsetValues.top + 68,
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,
     }),
+    allowsDragToDismiss: false,
     dismissable: false,
     gestureEnabled: false,
+    // with dismissable: false the pan gesture still responds to touches starting within headerHeight;
+    // 0 disables the drag entirely (must be set after buildCoolModalConfig, which maps 0 to 25).
+    headerHeight: 0,
   }),
 };
 

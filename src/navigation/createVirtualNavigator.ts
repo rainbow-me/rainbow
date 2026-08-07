@@ -40,6 +40,8 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
   initialRoute: VirtualRoute;
   routes: readonly VirtualRoute[];
   options?: {
+    /** When the group changes between two routes, `navigate` clears history instead of appending to it. */
+    getRouteGroup?: (route: VirtualRoute) => string;
     keyPrefix?: string;
     onRouteChange?: (route: VirtualRoute) => void;
   };
@@ -94,9 +96,11 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
           }
           return state;
         }
+        const getRouteGroup = options?.getRouteGroup;
+        const crossesGroupBoundary = getRouteGroup != null && getRouteGroup(route) !== getRouteGroup(state.activeRoute);
         return {
           activeRoute: route,
-          history: [...state.history, state.activeRoute],
+          history: crossesGroupBoundary ? [] : [...state.history, state.activeRoute],
           params: didParamsChange ? { ...state.params, [route]: params } : state.params,
         };
       });

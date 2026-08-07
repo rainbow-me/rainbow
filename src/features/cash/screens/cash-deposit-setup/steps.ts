@@ -17,6 +17,26 @@ export const SETUP_STEP_ORDER: readonly CashDepositSetupRoute[] = [
   Routes.CASH_SETUP_CARD_ADDED,
 ];
 
+type SetupBackGroup = 'signup' | 'kyc' | 'passkey' | 'email' | 'card' | 'cardAdded';
+
+/**
+ * Back navigation only works within a group; navigating across a boundary clears history, so
+ * steps behind an irreversible milestone (phone verified, KYC submitted, passkey enrolled,
+ * card linked) are unreachable.
+ */
+export const SETUP_STEP_GROUP: Record<CashDepositSetupRoute, SetupBackGroup> = {
+  [Routes.CASH_SETUP_PHONE]: 'signup',
+  [Routes.CASH_SETUP_CONFIRM_PHONE]: 'signup',
+  [Routes.CASH_SETUP_IDENTITY]: 'kyc',
+  [Routes.CASH_SETUP_SSN]: 'kyc',
+  [Routes.CASH_SETUP_REVIEW]: 'kyc',
+  [Routes.CASH_SETUP_PASSKEY]: 'passkey',
+  [Routes.CASH_SETUP_EMAIL]: 'email',
+  [Routes.CASH_SETUP_ALL_DONE]: 'card',
+  [Routes.CASH_SETUP_CARD_DETAILS]: 'card',
+  [Routes.CASH_SETUP_CARD_ADDED]: 'cardAdded',
+};
+
 export function getNextSetupStep(current: CashDepositSetupRoute): CashDepositSetupRoute | null {
   const index = SETUP_STEP_ORDER.indexOf(current);
   return SETUP_STEP_ORDER[index + 1] ?? null;

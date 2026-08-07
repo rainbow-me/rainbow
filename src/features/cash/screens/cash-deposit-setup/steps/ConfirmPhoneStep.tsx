@@ -17,21 +17,21 @@ export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
   const { state, code, setCode, submit, resend, resending, resendCooldownSeconds } = useVerifyPhoneFlow();
   // The pager keeps visited steps mounted, so focus is tied to the step being active rather than to mount.
   const isActiveStep = useCashDepositSetupNavigationStore(s => s.activeRoute === Routes.CASH_SETUP_CONFIRM_PHONE);
-  const verifying = state === 'verifying';
+  // Stays true once the code is accepted: re-enabling the kept-mounted input would refocus it and flash the keyboard.
+  const submitted = state === 'verifying' || state === 'verified';
   const cooling = resendCooldownSeconds > 0;
 
   return (
     <SetupStepLayout
       actionDisabled={code.length !== OTP_LENGTH}
       actionLabel={i18n.t(l.confirm)}
-      actionLoading={verifying}
-      backDisabled={verifying}
+      actionLoading={submitted}
       onAction={submit}
       title={i18n.t(l.title)}
     >
       <Box gap={16} paddingTop="24px">
         <OtpInput
-          disabled={verifying}
+          disabled={submitted}
           error={state === 'error'}
           focused={isActiveStep}
           length={OTP_LENGTH}

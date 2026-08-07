@@ -73,7 +73,6 @@ export const ReviewStep = memo(function ReviewStep() {
       <SetupStepLayout
         actionDisabled={!identity || !governmentId}
         actionLabel={i18n.t(l.confirm)}
-        backDisabled={submitting}
         onAction={submit}
         subtitle={i18n.t(l.subtitle)}
         title={i18n.t(l.title)}

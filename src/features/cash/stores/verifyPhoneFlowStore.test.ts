@@ -93,7 +93,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
       bootstrapTokenExpiresAt: TOKEN.expiresAt,
     });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'signup' });
-    expect(flow().state).toBe('verifying');
+    expect(flow().state).toBe('verified');
   });
 
   it('verifies a resume challenge through FinishSignupResume', async () => {
@@ -118,7 +118,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockGetUserStatus).toHaveBeenCalledWith({ bootstrapToken: TOKEN.bootstrapToken });
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
-    expect(flow().state).toBe('verifying');
+    expect(flow().state).toBe('verified');
   });
 
   it('retries a failed resume status check once after a delay', async () => {
@@ -296,6 +296,17 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockVerifyPhone).toHaveBeenCalledTimes(1);
     resolveVerify(TOKEN);
     await expect(first).resolves.toBe('verified');
+  });
+
+  // The Confirm button is briefly tappable again between acceptance and the pager moving on.
+  it('ignores a submit after the code was already accepted', async () => {
+    flow().setCode(CODE);
+    await flow().submit();
+
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(mockVerifyPhone).toHaveBeenCalledTimes(1);
+    expect(flow().state).toBe('verified');
   });
 });
 

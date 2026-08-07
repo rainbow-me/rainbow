@@ -5,13 +5,18 @@ import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
 type SetupCancelButtonProps = {
+  disabled?: boolean;
   onPress: () => void;
   testID?: string;
 };
 
-export const SetupCancelButton = memo(function SetupCancelButton({ onPress, testID = 'cash-setup-cancel' }: SetupCancelButtonProps) {
+export const SetupCancelButton = memo(function SetupCancelButton({
+  disabled = false,
+  onPress,
+  testID = 'cash-setup-cancel',
+}: SetupCancelButtonProps) {
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.92} testID={testID}>
       <Box
         alignItems="center"
         background="fillTertiary"

@@ -8,14 +8,21 @@ import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
+import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute, type RootStackParamList } from '@/navigation/types';
 
+import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { useCashDepositSetupStatusStore } from '../../stores/cashDepositSetupStore';
+import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStore';
+import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
+import { SetupCancelSheet } from './components/SetupCancelSheet';
+import { useSetupCancelSheetStore } from './setupCancelSheetStore';
+import { useIsSetupSubmittingStore } from './setupSubmittingStore';
 import { getFirstSetupStep, SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
@@ -30,6 +37,7 @@ import { SsnStep } from './steps/SsnStep';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useCashDepositSetupNavigation } from './useCashDepositSetupNavigation';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_PHONE]: <PhoneStep />,
@@ -47,6 +55,7 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
 export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CASH_DEPOSIT_SETUP_SCREEN>>();
   const { ref, goToPage } = usePagerNavigation();
+  const { next, cancel } = useCashDepositSetupNavigation();
   const initialPage = useStableValue(
     () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStatusStore.getState()) ?? SETUP_STEP_ORDER[0]
   );
@@ -62,19 +71,40 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     route => goToPage(route)
   );
 
+  useHardwareBackOnFocus(
+    () => {
+      if (useIsSetupSubmittingStore.getState() || getIsCashHalfSheetOpen()) return true;
+      const { activeRoute, history } = useCashDepositSetupNavigationStore.getState();
+      if (history.length) {
+        CashDepositSetupNavigation.goBack();
+      } else if (activeRoute === Routes.CASH_SETUP_CARD_ADDED) {
+        next();
+      } else {
+        cancel();
+      }
+      return true;
+    },
+    false,
+    [next, cancel]
+  );
+
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();
+    useCashSetupSessionStore.getState().reset();
     useSubmitPhoneFlowStore.getState().reset();
     useVerifyPhoneFlowStore.getState().reset();
     useSubmitKycFlowStore.getState().reset();
     useAddPasskeyFlowStore.getState().reset();
+    useCardLinkFlowStore.getState().reset();
+    useSetupCancelSheetStore.getState().close();
   });
 
   return (
     <Box style={styles.container}>
       {useStableValue(() => (
         <SmoothPager
-          enableSwipeToGoBack
+          enableSwipeToGoBack={false}
+          enableSwipeToGoForward={false}
           initialPage={initialPage}
           lazy
           onNewIndex={CashDepositSetupNavigator.handlePagerIndexChange}
@@ -91,6 +121,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
           ))}
         </SmoothPager>
       ))}
+      <SetupCancelSheet />
       <AbsolutePortalRoot />
     </Box>
   );

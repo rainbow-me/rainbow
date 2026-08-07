@@ -10,7 +10,7 @@ import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessio
 
 export const OTP_LENGTH = 6;
 
-export type VerifyPhoneState = 'entry' | 'verifying' | 'error';
+export type VerifyPhoneState = 'entry' | 'verifying' | 'verified' | 'error';
 
 export type VerifyPhoneResult = 'verified' | 'verifiedKycApproved' | 'failed' | 'signupAlreadyComplete';
 
@@ -42,7 +42,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
   submit: async () => {
     const { code, state } = get();
-    if (code.length !== OTP_LENGTH || state === 'verifying') return 'failed';
+    if (code.length !== OTP_LENGTH || state === 'verifying' || state === 'verified') return 'failed';
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
     if (session.status !== 'phoneSubmitted') return 'failed';
@@ -70,9 +70,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
       // A resumed account may have completed KYC in an earlier signup attempt.
       const skipKyc = challenge.kind === 'resume' && (await getIsKycApproved(result.bootstrapToken));
-      // State stays 'verifying' for good — this step is never revisited, and
-      // re-enabling the kept-mounted OTP input would refocus it and flash the
-      // keyboard. Screen cleanup or a fresh phone submission resets the store.
+      set({ state: 'verified' });
       return skipKyc ? 'verifiedKycApproved' : 'verified';
     } catch (e) {
       if (!sessionStore.getIsCurrentChallenge(challenge)) {

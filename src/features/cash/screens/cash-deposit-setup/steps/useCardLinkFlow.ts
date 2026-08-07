@@ -1,16 +1,10 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import { BivoSecureStore } from '@bivoglobal/payment-react-native';
+import { createStoreActions } from '@storesjs/stores';
 import { BIVO_ENV, BIVO_VAULT_ID } from 'react-native-dotenv';
 
-import { analytics } from '@/analytics';
-import { logger, RainbowError } from '@/logger';
-
-import { linkCardWithVault } from '../../../services/cardLinkService';
-import { isPasskeyCancellation } from '../../../services/cashPasskeyService';
-import { useCashPaymentMethodStore } from '../../../stores/cashPaymentMethodStore';
-
-export type CardLinkState = 'entry' | 'submitting' | 'submitError' | 'success';
+import { useCardLinkFlowStore, type CardLinkState } from '../../../stores/cardLinkFlowStore';
 
 export const CARD_FIELD = {
   number: 'card',
@@ -25,6 +19,8 @@ function createBivoStore(): BivoSecureStore {
   return new BivoSecureStore(BIVO_VAULT_ID, BIVO_ENV);
 }
 
+const cardLinkFlowActions = createStoreActions(useCardLinkFlowStore);
+
 export type UseCardLinkFlow = {
   state: CardLinkState;
   bivoStore: BivoSecureStore;
@@ -35,57 +31,24 @@ export type UseCardLinkFlow = {
 };
 
 export function useCardLinkFlow(): UseCardLinkFlow {
-  const [flowState, setFlowState] = useState<CardLinkState>('entry');
+  const state = useCardLinkFlowStore(state => state.state);
   const [bivoStore] = useState(createBivoStore);
   const [, onFieldStateChange] = useReducer(i => i + 1, 0);
-  const abortRef = useRef<AbortController | null>(null);
 
   const isReady = !bivoStore.isSubmitDisabled(SUBMIT_FIELDS);
 
-  const submit = useCallback(async () => {
-    if (abortRef.current) return;
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setFlowState('submitting');
-
-    try {
-      const card = await linkCardWithVault(bivoStore, controller);
-      if (controller.signal.aborted) return;
-      useCashPaymentMethodStore.getState().setLinkedCard(card);
-      analytics.track(analytics.event.cashCardLinked, { brand: card.brand });
-      setFlowState('success');
-    } catch (e) {
-      if (controller.signal.aborted) return;
-      // Sign-in cancellation is a deliberate dismissal, not a failure: back to the form, silently.
-      if (isPasskeyCancellation(e)) {
-        setFlowState('entry');
-        return;
-      }
-      logger.error(new RainbowError('[useCardLinkFlow]: Failed to link card', e));
-      analytics.track(analytics.event.cashCardLinkFailed, { reason: e instanceof Error ? e.message : String(e) });
-      setFlowState('submitError');
-    } finally {
-      if (abortRef.current === controller) {
-        abortRef.current = null;
-      }
-    }
+  const submit = useCallback(() => {
+    cardLinkFlowActions.submit(bivoStore);
   }, [bivoStore]);
 
-  const reset = useCallback(() => setFlowState('entry'), []);
-
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort();
-    };
-  }, []);
+  useEffect(() => cardLinkFlowActions.reset, []);
 
   return {
-    state: flowState,
+    state,
     bivoStore,
     isReady,
     onFieldStateChange,
-    reset,
+    reset: cardLinkFlowActions.reset,
     submit,
   };
 }
