@@ -5,13 +5,22 @@ import { delay } from '@/utils/delay';
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { KYC_POLL_BUDGET_MS, KYC_POLL_INTERVAL_MS, useSubmitKycFlowStore } from './useSubmitKycFlow';
+import { KYC_POLL_INTERVAL_MS, useSubmitKycFlowStore, type SubmitKycState } from './useSubmitKycFlow';
 
 jest.mock('@/analytics', () => ({
   analytics: {
     track: jest.fn(),
-    event: { cashKycSubmitted: 'cash.kyc_submitted', cashKycApproved: 'cash.kyc_approved', cashKycFailed: 'cash.kyc_failed' },
+    event: {
+      cashKycSubmitted: 'cash.kyc_submitted',
+      cashKycApproved: 'cash.kyc_approved',
+      cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
+      cashKycFailed: 'cash.kyc_failed',
+    },
   },
+}));
+
+jest.mock('@/features/config/stores/remoteConfig', () => ({
+  getRemoteConfig: () => ({ cash_kyc_review_delay_ms: 60_000 }),
 }));
 
 jest.mock('@/logger', () => ({
@@ -45,7 +54,13 @@ const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 
 const SSN_LAST4 = '6789';
 if (!isValidUsSsnLast4(SSN_LAST4)) throw new Error('expected a valid SSN last four');
 const GOVERNMENT_ID = createUsSsnLast4GovernmentId(SSN_LAST4);
-const POLL_ATTEMPTS = KYC_POLL_BUDGET_MS / KYC_POLL_INTERVAL_MS;
+const REVIEW_DELAY_MS = 60_000;
+
+function fakeClock(start = 1_750_000_000_000) {
+  let clock = start;
+  jest.spyOn(Date, 'now').mockImplementation(() => clock);
+  return { advance: (ms: number) => (clock += ms) };
+}
 
 const flow = () => useSubmitKycFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState();
@@ -67,6 +82,10 @@ beforeEach(() => {
   mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('useSubmitKycFlowStore.submit', () => {
   it('submits, tracks, and resolves approved — in order', async () => {
     await expect(flow().submit()).resolves.toBe('approved');
@@ -86,7 +105,7 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(submitOrder).toBeLessThan(trackApprovedOrder);
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
-    expect(flow().state).toBe('success');
+    expect(flow().state).toBe('approved');
   });
 
   it('polls while pending, then approves', async () => {
@@ -100,29 +119,90 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(mockDelay).toHaveBeenCalledWith(KYC_POLL_INTERVAL_MS);
   });
 
-  it('fails with timeout when pending never resolves within the poll budget', async () => {
+  it('switches to reviewing once the delay elapses, and keeps polling until the verdict lands', async () => {
+    const clock = fakeClock();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
-    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    const statesWhilePolling: SubmitKycState[] = [];
+    mockGetUserStatus
+      .mockImplementationOnce(() => {
+        statesWhilePolling.push(flow().state);
+        clock.advance(REVIEW_DELAY_MS);
+        return Promise.resolve({ kycStatus: KycStatus.Pending });
+      })
+      .mockImplementationOnce(() => {
+        statesWhilePolling.push(flow().state);
+        return Promise.resolve({ kycStatus: KycStatus.Approved });
+      });
 
-    await expect(flow().submit()).resolves.toBe('failed');
+    await expect(flow().submit()).resolves.toBe('approved');
 
-    expect(mockGetUserStatus).toHaveBeenCalledTimes(POLL_ATTEMPTS);
-    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'timeout' });
-    expect(logger.error).toHaveBeenCalled();
-    expect(flow().state).toBe('error');
+    expect(statesWhilePolling).toEqual(['submitting', 'reviewing']);
+    expect(track).toHaveBeenCalledWith('cash.kyc_awaiting_decision', { source: 'submit' });
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_failed', expect.anything());
+    expect(flow().state).toBe('approved');
   });
 
-  it.each([
-    { kycStatus: 'KYC_STATUS_UNSPECIFIED', reason: 'unspecified' },
-    { kycStatus: 'KYC_STATUS_REJECTED', reason: 'rejected' },
-    { kycStatus: 'KYC_STATUS_REVIEW', reason: 'review' },
-  ])('fails with $reason without polling', async ({ kycStatus, reason }) => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus });
+  it('tracks the awaiting-decision event only once however long the wait runs', async () => {
+    const clock = fakeClock();
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    mockDelay.mockImplementationOnce(() => {
+      clock.advance(REVIEW_DELAY_MS);
+      return Promise.resolve();
+    });
+    mockGetUserStatus
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending })
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending })
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
 
-    await expect(flow().submit()).resolves.toBe('failed');
+    await flow().submit();
+
+    expect(track.mock.calls.filter(([name]) => name === 'cash.kyc_awaiting_decision')).toHaveLength(1);
+  });
+
+  it('reports a rejection without offering a retry', async () => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected });
+
+    await expect(flow().submit()).resolves.toBe('rejected');
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
-    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason });
+    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'rejected' });
+    expect(flow().state).toBe('rejected');
+  });
+
+  it.each([KycStatus.Unspecified, KycStatus.Review])('keeps polling on %s instead of failing', async kycStatus => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
+
+    await expect(flow().submit()).resolves.toBe('approved');
+
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_failed', expect.anything());
+  });
+
+  it('falls back to reviewing when a status poll fails, never to the retryable error', async () => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    mockGetUserStatus.mockRejectedValue(new Error('token expired'));
+
+    await expect(flow().submit()).resolves.toBe('awaitingDecision');
+
+    expect(flow().state).toBe('reviewing');
+    expect(track).toHaveBeenCalledWith('cash.kyc_awaiting_decision', { source: 'submit' });
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_failed', expect.anything());
+    expect(logger.warn).toHaveBeenCalled();
+  });
+
+  it('stops writing once the flow is reset, so an abandoned poll cannot resurface later', async () => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    mockDelay.mockImplementationOnce(() => {
+      flow().reset();
+      return Promise.resolve();
+    });
+
+    await expect(flow().submit()).resolves.toBe('cancelled');
+
+    expect(mockGetUserStatus).not.toHaveBeenCalled();
+    expect(flow().state).toBe('entry');
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
   });
 
   it('fails with the error message when the submission throws', async () => {

@@ -13,6 +13,9 @@ jest.mock('@/analytics', () => ({
       cashPhoneVerified: 'cash.phone_verified',
       cashPhoneVerifyFailed: 'cash.phone_verify_failed',
       cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+      cashKycApproved: 'cash.kyc_approved',
+      cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
+      cashKycFailed: 'cash.kyc_failed',
     },
   },
 }));
@@ -71,7 +74,7 @@ beforeEach(() => {
   useVerifyPhoneFlowStore.getState().reset();
   mockVerifyPhone.mockResolvedValue(TOKEN);
   mockFinishSignupResume.mockResolvedValue({ outcome: 'verified', ...TOKEN });
-  mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Pending });
+  mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Unspecified });
   mockResendPhoneCode.mockResolvedValue({ resendAfter: RESEND_AFTER });
   mockStartSignupResume.mockResolvedValue({ resumeId: 'rcv_2', resendAfter: RESEND_AFTER });
 });
@@ -108,17 +111,47 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
   });
 
-  it('reports approved KYC when the resumed account already passed it', async () => {
+  it.each([
+    { kycStatus: KycStatus.Approved, expected: 'approved' },
+    { kycStatus: KycStatus.Pending, expected: 'reviewing' },
+    { kycStatus: KycStatus.Review, expected: 'reviewing' },
+    { kycStatus: KycStatus.Rejected, expected: 'rejected' },
+  ])('surfaces $expected for a resumed account whose KYC is $kycStatus', async ({ kycStatus, expected }) => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
-    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
+    mockGetUserStatus.mockResolvedValue({ kycStatus });
     flow().setCode(CODE);
 
-    await expect(flow().submit()).resolves.toBe('verifiedKycApproved');
+    await expect(flow().submit()).resolves.toBe('verifiedKycOutcome');
 
     expect(mockGetUserStatus).toHaveBeenCalledWith({ bootstrapToken: TOKEN.bootstrapToken });
+    expect(flow().kycOutcome).toBe(expected);
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
     expect(flow().state).toBe('verified');
+  });
+
+  it.each([
+    { kycStatus: KycStatus.Approved, event: 'cash.kyc_approved', payload: undefined },
+    { kycStatus: KycStatus.Pending, event: 'cash.kyc_awaiting_decision', payload: { source: 'resume' } },
+    { kycStatus: KycStatus.Rejected, event: 'cash.kyc_failed', payload: { reason: 'rejected' } },
+  ])('tracks $event when a resumed account reports $kycStatus', async ({ event, kycStatus, payload }) => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockResolvedValue({ kycStatus });
+    flow().setCode(CODE);
+
+    await flow().submit();
+
+    expect(track).toHaveBeenCalledWith(event, ...(payload ? [payload] : []));
+  });
+
+  it('sends a resumed account that never submitted KYC through the KYC steps', async () => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Unspecified });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('verified');
+
+    expect(flow().kycOutcome).toBeNull();
   });
 
   it('retries a failed resume status check once after a delay', async () => {
@@ -126,10 +159,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     mockGetUserStatus.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
     flow().setCode(CODE);
 
-    await expect(flow().submit()).resolves.toBe('verifiedKycApproved');
+    await expect(flow().submit()).resolves.toBe('verifiedKycOutcome');
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(mockDelay).toHaveBeenCalledWith(2000);
+    expect(flow().kycOutcome).toBe('approved');
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
   });
 
@@ -141,6 +175,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     await expect(flow().submit()).resolves.toBe('verified');
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
+    expect(flow().kycOutcome).toBeNull();
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
     expect(track).not.toHaveBeenCalledWith('cash.phone_verify_failed', expect.anything());
