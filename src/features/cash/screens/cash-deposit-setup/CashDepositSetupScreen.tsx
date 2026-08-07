@@ -28,7 +28,6 @@ import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
 import { CardDetailsStep } from './steps/CardDetailsStep';
 import { ConfirmPhoneStep } from './steps/ConfirmPhoneStep';
-import { EmailStep } from './steps/EmailStep';
 import { IdentityStep } from './steps/IdentityStep';
 import { PasskeyStep } from './steps/PasskeyStep';
 import { PhoneStep } from './steps/PhoneStep';
@@ -46,7 +45,6 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_SSN]: <SsnStep />,
   [Routes.CASH_SETUP_REVIEW]: <ReviewStep />,
   [Routes.CASH_SETUP_PASSKEY]: <PasskeyStep />,
-  [Routes.CASH_SETUP_EMAIL]: <EmailStep />,
   [Routes.CASH_SETUP_ALL_DONE]: <AllDoneStep />,
   [Routes.CASH_SETUP_CARD_DETAILS]: <CardDetailsStep />,
   [Routes.CASH_SETUP_CARD_ADDED]: <CardAddedStep />,

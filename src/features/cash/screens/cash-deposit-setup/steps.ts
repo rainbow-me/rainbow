@@ -11,13 +11,12 @@ export const SETUP_STEP_ORDER: readonly CashDepositSetupRoute[] = [
   Routes.CASH_SETUP_SSN,
   Routes.CASH_SETUP_REVIEW,
   Routes.CASH_SETUP_PASSKEY,
-  Routes.CASH_SETUP_EMAIL,
   Routes.CASH_SETUP_ALL_DONE,
   Routes.CASH_SETUP_CARD_DETAILS,
   Routes.CASH_SETUP_CARD_ADDED,
 ];
 
-type SetupBackGroup = 'signup' | 'kyc' | 'passkey' | 'email' | 'card' | 'cardAdded';
+type SetupBackGroup = 'signup' | 'kyc' | 'passkey' | 'card' | 'cardAdded';
 
 /**
  * Back navigation only works within a group; navigating across a boundary clears history, so
@@ -31,7 +30,6 @@ export const SETUP_STEP_GROUP: Record<CashDepositSetupRoute, SetupBackGroup> = {
   [Routes.CASH_SETUP_SSN]: 'kyc',
   [Routes.CASH_SETUP_REVIEW]: 'kyc',
   [Routes.CASH_SETUP_PASSKEY]: 'passkey',
-  [Routes.CASH_SETUP_EMAIL]: 'email',
   [Routes.CASH_SETUP_ALL_DONE]: 'card',
   [Routes.CASH_SETUP_CARD_DETAILS]: 'card',
   [Routes.CASH_SETUP_CARD_ADDED]: 'cardAdded',
