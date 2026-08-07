@@ -54,9 +54,9 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
     navigate(Routes.FIAT_ON_RAMP_SHEET);
   }, [navigate]);
 
-  // Sign In → passkey login. Destination lands in a later unit; inert for now.
+  // Sign In → phone-number passkey login for a device with no stored account.
   const handleSignIn = useCallback(() => {
-    // TODO(cash): start passkey OAuth login once the auth unit lands.
+    replace(Routes.CASH_SIGN_IN_SCREEN);
   }, []);
 
   return (

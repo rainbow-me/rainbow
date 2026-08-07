@@ -1,104 +1,28 @@
-import React, { memo, type ReactNode } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { memo } from 'react';
 
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, useBackgroundColor } from '@/design-system';
-import { CashActionButton } from '@/features/cash/components/CashActionButton';
+import { CashStepLayout, type CashStepLayoutProps } from '@/features/cash/components/CashStepLayout';
 import * as i18n from '@/languages';
 
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
-type SetupStepLayoutProps = {
-  title: string;
-  subtitle?: string;
-  children?: ReactNode;
+type SetupStepLayoutProps = Omit<CashStepLayoutProps, 'actionLabel' | 'actionTestID' | 'backTestID' | 'onAction' | 'onBack'> & {
   /** Overrides the default "Next" CTA label. */
   actionLabel?: string;
   /** Overrides the default `next()` press handler. */
   onAction?: () => void;
-  actionDisabled?: boolean;
-  actionLoading?: boolean;
-  backDisabled?: boolean;
 };
 
-export const SetupStepLayout = memo(function SetupStepLayout({
-  title,
-  subtitle,
-  children,
-  actionLabel,
-  onAction,
-  actionDisabled = false,
-  actionLoading = false,
-  backDisabled = false,
-}: SetupStepLayoutProps) {
+export const SetupStepLayout = memo(function SetupStepLayout({ actionLabel, onAction, ...props }: SetupStepLayoutProps) {
   const { next, back } = useCashDepositSetupNavigation();
-  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
-  const insets = useSafeAreaInsets();
 
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      // Closed keyboard: the button sits insets.bottom above the screen bottom; open: 20 above the keyboard.
-      keyboardVerticalOffset={20 - insets.bottom}
-      style={[styles.keyboardAvoidingView, { backgroundColor: surfacePrimaryElevated }]}
-    >
-      <Box
-        background="surfacePrimaryElevated"
-        height="full"
-        paddingHorizontal="24px"
-        width="full"
-        style={{ paddingBottom: insets.bottom, paddingTop: insets.top + 24 }}
-      >
-        <ButtonPressAnimation disabled={backDisabled} onPress={back} scaleTo={0.8} testID="cash-setup-back">
-          <Box
-            alignItems="center"
-            background="fillTertiary"
-            borderRadius={18}
-            height={{ custom: 36 }}
-            justifyContent="center"
-            width={{ custom: 36 }}
-          >
-            <Text align="center" color="label" size="17pt" weight="heavy">
-              {'􀆉'}
-            </Text>
-          </Box>
-        </ButtonPressAnimation>
-
-        <Box gap={24} paddingTop="24px">
-          <Text color="label" size="26pt" weight="heavy">
-            {title}
-          </Text>
-          {subtitle != null && (
-            <Text color="labelSecondary" size="17pt / 135%" weight="bold">
-              {subtitle}
-            </Text>
-          )}
-        </Box>
-
-        <Box style={styles.body}>{children}</Box>
-
-        <CashActionButton
-          disabled={actionDisabled}
-          label={actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
-          loading={actionLoading}
-          onPress={onAction ?? next}
-          testID="cash-setup-next"
-          textSize="20pt"
-        />
-      </Box>
-    </KeyboardAvoidingView>
+    <CashStepLayout
+      {...props}
+      actionLabel={actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
+      actionTestID="cash-setup-next"
+      backTestID="cash-setup-back"
+      onAction={onAction ?? next}
+      onBack={back}
+    />
   );
-});
-
-const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-    width: '100%',
-  },
 });

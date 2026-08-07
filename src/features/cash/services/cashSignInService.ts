@@ -3,10 +3,11 @@ import { time } from '@/framework/core/utils/time';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
+import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
-import { finalizeAuth, finishLogin, startLogin } from './userClient';
+import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash';
+export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 
@@ -24,21 +25,28 @@ export async function ensureAccessToken(trigger: CashSignInTrigger): Promise<str
   if (cached) return cached;
 
   // Concurrent callers join the same ceremony instead of stacking passkey prompts
-  pendingSignIn ??= signIn(trigger).finally(() => {
+  pendingSignIn ??= runLoginCeremony(trigger, storedAccountIdentifier).finally(() => {
     pendingSignIn = null;
   });
   return pendingSignIn;
 }
 
-async function signIn(trigger: CashSignInTrigger): Promise<string> {
+function storedAccountIdentifier(): StartLoginParams {
+  const userId = useCashAccountStore.getState().userId;
+  if (!userId) throw new Error('No cash account recorded on this device');
+  return { userId };
+}
+
+// The identifier is resolved inside the try so a missing account record reports through the same funnel.
+async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: () => StartLoginParams): Promise<string> {
   analytics.track(analytics.event.cashSignInSubmitted, { trigger });
   try {
-    const userId = useCashAccountStore.getState().userId;
-    if (!userId) throw new Error('No cash account recorded on this device');
-
-    const start = await startLogin({ userId });
+    const start = await startLogin(resolveIdentifier());
     const credentialAssertionJson = await getPasskeyAssertion(start.publicKeyOptionsJson);
     const finish = await finishLogin({ sessionId: start.sessionId, sessionToken: start.sessionToken, credentialAssertionJson });
+
+    // setUserId drops account-scoped state when the record changes, so it must precede setToken.
+    useCashAccountStore.getState().setUserId(finish.userId);
     const token = await finalizeAuth({ sessionId: finish.sessionId, sessionToken: finish.sessionToken });
 
     useCashAuthTokenStore.getState().setToken(token);
@@ -52,4 +60,9 @@ async function signIn(trigger: CashSignInTrigger): Promise<string> {
     }
     throw error;
   }
+}
+
+// Signs in a device with no stored account: the phone number identifies the user instead.
+export async function signInWithPhone(nationalNumber: string): Promise<void> {
+  await runLoginCeremony('signInScreen', () => ({ phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber } }));
 }

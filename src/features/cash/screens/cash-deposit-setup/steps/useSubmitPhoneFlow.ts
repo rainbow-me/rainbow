@@ -5,12 +5,11 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { createUserWithPhone, startSignupResume, US_COUNTRY_CALLING_CODE } from '../../../services/userClient';
+import { createUserWithPhone, startSignupResume } from '../../../services/userClient';
 import { useCashSetupSessionStore, type PhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
+import { extractNationalDigits, NATIONAL_NUMBER_LENGTH } from '../../../utils/phoneNumber';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-
-export const NATIONAL_NUMBER_LENGTH = 10;
 
 export type SubmitPhoneState = 'entry' | 'submitting' | 'error';
 
@@ -25,15 +24,6 @@ type SubmitPhoneFlowStore = {
 async function startResume(nationalNumber: string): Promise<{ challenge: PhoneChallenge; resendAfter: number }> {
   const { resumeId, resendAfter } = await startSignupResume({ nationalNumber });
   return { challenge: { kind: 'resume', resumeId }, resendAfter };
-}
-
-// Pasted or AutoFilled values may carry the +1 country code on top of the 10 national digits.
-function extractNationalDigits(text: string): string {
-  let digits = text.replace(/\D/g, '');
-  if (digits.length > NATIONAL_NUMBER_LENGTH && digits.startsWith(US_COUNTRY_CALLING_CODE)) {
-    digits = digits.slice(US_COUNTRY_CALLING_CODE.length);
-  }
-  return digits.slice(0, NATIONAL_NUMBER_LENGTH);
 }
 
 function clearPhoneAlreadyRegistered() {

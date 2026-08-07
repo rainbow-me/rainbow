@@ -64,6 +64,7 @@ const Routes = {
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   CASH_DEPOSIT_INTRO_PANEL: 'CashDepositIntroPanel',
   CASH_DEPOSIT_SETUP_SCREEN: 'CashDepositSetupScreen',
+  CASH_SIGN_IN_SCREEN: 'CashSignInScreen',
   CASH_SETUP_PHONE: 'CashSetupPhone',
   CASH_SETUP_CONFIRM_PHONE: 'CashSetupConfirmPhone',
   CASH_SETUP_IDENTITY: 'CashSetupIdentity',

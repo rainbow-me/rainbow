@@ -110,11 +110,18 @@ type RampCard = {
 
 type CompleteCardLinkSessionResponse = { card: RampCard };
 
+type ListCardsResponse = { cards?: RampCard[] };
+
 const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Unspecified]: 'Card',
   [CardBrand.Visa]: 'Visa',
   [CardBrand.Mastercard]: 'Mastercard',
 };
+
+// TODO: Replace it with actual CC brands once APP-3934 is resolved
+function toLinkedCard({ id, lastFourDigits }: RampCard): LinkedCard {
+  return { id, brand: CARD_BRAND_LABELS[CardBrand.Visa], last4: lastFourDigits };
+}
 
 function isUnauthorized(error: unknown): boolean {
   return error instanceof RainbowFetchError && error.response?.status === 401;
@@ -165,9 +172,15 @@ export async function completeCardLinkSession(
       { abortController, headers }
     )
   );
-  const { id, lastFourDigits } = data.card;
-  // TODO: Replace it with actual CC brands once APP-3934 is resolved
-  return { id, brand: CARD_BRAND_LABELS[CardBrand.Visa], last4: lastFourDigits };
+  return toLinkedCard(data.card);
+}
+
+export async function listCards(abortController?: AbortController | null): Promise<LinkedCard[]> {
+  const { data } = await authorizedRequest('signInScreen', headers =>
+    getCashPlatformClient().get<ListCardsResponse>('/ramp/payment-methods/cards', { abortController, headers })
+  );
+  // protojson drops empty repeated fields, so an account with no cards responds `{}`.
+  return (data.cards ?? []).map(toLinkedCard);
 }
 
 // ---- Wallet link -----------------------------------------------------------

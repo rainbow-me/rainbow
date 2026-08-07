@@ -2,22 +2,15 @@ import React, { memo } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
 import { Box, Text, useForegroundColor } from '@/design-system';
+import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import * as i18n from '@/languages';
 
-import { US_COUNTRY_CALLING_CODE } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../../utils/phoneNumber';
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
-import { NATIONAL_NUMBER_LENGTH, useSubmitPhoneFlow } from './useSubmitPhoneFlow';
+import { useSubmitPhoneFlow } from './useSubmitPhoneFlow';
 
 const l = i18n.l.cash.deposit_setup.phone;
-
-function formatNationalNumber(digits: string): string {
-  if (!digits) return '';
-  if (digits.length <= 3) return `(${digits}`;
-  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-}
 
 export const PhoneStep = memo(function PhoneStep() {
   const { state, digits, setDigits, submit } = useSubmitPhoneFlow();

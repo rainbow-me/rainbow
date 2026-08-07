@@ -2,13 +2,13 @@ import React, { memo, useCallback, useState } from 'react';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 
 import { Box, Text, useForegroundColor } from '@/design-system';
+import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import { useDatePicker } from '@/framework/ui/hooks/useDatePicker';
 import * as i18n from '@/languages';
 
 import { formatDateOfBirth, isValidDateOfBirth, isValidLegalName, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore, type CashSetupDateOfBirth } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.identity;
