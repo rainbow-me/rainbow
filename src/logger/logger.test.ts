@@ -386,3 +386,124 @@ describe('beforeSend filtering', () => {
     expect(result).toBe(dummyEvent);
   });
 });
+
+describe('redaction', () => {
+  const beforeSend = defaultOptions.beforeSend!;
+  const beforeBreadcrumb = defaultOptions.beforeBreadcrumb!;
+
+  test('strips the query string from request breadcrumbs', () => {
+    const breadcrumb = beforeBreadcrumb(
+      { category: 'xhr', type: 'http', data: { method: 'GET', url: `https://api.example.com/?address=0x${'a'.repeat(40)}` } },
+      {}
+    );
+
+    expect(breadcrumb?.data?.url).toBe('https://api.example.com');
+  });
+
+  test('drops a breadcrumb url it cannot parse rather than passing it through', () => {
+    const breadcrumb = beforeBreadcrumb({ category: 'xhr', type: 'http', data: { method: 'GET', url: 'not-a-url' } }, {});
+
+    expect(breadcrumb?.data).not.toHaveProperty('url');
+  });
+
+  test('leaves breadcrumbs without a url alone', () => {
+    const breadcrumb = beforeBreadcrumb({ category: 'console', message: 'hello' }, {});
+
+    expect(breadcrumb).toEqual({ category: 'console', message: 'hello' });
+  });
+
+  test('sanitises breadcrumbs on the event, which is where native ones arrive', () => {
+    const event: Sentry.ErrorEvent = {
+      type: undefined,
+      breadcrumbs: [
+        {
+          category: 'http',
+          data: {
+            'method': 'GET',
+            'url': `https://api.example.com/v1/wallets/0x${'a'.repeat(40)}/positions`,
+            'http.query': 'currency=USD',
+          },
+        },
+      ],
+    };
+
+    const result = beforeSend(event, {}) as Sentry.ErrorEvent;
+    const data = result.breadcrumbs?.[0]?.data;
+
+    expect(data?.url).toBe('https://api.example.com/v1/wallets/:id/positions');
+    expect(data).not.toHaveProperty('http.query');
+  });
+
+  test('redacts exception values, which no url field covers', () => {
+    const event = { exception: { values: [{ value: `missing revert data for 0x${'a'.repeat(40)}` }] } } as Sentry.ErrorEvent;
+
+    const result = beforeSend(event, {}) as Sentry.ErrorEvent;
+
+    expect(result.exception?.values?.[0]?.value).toBe('missing revert data for [address]');
+  });
+
+  test('redacts a captureMessage event', () => {
+    const event = { message: `Failed to fetch balances for 0x${'a'.repeat(40)}` } as Sentry.ErrorEvent;
+
+    const result = beforeSend(event, {}) as Sentry.ErrorEvent;
+
+    expect(result.message).toBe('Failed to fetch balances for [address]');
+  });
+});
+
+/**
+ * One fixture with an address in every field that can carry a string, so coverage is asserted rather
+ * than imagined. A field left untouched below is a decision, not an oversight: add a field here when
+ * the SDK starts populating one, and the gap shows up as a failing expectation.
+ */
+describe('carrier coverage', () => {
+  const beforeSend = defaultOptions.beforeSend!;
+  const ADDRESS = `0x${'a'.repeat(40)}`;
+
+  const poisoned = () =>
+    ({
+      type: undefined,
+      message: `message ${ADDRESS}`,
+      exception: { values: [{ value: `exception ${ADDRESS}` }] },
+      breadcrumbs: [
+        {
+          category: 'console',
+          message: `breadcrumb ${ADDRESS}`,
+          data: {
+            'url': `https://api.example.com/v1/wallets/${ADDRESS}/nfts`,
+            'http.query': `address=${ADDRESS}`,
+            'arguments': [`console arg ${ADDRESS}`],
+            'metadata': { nested: `nested ${ADDRESS}` },
+          },
+        },
+      ],
+      extra: { address: ADDRESS, apiErrors: [{ detail: `failed for ${ADDRESS}` }] },
+      tags: { note: `tag ${ADDRESS}` },
+      contexts: { app: { note: `context ${ADDRESS}` } },
+    }) as Sentry.ErrorEvent;
+
+  test('covers messages, exception values, breadcrumbs and metadata', () => {
+    const result = beforeSend(poisoned(), {}) as Sentry.ErrorEvent;
+    const data = result.breadcrumbs?.[0]?.data;
+
+    expect(result.message).toBe('message [address]');
+    expect(result.exception?.values?.[0]?.value).toBe('exception [address]');
+    expect(result.breadcrumbs?.[0]?.message).toBe('breadcrumb [address]');
+    expect(data?.url).toBe('https://api.example.com/v1/wallets/:id/nfts');
+    expect(data?.metadata).toEqual({ nested: 'nested [address]' });
+    expect(data?.arguments).toEqual(['console arg [address]']);
+    expect(data).not.toHaveProperty('http.query');
+    expect(result.extra?.address).toBe('[address]');
+    expect(result.extra?.apiErrors).toEqual([{ detail: 'failed for [address]' }]);
+  });
+
+  test('leaves tags and contexts alone, which is deliberate', () => {
+    const result = beforeSend(poisoned(), {}) as Sentry.ErrorEvent;
+
+    // A tag value is low-cardinality by design, so rewriting one is likelier to break a deliberate
+    // tag than to catch a leak. Keeping identifiers out of tags is a convention, not enforced here.
+    expect(result.tags?.note).toBe(`tag ${ADDRESS}`);
+    // Contexts are SDK-owned: device model, os build, app version. Rewriting them mangles diagnostics.
+    expect(result.contexts?.app?.note).toBe(`context ${ADDRESS}`);
+  });
+});

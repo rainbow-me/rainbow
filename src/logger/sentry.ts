@@ -5,6 +5,8 @@ import VersionNumber from 'react-native-version-number';
 import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
+import { redactIdentifiers } from '@/logger/redactIdentifiers';
+import { sanitizeUrl } from '@/logger/sanitizeUrl';
 
 type Environment = 'production' | 'internal' | 'development';
 const ENVIRONMENT: Environment = IS_DEV ? 'development' : IS_STORE_INSTALL ? 'production' : 'internal';
@@ -28,10 +30,73 @@ const IGNORED_ERRORS: Array<string | RegExp> = [
   /^Network request failed$/,
 ];
 
+/**
+ * Every fetch and XHR produces a breadcrumb carrying the full request URL, and the SDK attaches
+ * breadcrumbs to every event it sends.
+ *
+ * Both beforeBreadcrumb and beforeSend hooks need this, and neither is redundant. `beforeBreadcrumb`
+ * is the only pass over breadcrumbs that JS forwards to the native scope, where they ride native crash events that
+ * `beforeSend` never sees. `beforeSend` is the only pass over the breadcrumbs iOS merges onto an
+ * event of its own accord, which never reach `beforeBreadcrumb`. Running twice is harmless: a
+ * templated path and a placeholder both survive a second pass unchanged.
+ */
+function sanitizeBreadcrumb(breadcrumb: Sentry.Breadcrumb): Sentry.Breadcrumb {
+  const { data } = breadcrumb;
+  if (data) {
+    if (typeof data.url === 'string') {
+      const safe = sanitizeUrl(data.url);
+      if (safe) data.url = safe;
+      else delete data.url;
+    }
+    // The native tracker keeps these beside the url, so sanitising the url alone leaves them behind.
+    delete data['http.query'];
+    delete data['http.fragment'];
+  }
+
+  if (breadcrumb.message) breadcrumb.message = redactIdentifiers(breadcrumb.message);
+
+  return breadcrumb;
+}
+
+const MAX_METADATA_DEPTH = 3;
+
+/**
+ * Metadata is an open map of whatever a caller passed, so it has to be walked rather than assumed.
+ *
+ * **Only safe from `beforeSend`.** By then the event is Sentry's own normalised deep copy, so rewriting
+ * it affects nothing else, and Errors have already been flattened to plain objects. `beforeBreadcrumb`
+ * runs synchronously inside `addBreadcrumb`, and `sentryTransport` hands it a shallow copy of the
+ * caller's metadata: walking there would rewrite strings inside objects the app is still using.
+ */
+function redactValues(container: Record<string, unknown> | unknown[], depth = 0): void {
+  for (const [key, value] of Object.entries(container)) {
+    if (typeof value === 'string') (container as Record<string, unknown>)[key] = redactIdentifiers(value);
+    else if (value && typeof value === 'object' && depth < MAX_METADATA_DEPTH) {
+      redactValues(value as Record<string, unknown>, depth + 1);
+    }
+  }
+}
+
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
 
+  beforeBreadcrumb: sanitizeBreadcrumb,
   beforeSend(event, hint) {
+    // iOS merges its own network breadcrumbs onto the event after `beforeBreadcrumb` has run, so this
+    // is the only hook that sees them, and they arrive with the path and query intact.
+    for (const breadcrumb of event.breadcrumbs ?? []) {
+      sanitizeBreadcrumb(breadcrumb);
+      if (breadcrumb.data) redactValues(breadcrumb.data);
+    }
+
+    // Logger metadata lands here, and our own call sites pass addresses through it.
+    if (event.extra) redactValues(event.extra);
+
+    if (event.message) event.message = redactIdentifiers(event.message);
+    for (const exception of event.exception?.values ?? []) {
+      if (exception.value) exception.value = redactIdentifiers(exception.value);
+    }
+
     // Drop non-actionable fetch errors (5xx, network failures).
     const error = hint?.originalException;
     if (error instanceof RainbowError && error.cause instanceof RainbowFetchError) {
