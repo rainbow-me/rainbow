@@ -19,7 +19,7 @@ import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk'
 
 // ============ Types ========================================================= //
 
-type TrackedTransactionResolution =
+export type TrackedTransactionResolution =
   | { kind: 'pending'; relayStatus?: RelayStatusSnapshot; transaction: PendingTransaction }
   | { kind: 'settled'; relayStatus?: RelayStatusSnapshot; transaction: SettledTransaction };
 

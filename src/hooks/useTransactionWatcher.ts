@@ -11,8 +11,9 @@ interface UseTransactionWatcherProps<T> {
 
 /**
  * Polls while `transactions` is nonempty.
- * Each run receives the latest transaction array without restarting the polling schedule when
- * that array changes.
+ *
+ * Each run receives the latest transaction array without restarting
+ * the polling schedule when that array changes.
  */
 export function useTransactionWatcher<T>({ interval = time.seconds(1), transactions, watchFunction }: UseTransactionWatcherProps<T>) {
   const transactionsRef = useRef(transactions);
