@@ -7,10 +7,12 @@ import { useTransactionWatcher } from './useTransactionWatcher';
 type WatcherCallback = (abortController: AbortController) => Promise<void>;
 
 const mockTransactionsRef: { current: string[] } = { current: [] };
-let mockMemoizedCallback: WatcherCallback | undefined;
+const mockUseCallback = jest
+  .fn<(callback: WatcherCallback, dependencies: readonly unknown[]) => WatcherCallback>()
+  .mockImplementation(callback => callback);
 
 jest.mock('react', () => ({
-  useCallback: (callback: WatcherCallback) => (mockMemoizedCallback ??= callback),
+  useCallback: (callback: WatcherCallback, dependencies: readonly unknown[]) => mockUseCallback(callback, dependencies),
   useRef: () => mockTransactionsRef,
 }));
 
@@ -23,25 +25,23 @@ const mockUseWatcher = jest.mocked(useWatcher);
 describe('useTransactionWatcher', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockMemoizedCallback = undefined;
     mockTransactionsRef.current = [];
   });
 
-  it('keeps the scheduler callback stable while reading the latest transactions', async () => {
+  it('reads the latest transactions without restarting the scheduler', async () => {
     const firstTransactions = ['first'];
     const latestTransactions = ['latest'];
     const watchFunction = jest.fn<(transactions: string[], abortController: AbortController) => Promise<void>>().mockResolvedValue();
 
     useTransactionWatcher({ transactions: firstTransactions, watchFunction });
-    const firstCallback = mockUseWatcher.mock.calls[0][0].watchFunction;
-
     useTransactionWatcher({ transactions: latestTransactions, watchFunction });
-    const latestCallback = mockUseWatcher.mock.calls[1][0].watchFunction;
+
+    const watch = mockUseWatcher.mock.calls[1][0].watchFunction;
     const abortController = new AbortController();
 
-    expect(latestCallback).toBe(firstCallback);
+    expect(mockUseCallback).toHaveBeenLastCalledWith(expect.any(Function), [watchFunction]);
 
-    await latestCallback(abortController);
+    await watch(abortController);
 
     expect(watchFunction).toHaveBeenCalledWith(latestTransactions, abortController);
   });

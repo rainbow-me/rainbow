@@ -60,7 +60,9 @@ jest.mock('@/state/swaps/swapsStore', () => ({
 }));
 
 jest.mock('@/state/assets/userAssetsStoreManager', () => {
-  const state: { address: string; cachedStore?: unknown; currency: 'ETH' } = { address: '0x123', currency: 'ETH' };
+  const cachedStore = { getState: () => ({ userAssets: new Map() }) };
+  const state = { address: '0x123', cachedStore, currency: 'ETH' as const };
+
   return {
     userAssetsStoreManager: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
       getState: () => state,
@@ -95,6 +97,20 @@ jest.mock('@/state/nonces', () => ({
 jest.mock('@/resources/transactions/consolidatedTransactions', () => ({
   consolidatedTransactionsQueryKey: (params: unknown) => ['consolidatedTransactions', params],
 }));
+
+jest.mock('@/features/network/stores/backendNetworksStore', () => {
+  const chainIds = [1, 10, 8453];
+  const state = {
+    getSupportedChainIds: () => chainIds,
+    getSupportedMainnetChainIds: () => chainIds,
+    getSupportedPositionsChainIds: () => chainIds,
+  };
+
+  return {
+    backendNetworksActions: state,
+    useBackendNetworksStore: { getState: () => state, subscribe: () => () => undefined },
+  };
+});
 
 jest.mock('@/analytics', () => ({
   analytics: {
