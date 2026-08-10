@@ -40,7 +40,7 @@ export type UseCardLinkFlow = {
   onCardTypeChange: (cardType: string) => void;
   onFieldBlur: (fieldName: CardField) => void;
   onFieldFocus: (fieldName: CardField) => void;
-  onFieldStateChange: () => void;
+  onFieldStateChange: (state: { fieldName: string }) => void;
   reset: () => void;
   submit: () => void;
 };
@@ -49,23 +49,30 @@ export function useCardLinkFlow(): UseCardLinkFlow {
   const state = useCardLinkFlowStore(state => state.state);
   const [bivoStore] = useState(createBivoStore);
   const [cardBrand, setCardBrand] = useState<CardBrand | null>(null);
-  const [focusedField, setFocusedField] = useState<CardField | null>(null);
-  const [, onFieldStateChange] = useReducer(i => i + 1, 0);
+  const [focus, setFocus] = useState<{ fieldName: CardField; edited: boolean } | null>(null);
+  const [, bumpFieldState] = useReducer(i => i + 1, 0);
 
   const onCardTypeChange = useCallback((cardType: string) => {
     setCardBrand(BIVO_CARD_BRANDS[cardType] ?? null);
   }, []);
 
-  const onFieldFocus = useCallback((fieldName: CardField) => setFocusedField(fieldName), []);
+  const onFieldFocus = useCallback((fieldName: CardField) => setFocus({ fieldName, edited: false }), []);
 
-  const onFieldBlur = useCallback((fieldName: CardField) => setFocusedField(current => (current === fieldName ? null : current)), []);
+  const onFieldBlur = useCallback((fieldName: CardField) => setFocus(current => (current?.fieldName === fieldName ? null : current)), []);
 
-  // Bivo validates a field before invoking our onBlur, so once a field loses focus a live read of
-  // bivoStore is current; the focusedField setState doubles as the rerender that refreshes these reads.
+  const onFieldStateChange = useCallback(({ fieldName }: { fieldName: string }) => {
+    bumpFieldState();
+    setFocus(current => (current?.fieldName === fieldName && !current.edited ? { ...current, edited: true } : current));
+  }, []);
+
+  // Bivo revalidates on every keystroke and before invoking our onBlur, so live reads of bivoStore are
+  // always current; the focus setState and the onStateChange bump are the rerenders that refresh them.
   const hasUnsupportedCardBrand = Boolean(bivoStore.form[CARD_FIELD.number]?.trim()) && cardBrand !== CardBrand.Visa;
 
   function isErrored(fieldName: CardField): boolean {
-    if (focusedField === fieldName) return false;
+    // An error is hidden only once the user edits the field it belongs to, so re-entering a field and
+    // leaving it untouched keeps the error visible.
+    if (focus?.fieldName === fieldName && focus.edited) return false;
     return Boolean(bivoStore.errors[fieldName]) || (fieldName === CARD_FIELD.number && hasUnsupportedCardBrand);
   }
 
