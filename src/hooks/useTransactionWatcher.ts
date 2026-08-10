@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { time } from '@/framework/core/utils/time';
 import { useWatcher } from '@/framework/ui/hooks/useWatcher';
@@ -10,16 +10,21 @@ interface UseTransactionWatcherProps<T> {
 }
 
 /**
- * Watches a set of transactions: polls `watchFunction` with the latest `transactions` while there
- * are any, stopping when the set empties. A thin wrapper over `useWatcher`.
+ * Polls while `transactions` is nonempty.
+ *
+ * Each run receives the latest transaction array without restarting
+ * the polling schedule when that array changes.
  */
 export function useTransactionWatcher<T>({ interval = time.seconds(1), transactions, watchFunction }: UseTransactionWatcherProps<T>) {
+  const transactionsRef = useRef(transactions);
+  transactionsRef.current = transactions;
+
   useWatcher({
     enabled: transactions.length > 0,
     interval,
     watchFunction: useCallback(
-      (abortController: AbortController) => watchFunction(transactions, abortController),
-      [watchFunction, transactions]
+      (abortController: AbortController) => watchFunction(transactionsRef.current, abortController),
+      [watchFunction]
     ),
   });
 }

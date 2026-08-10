@@ -62,13 +62,11 @@ export type BackendTransactionArgs = {
   enabled: boolean;
 };
 
-// 4xx responses where the client cannot meaningfully react. Silenced so the pending-tx
-// watcher's 1Hz polling doesn't flood Sentry while a persistent server-side condition
-// (auth, WAF, rate limit, not-yet-indexed) clears. 400 / 422 and other client-bug codes
-// are deliberately omitted: those signal malformed requests we want to see.
-const SILENCED_FETCH_STATUSES = new Set([401, 403, 404, 408, 429]);
-
-export const fetchRawTransaction = async ({
+/**
+ * Fetches and parses a transaction by hash.
+ * A 404 response returns `null`; other platform request or parsing failures reject.
+ */
+export async function fetchRawTransaction({
   abortController,
   address,
   currency,
@@ -82,7 +80,7 @@ export const fetchRawTransaction = async ({
   chainId: ChainId;
   hash: string;
   originalType?: TransactionType;
-}): Promise<RainbowTransaction | null> => {
+}): Promise<RainbowTransaction | null> {
   if (IS_TEST) {
     const mockCashTransaction = await getMockCashTransactionByHash({ address, currency, chainId, hash });
     if (mockCashTransaction) return mockCashTransaction;
@@ -160,13 +158,10 @@ export const fetchRawTransaction = async ({
 
     return parsed;
   } catch (e) {
-    if (e instanceof RainbowFetchError && e.response && SILENCED_FETCH_STATUSES.has(e.response.status)) {
-      return null;
-    }
-    logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
-    return null;
+    if (e instanceof RainbowFetchError && e.response?.status === 404) return null;
+    throw e;
   }
-};
+}
 
 // ///////////////////////////////////////////////
 // Query Function
@@ -174,10 +169,19 @@ export const fetchRawTransaction = async ({
 export const transactionQueryKey = ({ hash, address, currency, chainId, originalType }: TransactionArgs) =>
   createQueryKey('transactions', { address, currency, chainId, hash, originalType }, { persisterVersion: 1 });
 
-export function transactionQueryFn({
+/**
+ * Fetches a transaction for React Query.
+ * Missing transactions return `null`. Other failures are logged and also return `null`.
+ */
+export async function transactionQueryFn({
   queryKey: [{ address, currency, chainId, hash, originalType }],
 }: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> {
-  return fetchRawTransaction({ address, currency, chainId, hash, originalType });
+  try {
+    return await fetchRawTransaction({ address, currency, chainId, hash, originalType });
+  } catch (error) {
+    logger.error(new RainbowError('[transaction]: Failed to fetch transaction', error));
+    return null;
+  }
 }
 
 export const fetchCachedTransaction = async ({

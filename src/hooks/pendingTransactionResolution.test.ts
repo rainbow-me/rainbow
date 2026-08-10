@@ -108,25 +108,18 @@ describe('pendingTransactionResolution', () => {
     expect(mockFetchRawTransaction).not.toHaveBeenCalled();
   });
 
-  it('keeps a confirmed managed transaction settled when relay refresh fails', async () => {
-    mockGetStatus.mockRejectedValue(new Error('relay unavailable'));
+  it('propagates relay refresh failures to the watcher', async () => {
+    const error = new Error('relay unavailable');
+    mockGetStatus.mockRejectedValue(error);
 
-    const resolution = await resolveTrackedTransaction({
-      abortController: null,
-      address: '0x123',
-      currency: 'ETH',
-      transaction: buildManagedConfirmedTransaction(),
-    });
-
-    expect(resolution).toMatchObject({
-      kind: 'settled',
-      transaction: expect.objectContaining({
-        hash: 'execution-1',
-        relayExecutionId: 'execution-1',
-        status: TransactionStatus.confirmed,
-        title: 'swap.confirmed',
-      }),
-    });
+    await expect(
+      resolveTrackedTransaction({
+        abortController: null,
+        address: '0x123',
+        currency: 'ETH',
+        transaction: buildManagedConfirmedTransaction(),
+      })
+    ).rejects.toBe(error);
   });
 
   it('keeps a confirmed managed transaction settled while relay exposes a late origin hash', async () => {

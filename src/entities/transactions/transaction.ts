@@ -324,6 +324,14 @@ export function isAwaitingRelayTransactionHash(transaction: Pick<RainbowTransact
   return typeof transaction.relayExecutionId === 'string' && transaction.hash === transaction.relayExecutionId;
 }
 
+/**
+ * Returns true when a confirmed transaction has an onchain hash instead
+ * of a managed relay placeholder.
+ */
+export function hasConfirmedOnchainHash(transaction: Pick<RainbowTransaction, 'hash' | 'relayExecutionId' | 'status'>): boolean {
+  return transaction.status === TransactionStatus.confirmed && !isAwaitingRelayTransactionHash(transaction);
+}
+
 export type TransactionApiResponse = {
   status: TransactionStatus;
   id: Hash;

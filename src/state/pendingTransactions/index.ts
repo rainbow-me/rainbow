@@ -1,7 +1,13 @@
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
-import { isPendingTransaction, type NewTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
+import {
+  hasConfirmedOnchainHash,
+  isPendingTransaction,
+  type NewTransaction,
+  type PendingTransaction,
+  type RainbowTransaction,
+} from '@/entities/transactions';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceActions } from '@/state/nonces';
@@ -10,6 +16,15 @@ import { shallowEqual } from '@/worklets/comparisons';
 export type PendingTransactionsState = {
   pendingTransactions: Partial<Record<string, RainbowTransaction[]>>;
   addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
+  applyTransactionResolution: ({
+    address,
+    pendingTransaction,
+    resolvedTransaction,
+  }: {
+    address: string;
+    pendingTransaction: PendingTransaction;
+    resolvedTransaction: RainbowTransaction;
+  }) => void;
   clearPendingTransactions: () => void;
   getPendingTransactions: (address: string) => PendingTransaction[];
   getTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
@@ -47,6 +62,25 @@ export const usePendingTransactionsStore = createBaseStore<PendingTransactionsSt
 
       rainbowToastsActions.handleTransaction(pendingTransaction);
     },
+
+    applyTransactionResolution: ({ address, pendingTransaction, resolvedTransaction }) =>
+      set(state => {
+        const transactions = state.pendingTransactions[address];
+        if (!transactions) return state;
+
+        const index = transactions.indexOf(pendingTransaction);
+        if (index === -1 || shallowEqual(transactions[index], resolvedTransaction)) return state;
+
+        const nextTransactions = [...transactions];
+        const shouldRetain = isPendingTransaction(resolvedTransaction) || hasConfirmedOnchainHash(resolvedTransaction);
+
+        if (shouldRetain) nextTransactions[index] = resolvedTransaction;
+        else nextTransactions.splice(index, 1);
+
+        return {
+          pendingTransactions: { ...state.pendingTransactions, [address]: nextTransactions },
+        };
+      }),
 
     clearPendingTransactions: () =>
       set({
