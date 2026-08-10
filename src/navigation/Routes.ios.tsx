@@ -12,6 +12,7 @@ import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashShee
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
+import { CashSignInScreen } from '@/features/cash/screens/cash-sign-in/CashSignInScreen';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { ControlPanel } from '@/features/dapp-browser/screens/ControlPanel';
@@ -314,6 +315,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
       <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
       <NativeStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} {...cashDepositSetupConfig} />
+      <NativeStack.Screen component={CashSignInScreen} name={Routes.CASH_SIGN_IN_SCREEN} {...cashDepositSetupConfig} />
       <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
       <NativeStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen

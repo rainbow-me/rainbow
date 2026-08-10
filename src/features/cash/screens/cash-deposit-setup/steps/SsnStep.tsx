@@ -2,12 +2,12 @@ import React, { memo, useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 
 import { Box, Text } from '@/design-system';
+import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import * as i18n from '@/languages';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.ssn;

@@ -1571,6 +1571,13 @@
         "watching_description": "You’re watching this wallet, so it can’t sign. Import it to deposit into it.",
         "hardware_description": "Hardware wallets can’t be added yet."
       },
+      "sign_in": {
+        "title": "Enter your phone number",
+        "subtitle": "Use the phone number connected to your account to log in.",
+        "placeholder": "Phone Number",
+        "action": "Next",
+        "error": "We couldn't log you in. Please check your number and try again."
+      },
       "deposit_setup": {
         "next": "Next",
         "finish": "Finish",

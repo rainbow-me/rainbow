@@ -5,10 +5,10 @@ import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-
 
 import { Box } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
+import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import * as i18n from '@/languages';
 
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useSetupInputTextStyle } from '../components/useSetupInputTextStyle';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 import { CARD_FIELD, useCardLinkFlow } from './useCardLinkFlow';
 

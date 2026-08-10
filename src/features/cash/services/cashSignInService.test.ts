@@ -3,7 +3,7 @@ import { analytics } from '@/analytics';
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getPasskeyAssertion } from './cashPasskeyService';
-import { ensureAccessToken } from './cashSignInService';
+import { ensureAccessToken, signInWithPhone } from './cashSignInService';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
 jest.mock('@/analytics', () => ({
@@ -47,7 +47,7 @@ beforeEach(() => {
   tokenStore().clearToken();
   mockStartLogin.mockResolvedValue({ sessionId: 'sess-1', sessionToken: 'tok-1', publicKeyOptionsJson: OPTIONS_JSON });
   mockGetPasskeyAssertion.mockResolvedValue(ASSERTION_JSON);
-  mockFinishLogin.mockResolvedValue({ sessionId: 'sess-2', sessionToken: 'tok-2' });
+  mockFinishLogin.mockResolvedValue({ sessionId: 'sess-2', sessionToken: 'tok-2', userId: 'user-2' });
   mockFinalizeAuth.mockResolvedValue({ accessToken: 'jwt-1', expiresAt: Date.now() + 3_600_000 });
 });
 
@@ -138,6 +138,49 @@ describe('ensureAccessToken', () => {
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
       ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'No cash account recorded on this device' }],
+    ]);
+  });
+});
+
+describe('signInWithPhone', () => {
+  beforeEach(() => {
+    useCashAccountStore.getState().clearUserId();
+  });
+
+  it('starts the ceremony with the phone identifier and persists the verified userId and token', async () => {
+    await expect(signInWithPhone('4155550100')).resolves.toBeUndefined();
+
+    expect(mockStartLogin).toHaveBeenCalledWith({ phone: { countryCode: '1', nationalNumber: '4155550100' } });
+    expect(useCashAccountStore.getState().userId).toBe('user-2');
+    // setUserId clears the token store — a surviving token proves it was stored after
+    expect(tokenStore().token?.accessToken).toBe('jwt-1');
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'signInScreen' }],
+      ['cash.sign_in_succeeded', { trigger: 'signInScreen' }],
+    ]);
+  });
+
+  it('cancellation leaves both stores untouched and tracks cancelled', async () => {
+    mockGetPasskeyAssertion.mockRejectedValue(new Error('UserCancelled'));
+
+    await expect(signInWithPhone('4155550100')).rejects.toThrow('UserCancelled');
+    expect(useCashAccountStore.getState().userId).toBeNull();
+    expect(tokenStore().token).toBeNull();
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'signInScreen' }],
+      ['cash.sign_in_cancelled', { trigger: 'signInScreen' }],
+    ]);
+  });
+
+  it('keeps the verified userId when token minting fails afterwards', async () => {
+    mockFinalizeAuth.mockRejectedValue(new Error('finalize failed'));
+
+    await expect(signInWithPhone('4155550100')).rejects.toThrow('finalize failed');
+    expect(useCashAccountStore.getState().userId).toBe('user-2');
+    expect(tokenStore().token).toBeNull();
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'signInScreen' }],
+      ['cash.sign_in_failed', { trigger: 'signInScreen', reason: 'finalize failed' }],
     ]);
   });
 });

@@ -5,9 +5,8 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
 
 import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from '../stores/cashSetupSessionStore';
+import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
-
-export const US_COUNTRY_CALLING_CODE = '1';
 
 const PHONE_ALREADY_REGISTERED = 1300;
 const REGISTERED_WITH_PASSKEY = 1303;
@@ -118,6 +117,9 @@ type AddPasskeyResponse = {
   userId: string;
 };
 
+/** Exactly one identifier: the stored account UUID, or the registered phone as a fallback. */
+export type StartLoginParams = { userId: string } | { phone: { countryCode: string; nationalNumber: string } };
+
 type StartLoginResponse = {
   sessionId: string;
   sessionToken: string;
@@ -135,6 +137,7 @@ type FinishLoginParams = {
 type FinishLoginResponse = {
   sessionId: string;
   sessionToken: string;
+  userId: string;
 };
 
 type FinishAddPasskeyParams = {
@@ -262,20 +265,20 @@ export async function finishAddPasskey({
   );
 }
 
-export async function startLogin({ userId }: { userId: string }): Promise<StartLoginResponse> {
+export async function startLogin(identifier: StartLoginParams): Promise<StartLoginResponse> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { sessionId: 'e2e-session-id', sessionToken: 'e2e-session-token', publicKeyOptionsJson: '{}' };
   }
 
-  const { data } = await getCashPlatformClient().post<StartLoginResponse>('/auth/StartLogin', { userId });
+  const { data } = await getCashPlatformClient().post<StartLoginResponse>('/auth/StartLogin', identifier);
   return { sessionId: data.sessionId, sessionToken: data.sessionToken, publicKeyOptionsJson: data.publicKeyOptionsJson };
 }
 
 export async function finishLogin({ sessionId, sessionToken, credentialAssertionJson }: FinishLoginParams): Promise<FinishLoginResponse> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    return { sessionId, sessionToken };
+    return { sessionId, sessionToken, userId: 'e2e-user-id' };
   }
 
   const { data } = await getCashPlatformClient().post<FinishLoginResponse>('/auth/FinishLogin', {
@@ -283,7 +286,7 @@ export async function finishLogin({ sessionId, sessionToken, credentialAssertion
     sessionToken,
     credentialAssertionJson,
   });
-  return { sessionId: data.sessionId, sessionToken: data.sessionToken };
+  return { sessionId: data.sessionId, sessionToken: data.sessionToken, userId: data.userId };
 }
 
 export async function finalizeAuth({

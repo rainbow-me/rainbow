@@ -1,6 +1,7 @@
 import { createBaseStore } from '@storesjs/stores';
 
 import { useCashAuthTokenStore } from './cashAuthTokenStore';
+import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
 import { useCashWalletStore } from './cashWalletStore';
 
 type CashAccountStore = {
@@ -10,17 +11,19 @@ type CashAccountStore = {
   clearUserId: () => void;
 };
 
-// A cached access token and the linked wallets belong to whichever account they came from — drop
-// both whenever the record changes.
+// A cached access token, the linked wallets and the linked card belong to whichever account they
+// came from — drop them all whenever the record changes.
 function clearAccountScopedState(): void {
   useCashAuthTokenStore.getState().clearToken();
   useCashWalletStore.getState().clear();
+  useCashPaymentMethodStore.getState().clearLinkedCard();
 }
 
 export const useCashAccountStore = createBaseStore<CashAccountStore>(
-  set => ({
+  (set, get) => ({
     userId: null,
     setUserId: userId => {
+      if (get().userId === userId) return;
       clearAccountScopedState();
       set({ userId });
     },
