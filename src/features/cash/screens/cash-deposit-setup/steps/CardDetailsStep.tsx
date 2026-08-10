@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useEffect } from 'react';
-import { Keyboard } from 'react-native';
 
 import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-react-native';
 
@@ -25,21 +24,14 @@ export const CardDetailsStep = memo(function CardLinkForm() {
     }
   }, [next, state]);
 
-  const submitting = state === 'submitting';
   const cancel = useCallback(() => {
     reset();
     back();
   }, [back, reset]);
 
-  // The number pads have no Done key, so an open keyboard would cover the status sheet with no way to close it.
-  const onSubmit = useCallback(() => {
-    Keyboard.dismiss();
-    submit();
-  }, [submit]);
-
   return (
     <>
-      <SetupStepLayout actionDisabled={!isReady} backDisabled={submitting} onAction={onSubmit} title={i18n.t(l.title)}>
+      <SetupStepLayout actionDisabled={!isReady} onAction={submit} title={i18n.t(l.title)}>
         <Box paddingTop="24px">
           <BivoCardInput
             bivoStore={bivoStore}

@@ -24,7 +24,6 @@ export const PhoneStep = memo(function PhoneStep() {
     <SetupStepLayout
       actionDisabled={digits.length !== NATIONAL_NUMBER_LENGTH}
       actionLoading={submitting}
-      backDisabled={submitting}
       onAction={submit}
       subtitle={i18n.t(l.subtitle)}
       title={i18n.t(l.title)}

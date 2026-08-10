@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useEffect } from 'react';
+import { Keyboard, StyleSheet, View } from 'react-native';
 
 import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
@@ -7,6 +7,7 @@ import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text } from '@/design-system';
 
+import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
 
 type HalfSheetAction = {
@@ -26,17 +27,20 @@ type CashStatusHalfSheetProps = CommonProps &
     | { status: 'inProgress' }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
+    | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
   );
 
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  warning: '􀇾',
 } as const;
 
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
   success: 'green',
+  warning: 'red',
 } as const;
 
 const PANEL_ENTERING_ANIMATION = SlideInDown.springify().damping(70).mass(0.8).stiffness(500);
@@ -46,6 +50,15 @@ const PANEL_RESIZE_ANIMATION = LinearTransition.duration(200).easing(Easing.inOu
 export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: CashStatusHalfSheetProps) {
   const icon = props.status === 'success' ? props.successIcon : STATUS_ICONS[props.status];
   const iconColor = STATUS_ICON_COLORS[props.status];
+  const isAlert = props.status === 'error' || props.status === 'warning';
+
+  useEffect(() => {
+    // A keyboard would cover the sheet, whose backdrop blocks any way to close it.
+    Keyboard.dismiss();
+    const { register, unregister } = useCashHalfSheetVisibilityStore.getState();
+    register();
+    return unregister;
+  }, []);
 
   return (
     <AbsolutePortal>
@@ -56,7 +69,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
             <Animated.View entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)} key={props.status}>
               <Box paddingBottom={props.status === 'inProgress' ? '32px' : '20px'} paddingHorizontal="32px" paddingTop="52px">
                 <Box height={{ custom: 64 }} justifyContent="center">
-                  <Text color={iconColor} size="44pt" style={[styles.icon, props.status === 'error' && styles.errorIcon]} weight="heavy">
+                  <Text color={iconColor} size="44pt" style={[styles.icon, isAlert && styles.alertIcon]} weight="heavy">
                     {icon}
                   </Text>
                 </Box>
@@ -76,7 +89,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
                   </Box>
                 )}
 
-                {props.status === 'error' && (
+                {isAlert && (
                   <Box gap={16} paddingTop="32px">
                     <CashActionButton
                       label={props.primaryAction.label}
@@ -86,6 +99,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
                     />
                     {props.secondaryAction && (
                       <CashActionButton
+                        color={props.status === 'warning' ? 'red' : 'blue'}
                         label={props.secondaryAction.label}
                         onPress={props.secondaryAction.onPress}
                         testID={props.secondaryAction.testID}
@@ -108,7 +122,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.44)',
   },
-  errorIcon: {
+  alertIcon: {
     fontSize: 46,
   },
   icon: {

@@ -28,7 +28,6 @@ export const PasskeyStep = memo(function PasskeyStep() {
       <SetupStepLayout
         actionLabel={i18n.t(l.action)}
         actionLoading={submitting}
-        backDisabled={submitting}
         onAction={submit}
         subtitle={i18n.t(l.subtitle)}
         title={i18n.t(l.title)}

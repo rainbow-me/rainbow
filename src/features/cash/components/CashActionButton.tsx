@@ -7,6 +7,7 @@ import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 type CashActionButtonProps = {
+  color?: 'blue' | 'red';
   disabled?: boolean;
   label: string;
   loading?: boolean;
@@ -18,6 +19,7 @@ type CashActionButtonProps = {
 };
 
 export const CashActionButton = memo(function CashActionButton({
+  color = 'blue',
   disabled = false,
   label,
   loading = false,
@@ -29,7 +31,7 @@ export const CashActionButton = memo(function CashActionButton({
 }: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
   const isDisabled = disabled || loading;
-  const textColor = variant === 'solid' ? 'white' : 'blue';
+  const textColor = variant === 'solid' ? 'white' : color;
 
   return (
     <ButtonPressAnimation

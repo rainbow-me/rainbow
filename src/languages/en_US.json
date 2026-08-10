@@ -1650,6 +1650,12 @@
         "card_added": {
           "title": "Card added",
           "description": "You’re all set. You can now deposit with your card."
+        },
+        "cancel_sheet": {
+          "title": "Cancel Setup?",
+          "description": "You’ll lose all progress made so far.",
+          "continue": "Continue Setup",
+          "confirm": "Cancel Setup"
         }
       }
     },

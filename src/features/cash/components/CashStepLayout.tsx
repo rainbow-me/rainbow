@@ -17,7 +17,9 @@ export type CashStepLayoutProps = {
   actionTestID: string;
   backTestID: string;
   onAction: () => void;
-  onBack: () => void;
+  /** Omit to hide the back button. */
+  onBack?: () => void;
+  headerRight?: ReactNode;
   actionDisabled?: boolean;
   actionLoading?: boolean;
   backDisabled?: boolean;
@@ -32,6 +34,7 @@ export const CashStepLayout = memo(function CashStepLayout({
   backTestID,
   onAction,
   onBack,
+  headerRight,
   actionDisabled = false,
   actionLoading = false,
   backDisabled = false,
@@ -53,20 +56,27 @@ export const CashStepLayout = memo(function CashStepLayout({
         width="full"
         style={{ paddingBottom: insets.bottom, paddingTop: insets.top + 24 }}
       >
-        <ButtonPressAnimation disabled={backDisabled} onPress={onBack} scaleTo={0.8} testID={backTestID}>
-          <Box
-            alignItems="center"
-            background="fillTertiary"
-            borderRadius={18}
-            height={{ custom: 36 }}
-            justifyContent="center"
-            width={{ custom: 36 }}
-          >
-            <Text align="center" color="label" size="17pt" weight="heavy">
-              {'􀆉'}
-            </Text>
-          </Box>
-        </ButtonPressAnimation>
+        <Box alignItems="center" flexDirection="row" height={{ custom: 36 }} justifyContent="space-between">
+          {onBack ? (
+            <ButtonPressAnimation disabled={backDisabled} onPress={onBack} scaleTo={0.8} testID={backTestID}>
+              <Box
+                alignItems="center"
+                background="fillTertiary"
+                borderRadius={18}
+                height={{ custom: 36 }}
+                justifyContent="center"
+                width={{ custom: 36 }}
+              >
+                <Text align="center" color="label" size="17pt" weight="heavy">
+                  {'􀆉'}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          ) : (
+            <Box />
+          )}
+          {headerRight}
+        </Box>
 
         <Box gap={24} paddingTop="24px">
           <Text color="label" size="26pt" weight="heavy">
