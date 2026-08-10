@@ -37,10 +37,10 @@ tags:
 - inputText: '000000'
 - extendedWaitUntil:
     visible:
-      text: 'reviewing your information'
+      text: '.*reviewing your information.*'
     timeout: 10000
 - assertVisible:
-    text: 'check back later'
+    text: '.*check back later.*'
 # Got it leaves Setup entirely; the submission carries on server-side.
 - tapOn:
     id: cash-setup-kyc-reviewing-got-it
@@ -49,4 +49,4 @@ tags:
       id: buy-button
     timeout: 10000
 - assertNotVisible:
-    text: 'reviewing your information'
+    text: '.*reviewing your information.*'
