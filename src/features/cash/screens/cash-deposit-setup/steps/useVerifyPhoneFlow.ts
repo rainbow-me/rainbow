@@ -5,6 +5,7 @@ import { createStoreActions } from '@storesjs/stores';
 import { time } from '@/framework/core/utils/time';
 import Routes from '@/navigation/routesNames';
 
+import { type KycOutcome } from '../../../services/userClient';
 import { selectResendAfter, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore, type VerifyPhoneState } from '../../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
@@ -15,6 +16,8 @@ const verifyPhoneFlowActions = createStoreActions(useVerifyPhoneFlowStore);
 export function useVerifyPhoneFlow(): {
   state: VerifyPhoneState;
   code: string;
+  kycOutcome: KycOutcome | null;
+  continueAfterKyc: () => void;
   setCode: (code: string) => void;
   submit: () => Promise<void>;
   resend: () => Promise<void>;
@@ -24,6 +27,7 @@ export function useVerifyPhoneFlow(): {
   const { next, back } = useCashDepositSetupNavigation();
   const state = useVerifyPhoneFlowStore(s => s.state);
   const code = useVerifyPhoneFlowStore(s => s.code);
+  const kycOutcome = useVerifyPhoneFlowStore(s => s.kycOutcome);
   const resending = useVerifyPhoneFlowStore(s => s.resending !== null);
   const resendAfter = useCashSetupSessionStore(selectResendAfter);
   const [resendCooldownSeconds, setResendCooldownSeconds] = useState(0);
@@ -31,9 +35,13 @@ export function useVerifyPhoneFlow(): {
   const submit = useCallback(async () => {
     const result = await verifyPhoneFlowActions.submit();
     if (result === 'verified') next();
-    if (result === 'verifiedKycApproved') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
     if (result === 'signupAlreadyComplete') back();
   }, [back, next]);
+
+  const continueAfterKyc = useCallback(() => {
+    CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
+    verifyPhoneFlowActions.clearKycOutcome();
+  }, []);
 
   useEffect(() => {
     if (resendAfter == null) {
@@ -54,6 +62,8 @@ export function useVerifyPhoneFlow(): {
   return {
     state,
     code,
+    kycOutcome,
+    continueAfterKyc,
     setCode: verifyPhoneFlowActions.setCode,
     submit,
     resend: verifyPhoneFlowActions.resend,

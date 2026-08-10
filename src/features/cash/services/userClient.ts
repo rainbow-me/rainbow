@@ -15,7 +15,11 @@ const SIGNUP_ALREADY_COMPLETE = 1322;
 
 const MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER = '5550001304';
 const MOCK_REGISTERED_WITH_PASSKEY_NUMBER = '5550001303';
+const MOCK_RESUME_KYC_PENDING_NUMBER = '5550001305';
 const MOCK_SIGNUP_ALREADY_COMPLETE_CODE = '001322';
+// The pending account's KYC status rides its resume handles, so the mocks stay stateless.
+const MOCK_KYC_PENDING_RESUME_ID = 'e2e-resume-id-kyc-pending';
+const MOCK_KYC_PENDING_BOOTSTRAP_TOKEN = 'bst_e2e_kyc_pending';
 
 function getPlatformErrorCode(error: unknown): number | null {
   if (!(error instanceof RainbowFetchError)) return null;
@@ -73,6 +77,9 @@ export enum KycStatus {
   Rejected = 'KYC_STATUS_REJECTED',
   Review = 'KYC_STATUS_REVIEW',
 }
+
+// Pending and Review are one state to the app: the provider has not decided yet.
+export type KycOutcome = 'reviewing' | 'approved' | 'rejected';
 
 export type CreateUserWithPhoneResult =
   | { outcome: 'created'; userId: string; resendAfter: number }
@@ -159,7 +166,8 @@ type GetUserStatusResponse = {
 export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    if (nationalNumber === MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER) return { outcome: 'registeredWithoutPasskey' };
+    if (nationalNumber === MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER || nationalNumber === MOCK_RESUME_KYC_PENDING_NUMBER)
+      return { outcome: 'registeredWithoutPasskey' };
     if (nationalNumber === MOCK_REGISTERED_WITH_PASSKEY_NUMBER) return { outcome: 'registeredWithPasskey' };
     return { outcome: 'created', userId: 'e2e-user-id', resendAfter: Date.now() + time.seconds(30) };
   }
@@ -311,7 +319,7 @@ export async function finalizeAuth({
 export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    return { kycStatus: KycStatus.Approved };
+    return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
   }
 
   const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
@@ -327,7 +335,8 @@ export async function startSignupResume({
 }): Promise<{ resumeId: string; resendAfter: number }> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
-    return { resumeId: 'e2e-resume-id', resendAfter: Date.now() + time.seconds(30) };
+    const resumeId = nationalNumber === MOCK_RESUME_KYC_PENDING_NUMBER ? MOCK_KYC_PENDING_RESUME_ID : 'e2e-resume-id';
+    return { resumeId, resendAfter: Date.now() + time.seconds(30) };
   }
 
   const { data } = await getCashPlatformClient().post<{ resumeId: string; resendAfter: unknown }>('/signup/resume/StartSignupResume', {
@@ -345,7 +354,8 @@ export async function finishSignupResume({ resumeId, code }: { resumeId: string;
     await delay(time.seconds(1));
     if (code === MOCK_SIGNUP_ALREADY_COMPLETE_CODE) return { outcome: 'signupAlreadyComplete' };
     if (code !== '000000') throw new Error('Invalid verification code');
-    return { outcome: 'verified', bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
+    const bootstrapToken = resumeId === MOCK_KYC_PENDING_RESUME_ID ? MOCK_KYC_PENDING_BOOTSTRAP_TOKEN : 'bst_e2e';
+    return { outcome: 'verified', bootstrapToken, expiresAt: Date.now() + time.hours(1) };
   }
 
   try {

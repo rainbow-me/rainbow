@@ -5,37 +5,65 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
-import { finishSignupResume, getUserStatus, KycStatus, resendPhoneCode, startSignupResume, verifyPhone } from '../services/userClient';
+import {
+  finishSignupResume,
+  getUserStatus,
+  KycStatus,
+  resendPhoneCode,
+  startSignupResume,
+  verifyPhone,
+  type KycOutcome,
+} from '../services/userClient';
 import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
 
 export const OTP_LENGTH = 6;
 
 export type VerifyPhoneState = 'entry' | 'verifying' | 'verified' | 'error';
 
-export type VerifyPhoneResult = 'verified' | 'verifiedKycApproved' | 'failed' | 'signupAlreadyComplete';
+export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | 'signupAlreadyComplete';
 
-// Best-effort: failing only costs an approved user a redundant pass through
-// KYC entry, so a transient status failure gets one delayed retry.
-async function getIsKycApproved(bootstrapToken: string): Promise<boolean> {
-  const check = async () => (await getUserStatus({ bootstrapToken })).kycStatus === KycStatus.Approved;
+// Null means the wizard proceeds to the KYC steps: either nothing was ever
+// submitted, or the status could not be read and a redundant pass is the safe
+// guess — showing "we're reviewing" to someone who never submitted strands them.
+function toKycOutcome(status: KycStatus): KycOutcome | null {
+  switch (status) {
+    case KycStatus.Approved:
+      return 'approved';
+    case KycStatus.Rejected:
+      return 'rejected';
+    case KycStatus.Pending:
+    case KycStatus.Review:
+      return 'reviewing';
+    case KycStatus.Unspecified:
+      return null;
+  }
+}
+
+// Best-effort: failing only costs the user a redundant pass through KYC entry,
+// so a transient status failure gets one delayed retry.
+async function getResumeKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
+  const check = async () => toKycOutcome((await getUserStatus({ bootstrapToken })).kycStatus);
   return check()
     .catch(() => delay(time.seconds(2)).then(check))
-    .catch(() => false);
+    .catch(() => null);
 }
 
 type VerifyPhoneFlowStore = {
   state: VerifyPhoneState;
   code: string;
+  kycOutcome: KycOutcome | null;
   resending: PhoneChallenge | null;
   setCode: (code: string) => void;
   submit: () => Promise<VerifyPhoneResult>;
   resend: () => Promise<void>;
+  clearKycOutcome: () => void;
   reset: () => void;
 };
 
 export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((set, get) => ({
   state: 'entry',
   code: '',
+  kycOutcome: null,
   resending: null,
 
   setCode: code => set(({ state }) => ({ code, state: state === 'error' ? 'entry' : state })),
@@ -68,10 +96,16 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
       sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
-      // A resumed account may have completed KYC in an earlier signup attempt.
-      const skipKyc = challenge.kind === 'resume' && (await getIsKycApproved(result.bootstrapToken));
-      set({ state: 'verified' });
-      return skipKyc ? 'verifiedKycApproved' : 'verified';
+      // A resumed account may have submitted KYC in an earlier signup attempt.
+      const kycOutcome = challenge.kind === 'resume' ? await getResumeKycOutcome(result.bootstrapToken) : null;
+      if (kycOutcome === 'approved') analytics.track(analytics.event.cashKycApproved);
+      else if (kycOutcome === 'reviewing') analytics.track(analytics.event.cashKycAwaitingDecision, { source: 'resume' });
+      else if (kycOutcome === 'rejected') analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
+      // Terminal, and deliberately not 'verifying': Setup's submission lock reads
+      // that state, so lingering there would disable every exit for the rest of
+      // the flow. Screen cleanup or a fresh phone submission resets the store.
+      set({ kycOutcome, state: 'verified' });
+      return kycOutcome ? 'verifiedKycOutcome' : 'verified';
     } catch (e) {
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
@@ -114,5 +148,9 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
     }
   },
 
-  reset: () => set({ code: '', resending: null, state: 'entry' }),
+  // Narrower than reset() on purpose: the step stays mounted behind the pager, so
+  // restoring 'entry' would re-enable its OTP input and flash the keyboard.
+  clearKycOutcome: () => set({ kycOutcome: null }),
+
+  reset: () => set({ code: '', kycOutcome: null, resending: null, state: 'entry' }),
 }));

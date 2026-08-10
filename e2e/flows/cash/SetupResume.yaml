@@ -94,7 +94,7 @@ tags:
 - assertVisible:
     text: 'This number is already connected to an account.'
 # The kept digits resume again; the mock OTP finishes the resume, and the mock
-# account's approved KYC (mock GetUserStatus) skips straight to Add Passkey.
+# account's approved KYC (mock GetUserStatus) is acknowledged before Add Passkey.
 - tapOn:
     id: cash-setup-next
 - extendedWaitUntil:
@@ -110,5 +110,14 @@ tags:
 - inputText: '0'
 - extendedWaitUntil:
     visible:
+      text: 'Identity verified'
+    timeout: 10000
+- tapOn:
+    id: cash-setup-kyc-success-continue
+- extendedWaitUntil:
+    visible:
       text: 'Add a Passkey'
     timeout: 10000
+# The step text stays in the hierarchy underneath a sheet, so assert the sheet itself is gone.
+- assertNotVisible:
+    id: cash-setup-kyc-success-overlay

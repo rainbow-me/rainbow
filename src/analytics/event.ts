@@ -132,6 +132,7 @@ export const event = {
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
   cashKycSubmitted: 'cash.kyc_submitted',
   cashKycApproved: 'cash.kyc_approved',
+  cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
   cashKycFailed: 'cash.kyc_failed',
   cashPasskeySubmitted: 'cash.passkey_submitted',
   cashPasskeyAdded: 'cash.passkey_added',
@@ -567,6 +568,9 @@ export type EventProperties = {
   };
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;
+  [event.cashKycAwaitingDecision]: {
+    source: 'submit' | 'resume';
+  };
   [event.cashKycFailed]: {
     reason: string;
   };

@@ -25,6 +25,7 @@ type CommonProps = {
 type CashStatusHalfSheetProps = CommonProps &
   (
     | { status: 'inProgress' }
+    | { status: 'reviewing'; action: HalfSheetAction }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -33,12 +34,14 @@ type CashStatusHalfSheetProps = CommonProps &
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  reviewing: '􀐫',
   warning: '􀇾',
 } as const;
 
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
+  reviewing: 'blue',
   success: 'green',
   warning: 'red',
 } as const;
@@ -86,6 +89,17 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
                 {props.status === 'success' && (
                   <Box paddingTop="32px">
                     <CashActionButton label={props.action.label} onPress={props.action.onPress} shadow testID={props.action.testID} />
+                  </Box>
+                )}
+
+                {props.status === 'reviewing' && (
+                  <Box paddingTop="32px">
+                    <CashActionButton
+                      label={props.action.label}
+                      onPress={props.action.onPress}
+                      testID={props.action.testID}
+                      variant="tinted"
+                    />
                   </Box>
                 )}
 

@@ -9,12 +9,13 @@ import Routes from '@/navigation/routesNames';
 import { formatDateOfBirth, formatUsSsnMasked } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
+import { KycOutcomeSheet } from '../components/KycOutcomeSheet';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 import { useSubmitKycFlow } from './useSubmitKycFlow';
 
 const l = i18n.l.cash.deposit_setup.review;
-const IDENTITY_VERIFIED_ICON = '􀯧';
+const kycL = i18n.l.cash.deposit_setup.kyc;
 
 function ReviewRow({
   disabled,
@@ -110,23 +111,10 @@ export const ReviewStep = memo(function ReviewStep() {
 
       {state === 'submitting' ? (
         <CashStatusHalfSheet
-          description={i18n.t(l.verifying_description)}
+          description={i18n.t(kycL.verifying_description)}
           status="inProgress"
           testID="cash-setup-kyc-verifying"
-          title={i18n.t(l.verifying_title)}
-        />
-      ) : state === 'success' ? (
-        <CashStatusHalfSheet
-          action={{
-            label: i18n.t(i18n.l.button.continue),
-            onPress: continueAfterVerification,
-            testID: 'cash-setup-kyc-success-continue',
-          }}
-          description={i18n.t(l.verified_description)}
-          status="success"
-          successIcon={IDENTITY_VERIFIED_ICON}
-          testID="cash-setup-kyc-success"
-          title={i18n.t(l.verified_title)}
+          title={i18n.t(kycL.verifying_title)}
         />
       ) : state === 'error' ? (
         <CashStatusHalfSheet
@@ -140,7 +128,9 @@ export const ReviewStep = memo(function ReviewStep() {
           testID="cash-setup-kyc-error"
           title={i18n.t(l.error_title)}
         />
-      ) : null}
+      ) : state === 'entry' ? null : (
+        <KycOutcomeSheet onContinue={continueAfterVerification} outcome={state} />
+      )}
     </>
   );
 });

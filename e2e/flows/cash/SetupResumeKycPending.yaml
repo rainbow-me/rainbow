@@ -1,0 +1,52 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- tapOn:
+    id: buy-button
+- assertVisible:
+    id: cash-deposit-intro-set-up-account
+- tapOn:
+    id: cash-deposit-intro-set-up-account
+- assertVisible:
+    text: 'Connect your phone number'
+# Mock 5550001305 resumes like 1304 does, but its KYC decision never arrives.
+- tapOn:
+    id: cash-setup-phone-input
+- inputText: '5550001305'
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Confirm your phone'
+    timeout: 10000
+- waitForAnimationToEnd
+- inputText: '000000'
+- extendedWaitUntil:
+    visible:
+      text: 'reviewing your information'
+    timeout: 10000
+- assertVisible:
+    text: 'check back later'
+# Got it leaves Setup entirely; the submission carries on server-side.
+- tapOn:
+    id: cash-setup-kyc-reviewing-got-it
+- extendedWaitUntil:
+    visible:
+      id: buy-button
+    timeout: 10000
+- assertNotVisible:
+    text: 'reviewing your information'
