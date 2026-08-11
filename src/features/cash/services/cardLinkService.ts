@@ -6,7 +6,7 @@ import { delay } from '@/utils/delay';
 import { withTimeout } from '@/utils/promise';
 
 import { MOCK_LINKED_CARD, type LinkedCard } from '../stores/cashPaymentMethodStore';
-import { completeCardLinkSession, startCardLinkSession } from './rampClient';
+import { completeCardLinkSession, startCardLinkSession, type CardBrand } from './rampClient';
 
 const BIVO_SUBMIT_TIMEOUT = time.seconds(30);
 
@@ -24,7 +24,11 @@ function throwIfAborted(abortController: AbortController | null | undefined): vo
   throw error;
 }
 
-export async function linkCardWithVault(bivoStore: BivoSecureStore, abortController?: AbortController | null): Promise<LinkedCard> {
+export async function linkCardWithVault(
+  bivoStore: BivoSecureStore,
+  cardBrand: CardBrand,
+  abortController?: AbortController | null
+): Promise<LinkedCard> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(3));
     return MOCK_LINKED_CARD;
@@ -38,6 +42,6 @@ export async function linkCardWithVault(bivoStore: BivoSecureStore, abortControl
   if (!result.success) throw new Error('Bivo vault submit failed');
   const providerCardId = result.data?.identifier;
   if (!providerCardId) throw new Error('Bivo vault response is missing the provider card id');
-  const card = await completeCardLinkSession({ providerCardId }, abortController);
+  const card = await completeCardLinkSession({ brand: cardBrand, providerCardId }, abortController);
   return card;
 }

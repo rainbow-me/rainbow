@@ -1,7 +1,7 @@
 import { type BivoSecureStore } from '@bivoglobal/payment-react-native';
 
 import { linkCardWithVault } from './cardLinkService';
-import { completeCardLinkSession, startCardLinkSession } from './rampClient';
+import { completeCardLinkSession, startCardLinkSession, type CardBrand } from './rampClient';
 
 const mockSubmit = jest.fn();
 
@@ -15,6 +15,7 @@ const mockComplete = completeCardLinkSession as jest.Mock;
 
 const SESSION = { linkUrl: 'https://vault/link', token: 'tok-1', tokenExpiresTime: '2999-01-01T00:00:00.000Z' };
 const CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
+const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const bivoStore = { submit: mockSubmit } as unknown as BivoSecureStore;
 
 beforeEach(() => {
@@ -41,18 +42,18 @@ describe('linkCardWithVault', () => {
       return CARD;
     });
 
-    await expect(linkCardWithVault(bivoStore, abortController)).resolves.toEqual(CARD);
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND, abortController)).resolves.toEqual(CARD);
 
     expect(order).toEqual(['session', 'submit', 'complete']);
     expect(mockStart).toHaveBeenCalledWith(abortController);
     expect(mockSubmit).toHaveBeenCalledWith(SESSION.linkUrl, SESSION.token);
-    expect(mockComplete).toHaveBeenCalledWith({ providerCardId: 'provider-card-1' }, abortController);
+    expect(mockComplete).toHaveBeenCalledWith({ brand: CARD_BRAND, providerCardId: 'provider-card-1' }, abortController);
   });
 
   it('does not touch the vault when the session fetch fails', async () => {
     mockStart.mockRejectedValue(new Error('no session'));
 
-    await expect(linkCardWithVault(bivoStore)).rejects.toThrow('no session');
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND)).rejects.toThrow('no session');
 
     expect(mockSubmit).not.toHaveBeenCalled();
     expect(mockComplete).not.toHaveBeenCalled();
@@ -65,7 +66,7 @@ describe('linkCardWithVault', () => {
     abortController.abort();
     mockStart.mockRejectedValue(abortError);
 
-    await expect(linkCardWithVault(bivoStore, abortController)).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND, abortController)).rejects.toMatchObject({ name: 'AbortError' });
 
     expect(mockStart).toHaveBeenCalledWith(abortController);
     expect(mockSubmit).not.toHaveBeenCalled();
@@ -79,7 +80,7 @@ describe('linkCardWithVault', () => {
       return { success: true, data: { identifier: 'provider-card-1' } };
     });
 
-    await expect(linkCardWithVault(bivoStore, abortController)).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND, abortController)).rejects.toMatchObject({ name: 'AbortError' });
 
     expect(mockComplete).not.toHaveBeenCalled();
   });
@@ -87,7 +88,7 @@ describe('linkCardWithVault', () => {
   it('does not complete the session when the vault submit is rejected', async () => {
     mockSubmit.mockResolvedValue({ success: false });
 
-    await expect(linkCardWithVault(bivoStore)).rejects.toThrow('Bivo vault submit failed');
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND)).rejects.toThrow('Bivo vault submit failed');
 
     expect(mockComplete).not.toHaveBeenCalled();
   });
@@ -95,7 +96,7 @@ describe('linkCardWithVault', () => {
   it('rejects when the vault response is missing the provider card id', async () => {
     mockSubmit.mockResolvedValue({ success: true, data: {} });
 
-    await expect(linkCardWithVault(bivoStore)).rejects.toThrow('Bivo vault response is missing the provider card id');
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND)).rejects.toThrow('Bivo vault response is missing the provider card id');
 
     expect(mockComplete).not.toHaveBeenCalled();
   });
