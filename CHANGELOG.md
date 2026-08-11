@@ -21,6 +21,51 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.42](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.42)
+
+### Added
+
+- Setup: SSN + Review Details (https://github.com/rainbow-me/rainbow/pull/7677)
+- Add Passkey Screen (https://github.com/rainbow-me/rainbow/pull/7686)
+- Link credit card adding with a user account (https://github.com/rainbow-me/rainbow/pull/7689)
+- Handle already verified phone number without passkey (https://github.com/rainbow-me/rainbow/pull/7679)
+- Link wallet (https://github.com/rainbow-me/rainbow/pull/7696)
+- Surface per-test results and retry-passes in the run summary (https://github.com/rainbow-me/rainbow/pull/7704)
+- Add status half modals (https://github.com/rainbow-me/rainbow/pull/7711)
+- Link creating order to the backend endpoint (https://github.com/rainbow-me/rainbow/pull/7703)
+- Handle resume when user KYC been approved already (https://github.com/rainbow-me/rainbow/pull/7717)
+- Implement Sign In (https://github.com/rainbow-me/rainbow/pull/7718)
+- Allow user to check KYC verification later (https://github.com/rainbow-me/rainbow/pull/7721)
+
+### Changed
+
+- Bump iOS and Android to v2.0.42 (https://github.com/rainbow-me/rainbow/pull/7687)
+- Remove dead demo app and packaging from vendored animated-charts (https://github.com/rainbow-me/rainbow/pull/7688)
+- Remove useIsWalletEthZero and its dead threading (https://github.com/rainbow-me/rainbow/pull/7683)
+- Remove dead exports from vendored animated-charts (https://github.com/rainbow-me/rainbow/pull/7690)
+- Use private dev keystore for local builds (https://github.com/rainbow-me/rainbow/pull/7693)
+- Update viem and remove patch (https://github.com/rainbow-me/rainbow/pull/7697)
+- Remove unreachable AddFundsInterstitial and friends (https://github.com/rainbow-me/rainbow/pull/7682)
+- Remove unreachable AssetListHeader and ListHeader (https://github.com/rainbow-me/rainbow/pull/7684)
+- Remove dead AnimatePresence and usePressHandler (https://github.com/rainbow-me/rainbow/pull/7691)
+- Remove unused CoinCheckButton component (https://github.com/rainbow-me/rainbow/pull/7692)
+- Remove dead env plumbing from the CI entry scripts (https://github.com/rainbow-me/rainbow/pull/7699)
+- Upgrade Maestro 2.0.10 -> 2.7.0 (https://github.com/rainbow-me/rainbow/pull/7700)
+- Remove duplicate Android logcat capture (https://github.com/rainbow-me/rainbow/pull/7702)
+- Pin anvil via mise (https://github.com/rainbow-me/rainbow/pull/7708)
+- Move test wallet funding out of the app (https://github.com/rainbow-me/rainbow/pull/7709)
+- Move EVM primitives out of framework into owning domains (https://github.com/rainbow-me/rainbow/pull/7713)
+- Ensure user can not go back after certain milestones (https://github.com/rainbow-me/rainbow/pull/7719)
+
+### Fixed
+
+- Flaky setup resume testing (https://github.com/rainbow-me/rainbow/pull/7698)
+- First pass of frozen copy in English on cold start (https://github.com/rainbow-me/rainbow/pull/7705)
+- Request failures counted as app crashes in release health (https://github.com/rainbow-me/rainbow/pull/7706)
+- Run summary looks complete when a shard reports nothing (https://github.com/rainbow-me/rainbow/pull/7710)
+- Redact identifiers from logged URLs and error messages (https://github.com/rainbow-me/rainbow/pull/7712)
+- Make transaction watching resilient to high pending volume and request failure (https://github.com/rainbow-me/rainbow/pull/7694)
+
 ## [2.0.41](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.41)
 
 ### Added
