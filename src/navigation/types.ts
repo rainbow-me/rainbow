@@ -664,6 +664,7 @@ type RouteParams = {
     /** Fiat amount as a decimal string, e.g. "50". */
     depositAmount: string;
   };
+  [Routes.CASH_PAYMENT_METHODS_SHEET]: undefined;
   [Routes.PERPS_ACCOUNT_SCREEN]:
     | {
         scrollToTop?: boolean;

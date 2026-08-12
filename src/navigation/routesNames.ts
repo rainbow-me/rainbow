@@ -75,6 +75,7 @@ const Routes = {
   CASH_SETUP_CARD_DETAILS: 'CashSetupCardDetails',
   CASH_SETUP_CARD_ADDED: 'CashSetupCardAdded',
   CASH_ADD_WALLET_SHEET: 'CashAddWalletSheet',
+  CASH_PAYMENT_METHODS_SHEET: 'CashPaymentMethodsSheet',
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   CHOOSE_BACKUP_SHEET: 'ChooseBackupSheet',
