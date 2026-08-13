@@ -1,8 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
-import Animated, { makeMutable, runOnUI, useAnimatedScrollHandler, type SharedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedScrollHandler, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
@@ -25,66 +25,77 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { clamp } from '@/worklets/numbers';
 
-type DiscoverSectionsPagerProps = {
-  scrollOffset: SharedValue<number>;
-};
-
-type SectionScrollOffsets = Map<DiscoverSection, SharedValue<number>>;
+type SectionFadeState = { readonly __workletContextObject: true; activeIndex: number; inactiveOffsets: number[] };
 
 const FALLBACK_SECTION_COUNT = 3;
 const FALLBACK_TILE_COUNT = 2;
 const EMPTY_TABS: DiscoverTab[] = [];
 
-export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
+export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: { scrollOffset: SharedValue<number> }) {
   const surface = useDiscoverSurface();
   const tabs = surface?.tabs ?? EMPTY_TABS;
-
-  const { activeSectionIndex, sectionScrollOffsets } = useStableValue(() => {
-    const initialSectionIndex = getSectionIndex(tabs, DiscoverSectionNavigation.getActiveSection());
-    return {
-      activeSectionIndex: makeMutable(initialSectionIndex === -1 && tabs.length ? 0 : initialSectionIndex),
-      sectionScrollOffsets: new Map<DiscoverSection, SharedValue<number>>(),
-    };
-  });
   const pagerKey = surface?.tabsKey ?? '';
 
-  const activateSection = useMemo(
+  const sectionFadeState = useStableValue<SectionFadeState>(() => ({
+    __workletContextObject: true,
+    activeIndex: 0,
+    inactiveOffsets: [],
+  }));
+
+  const activateSectionFade = useMemo(
     () =>
-      runOnUI((index: number, sectionOffset: SharedValue<number>) => {
-        if (index !== -1) activeSectionIndex.value = index;
-        scrollOffset.value = sectionOffset.value;
+      runOnUI((index: number) => {
+        const previousIndex = sectionFadeState.activeIndex;
+        if (previousIndex === index) return;
+
+        const nextOffset = sectionFadeState.inactiveOffsets[index] ?? 0;
+
+        sectionFadeState.inactiveOffsets[previousIndex] = scrollOffset.value;
+        sectionFadeState.activeIndex = index;
+        scrollOffset.value = nextOffset;
       }),
-    [activeSectionIndex, scrollOffset]
+    [scrollOffset, sectionFadeState]
+  );
+
+  const resetSectionFadeState = useMemo(
+    () =>
+      runOnUI((activeIndex: number) => {
+        sectionFadeState.activeIndex = activeIndex;
+        sectionFadeState.inactiveOffsets.length = 0;
+        scrollOffset.value = 0;
+      }),
+    [scrollOffset, sectionFadeState]
   );
 
   useListen(
     useDiscoverNavigationStore,
-    state => state.activeSection,
+    s => s.activeSection,
     section => {
-      activateSection(getSectionIndex(tabs, section), getSectionScrollOffset(sectionScrollOffsets, section));
+      const tabs = useDiscoverSurface.getState()?.tabs;
+      if (!tabs) return;
+
+      const sectionIndex = getSectionIndex(tabs, section);
+      if (sectionIndex === -1) return;
+
+      activateSectionFade(sectionIndex);
     }
   );
 
-  useEffect(() => {
-    const firstTab = tabs[0];
-    if (!firstTab) return;
+  useListen(
+    useDiscoverSurface,
+    s => s?.tabsKey,
+    () => {
+      const tabs = useDiscoverSurface.getState()?.tabs ?? EMPTY_TABS;
+      const sectionIndex = getSectionIndex(tabs, DiscoverSectionNavigation.getActiveSection());
+      const isActiveSectionGone = sectionIndex === -1;
 
-    const currentSections = new Set(tabs.map(tab => tab.id));
-    for (const section of sectionScrollOffsets.keys()) {
-      if (!currentSections.has(section)) {
-        sectionScrollOffsets.delete(section);
-      }
-    }
+      resetSectionFadeState(isActiveSectionGone ? 0 : sectionIndex);
 
-    const activeSection = DiscoverSectionNavigation.getActiveSection();
-    const sectionIndex = getSectionIndex(tabs, activeSection);
-    if (sectionIndex === -1) {
-      DiscoverSectionNavigation.navigate(firstTab.id);
-      return;
-    }
-
-    activateSection(sectionIndex, getSectionScrollOffset(sectionScrollOffsets, activeSection));
-  }, [activateSection, sectionScrollOffsets, tabs]);
+      const firstTab = tabs[0];
+      if (firstTab && isActiveSectionGone) DiscoverSectionNavigation.navigate(firstTab.id);
+    },
+    { fireImmediately: true }
+  );
 
   if (!surface || !tabs.length) {
     return (
@@ -111,11 +122,10 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
         {tabs.map((section, index) => (
           <SmoothPager.Page id={section.id} key={section.id}>
             <DiscoverSectionScrollView
-              activeSectionIndex={activeSectionIndex}
               scrollOffset={scrollOffset}
               section={section}
+              sectionFadeState={sectionFadeState}
               sectionIndex={index}
-              storedScrollOffset={getSectionScrollOffset(sectionScrollOffsets, section.id)}
               surfaceId={surface.id}
             />
           </SmoothPager.Page>
@@ -154,18 +164,16 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback() {
 });
 
 const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
-  activeSectionIndex,
   scrollOffset,
   section,
+  sectionFadeState,
   sectionIndex,
-  storedScrollOffset,
   surfaceId,
 }: {
-  activeSectionIndex: SharedValue<number>;
   scrollOffset: SharedValue<number>;
   section: DiscoverTab;
+  sectionFadeState: SectionFadeState;
   sectionIndex: number;
-  storedScrollOffset: SharedValue<number>;
   surfaceId: SurfaceId;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
@@ -182,12 +190,15 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: event => {
-      const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
+      const fadeOffset = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
-      if (storedScrollOffset.value !== clampedPosition) storedScrollOffset.value = clampedPosition;
+      if (sectionFadeState.activeIndex === sectionIndex) {
+        if (scrollOffset.value !== fadeOffset) scrollOffset.value = fadeOffset;
+        return;
+      }
 
-      if (activeSectionIndex.value !== sectionIndex || scrollOffset.value === clampedPosition) return;
-      scrollOffset.value = clampedPosition;
+      if (sectionFadeState.inactiveOffsets[sectionIndex] === fadeOffset) return;
+      sectionFadeState.inactiveOffsets[sectionIndex] = fadeOffset;
     },
   });
 
@@ -210,15 +221,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     </Animated.ScrollView>
   );
 });
-
-function getSectionScrollOffset(offsets: SectionScrollOffsets, section: DiscoverSection): SharedValue<number> {
-  const existing = offsets.get(section);
-  if (existing) return existing;
-
-  const offset = makeMutable(0);
-  offsets.set(section, offset);
-  return offset;
-}
 
 function getSectionIndex(tabs: DiscoverTab[], section: DiscoverSection): number {
   return tabs.findIndex(tab => tab.id === section);
