@@ -9,6 +9,13 @@
 # Remove when: codebase migrated off react-native-fs to
 #   expo-file-system. Draft PR: rainbow-me/rainbow#7428.
 
+diff --git a/node_modules/react-native-fs/android/build.gradle b/node_modules/react-native-fs/android/build.gradle
+index b956cfa..ddef857 100644
+--- a/node_modules/react-native-fs/android/build.gradle
++++ b/node_modules/react-native-fs/android/build.gradle
+@@ -7 +7 @@
+-        jcenter()
++        mavenCentral()
 diff --git a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
 index 0000000..0000001 100644
 --- a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java

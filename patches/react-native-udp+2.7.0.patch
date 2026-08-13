@@ -1,3 +1,10 @@
+diff --git a/node_modules/react-native-udp/android/build.gradle b/node_modules/react-native-udp/android/build.gradle
+index 8a2effa..edeb0ab 100644
+--- a/node_modules/react-native-udp/android/build.gradle
++++ b/node_modules/react-native-udp/android/build.gradle
+@@ -22 +22 @@
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 diff --git a/node_modules/react-native-udp/android/src/main/java/com/tradle/react/UdpSocketClient.java b/node_modules/react-native-udp/android/src/main/java/com/tradle/react/UdpSocketClient.java
 index 15d6526..510f06d 100644
 --- a/node_modules/react-native-udp/android/src/main/java/com/tradle/react/UdpSocketClient.java

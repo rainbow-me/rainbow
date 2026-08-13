@@ -1,0 +1,7 @@
+diff --git a/node_modules/react-native-get-random-values/android/build.gradle b/node_modules/react-native-get-random-values/android/build.gradle
+index 8dfd8b9..a827cf4 100644
+--- a/node_modules/react-native-get-random-values/android/build.gradle
++++ b/node_modules/react-native-get-random-values/android/build.gradle
+@@ -4 +4 @@
+-        jcenter()
++        mavenCentral()

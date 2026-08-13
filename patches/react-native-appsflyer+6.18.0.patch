@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-appsflyer/android/build.gradle b/node_modules/react-native-appsflyer/android/build.gradle
+index fc55248..a425d92 100644
+--- a/node_modules/react-native-appsflyer/android/build.gradle
++++ b/node_modules/react-native-appsflyer/android/build.gradle
+@@ -28,3 +28,7 @@ android {
+     buildToolsVersion safeExtGet('buildToolsVersion', '34.0.0')
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@shopify/flash-list/android/build.gradle b/node_modules/@shopify/flash-list/android/build.gradle
+index 0585d2a..a4d01ff 100644
+--- a/node_modules/@shopify/flash-list/android/build.gradle
++++ b/node_modules/@shopify/flash-list/android/build.gradle
+@@ -44,3 +44,7 @@ android {
+     }
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     compileOptions {

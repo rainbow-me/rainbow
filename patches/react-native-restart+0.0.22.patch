@@ -1,0 +1,9 @@
+diff --git a/node_modules/react-native-restart/android/build.gradle b/node_modules/react-native-restart/android/build.gradle
+index 7597ac6..47a5d21 100644
+--- a/node_modules/react-native-restart/android/build.gradle
++++ b/node_modules/react-native-restart/android/build.gradle
+@@ -8 +8 @@
+-      jcenter()
++      mavenCentral()
+@@ -48 +47,0 @@
+-  jcenter()

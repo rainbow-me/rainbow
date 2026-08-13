@@ -1,0 +1,7 @@
+diff --git a/node_modules/react-native-action-sheet/android/build.gradle b/node_modules/react-native-action-sheet/android/build.gradle
+index 23a172b..af66e77 100644
+--- a/node_modules/react-native-action-sheet/android/build.gradle
++++ b/node_modules/react-native-action-sheet/android/build.gradle
+@@ -13 +13 @@
+-        jcenter()
++        mavenCentral()

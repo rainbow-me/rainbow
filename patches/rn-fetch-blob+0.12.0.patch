@@ -1,0 +1,12 @@
+diff --git a/node_modules/rn-fetch-blob/android/build.gradle b/node_modules/rn-fetch-blob/android/build.gradle
+index a4ca7a4..1450d3e 100644
+--- a/node_modules/rn-fetch-blob/android/build.gradle
++++ b/node_modules/rn-fetch-blob/android/build.gradle
+@@ -9 +8,0 @@
+-    jcenter()
+@@ -15 +14 @@
+-        jcenter()
++        mavenCentral()
+@@ -34 +33 @@
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

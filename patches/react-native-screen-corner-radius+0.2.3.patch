@@ -1,0 +1,20 @@
+diff --git a/node_modules/react-native-screen-corner-radius/android/build.gradle b/node_modules/react-native-screen-corner-radius/android/build.gradle
+index 48d7647..640ed69 100644
+--- a/node_modules/react-native-screen-corner-radius/android/build.gradle
++++ b/node_modules/react-native-screen-corner-radius/android/build.gradle
+@@ -7 +7 @@
+-    jcenter()
++    mavenCentral()
+@@ -55 +54,0 @@
+-  jcenter()
+diff --git a/node_modules/react-native-screen-corner-radius/ios/ScreenCornerRadius.m b/node_modules/react-native-screen-corner-radius/ios/ScreenCornerRadius.m
+index e781740..985ee9c 100644
+--- a/node_modules/react-native-screen-corner-radius/ios/ScreenCornerRadius.m
++++ b/node_modules/react-native-screen-corner-radius/ios/ScreenCornerRadius.m
+@@ -1,5 +1,5 @@
+ #import "ScreenCornerRadius-Bridging-Header.h"
+-#import "RCTBridgeModule.h"
++#import <React/RCTBridgeModule.h>
+ 
+ @interface RCT_EXTERN_REMAP_MODULE(ScreenCornerRadius, ScreenCornerRadius, NSObject)
+ 

@@ -10,9 +10,15 @@ index 43ce35d..c1dd344 100644
  
  end
 diff --git a/node_modules/react-native-tcp/android/build.gradle b/node_modules/react-native-tcp/android/build.gradle
-index c582eb7..5785289 100644
+index c582eb7..8398492 100644
 --- a/node_modules/react-native-tcp/android/build.gradle
 +++ b/node_modules/react-native-tcp/android/build.gradle
+@@ -7 +7 @@
+-        jcenter()
++        mavenCentral()
+@@ -31 +31 @@
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 @@ -44,6 +44,6 @@ repositories {
  }
  

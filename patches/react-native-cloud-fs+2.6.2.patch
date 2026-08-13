@@ -1,15 +1,41 @@
 diff --git a/node_modules/react-native-cloud-fs/android/build.gradle b/node_modules/react-native-cloud-fs/android/build.gradle
-index 0c80504..2bb6dd7 100644
+index 340d577..2dac62e 100644
 --- a/node_modules/react-native-cloud-fs/android/build.gradle
 +++ b/node_modules/react-native-cloud-fs/android/build.gradle
-@@ -43,9 +43,7 @@ allprojects {
- 
- dependencies {
-     implementation 'com.google.android.gms:play-services-drive:17.0.0'
+@@ -48,3 +48 @@ dependencies {
 -    implementation ('com.google.android.gms:play-services-auth:17.0.0') {
 -        force = true;
 -    }
-+    implementation ('com.google.android.gms:play-services-auth:17.0.0') 
-     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
-     implementation('com.google.api-client:google-api-client-android:1.26.0') {
-         exclude group: 'org.apache.httpcomponents'
++    implementation ('com.google.android.gms:play-services-auth:17.0.0')
+@@ -62 +60 @@ dependencies {
+-}
+\ No newline at end of file
++}
+diff --git a/node_modules/react-native-cloud-fs/ios/RNCloudFs.h b/node_modules/react-native-cloud-fs/ios/RNCloudFs.h
+index f6bf5c4..d8933ca 100644
+--- a/node_modules/react-native-cloud-fs/ios/RNCloudFs.h
++++ b/node_modules/react-native-cloud-fs/ios/RNCloudFs.h
+@@ -2,5 +2 @@
+-#if __has_include(<React/RCTBridgeModule.h>)
+-  #import <React/RCTBridgeModule.h>
+-#else
+-  #import "RCTBridgeModule.h"
+-#endif
++#import <React/RCTBridgeModule.h>
+diff --git a/node_modules/react-native-cloud-fs/ios/RNCloudFs.m b/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
+index d38ff4e..0fe0a6b 100644
+--- a/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
++++ b/node_modules/react-native-cloud-fs/ios/RNCloudFs.m
+@@ -3,8 +2,0 @@
+-#import <UIKit/UIKit.h>
+-#if __has_include(<React/RCTBridgeModule.h>)
+-  #import <React/RCTBridgeModule.h>
+-#else
+-  #import "RCTBridgeModule.h"
+-#endif
+-#import "RCTEventDispatcher.h"
+-#import "RCTUtils.h"
+@@ -12 +4,2 @@
+-#import "RCTLog.h"
++#import <React/RCTLog.h>
++#import <UIKit/UIKit.h>

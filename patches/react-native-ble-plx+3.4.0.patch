@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-ble-plx/android/build.gradle b/node_modules/react-native-ble-plx/android/build.gradle
+index 54b4275..1f19f4f 100644
+--- a/node_modules/react-native-ble-plx/android/build.gradle
++++ b/node_modules/react-native-ble-plx/android/build.gradle
+@@ -57,3 +57,7 @@ android {
+   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+-
++
++  buildFeatures {
++    buildConfig true
++  }
++
+   defaultConfig {
