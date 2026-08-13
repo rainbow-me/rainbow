@@ -22,10 +22,9 @@ import { DeeplinkHandler } from '@/app/navigation/DeeplinkHandler';
 import { TestDeeplinkHandler } from '@/app/navigation/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
-import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
+import { reactNativeDisableYellowBox } from '@/config/debug';
 import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
 import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
@@ -46,10 +45,7 @@ import { MainThemeProvider } from '@/theme/ThemeContext';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
-if (IS_DEV) {
-  reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
-  (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
-}
+if (IS_DEV && reactNativeDisableYellowBox) LogBox.ignoreAllLogs();
 
 enableScreens();
 configureRainbowSdk();
