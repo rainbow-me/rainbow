@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, InteractionManager, Platform } from 'react-native';
+import { ActivityIndicator, Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { noop } from 'lodash';
@@ -256,7 +256,7 @@ export function WalletConnectApprovalSheet() {
   }, [chainId, type]);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       analytics.track(analytics.event.shownWalletconnectSessionRequest);
     });
     // Reject if the modal is dismissed
@@ -294,7 +294,7 @@ export function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       analytics.track(analytics.event.receivedWcConnection, {
         dappName,
         dappUrl,

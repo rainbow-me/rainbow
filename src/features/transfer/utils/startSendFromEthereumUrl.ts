@@ -1,4 +1,4 @@
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 // @ts-expect-error eth-url-parser ships no type declarations
 import { parse } from 'eth-url-parser';
@@ -60,7 +60,7 @@ export async function startSendFromEthereumUrl(data: string) {
 
   const assetWithPrice = parseAssetNative(asset, nativeCurrency);
 
-  InteractionManager.runAfterInteractions(() => {
+  requestIdleCallback(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
     if (Platform.OS === 'ios') {
       Navigation.handleAction(Routes.SEND_FLOW, {

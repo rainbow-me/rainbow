@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, type ReactNode } from 'react';
-import { InteractionManager, Platform, Share, View } from 'react-native';
+import { Platform, Share, View } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
@@ -353,7 +353,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
     if (isENS) {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         startRegistration(asset.name, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: asset.name,

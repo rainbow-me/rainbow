@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
@@ -353,7 +352,7 @@ export function useSendSubmit({
         navigate(Routes.WALLET_SCREEN);
 
         if (!rainbowToastsEnabled) {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             navigate(Routes.PROFILE_SCREEN);
           });
         }

@@ -1,6 +1,5 @@
 /* eslint-disable no-promise-executor-return */
 import { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { DelayedAlert } from '@/components/alerts';
@@ -75,7 +74,7 @@ export const useCreateBackup = () => {
 
   const onError = useCallback(
     (msg: string, isDamaged?: boolean) => {
-      InteractionManager.runAfterInteractions(async () => {
+      requestIdleCallback(async () => {
         if (isDamaged) {
           Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
         } else {

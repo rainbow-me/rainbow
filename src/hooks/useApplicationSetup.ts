@@ -1,5 +1,4 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { checkIdentifierOnLaunch } from '@/features/backup/backup';
 import {
@@ -32,7 +31,7 @@ async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>)
 
   if (address) {
     void initializeWallet({ shouldRunMigrations: true });
-    InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
+    requestIdleCallback(checkIdentifierOnLaunch);
   }
 
   const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;

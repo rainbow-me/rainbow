@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { type EthereumAddress } from '@/entities/wallet';
 import { IS_TEST } from '@/env';
@@ -140,7 +139,7 @@ const SessionEntryPromptSyncComponent = () => {
     }
 
     startedRef.current = true;
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       void runSessionEntryPromptOnce();
     });
   }, [activeRoute, walletReady]);

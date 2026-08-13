@@ -1,6 +1,6 @@
 // @refresh
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { InteractionManager, NativeModules, Platform, type StyleProp, type TextInput, type TextStyle } from 'react-native';
+import { NativeModules, Platform, type TextInput } from 'react-native';
 
 import {
   runOnJS,
@@ -36,6 +36,7 @@ import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } fr
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
+import { type AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
 import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
@@ -143,7 +144,7 @@ interface SwapContextType {
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
   confirmButtonProps: DerivedValue<ConfirmButtonProps>;
-  confirmButtonIconStyle: StyleProp<TextStyle>;
+  confirmButtonIconStyle: AnimatedTextProps['style'];
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
   gasPanelHeight: SharedValue<number>;
@@ -755,7 +756,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             const chainIdToSet = extendedAsset?.chainId ?? ChainId.mainnet;
             const shouldUpdateSelectedOutputChainId = swapsStore.getState().selectedOutputChainId !== chainIdToSet;
             if (shouldUpdateSelectedOutputChainId) swapsStore.setState({ selectedOutputChainId: chainIdToSet });
