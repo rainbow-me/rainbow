@@ -3154,7 +3154,7 @@ PODS:
     - React
   - react-native-ios-context-menu (1.15.3):
     - React-Core
-  - react-native-keyboard-controller (1.21.7):
+  - react-native-keyboard-controller (1.22.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3167,7 +3167,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-keyboard-controller/common (= 1.21.7)
+    - react-native-keyboard-controller/common (= 1.22.3)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3177,7 +3177,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-keyboard-controller/common (1.21.7):
+  - react-native-keyboard-controller/common (1.22.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -5260,7 +5260,7 @@ SPEC CHECKSUMS:
   react-native-cool-modals: e01f5d0d03b4d207710ca2fa37a41b085017962e
   react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
-  react-native-keyboard-controller: bc54fbb24e5d8ec735c9c1bc259670be254488f2
+  react-native-keyboard-controller: 0cf48ce6765397791a0f4b047a82cf077250c314
   react-native-menu: b265308504babf73c6a7f1e08020ac498187a86c
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
