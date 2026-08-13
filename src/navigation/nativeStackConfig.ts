@@ -1,40 +1,28 @@
 import { Keyboard } from 'react-native';
 
+import { type CoolModalNavigationOptions } from '@/react-native-cool-modals/NativeStackView';
+
 import { appearListener } from './nativeStackHelpers';
 import { onDidPop, onWillPop } from './Navigation';
 
 type NativeStackConfig = {
-  mode: 'modal';
-  screenOptions: {
-    contentStyle: {
-      backgroundColor: string;
-    };
-    onAppear: () => void;
-    onDismissed: () => void;
-    onTouchTop: ({ nativeEvent: { dismissing } }: { nativeEvent: { dismissing: boolean } }) => void;
-    onWillDismiss: () => void;
-    showDragIndicator: boolean;
-    springDamping: number;
-    stackPresentation: 'modal';
-    transitionDuration: number;
-  };
+  screenOptions: CoolModalNavigationOptions;
 };
 
 export const nativeStackConfig: NativeStackConfig = {
-  mode: 'modal',
   screenOptions: {
     contentStyle: {
       backgroundColor: 'transparent',
     },
     onAppear: () => {
-      appearListener.current && appearListener.current();
+      appearListener.current?.();
     },
     onDismissed: onDidPop,
-    onTouchTop: ({ nativeEvent: { dismissing } }: { nativeEvent: { dismissing: boolean } }) => {
+    onTouchTop: ({ nativeEvent: { dismissing } }) => {
       if (dismissing) {
         Keyboard.dismiss();
       } else {
-        appearListener.current && appearListener.current();
+        appearListener.current?.();
       }
     },
     onWillDismiss: onWillPop,

@@ -57,7 +57,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-      _props = WindowPortalShadowNode::defaultSharedProps();
+    _props = WindowPortalShadowNode::defaultSharedProps();
   }
   return self;
 }

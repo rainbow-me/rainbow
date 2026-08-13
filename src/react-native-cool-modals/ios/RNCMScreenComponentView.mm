@@ -6,9 +6,9 @@
 #import "RNCMScreenComponentView.h"
 
 #import <React/RCTConversions.h>
-#import <React/RCTViewComponentView.h>
-#import <React/RCTSurfaceView.h>
 #import <React/RCTRootComponentView.h>
+#import <React/RCTSurfaceView.h>
+#import <React/RCTViewComponentView.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/react_native_cool_modals/EventEmitters.h>
 #import <react/renderer/components/react_native_cool_modals/Props.h>
@@ -32,7 +32,7 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
 @implementation RNCMScreenComponentView {
   RNCMScreenViewController *_controller;
   RNCMScreenShadowNode::ConcreteState::Shared _state;
-    RCTSurfaceTouchHandler *_touchHandler;
+  RCTSurfaceTouchHandler *_touchHandler;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -102,22 +102,32 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
       _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
       break;
   }
-    
-    if (newScreenProps.hidden != oldScreenProps.hidden && newScreenProps.hidden) {
-        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC);
-        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
-          if (self.superview.superview.subviews.count > 0) {
-            self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
-          }
-          [(PanModalViewController*) [self->_controller parentVC] hide];
-        });
+
+  if (newScreenProps.hidden != oldScreenProps.hidden && newScreenProps.hidden) {
+    __weak RNCMScreenComponentView *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+      RNCMScreenComponentView *strongSelf = weakSelf;
+      if (strongSelf == nil || !GetScreenComponentViewProps(strongSelf->_props).hidden) {
+        return;
       }
 
-    
-    [(PanModalViewController*) [_controller parentVC] rejump];
+      if (strongSelf.superview.superview.subviews.count > 0) {
+        strongSelf.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
+      }
+      [(PanModalViewController *)[strongSelf->_controller parentVC] hide];
+    });
+  }
+
+  PanModalViewController *parentViewController = (PanModalViewController *)[_controller parentVC];
+  if (newScreenProps.longFormHeight != oldScreenProps.longFormHeight ||
+      newScreenProps.shortFormHeight != oldScreenProps.shortFormHeight) {
+    [parentViewController rejump];
+  } else if (newScreenProps.isShortFormEnabled != oldScreenProps.isShortFormEnabled) {
+    [parentViewController panModalSetNeedsLayoutUpdateWrapper];
+  }
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   _state = std::static_pointer_cast<const RNCMScreenShadowNode::ConcreteState>(state);
 }
@@ -125,24 +135,25 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
            oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
 {
-    _newLayoutMetrics = layoutMetrics;
-    _oldLayoutMetrics = oldLayoutMetrics;
-    UIViewController *parentVC = self.reactViewController.parentViewController;
-    if (parentVC == nil || ![parentVC isKindOfClass:[UINavigationController class]]) {
-        [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
-    }
-    // when screen is mounted under RNSNavigationController it's size is controller
-    // by the navigation controller itself. That is, it is set to fill space of
-    // the controller. In that case we ignore react layout system from managing
-    // the screen dimensions and we wait for the screen VC to update and then we
-    // pass the dimensions to ui view manager to take into account when laying out
-    // subviews
-    // Explanation taken from `reactSetFrame`, which is old arch equivalent of this code.
+  _newLayoutMetrics = layoutMetrics;
+  _oldLayoutMetrics = oldLayoutMetrics;
+  UIViewController *parentVC = self.reactViewController.parentViewController;
+  if (parentVC == nil || ![parentVC isKindOfClass:[UINavigationController class]]) {
+    [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  }
+  // When a screen is mounted under UINavigationController, the navigation controller owns its size.
+  // Ignore React layout for the screen itself and let the controller report its dimensions to the
+  // shadow tree so React can lay out the screen's children.
 }
 
 - (void)layout
 {
   [(PanModalViewController *)[_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTRNCMScreenHandleCommand(self, commandName, args);
 }
 
 - (BOOL)presentationControllerShouldDismiss:(UIPresentationController *)presentationController

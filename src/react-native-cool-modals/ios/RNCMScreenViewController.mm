@@ -7,7 +7,7 @@
   __weak id _previousFirstResponder;
   CGRect _lastViewFrame;
   UIViewController *_parentVC;
-    RNCMScreenComponentView *_initialView;
+  RNCMScreenComponentView *_initialView;
 }
 
 - (instancetype)initWithView:(UIView *)view
@@ -112,14 +112,14 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    [self.screenView notifyWillAppear];
+  [super viewWillAppear:animated];
+  [self.screenView notifyWillAppear];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
   [super viewDidAppear:animated];
-    [self.screenView notifyAppear];
+  [self.screenView notifyAppear];
 }
 
 - (void)notifyFinishTransitioning

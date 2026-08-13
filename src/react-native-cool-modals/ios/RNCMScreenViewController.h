@@ -8,7 +8,7 @@
 
 - (instancetype)initWithView:(UIView *)view;
 - (void)notifyFinishTransitioning;
-- (UIViewController*) parentVC;
+- (UIViewController *)parentVC;
 - (void)setViewToSnapshot;
 - (RNCMScreenComponentView *)screenView;
 

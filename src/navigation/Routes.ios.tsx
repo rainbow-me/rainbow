@@ -154,7 +154,7 @@ import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackCoolModalNavigator();
+const NativeStack = createNativeStackCoolModalNavigator<RootStackParamList>();
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;
@@ -232,7 +232,6 @@ function NativeStackNavigator() {
         options={{
           customStack: true,
           ignoreBottomOffset: true,
-          onAppear: null,
           topOffset: 0,
         }}
       />

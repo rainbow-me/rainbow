@@ -1,59 +1,60 @@
-
 import PanModal
 
 @objc public protocol PanModalViewControllerScreen: NSObjectProtocol {
-    @objc var panModalViewController: PanModalViewController? { get }
-    @objc var allowsDragToDismiss: Bool { get }
-    @objc var allowsTapToDismiss: Bool { get }
-    @objc var anchorModalToLongForm: Bool { get }
-    @objc var backgroundOpacity: NSNumber { get }
-    @objc var cornerRadius: NSNumber { get }
-    @objc var customStack: Bool { get }
-    @objc var disableShortFormAfterTransitionToLongForm: Bool { get }
-    @objc var interactWithScrollView: Bool { get }
-    @objc var isShortFormEnabled: Bool { get }
-    @objc var longFormHeight: NSNumber { get }
-    @objc var modalBackgroundColor: UIColor { get }
-    @objc var relevantScrollViewDepth: NSNumber { get }
-    @objc var shortFormHeight: NSNumber { get }
-    @objc var showDragIndicator: Bool { get }
-    @objc var springDamping: NSNumber { get }
-    @objc var startFromShortForm: Bool { get }
-    @objc var topOffset: NSNumber { get }
-    @objc var transitionDuration: NSNumber { get }
-    @objc var ignoreBottomOffset: Bool { get }
-    @objc var dismissable: Bool { get }
-    @objc var headerHeight: NSNumber { get }
+  @objc var panModalViewController: PanModalViewController? { get }
+  @objc var allowsDragToDismiss: Bool { get }
+  @objc var allowsTapToDismiss: Bool { get }
+  @objc var anchorModalToLongForm: Bool { get }
+  @objc var backgroundOpacity: NSNumber { get }
+  @objc var cornerRadius: NSNumber { get }
+  @objc var customStack: Bool { get }
+  @objc var disableShortFormAfterTransitionToLongForm: Bool { get }
+  @objc var interactWithScrollView: Bool { get }
+  @objc var isShortFormEnabled: Bool { get }
+  @objc var longFormHeight: NSNumber { get }
+  @objc var modalBackgroundColor: UIColor { get }
+  @objc var relevantScrollViewDepth: NSNumber { get }
+  @objc var shortFormHeight: NSNumber { get }
+  @objc var showDragIndicator: Bool { get }
+  @objc var springDamping: NSNumber { get }
+  @objc var startFromShortForm: Bool { get }
+  @objc var topOffset: NSNumber { get }
+  @objc var transitionDuration: NSNumber { get }
+  @objc var ignoreBottomOffset: Bool { get }
+  @objc var dismissable: Bool { get }
+  @objc var headerHeight: NSNumber { get }
 
-    @objc func notifyAppear()
-    @objc func willDismiss()
-    @objc func invalidateImpl()
-    @objc func onTouchTopWrapper(_ dismissing: NSNumber)
+  @objc func notifyAppear()
+  @objc func willDismiss()
+  @objc func invalidateImpl()
+  @objc func onTouchTopWrapper(_ dismissing: NSNumber)
 }
 
 extension UIScreen {
-    private static let cornerRadiusKey: String = {
-        let components = ["Radius", "Corner", "display", "_"]
-        return components.reversed().joined()
-    }()
+  private static let cornerRadiusKey: String = {
+    let components = ["Radius", "Corner", "display", "_"]
+    return components.reversed().joined()
+  }()
 
-    public var displayCornerRadius: CGFloat {
-        guard let cornerRadius = self.value(forKey: Self.cornerRadiusKey) as? CGFloat else {
-            return 0
-        }
-        
-        return cornerRadius
+  public var displayCornerRadius: CGFloat {
+    guard let cornerRadius = self.value(forKey: Self.cornerRadiusKey) as? CGFloat else {
+      return 0
     }
+
+    return cornerRadius
+  }
 }
 
-public extension UIView {
-  @objc func newHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    if (self.superview!.superview == nil && self.subviews.count == 2 && self.subviews[1] is PanModal.PanContainerView) {
+extension UIView {
+  @objc public func newHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    if self.superview!.superview == nil && self.subviews.count == 2
+      && self.subviews[1] is PanModal.PanContainerView
+    {
       let container = self.subviews[1]
       if let screen = container.subviews.first as? PanModalViewControllerScreen {
         let hacked = screen.panModalViewController?.hacked ?? false
         if hacked {
-          if (self.subviews[1].frame.contains(point)) {
+          if self.subviews[1].frame.contains(point) {
             return self.subviews[1].hitTest(point, with: event)
           }
           return nil
@@ -66,12 +67,12 @@ public extension UIView {
 
 public class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
   static var swizzled = false
-  var config : (UIView & PanModalViewControllerScreen)?
+  var config: (UIView & PanModalViewControllerScreen)?
   public var length: CGFloat = 0
   public var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   public var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   public var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
-  var state: PanModalPresentationController.PresentationState? = nil;
+  var state: PanModalPresentationController.PresentationState? = nil
   var disappeared = false
   var hiding = false
   var didHandleWillDismiss = false
@@ -86,7 +87,10 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     viewControllerToPresent.setValue(self, forKey: "_parentVC")
     viewController = viewControllerToPresent
     config = (viewControllerToPresent.view as! (UIView & PanModalViewControllerScreen))
-    state = (config?.startFromShortForm ?? false) ? PanModalPresentationController.PresentationState.shortForm : PanModalPresentationController.PresentationState.longForm;
+    state =
+      (config?.startFromShortForm ?? false)
+      ? PanModalPresentationController.PresentationState.shortForm
+      : PanModalPresentationController.PresentationState.longForm
   }
 
   @objc public func hide() {
@@ -96,18 +100,18 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   @objc public func jumpTo(long: NSNumber) {
-    if (hasAskedAboutShortForm > 0) {
+    if hasAskedAboutShortForm > 0 {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
         // actively waiting
         self.jumpTo(long: long)
       }
-      return;
+      return
     }
     self.panModalSetNeedsLayoutUpdate()
-    if (long.boolValue) {
-      panModalTransition(to: .longForm);
+    if long.boolValue {
+      panModalTransition(to: .longForm)
     } else {
-      panModalTransition(to: .shortForm);
+      panModalTransition(to: .shortForm)
     }
   }
 
@@ -127,15 +131,13 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
       forceDisableShortForm = true
       self.panModalSetNeedsLayoutUpdate()
     }
-    self.state = state;
+    self.state = state
   }
-
 
   @objc public func unhackParent() {
     self.hacked = false
     self.ppview = nil
   }
-
 
   public func onTouchTop(_ dismissing: Bool) {
     let selector = NSSelectorFromString("onTouchTopWrapper:")
@@ -143,12 +145,10 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   override public var bottomLayoutGuide: UILayoutSupport {
-    get {
-      if self.isViewLoaded {
-        return super.bottomLayoutGuide
-      }
-      return self
+    if self.isViewLoaded {
+      return super.bottomLayoutGuide
     }
+    return self
   }
 
   var hacked = false
@@ -167,19 +167,19 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   public var cornerRadius: CGFloat {
-    if (self.config?.cornerRadius == 0.666) {
+    if self.config?.cornerRadius == 0.666 {
       return UIScreen.main.displayCornerRadius
     }
     return CGFloat(truncating: self.config?.cornerRadius ?? 0)
   }
 
   public var ignoreBottomOffset: Bool {
-    return self.config!.ignoreBottomOffset;
+    return self.config!.ignoreBottomOffset
   }
 
   public var isHapticFeedbackEnabled: Bool = false
 
-  func findChildScrollViewDFS(view: UIView)-> UIScrollView? {
+  func findChildScrollViewDFS(view: UIView) -> UIScrollView? {
     if panScrollableCache != nil {
       return panScrollableCache
     }
@@ -196,7 +196,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
           return maybeScrollView
         }
       }
-      last.subviews.forEach { subview in
+      for subview in last.subviews {
         viewsToTraverse.append(subview)
       }
     }
@@ -205,7 +205,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
 
   override public var view: UIView! {
     get {
-      if (viewController == nil) {
+      if viewController == nil {
         return UIView()
       }
       return viewController!.view
@@ -227,10 +227,11 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   public func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
-    if (hiding) {
+    if hiding {
       return false
     }
-    return self.config!.dismissable || self.shouldPrioritize(panModalGestureRecognizer: panModalGestureRecognizer)
+    return self.config!.dismissable
+      || self.shouldPrioritize(panModalGestureRecognizer: panModalGestureRecognizer)
   }
 
   public var allowsDragToDismiss: Bool {
@@ -251,7 +252,8 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
 
   public var panModalBackgroundColor: UIColor {
     let backgroundColor: UIColor = self.config?.modalBackgroundColor ?? UIColor.black
-    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
+    return backgroundColor.withAlphaComponent(
+      CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
   }
 
   public var scrollIndicatorInsets: UIEdgeInsets {
@@ -264,11 +266,12 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
       )
     }
 
-    let currentInsets = if #available(iOS 13.0, *) {
-      scrollView.verticalScrollIndicatorInsets
-    } else {
-      scrollView.scrollIndicatorInsets
-    }
+    let currentInsets =
+      if #available(iOS 13.0, *) {
+        scrollView.verticalScrollIndicatorInsets
+      } else {
+        scrollView.scrollIndicatorInsets
+      }
 
     return UIEdgeInsets(
       top: max(currentInsets.top, shouldRoundTopCorners ? cornerRadius : 0),
@@ -285,7 +288,9 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
 
     /// HACK
 
-    let initialLocationAbsY = (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation.y;
+    let initialLocationAbsY =
+      (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation
+      .y
     let currLocationAbsY = panModalGestureRecognizer.location(in: view.superview!.superview).y
 
     let displacementY = currLocationAbsY - initialLocationAbsY
@@ -298,10 +303,10 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   var isShortFormEnabledInternal = 2
-  var hasAskedAboutShortForm = 2;
+  var hasAskedAboutShortForm = 2
   var isShortFormEnabled: Bool {
-    hasAskedAboutShortForm -= 1;
-    let startFromShortForm = self.config?.startFromShortForm ?? true;
+    hasAskedAboutShortForm -= 1
+    let startFromShortForm = self.config?.startFromShortForm ?? true
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
@@ -331,7 +336,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   public var panScrollable: UIScrollView? {
-    if !(self.config?.interactWithScrollView ?? false){
+    if !(self.config?.interactWithScrollView ?? false) {
       return nil
     }
     return findChildScrollViewDFS(view: self.view!)
@@ -347,11 +352,13 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     }
     config = nil
 
-    let isSlack = self.presentingViewController?.responds(to: NSSelectorFromString("unhackParent")) ?? false
+    let isSlack =
+      self.presentingViewController?.responds(to: NSSelectorFromString("unhackParent")) ?? false
 
     if isSlack {
-      let isHidden: Bool = (self.presentingViewController as? PanModalViewController)?.config?.isHidden ?? false
-      if (isHidden) {
+      let isHidden: Bool =
+        (self.presentingViewController as? PanModalViewController)?.config?.isHidden ?? false
+      if isHidden {
         self.presentingViewController!.dismiss(animated: false)
       }
     }
@@ -375,7 +382,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     super.viewWillDisappear(animated)
   }
 
-  var prevHeight: CGFloat = 0;
+  var prevHeight: CGFloat = 0
   override public func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     for i in 1...10 {
@@ -398,10 +405,12 @@ extension UIViewController {
     return delegate
   }
 
-  @objc public func presentModally(_ viewControllerToPresent: UIViewController,
-                                   animated flag: Bool,
-                                   completion: (() -> Void)? = nil,
-                                   slackStack:Bool) -> Void
+  @objc public func presentModally(
+    _ viewControllerToPresent: UIViewController,
+    animated flag: Bool,
+    completion: (() -> Void)? = nil,
+    slackStack: Bool
+  )
 
   {
     let controller = PanModalViewController(viewControllerToPresent)
@@ -409,8 +418,10 @@ extension UIViewController {
       (self as! PanModalViewController).unhackParent()
     }
 
-    controller.transitioningDelegate = slackStack ? viewControllerToPresent.transitioningDelegate : nil
-    controller.modalPresentationStyle = slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
+    controller.transitioningDelegate =
+      slackStack ? viewControllerToPresent.transitioningDelegate : nil
+    controller.modalPresentationStyle =
+      slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
     self.present(controller, animated: flag, completion: completion)
   }
 }

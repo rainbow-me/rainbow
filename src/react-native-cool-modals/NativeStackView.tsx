@@ -1,10 +1,73 @@
 import React, { createContext, useMemo, useRef } from 'react';
-import { Dimensions, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Dimensions, StyleSheet, View, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
-import { StackActions, useTheme } from '@react-navigation/native';
+import {
+  StackActions,
+  useTheme,
+  type NavigationHelpers,
+  type ParamListBase,
+  type StackActionHelpers,
+  type StackNavigationState,
+} from '@react-navigation/native';
+import type { StackNavigationEventMap, StackNavigationOptions } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Components from './screens';
+import { Commands as CoolModalScreenCommands, type NativeProps } from './specs/NativeCoolModalScreen';
+import type CoolModalScreen from './specs/NativeCoolModalScreen';
+
+type CoolModalNativeOptions = Pick<
+  NativeProps,
+  | 'allowsDragToDismiss'
+  | 'allowsTapToDismiss'
+  | 'anchorModalToLongForm'
+  | 'backgroundOpacity'
+  | 'cornerRadius'
+  | 'customStack'
+  | 'disableShortFormAfterTransitionToLongForm'
+  | 'dismissable'
+  | 'headerHeight'
+  | 'ignoreBottomOffset'
+  | 'interactWithScrollView'
+  | 'isShortFormEnabled'
+  | 'longFormHeight'
+  | 'onTouchTop'
+  | 'onWillDismiss'
+  | 'relevantScrollViewDepth'
+  | 'shortFormHeight'
+  | 'showDragIndicator'
+  | 'springDamping'
+  | 'stackAnimation'
+  | 'stackPresentation'
+  | 'startFromShortForm'
+  | 'topOffset'
+  | 'transitionDuration'
+>;
+
+export type CoolModalNavigationOptions = StackNavigationOptions &
+  CoolModalNativeOptions & {
+    backgroundColor?: ColorValue;
+    contentStyle?: StyleProp<ViewStyle>;
+    limitActiveModals?: boolean;
+    onAppear?: () => void;
+    onDismissed?: () => void;
+    single?: boolean;
+  };
+
+export type CoolModalNavigationEventMap = StackNavigationEventMap & {
+  appear: { data: undefined };
+  dismiss: { data: undefined };
+  finishTransitioning: { data: undefined };
+};
+
+type CoolModalNavigationState = StackNavigationState<ParamListBase>;
+type CoolModalNavigationHelpers = NavigationHelpers<ParamListBase, CoolModalNavigationEventMap> & StackActionHelpers<ParamListBase>;
+type CoolModalRoute = CoolModalNavigationState['routes'][number];
+type CoolModalDescriptor = {
+  options: CoolModalNavigationOptions;
+  render: () => React.ReactNode;
+};
+type CoolModalDescriptorMap = Record<string, CoolModalDescriptor>;
 
 type ModalContextValue = {
   layout: () => void;
@@ -18,30 +81,12 @@ const sx = StyleSheet.create({
   },
 });
 
-type Descriptor = {
-  key?: string;
-  options: Record<string, any>;
-  render: () => React.ReactNode;
-};
-
-type Route = {
-  key: string;
-  name: string;
-};
-
-type NavigationHelpersLike = {
-  emit?: (event: { target: string; type: string }) => void;
-  dispatch?: (action: any) => void;
-  addListener?: (type: string, listener: (e: any) => void) => void;
-  isFocused?: () => boolean;
-};
-
 type NativeStackViewProps = {
   colors: { background: string };
-  descriptors: Record<string, Descriptor>;
-  navigation: NavigationHelpersLike;
-  route: Route;
-  state: { routes: Route[]; index: number; key: string };
+  descriptors: CoolModalDescriptorMap;
+  navigation: CoolModalNavigationHelpers;
+  route: CoolModalRoute;
+  state: CoolModalNavigationState;
   hidden?: boolean;
 };
 
@@ -49,8 +94,8 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
   const insets = useSafeAreaInsets();
   const descriptor = descriptors[route.key];
 
-  const { options = {}, render: renderScene } = descriptor;
-  const ref = useRef<React.ComponentRef<typeof Components.Screen> | null>(null);
+  const { options, render: renderScene } = descriptor;
+  const ref = useRef<React.ElementRef<typeof CoolModalScreen>>(null);
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,
@@ -85,7 +130,9 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
   const context = useMemo(
     () => ({
       layout: () => {
-        // TODO: Is this needed?
+        if (ref.current) {
+          CoolModalScreenCommands.layout(ref.current);
+        }
       },
     }),
     []
@@ -117,19 +164,19 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
         longFormHeight={(longFormHeight != null ? longFormHeight - insets.bottom : undefined) ?? Dimensions.get('screen').height}
         modalBackgroundColor={backgroundColor}
         onAppear={() => {
-          options?.onAppear?.();
-          navigation?.emit?.({
+          options.onAppear?.();
+          navigation.emit({
             target: route.key,
             type: 'appear',
           });
         }}
         onDismissed={() => {
-          options?.onDismissed?.();
-          navigation?.emit?.({
+          options.onDismissed?.();
+          navigation.emit({
             target: route.key,
             type: 'dismiss',
           });
-          navigation?.dispatch?.({
+          navigation.dispatch({
             ...StackActions.pop(),
             source: route.key,
             target: state.key,
@@ -155,7 +202,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
             {
               backgroundColor: stackPresentation !== 'transparentModal' ? colors.background : undefined,
             },
-            contentStyle as StyleProp<ViewStyle>,
+            contentStyle,
           ]}
         >
           {renderScene()}
@@ -166,38 +213,38 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }: N
 }
 
 type NativeStackViewComponentProps = {
-  state: { routes: Route[]; index: number; key: string };
-  navigation: NavigationHelpersLike;
-  descriptors: Record<string, Descriptor>;
-} & Record<string, unknown>;
+  state: CoolModalNavigationState;
+  navigation: CoolModalNavigationHelpers;
+  descriptors: CoolModalDescriptorMap;
+};
 
 export default function NativeStackView({ state, navigation, descriptors }: NativeStackViewComponentProps) {
   const { colors } = useTheme();
 
-  const nonSingleRoutesLength = state.routes.filter(route => {
-    const { options = {} } = descriptors[route.key] ?? {};
-    return !options.single;
-  }).length;
+  let nonSingleRoutesLength = 0;
+  for (const route of state.routes) {
+    if (!descriptors[route.key].options.single) nonSingleRoutesLength += 1;
+  }
 
   return (
     <Components.ScreenStack
       style={sx.container}
       onFinishTransitioning={() => {
-        navigation?.emit?.({
+        navigation.emit({
           target: state.key,
           type: 'finishTransitioning',
         });
       }}
     >
       {state.routes.map((route, i) => {
-        const { options = {} } = descriptors[route.key] ?? {};
+        const { options } = descriptors[route.key];
         const { limitActiveModals } = options;
         return (
           <ScreenView
             colors={colors}
             descriptors={descriptors}
             hidden={limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0}
-            key={`screen${i}`}
+            key={route.key}
             navigation={navigation}
             route={route}
             state={state}
