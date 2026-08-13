@@ -64,6 +64,7 @@ const Routes = {
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   CASH_DEPOSIT_INTRO_PANEL: 'CashDepositIntroPanel',
   CASH_DEPOSIT_SETUP_SCREEN: 'CashDepositSetupScreen',
+  CASH_SETUP_CANCEL_SHEET: 'CashSetupCancelSheet',
   CASH_SIGN_IN_SCREEN: 'CashSignInScreen',
   CASH_SETUP_PHONE: 'CashSetupPhone',
   CASH_SETUP_CONFIRM_PHONE: 'CashSetupConfirmPhone',
@@ -163,6 +164,7 @@ const Routes = {
 export const NATIVE_ROUTES = new Set<Route>([
   Routes.AIRDROPS_SHEET,
   Routes.CHANGE_WALLET_SHEET,
+  Routes.CASH_SETUP_CANCEL_SHEET,
   Routes.CLOSE_POSITION_BOTTOM_SHEET,
   Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET,
   Routes.DAPP_BROWSER_CONTROL_PANEL,

@@ -26,10 +26,6 @@ jest.mock('../../../services/userClient', () => ({
   verifyPhone: jest.fn(),
 }));
 
-jest.mock('../useCashDepositSetupNavigation', () => ({
-  useCashDepositSetupNavigation: jest.fn(),
-}));
-
 const mockCreateUserWithPhone = createUserWithPhone as jest.Mock;
 const mockStartSignupResume = startSignupResume as jest.Mock;
 const track = analytics.track as jest.Mock;

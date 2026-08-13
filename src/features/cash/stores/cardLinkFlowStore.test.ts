@@ -38,7 +38,6 @@ const track = analytics.track as jest.Mock;
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const BIVO_STORE = {} as BivoSecureStore;
-
 const flow = () => useCardLinkFlowStore.getState();
 const linkedCard = () => useCashPaymentMethodStore.getState().linkedCard;
 

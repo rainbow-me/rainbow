@@ -651,6 +651,7 @@ type RouteParams = {
   };
   [Routes.PERPS_NAVIGATOR]: undefined;
   [Routes.CASH_DEPOSIT_SETUP_SCREEN]: undefined;
+  [Routes.CASH_SETUP_CANCEL_SHEET]: undefined;
   [Routes.CASH_ADD_WALLET_SHEET]: {
     walletAddress: Address;
     cardId: string;

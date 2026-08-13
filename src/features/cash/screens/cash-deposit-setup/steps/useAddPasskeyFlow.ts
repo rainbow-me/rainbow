@@ -1,6 +1,4 @@
-import { useCallback } from 'react';
-
-import { createBaseStore, createStoreActions } from '@storesjs/stores';
+import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
@@ -9,7 +7,6 @@ import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 export type AddPasskeyState = 'entry' | 'submitting' | 'error';
 
@@ -55,20 +52,3 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
     }
   },
 }));
-
-const addPasskeyFlowActions = createStoreActions(useAddPasskeyFlowStore);
-
-export function useAddPasskeyFlow(): {
-  reset: () => void;
-  state: AddPasskeyState;
-  submit: () => Promise<void>;
-} {
-  const { next } = useCashDepositSetupNavigation();
-  const state = useAddPasskeyFlowStore(state => state.state);
-
-  const submit = useCallback(async () => {
-    if ((await addPasskeyFlowActions.submit()) === 'completed') next();
-  }, [next]);
-
-  return { reset: addPasskeyFlowActions.reset, state, submit };
-}

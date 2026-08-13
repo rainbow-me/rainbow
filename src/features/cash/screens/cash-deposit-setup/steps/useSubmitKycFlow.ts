@@ -1,4 +1,4 @@
-import { createBaseStore, createStoreActions } from '@storesjs/stores';
+import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -40,9 +40,12 @@ export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, g
   submit: async () => {
     const { state } = get();
     if (state === 'submitting' || state === 'reviewing') return 'skipped';
-    const { session } = useCashSetupSessionStore.getState();
-    if (session.status !== 'phoneVerified' || !session.identity || !session.governmentId) return 'skipped';
-    const { bootstrapToken, identity, governmentId } = session;
+    const sessionStore = useCashSetupSessionStore.getState();
+    const { session } = sessionStore;
+    const identity = sessionStore.getIdentity();
+    const governmentId = sessionStore.getGovernmentId();
+    if (session.status !== 'phoneVerified' || !identity || !governmentId) return 'skipped';
+    const { bootstrapToken } = session;
 
     const run = {};
     set({ run, state: 'submitting' });
@@ -100,15 +103,3 @@ export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, g
     return 'rejected';
   },
 }));
-
-const submitKycFlowActions = createStoreActions(useSubmitKycFlowStore);
-
-export function useSubmitKycFlow(): {
-  reset: () => void;
-  state: SubmitKycState;
-  submit: () => Promise<SubmitKycResult>;
-} {
-  const state = useSubmitKycFlowStore(state => state.state);
-
-  return { reset: submitKycFlowActions.reset, state, submit: submitKycFlowActions.submit };
-}

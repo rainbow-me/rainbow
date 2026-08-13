@@ -6,28 +6,24 @@ import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInput
 import * as i18n from '@/languages';
 
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../../utils/phoneNumber';
+import { formatNationalNumber, US_COUNTRY_CALLING_CODE } from '../../../utils/phoneNumber';
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useSubmitPhoneFlow } from './useSubmitPhoneFlow';
+import { useSetupInputRef } from '../setupContext';
+import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
 
 const l = i18n.l.cash.deposit_setup.phone;
 
 export const PhoneStep = memo(function PhoneStep() {
-  const { state, digits, setDigits, submit } = useSubmitPhoneFlow();
+  const state = useSubmitPhoneFlowStore(store => store.state);
+  const digits = useSubmitPhoneFlowStore(store => store.digits);
   const alreadyRegistered = useCashSetupSessionStore(s => s.session.status === 'phoneAlreadyRegistered');
-  const submitting = state === 'submitting';
+  const inputRef = useSetupInputRef();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const inputTextStyle = useSetupInputTextStyle();
 
   return (
-    <SetupStepLayout
-      actionDisabled={digits.length !== NATIONAL_NUMBER_LENGTH}
-      actionLoading={submitting}
-      onAction={submit}
-      subtitle={i18n.t(l.subtitle)}
-      title={i18n.t(l.title)}
-    >
+    <SetupStepLayout subtitle={i18n.t(l.subtitle)} title={i18n.t(l.title)}>
       <Box gap={12} paddingTop="24px">
         <Box flexDirection="row" gap={12}>
           <Box background="fillTertiary" borderRadius={20} justifyContent="center" paddingHorizontal="16px">
@@ -36,12 +32,11 @@ export const PhoneStep = memo(function PhoneStep() {
             </Text>
           </Box>
           <TextInput
-            autoFocus
-            editable={!submitting}
             keyboardType="phone-pad"
-            onChangeText={setDigits}
+            onChangeText={useSubmitPhoneFlowStore.getState().setDigits}
             placeholder={i18n.t(l.placeholder)}
             placeholderTextColor={labelQuaternary}
+            ref={inputRef}
             style={[inputTextStyle, styles.input]}
             testID="cash-setup-phone-input"
             textContentType="telephoneNumber"

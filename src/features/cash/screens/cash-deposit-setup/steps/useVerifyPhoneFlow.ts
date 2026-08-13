@@ -9,7 +9,7 @@ import { type KycOutcome } from '../../../services/userClient';
 import { selectResendAfter, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore, type VerifyPhoneState } from '../../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
+import { submitPhoneCode } from '../setupAction';
 
 const verifyPhoneFlowActions = createStoreActions(useVerifyPhoneFlowStore);
 
@@ -24,7 +24,6 @@ export function useVerifyPhoneFlow(): {
   resending: boolean;
   resendCooldownSeconds: number;
 } {
-  const { next, back } = useCashDepositSetupNavigation();
   const state = useVerifyPhoneFlowStore(s => s.state);
   const code = useVerifyPhoneFlowStore(s => s.code);
   const kycOutcome = useVerifyPhoneFlowStore(s => s.kycOutcome);
@@ -32,19 +31,13 @@ export function useVerifyPhoneFlow(): {
   const resendAfter = useCashSetupSessionStore(selectResendAfter);
   const [resendCooldownSeconds, setResendCooldownSeconds] = useState(0);
 
-  const submit = useCallback(async () => {
-    const result = await verifyPhoneFlowActions.submit();
-    if (result === 'verified') next();
-    if (result === 'signupAlreadyComplete') back();
-  }, [back, next]);
-
   const continueAfterKyc = useCallback(() => {
     CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
     verifyPhoneFlowActions.clearKycOutcome();
   }, []);
 
   useEffect(() => {
-    if (resendAfter == null) {
+    if (resendAfter == null || state === 'verifying' || state === 'verified') {
       setResendCooldownSeconds(0);
       return;
     }
@@ -57,7 +50,7 @@ export function useVerifyPhoneFlow(): {
     const id = setInterval(update, time.seconds(1));
     update();
     return () => clearInterval(id);
-  }, [resendAfter]);
+  }, [resendAfter, state]);
 
   return {
     state,
@@ -65,7 +58,7 @@ export function useVerifyPhoneFlow(): {
     kycOutcome,
     continueAfterKyc,
     setCode: verifyPhoneFlowActions.setCode,
-    submit,
+    submit: submitPhoneCode,
     resend: verifyPhoneFlowActions.resend,
     resending,
     resendCooldownSeconds,
