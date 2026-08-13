@@ -1,0 +1,341 @@
+# PATCH CONTEXT
+# Why: RN 0.87 removes the private iOS RCTCxxBridge.runtime path and
+#   Android's CatalystInstance runtime lookup is deprecated in bridgeless
+#   mode. Register the existing JSI global through React Native's owned
+#   TurboModuleWithJSIBindings hooks on both platforms, and enable prefab
+#   consumption and ReactAndroid's shared C++ runtime for the Android native
+#   build. Trigger behavior and the per-haptic hot path remain unchanged.
+# Upstream Issue: none filed yet.
+# Remove when: react-native-turbo-haptics ships RN 0.87-compatible JSI
+#   binding installers on iOS and Android.
+
+diff --git a/node_modules/react-native-turbo-haptics/android/build.gradle b/node_modules/react-native-turbo-haptics/android/build.gradle
+index ebfb3f3..2826d5a 100644
+--- a/node_modules/react-native-turbo-haptics/android/build.gradle
++++ b/node_modules/react-native-turbo-haptics/android/build.gradle
+@@ -28,6 +28,11 @@ android {
+         ndkVersion rootProject.ext.ndkVersion
+     }
+ 
++    buildFeatures {
++        buildConfig true
++        prefab true
++    }
++
+     defaultConfig {
+         minSdkVersion safeExtGet('minSdkVersion', 21)
+         targetSdkVersion safeExtGet('targetSdkVersion', 33)
+@@ -35,7 +40,8 @@ android {
+         externalNativeBuild {
+             cmake {
+-                cppFlags "-std=c++17"
++                cppFlags "-std=c++20"
+-                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
++                arguments "-DANDROID_STL=c++_shared",
++                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+             }
+         }
+     }
+diff --git a/node_modules/react-native-turbo-haptics/android/src/fabric/java/com/turbohaptics/TurboHapticsModule.kt b/node_modules/react-native-turbo-haptics/android/src/fabric/java/com/turbohaptics/TurboHapticsModule.kt
+index 50be90c55d..62ad5f18d0 100644
+--- a/node_modules/react-native-turbo-haptics/android/src/fabric/java/com/turbohaptics/TurboHapticsModule.kt
++++ b/node_modules/react-native-turbo-haptics/android/src/fabric/java/com/turbohaptics/TurboHapticsModule.kt
+@@ -1,12 +1,15 @@
+ package com.turbohaptics
+ 
+-import androidx.annotation.NonNull
++import com.facebook.proguard.annotations.DoNotStrip
+ import com.facebook.react.bridge.ReactApplicationContext
+ import com.facebook.react.bridge.NativeModule
++import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
++import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
+ 
+ class TurboHapticsModule(context: ReactApplicationContext) :
+     NativeTurboHapticsSpec(context),
+-    NativeModule {
++    NativeModule,
++    TurboModuleWithJSIBindings {
+ 
+     companion object {
+         const val NAME = "TurboHaptics"
+@@ -22,22 +25,10 @@ class TurboHapticsModule(context: ReactApplicationContext) :
+ 
+     override fun invalidate() {}
+ 
+-    override fun install(): Boolean {
+-        try {
+-            val catalystInstance = reactApplicationContext.catalystInstance
+-                ?: return false
++    override fun install(): Boolean = nativeInitialize(reactApplicationContext)
+ 
+-            val runtimePointer = catalystInstance.javaScriptContextHolder.get()
+-            if (runtimePointer == 0L) {
+-                return false
+-            }
++    @DoNotStrip
++    external override fun getBindingsInstaller(): BindingsInstallerHolder
+ 
+-            return nativeInstallHaptics(runtimePointer, reactApplicationContext)
+-        } catch (e: Exception) {
+-            e.printStackTrace()
+-            return false
+-        }
+-    }
+-
+-    private external fun nativeInstallHaptics(runtimePointer: Long, context: ReactApplicationContext): Boolean
+-}
+\ No newline at end of file
++    private external fun nativeInitialize(context: ReactApplicationContext): Boolean
++}
+diff --git a/node_modules/react-native-turbo-haptics/android/src/main/jni/CMakeLists.txt b/node_modules/react-native-turbo-haptics/android/src/main/jni/CMakeLists.txt
+index 837b916146..13846a8bbb 100644
+--- a/node_modules/react-native-turbo-haptics/android/src/main/jni/CMakeLists.txt
++++ b/node_modules/react-native-turbo-haptics/android/src/main/jni/CMakeLists.txt
+@@ -4,21 +4,20 @@ project("turbo-haptics")
+-set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CXX_STANDARD 20)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+-set(NODE_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../node_modules")
+-
+ add_library(turbo-haptics SHARED
+-        TurboHapticsHostObject.cpp
+-        "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi/jsi.cpp")
++        TurboHapticsHostObject.cpp)
+ 
+ target_include_directories(turbo-haptics PRIVATE
+         "${CMAKE_CURRENT_SOURCE_DIR}/includes"
+-        "${NODE_MODULES_DIR}/react-native/ReactCommon"
+-        "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
+-        "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi"
+ )
+ 
+ find_library(log-lib log)
++find_package(fbjni REQUIRED CONFIG)
++find_package(ReactAndroid REQUIRED CONFIG)
+ 
+ target_link_libraries(turbo-haptics
+         android
+-        ${log-lib})
+\ No newline at end of file
++        ${log-lib}
++        fbjni::fbjni
++        ReactAndroid::jsi
++        ReactAndroid::reactnative)
+diff --git a/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.cpp b/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.cpp
+index f818f37f13..f5c40bb316 100644
+--- a/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.cpp
++++ b/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.cpp
+@@ -24,6 +24,23 @@ namespace turbohaptics {
+     int TurboHapticsHostObject::androidApiLevel_ = 0;
+     bool TurboHapticsHostObject::isInitialized_ = false;
+ 
++    void TurboHapticsModuleJSIBindings::registerNatives() {
++        javaClassLocal()->registerNatives({
++                makeNativeMethod(
++                        "getBindingsInstaller",
++                        TurboHapticsModuleJSIBindings::getBindingsInstaller),
++        });
++    }
++
++    facebook::jni::local_ref<facebook::react::BindingsInstallerHolder::javaobject>
++    TurboHapticsModuleJSIBindings::getBindingsInstaller(
++            facebook::jni::alias_ref<TurboHapticsModuleJSIBindings>) {
++        return facebook::react::BindingsInstallerHolder::newObjectCxxArgs(
++                [](facebook::jsi::Runtime& runtime, const std::shared_ptr<facebook::react::CallInvoker>&) {
++                    installHapticFeedback(runtime);
++                });
++    }
++
+     void TurboHapticsHostObject::initializeIfNeeded(JNIEnv* env, jobject context) {
+         if (isInitialized_) return;
+ 
+@@ -169,10 +186,7 @@ namespace turbohaptics {
+         return facebook::jsi::Value::undefined();
+     }
+ 
+-    void installHapticFeedback(facebook::jsi::Runtime& runtime, JNIEnv* env, jobject context) {
+-        // Initialize static vibrator state
+-        TurboHapticsHostObject::initializeIfNeeded(env, context);
+-
++    void installHapticFeedback(facebook::jsi::Runtime& runtime) {
+         auto createHapticFeedback = facebook::jsi::Function::createFromHostFunction(
+                 runtime,
+                 facebook::jsi::PropNameID::forAscii(runtime, "createHapticFeedback"),
+@@ -191,6 +205,23 @@ namespace turbohaptics {
+ } // namespace turbohaptics
+ 
+ extern "C" {
++JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
++    return facebook::jni::initialize(vm, [] {
++        turbohaptics::TurboHapticsModuleJSIBindings::registerNatives();
++    });
++}
++
++JNIEXPORT jboolean JNICALL
++Java_com_turbohaptics_TurboHapticsModule_nativeInitialize(
++        JNIEnv* env,
++        jobject,
++        jobject context) {
++    if (context == nullptr) return JNI_FALSE;
++
++    turbohaptics::TurboHapticsHostObject::initializeIfNeeded(env, context);
++    return JNI_TRUE;
++}
++
+ JNIEXPORT jboolean JNICALL
+ Java_com_turbohaptics_TurboHapticsModule_nativeInstallHaptics(
+         JNIEnv* env,
+@@ -202,7 +233,8 @@ Java_com_turbohaptics_TurboHapticsModule_nativeInstallHaptics(
+     if (!runtime) return JNI_FALSE;
+ 
+     try {
+-        turbohaptics::installHapticFeedback(*runtime, env, context);
++        turbohaptics::TurboHapticsHostObject::initializeIfNeeded(env, context);
++        turbohaptics::installHapticFeedback(*runtime);
+         return JNI_TRUE;
+     } catch (const std::exception& e) {
+         LOGE("Failed to install haptics: %s", e.what());
+@@ -217,4 +249,4 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
+         turbohaptics::TurboHapticsHostObject::cleanup(env);
+     }
+ }
+-}
+\ No newline at end of file
++}
+diff --git a/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.h b/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.h
+index a54a05bebc..d4cfebbdfa 100644
+--- a/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.h
++++ b/node_modules/react-native-turbo-haptics/android/src/main/jni/TurboHapticsHostObject.h
+@@ -1,9 +1,22 @@
+ #pragma once
+ 
++#include <ReactCommon/BindingsInstallerHolder.h>
++#include <fbjni/fbjni.h>
+ #include <jni.h>
+ #include <jsi/jsi.h>
+ 
+ namespace turbohaptics {
++    class TurboHapticsModuleJSIBindings : public facebook::jni::JavaClass<TurboHapticsModuleJSIBindings> {
++        public:
++            static constexpr auto kJavaDescriptor = "Lcom/turbohaptics/TurboHapticsModule;";
++
++            static void registerNatives();
++
++        private:
++            static facebook::jni::local_ref<facebook::react::BindingsInstallerHolder::javaobject> getBindingsInstaller(
++                    facebook::jni::alias_ref<TurboHapticsModuleJSIBindings> module);
++    };
++
+     class JSI_EXPORT TurboHapticsHostObject final : public facebook::jsi::HostObject {
+         public:
+             TurboHapticsHostObject();
+@@ -32,5 +45,5 @@ namespace turbohaptics {
+ 
+     };
+ 
+-    void installHapticFeedback(facebook::jsi::Runtime& runtime, JNIEnv* env, jobject context);
+-} // namespace turbohaptics
+\ No newline at end of file
++    void installHapticFeedback(facebook::jsi::Runtime& runtime);
++} // namespace turbohaptics
+diff --git a/node_modules/react-native-turbo-haptics/ios/TurboHapticsModule.mm b/node_modules/react-native-turbo-haptics/ios/TurboHapticsModule.mm
+index 4c7298960c..398f11b944 100644
+--- a/node_modules/react-native-turbo-haptics/ios/TurboHapticsModule.mm
++++ b/node_modules/react-native-turbo-haptics/ios/TurboHapticsModule.mm
+@@ -7,14 +7,36 @@
+ 
+ #import "TurboHapticsModule.h"
+ #import "TurboHapticsHostObject.h"
++#ifdef RCT_NEW_ARCH_ENABLED
++#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
++#else
+ #import <React/RCTBridge+Private.h>
++#endif
+ #import <jsi/jsi.h>
+ 
+-@implementation TurboHapticsModule {
+-    facebook::jsi::Runtime* _runtime;
+-    std::shared_ptr<facebook::jsi::Function> _createHapticFeedback;
++static void installHapticFeedback(facebook::jsi::Runtime& runtime) {
++    auto createHapticFeedback = facebook::jsi::Function::createFromHostFunction(
++        runtime,
++        facebook::jsi::PropNameID::forAscii(runtime, "createHapticFeedback"),
++        0,
++        [](facebook::jsi::Runtime& runtime,
++           const facebook::jsi::Value&,
++           const facebook::jsi::Value*,
++           size_t) -> facebook::jsi::Value {
++            auto hostObject = std::make_shared<TurboHapticsHostObject>();
++            return facebook::jsi::Object::createFromHostObject(runtime, hostObject);
++        });
++
++    runtime.global().setProperty(runtime, "createHapticFeedback", std::move(createHapticFeedback));
+ }
+ 
++#ifdef RCT_NEW_ARCH_ENABLED
++@interface TurboHapticsModule () <RCTTurboModuleWithJSIBindings>
++@end
++#endif
++
++@implementation TurboHapticsModule
++
+ RCT_EXPORT_MODULE(TurboHaptics)
+ 
+ + (BOOL)requiresMainQueueSetup {
+@@ -46,8 +68,6 @@ - (void)handleAppStateChange:(NSNotification *)notification {
+ 
+ - (void)invalidate {
+     TurboHapticsHostObject::cleanup();
+-    _runtime = nil;
+-    _createHapticFeedback.reset();
+ }
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+@@ -55,9 +75,18 @@ - (void)invalidate {
+    (const facebook::react::ObjCTurboModule::InitParams&)params {
+     return std::make_shared<facebook::react::NativeTurboHapticsSpecJSI>(params);
+ }
++
++- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime&)runtime
++                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker>&)callInvoker {
++    (void)callInvoker;
++    installHapticFeedback(runtime);
++}
+ #endif
+ 
+ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
++#ifdef RCT_NEW_ARCH_ENABLED
++    return @true;
++#else
+     RCTBridge* bridge = [RCTBridge currentBridge];
+     RCTCxxBridge* cxxBridge = (RCTCxxBridge*)bridge;
+     
+@@ -70,25 +99,9 @@ - (void)invalidate {
+         return @false;
+     }
+     
+-    _runtime = jsiRuntime;
+-    auto& runtime = *jsiRuntime;
+-    
+-    _createHapticFeedback = std::make_shared<facebook::jsi::Function>(
+-        facebook::jsi::Function::createFromHostFunction(
+-            runtime,
+-            facebook::jsi::PropNameID::forAscii(runtime, "createHapticFeedback"),
+-            0,
+-            [](facebook::jsi::Runtime& runtime,
+-               const facebook::jsi::Value& thisValue,
+-               const facebook::jsi::Value* arguments,
+-               size_t count) -> facebook::jsi::Value {
+-                auto hostObject = std::make_shared<TurboHapticsHostObject>();
+-                return facebook::jsi::Object::createFromHostObject(runtime, hostObject);
+-            }));
+-        
+-    runtime.global().setProperty(runtime, "createHapticFeedback", *_createHapticFeedback);
+-    
++    installHapticFeedback(*jsiRuntime);
+     return @true;
++#endif
+ }
+ 
+ @end
