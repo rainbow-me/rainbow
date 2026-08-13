@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-branch/android/build.gradle b/node_modules/react-native-branch/android/build.gradle
+index 68f9ed4..5fbb634 100644
+--- a/node_modules/react-native-branch/android/build.gradle
++++ b/node_modules/react-native-branch/android/build.gradle
+@@ -19,3 +19,7 @@ android {
+     compileSdkVersion safeExtGet('compileSdkVersion', 26)
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {

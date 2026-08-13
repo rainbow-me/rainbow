@@ -1,7 +1,9 @@
 diff --git a/node_modules/react-native-tooltips/android/build.gradle b/node_modules/react-native-tooltips/android/build.gradle
-index 64ae039..eef21ed 100644
+index 04521e8..27b23f5 100644
 --- a/node_modules/react-native-tooltips/android/build.gradle
 +++ b/node_modules/react-native-tooltips/android/build.gradle
+@@ -7 +6,0 @@
+-        jcenter()
 @@ -15,12 +15,12 @@ buildscript {
  apply plugin: 'com.android.library'
  

@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-aes-crypto/android/build.gradle b/node_modules/react-native-aes-crypto/android/build.gradle
-index c195ac2..7917d98 100644
+index c195ac2..a0d9f50 100644
 --- a/node_modules/react-native-aes-crypto/android/build.gradle
 +++ b/node_modules/react-native-aes-crypto/android/build.gradle
 @@ -1,7 +1,7 @@
@@ -11,3 +11,6 @@ index c195ac2..7917d98 100644
      buildToolsVersion '28.0.3'
  
      defaultConfig {
+@@ -16 +16 @@
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

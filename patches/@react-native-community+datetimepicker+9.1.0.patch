@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-community/datetimepicker/android/build.gradle b/node_modules/@react-native-community/datetimepicker/android/build.gradle
+index af810e8..f99c9ff 100644
+--- a/node_modules/@react-native-community/datetimepicker/android/build.gradle
++++ b/node_modules/@react-native-community/datetimepicker/android/build.gradle
+@@ -42,3 +42,7 @@ android {
+     }
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {

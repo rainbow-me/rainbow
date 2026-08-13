@@ -1,7 +1,10 @@
 diff --git a/node_modules/react-native-palette-full/android/build.gradle b/node_modules/react-native-palette-full/android/build.gradle
-index e723e56..a7f750f 100644
+index e723e56..98466a1 100644
 --- a/node_modules/react-native-palette-full/android/build.gradle
 +++ b/node_modules/react-native-palette-full/android/build.gradle
+@@ -4 +4 @@
+-        jcenter()
++        mavenCentral()
 @@ -12,12 +12,12 @@ buildscript {
  apply plugin: 'com.android.library'
  
