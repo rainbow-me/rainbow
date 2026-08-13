@@ -1,0 +1,22 @@
+# PATCH CONTEXT
+# Why: The Swift bridging header publishes five unused legacy text-input
+#   headers. RN 0.87 no longer exports RCTBaseTextInputView through the
+#   prebuilt React framework, preventing the package's Fabric pod from
+#   compiling. Keep only the bridge, UI manager, and view manager types
+#   consumed by the Swift implementation.
+# Upstream Issue: none filed yet.
+# Remove when: react-native-advanced-input-mask ships a bridging header
+#   containing only its live React dependencies.
+
+diff --git a/node_modules/react-native-advanced-input-mask/ios/MaskedTextInput-Bridging-Header.h b/node_modules/react-native-advanced-input-mask/ios/MaskedTextInput-Bridging-Header.h
+index 2453f8cb9a..ee86e59d81 100644
+--- a/node_modules/react-native-advanced-input-mask/ios/MaskedTextInput-Bridging-Header.h
++++ b/node_modules/react-native-advanced-input-mask/ios/MaskedTextInput-Bridging-Header.h
+@@ -1,2 +0,0 @@
+-#import <React/RCTBackedTextInputDelegateAdapter.h>
+-#import <React/RCTBaseTextInputView.h>
+@@ -4 +1,0 @@
+-#import <React/RCTBridgeModule.h>
+@@ -6,2 +2,0 @@
+-#import <React/RCTUITextField.h>
+-#import <React/RCTUITextView.h>
