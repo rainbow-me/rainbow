@@ -1,0 +1,717 @@
+# PATCH CONTEXT
+# Why: QuickMd5 installs JSI bindings through private bridge runtime pointers
+#   and a package-owned Android build. RN 0.87's bridgeless runtime instead
+#   owns TurboModule registration and generates the pure-C++ spec target.
+#   Express the existing MD5 implementation as that pure-C++ module, link it
+#   through React Native's generated targets, and let platform autolinking own
+#   registration on both iOS and Android.
+# Remove when: react-native-quick-md5 ships an RN 0.87-compatible pure-C++
+#   TurboModule with equivalent string and binary MD5 behavior.
+
+diff --git a/node_modules/react-native-quick-md5/android/CMakeLists.txt b/node_modules/react-native-quick-md5/android/CMakeLists.txt
+index c1f263c..95c40e0 100644
+--- a/node_modules/react-native-quick-md5/android/CMakeLists.txt
++++ b/node_modules/react-native-quick-md5/android/CMakeLists.txt
+@@ -1,26 +1,32 @@
++cmake_minimum_required(VERSION 3.13)
+ project(QuickMd5)
+-cmake_minimum_required(VERSION 3.9.0)
+ 
+ set (PACKAGE_NAME "react-native-quick-md5")
+ set (CMAKE_VERBOSE_MAKEFILE ON)
+-set (CMAKE_CXX_STANDARD 17)
+ 
+-file(TO_CMAKE_PATH "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi/jsi.cpp" libPath)
++add_library(
++  ${PACKAGE_NAME}
++  STATIC
++  ../cpp/quick-md5.cpp
++  ../cpp/md5.cpp
++)
+ 
+-# Specifies a path to native header files.
+-include_directories(
+-  ../cpp
+-  "${NODE_MODULES_DIR}/react-native/React"
+-  "${NODE_MODULES_DIR}/react-native/React/Base"
+-  "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
++set_target_properties(
++  ${PACKAGE_NAME} PROPERTIES
++  CXX_STANDARD 20
++  CXX_STANDARD_REQUIRED ON
++  CXX_EXTENSIONS OFF
+ )
+ 
+-add_library(quickmd5 # Library name
+-  SHARED
+-  ${libPath}
+-  ../cpp/quick-md5.cpp
+-  ../cpp/md5.cpp
+-  cpp-adapter.cpp
++target_include_directories(
++  ${PACKAGE_NAME}
++  PUBLIC
++  ../cpp
+ )
+ 
+-target_link_libraries(quickmd5)
++target_link_libraries(
++  ${PACKAGE_NAME}
++  jsi
++  reactnative
++  react_codegen_QuickMd5Spec
++)
+diff --git a/node_modules/react-native-quick-md5/android/build.gradle b/node_modules/react-native-quick-md5/android/build.gradle
+deleted file mode 100644
+index 7eda4fe..0000000
+--- a/node_modules/react-native-quick-md5/android/build.gradle
++++ /dev/null
+@@ -1,155 +0,0 @@
+-import java.nio.file.Paths
+-
+-buildscript {
+-  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
+-  repositories {
+-    google()
+-    mavenCentral()
+-  }
+-
+-  dependencies {
+-    classpath 'com.android.tools.build:gradle:4.2.2'
+-  }
+-}
+-
+-apply plugin: 'com.android.library'
+-
+-def getExtOrDefault(name) {
+-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['QuickMd5_' + name]
+-}
+-
+-def getExtOrIntegerDefault(name) {
+-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['QuickMd5_' + name]).toInteger()
+-}
+-
+-static def findNodeModules(baseDir) {
+-  def basePath = baseDir.toPath().normalize()
+-  // Node's module resolution algorithm searches up to the root directory,
+-  // after which the base path will be null
+-  while (basePath) {
+-    def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
+-    def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
+-    if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
+-      return nodeModulesPath.toString()
+-    }
+-    basePath = basePath.getParent()
+-  }
+-  throw new GradleException("react-native-quick-md5: Failed to find node_modules/ path!")
+-}
+-
+-def nodeModules = findNodeModules(projectDir);
+-logger.warn("react-native-quick-md5: node_modules/ found at: ${nodeModules}");
+-
+-android {
+-  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+-  buildToolsVersion getExtOrDefault('buildToolsVersion')
+-  ndkVersion getExtOrDefault('ndkVersion')
+-
+-  defaultConfig {
+-    minSdkVersion 21
+-    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+-    versionCode 1
+-    versionName "1.0"
+-    
+-    externalNativeBuild {
+-        cmake {
+-            cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
+-            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+-            arguments "-DNODE_MODULES_DIR=${nodeModules}",
+-                      "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+-        }
+-    }
+-    
+-  }
+-  
+-  externalNativeBuild {
+-      cmake {
+-          path "CMakeLists.txt"
+-      }
+-  }
+-  
+-  buildTypes {
+-    release {
+-      minifyEnabled false
+-    }
+-  }
+-  lintOptions {
+-    disable 'GradleCompatible'
+-  }
+-  compileOptions {
+-    sourceCompatibility JavaVersion.VERSION_1_8
+-    targetCompatibility JavaVersion.VERSION_1_8
+-  }
+-}
+-
+-repositories {
+-  mavenCentral()
+-  google()
+-
+-  def found = false
+-  def defaultDir = null
+-  def androidSourcesName = 'React Native sources'
+-
+-  if (rootProject.ext.has('reactNativeAndroidRoot')) {
+-    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
+-  } else {
+-    defaultDir = file("$nodeModules/react-native/android")
+-  }
+-
+-  if (defaultDir.exists()) {
+-    maven {
+-      url defaultDir.toString()
+-      name androidSourcesName
+-    }
+-
+-    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
+-    found = true
+-  } else {
+-    def parentDir = rootProject.projectDir
+-
+-    1.upto(5, {
+-      if (found) return true
+-      parentDir = parentDir.parentFile
+-
+-      def androidSourcesDir = new File(
+-              parentDir,
+-              'node_modules/react-native'
+-      )
+-
+-      def androidPrebuiltBinaryDir = new File(
+-              parentDir,
+-              'node_modules/react-native/android'
+-      )
+-
+-      if (androidPrebuiltBinaryDir.exists()) {
+-        maven {
+-          url androidPrebuiltBinaryDir.toString()
+-          name androidSourcesName
+-        }
+-
+-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
+-        found = true
+-      } else if (androidSourcesDir.exists()) {
+-        maven {
+-          url androidSourcesDir.toString()
+-          name androidSourcesName
+-        }
+-
+-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
+-        found = true
+-      }
+-    })
+-  }
+-
+-  if (!found) {
+-    throw new GradleException(
+-            "${project.name}: unable to locate React Native android sources. " +
+-                    "Ensure you have you installed React Native as a dependency in your project and try again."
+-    )
+-  }
+-}
+-
+-dependencies {
+-  // noinspection GradleDynamicVersion
+-  api 'com.facebook.react:react-native:+'
+-}
+diff --git a/node_modules/react-native-quick-md5/android/cpp-adapter.cpp b/node_modules/react-native-quick-md5/android/cpp-adapter.cpp
+deleted file mode 100644
+index 65612ee..0000000
+--- a/node_modules/react-native-quick-md5/android/cpp-adapter.cpp
++++ /dev/null
+@@ -1,14 +0,0 @@
+-#include <jni.h>
+-#include "quick-md5.h"
+-
+-extern "C"
+-JNIEXPORT void JNICALL
+-Java_com_reactnativequickmd5_QuickMd5Module_initialize(JNIEnv* env, jclass clazz, jlong jsiPtr) {
+-  installMd5(*reinterpret_cast<facebook::jsi::Runtime*>(jsiPtr));
+-}
+-
+-extern "C"
+-JNIEXPORT void JNICALL
+-Java_com_reactnativequickmd5_QuickMd5Module_destruct(JNIEnv* env, jclass clazz) {
+-  cleanupMd5();
+-}
+diff --git a/node_modules/react-native-quick-md5/android/gradle.properties b/node_modules/react-native-quick-md5/android/gradle.properties
+deleted file mode 100644
+index 62db111..0000000
+--- a/node_modules/react-native-quick-md5/android/gradle.properties
++++ /dev/null
+@@ -1,4 +0,0 @@
+-QuickMd5_kotlinVersion=1.6.0
+-QuickMd5_compileSdkVersion=30
+-QuickMd5_buildToolsVersion=30.0.2
+-QuickMd5_targetSdkVersion=30
+diff --git a/node_modules/react-native-quick-md5/android/local.properties b/node_modules/react-native-quick-md5/android/local.properties
+deleted file mode 100644
+index 6b40387..0000000
+--- a/node_modules/react-native-quick-md5/android/local.properties
++++ /dev/null
+@@ -1,8 +0,0 @@
+-## This file must *NOT* be checked into Version Control Systems,
+-# as it contains information specific to your local configuration.
+-#
+-# Location of the SDK. This is only used by Gradle.
+-# For customization when using a Version Control System, please read the
+-# header note.
+-#Tue Jan 18 12:04:37 JST 2022
+-sdk.dir=/Users/nora/Library/Android/sdk
+diff --git a/node_modules/react-native-quick-md5/android/src/main/AndroidManifest.xml b/node_modules/react-native-quick-md5/android/src/main/AndroidManifest.xml
+deleted file mode 100644
+index ff537f2..0000000
+--- a/node_modules/react-native-quick-md5/android/src/main/AndroidManifest.xml
++++ /dev/null
+@@ -1,4 +0,0 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-          package="com.reactnativequickmd5">
+-
+-</manifest>
+diff --git a/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Module.java b/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Module.java
+deleted file mode 100644
+index 6917a9b..0000000
+--- a/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Module.java
++++ /dev/null
+@@ -1,38 +0,0 @@
+-package com.reactnativequickmd5;
+-
+-import androidx.annotation.NonNull;
+-
+-import com.facebook.react.bridge.ReactApplicationContext;
+-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+-import com.facebook.react.bridge.ReactMethod;
+-
+-public class QuickMd5Module extends ReactContextBaseJavaModule {
+-  public static final String NAME = "QuickMd5";
+-  private static native void initialize(long jsiPtr, String docDir);
+-
+-  public QuickMd5Module(ReactApplicationContext reactContext) {
+-    super(reactContext);
+-  }
+-
+-  @NonNull
+-  @Override
+-  public String getName() {
+-    return NAME;
+-  }
+-
+-  @ReactMethod(isBlockingSynchronousMethod = true)
+-  public boolean install() {
+-    try {
+-      System.loadLibrary("quickmd5");
+-
+-      ReactApplicationContext context = getReactApplicationContext();
+-      initialize(
+-        context.getJavaScriptContextHolder().get(),
+-        context.getFilesDir().getAbsolutePath()
+-      );
+-      return true;
+-    } catch (Exception exception) {
+-      return false;
+-    }
+-  }
+-}
+diff --git a/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Package.java b/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Package.java
+deleted file mode 100644
+index 0b36226..0000000
+--- a/node_modules/react-native-quick-md5/android/src/main/java/com/reactnativequickmd5/QuickMd5Package.java
++++ /dev/null
+@@ -1,26 +0,0 @@
+-package com.reactnativequickmd5;
+-
+-import androidx.annotation.NonNull;
+-
+-import com.facebook.react.ReactPackage;
+-import com.facebook.react.bridge.NativeModule;
+-import com.facebook.react.bridge.ReactApplicationContext;
+-import com.facebook.react.uimanager.ViewManager;
+-
+-import java.util.Collections;
+-import java.util.List;
+-
+-
+-public class QuickMd5Package implements ReactPackage {
+-  @NonNull
+-  @Override
+-  public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
+-    return Collections.singletonList(new QuickMd5Module(reactContext));
+-  }
+-
+-  @NonNull
+-  @Override
+-  public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
+-    return Collections.emptyList();
+-  }
+-}
+diff --git a/node_modules/react-native-quick-md5/cpp/quick-md5.cpp b/node_modules/react-native-quick-md5/cpp/quick-md5.cpp
+index 3655d42..925dda1 100644
+--- a/node_modules/react-native-quick-md5/cpp/quick-md5.cpp
++++ b/node_modules/react-native-quick-md5/cpp/quick-md5.cpp
+@@ -1,49 +1,27 @@
+-#import "quick-md5.h"
+-#import "md5.h"
+-#include <iostream>
+-#include <sstream>
++#include "QuickMd5Impl.h"
++#include "md5.h"
+ 
+-using namespace facebook;
++#include <string>
++#include <utility>
+ 
+-// Returns false if the passed value is not a string or an ArrayBuffer.
+-bool md5_valueToString(jsi::Runtime& runtime, const jsi::Value& value, std::string* str) {
+-  if (value.isString()) {
+-    *str = value.asString(runtime).utf8(runtime);
+-    return true;
+-  }
++namespace facebook::react {
+ 
+-  if (value.isObject()) {
+-    auto obj = value.asObject(runtime);
+-    if (!obj.isArrayBuffer(runtime)) {
+-      return false;
+-    }
+-    auto buf = obj.getArrayBuffer(runtime);
+-    *str = std::string((char*)buf.data(runtime), buf.size(runtime));
+-    return true;
+-  }
++QuickMd5Impl::QuickMd5Impl(std::shared_ptr<CallInvoker> jsInvoker)
++    : NativeQuickMd5CxxSpec(std::move(jsInvoker)) {}
+ 
+-  return false;
++jsi::String QuickMd5Impl::stringMd5(jsi::Runtime& runtime, jsi::String data) {
++  return jsi::String::createFromUtf8(runtime, md5(data.utf8(runtime)));
+ }
+ 
+-void installMd5(jsi::Runtime& jsiRuntime) {
+-  std::cout << "Initializing react-native-quick-md5" << "\n";
+-
+-  auto md5FromArrayBuffer = jsi::Function::createFromHostFunction(
+-      jsiRuntime,
+-      jsi::PropNameID::forAscii(jsiRuntime, "md5FromArrayBuffer"),
+-      1,  // string or ArrayBuffer
+-      [](jsi::Runtime& runtime, const jsi::Value& thisValue, const jsi::Value* arguments, size_t count) -> jsi::Value {
+-        std::string str;
+-        if(!md5_valueToString(runtime, arguments[0], &str)) {
+-          return jsi::Value(-1);
+-        }
+-        std::string strMd5 =  md5(str);
++jsi::String QuickMd5Impl::binaryMd5(jsi::Runtime& runtime, jsi::Object data) {
++  if (!data.isArrayBuffer(runtime)) {
++    throw jsi::JSError(runtime, "binaryMd5: argument must be an ArrayBuffer");
++  }
+ 
+-        return jsi::Value(jsi::String::createFromUtf8(runtime, strMd5));
+-      }
+-  );
+-  jsiRuntime.global().setProperty(jsiRuntime, "md5FromArrayBuffer", std::move(md5FromArrayBuffer));
++  const auto buffer = data.getArrayBuffer(runtime);
++  const std::string input(
++      reinterpret_cast<const char*>(buffer.data(runtime)), buffer.size(runtime));
++  return jsi::String::createFromUtf8(runtime, md5(input));
+ }
+ 
+-void cleanupMd5() {
+-}
++} // namespace facebook::react
+diff --git a/node_modules/react-native-quick-md5/cpp/quick-md5.h b/node_modules/react-native-quick-md5/cpp/quick-md5.h
+deleted file mode 100644
+index bf117d4..0000000
+--- a/node_modules/react-native-quick-md5/cpp/quick-md5.h
++++ /dev/null
+@@ -1,5 +0,0 @@
+-#include <jsi/jsilib.h>
+-#include <jsi/jsi.h>
+-
+-void installMd5(facebook::jsi::Runtime& jsiRuntime);
+-void cleanupMd5();
+diff --git a/node_modules/react-native-quick-md5/cpp/QuickMd5Impl.h b/node_modules/react-native-quick-md5/cpp/QuickMd5Impl.h
+new file mode 100644
+index 0000000..2b8ac4f
+--- /dev/null
++++ b/node_modules/react-native-quick-md5/cpp/QuickMd5Impl.h
+@@ -0,0 +1,17 @@
++#pragma once
++
++#include <QuickMd5SpecJSI.h>
++
++#include <memory>
++
++namespace facebook::react {
++
++class QuickMd5Impl : public NativeQuickMd5CxxSpec<QuickMd5Impl> {
++ public:
++  explicit QuickMd5Impl(std::shared_ptr<CallInvoker> jsInvoker);
++
++  jsi::String stringMd5(jsi::Runtime& runtime, jsi::String data);
++  jsi::String binaryMd5(jsi::Runtime& runtime, jsi::Object data);
++};
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-quick-md5/ios/QuickMd5.xcodeproj/project.pbxproj b/node_modules/react-native-quick-md5/ios/QuickMd5.xcodeproj/project.pbxproj
+--- a/node_modules/react-native-quick-md5/ios/QuickMd5.xcodeproj/project.pbxproj
++++ b/node_modules/react-native-quick-md5/ios/QuickMd5.xcodeproj/project.pbxproj
+@@ -8,7 +8,7 @@
+ 
+ /* Begin PBXBuildFile section */
+ 		5E46D8CD2428F78900513E24 /* quick-md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E46D8CB2428F78900513E24 /* quick-md5.cpp */; };
+-		5E555C0D2413F4C50049A1A2 /* QuickMd5.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* QuickMd5.mm */; };
++		5E555C0D2413F4C50049A1A2 /* OnLoad.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* OnLoad.mm */; };
+ 		8869CE0E25DCE2330053CC5E /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8869CE0D25DCE2330053CC5E /* md5.cpp */; };
+ /* End PBXBuildFile section */
+ 
+@@ -27,10 +27,10 @@
+ /* Begin PBXFileReference section */
+ 		134814201AA4EA6300B7C361 /* libQuickMd5.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libQuickMd5.a; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		5E46D8CB2428F78900513E24 /* quick-md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "quick-md5.cpp"; path = "../cpp/quick-md5.cpp"; sourceTree = "<group>"; };
+-		5E46D8CC2428F78900513E24 /* quick-md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "quick-md5.h"; path = "../cpp/quick-md5.h"; sourceTree = "<group>"; };
++		5E46D8CC2428F78900513E24 /* QuickMd5Impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "QuickMd5Impl.h"; path = "../cpp/QuickMd5Impl.h"; sourceTree = "<group>"; };
+ 		8869CE0C25DCE2330053CC5E /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = md5.h; path = ../cpp/md5.h; sourceTree = "<group>"; };
+ 		8869CE0D25DCE2330053CC5E /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = md5.cpp; path = ../cpp/md5.cpp; sourceTree = "<group>"; };
+-		B3E7B5891CC2AC0600A0062D /* QuickMd5.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QuickMd5.mm; sourceTree = "<group>"; };
++		B3E7B5891CC2AC0600A0062D /* OnLoad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OnLoad.mm; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+ /* Begin PBXFrameworksBuildPhase section */
+@@ -56,10 +56,10 @@
+ 			isa = PBXGroup;
+ 			children = (
+ 				5E46D8CB2428F78900513E24 /* quick-md5.cpp */,
+-				5E46D8CC2428F78900513E24 /* quick-md5.h */,
++				5E46D8CC2428F78900513E24 /* QuickMd5Impl.h */,
+ 				8869CE0D25DCE2330053CC5E /* md5.cpp */,
+ 				8869CE0C25DCE2330053CC5E /* md5.h */,
+-				B3E7B5891CC2AC0600A0062D /* QuickMd5.mm */,
++				B3E7B5891CC2AC0600A0062D /* OnLoad.mm */,
+ 				134814211AA4EA7D00B7C361 /* Products */,
+ 			);
+ 			sourceTree = "<group>";
+@@ -123,7 +123,7 @@
+ 			files = (
+ 				8869CE0E25DCE2330053CC5E /* md5.cpp in Sources */,
+ 				5E46D8CD2428F78900513E24 /* quick-md5.cpp in Sources */,
+-				5E555C0D2413F4C50049A1A2 /* QuickMd5.mm in Sources */,
++				5E555C0D2413F4C50049A1A2 /* OnLoad.mm in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+diff --git a/node_modules/react-native-quick-md5/ios/OnLoad.mm b/node_modules/react-native-quick-md5/ios/OnLoad.mm
+new file mode 100644
+index 0000000..dd96b4c
+--- /dev/null
++++ b/node_modules/react-native-quick-md5/ios/OnLoad.mm
+@@ -0,0 +1,23 @@
++#import "QuickMd5Impl.h"
++
++#import <ReactCommon/CxxTurboModuleUtils.h>
++
++#include <utility>
++
++@interface QuickMd5OnLoad : NSObject
++@end
++
++@implementation QuickMd5OnLoad
++
++using namespace facebook::react;
++
+++ (void)load
++{
++  registerCxxModuleToGlobalModuleMap(
++      std::string(QuickMd5Impl::kModuleName),
++      [](std::shared_ptr<CallInvoker> jsInvoker) {
++        return std::make_shared<QuickMd5Impl>(std::move(jsInvoker));
++      });
++}
++
++@end
+diff --git a/node_modules/react-native-quick-md5/ios/QuickMd5.h b/node_modules/react-native-quick-md5/ios/QuickMd5.h
+deleted file mode 100644
+index fdb9c8d..0000000
+--- a/node_modules/react-native-quick-md5/ios/QuickMd5.h
++++ /dev/null
+@@ -1,9 +0,0 @@
+-#import <React/RCTBridgeModule.h>
+-
+-#ifdef __cplusplus
+-#import "quick-md5.h"
+-#endif
+-
+-@interface QuickMd5 : NSObject <RCTBridgeModule>
+-@property (nonatomic, assign) BOOL setBridgeOnMainQueue;
+-@end
+diff --git a/node_modules/react-native-quick-md5/ios/QuickMd5.mm b/node_modules/react-native-quick-md5/ios/QuickMd5.mm
+deleted file mode 100644
+index 4521360..0000000
+--- a/node_modules/react-native-quick-md5/ios/QuickMd5.mm
++++ /dev/null
+@@ -1,35 +0,0 @@
+-#import "QuickMd5.h"
+-#import <React/RCTBridge+Private.h>
+-#import <React/RCTUtils.h>
+-
+-@implementation QuickMd5
+-
+-@synthesize bridge = _bridge;
+-@synthesize methodQueue = _methodQueue;
+-
+-RCT_EXPORT_MODULE()
+-
+-+ (BOOL)requiresMainQueueSetup {
+-  return YES;
+-}
+-
+-- (void)setBridge:(RCTBridge *)bridge
+-{
+-  _bridge = bridge;
+-  _setBridgeOnMainQueue = RCTIsMainQueue();
+-
+-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+-  if (!cxxBridge.runtime) {
+-    return;
+-  }
+-
+-  [bridge dispatchBlock:^{
+-    installMd5(*(facebook::jsi::Runtime *)cxxBridge.runtime);
+-  } queue:RCTJSThread];
+-}
+-
+-- (void)invalidate {
+-  cleanupMd5();
+-}
+-
+-@end
+diff --git a/node_modules/react-native-quick-md5/package.json b/node_modules/react-native-quick-md5/package.json
+index 045790b..173a215 100644
+--- a/node_modules/react-native-quick-md5/package.json
++++ b/node_modules/react-native-quick-md5/package.json
+@@ -40,6 +40,7 @@
+     "ios",
+     "cpp",
+     "react-native-quick-md5.podspec",
++    "react-native.config.js",
+     "!lib/typescript/example",
+     "!android/build",
+     "!android/.cxx",
+@@ -162,6 +163,14 @@
+       ]
+     ]
+   },
++  "codegenConfig": {
++    "name": "QuickMd5Spec",
++    "type": "modules",
++    "jsSrcsDir": "src",
++    "android": {
++      "javaPackageName": "com.reactnativequickmd5"
++    }
++  },
+   "dependencies": {
+     "spark-md5": "^3.0.2"
+   },
+diff --git a/node_modules/react-native-quick-md5/react-native-quick-md5.podspec b/node_modules/react-native-quick-md5/react-native-quick-md5.podspec
+index 8c40877..4a5ee65 100644
+--- a/node_modules/react-native-quick-md5/react-native-quick-md5.podspec
++++ b/node_modules/react-native-quick-md5/react-native-quick-md5.podspec
+@@ -10,14 +10,11 @@ Pod::Spec.new do |s|
+   s.license      = package["license"]
+   s.authors      = package["author"]
+ 
+-  s.platforms    = { :ios => "10.0" }
++  s.platforms    = { :ios => min_ios_version_supported }
+   s.source       = { :git => "https://github.com/craftzdog/react-native-quick-md5.git", :tag => "#{s.version}" }
+ 
+   s.source_files = "ios/**/*.{h,m,mm}", "cpp/**/*.{h,cpp}"
++  s.private_header_files = "ios/**/*.h"
+ 
+-  if respond_to?(:install_modules_dependencies)
+-    install_modules_dependencies(s)
+-  else
+-    s.dependency "React-Core"
+-  end
++  install_modules_dependencies(s)
+ end
+diff --git a/node_modules/react-native-quick-md5/react-native.config.js b/node_modules/react-native-quick-md5/react-native.config.js
+new file mode 100644
+index 0000000..f30e2d3
+--- /dev/null
++++ b/node_modules/react-native-quick-md5/react-native.config.js
+@@ -0,0 +1,11 @@
++module.exports = {
++  dependency: {
++    platforms: {
++      android: {
++        cxxModuleCMakeListsModuleName: 'react-native-quick-md5',
++        cxxModuleCMakeListsPath: 'CMakeLists.txt',
++        cxxModuleHeaderName: 'QuickMd5Impl'
++      }
++    }
++  }
++}
+diff --git a/node_modules/react-native-quick-md5/src/NativeQuickMd5.ts b/node_modules/react-native-quick-md5/src/NativeQuickMd5.ts
+new file mode 100644
+index 0000000..52a8b56
+--- /dev/null
++++ b/node_modules/react-native-quick-md5/src/NativeQuickMd5.ts
+@@ -0,0 +1,8 @@
++import { TurboModuleRegistry, type TurboModule } from 'react-native'
++
++export interface Spec extends TurboModule {
++  stringMd5(data: string): string
++  binaryMd5(data: Object): string
++}
++
++export default TurboModuleRegistry.getEnforcing<Spec>('QuickMd5')
+diff --git a/node_modules/react-native-quick-md5/src/index.tsx b/node_modules/react-native-quick-md5/src/index.tsx
+index 0184420..62fe561 100644
+--- a/node_modules/react-native-quick-md5/src/index.tsx
++++ b/node_modules/react-native-quick-md5/src/index.tsx
+@@ -1,13 +1,4 @@
+-import { NativeModules } from 'react-native'
+-import SparkMD5 from 'spark-md5'
+-
+-const g = global as any
+-
+-const Md5Module = NativeModules.QuickMd5
+-
+-if (Md5Module && typeof Md5Module.install === 'function') {
+-  Md5Module.install()
+-}
++import NativeQuickMd5 from './NativeQuickMd5'
+ 
+ function stringToArrayBuffer(str: string) {
+   const buf = new ArrayBuffer(str.length)
+@@ -19,23 +10,11 @@ function stringToArrayBuffer(str: string) {
+ }
+ 
+ export function stringMd5(data: string): string {
+-  if (typeof g.md5FromArrayBuffer !== 'undefined') {
+-    return g.md5FromArrayBuffer(data)
+-  } else {
+-    const spark = new SparkMD5()
+-    spark.append(data)
+-    return spark.end()
+-  }
++  return NativeQuickMd5.stringMd5(data)
+ }
+ 
+ export function binaryMd5(data: string | ArrayBuffer): string {
+   data = typeof data === 'string' ? stringToArrayBuffer(data) : data
+ 
+-  if (typeof g.md5FromArrayBuffer !== 'undefined') {
+-    return g.md5FromArrayBuffer(data)
+-  } else {
+-    const spark = new SparkMD5.ArrayBuffer()
+-    spark.append(data)
+-    return spark.end()
+-  }
++  return NativeQuickMd5.binaryMd5(data)
+ }
