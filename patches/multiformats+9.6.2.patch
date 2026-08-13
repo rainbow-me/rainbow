@@ -1,0 +1,21 @@
+# PATCH CONTEXT
+# Why: multiformats@9.6.2 exports `./cid` and ships its declaration, but the
+#   subpath export omits a `types` condition. TypeScript's bundler resolver
+#   therefore selects the JavaScript runtime file and reports TS7016.
+# Upstream Issue: none filed; current multiformats releases publish typed
+#   export conditions.
+# Remove when: the dependency graph admits a multiformats version whose
+#   `./cid` export maps `types` to its shipped declaration.
+
+diff --git a/node_modules/multiformats/package.json b/node_modules/multiformats/package.json
+index 0000000..0000001 100644
+--- a/node_modules/multiformats/package.json
++++ b/node_modules/multiformats/package.json
+@@ -42,6 +42,7 @@
+       "import": "./esm/src/index.js"
+     },
+     "./cid": {
++      "types": "./types/src/cid.d.ts",
+       "browser": "./esm/src/cid.js",
+       "require": "./cjs/src/cid.js",
+       "import": "./esm/src/cid.js"
