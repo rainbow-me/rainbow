@@ -60,6 +60,9 @@ export function buildCashPurchaseTransaction({
     network,
     nonce: null,
     status,
+    // Stands in for `minedAt` until history indexes the transaction; without one the activity list
+    // drops the row the moment it settles.
+    timestamp: Date.now(),
     title: buildTransactionTitle('purchase', status),
     to: walletAddress,
     type: 'purchase',
