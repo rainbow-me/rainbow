@@ -12,6 +12,7 @@ export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
 export type DiscoverSurface = {
   id: SurfaceId;
   tabs: DiscoverTab[];
+  tabsKey: string;
 };
 
 export type DiscoverTab = {

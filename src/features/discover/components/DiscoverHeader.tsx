@@ -75,7 +75,7 @@ function DiscoverSearchButton() {
 function DiscoverCategorySelector() {
   const activeSection = useDiscoverNavigationStore(state => state.activeSection);
   const surface = useDiscoverSurface();
-  const tabs = surface?.tabs ?? [];
+  const tabs = surface?.tabs;
   const { scrollToSectionTop } = useDiscoverScreenContext();
   const { isDarkMode } = useColorMode();
   const screenBackgroundToken: BackgroundColor = isDarkMode ? 'black' : 'surfacePrimary';
@@ -152,7 +152,7 @@ function DiscoverCategorySelector() {
     [scrollToSectionTop, surface]
   );
 
-  if (!tabs.length) return <DiscoverCategorySelectorFallback />;
+  if (!tabs?.length) return <DiscoverCategorySelectorFallback />;
 
   return (
     <Box width="full" height="full">
@@ -166,7 +166,7 @@ function DiscoverCategorySelector() {
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
       >
-        {tabs.map((section, index) => {
+        {tabs.map(section => {
           const isSelected = section.id === activeSection;
           const sectionLabel = resolveSectionTitle(section);
           return (

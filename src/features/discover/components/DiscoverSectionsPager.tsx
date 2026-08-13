@@ -38,7 +38,6 @@ const EMPTY_TABS: DiscoverTab[] = [];
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
   const tabs = surface?.tabs ?? EMPTY_TABS;
-  const pagerKey = useMemo(() => tabs.map(tab => tab.id).join('|'), [tabs]);
 
   const { activeSectionIndex, sectionScrollOffsets } = useStableValue(() => {
     const initialSectionIndex = getSectionIndex(tabs, DiscoverSectionNavigation.getActiveSection());
@@ -47,6 +46,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
       sectionScrollOffsets: new Map<DiscoverSection, SharedValue<number>>(),
     };
   });
+  const pagerKey = surface?.tabsKey ?? '';
 
   const activateSection = useMemo(
     () =>

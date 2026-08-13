@@ -131,6 +131,7 @@ export function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface 
   return {
     id: surface.id,
     tabs,
+    tabsKey: tabs.map(tab => tab.id).join('|'),
   };
 }
 
