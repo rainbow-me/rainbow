@@ -91,7 +91,11 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
             // Handle tab removal after tab close animation completion
             if (isFinished && currentlyBeingClosedTabIds.value.includes(tabId) && activeTabCloseGestures.value[tabId]) {
               // Zero out scale to ensure the tab is hidden while unmounting
-              activeTabCloseGestures.modify(gestures => ({ ...gestures, [tabId]: { ...gestures[tabId], gestureScale: 0 } }));
+              activeTabCloseGestures.modify(gestures => {
+                const gesture = gestures[tabId];
+                if (!gesture) return gestures;
+                return { ...gestures, [tabId]: { ...gesture, gestureScale: 0 } };
+              });
               // Finalize tab close
               closeTabWorklet({ tabId, tabIndex: activeTabCloseGestures.value[tabId].tabIndex });
               currentlyBeingClosedTabIds.modify(closingTabs => {
