@@ -48,6 +48,11 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
     ref
   ) => {
     const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
+    const nativeOnPress = useMemo<NativeButtonProps['onPress']>(() => (onPress ? () => onPress() : undefined), [onPress]);
+    const nativeOnLongPress = useMemo<NativeButtonProps['onLongPress']>(
+      () => (onLongPress ? () => onLongPress() : undefined),
+      [onLongPress]
+    );
 
     const nativeProps: NativeButtonProps = {
       ...rest,
@@ -59,8 +64,8 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       testID,
       transformOrigin: normalizedTransformOrigin,
       useLateHaptic,
-      onPress: onPress as NativeButtonProps['onPress'],
-      onLongPress: onLongPress as NativeButtonProps['onLongPress'],
+      onPress: nativeOnPress,
+      onLongPress: nativeOnLongPress,
       accessible,
     };
 
