@@ -1,29 +1,15 @@
 # PATCH CONTEXT
-# Native repair (iOS Paper): Reanimated's synchronous layout pass suppresses
-#   mounting observers. JBAnimatedTextManager normally queues text storage from
-#   an observer, allowing new layout frames to mount before the new glyphs.
-#   Queue the inherited guarded text update after shadow layout instead, so
-#   text and frames share the same mount. Keep the observer for other updates;
-#   its existing guard prevents duplicate text installation.
-#   Fabric and Android are unchanged. Remove this native hunk when upstream
-#   provides atomic text/layout mounting on Paper.
-# Upstream issue for native repair: not filed.
-#
-# Why: react-native-animateable-text@0.17.1 fixed `AnimateableTextProps`
-#   in src/TextProps.tsx (drops `Omit<…, "children">`) but the published
-#   .d.ts files in lib/typescript/ were not regenerated and still carry
-#   the old `Omit<TextProps, "children">` shape — including the package
-#   `types` entrypoint at lib/typescript/src/index.d.ts. Without this
-#   patch `<AnimatedText>{children}</AnimatedText>` fails type check
-#   with TS2322 "Property 'children' does not exist…". Patch updates
-#   all three published .d.ts files (index, TextProps, web) to match
-#   the source.
-# Upstream Issue: none filed — the maintainer just needs to run a fresh
-#   `prepare` to republish the .d.ts files. Easy upstream PR.
+# Why: Rainbow's AnimatedText provides a line-height fix node as a child,
+#   and react-native-animateable-text forwards children at runtime. The
+#   package's published declarations nevertheless omit TextProps.children,
+#   making that supported composition fail with TS2322. Keep the package's
+#   three public declaration surfaces aligned with its runtime behavior.
+# Upstream Issue: none filed — the package declarations and source prop type
+#   should retain NativeTextProps.children.
 # Linear Issue: FEPLAT-98
 # Remove when: react-native-animateable-text ships a release where
-#   lib/typescript/src/{index,TextProps,AnimateableText.web}.d.ts
-#   match the source (no `Omit<…, "children">`).
+#   lib/typescript/src/{index,TextProps,AnimateableText.web}.d.ts admit
+#   NativeTextProps.children.
 
 diff --git a/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts b/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts
 index 0000000..0000001 100644
@@ -59,17 +45,3 @@ index 0000000..0000001 100644
      forwardedRef?: import("react").Ref<import("react-native").Text>;
      text?: string;
      onStartShouldSetResponder?: () => boolean;
-diff --git a/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm b/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
---- a/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
-+++ b/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
-@@ -37,1 +37,10 @@
-+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
-+{
-+  [super layoutSubviewsWithContext:layoutContext];
-+
-+  // Reanimated's synchronous layout pass suppresses mounting observers.
-+  // Queue text in this batch so its glyphs and measured frame mount together.
-+  [self uiManagerWillPerformMounting];
-+}
-+
- - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size

@@ -21,18 +21,20 @@
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -111,6 +111,7 @@
-
+@@ -115,6 +115,7 @@
+ 
  @implementation RCTView {
    UIColor *_backgroundColor;
 +  UIView *_nativeBorderView;
    NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
    NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
  }
-@@ -788,6 +789,18 @@
+@@ -790,6 +791,18 @@
+       (borderBottomColor ?: borderColor),
+       (directionAwareBorderRightColor ?: borderColor),
    };
- }
-
++}
++
 +- (void)setFrame:(CGRect)frame
 +{
 +  [super setFrame:frame];
@@ -43,15 +45,13 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
 +{
 +  [super setBounds:bounds];
 +  _nativeBorderView.frame = self.bounds;
-+}
-+
+ }
+ 
  - (void)reactSetFrame:(CGRect)frame
- {
-   // If frame is zero, or below the threshold where the border radii can
-@@ -800,6 +813,50 @@
+@@ -804,6 +817,50 @@
    }
  }
-
+ 
 +- (void)updateNativeCornerRadii:(RCTCornerRadii)cornerRadii
 +{
 +#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
@@ -99,10 +99,10 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
  - (void)displayLayer:(CALayer *)layer
  {
    if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
-@@ -814,7 +871,13 @@
+@@ -818,7 +875,13 @@
    const UIEdgeInsets borderInsets = [self bordersAsInsets];
    const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
-
+ 
 -  BOOL useIOSBorderRendering = RCTCornerRadiiAreEqualAndSymmetrical(cornerRadii) &&
 +  BOOL useIOSBorderRendering = RCTCornerRadiiAreEqualAndSymmetrical(cornerRadii);
 +#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
@@ -112,12 +112,12 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
 +#endif
 +  useIOSBorderRendering = useIOSBorderRendering &&
        RCTBorderInsetsAreEqual(borderInsets) && RCTBorderColorsAreEqual(borderColors) &&
-
+ 
        // iOS draws borders in front of the content whereas CSS draws them behind
-@@ -830,21 +893,35 @@
-
+@@ -834,21 +897,35 @@
+ 
    UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
-
+ 
 +  if (@available(iOS 13.0, *)) {
 +    layer.cornerCurve = kCACornerCurveContinuous;
 +  }
@@ -139,55 +139,56 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
      layer.mask = nil;
      return;
    }
-
+ 
 +  _nativeBorderView.layer.borderWidth = 0;
 +
    UIImage *image = RCTGetBorderImage(
        _borderStyle, layer.bounds.size, cornerRadii, borderInsets, borderColors, backgroundColor, self.clipsToBounds);
-
+ 
    layer.backgroundColor = NULL;
 +  layer.borderWidth = 0;
 +  layer.borderColor = NULL;
 +  [self updateClippingForLayer:layer];
-
+ 
    if (image == nil) {
      layer.contents = nil;
-@@ -870,8 +947,6 @@
+@@ -874,8 +951,6 @@
    } else {
      layer.contentsCenter = CGRectMake(0.0, 0.0, 1.0, 1.0);
    }
 -
 -  [self updateClippingForLayer:layer];
  }
-
+ 
  static BOOL RCTLayerHasShadow(CALayer *layer)
-@@ -934,12 +1009,12 @@
+@@ -939,12 +1014,12 @@
  - (void)updateClippingForLayer:(CALayer *)layer
  {
    CALayer *mask = nil;
 -  CGFloat cornerRadius = 0;
 +  RCTCornerRadii clippingRadii = {0};
-
+ 
    if (self.clipsToBounds) {
      const RCTCornerRadii cornerRadii = [self cornerRadii];
      if (RCTCornerRadiiAreEqualAndSymmetrical(cornerRadii)) {
 -      cornerRadius = cornerRadii.topLeftHorizontal;
 +      clippingRadii = cornerRadii;
-
+ 
      } else {
        CAShapeLayer *shapeLayer = [CAShapeLayer layer];
-@@ -951,6 +1026,6 @@
+@@ -956,7 +1031,7 @@
      }
    }
-
+ 
 -  layer.cornerRadius = cornerRadius;
 +  [self updateNativeCornerRadii:clippingRadii];
    layer.mask = mask;
  }
+ 
 diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
 --- a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
 +++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
-@@ -542,7 +542,7 @@
+@@ -518,7 +518,7 @@
        .borderColors = borderColors.resolve(isRTL, {}),
        .borderWidths = borderWidths.resolve(isRTL, 0),
        .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),

@@ -301,6 +301,7 @@ DEPENDENCIES
   bigdecimal
   cocoapods (>= 1.13, != 1.15.1, != 1.15.0)
   fastlane
+  nkf
 
 RUBY VERSION
   ruby 3.4.8
