@@ -2,6 +2,7 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import { v4 as uuidv4 } from 'uuid';
 
 import { analytics } from '@/analytics';
+import { requireAddress } from '@/features/address/core/requireAddress';
 import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
@@ -91,9 +92,12 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           timeToUsdcMs: new Date(order.completedTime).getTime() - new Date(order.createdTime).getTime(),
         });
         try {
+          // The ramp echoes the address lowercased, while every reader of the pending-transaction store
+          // keys off the app's checksummed account address.
+          const walletAddress = requireAddress(order.walletAddress, '[cashBuyOrderStore] ramp returned an invalid wallet address');
           pendingTransactionsActions.addPendingTransaction({
-            address: order.walletAddress,
-            pendingTransaction: buildCashPurchaseTransaction({ order, walletAddress: order.walletAddress }),
+            address: walletAddress,
+            pendingTransaction: buildCashPurchaseTransaction({ order, walletAddress }),
           });
         } catch (error) {
           logger.error(new RainbowError('[cashBuyOrderStore] failed to enqueue purchase transaction', { error }), {

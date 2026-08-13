@@ -63,6 +63,7 @@ declare module 'react-native-dotenv' {
   export const BIVO_ENV: 'sandbox' | 'live';
   export const CASH_PLATFORM_BASE_URL: string;
   export const CASH_PLATFORM_API_KEY: string;
+  export const CASH_USE_PROD: 'true' | 'false';
   export const GELATO_API_KEY: string;
   export const RAINBOW_RELAY_URL: string;
   export const RAINBOW_RELAY_API_KEY: string;

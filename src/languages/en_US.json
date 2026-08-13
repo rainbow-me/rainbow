@@ -1638,7 +1638,6 @@
           "error_description": "We couldn’t add your passkey. Please try again.",
           "try_again": "Try Again"
         },
-        "email": { "title": "Enter email" },
         "all_done": {
           "title": "You’re all done!",
           "description": "You’re good to go. Add a payment method and you’re ready.",

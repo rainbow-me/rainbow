@@ -29,7 +29,6 @@ export enum RampCryptoAsset {
 
 export enum RampNetwork {
   Unspecified = 'NETWORK_UNSPECIFIED',
-  Arbitrum = 'NETWORK_ARBITRUM',
   ArbitrumTestnet = 'NETWORK_ARBITRUM_TESTNET',
   Base = 'NETWORK_BASE',
 }

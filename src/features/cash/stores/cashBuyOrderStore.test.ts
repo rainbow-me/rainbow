@@ -55,7 +55,12 @@ const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 
 // ---- Fixtures --------------------------------------------------------------
 
-const SPEC: BuyOrderSpec = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: '0xabc' };
+// The client submits the checksummed account address; the ramp echoes it back lowercased. Both forms are
+// fixtures on purpose — an all-lowercase address cannot express the difference the store has to reconcile.
+const WALLET_ADDRESS = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed';
+const RAMP_WALLET_ADDRESS = WALLET_ADDRESS.toLowerCase();
+
+const SPEC: BuyOrderSpec = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: WALLET_ADDRESS };
 const SUBMITTED_AT = 1750789885000;
 const CREATED_PENDING_ORDER: CreatedBuyOrder = {
   id: SPEC.id,
@@ -69,7 +74,7 @@ const ORDER_COMMON = {
   cryptoAmount: { amount: '50', asset: { asset: RampCryptoAsset.USDC, network: RampNetwork.Base } },
   fiatAmount: { amount: '50', currency: 'USD' },
   createdTime: '2026-06-24T18:31:25.000Z',
-  walletAddress: '0xabc',
+  walletAddress: RAMP_WALLET_ADDRESS,
 };
 const PENDING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { ...ORDER_COMMON, status: OrderStatus.Pending };
 const PROCESSING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { ...ORDER_COMMON, status: OrderStatus.Processing };
@@ -85,8 +90,8 @@ const FAILED_PAYMENT_ORDER: Extract<BuyOrder, { status: OrderStatus.Failed }> = 
   failureReason: OrderFailureReason.PaymentRejected,
 };
 
-const SUBMIT_INPUT = { cardId: 'card-1', depositAmount: '50', walletAddress: '0xabc' };
-const LINKED_WALLET = { id: 'wallet-1', address: '0xabc' };
+const SUBMIT_INPUT = { cardId: 'card-1', depositAmount: '50', walletAddress: WALLET_ADDRESS };
+const LINKED_WALLET = { id: 'wallet-1', address: RAMP_WALLET_ADDRESS };
 
 function fetchError(status: number): RainbowFetchError {
   return new RainbowFetchError({ message: 'not found', response: { status } as Response });
@@ -292,13 +297,26 @@ describe('syncActiveOrder', () => {
 
     await getState().syncActiveOrder();
 
-    expect(buildPurchaseTransaction).toHaveBeenCalledWith({ order: COMPLETED_ORDER, walletAddress: COMPLETED_ORDER.walletAddress });
+    expect(buildPurchaseTransaction).toHaveBeenCalledWith({ order: COMPLETED_ORDER, walletAddress: WALLET_ADDRESS });
     expect(addPendingTransaction).toHaveBeenCalledWith({
-      address: COMPLETED_ORDER.walletAddress,
+      address: WALLET_ADDRESS,
       pendingTransaction: PURCHASE_TRANSACTION,
     });
     expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
     expect(phase()).toBe('success');
+  });
+
+  // usePendingTransactionsStore is a raw-keyed map and every reader looks the row up under the app's
+  // checksummed account address, so filing it under the ramp's lowercased echo hides it from all of them.
+  it('keys the pending transaction by the checksummed address, not the ramp echo', async () => {
+    startPolling(PROCESSING_ORDER);
+    getOrder.mockResolvedValue(COMPLETED_ORDER);
+
+    await getState().syncActiveOrder();
+
+    const { address } = addPendingTransaction.mock.calls[0][0];
+    expect(address).toBe(WALLET_ADDRESS);
+    expect(address).not.toBe(COMPLETED_ORDER.walletAddress);
   });
 
   it('surfaces a payment-rejected error when polling resolves to failed', async () => {

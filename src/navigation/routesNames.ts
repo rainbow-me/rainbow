@@ -71,7 +71,6 @@ const Routes = {
   CASH_SETUP_SSN: 'CashSetupSsn',
   CASH_SETUP_REVIEW: 'CashSetupReview',
   CASH_SETUP_PASSKEY: 'CashSetupPasskey',
-  CASH_SETUP_EMAIL: 'CashSetupEmail',
   CASH_SETUP_ALL_DONE: 'CashSetupAllDone',
   CASH_SETUP_CARD_DETAILS: 'CashSetupCardDetails',
   CASH_SETUP_CARD_ADDED: 'CashSetupCardAdded',

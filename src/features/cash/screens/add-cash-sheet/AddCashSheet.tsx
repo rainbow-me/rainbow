@@ -195,7 +195,11 @@ function AddCashActionButton({
   const accent = useForegroundColor('accent');
 
   return (
-    <Box paddingHorizontal="20px" paddingTop="24px" style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}>
+    <Box
+      paddingHorizontal="20px"
+      paddingTop={isKeypad ? undefined : '24px'}
+      style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}
+    >
       {hasLinkedCard ? (
         <HoldToActivateButton
           backgroundColor="accent"
@@ -293,7 +297,7 @@ function KeypadAmountContent({
       </Box>
       <KeypadFundingCaption />
       {linkedCard && <AddFromRow card={linkedCard} onPress={onAddFrom} />}
-      <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px">
+      <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px" paddingTop="24px">
         <NumberPad
           activeFieldId={amount.activeFieldId}
           fields={amount.fields}
