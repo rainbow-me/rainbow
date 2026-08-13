@@ -162,7 +162,7 @@
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
-    "@bivoglobal/payment-react-native": "0.0.5",
+    "@bivoglobal/payment-react-native": "0.0.6",
     "@bradgarropy/use-countdown": "1.4.1",
     "@candlefinance/faster-image": "1.6.2",
     "@capsizecss/core": "3.0.0",
