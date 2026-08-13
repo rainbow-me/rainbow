@@ -68,12 +68,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   maskElement: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
   maskView: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
   },
 });

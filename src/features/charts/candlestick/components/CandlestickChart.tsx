@@ -2201,7 +2201,7 @@ const styles = StyleSheet.create({
   canvas: {
     flex: 1,
   },
-  emptyState: StyleSheet.absoluteFillObject,
+  emptyState: StyleSheet.absoluteFill,
   leftFade: {
     bottom: 0,
     position: 'absolute',

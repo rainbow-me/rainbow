@@ -74,7 +74,7 @@ export function Navbar({
             alignItems: 'center',
             paddingHorizontal: NAVBAR_HORIZONTAL_INSET,
             backgroundColor: 'transparent',
-            ...StyleSheet.absoluteFillObject,
+            ...StyleSheet.absoluteFill,
           }}
           width="full"
           pointerEvents={pointerEvents}

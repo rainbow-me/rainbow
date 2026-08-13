@@ -132,7 +132,7 @@ function GradientFill() {
   const canvasHeight = height + blurPadding * 2;
 
   return (
-    <View style={{ ...StyleSheet.absoluteFillObject, top: -blurPadding + topOffset, alignItems: 'center' }}>
+    <View style={{ ...StyleSheet.absoluteFill, top: -blurPadding + topOffset, alignItems: 'center' }}>
       <Canvas
         style={{
           width: canvasWidth,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   backgroundCoinLayerClipped: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: BORDER_RADIUS,
     overflow: 'hidden',
   },

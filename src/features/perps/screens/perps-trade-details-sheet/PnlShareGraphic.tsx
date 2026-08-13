@@ -139,7 +139,7 @@ function PnlShareContent({
           overflow: 'hidden',
         },
         contentContainer: {
-          ...StyleSheet.absoluteFillObject,
+          ...StyleSheet.absoluteFill,
           padding: s(14),
         },
         characterContainer: {

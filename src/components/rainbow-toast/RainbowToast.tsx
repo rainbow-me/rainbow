@@ -134,7 +134,7 @@ function RainbowToastDisplayContent() {
       <RainbowToastExpandedDisplay />
 
       <GestureDetector gesture={panGesture}>
-        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFill, hiddenAnimatedStyle]}>
           {toastsWithAdjustedIndex(visibleToasts).map(([toast, index]) => {
             return <RainbowToastItem stackWidth={stackWidth} key={toast.id} toast={toast} index={index} />;
           })}
