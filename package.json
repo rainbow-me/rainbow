@@ -340,7 +340,7 @@
     "react-native-permissions": "3.10.1",
     "react-native-quick-md5": "3.0.9",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c",
-    "react-native-randombytes": "3.5.3",
+    "react-native-randombytes": "3.6.2",
     "react-native-reanimated": "4.6.0-nightly-20260812-0f8cf6dcc",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
