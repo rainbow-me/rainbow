@@ -3150,8 +3150,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-get-random-values (1.5.0):
-    - React
+  - react-native-get-random-values (2.0.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - react-native-ios-context-menu (1.15.3):
     - React-Core
   - react-native-keyboard-controller (1.22.3):
@@ -5258,7 +5278,7 @@ SPEC CHECKSUMS:
   react-native-cloud-fs: 0646046c613edacda3902576805cee7c61813801
   react-native-compat: cda27fa481106890a5812dc6b39c98326047d6da
   react-native-cool-modals: e01f5d0d03b4d207710ca2fa37a41b085017962e
-  react-native-get-random-values: 04e59f21c9076958ba50576bdd51878fac5b35ef
+  react-native-get-random-values: 4c923ad74f603ac6359e7990c36fd3af06f129b9
   react-native-ios-context-menu: 986da6dcba70094bcc2a8049f68410fe7d25aff1
   react-native-keyboard-controller: 0cf48ce6765397791a0f4b047a82cf077250c314
   react-native-menu: b265308504babf73c6a7f1e08020ac498187a86c

@@ -9667,7 +9667,7 @@ __metadata:
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
     react-native-gesture-handler: "npm:2.32.0"
-    react-native-get-random-values: "npm:1.5.0"
+    react-native-get-random-values: "npm:2.0.0"
     react-native-image-colors: "npm:2.5.1"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
@@ -22736,14 +22736,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-get-random-values@npm:1.5.0":
-  version: 1.5.0
-  resolution: "react-native-get-random-values@npm:1.5.0"
+"react-native-get-random-values@npm:2.0.0":
+  version: 2.0.0
+  resolution: "react-native-get-random-values@npm:2.0.0"
   dependencies:
     fast-base64-decode: "npm:^1.0.0"
   peerDependencies:
-    react-native: ">=0.56"
-  checksum: 10c0/ee6e7495dc49ae6fc390c4fb6f6402e7aa6008afa01c144e56a9513b7bdb2c0124c1fccee2ddd116d01142b913acd75e92bed713e42a61444b07aaf9a5de6057
+    react-native: ">=0.81"
+  checksum: 10c0/fd2e10ab3bca54bff8f5844e3314b797e02822e86663bc2dafe00a511b8a8e1c05d96aa0b8dc1ffad428387d44bbf458ce770a429858433d36f58a16e6e52986
   languageName: node
   linkType: hard
 
