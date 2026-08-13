@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     zIndex: 999999,
   },
   gradientFillContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: BORDER_RADIUS,
     overflow: 'hidden',
   },

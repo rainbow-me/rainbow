@@ -657,9 +657,9 @@ export const ZoomableWrapper = ({
     <View style={{ alignItems: 'center' }}>
       <GestureDetector gesture={combinedGesture}>
         <ZoomContainer collapsable={false} height={containerHeight} width={containerWidth}>
-          <Container hasShadow={hasShadow} style={[containerStyle, StyleSheet.absoluteFillObject]}>
+          <Container hasShadow={hasShadow} style={[containerStyle, StyleSheet.absoluteFill]}>
             <GestureDetector gesture={imageGesture}>
-              <ImageWrapper collapsable={false} style={[animatedStyle, cornerStyle, StyleSheet.absoluteFillObject]}>
+              <ImageWrapper collapsable={false} style={[animatedStyle, cornerStyle, StyleSheet.absoluteFill]}>
                 {children}
               </ImageWrapper>
             </GestureDetector>

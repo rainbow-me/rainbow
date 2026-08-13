@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     width: MONEYLINE_CELL_WIDTH,
   },
   betCellOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: opacity(globalColors.grey100, 0.3),
     borderRadius: BET_CELL_BORDER_RADIUS,
   },

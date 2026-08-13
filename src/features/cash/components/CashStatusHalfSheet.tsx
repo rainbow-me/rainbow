@@ -125,7 +125,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
 
 const styles = StyleSheet.create({
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.44)',
   },
   alertIcon: {
@@ -136,9 +136,9 @@ const styles = StyleSheet.create({
     lineHeight: 64,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   panelHost: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
 });

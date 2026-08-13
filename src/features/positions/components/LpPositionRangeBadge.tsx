@@ -92,7 +92,7 @@ export const LpPositionRangeBadge = ({ assets }: LpPositionRangeBadgeProps) => {
                 }
                 start={{ x: isFirst ? 0 : 1, y: 0.5 }}
                 end={{ x: isFirst ? 1 : 0, y: 0.5 }}
-                style={StyleSheet.absoluteFillObject}
+                style={StyleSheet.absoluteFill}
               />
             </Box>
           </Box>

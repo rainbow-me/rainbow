@@ -23,11 +23,11 @@ export function Portal() {
     <Wrapper
       pointerEvents="none"
       style={{
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         pointerEvents: 'none',
       }}
     >
-      <NativePortal {...(Platform.OS === 'ios' ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+      <NativePortal {...(Platform.OS === 'ios' ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFill}>
         <LoadingOverlay paddingTop={sheetVerticalOffset} title={loadingState} />
       </NativePortal>
     </Wrapper>

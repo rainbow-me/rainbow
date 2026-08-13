@@ -213,7 +213,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
 
   return (
     <Fragment>
-      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFill]} /> : null}
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}

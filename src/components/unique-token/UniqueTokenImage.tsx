@@ -96,9 +96,9 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
     <Centered backgroundColor={backgroundColor} style={StyleSheet.absoluteFill}>
       {shouldShowRegularImage && (
         <>
-          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
+          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFill} />
           {optimisticImageLoading && isLoading && lowResImageUrl && (
-            <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />
+            <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFill} />
           )}
         </>
       )}

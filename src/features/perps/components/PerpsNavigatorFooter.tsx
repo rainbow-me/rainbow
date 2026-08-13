@@ -141,10 +141,10 @@ const PerpsAccountScreenFooter = () => {
             },
           ]}
         >
-          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity100} />
           <LinearGradient
             colors={['rgba(255, 255, 255, 0.96)', 'rgba(255, 255, 255, 0.88)']}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
           />
@@ -284,10 +284,10 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
             },
           ]}
         >
-          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity100} />
           <LinearGradient
             colors={isLong ? [accentColors.surfacePrimary, '#142A18'] : [accentColors.surfacePrimary, '#2A1614']}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 2 }}
           />

@@ -66,7 +66,7 @@ buildFlexStyles.object = ({ align = 'stretch', self, flex, direction = 'row', ju
   }
 
   if (cover) {
-    Object.assign(props, StyleSheet.absoluteFillObject);
+    Object.assign(props, StyleSheet.absoluteFill);
   }
 
   return props;

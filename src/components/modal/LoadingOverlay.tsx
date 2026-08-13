@@ -29,7 +29,7 @@ const LoadingOverlayComponent = ({ title, paddingTop = 0, style }: LoadingOverla
       <Animated.View
         entering={FadeIn}
         exiting={FadeOut}
-        style={[StyleSheet.absoluteFillObject, { backgroundColor: opacity(globalColors.grey100, 0.7) }]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: opacity(globalColors.grey100, 0.7) }]}
       />
       <Box
         alignItems="center"
@@ -62,11 +62,11 @@ export const LoadingOverlay = neverRerender(LoadingOverlayComponent);
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 999,
   },
   overlayBlur: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1,
   },
   title: {

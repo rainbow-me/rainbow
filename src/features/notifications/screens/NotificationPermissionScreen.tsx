@@ -77,7 +77,7 @@ export function NotificationPermissionScreen() {
     <ColorModeProvider value="dark">
       <View style={styles.container} testID="notification-permission-screen">
         <SystemBars style="light" />
-        <Box as={ImageBackground} height="full" source={backgroundImage} style={StyleSheet.absoluteFillObject} />
+        <Box as={ImageBackground} height="full" source={backgroundImage} style={StyleSheet.absoluteFill} />
         <Box paddingTop={{ custom: 57.5 }} paddingBottom={{ custom: safeAreaInsets.bottom }} style={styles.flex}>
           <Image source={headerImage} style={styles.headerImage} resizeMode="contain" />
           <Box alignItems="center" paddingHorizontal="20px" paddingTop={'44px'} paddingBottom={{ custom: 64 }}>

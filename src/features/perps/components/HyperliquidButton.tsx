@@ -35,16 +35,11 @@ export const HyperliquidButton = function HyperliquidButton({ children, onPress,
       >
         {isDarkMode && (
           <>
-            <LinearGradient
-              colors={accentColors.gradient}
-              style={StyleSheet.absoluteFillObject}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            />
+            <LinearGradient colors={accentColors.gradient} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
             <View style={styles.darkModeOverlay} />
           </>
         )}
-        {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
+        {!isDarkMode && <View style={[StyleSheet.absoluteFill, { backgroundColor: accentColors.opacity100 }]} />}
         {children}
       </Box>
     </ButtonPressAnimation>
@@ -55,6 +50,6 @@ const styles = StyleSheet.create({
   darkModeOverlay: {
     backgroundColor: '#000000',
     opacity: 0.12,
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
 });

@@ -237,11 +237,11 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
       {useBackgroundOverlay && (
         <>
           {backgroundOverlay ? (
-            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFillObject]}>
+            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFill]}>
               {backgroundOverlay}
             </Box>
           ) : (
-            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFillObject]}>
+            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFill]}>
               {Platform.OS === 'ios' && (
                 <Box
                   as={View}

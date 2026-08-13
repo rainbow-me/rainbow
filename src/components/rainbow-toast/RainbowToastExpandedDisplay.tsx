@@ -24,7 +24,7 @@ const ITEM_HEIGHT = 66;
 const ExpandedToastCard = ({ width, height, children }: { width: number; height: number; children: React.ReactNode }) => {
   return (
     <Panel style={{ width, height }}>
-      <View style={StyleSheet.absoluteFillObject}>{children}</View>
+      <View style={StyleSheet.absoluteFill}>{children}</View>
     </Panel>
   );
 };
@@ -107,7 +107,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       {/* backdrop */}
       <Animated.View style={[styles.backdrop, opacityStyle, { pointerEvents: pointerEvents }]}>
         <TouchableWithoutFeedback onPress={hide}>
-          <Box style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.7)' }]} />
+          <Box style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.7)' }]} />
         </TouchableWithoutFeedback>
       </Animated.View>
 
