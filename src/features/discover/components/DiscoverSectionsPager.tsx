@@ -1,8 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
-import { Platform, ScrollView, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
-import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { makeMutable, runOnUI, useAnimatedScrollHandler, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
@@ -21,6 +21,7 @@ import {
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { clamp } from '@/worklets/numbers';
 
@@ -28,32 +29,62 @@ type DiscoverSectionsPagerProps = {
   scrollOffset: SharedValue<number>;
 };
 
-type SectionScrollOffsets = Partial<Record<DiscoverSection, number>>;
+type SectionScrollOffsets = Map<DiscoverSection, SharedValue<number>>;
 
 const FALLBACK_SECTION_COUNT = 3;
 const FALLBACK_TILE_COUNT = 2;
+const EMPTY_TABS: DiscoverTab[] = [];
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
-  const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
-  const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
-  const pagerKey = tabs.map(tab => tab.id).join('|');
+  const tabs = surface?.tabs ?? EMPTY_TABS;
+  const pagerKey = useMemo(() => tabs.map(tab => tab.id).join('|'), [tabs]);
+
+  const { activeSectionIndex, sectionScrollOffsets } = useStableValue(() => {
+    const initialSectionIndex = getSectionIndex(tabs, DiscoverSectionNavigation.getActiveSection());
+    return {
+      activeSectionIndex: makeMutable(initialSectionIndex === -1 && tabs.length ? 0 : initialSectionIndex),
+      sectionScrollOffsets: new Map<DiscoverSection, SharedValue<number>>(),
+    };
+  });
+
+  const activateSection = useMemo(
+    () =>
+      runOnUI((index: number, sectionOffset: SharedValue<number>) => {
+        if (index !== -1) activeSectionIndex.value = index;
+        scrollOffset.value = sectionOffset.value;
+      }),
+    [activeSectionIndex, scrollOffset]
+  );
 
   useListen(
     useDiscoverNavigationStore,
     state => state.activeSection,
     section => {
-      scrollOffset.value = sectionScrollOffsets.current[section] ?? 0;
+      activateSection(getSectionIndex(tabs, section), getSectionScrollOffset(sectionScrollOffsets, section));
     }
   );
 
   useEffect(() => {
     const firstTab = tabs[0];
-    if (surface && firstTab && !tabs.some(tab => tab.id === activeSectionId)) {
-      DiscoverSectionNavigation.navigate(firstTab.id);
+    if (!firstTab) return;
+
+    const currentSections = new Set(tabs.map(tab => tab.id));
+    for (const section of sectionScrollOffsets.keys()) {
+      if (!currentSections.has(section)) {
+        sectionScrollOffsets.delete(section);
+      }
     }
-  }, [activeSectionId, surface, tabs]);
+
+    const activeSection = DiscoverSectionNavigation.getActiveSection();
+    const sectionIndex = getSectionIndex(tabs, activeSection);
+    if (sectionIndex === -1) {
+      DiscoverSectionNavigation.navigate(firstTab.id);
+      return;
+    }
+
+    activateSection(sectionIndex, getSectionScrollOffset(sectionScrollOffsets, activeSection));
+  }, [activateSection, sectionScrollOffsets, tabs]);
 
   if (!surface || !tabs.length) {
     return (
@@ -71,19 +102,20 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
         fallbackPage={tabs[0].id}
         fillHeight
         key={pagerKey}
+        lazy
         navigation={DiscoverPagerNavigation}
         scaleTo={1}
         springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         verticalPageAlignment="top"
       >
         {tabs.map((section, index) => (
-          <SmoothPager.Page id={section.id} key={section.id} lazy>
+          <SmoothPager.Page id={section.id} key={section.id}>
             <DiscoverSectionScrollView
-              isActive={section.id === activeSectionId}
+              activeSectionIndex={activeSectionIndex}
               scrollOffset={scrollOffset}
               section={section}
               sectionIndex={index}
-              sectionScrollOffsets={sectionScrollOffsets}
+              storedScrollOffset={getSectionScrollOffset(sectionScrollOffsets, section.id)}
               surfaceId={surface.id}
             />
           </SmoothPager.Page>
@@ -122,77 +154,48 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback() {
 });
 
 const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
-  isActive,
+  activeSectionIndex,
   scrollOffset,
   section,
   sectionIndex,
-  sectionScrollOffsets,
+  storedScrollOffset,
   surfaceId,
 }: {
-  isActive: boolean;
+  activeSectionIndex: SharedValue<number>;
   scrollOffset: SharedValue<number>;
   section: DiscoverTab;
   sectionIndex: number;
-  sectionScrollOffsets: MutableRefObject<SectionScrollOffsets>;
+  storedScrollOffset: SharedValue<number>;
   surfaceId: SurfaceId;
 }) {
   const { registerSectionScrollView } = useDiscoverScreenContext();
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
-  const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[section.id] ?? 0);
+  const sectionId = section.id;
 
   const setScrollViewRef = useCallback(
     (scrollView: DiscoverSectionScrollViewRef | null) => {
-      registerSectionScrollView(section.id, scrollView);
+      registerSectionScrollView(sectionId, scrollView);
     },
-    [registerSectionScrollView, section]
-  );
-
-  const updateSectionScrollOffset = useCallback(
-    (nextOffset: number) => {
-      sectionScrollOffsets.current[section.id] = nextOffset;
-    },
-    [section.id, sectionScrollOffsets]
-  );
-
-  const onAndroidScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const clampedPosition = clamp(event.nativeEvent.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
-
-      if (storedScrollOffset.value !== clampedPosition) {
-        storedScrollOffset.value = clampedPosition;
-        updateSectionScrollOffset(clampedPosition);
-      }
-
-      if (!isActive || scrollOffset.value === clampedPosition) return;
-      scrollOffset.value = clampedPosition;
-    },
-    [isActive, scrollOffset, storedScrollOffset, updateSectionScrollOffset]
+    [registerSectionScrollView, sectionId]
   );
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: event => {
       const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
-      if (storedScrollOffset.value !== clampedPosition) {
-        storedScrollOffset.value = clampedPosition;
-        runOnJS(updateSectionScrollOffset)(clampedPosition);
-      }
+      if (storedScrollOffset.value !== clampedPosition) storedScrollOffset.value = clampedPosition;
 
-      if (!isActive || scrollOffset.value === clampedPosition) return;
+      if (activeSectionIndex.value !== sectionIndex || scrollOffset.value === clampedPosition) return;
       scrollOffset.value = clampedPosition;
     },
   });
 
-  const SectionScrollView = Platform.OS === 'android' ? ScrollView : Animated.ScrollView;
-  const sectionScrollHandler = Platform.OS === 'android' ? onAndroidScroll : onScroll;
-
   return (
-    <SectionScrollView
+    <Animated.ScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={[styles.scrollContent, Platform.OS === 'android' && { paddingBottom: bottomInset }]}
-      onScroll={sectionScrollHandler}
-      pointerEvents={isActive ? 'auto' : 'none'}
+      onScroll={onScroll}
       ref={setScrollViewRef}
       refreshControl={<DiscoverRefreshControl />}
       scrollEventThrottle={16}
@@ -201,12 +204,25 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       style={styles.scrollView}
       testID={`discover-section-page-${sectionIndex + 1}`}
     >
-      <Box testID={`discover-section-${section.id}`}>
+      <Box testID={`discover-section-${sectionId}`}>
         <DiscoverSections items={section.sections} surfaceId={surfaceId} />
       </Box>
-    </SectionScrollView>
+    </Animated.ScrollView>
   );
 });
+
+function getSectionScrollOffset(offsets: SectionScrollOffsets, section: DiscoverSection): SharedValue<number> {
+  const existing = offsets.get(section);
+  if (existing) return existing;
+
+  const offset = makeMutable(0);
+  offsets.set(section, offset);
+  return offset;
+}
+
+function getSectionIndex(tabs: DiscoverTab[], section: DiscoverSection): number {
+  return tabs.findIndex(tab => tab.id === section);
+}
 
 const styles = StyleSheet.create({
   container: {
