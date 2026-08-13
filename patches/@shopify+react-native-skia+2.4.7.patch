@@ -1,3 +1,16 @@
+diff --git a/node_modules/@shopify/react-native-skia/android/build.gradle b/node_modules/@shopify/react-native-skia/android/build.gradle
+index 9c6ab08..0466eb6 100644
+--- a/node_modules/@shopify/react-native-skia/android/build.gradle
++++ b/node_modules/@shopify/react-native-skia/android/build.gradle
+@@ -143,3 +143,7 @@ android {
+     }
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {
 diff --git a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
 index 9da1458..7ee5ed9 100644
 --- a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
@@ -35,3 +48,88 @@ index 9da1458..7ee5ed9 100644
    if (supportsWideColor) {
      CGColorSpaceRef colorSpace =
          CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+diff --git a/node_modules/@shopify/react-native-skia/cpp/api/third_party/base64.cpp b/node_modules/@shopify/react-native-skia/cpp/api/third_party/base64.cpp
+--- a/node_modules/@shopify/react-native-skia/cpp/api/third_party/base64.cpp
++++ b/node_modules/@shopify/react-native-skia/cpp/api/third_party/base64.cpp
+@@ -7 +7 @@
+-#include "third_party/base64.h"
++#include "base64.h"
+diff --git a/node_modules/@shopify/react-native-skia/cpp/api/third_party/SkottieUtils.cpp b/node_modules/@shopify/react-native-skia/cpp/api/third_party/SkottieUtils.cpp
+--- a/node_modules/@shopify/react-native-skia/cpp/api/third_party/SkottieUtils.cpp
++++ b/node_modules/@shopify/react-native-skia/cpp/api/third_party/SkottieUtils.cpp
+@@ -8 +8 @@
+-#include "third_party/SkottieUtils.h"
++#include "SkottieUtils.h"
+diff --git a/node_modules/@shopify/react-native-skia/react-native-skia.podspec b/node_modules/@shopify/react-native-skia/react-native-skia.podspec
+--- a/node_modules/@shopify/react-native-skia/react-native-skia.podspec
++++ b/node_modules/@shopify/react-native-skia/react-native-skia.podspec
+@@ -69 +69 @@ Pod::Spec.new do |s|
+-    "HEADER_SEARCH_PATHS" => '"$(PODS_TARGET_SRCROOT)/cpp/"/**'
++    "HEADER_SEARCH_PATHS" => '"$(PODS_TARGET_SRCROOT)/cpp"/** "$(PODS_TARGET_SRCROOT)/cpp" "$(PODS_TARGET_SRCROOT)/cpp/skia"'
+diff --git a/node_modules/@shopify/react-native-skia/apple/SkiaManager.h b/node_modules/@shopify/react-native-skia/apple/SkiaManager.h
+--- a/node_modules/@shopify/react-native-skia/apple/SkiaManager.h
++++ b/node_modules/@shopify/react-native-skia/apple/SkiaManager.h
+@@ -15,0 +16 @@
++                       runtime:(facebook::jsi::Runtime *)runtime
+diff --git a/node_modules/@shopify/react-native-skia/apple/SkiaManager.mm b/node_modules/@shopify/react-native-skia/apple/SkiaManager.mm
+--- a/node_modules/@shopify/react-native-skia/apple/SkiaManager.mm
++++ b/node_modules/@shopify/react-native-skia/apple/SkiaManager.mm
+@@ -5 +4,0 @@
+-#import <React/RCTBridge+Private.h>
+@@ -26,0 +26 @@
++                       runtime:(facebook::jsi::Runtime *)runtime
+@@ -32,6 +32 @@
+-    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)bridge;
+-    if (cxxBridge.runtime) {
+-
+-      facebook::jsi::Runtime *jsRuntime =
+-          (facebook::jsi::Runtime *)cxxBridge.runtime;
+-
++    if (runtime != nullptr) {
+@@ -40 +35 @@
+-          jsRuntime, jsInvoker,
++          runtime, jsInvoker,
+diff --git a/node_modules/@shopify/react-native-skia/apple/RNSkiaModule.mm b/node_modules/@shopify/react-native-skia/apple/RNSkiaModule.mm
+--- a/node_modules/@shopify/react-native-skia/apple/RNSkiaModule.mm
++++ b/node_modules/@shopify/react-native-skia/apple/RNSkiaModule.mm
+@@ -2,0 +3 @@
++#ifndef RCT_NEW_ARCH_ENABLED
+@@ -3,0 +5 @@
++#endif
+@@ -4,0 +7,3 @@
++#ifdef RCT_NEW_ARCH_ENABLED
++#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
++#endif
+@@ -5,0 +11,5 @@
++#ifdef RCT_NEW_ARCH_ENABLED
++@interface RNSkiaModule () <RCTTurboModuleWithJSIBindings>
++@end
++#endif
++
+@@ -8,0 +19 @@
++  facebook::jsi::Runtime *jsRuntime;
+@@ -30,0 +42,2 @@
++  jsRuntime = nullptr;
++  jsInvoker.reset();
+@@ -37,0 +51,5 @@
++#ifdef RCT_NEW_ARCH_ENABLED
++  if (jsRuntime == nullptr || !jsInvoker) {
++    return @false;
++  }
++#else
+@@ -38,0 +57 @@
++  jsRuntime = (facebook::jsi::Runtime *)cxxBridge.runtime;
+@@ -42 +61,3 @@
+-  skiaManager = [[SkiaManager alloc] initWithBridge:cxxBridge
++#endif
++  skiaManager = [[SkiaManager alloc] initWithBridge:self.bridge
++                                            runtime:jsRuntime
+@@ -47,0 +69,6 @@
++- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
++                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callInvoker {
++  jsRuntime = &runtime;
++  jsInvoker = callInvoker;
++}
++
+@@ -50 +76,0 @@
+-  jsInvoker = params.jsInvoker;
