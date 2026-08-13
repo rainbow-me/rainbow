@@ -130,7 +130,7 @@ rn-nodeify --install --hack 'crypto,buffer,react-native-randombytes,vm,stream,ht
 echo "✅ rn-nodeify packages hacked succesfully"
 
 # Apply patches.
-patch-package
+patch-package --error-on-fail
 echo "✅ All patches applied"
 
 # Create a debug file from the default if one does not exist.
