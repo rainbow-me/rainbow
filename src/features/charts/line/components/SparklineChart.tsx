@@ -48,7 +48,8 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
     config => {
       'worklet';
       return new CompactLineChartRenderer(config);
-    }
+    },
+    true
   );
 
   const animatedStyle = useAnimatedStyle(() => {
