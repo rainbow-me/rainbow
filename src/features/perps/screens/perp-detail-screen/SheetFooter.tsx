@@ -58,9 +58,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         if (isPerpsNavigatorBehindCurrentRoute()) {
           navigation.goBack();
         } else {
-          Navigation.replace(Routes.PERPS_NAVIGATOR, {
-            initialPerpsPage: Routes.PERPS_NEW_POSITION_SCREEN,
-          });
+          Navigation.replace(Routes.PERPS_NAVIGATOR);
         }
       },
       text: i18n.t(i18n.l.perps.actions.open_position),

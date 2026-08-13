@@ -1,21 +1,17 @@
-import React, { memo, useLayoutEffect } from 'react';
+import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
-
-import { useRoute, type RouteProp } from '@react-navigation/native';
-import { useListen } from '@storesjs/stores';
 
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
-import { type CashDepositSetupRoute, type RootStackParamList } from '@/navigation/types';
+import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
-import { useCashDepositSetupStatusStore } from '../../stores/cashDepositSetupStore';
 import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStore';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
@@ -23,7 +19,7 @@ import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSe
 import { SetupCancelSheet } from './components/SetupCancelSheet';
 import { useSetupCancelSheetStore } from './setupCancelSheetStore';
 import { useIsSetupSubmittingStore } from './setupSubmittingStore';
-import { getFirstSetupStep, SETUP_STEP_ORDER } from './steps';
+import { SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
 import { CardDetailsStep } from './steps/CardDetailsStep';
@@ -53,23 +49,7 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
 };
 
 export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
-  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CASH_DEPOSIT_SETUP_SCREEN>>();
-  const { ref, goToPage } = usePagerNavigation();
   const { next, cancel } = useCashDepositSetupNavigation();
-  const initialPage = useStableValue(
-    () => params?.initialStep ?? getFirstSetupStep(useCashDepositSetupStatusStore.getState()) ?? SETUP_STEP_ORDER[0]
-  );
-
-  // onNewIndex doesn't fire on mount, so seed the navigator with the page the pager opens on.
-  useLayoutEffect(() => {
-    useCashDepositSetupNavigationStore.setState({ activeRoute: initialPage, history: [] });
-  }, [initialPage]);
-
-  useListen(
-    useCashDepositSetupNavigationStore,
-    state => state.activeRoute,
-    route => goToPage(route)
-  );
 
   useHardwareBackOnFocus(
     () => {
@@ -105,19 +85,15 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
         <SmoothPager
           enableSwipeToGoBack={false}
           enableSwipeToGoForward={false}
-          initialPage={initialPage}
           lazy
-          onNewIndex={CashDepositSetupNavigator.handlePagerIndexChange}
-          ref={ref}
+          navigation={CashDepositSetupNavigator.Pager}
           scaleTo={1}
           springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         >
           {SETUP_STEP_ORDER.map(route => (
-            <SmoothPager.Page
-              component={<CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>}
-              id={route}
-              key={route}
-            />
+            <SmoothPager.Page id={route} key={route}>
+              <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
+            </SmoothPager.Page>
           ))}
         </SmoothPager>
       ))}

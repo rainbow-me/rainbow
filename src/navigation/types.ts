@@ -649,16 +649,8 @@ type RouteParams = {
   [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
     symbol: string;
   };
-  [Routes.PERPS_NAVIGATOR]:
-    | {
-        initialPerpsPage?: PerpsRoute;
-      }
-    | undefined;
-  [Routes.CASH_DEPOSIT_SETUP_SCREEN]:
-    | {
-        initialStep?: CashDepositSetupRoute;
-      }
-    | undefined;
+  [Routes.PERPS_NAVIGATOR]: undefined;
+  [Routes.CASH_DEPOSIT_SETUP_SCREEN]: undefined;
   [Routes.CASH_ADD_WALLET_SHEET]: {
     walletAddress: Address;
     cardId: string;
