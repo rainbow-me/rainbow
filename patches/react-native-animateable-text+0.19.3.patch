@@ -1,19 +1,15 @@
 # PATCH CONTEXT
-# Why: react-native-animateable-text@0.17.1 fixed `AnimateableTextProps`
-#   in src/TextProps.tsx (drops `Omit<…, "children">`) but the published
-#   .d.ts files in lib/typescript/ were not regenerated and still carry
-#   the old `Omit<TextProps, "children">` shape — including the package
-#   `types` entrypoint at lib/typescript/src/index.d.ts. Without this
-#   patch `<AnimatedText>{children}</AnimatedText>` fails type check
-#   with TS2322 "Property 'children' does not exist…". Patch updates
-#   all three published .d.ts files (index, TextProps, web) to match
-#   the source.
-# Upstream Issue: none filed — the maintainer just needs to run a fresh
-#   `prepare` to republish the .d.ts files. Easy upstream PR.
+# Why: Rainbow's AnimatedText provides a line-height fix node as a child,
+#   and react-native-animateable-text forwards children at runtime. The
+#   package's published declarations nevertheless omit TextProps.children,
+#   making that supported composition fail with TS2322. Keep the package's
+#   three public declaration surfaces aligned with its runtime behavior.
+# Upstream Issue: none filed — the package declarations and source prop type
+#   should retain NativeTextProps.children.
 # Linear Issue: FEPLAT-98
 # Remove when: react-native-animateable-text ships a release where
-#   lib/typescript/src/{index,TextProps,AnimateableText.web}.d.ts
-#   match the source (no `Omit<…, "children">`).
+#   lib/typescript/src/{index,TextProps,AnimateableText.web}.d.ts admit
+#   NativeTextProps.children.
 
 diff --git a/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts b/node_modules/react-native-animateable-text/lib/typescript/src/AnimateableText.web.d.ts
 index 0000000..0000001 100644

@@ -1,0 +1,38 @@
+# PATCH CONTEXT
+# Why: Forces continuous (squircle) corners on both React Native
+#   view implementations so Fabric views and retained legacy view
+#   managers match iOS-system rounded-rectangle styling. Fabric
+#   exposes `borderCurve`, but its runtime default is Circular;
+#   legacy RCTView has no equivalent style prop.
+# Upstream Issue: none filed yet.
+# Linear Issue: FEPLAT-97
+# Remove when: design-system components set `borderCurve`
+#   explicitly across the app and all legacy RCTView consumers are
+#   gone, or upstream changes the defaults on both paths.
+
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -832,6 +832,10 @@
+   // correctly clip the subviews.
+ 
+   UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
++
++  if (@available(iOS 13.0, *)) {
++    layer.cornerCurve = kCACornerCurveContinuous;
++  }
+ 
+   if (useIOSBorderRendering) {
+     layer.cornerRadius = cornerRadii.topLeftHorizontal;
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+--- a/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/BaseViewProps.cpp
+@@ -517,7 +517,7 @@
+       .borderColors = borderColors.resolve(isRTL, {}),
+       .borderWidths = borderWidths.resolve(isRTL, 0),
+       .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+-      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
++      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Continuous),
+       .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
+   };
+ }
