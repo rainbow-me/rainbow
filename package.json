@@ -322,7 +322,7 @@
     "react-native-fast-image": "8.5.11",
     "react-native-fs": "2.16.6",
     "react-native-gesture-handler": "2.32.0",
-    "react-native-get-random-values": "1.5.0",
+    "react-native-get-random-values": "2.0.0",
     "react-native-image-colors": "2.5.1",
     "react-native-indicators": "0.17.0",
     "react-native-ios-context-menu": "1.15.3",
