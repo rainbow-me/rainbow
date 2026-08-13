@@ -3,13 +3,13 @@ import { StyleSheet, View } from 'react-native';
 
 import { Blur, Canvas, Circle, Group, RadialGradient, LinearGradient as SkiaLinearGradient, vec } from '@shopify/react-native-skia';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
-import { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetHandle } from '@/components/sheet';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { downscalePagerIndex, SmoothPager, upscalePagerIndex, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
 import { AnimatedText, Box, Separator } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
@@ -202,12 +202,10 @@ const PanelContent = memo(function PanelContent({
   gradientColors: string[];
   ButtonComponent?: React.ComponentType<ExplainerSheetButtonProps>;
 }) {
-  const { goForward, ref } = usePagerNavigation();
+  const pagerNavigation = usePagerHistory(steps[0].id);
   const { goBack: dismissSheet } = useNavigation();
-
-  const currentPageIndex = useDerivedValue(() => {
-    return downscalePagerIndex(ref.current?.currentPageIndex.value ?? 0);
-  });
+  const animatedPageIndex = useSharedValue(upscalePagerIndex(0));
+  const currentPageIndex = useDerivedValue(() => downscalePagerIndex(animatedPageIndex.value));
 
   const roundedCurrentPageIndex = useDerivedValue(() => {
     return Math.round(currentPageIndex.value);
@@ -222,12 +220,14 @@ const PanelContent = memo(function PanelContent({
   });
 
   const goToNextStepOrDismiss = useCallback(() => {
-    if (roundedCurrentPageIndex.value < steps.length - 1) {
-      goForward();
+    const currentStepIndex = steps.findIndex(step => step.id === pagerNavigation.getState().page);
+    const nextStep = steps[currentStepIndex + 1];
+    if (nextStep) {
+      pagerNavigation.navigate(nextStep.id);
     } else {
       dismissSheet();
     }
-  }, [dismissSheet, goForward, roundedCurrentPageIndex, steps.length]);
+  }, [dismissSheet, pagerNavigation, steps]);
 
   return (
     <Box
@@ -240,21 +240,22 @@ const PanelContent = memo(function PanelContent({
       gap={32}
     >
       <Box gap={20} style={styles.flex}>
-        <SmoothPager enableSwipeToGoBack={true} enableSwipeToGoForward={'always'} initialPage={steps[0].id} ref={ref}>
+        <SmoothPager
+          enableSwipeToGoBack={true}
+          enableSwipeToGoForward={'always'}
+          navigation={pagerNavigation}
+          pageIndex={animatedPageIndex}
+        >
           {steps.map((step, index) => (
-            <SmoothPager.Page
-              key={step.id}
-              component={
-                <Step
-                  step={step}
-                  stepIndex={index}
-                  currentPageIndex={currentPageIndex}
-                  showSunrays={showSunrays}
-                  gradientColors={gradientColors}
-                />
-              }
-              id={step.id}
-            />
+            <SmoothPager.Page key={step.id} id={step.id}>
+              <Step
+                step={step}
+                stepIndex={index}
+                currentPageIndex={currentPageIndex}
+                showSunrays={showSunrays}
+                gradientColors={gradientColors}
+              />
+            </SmoothPager.Page>
           ))}
         </SmoothPager>
         <StepIndicators stepCount={steps.length} currentIndex={currentPageIndex} />

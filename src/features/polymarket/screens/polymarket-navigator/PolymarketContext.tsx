@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useRef, type ReactNode, type RefObject } from 'react';
-import { type ScrollView } from 'react-native';
 
+import { type ScrollView } from 'react-native-gesture-handler';
 import type Animated from 'react-native-reanimated';
 
 type PolymarketContextType = {

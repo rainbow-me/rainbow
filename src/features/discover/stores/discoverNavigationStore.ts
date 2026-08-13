@@ -23,3 +23,13 @@ export const useDiscoverNavigationStore = createBaseStore<DiscoverNavigationStor
 }));
 
 export const DiscoverSectionNavigation = createStoreActions(useDiscoverNavigationStore);
+
+export const DiscoverPagerNavigation = {
+  getState: () => ({ page: useDiscoverNavigationStore.getState().activeSection }),
+  navigate: DiscoverSectionNavigation.navigate,
+  subscribe: (listener: (state: { page: DiscoverSection }) => void) =>
+    useDiscoverNavigationStore.subscribe(
+      state => state.activeSection,
+      page => listener({ page })
+    ),
+};
