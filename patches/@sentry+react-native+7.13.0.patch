@@ -1,0 +1,15 @@
+# PATCH CONTEXT
+# Why: RN 0.87 no longer exports RCTTextView through the prebuilt React
+#   framework. Sentry Replay refers to that class only by string name, so
+#   its header import is unused and prevents the otherwise compatible pod
+#   from compiling.
+# Upstream Issue: none filed yet.
+# Remove when: @sentry/react-native no longer imports RCTTextView in the
+#   maintained SDK version used by Rainbow.
+
+diff --git a/node_modules/@sentry/react-native/ios/RNSentryReplay.mm b/node_modules/@sentry/react-native/ios/RNSentryReplay.mm
+index 40575a9e4c..e0517707ab 100644
+--- a/node_modules/@sentry/react-native/ios/RNSentryReplay.mm
++++ b/node_modules/@sentry/react-native/ios/RNSentryReplay.mm
+@@ -5 +4,0 @@
+-#import "React/RCTTextView.h"
