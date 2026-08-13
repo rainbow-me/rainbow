@@ -13,9 +13,6 @@ import { logger } from '@/logger';
 
 import 'fast-text-encoding';
 
-// @ts-ignore – Event shadows the global, triggering TS2866 under isolatedModules
-import { Event, EventTarget } from 'event-target-shim';
-
 import globalVariables from './globalVariables';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
@@ -162,22 +159,6 @@ if (!description.writable) {
     })(),
     writable: true,
   });
-}
-
-// Polyfills for @nktkas/hyperliquid
-if (!globalThis.EventTarget || !globalThis.Event) {
-  globalThis.EventTarget = EventTarget;
-  globalThis.Event = Event;
-}
-
-if (!globalThis.CustomEvent) {
-  globalThis.CustomEvent = function (type, params) {
-    // eslint-disable-next-line no-param-reassign
-    params = params || {};
-    const event = new Event(type, params);
-    event.detail = params.detail || null;
-    return event;
-  };
 }
 
 if (!AbortSignal.any) {
