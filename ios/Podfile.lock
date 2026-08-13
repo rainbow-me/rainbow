@@ -3292,8 +3292,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-randombytes (3.5.3):
-    - React
+  - react-native-randombytes (3.6.2):
+    - React-Core
   - react-native-restart (0.0.22):
     - React-Core
   - react-native-safe-area-context (5.9.0):
@@ -5287,7 +5287,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 4ac12d273ecfdb2c0280da06bd8d80a6e1f2f1a9
   react-native-palette-full: d25c07e220328405154382094a6e933ad76f74dc
   react-native-quick-md5: acf07792c3704ae557ea7c245278429d356a63fe
-  react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0
+  react-native-randombytes: 4eeddad82d1fd57adda1cd5beffe67d041c9d6de
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 3a6b38edff2a811fc1e27f5ff81249b24ea7e607
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
