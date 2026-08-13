@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { isEmpty } from 'lodash';
@@ -67,7 +66,7 @@ export const useCalculateGasLimit = ({
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current && !isMessageRequest && provider) {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         calculateGasLimit();
       });
     }

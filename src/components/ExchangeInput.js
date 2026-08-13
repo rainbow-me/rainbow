@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { MaskedTextInput } from 'react-native-advanced-input-mask';
 
@@ -79,7 +79,7 @@ const ExchangeInput = (
   const handleChange = useCallback(
     event => {
       if (isFocused && !isTouched) {
-        InteractionManager.runAfterInteractions(() => setIsTouched(true));
+        requestIdleCallback(() => setIsTouched(true));
       }
 
       onChange?.(event);

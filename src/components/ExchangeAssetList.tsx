@@ -9,7 +9,7 @@ import React, {
   type MutableRefObject,
   type ReactElement,
 } from 'react';
-import { InteractionManager, Keyboard, Platform, SectionList, StyleSheet, type SectionListData } from 'react-native';
+import { Keyboard, Platform, SectionList, StyleSheet, type SectionListData } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
@@ -170,7 +170,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
       navigate(Routes.EXPLAIN_SHEET, {
         asset: item,
         onClose: () => {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             setTimeout(() => {
               itemProps.onPress(item);
             }, 250);

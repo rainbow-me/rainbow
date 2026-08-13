@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, Platform, type TextInput } from 'react-native';
+import { Platform, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
@@ -148,7 +148,7 @@ export default function RestoreCloudStep() {
           backupsStore.getState().setStoredPassword('');
         }
 
-        InteractionManager.runAfterInteractions(async () => {
+        requestIdleCallback(async () => {
           if (Platform.OS === 'android' && filename) {
             filename = normalizeAndroidBackupFilename(filename);
           }

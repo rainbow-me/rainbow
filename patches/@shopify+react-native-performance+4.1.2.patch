@@ -11,6 +11,9 @@
 # Remove when: library replaced. PoCs in rainbow-me/rainbow#7424
 #   (RN built-in performance.rnStartupTiming) and #7426 (Sentry
 #   auto-instrumentation).
+# RN 0.87: InteractionManager was removed from React Native. Keep the
+#   package's two deliberate deferrals on requestIdleCallback and cancel
+#   the render-owned callback when its component unmounts.
 
 diff --git a/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt b/node_modules/@shopify/react-native-performance/android/src/main/kotlin/com/shopify/reactnativeperformance/PerformanceMarker.kt
 index 19b8fb4..9096d34 100644
@@ -52,3 +55,51 @@ index db07d54..a0f43e2 100644
      @objc static func requiresMainQueueSetup() -> Bool {
          return true
      }
+diff --git a/node_modules/@shopify/react-native-performance/dist/PerformanceMeasureView.js b/node_modules/@shopify/react-native-performance/dist/PerformanceMeasureView.js
+index 452b24242e..174dc0e84c 100644
+--- a/node_modules/@shopify/react-native-performance/dist/PerformanceMeasureView.js
++++ b/node_modules/@shopify/react-native-performance/dist/PerformanceMeasureView.js
+@@ -30,3 +30,4 @@ var PerformanceMeasureView = function (_a) {
+-            react_native_1.InteractionManager.runAfterInteractions(function () {
++            var idleCallback_1 = requestIdleCallback(function () {
+                 setShow(true);
+             });
++            return function () { return cancelIdleCallback(idleCallback_1); };
+diff --git a/node_modules/@shopify/react-native-performance/dist/context/PerformanceProfiler.js b/node_modules/@shopify/react-native-performance/dist/context/PerformanceProfiler.js
+index 6f9c9e60b0..2148ce3c28 100644
+--- a/node_modules/@shopify/react-native-performance/dist/context/PerformanceProfiler.js
++++ b/node_modules/@shopify/react-native-performance/dist/context/PerformanceProfiler.js
+@@ -9 +8,0 @@ var react_1 = tslib_1.__importStar(require("react"));
+-var react_native_1 = require("react-native");
+@@ -25,3 +24,2 @@ var PerformanceProfiler = function (_a) {
+-        // To prevent that error handler is wrapped in runAfterInteractions.
+-        // It's not significant when an error gets reported, but it unblocks navigation transition.
+-        react_native_1.InteractionManager.runAfterInteractions(function () {
++        // It's not significant when an error gets reported, so defer it until the JS thread is idle.
++        requestIdleCallback(function () {
+diff --git a/node_modules/@shopify/react-native-performance/src/PerformanceMeasureView.tsx b/node_modules/@shopify/react-native-performance/src/PerformanceMeasureView.tsx
+index 004b9cd522..6886993bd3 100644
+--- a/node_modules/@shopify/react-native-performance/src/PerformanceMeasureView.tsx
++++ b/node_modules/@shopify/react-native-performance/src/PerformanceMeasureView.tsx
+@@ -2 +2 @@ import React, {ReactNode, useEffect, useState, useRef, useCallback} from 'react'
+-import {InteractionManager, StyleSheet} from 'react-native';
++import {StyleSheet} from 'react-native';
+@@ -63,3 +63,5 @@ const PerformanceMeasureView = ({
+-      InteractionManager.runAfterInteractions(() => {
++      const idleCallback = requestIdleCallback(() => {
+         setShow(true);
+       });
++
++      return () => cancelIdleCallback(idleCallback);
+diff --git a/node_modules/@shopify/react-native-performance/src/context/PerformanceProfiler.tsx b/node_modules/@shopify/react-native-performance/src/context/PerformanceProfiler.tsx
+index 57dc721525..8c22d0844f 100644
+--- a/node_modules/@shopify/react-native-performance/src/context/PerformanceProfiler.tsx
++++ b/node_modules/@shopify/react-native-performance/src/context/PerformanceProfiler.tsx
+@@ -6 +5,0 @@ import React, {useCallback} from 'react';
+-import {InteractionManager} from 'react-native';
+@@ -47,3 +46,2 @@ const PerformanceProfiler = ({
+-      // To prevent that error handler is wrapped in runAfterInteractions.
+-      // It's not significant when an error gets reported, but it unblocks navigation transition.
+-      InteractionManager.runAfterInteractions(() => {
++      // It's not significant when an error gets reported, so defer it until the JS thread is idle.
++      requestIdleCallback(() => {

@@ -1,5 +1,3 @@
-import { InteractionManager } from 'react-native';
-
 import {
   isEthereumAction,
   isHandshakeAction,
@@ -431,7 +429,7 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     }
 
     if (request?.walletConnectV2RequestValues?.onComplete) {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         request?.walletConnectV2RequestValues?.onComplete?.(type);
       });
     }

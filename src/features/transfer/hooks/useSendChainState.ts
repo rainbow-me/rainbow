@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 
@@ -34,7 +33,7 @@ export function useSendChainState({
 
   useEffect(() => {
     if (prevChainId !== currentChainId) {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         startPollingGasFees(currentChainId);
       });
     }
@@ -42,7 +41,7 @@ export function useSendChainState({
 
   useEffect(() => {
     return () => {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         stopPollingGasFees();
       });
     };

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
@@ -112,7 +112,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
 
   useEffect(() => {
     // We need to run this after interactions since there were issues on Android
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       loadSeed();
     });
   }, [loadSeed]);

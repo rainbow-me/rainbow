@@ -1,4 +1,3 @@
-export { default as AnimatedNumber } from './AnimatedNumber';
 export { default as Bold } from './Bold';
 export { default as Br } from './Br';
 export { default as DollarFigure } from './DollarFigure';

@@ -1,5 +1,4 @@
 import React from 'react';
-import { InteractionManager } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -100,7 +99,7 @@ export const AddWalletSheet = () => {
       type: 'ledger_nano_x',
     });
     goBack();
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
         entryPoint: Routes.ADD_WALLET_SHEET,
         flowContext,
@@ -159,7 +158,7 @@ export const AddWalletSheet = () => {
     icon: BackupWarning,
     iconColor: globalColors.yellow60,
     onPress: () => {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         navigate(Routes.MODAL_SCREEN, {
           type: 'dev_test_backup',
         });

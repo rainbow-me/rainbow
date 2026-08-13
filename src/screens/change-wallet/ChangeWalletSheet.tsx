@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, Platform, type LayoutChangeEvent } from 'react-native';
+import { Alert, Platform, type LayoutChangeEvent } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -237,11 +237,11 @@ export default function ChangeWalletSheet() {
       if (!wallet) return;
       const account = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
 
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         goBack();
       });
 
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         setTimeout(() => {
           navigate(Routes.MODAL_SCREEN, {
             address,
@@ -379,7 +379,7 @@ export default function ChangeWalletSheet() {
         return;
       }
 
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         navigate(Routes.SETTINGS_SHEET, {
           params: {
             walletId: wallet.id,
@@ -397,7 +397,7 @@ export default function ChangeWalletSheet() {
       action: 'Navigates from WalletList to AddWalletSheet',
     });
     goBack();
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
         flowContext: 'in_app',
         isFirstWallet: false,

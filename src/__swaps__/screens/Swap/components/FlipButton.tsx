@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
@@ -81,7 +81,7 @@ export const FlipButton = () => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             if (shouldUpdateSelectedOutputChainId) {
               useSwapsStore.setState(state => ({
                 selectedOutputChainId: state.inputAsset?.chainId ?? ChainId.mainnet,

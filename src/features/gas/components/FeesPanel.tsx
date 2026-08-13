@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -532,7 +532,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       } else {
         setLastFocusedInputHandle(maxBaseFieldRef);
       }
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         triggerFocus();
       });
     };

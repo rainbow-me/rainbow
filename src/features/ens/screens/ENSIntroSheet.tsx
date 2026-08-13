@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -148,7 +148,7 @@ export default function ENSIntroSheet() {
 
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       startRegistration('', REGISTRATION_MODES.CREATE);
       navigate(Routes.ENS_SEARCH_SHEET);
     });
@@ -157,7 +157,7 @@ export default function ENSIntroSheet() {
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         params?.onSelectExistingName?.();
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       });

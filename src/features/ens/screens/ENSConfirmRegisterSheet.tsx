@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
@@ -148,7 +148,7 @@ export default function ENSConfirmRegisterSheet() {
   const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       goBack();
       setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
@@ -160,7 +160,7 @@ export default function ENSConfirmRegisterSheet() {
       useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
+        requestIdleCallback(() => {
           handleReviewPromptAction(ReviewPromptAction.EnsNameRegistration);
         });
       }, 500);
