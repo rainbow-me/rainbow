@@ -38,7 +38,7 @@ type PanelProps = {
   layoutAnimation?: ComponentProps<typeof Animated.View>['layout'];
   outerBorderColor?: string;
   outerBorderWidth?: number;
-  panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
+  panelStyle?: StyleProp<ViewStyle> | AnimatedStyle<ViewStyle>;
 };
 
 const Panel = ({
@@ -97,7 +97,7 @@ type PanelSheetProps = PanelProps & {
   layoutAnimation?: ComponentProps<typeof Animated.View>['layout'];
   showHandle?: boolean;
   showTapToDismiss?: boolean;
-  panelStyle?: StyleProp<ViewStyle> | AnimatedStyle;
+  panelStyle?: StyleProp<ViewStyle> | AnimatedStyle<ViewStyle>;
   enableKeyboardAvoidance?: boolean;
   keyboardAvoidanceOffset?: { closed?: number; opened?: number };
 };

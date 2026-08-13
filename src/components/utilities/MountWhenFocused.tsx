@@ -1,5 +1,5 @@
 import React from 'react';
-import { type ViewProps } from 'react-native';
+import { type ViewProps, type ViewStyle } from 'react-native';
 
 import Animated, { Easing, FadeIn, FadeOut, type AnimatedProps, type AnimatedStyle } from 'react-native-reanimated';
 
@@ -25,7 +25,7 @@ type MountWhenFocusedProps = {
       animated: true;
       entering?: AnimatedProps<ViewProps>['entering'];
       exiting?: AnimatedProps<ViewProps>['exiting'];
-      style?: AnimatedStyle;
+      style?: AnimatedStyle<ViewStyle>;
     }
 );
 

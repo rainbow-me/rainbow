@@ -1,9 +1,9 @@
 import React, { memo, useEffect, useRef, useState, type MutableRefObject } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, type ViewStyle } from 'react-native';
 
 import { Freeze } from 'react-freeze';
 import Animated, { FadeIn, useAnimatedProps, type AnimatedStyle, type DerivedValue, type SharedValue } from 'react-native-reanimated';
-import ViewShot from 'react-native-view-shot';
+import ViewShot, { type ViewShotRef } from 'react-native-view-shot';
 import { type WebViewProps } from 'react-native-webview';
 import type WebView from 'react-native-webview';
 
@@ -36,7 +36,7 @@ import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
-  const viewShotRef = useRef<ViewShot | null>(null);
+  const viewShotRef = useRef<ViewShotRef | null>(null);
 
   const { animatedWebViewBackgroundColorStyle, animatedWebViewStyle, backgroundColor, zIndexAnimatedStyle } = useAnimatedTab({ tabId });
 
@@ -80,7 +80,7 @@ const HomepageOrWebView = ({
   setLogo: BrowserState['setLogo'];
   setTitle: BrowserState['setTitle'];
   tabId: string;
-  viewShotRef: MutableRefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShotRef | null>;
 }) => {
   const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
   const { isDarkMode } = useColorMode();
@@ -123,7 +123,7 @@ const TabScreenshot = memo(function TabScreenshot({
   animatedStyle,
   screenshotData,
 }: {
-  animatedStyle: AnimatedStyle;
+  animatedStyle: AnimatedStyle<ViewStyle>;
   screenshotData: DerivedValue<ScreenshotType | undefined>;
 }) {
   const animatedProps = useAnimatedProps(() => {
@@ -155,7 +155,7 @@ const FreezableWebViewComponent = ({
   setLogo: BrowserState['setLogo'];
   setTitle: BrowserState['setTitle'];
   tabId: string;
-  viewShotRef: MutableRefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShotRef | null>;
 }) => {
   const { activeTabRef, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
 

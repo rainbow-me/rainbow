@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react';
-import { Animated, StyleSheet, View, type RegisteredStyle, type ViewStyle } from 'react-native';
+import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import Video, { type VideoRef } from 'react-native-video';
 
@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 import { position } from '@/styles';
 
 export type SimpleVideoProps = {
-  readonly style?: ViewStyle | RegisteredStyle<ViewStyle>;
+  readonly style?: StyleProp<ViewStyle>;
   readonly uri: string;
   readonly posterUri?: string;
   readonly loading: boolean;

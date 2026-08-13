@@ -178,7 +178,6 @@ const Step = memo(function Step({
         </Box>
         <AnimatedBlurView
           blurStyle={'plain'}
-          // @ts-expect-error the type created when using createAnimatedComponent is not correct
           blurIntensity={blurIntensity}
           style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }, blurViewHackFix]}
         />

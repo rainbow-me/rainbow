@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, type RefObject } from 'react';
-import { Platform, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type ScrollViewProps, type ViewStyle } from 'react-native';
 
 import Animated, {
   runOnJS,
@@ -348,7 +348,7 @@ const Candle = ({
   wickBottomOffset,
   wickTopOffset,
 }: {
-  backgroundColorStyle: AnimatedStyle;
+  backgroundColorStyle: AnimatedStyle<ViewStyle>;
   borderColor: string;
   candleHeight: number;
   color: 'green' | 'red';
