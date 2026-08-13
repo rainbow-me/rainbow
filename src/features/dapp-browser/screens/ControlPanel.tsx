@@ -18,7 +18,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ImgixImage } from '@/components/images';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { SmoothPager, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
 import {
   AnimatedText,
   Bleed,
@@ -81,7 +81,8 @@ const HOME_PANEL_FULL_HEIGHT = 334;
 const HOME_PANEL_DAPP_SECTION = 44 + 24;
 
 export const ControlPanel = () => {
-  const { goBack, goToPage, ref } = usePagerNavigation();
+  const pagerNavigation = usePagerHistory(PAGES.HOME);
+  const { goBack, navigate: goToPage } = pagerNavigation;
   const accountAddress = useAccountAddress();
   const {
     params: { activeTabRef },
@@ -267,48 +268,37 @@ export const ControlPanel = () => {
     <>
       <AccentColorSetter animatedAccentColor={animatedAccentColor} selectedWallet={selectedWallet} />
       <Box style={controlPanelStyles.panelContainer}>
-        <SmoothPager initialPage={PAGES.HOME} ref={ref}>
-          <SmoothPager.Page
-            component={
-              <HomePanel
-                allNetworkItems={allNetworkItems}
-                animatedAccentColor={animatedAccentColor}
-                goToPage={goToPage}
-                isConnected={isConnected}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-                selectedChainId={currentChainId}
-                selectedWallet={selectedWallet}
-              />
-            }
-            id={PAGES.HOME}
-          />
-          <SmoothPager.Group>
-            <SmoothPager.Page
-              component={
-                <SwitchWalletPanel
-                  allWalletItems={allWalletItems}
-                  animatedAccentColor={animatedAccentColor}
-                  goBack={goBack}
-                  onWalletSwitch={handleSwitchWallet}
-                  selectedWalletId={selectedWalletId}
-                />
-              }
-              id={PAGES.SWITCH_WALLET}
+        <SmoothPager navigation={pagerNavigation}>
+          <SmoothPager.Page id={PAGES.HOME}>
+            <HomePanel
+              allNetworkItems={allNetworkItems}
+              animatedAccentColor={animatedAccentColor}
+              goToPage={goToPage}
+              isConnected={isConnected}
+              onConnect={handleConnect}
+              onDisconnect={handleDisconnect}
+              selectedChainId={currentChainId}
+              selectedWallet={selectedWallet}
             />
-            <SmoothPager.Page
-              component={
-                <SwitchNetworkPanel
-                  allNetworkItems={allNetworkItems}
-                  animatedAccentColor={animatedAccentColor}
-                  goBack={goBack}
-                  onNetworkSwitch={handleNetworkSwitch}
-                  selectedNetworkId={selectedNetworkId}
-                />
-              }
-              id={PAGES.SWITCH_NETWORK}
+          </SmoothPager.Page>
+          <SmoothPager.Page id={PAGES.SWITCH_WALLET}>
+            <SwitchWalletPanel
+              allWalletItems={allWalletItems}
+              animatedAccentColor={animatedAccentColor}
+              goBack={goBack}
+              onWalletSwitch={handleSwitchWallet}
+              selectedWalletId={selectedWalletId}
             />
-          </SmoothPager.Group>
+          </SmoothPager.Page>
+          <SmoothPager.Page id={PAGES.SWITCH_NETWORK}>
+            <SwitchNetworkPanel
+              allNetworkItems={allNetworkItems}
+              animatedAccentColor={animatedAccentColor}
+              goBack={goBack}
+              onNetworkSwitch={handleNetworkSwitch}
+              selectedNetworkId={selectedNetworkId}
+            />
+          </SmoothPager.Page>
         </SmoothPager>
       </Box>
       <TapToDismiss />

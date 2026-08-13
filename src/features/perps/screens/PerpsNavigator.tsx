@@ -1,12 +1,10 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { useRoute, type RouteProp } from '@react-navigation/native';
-import { useListen } from '@storesjs/stores';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box, useColorMode } from '@/design-system';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
@@ -20,29 +18,18 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
-import { type PerpsRoute, type RootStackParamList } from '@/navigation/types';
+import { type PerpsRoute } from '@/navigation/types';
 
 const Navigator = createVirtualNavigator<PerpsRoute>({
   initialRoute: Routes.PERPS_ACCOUNT_SCREEN,
   routes: [Routes.PERPS_ACCOUNT_SCREEN, Routes.PERPS_SEARCH_SCREEN, Routes.PERPS_NEW_POSITION_SCREEN],
 });
 
-export const PerpsNavigation = Navigator.Navigation;
-export const usePerpsNavigationStore = Navigator.useNavigationStore;
+export const { Navigation: PerpsNavigation, useNavigationStore: usePerpsNavigationStore } = Navigator;
 
 export const PerpsNavigator = memo(function PerpsNavigator() {
-  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PERPS_NAVIGATOR>>();
   const { isDarkMode } = useColorMode();
-  const { ref, goToPage } = usePagerNavigation();
-  const initialPage = useStableValue(() => params?.initialPerpsPage ?? Routes.PERPS_ACCOUNT_SCREEN);
-
   const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
-
-  useListen(
-    usePerpsNavigationStore,
-    state => state.activeRoute,
-    route => goToPage(route)
-  );
 
   useCleanup(PerpsNavigation.resetNavigationState);
 
@@ -59,39 +46,27 @@ export const PerpsNavigator = memo(function PerpsNavigator() {
             <SmoothPager
               enableSwipeToGoBack={true}
               enableSwipeToGoForward={true}
-              initialPage={initialPage}
-              onNewIndex={Navigator.handlePagerIndexChange}
-              ref={ref}
+              navigation={Navigator.Pager}
               scaleTo={1}
               springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
             >
-              <SmoothPager.Page
-                component={
-                  <Navigator.Route name={Routes.PERPS_ACCOUNT_SCREEN}>
-                    <PerpsAccountScreen />
-                  </Navigator.Route>
-                }
-                id={Routes.PERPS_ACCOUNT_SCREEN}
-              />
+              <SmoothPager.Page id={Routes.PERPS_ACCOUNT_SCREEN}>
+                <Navigator.Route name={Routes.PERPS_ACCOUNT_SCREEN}>
+                  <PerpsAccountScreen />
+                </Navigator.Route>
+              </SmoothPager.Page>
 
-              <SmoothPager.Page
-                component={
-                  <Navigator.Route name={Routes.PERPS_SEARCH_SCREEN}>
-                    <PerpsSearchScreen />
-                  </Navigator.Route>
-                }
-                id={Routes.PERPS_SEARCH_SCREEN}
-              />
+              <SmoothPager.Page id={Routes.PERPS_SEARCH_SCREEN}>
+                <Navigator.Route name={Routes.PERPS_SEARCH_SCREEN}>
+                  <PerpsSearchScreen />
+                </Navigator.Route>
+              </SmoothPager.Page>
 
-              <SmoothPager.Page
-                component={
-                  <Navigator.Route name={Routes.PERPS_NEW_POSITION_SCREEN}>
-                    <PerpsNewPositionScreen />
-                  </Navigator.Route>
-                }
-                id={Routes.PERPS_NEW_POSITION_SCREEN}
-                lazy
-              />
+              <SmoothPager.Page id={Routes.PERPS_NEW_POSITION_SCREEN} lazy>
+                <Navigator.Route name={Routes.PERPS_NEW_POSITION_SCREEN}>
+                  <PerpsNewPositionScreen />
+                </Navigator.Route>
+              </SmoothPager.Page>
             </SmoothPager>
           ))}
 

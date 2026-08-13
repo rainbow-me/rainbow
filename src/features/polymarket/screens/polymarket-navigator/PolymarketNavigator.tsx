@@ -1,10 +1,8 @@
 import { memo, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { useListen } from '@storesjs/stores';
-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box, useColorMode } from '@/design-system';
 import { POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
@@ -39,16 +37,9 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
 
 const PolymarketNavigatorContent = () => {
   const { isDarkMode } = useColorMode();
-  const { ref, goToPage } = usePagerNavigation();
   const { categorySelectorRef, eventsListRef } = usePolymarketContext();
 
   const screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
-
-  useListen(
-    usePolymarketNavigationStore,
-    state => state.activeRoute,
-    route => goToPage(route)
-  );
 
   useCleanup(PolymarketNavigation.resetNavigationState);
 
@@ -66,7 +57,7 @@ const PolymarketNavigatorContent = () => {
     // Reset list scroll too: a repeated deep link to the same league leaves
     // selectedLeagueId unchanged, so the value-based useListen won't fire.
     eventsListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [requestedRoute, routeRequestKey]);
+  }, [eventsListRef, requestedRoute, routeRequestKey]);
 
   return (
     <>
@@ -80,41 +71,28 @@ const PolymarketNavigatorContent = () => {
           <SmoothPager
             enableSwipeToGoBack
             enableSwipeToGoForward="always"
-            initialPage={usePolymarketNavigationStore.getState().activeRoute}
-            onNewIndex={Navigator.handlePagerIndexChange}
-            ref={ref}
+            navigation={Navigator.Pager}
             scaleTo={1}
             springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
             waitFor={categorySelectorRef}
           >
-            <SmoothPager.Page
-              component={
-                <Navigator.Route name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
-                  <PolymarketBrowseEventsScreen />
-                </Navigator.Route>
-              }
-              id={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
-            />
+            <SmoothPager.Page id={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
+              <Navigator.Route name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
+                <PolymarketBrowseEventsScreen />
+              </Navigator.Route>
+            </SmoothPager.Page>
 
-            <SmoothPager.Page
-              component={
-                <Navigator.Route name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
-                  <PolymarketAccountScreen />
-                </Navigator.Route>
-              }
-              id={Routes.POLYMARKET_ACCOUNT_SCREEN}
-              lazy
-            />
+            <SmoothPager.Page id={Routes.POLYMARKET_ACCOUNT_SCREEN} lazy>
+              <Navigator.Route name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
+                <PolymarketAccountScreen />
+              </Navigator.Route>
+            </SmoothPager.Page>
 
-            <SmoothPager.Page
-              component={
-                <Navigator.Route name={Routes.POLYMARKET_SEARCH_SCREEN}>
-                  <PolymarketSearchScreen />
-                </Navigator.Route>
-              }
-              id={Routes.POLYMARKET_SEARCH_SCREEN}
-              lazy
-            />
+            <SmoothPager.Page id={Routes.POLYMARKET_SEARCH_SCREEN} lazy>
+              <Navigator.Route name={Routes.POLYMARKET_SEARCH_SCREEN}>
+                <PolymarketSearchScreen />
+              </Navigator.Route>
+            </SmoothPager.Page>
           </SmoothPager>
         ))}
       </Box>

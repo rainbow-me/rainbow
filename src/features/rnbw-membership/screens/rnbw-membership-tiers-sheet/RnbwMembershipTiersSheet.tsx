@@ -2,11 +2,18 @@ import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
 
 import { StepIndicators } from '@/components/explainer-sheet/components/StepIndicators';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { downscalePagerIndex, SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { downscalePagerIndex, SmoothPager, upscalePagerIndex } from '@/components/SmoothPager/SmoothPager';
 import { Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
@@ -14,6 +21,7 @@ import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
 import { formatNumber } from '@/helpers/strings';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 
 import { TierBadge } from '../../components/TierBadge';
@@ -27,10 +35,13 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet() {
   const { isDarkMode, colorMode } = useColorMode();
   const { currentTier, allTiers } = useMembershipTierInfo();
-  const { ref } = usePagerNavigation();
-  const currentPageIndex = useDerivedValue(() => {
-    return downscalePagerIndex(ref.current?.currentPageIndex.value ?? 0);
+  const [initialPage, initialPageIndex] = useStableValue(() => {
+    const currentIndex = allTiers.findIndex(tier => tier.level === currentTier.level);
+    const index = currentIndex === -1 ? 0 : currentIndex;
+    return [allTiers[index].level, index] as const;
   });
+  const animatedPageIndex = useSharedValue(upscalePagerIndex(initialPageIndex));
+  const currentPageIndex = useDerivedValue(() => downscalePagerIndex(animatedPageIndex.value));
 
   return (
     <PanelSheet>
@@ -43,13 +54,11 @@ export const RnbwMembershipTiersSheet = memo(function RnbwMembershipTiersSheet()
             pageIndex={currentPageIndex}
           />
         ))}
-        <SmoothPager enableSwipeToGoBack={true} enableSwipeToGoForward={'always'} initialPage={currentTier.level} ref={ref}>
+        <SmoothPager enableSwipeToGoBack={true} enableSwipeToGoForward={'always'} initialPage={initialPage} pageIndex={animatedPageIndex}>
           {allTiers.map((tier, index) => (
-            <SmoothPager.Page
-              key={tier.level}
-              component={<Tier tier={tier} tierIndex={index} tierCount={allTiers.length} />}
-              id={tier.level}
-            />
+            <SmoothPager.Page key={tier.level} id={tier.level}>
+              <Tier tier={tier} tierIndex={index} tierCount={allTiers.length} />
+            </SmoothPager.Page>
           ))}
         </SmoothPager>
         <StepIndicators

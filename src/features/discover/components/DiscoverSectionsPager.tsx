@@ -8,11 +8,12 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Skeleton } from '@/components/Skeleton';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
+import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { DiscoverRefreshControl } from '@/features/discover/components/DiscoverRefreshControl';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import {
+  DiscoverPagerNavigation,
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
   type DiscoverSection,
@@ -36,8 +37,6 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
   const surface = useDiscoverSurface();
   const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
-  const { ref, goToPage } = usePagerNavigation<DiscoverSection>();
-  const initialSection = getInitialSection(tabs, activeSectionId);
   const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
   const pagerKey = tabs.map(tab => tab.id).join('|');
 
@@ -46,16 +45,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
     state => state.activeSection,
     section => {
       scrollOffset.value = sectionScrollOffsets.current[section] ?? 0;
-      goToPage(section);
     }
-  );
-
-  const handlePagerIndexChange = useCallback(
-    (index: number) => {
-      const section = tabs[index]?.id;
-      if (section) DiscoverSectionNavigation.navigate(section);
-    },
-    [tabs]
   );
 
   useEffect(() => {
@@ -78,31 +68,25 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
       <SmoothPager
         enableSwipeToGoBack={false}
         enableSwipeToGoForward={false}
+        fallbackPage={tabs[0].id}
         fillHeight
-        initialPage={initialSection}
         key={pagerKey}
-        onNewIndex={handlePagerIndexChange}
-        ref={ref}
+        navigation={DiscoverPagerNavigation}
         scaleTo={1}
         springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         verticalPageAlignment="top"
       >
         {tabs.map((section, index) => (
-          <SmoothPager.Page
-            component={
-              <DiscoverSectionScrollView
-                isActive={section.id === activeSectionId}
-                scrollOffset={scrollOffset}
-                section={section}
-                sectionIndex={index}
-                sectionScrollOffsets={sectionScrollOffsets}
-                surfaceId={surface.id}
-              />
-            }
-            id={section.id}
-            key={section.id}
-            lazy
-          />
+          <SmoothPager.Page id={section.id} key={section.id} lazy>
+            <DiscoverSectionScrollView
+              isActive={section.id === activeSectionId}
+              scrollOffset={scrollOffset}
+              section={section}
+              sectionIndex={index}
+              sectionScrollOffsets={sectionScrollOffsets}
+              surfaceId={surface.id}
+            />
+          </SmoothPager.Page>
         ))}
       </SmoothPager>
     </Box>
@@ -223,10 +207,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     </SectionScrollView>
   );
 });
-
-function getInitialSection(tabs: DiscoverTab[], activeSectionId: string): string {
-  return tabs.some(tab => tab.id === activeSectionId) ? activeSectionId : (tabs[0]?.id ?? activeSectionId);
-}
 
 const styles = StyleSheet.create({
   container: {
