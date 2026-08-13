@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
-import { createUserWithPhone, startSignupResume } from '../../../services/userClient';
+import { createUserWithPhone, startRecovery, startSignupResume, type CreateUserWithPhoneResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
@@ -26,16 +26,22 @@ jest.mock('../../../services/userClient', () => ({
   US_COUNTRY_CALLING_CODE: '1',
   createUserWithPhone: jest.fn(),
   resendPhoneCode: jest.fn(),
+  startRecovery: jest.fn(),
   startSignupResume: jest.fn(),
   verifyPhone: jest.fn(),
 }));
 
-const mockCreateUserWithPhone = createUserWithPhone as jest.Mock;
-const mockStartSignupResume = startSignupResume as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockCreateUserWithPhone = jest.mocked(createUserWithPhone);
+const mockStartRecovery = jest.mocked(startRecovery);
+const mockStartSignupResume = jest.mocked(startSignupResume);
+const track = jest.mocked(analytics.track);
 
 const DIGITS = '4155550100';
-const RESPONSE = { outcome: 'created', userId: 'user-1', resendAfter: 1_750_000_030_000 };
+const RESPONSE: Extract<CreateUserWithPhoneResult, { outcome: 'created' }> = {
+  outcome: 'created',
+  userId: 'user-1',
+  resendAfter: 1_750_000_030_000,
+};
 
 const flow = () => useSubmitPhoneFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState().session;
@@ -125,15 +131,35 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
-  it.each(['registeredWithPasskey', 'alreadyRegistered'])('shows the already-registered message on the %s outcome', async outcome => {
-    mockCreateUserWithPhone.mockResolvedValue({ outcome });
+  it('starts account recovery for a phone registered with a passkey', async () => {
+    mockCreateUserWithPhone.mockResolvedValue({ outcome: 'registeredWithPasskey' });
+    mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-1', resendAfter: 1_750_000_060_000 });
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: DIGITS });
+    expect(session()).toEqual({
+      status: 'recovery',
+      challenge: { kind: 'recovery', recoveryId: 'recovery-1' },
+      phoneNationalNumber: DIGITS,
+      resendAfter: 1_750_000_060_000,
+      identity: { firstName: '', lastName: '', dateOfBirth: null },
+      ssnLast4: '',
+    });
+    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'recovery' });
+    expect(flow().state).toBe('entry');
+  });
+
+  it('shows the already-registered message only for the ambiguous outcome', async () => {
+    mockCreateUserWithPhone.mockResolvedValue({ outcome: 'alreadyRegistered' });
     flow().setDigits(DIGITS);
 
     await expect(flow().submit()).resolves.toBe(false);
 
     expect(flow().state).toBe('entry');
     expect(session()).toEqual({ status: 'phoneAlreadyRegistered', phoneNationalNumber: DIGITS });
-    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome });
+    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome: 'alreadyRegistered' });
 
     flow().setDigits('415');
     expect(flow().state).toBe('entry');

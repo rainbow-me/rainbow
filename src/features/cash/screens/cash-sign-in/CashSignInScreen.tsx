@@ -50,7 +50,7 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
     // Best effort: signed in either way, and the Add Cash sheet offers card linking when no card is stored.
     try {
       // An account can hold only one card today; picking among several lands with multi-card support.
-      const [card] = await listCards();
+      const [card] = await listCards({ trigger: 'signInScreen' });
       if (card) useCashPaymentMethodStore.getState().setLinkedCard(card);
     } catch (e) {
       logger.error(new RainbowError('[CashSignInScreen]: Failed to fetch cards', e));

@@ -3,8 +3,12 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { createUserWithPhone, startSignupResume } from '../../../services/userClient';
-import { useCashSetupSessionStore, type PhoneChallenge } from '../../../stores/cashSetupSessionStore';
+import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
+import {
+  useCashSetupSessionStore,
+  type PhoneVerificationChallenge,
+  type RecoveryPhoneChallenge,
+} from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 import { extractNationalDigits, NATIONAL_NUMBER_LENGTH } from '../../../utils/phoneNumber';
@@ -19,9 +23,16 @@ type SubmitPhoneFlowStore = {
   reset: () => void;
 };
 
-async function startResume(nationalNumber: string): Promise<{ challenge: PhoneChallenge; resendAfter: number }> {
+async function startResume(
+  nationalNumber: string
+): Promise<{ challenge: Extract<PhoneVerificationChallenge, { kind: 'resume' }>; resendAfter: number }> {
   const { resumeId, resendAfter } = await startSignupResume({ nationalNumber });
   return { challenge: { kind: 'resume', resumeId }, resendAfter };
+}
+
+async function startAccountRecovery(nationalNumber: string): Promise<{ challenge: RecoveryPhoneChallenge; resendAfter: number }> {
+  const { recoveryId, resendAfter } = await startRecovery({ nationalNumber });
+  return { challenge: { kind: 'recovery', recoveryId }, resendAfter };
 }
 
 function clearPhoneAlreadyRegistered() {
@@ -56,7 +67,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     try {
       const result = await createUserWithPhone({ nationalNumber: digits });
 
-      if (result.outcome === 'registeredWithPasskey' || result.outcome === 'alreadyRegistered') {
+      if (result.outcome === 'alreadyRegistered') {
         analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: result.outcome });
         useCashSetupSessionStore.getState().setPhoneAlreadyRegistered(digits);
         set({ state: 'entry' });
@@ -65,8 +76,13 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
 
       const { challenge, resendAfter } =
         result.outcome === 'created'
-          ? { challenge: { kind: 'signup', userId: result.userId } satisfies PhoneChallenge, resendAfter: result.resendAfter }
-          : await startResume(digits);
+          ? {
+              challenge: { kind: 'signup', userId: result.userId } satisfies PhoneVerificationChallenge,
+              resendAfter: result.resendAfter,
+            }
+          : result.outcome === 'registeredWithPasskey'
+            ? await startAccountRecovery(digits)
+            : await startResume(digits);
       useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
       // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
       useVerifyPhoneFlowStore.getState().reset();

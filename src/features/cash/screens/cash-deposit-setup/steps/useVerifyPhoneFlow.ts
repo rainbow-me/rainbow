@@ -37,7 +37,7 @@ export function useVerifyPhoneFlow(): {
   }, []);
 
   useEffect(() => {
-    if (resendAfter == null || state === 'verifying' || state === 'verified') {
+    if (resendAfter == null || state === 'verifying' || state === 'submitted') {
       setResendCooldownSeconds(0);
       return;
     }

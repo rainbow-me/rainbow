@@ -11,7 +11,12 @@ import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupId
 const PHONE_ALREADY_REGISTERED = 1300;
 const REGISTERED_WITH_PASSKEY = 1303;
 const REGISTERED_WITHOUT_PASSKEY = 1304;
+const RECOVERY_SESSION_INVALID = 1320;
+const RECOVERY_CODE_INVALID = 1321;
 const SIGNUP_ALREADY_COMPLETE = 1322;
+const SIGNUP_INCOMPLETE = 1323;
+const ACCESS_BLOCKED = 1340;
+const IDENTITY_MISMATCH = 403;
 
 const MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER = '5550001304';
 const MOCK_REGISTERED_WITH_PASSKEY_NUMBER = '5550001303';
@@ -153,6 +158,13 @@ type FinishAddPasskeyParams = {
   /** WebAuthn attestation, JSON-encoded. */
   credentialCreationJson: string;
   passkeyName: string;
+};
+
+type FinishRecoveryParams = {
+  recoveryId: string;
+  code: string;
+  identity: CashSetupIdentity;
+  governmentId: CashSetupGovernmentId;
 };
 
 type GetUserStatusResponse = {
@@ -343,6 +355,66 @@ export async function startSignupResume({
     phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
   });
   return { resumeId: data.resumeId, resendAfter: parseResendAfter(data.resendAfter) };
+}
+
+export async function startRecovery({ nationalNumber }: { nationalNumber: string }): Promise<{ recoveryId: string; resendAfter: number }> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { recoveryId: 'e2e-recovery-id', resendAfter: Date.now() + time.seconds(30) };
+  }
+
+  const { data } = await getCashPlatformClient().post<{
+    recoveryId: string;
+    methods?: string[];
+    resendAfter: unknown;
+  }>('/recovery/StartRecovery', {
+    phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+  });
+  if (!data.methods?.includes('RECOVERY_METHOD_PERSONAL_DETAILS')) {
+    throw new Error('UserService returned no supported recovery method');
+  }
+  return { recoveryId: data.recoveryId, resendAfter: parseResendAfter(data.resendAfter) };
+}
+
+export type FinishRecoveryResult =
+  | { outcome: 'recovered'; bootstrapToken: string; expiresAt: number }
+  | { outcome: 'identityMismatch' | 'sessionInvalid' | 'codeInvalid' | 'signupIncomplete' | 'accessBlocked' };
+
+export async function finishRecovery({ recoveryId, code, identity, governmentId }: FinishRecoveryParams): Promise<FinishRecoveryResult> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    if (code !== '000000') return { outcome: 'codeInvalid' };
+    return { outcome: 'recovered', bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
+  }
+
+  try {
+    const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/recovery/FinishRecovery', {
+      recoveryId,
+      code,
+      personalDetails: {
+        countryCode: governmentId.countryCode,
+        legalName: { firstName: identity.firstName, lastName: identity.lastName },
+        dateOfBirth: identity.dateOfBirth,
+        governmentId,
+      },
+    });
+    return { outcome: 'recovered', ...parseBootstrapCredential(data) };
+  } catch (e) {
+    switch (getPlatformErrorCode(e)) {
+      case IDENTITY_MISMATCH:
+        return { outcome: 'identityMismatch' };
+      case RECOVERY_SESSION_INVALID:
+        return { outcome: 'sessionInvalid' };
+      case RECOVERY_CODE_INVALID:
+        return { outcome: 'codeInvalid' };
+      case SIGNUP_INCOMPLETE:
+        return { outcome: 'signupIncomplete' };
+      case ACCESS_BLOCKED:
+        return { outcome: 'accessBlocked' };
+      default:
+        throw e;
+    }
+  }
 }
 
 export type FinishSignupResumeResult =

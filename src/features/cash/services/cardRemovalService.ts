@@ -16,7 +16,7 @@ export async function removeLinkedCard(cardId: string): Promise<void> {
 
 async function isCardGone(cardId: string): Promise<boolean> {
   try {
-    return !(await listCards()).some(card => card.id === cardId);
+    return !(await listCards({ trigger: 'addCash' })).some(card => card.id === cardId);
   } catch {
     return false;
   }

@@ -9,9 +9,13 @@ import {
   type CashSetupIdentityDraft,
 } from '../services/cashSetupIdentityService';
 
+export type PhoneVerificationChallenge = Readonly<{ kind: 'signup'; userId: string }> | Readonly<{ kind: 'resume'; resumeId: string }>;
+
+export type RecoveryPhoneChallenge = Readonly<{ kind: 'recovery'; recoveryId: string }>;
+
 // Identifies one accepted phone submission by reference, so async results can
 // be checked against the submission that started them.
-export type PhoneChallenge = Readonly<{ kind: 'signup'; userId: string }> | Readonly<{ kind: 'resume'; resumeId: string }>;
+export type PhoneChallenge = PhoneVerificationChallenge | RecoveryPhoneChallenge;
 
 type EmptyCashSetupSession = {
   status: 'empty';
@@ -20,8 +24,17 @@ type EmptyCashSetupSession = {
 type PhoneSubmittedCashSetupSession = {
   status: 'phoneSubmitted';
   phoneNationalNumber: string;
-  challenge: PhoneChallenge;
+  challenge: PhoneVerificationChallenge;
   resendAfter: number;
+};
+
+type RecoveryCashSetupSession = {
+  status: 'recovery';
+  phoneNationalNumber: string;
+  challenge: RecoveryPhoneChallenge;
+  resendAfter: number;
+  identity: CashSetupIdentityDraft;
+  ssnLast4: string;
 };
 
 type PhoneAlreadyRegisteredCashSetupSession = {
@@ -31,6 +44,7 @@ type PhoneAlreadyRegisteredCashSetupSession = {
 
 type VerifiedCashSetupSession = {
   status: 'phoneVerified';
+  source: PhoneChallenge['kind'];
   phoneNationalNumber: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
@@ -41,6 +55,7 @@ type VerifiedCashSetupSession = {
 type CashSetupSession =
   | EmptyCashSetupSession
   | PhoneSubmittedCashSetupSession
+  | RecoveryCashSetupSession
   | PhoneAlreadyRegisteredCashSetupSession
   | VerifiedCashSetupSession;
 
@@ -52,6 +67,7 @@ type CashSetupSessionStore = {
   setPhoneSubmitted: (params: { challenge: PhoneChallenge; phoneNationalNumber: string; resendAfter: number }) => void;
   setPhoneAlreadyRegistered: (phoneNationalNumber: string) => void;
   setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
+  replaceRecoveryChallenge: (challenge: RecoveryPhoneChallenge, next: RecoveryPhoneChallenge, resendAfter: number) => void;
   setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
   setDateOfBirth: (dateOfBirth: CashSetupIdentityDraft['dateOfBirth']) => void;
   setFirstName: (firstName: string) => void;
@@ -68,7 +84,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
   function setIdentityField<Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) {
     set(state => {
       const { session } = state;
-      if (session.status !== 'phoneVerified' || shallowEqual(session.identity[field], value)) return state;
+      if (!hasIdentityDraft(session) || shallowEqual(session.identity[field], value)) return state;
       return { session: { ...session, identity: { ...session.identity, [field]: value } } };
     });
   }
@@ -77,39 +93,61 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     session: EMPTY_SESSION,
     getGovernmentId: () => {
       const { session } = get();
-      return session.status === 'phoneVerified' && isValidUsSsnLast4(session.ssnLast4)
-        ? createUsSsnLast4GovernmentId(session.ssnLast4)
-        : null;
+      return hasIdentityDraft(session) && isValidUsSsnLast4(session.ssnLast4) ? createUsSsnLast4GovernmentId(session.ssnLast4) : null;
     },
     getIdentity: () => {
       const { session } = get();
-      return session.status === 'phoneVerified' ? createCashSetupIdentity(session.identity) : null;
+      return hasIdentityDraft(session) ? createCashSetupIdentity(session.identity) : null;
     },
     getIsCurrentChallenge: challenge => {
       const { session } = get();
-      return session.status === 'phoneSubmitted' && session.challenge === challenge;
+      return (session.status === 'phoneSubmitted' || session.status === 'recovery') && session.challenge === challenge;
     },
     setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) =>
-      set({ session: { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter } }),
+      set({
+        session:
+          challenge.kind === 'recovery'
+            ? {
+                status: 'recovery',
+                challenge,
+                phoneNationalNumber,
+                resendAfter,
+                identity: EMPTY_IDENTITY,
+                ssnLast4: '',
+              }
+            : { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter },
+      }),
     setPhoneAlreadyRegistered: phoneNationalNumber => set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } }),
     setResendAfter: (challenge, resendAfter) =>
       set(state => {
         const { session } = state;
-        if (session.status !== 'phoneSubmitted' || session.challenge !== challenge || session.resendAfter === resendAfter) return state;
+        if (
+          (session.status !== 'phoneSubmitted' && session.status !== 'recovery') ||
+          session.challenge !== challenge ||
+          session.resendAfter === resendAfter
+        )
+          return state;
         return { session: { ...session, resendAfter } };
+      }),
+    replaceRecoveryChallenge: (challenge, next, resendAfter) =>
+      set(state => {
+        const { session } = state;
+        if (session.status !== 'recovery' || session.challenge !== challenge) return state;
+        return { session: { ...session, challenge: next, resendAfter } };
       }),
     setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) =>
       set(state => {
         const { session } = state;
-        if (session.status !== 'phoneSubmitted' || session.challenge !== challenge) return state;
+        if ((session.status !== 'phoneSubmitted' && session.status !== 'recovery') || session.challenge !== challenge) return state;
         return {
           session: {
             status: 'phoneVerified',
+            source: challenge.kind,
             phoneNationalNumber: session.phoneNationalNumber,
             bootstrapToken,
             bootstrapTokenExpiresAt: expiresAt,
-            identity: EMPTY_IDENTITY,
-            ssnLast4: '',
+            identity: session.status === 'recovery' ? session.identity : EMPTY_IDENTITY,
+            ssnLast4: session.status === 'recovery' ? session.ssnLast4 : '',
           },
         };
       }),
@@ -120,7 +158,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
       set(state => {
         const { session } = state;
         const ssnLast4 = value.replace(/\D/g, '').slice(0, 4);
-        if (session.status !== 'phoneVerified' || session.ssnLast4 === ssnLast4) return state;
+        if (!hasIdentityDraft(session) || session.ssnLast4 === ssnLast4) return state;
         return { session: { ...session, ssnLast4 } };
       }),
     reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
@@ -132,5 +170,9 @@ export function selectIsPhoneVerified(state: CashSetupSessionStore): boolean {
 }
 
 export function selectResendAfter(state: CashSetupSessionStore): number | null {
-  return state.session.status === 'phoneSubmitted' ? state.session.resendAfter : null;
+  return state.session.status === 'phoneSubmitted' || state.session.status === 'recovery' ? state.session.resendAfter : null;
+}
+
+function hasIdentityDraft(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupSession {
+  return session.status === 'recovery' || session.status === 'phoneVerified';
 }

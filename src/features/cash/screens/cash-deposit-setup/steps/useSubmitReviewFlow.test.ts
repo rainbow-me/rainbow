@@ -6,7 +6,7 @@ import { delay } from '@/utils/delay';
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
-import { KYC_POLL_INTERVAL_MS, useSubmitKycFlowStore, type SubmitKycState } from './useSubmitKycFlow';
+import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
 jest.mock('@/analytics', () => ({
   analytics: {
@@ -46,10 +46,10 @@ jest.mock('../../../services/userClient', () => ({
   submitOnboarding: jest.fn(),
 }));
 
-const mockSubmitOnboarding = submitOnboarding as jest.Mock;
-const mockGetUserStatus = getUserStatus as jest.Mock;
-const mockDelay = delay as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockSubmitOnboarding = jest.mocked(submitOnboarding);
+const mockGetUserStatus = jest.mocked(getUserStatus);
+const mockDelay = jest.mocked(delay);
+const track = jest.mocked(analytics.track);
 
 const TOKEN = 'bst_1';
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1990, month: 1, day: 2 } };
@@ -63,7 +63,7 @@ function fakeClock(start = 1_750_000_000_000) {
   return { advance: (ms: number) => (clock += ms) };
 }
 
-const flow = () => useSubmitKycFlowStore.getState();
+const flow = () => useSubmitReviewFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState();
 const challenge = () => {
   const current = session().session;
@@ -89,7 +89,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('useSubmitKycFlowStore.submit', () => {
+describe('useSubmitReviewFlowStore.submit onboarding', () => {
   it('submits, tracks, and resolves approved — in order', async () => {
     await expect(flow().submit()).resolves.toBe('approved');
 
@@ -125,7 +125,7 @@ describe('useSubmitKycFlowStore.submit', () => {
   it('switches to reviewing once the delay elapses, and keeps polling until the verdict lands', async () => {
     const clock = fakeClock();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
-    const statesWhilePolling: SubmitKycState[] = [];
+    const statesWhilePolling: SubmitReviewState[] = [];
     mockGetUserStatus
       .mockImplementationOnce(() => {
         statesWhilePolling.push(flow().state);
@@ -219,18 +219,14 @@ describe('useSubmitKycFlowStore.submit', () => {
   });
 
   it('skips a second submit while one is in flight', async () => {
-    let resolveSubmit!: (value: { kycStatus: KycStatus }) => void;
-    mockSubmitOnboarding.mockReturnValue(
-      new Promise(resolve => {
-        resolveSubmit = resolve;
-      })
-    );
+    const submit = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();
     await expect(flow().submit()).resolves.toBe('skipped');
 
     expect(mockSubmitOnboarding).toHaveBeenCalledTimes(1);
-    resolveSubmit({ kycStatus: KycStatus.Approved });
+    submit.resolve({ kycStatus: KycStatus.Approved });
     await expect(first).resolves.toBe('approved');
   });
 

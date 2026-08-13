@@ -1630,6 +1630,10 @@
           "error_description": "Please double-check your details and try again.",
           "edit_details": "Edit Details"
         },
+        "recovery_locked": {
+          "title": "Account recovery is locked",
+          "description": "Contact support to restore access to your account."
+        },
         "kyc": {
           "verifying_title": "Verifying your identity...",
           "verifying_description": "This can take up to a few minutes.",
