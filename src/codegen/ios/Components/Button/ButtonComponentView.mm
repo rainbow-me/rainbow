@@ -3,6 +3,7 @@
 //  Rainbow
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import <React/RCTConversions.h>
 #import <React/RCTViewComponentView.h>
 #import <react/renderer/components/rainbow/ComponentDescriptors.h>
@@ -12,49 +13,58 @@
 
 using namespace facebook::react;
 
+static constexpr NSTimeInterval kDefaultDurationSeconds = 0.16;
+static constexpr NSTimeInterval kDefaultLongPressDurationSeconds = 0.5;
+static constexpr CFTimeInterval kThrottleDurationSeconds = 0.5;
+
+static NSTimeInterval SecondsFromMilliseconds(double milliseconds)
+{
+  return milliseconds / 1000.0;
+}
+
+static NSTimeInterval OptionalSecondsFromMilliseconds(double milliseconds)
+{
+  return milliseconds == -1.0 ? -1.0 : SecondsFromMilliseconds(milliseconds);
+}
+
 static void GenerateHapticFeedback(NSString *hapticEffect)
 {
   if (!hapticEffect) {
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"error"] ||
-      [hapticEffect isEqualToString:@"notificationError"]) {
+  if ([hapticEffect isEqualToString:@"error"] || [hapticEffect isEqualToString:@"notificationError"]) {
     UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
     [generator notificationOccurred:UINotificationFeedbackTypeError];
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"success"] ||
-      [hapticEffect isEqualToString:@"notificationSuccess"]) {
+  if ([hapticEffect isEqualToString:@"success"] || [hapticEffect isEqualToString:@"notificationSuccess"]) {
     UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
     [generator notificationOccurred:UINotificationFeedbackTypeSuccess];
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"warning"] ||
-      [hapticEffect isEqualToString:@"notificationWarning"]) {
+  if ([hapticEffect isEqualToString:@"warning"] || [hapticEffect isEqualToString:@"notificationWarning"]) {
     UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
     [generator notificationOccurred:UINotificationFeedbackTypeWarning];
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"light"] ||
-      [hapticEffect isEqualToString:@"impactLight"]) {
+  if ([hapticEffect isEqualToString:@"light"] || [hapticEffect isEqualToString:@"impactLight"]) {
     UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
     [generator impactOccurred];
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"medium"] ||
-      [hapticEffect isEqualToString:@"impactMedium"]) {
-    UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+  if ([hapticEffect isEqualToString:@"medium"] || [hapticEffect isEqualToString:@"impactMedium"]) {
+    UIImpactFeedbackGenerator *generator =
+        [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
     [generator impactOccurred];
     return;
   }
 
-  if ([hapticEffect isEqualToString:@"heavy"] ||
-      [hapticEffect isEqualToString:@"impactHeavy"]) {
+  if ([hapticEffect isEqualToString:@"heavy"] || [hapticEffect isEqualToString:@"impactHeavy"]) {
     UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
     [generator impactOccurred];
     return;
@@ -67,7 +77,8 @@ static void GenerateHapticFeedback(NSString *hapticEffect)
 static void SetAnchorPoint(UIView *view, CGPoint point)
 {
   CGPoint newPoint = CGPointMake(view.bounds.size.width * point.x, view.bounds.size.height * point.y);
-  CGPoint oldPoint = CGPointMake(view.bounds.size.width * view.layer.anchorPoint.x, view.bounds.size.height * view.layer.anchorPoint.y);
+  CGPoint oldPoint = CGPointMake(
+      view.bounds.size.width * view.layer.anchorPoint.x, view.bounds.size.height * view.layer.anchorPoint.y);
 
   newPoint = CGPointApplyAffineTransform(newPoint, view.transform);
   oldPoint = CGPointApplyAffineTransform(oldPoint, view.transform);
@@ -86,21 +97,25 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 @interface ButtonComponentView : RCTViewComponentView <RCTButtonViewProtocol>
 @end
 
+@interface ButtonComponentView ()
+- (void)resetComponentState;
+@end
+
 @implementation ButtonComponentView {
   UILongPressGestureRecognizer *_longPress;
   CGPoint _tapLocation;
   BOOL _hasTapLocation;
   UIViewPropertyAnimator *_animator;
 
-  double _duration;
-  double _pressOutDuration;
-  double _scaleTo;
+  NSTimeInterval _durationSeconds;
+  NSTimeInterval _pressOutDurationSeconds;
+  CGFloat _scaleTo;
   BOOL _enableHapticFeedback;
   NSString *_hapticType;
   BOOL _useLateHaptic;
   BOOL _throttle;
   BOOL _shouldLongPressHoldPress;
-  BOOL _blocked;
+  CFTimeInterval _blockedUntil;
   BOOL _invalidated;
 }
 
@@ -112,35 +127,48 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-      _props = ButtonShadowNode::defaultSharedProps();
-
-    _duration = 0.16;
-    _pressOutDuration = -1.0;
-    _scaleTo = 0.97;
-    _enableHapticFeedback = YES;
-    _hapticType = @"selection";
-    _useLateHaptic = YES;
-    _throttle = NO;
-    _shouldLongPressHoldPress = NO;
-    _blocked = NO;
-    _invalidated = NO;
-
-    self.userInteractionEnabled = YES;
-    SetAnchorPoint(self, CGPointMake(0.5, 0.5));
+    _props = ButtonShadowNode::defaultSharedProps();
 
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressHandler:)];
-    _longPress.minimumPressDuration = 0.5;
     [self addGestureRecognizer:_longPress];
+
+    [self resetComponentState];
   }
 
   return self;
 }
 
+- (void)resetComponentState
+{
+  [_animator stopAnimation:YES];
+  _animator = nil;
+
+  _durationSeconds = kDefaultDurationSeconds;
+  _pressOutDurationSeconds = -1.0;
+  _scaleTo = 0.86;
+  _enableHapticFeedback = YES;
+  _hapticType = @"selection";
+  _useLateHaptic = YES;
+  _throttle = NO;
+  _shouldLongPressHoldPress = NO;
+  _blockedUntil = 0;
+  _invalidated = NO;
+  _hasTapLocation = NO;
+  _tapLocation = CGPointZero;
+
+  _longPress.enabled = NO;
+  _longPress.minimumPressDuration = kDefaultLongPressDurationSeconds;
+  _longPress.enabled = YES;
+
+  self.transform = CGAffineTransformIdentity;
+  self.userInteractionEnabled = YES;
+  SetAnchorPoint(self, CGPointMake(0.5, 0.5));
+}
+
 - (void)prepareForRecycle
 {
-  _blocked = NO;
-  _invalidated = NO;
   [super prepareForRecycle];
+  [self resetComponentState];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -153,11 +181,11 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   }
 
   if (newButtonProps.duration != oldButtonProps.duration) {
-    _duration = newButtonProps.duration;
+    _durationSeconds = SecondsFromMilliseconds(newButtonProps.duration);
   }
 
   if (newButtonProps.pressOutDuration != oldButtonProps.pressOutDuration) {
-    _pressOutDuration = newButtonProps.pressOutDuration;
+    _pressOutDurationSeconds = OptionalSecondsFromMilliseconds(newButtonProps.pressOutDuration);
   }
 
   if (newButtonProps.scaleTo != oldButtonProps.scaleTo) {
@@ -181,7 +209,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   }
 
   if (newButtonProps.minLongPressDuration != oldButtonProps.minLongPressDuration) {
-    _longPress.minimumPressDuration = newButtonProps.minLongPressDuration;
+    _longPress.minimumPressDuration = SecondsFromMilliseconds(newButtonProps.minLongPressDuration);
   }
 
   if (newButtonProps.hapticType != oldButtonProps.hapticType) {
@@ -244,10 +272,11 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onCancel({
-      .state = static_cast<int>(state),
-      .close = close,
-  });
+  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)
+      ->onCancel({
+          .state = static_cast<int>(state),
+          .close = close,
+      });
 }
 
 #pragma mark - Touch handling
@@ -265,7 +294,9 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     case UIGestureRecognizerStateEnded:
       if (_shouldLongPressHoldPress) {
         [self sendLongPressEnded];
-        _animator = [self animateTapEndWithDuration:(_pressOutDuration == -1 ? _duration : _pressOutDuration) useHaptic:nil];
+        _animator = [self
+            animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
+                            useHaptic:nil];
       }
       break;
     default:
@@ -291,41 +322,42 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   if (!_hasTapLocation) {
     return NO;
   }
-  return (_tapLocation.x - tolerance <= location.x && location.x <= _tapLocation.x + tolerance &&
-          _tapLocation.y - tolerance <= location.y && location.y <= _tapLocation.y + tolerance);
+  return (
+      _tapLocation.x - tolerance <= location.x && location.x <= _tapLocation.x + tolerance &&
+      _tapLocation.y - tolerance <= location.y && location.y <= _tapLocation.y + tolerance);
 }
 
 - (UIViewPropertyAnimator *)animateTapStartWithDuration:(double)duration
                                                   scale:(double)scale
-                                               useHaptic:(NSString *)useHaptic
+                                              useHaptic:(NSString *)useHaptic
 {
   if (useHaptic) {
     GenerateHapticFeedback(useHaptic);
   }
 
-  UIViewPropertyAnimator *animator = [[UIViewPropertyAnimator alloc] initWithDuration:duration
-                                                                       controlPoint1:CGPointMake(0.25, 0.46)
-                                                                       controlPoint2:CGPointMake(0.45, 0.94)
-                                                                          animations:^{
-                                                                            self.transform = CGAffineTransformMakeScale(scale, scale);
-                                                                          }];
+  UIViewPropertyAnimator *animator =
+      [[UIViewPropertyAnimator alloc] initWithDuration:duration
+                                         controlPoint1:CGPointMake(0.25, 0.46)
+                                         controlPoint2:CGPointMake(0.45, 0.94)
+                                            animations:^{
+                                              self.transform = CGAffineTransformMakeScale(scale, scale);
+                                            }];
   [animator startAnimation];
   return animator;
 }
 
-- (UIViewPropertyAnimator *)animateTapEndWithDuration:(double)duration
-                                         useHaptic:(NSString *)useHaptic
+- (UIViewPropertyAnimator *)animateTapEndWithDuration:(double)duration useHaptic:(NSString *)useHaptic
 {
   if (useHaptic) {
     GenerateHapticFeedback(useHaptic);
   }
 
   UIViewPropertyAnimator *animator = [[UIViewPropertyAnimator alloc] initWithDuration:duration
-                                                                       controlPoint1:CGPointMake(0.25, 0.46)
-                                                                       controlPoint2:CGPointMake(0.45, 0.94)
-                                                                          animations:^{
-                                                                            self.transform = CGAffineTransformIdentity;
-                                                                          }];
+                                                                        controlPoint1:CGPointMake(0.25, 0.46)
+                                                                        controlPoint2:CGPointMake(0.45, 0.94)
+                                                                           animations:^{
+                                                                             self.transform = CGAffineTransformIdentity;
+                                                                           }];
   [animator startAnimation];
   return animator;
 }
@@ -338,14 +370,14 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     _hasTapLocation = YES;
   }
 
-  if (_blocked) {
+  if (CACurrentMediaTime() < _blockedUntil) {
     _invalidated = YES;
     return;
   }
 
   _invalidated = NO;
   NSString *haptic = (_useLateHaptic ? nil : (_enableHapticFeedback ? _hapticType : nil));
-  _animator = [self animateTapStartWithDuration:_duration scale:_scaleTo useHaptic:haptic];
+  _animator = [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo useHaptic:haptic];
 
   if (_shouldLongPressHoldPress) {
     [self sendPressAtLocation:_tapLocation];
@@ -372,9 +404,9 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
   static const CGFloat kTouchMoveTolerance = 80.0;
   if (![self touchInRange:location tolerance:kTouchMoveTolerance]) {
-    _animator = [self animateTapEndWithDuration:_duration useHaptic:nil];
+    _animator = [self animateTapEndWithDuration:_durationSeconds useHaptic:nil];
   } else if ([self touchInRange:location tolerance:kTouchMoveTolerance * 0.8]) {
-    _animator = [self animateTapStartWithDuration:_duration scale:_scaleTo useHaptic:nil];
+    _animator = [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo useHaptic:nil];
   }
 }
 
@@ -393,16 +425,14 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   static const CGFloat kTouchMoveTolerance = 80.0;
   if ([self touchInRange:location tolerance:kTouchMoveTolerance * 0.8]) {
     NSString *useHaptic = (_useLateHaptic && _enableHapticFeedback) ? _hapticType : nil;
-    _animator = [self animateTapEndWithDuration:(_pressOutDuration == -1 ? _duration : _pressOutDuration)
-                                      useHaptic:useHaptic];
+    _animator =
+        [self animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
+                              useHaptic:useHaptic];
     if (!_shouldLongPressHoldPress) {
       [self sendPressAtLocation:location];
     }
     if (_throttle) {
-      _blocked = YES;
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-          self->_blocked = NO;
-      });
+      _blockedUntil = CACurrentMediaTime() + kThrottleDurationSeconds;
     }
   } else {
     [self touchesCancelled:touches withEvent:event];
@@ -414,7 +444,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   if (_invalidated) {
     return;
   }
-    
+
   UITouch *touch = touches.anyObject;
   if (touch && _hasTapLocation) {
     CGPoint location = [touch locationInView:self];
@@ -422,15 +452,13 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   }
 
   if (!_shouldLongPressHoldPress) {
-    _animator = [self animateTapEndWithDuration:(_pressOutDuration == -1 ? _duration : _pressOutDuration)
-                                      useHaptic:nil];
+    _animator =
+        [self animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
+                              useHaptic:nil];
   }
 
   if (_throttle) {
-    _blocked = YES;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      self->_blocked = NO;
-    });
+    _blockedUntil = CACurrentMediaTime() + kThrottleDurationSeconds;
   }
 }
 

@@ -11,7 +11,9 @@ export interface ButtonPressAnimationProps
   onPress?: ((event?: GestureResponderEvent) => void) | null | undefined;
   onLongPress?: ((event?: GestureResponderEvent) => void) | null;
   activeOpacity?: number;
+  /** Milliseconds. */
   duration?: number;
+  /** Milliseconds. */
   minLongPressDuration?: number;
   onLongPressEnded?: () => void;
   onPressStart?: () => void;
@@ -25,7 +27,10 @@ export interface ButtonPressAnimationProps
   compensateForTransformOrigin?: boolean;
   /** @platform ios */
   onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
-  /** @platform ios */
+  /**
+   * Milliseconds, or -1 to use `duration`.
+   * @platform ios
+   */
   pressOutDuration?: number;
   /** @platform ios */
   throttle?: boolean;
