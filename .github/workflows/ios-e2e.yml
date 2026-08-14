@@ -108,6 +108,11 @@ jobs:
           wait_for_boot: true
           boot_timeout_seconds: 180
 
+      - name: Enroll Face ID
+        run: ./scripts/e2e-ios-enroll-biometrics.sh
+        env:
+          DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+
       - name: Run Tests
         run: ./scripts/e2e-ios-ci.sh
         env:
