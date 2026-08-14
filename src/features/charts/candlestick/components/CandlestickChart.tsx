@@ -1018,9 +1018,7 @@ class CandlestickChartManager {
       this.perpsIndicatorBuilder.drawBubbles(canvas, perpsIndicatorPositions);
     }
 
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Indicator Picture ============================================ //
@@ -1065,9 +1063,7 @@ class CandlestickChartManager {
       stride,
     });
 
-    const oldPicture = this.indicatorPicture.value;
     indicatorPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Crosshair Picture ============================================ //
@@ -1146,9 +1142,7 @@ class CandlestickChartManager {
       if (previousActiveCandle) triggerHaptics('selection');
     }
 
-    const oldPicture = this.crosshairPicture.value;
     crosshairPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Animation Handler ============================================ //
@@ -1469,9 +1463,6 @@ class CandlestickChartManager {
 
   public dispose(): void {
     this.candles = [];
-    this.crosshairPicture.value.dispose();
-    this.chartPicture.value.dispose();
-    this.indicatorPicture.value.dispose();
     this.pictureRecorder.dispose();
 
     this.animator.dispose();
@@ -1878,7 +1869,6 @@ function useCandlestickChart({
 
   useCleanup(() => {
     chartStatus.value = ChartStatus.Loaded;
-    initialPicture.dispose();
     runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;

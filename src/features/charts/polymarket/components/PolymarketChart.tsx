@@ -276,7 +276,6 @@ export const PolymarketChart = memo(function PolymarketChart({
   }));
 
   useCleanup(() => {
-    initialPicture.dispose();
     runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;

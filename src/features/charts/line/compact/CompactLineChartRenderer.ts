@@ -206,11 +206,6 @@ export class CompactLineChartRenderer {
     this.strokePaint.dispose();
     this.fillPaint.dispose();
     this.pictureRecorder.dispose();
-
-    const currentPicture = this.chartPicture.value;
-    if (currentPicture !== this.blankPicture) {
-      currentPicture.dispose();
-    }
   }
 
   private setColor(color: string): void {
@@ -252,19 +247,11 @@ export class CompactLineChartRenderer {
     canvas.drawPath(this.fillPath, this.fillPaint);
     canvas.drawPath(this.strokePath, this.strokePaint);
 
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
   }
 
   private setBlankPicture(): void {
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.blankPicture;
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
   }
 
   private buildSmoothedPaths(data: CompactLineChartData, count: number): void {
