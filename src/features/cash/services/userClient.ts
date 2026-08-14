@@ -1,5 +1,4 @@
-import { IS_TESTING } from 'react-native-dotenv';
-
+import { IS_CASH_MOCK } from '@/env';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
@@ -176,7 +175,7 @@ type GetUserStatusResponse = {
 };
 
 export async function createUserWithPhone({ nationalNumber }: { nationalNumber: string }): Promise<CreateUserWithPhoneResult> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     if (nationalNumber === MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER || nationalNumber === MOCK_RESUME_KYC_PENDING_NUMBER)
       return { outcome: 'registeredWithoutPasskey' };
@@ -210,7 +209,7 @@ export async function verifyPhone({
   userId: string;
   code: string;
 }): Promise<{ bootstrapToken: string; expiresAt: number }> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     if (code !== '000000') throw new Error('Invalid verification code');
     return { bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
@@ -224,7 +223,7 @@ export async function verifyPhone({
 }
 
 export async function resendPhoneCode({ userId }: { userId: string }): Promise<ResendPhoneCodeResponse> {
-  if (IS_TESTING === 'true') return { resendAfter: Date.now() + time.seconds(30) };
+  if (IS_CASH_MOCK) return { resendAfter: Date.now() + time.seconds(30) };
 
   const { data } = await getCashPlatformClient().post<{ resendAfter: unknown }>('/signup/ResendPhoneCode', { userId });
   return { resendAfter: parseResendAfter(data.resendAfter) };
@@ -236,7 +235,7 @@ export async function submitOnboarding({
   identity,
   governmentId,
 }: SubmitOnboardingParams): Promise<SubmitOnboardingResponse> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { kycStatus: KycStatus.Approved };
   }
@@ -254,7 +253,7 @@ export async function submitOnboarding({
 }
 
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { passkeyId: 'e2e-passkey-id', publicKeyOptionsJson: '{}', userId: 'e2e-user-id' };
   }
@@ -273,7 +272,7 @@ export async function finishAddPasskey({
   credentialCreationJson,
   passkeyName,
 }: FinishAddPasskeyParams): Promise<void> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return;
   }
@@ -286,7 +285,7 @@ export async function finishAddPasskey({
 }
 
 export async function startLogin(identifier: StartLoginParams): Promise<StartLoginResponse> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { sessionId: 'e2e-session-id', sessionToken: 'e2e-session-token', publicKeyOptionsJson: '{}' };
   }
@@ -296,7 +295,7 @@ export async function startLogin(identifier: StartLoginParams): Promise<StartLog
 }
 
 export async function finishLogin({ sessionId, sessionToken, credentialAssertionJson }: FinishLoginParams): Promise<FinishLoginResponse> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { sessionId, sessionToken, userId: 'e2e-user-id' };
   }
@@ -316,7 +315,7 @@ export async function finalizeAuth({
   sessionId: string;
   sessionToken: string;
 }): Promise<{ accessToken: string; expiresAt: number }> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { accessToken: 'e2e-access-token', expiresAt: Date.now() + time.hours(1) };
   }
@@ -329,7 +328,7 @@ export async function finalizeAuth({
 }
 
 export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
   }
@@ -345,7 +344,7 @@ export async function startSignupResume({
 }: {
   nationalNumber: string;
 }): Promise<{ resumeId: string; resendAfter: number }> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     const resumeId = nationalNumber === MOCK_RESUME_KYC_PENDING_NUMBER ? MOCK_KYC_PENDING_RESUME_ID : 'e2e-resume-id';
     return { resumeId, resendAfter: Date.now() + time.seconds(30) };
@@ -422,7 +421,7 @@ export type FinishSignupResumeResult =
   | { outcome: 'signupAlreadyComplete' };
 
 export async function finishSignupResume({ resumeId, code }: { resumeId: string; code: string }): Promise<FinishSignupResumeResult> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     if (code === MOCK_SIGNUP_ALREADY_COMPLETE_CODE) return { outcome: 'signupAlreadyComplete' };
     if (code !== '000000') throw new Error('Invalid verification code');

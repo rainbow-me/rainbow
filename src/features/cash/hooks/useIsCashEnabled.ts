@@ -1,3 +1,4 @@
+import { IS_CASH_MOCK } from '@/env';
 import { CASH } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -9,5 +10,5 @@ import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 export function useIsCashEnabled(): boolean {
   const { cash_enabled } = useRemoteConfig('cash_enabled');
   const cashExperimentalEnabled = useExperimentalFlag(CASH);
-  return cashExperimentalEnabled || cash_enabled;
+  return IS_CASH_MOCK || cashExperimentalEnabled || cash_enabled;
 }

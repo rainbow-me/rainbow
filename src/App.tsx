@@ -23,7 +23,7 @@ import { TestDeeplinkHandler } from '@/app/navigation/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
-import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
+import { IS_CASH_MOCK, IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
@@ -85,7 +85,7 @@ function AppComponent() {
       </View>
       <NotificationsHandler />
       <DeeplinkHandler initialRoute={initialRoute} />
-      {IS_TEST && <TestDeeplinkHandler />}
+      {IS_CASH_MOCK && <TestDeeplinkHandler />}
       {(!IS_STORE_INSTALL || IS_TEST) && <SandboxDiagnosticsOverlay />}
       <BackupsSync />
       <AbsolutePortalRoot />

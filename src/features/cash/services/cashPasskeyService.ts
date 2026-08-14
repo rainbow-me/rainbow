@@ -1,7 +1,7 @@
 import DeviceInfo from 'react-native-device-info';
-import { IS_TESTING } from 'react-native-dotenv';
 import { create, get } from 'react-native-passkeys';
 
+import { IS_CASH_MOCK } from '@/env';
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 
@@ -27,7 +27,7 @@ function parsePasskeyRequestOptions(publicKeyOptionsJson: string): PasskeyReques
 }
 
 export async function createPasskeyCredential(publicKeyOptionsJson: string): Promise<string> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return '{}';
   }
@@ -40,7 +40,7 @@ export async function createPasskeyCredential(publicKeyOptionsJson: string): Pro
 }
 
 export async function getPasskeyAssertion(publicKeyOptionsJson: string): Promise<string> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(1));
     return '{}';
   }

@@ -1,6 +1,6 @@
-import { IS_TESTING } from 'react-native-dotenv';
 import { type Address } from 'viem';
 
+import { IS_CASH_MOCK } from '@/env';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
@@ -35,7 +35,7 @@ function buildLinkMessage({ userId, address, timestamp }: { userId: string; addr
 }
 
 export async function checkWalletLink(address: Address, abortController?: AbortController | null): Promise<WalletLinkStatus> {
-  if (IS_TESTING === 'true') return 'linked';
+  if (IS_CASH_MOCK) return 'linked';
 
   // Ahead of the cache lookup: the same token authorizes the buy order that follows either way.
   await ensureAccessToken('addCash');

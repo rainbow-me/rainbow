@@ -1,6 +1,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { z } from 'zod';
 
+import { IS_CASH_MOCK } from '@/env';
 import { parseResponse } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { greaterThan } from '@/helpers/utilities';
@@ -294,20 +295,19 @@ export async function linkWallet(
 const getOrderResponseSchema = z.object({ order: buyOrderSchema });
 
 export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void> {
-  if (IS_TESTING === 'true') return e2eCreateBuyOrder(params);
+  if (IS_CASH_MOCK) return e2eCreateBuyOrder(params);
 
   await authorizedRequest('addCash', headers => getCashPlatformClient().post('/ramp/orders/buy', params, { headers }));
 }
 
 export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
-  const data =
-    IS_TESTING === 'true'
-      ? e2eGetOrderResponse(orderId)
-      : (
-          await authorizedRequest('addCash', headers =>
-            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
-          )
-        ).data;
+  const data = IS_CASH_MOCK
+    ? e2eGetOrderResponse(orderId)
+    : (
+        await authorizedRequest('addCash', headers =>
+          getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+        )
+      ).data;
   return { ...parseResponse(getOrderResponseSchema, data, 'getOrder').order, id: orderId };
 }
 

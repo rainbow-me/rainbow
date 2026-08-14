@@ -1,6 +1,6 @@
 import ReactNative, { NativeModules } from 'react-native';
 
-import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_API_KEY_PROD, RPC_PROXY_BASE_URL_PROD } from 'react-native-dotenv';
+import { CASH_MOCK_MODE, ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_API_KEY_PROD, RPC_PROXY_BASE_URL_PROD } from 'react-native-dotenv';
 
 /**
  * @deprecated use IS_WEB
@@ -10,6 +10,7 @@ export const IS_WEB = web;
 
 export const IS_DEV = (typeof __DEV__ === 'boolean' && __DEV__) || !!Number(ENABLE_DEV_MODE);
 export const IS_TEST = IS_TESTING === 'true';
+export const IS_CASH_MOCK = IS_TEST || CASH_MOCK_MODE === 'true';
 export const IS_PROD = !IS_DEV && !IS_TEST;
 
 export const RPC_PROXY_BASE_URL = RPC_PROXY_BASE_URL_PROD;

@@ -1,6 +1,6 @@
 import { type BivoSecureStore } from '@bivoglobal/payment-react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 
+import { IS_CASH_MOCK } from '@/env';
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 import { withTimeout } from '@/utils/promise';
@@ -29,7 +29,7 @@ export async function linkCardWithVault(
   cardBrand: CardBrand,
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
-  if (IS_TESTING === 'true') {
+  if (IS_CASH_MOCK) {
     await delay(time.seconds(3));
     return MOCK_LINKED_CARD;
   }
