@@ -2,9 +2,11 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
 import { createPasskeyCredential } from '../../../services/cashPasskeyService';
+import { listCards } from '../../../services/rampClient';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { useCashPaymentMethodStore } from '../../../stores/cashPaymentMethodStore';
+import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useAddPasskeyFlowStore } from './useAddPasskeyFlow';
 
 jest.mock('@/analytics', () => ({
@@ -28,25 +30,38 @@ jest.mock('../../../services/userClient', () => ({
   finishAddPasskey: jest.fn(),
 }));
 
+jest.mock('../../../services/rampClient', () => ({
+  listCards: jest.fn(),
+}));
+
 jest.mock('../../../services/cashPasskeyService', () => ({
   createPasskeyCredential: jest.fn(),
   getPasskeyName: jest.fn(() => 'iPhone 15 Pro'),
   isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
 
-jest.mock('../../../stores/cashAccountStore', () => ({
-  useCashAccountStore: { getState: jest.fn() },
-}));
+jest.mock('../../../stores/cashAccountStore', () => {
+  const state = { userId: null, setUserId: jest.fn(), clearUserId: jest.fn() };
+  return { useCashAccountStore: { getState: jest.fn(() => state) } };
+});
 
-const mockAddPasskey = addPasskey as jest.Mock;
-const mockFinishAddPasskey = finishAddPasskey as jest.Mock;
-const mockCreatePasskeyCredential = createPasskeyCredential as jest.Mock;
-const track = analytics.track as jest.Mock;
-const setUserId = jest.fn();
+jest.mock('../../../stores/cashPaymentMethodStore', () => {
+  const state = { linkedCard: null, setLinkedCard: jest.fn(), clearLinkedCard: jest.fn() };
+  return { useCashPaymentMethodStore: { getState: jest.fn(() => state) } };
+});
+
+const mockAddPasskey = jest.mocked(addPasskey);
+const mockFinishAddPasskey = jest.mocked(finishAddPasskey);
+const mockCreatePasskeyCredential = jest.mocked(createPasskeyCredential);
+const mockListCards = jest.mocked(listCards);
+const track = jest.mocked(analytics.track);
+const setUserId = jest.mocked(useCashAccountStore.getState().setUserId);
+const setLinkedCard = jest.mocked(useCashPaymentMethodStore.getState().setLinkedCard);
 
 const TOKEN = 'bst_1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
 const CREDENTIAL_JSON = '{"id":"cred-1"}';
+const RECOVERED_CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
 
 const flow = () => useAddPasskeyFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState();
@@ -55,10 +70,19 @@ const challenge = () => {
   if (current.status !== 'phoneSubmitted') throw new Error('expected a phoneSubmitted session');
   return current.challenge;
 };
+const verifyRecoverySession = () => {
+  session().reset();
+  const recoveryChallenge: RecoveryPhoneChallenge = { kind: 'recovery', recoveryId: 'recovery-1' };
+  session().setPhoneSubmitted({ challenge: recoveryChallenge, phoneNationalNumber: '4155550100', resendAfter: 0 });
+  session().setFirstName('Ada');
+  session().setLastName('Lovelace');
+  session().setDateOfBirth({ year: 1815, month: 12, day: 10 });
+  session().setSsnLast4('1234');
+  session().setPhoneVerified(recoveryChallenge, { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (useCashAccountStore.getState as jest.Mock).mockReturnValue({ setUserId });
   flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
@@ -66,6 +90,7 @@ beforeEach(() => {
   mockAddPasskey.mockResolvedValue({ passkeyId: 'pk-1', publicKeyOptionsJson: OPTIONS_JSON, userId: 'user-1' });
   mockCreatePasskeyCredential.mockResolvedValue(CREDENTIAL_JSON);
   mockFinishAddPasskey.mockResolvedValue(undefined);
+  mockListCards.mockResolvedValue([]);
 });
 
 describe('useAddPasskeyFlowStore.submit', () => {
@@ -136,6 +161,31 @@ describe('useAddPasskeyFlowStore.submit', () => {
 
     expect(mockAddPasskey).toHaveBeenCalledTimes(2);
     expect(setUserId).toHaveBeenCalledWith('user-1');
+  });
+
+  it('restores the recovered account card after passkey enrollment', async () => {
+    verifyRecoverySession();
+    mockListCards.mockResolvedValue([RECOVERED_CARD]);
+
+    await expect(flow().submit()).resolves.toBe('recovered');
+
+    expect(mockListCards).toHaveBeenCalledWith({ trigger: 'recovery' });
+    expect(setLinkedCard).toHaveBeenCalledWith(RECOVERED_CARD);
+    expect(setUserId).toHaveBeenCalledWith('user-1');
+    expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
+  });
+
+  it('completes recovery when card restoration fails after passkey enrollment', async () => {
+    verifyRecoverySession();
+    mockListCards.mockRejectedValue(new Error('network down'));
+
+    await expect(flow().submit()).resolves.toBe('recovered');
+
+    expect(setUserId).toHaveBeenCalledWith('user-1');
+    expect(mockAddPasskey).toHaveBeenCalledTimes(1);
+    expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
+    expect(track).not.toHaveBeenCalledWith('cash.passkey_failed', expect.anything());
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('skips a second submit while one is in flight', async () => {
