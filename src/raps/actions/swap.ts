@@ -16,7 +16,7 @@ import { REFERRER } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import type { Call } from '@rainbow-me/sdk';
+import type { CallInput } from '@rainbow-me/sdk';
 import {
   getQuoteExecutionDetails,
   getTargetAddress,
@@ -309,16 +309,15 @@ function buildSwapTransaction(
 
 export const prepareSwap = async ({
   parameters,
-  quote,
 }: PrepareActionProps<'swap'>): Promise<{
-  call: Call;
+  call: CallInput;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'swap parameters.nonce');
   const provider = getProvider({ chainId: parameters.chainId });
   const preparedCall = await prepareSwapCall({
     provider,
-    quote,
+    quote: parameters.quote,
   });
   const transaction = {
     ...buildSwapTransaction(parameters, parameters.gasParams, nonce),
@@ -333,7 +332,7 @@ export const prepareSwap = async ({
   };
 };
 
-export async function prepareSwapCall({ provider, quote }: { provider: StaticJsonRpcProvider; quote: Quote }): Promise<Call> {
+export async function prepareSwapCall({ provider, quote }: { provider: StaticJsonRpcProvider; quote: Quote }): Promise<CallInput> {
   if (quote.swapType === SwapType.wrap || quote.swapType === SwapType.unwrap) {
     return buildWrappedSwapCall(quote);
   }
@@ -356,7 +355,7 @@ export async function prepareSwapCall({ provider, quote }: { provider: StaticJso
   };
 }
 
-function buildWrappedSwapCall(quote: Quote): Call {
+function buildWrappedSwapCall(quote: Quote): CallInput {
   const wrappedAssetAddress = getWrappedAssetAddress(quote);
 
   if (quote.swapType === SwapType.wrap) {
@@ -377,7 +376,7 @@ function buildWrappedSwapCall(quote: Quote): Call {
   };
 }
 
-function buildFallbackSwapCall(quote: Quote): Call {
+function buildFallbackSwapCall(quote: Quote): CallInput {
   if (quote.value === undefined || quote.value === null) {
     throw new Error('Quote must have a valid value');
   }
@@ -389,7 +388,7 @@ function buildFallbackSwapCall(quote: Quote): Call {
   };
 }
 
-function appendReferrerCode(data: Call['data'], referrer: string): Call['data'] {
+function appendReferrerCode(data: CallInput['data'], referrer: string): CallInput['data'] {
   return requireHex(`${data}${keccak256(toUtf8Bytes(referrer)).slice(2, 10)}`, 'swap prepared tx.data');
 }
 

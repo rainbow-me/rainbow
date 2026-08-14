@@ -1,13 +1,13 @@
 import { type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
+import { type CallInput, type CallsPlan, type CallsPolicy } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareStakeRnbw, type StakeRnbwPreparationParams } from './prepareStakeRnbw';
 
 const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
+const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<CallsPlan>, [unknown]>();
 const mockGetProvider = jest.fn();
 const mockResolveStakeClaimStrategy = jest.fn<Promise<unknown>, [string]>();
 
@@ -56,15 +56,15 @@ jest.mock('./stakeRnbwCalls', () => ({
 const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
 const STAKE_AMOUNT_RAW = '1000000000000000000';
 const provider = { name: 'provider' };
-const STAKE_CALL = { data: '0x1234', to: STAKING_CONTRACT_ADDRESS, value: 0n } satisfies Call;
-const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } } satisfies CallsRequirements;
+const STAKE_CALL: CallInput = { data: '0x1234', to: STAKING_CONTRACT_ADDRESS, value: 0n };
+const SPONSORED_POLICY = { atomic: true, sponsorship: 'required' } satisfies CallsPolicy;
 
 describe('prepareStakeRnbw', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockGetProvider.mockReturnValue(provider);
-    mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL], requirements: SPONSORED_REQUIREMENTS });
+    mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL], ...SPONSORED_POLICY });
     mockResolveStakeClaimStrategy.mockResolvedValue({
       claimFulfillsStake: false,
       claimToDestination: 'wallet',
@@ -106,7 +106,7 @@ describe('prepareStakeRnbw', () => {
       publicClient: expect.objectContaining({
         chain: expect.objectContaining({ id: STAKING_CHAIN_ID }),
       }),
-      requirements: SPONSORED_REQUIREMENTS,
+      ...SPONSORED_POLICY,
     });
   });
 

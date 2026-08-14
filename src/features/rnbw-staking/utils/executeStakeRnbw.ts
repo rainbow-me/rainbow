@@ -12,7 +12,7 @@ import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_TOKEN_ADDRESS,
@@ -182,7 +182,7 @@ async function resolveStakeRnbwCallGasLimit({
   provider,
 }: {
   address: Address;
-  call: Call;
+  call: CallInput;
   provider: StaticJsonRpcProvider;
 }): Promise<TransactionResponse['gasLimit'] | number> {
   try {

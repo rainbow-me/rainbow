@@ -5,19 +5,18 @@ import { isAddress, type Address } from 'viem';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { parsePositiveRawAmount } from '@/features/token/core/services/tokenAmount';
 import { ensureError, logger } from '@/logger';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { predictSponsoredSend, prepareSponsoredSend } from '../utils/sponsoredSend';
 import { buildSendCallFromSendDetails } from '../utils/sponsoredSendExecution';
 
 type PreparedSponsoredSendState =
-  | { call: Call; key: string; preparedCalls: PreparedCallsExecution | null }
+  | { call: CallInput; key: string; preparedCalls: PreparedCallsExecution<'calls.managed'> | null }
   | { call: null; key: string; preparedCalls: null };
 
 type DelegationSupportCache = Map<string, Promise<boolean>>;
@@ -141,7 +140,7 @@ export function useSponsoredSendPreparation({
   const [isSponsorshipSupported, setIsSponsorshipSupported] = useState(false);
   const hasResolvedSponsoredSend = preparedSponsoredSend?.key === sponsoredSendRequestKey;
   const preparedCalls = hasResolvedSponsoredSend ? preparedSponsoredSend.preparedCalls : null;
-  const isSponsoredSend = isPreparedCallsExecutionSponsored(preparedCalls);
+  const isSponsoredSend = preparedCalls !== null;
   const preparedCall = hasResolvedSponsoredSend && isSponsoredSend ? preparedSponsoredSend.call : null;
   const shouldShowSponsoredSendGas =
     canUseSponsoredSend &&

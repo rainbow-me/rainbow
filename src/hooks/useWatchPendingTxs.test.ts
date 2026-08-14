@@ -15,11 +15,27 @@ import { queryClient } from '@/react-query';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { RelayExecutionStatus } from '@rainbow-me/sdk';
+import { RelayExecutionStatus, type RelayExecutionId, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 import { SwapType } from '@rainbow-me/swaps';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 import { useWatchPendingTransactions, watchPendingTransaction } from './useWatchPendingTxs';
+
+const EXECUTION_ID: RelayExecutionId = '0x0101010101010101010101010101010101010101010101010101010101010101';
+const OTHER_EXECUTION_ID: RelayExecutionId = '0x0202020202020202020202020202020202020202020202020202020202020202';
+const SETTLED_EXECUTION_ID: RelayExecutionId = '0x0303030303030303030303030303030303030303030303030303030303030303';
+
+jest.mock('@rainbow-me/sdk', () => ({
+  RelayExecutionStatus: {
+    AwaitingWallet: 'AWAITING_WALLET',
+    Confirmed: 'CONFIRMED',
+    Failed: 'FAILED',
+    Pending: 'PENDING',
+    Prepared: 'PREPARED',
+    Reverted: 'REVERTED',
+    Submitting: 'SUBMITTING',
+  },
+}));
 
 jest.mock('react', () => ({
   ...jest.requireActual<typeof import('react')>('react'),
@@ -182,8 +198,11 @@ describe('watchPendingTransaction', () => {
   });
 
   it('keeps unsettled overlays and retains newly settled overlays until history indexes them', async () => {
-    const stillPendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
-    const confirmedPendingTransaction = buildManagedPendingTransaction({ hash: 'execution-2', relayExecutionId: 'execution-2' });
+    const stillPendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
+    const confirmedPendingTransaction = buildManagedPendingTransaction({
+      hash: OTHER_EXECUTION_ID,
+      relayExecutionId: OTHER_EXECUTION_ID,
+    });
     const confirmedTransaction: SettledTransaction = {
       ...confirmedPendingTransaction,
       changes: [
@@ -354,7 +373,7 @@ describe('watchPendingTransaction', () => {
   });
 
   it('drops settled overlays once history includes them', async () => {
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const settledTransaction: SettledTransaction = {
       ...pendingTransaction,
       hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
@@ -404,9 +423,9 @@ describe('watchPendingTransaction', () => {
   it('keeps existing settled overlays visible while only pending transactions are watched', async () => {
     const settledOverlay = buildManagedConfirmedTransaction({
       hash: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      relayExecutionId: 'execution-settled',
+      relayExecutionId: SETTLED_EXECUTION_ID,
     });
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
 
     pendingTransactionsActions.setPendingTransactions({
       address: TEST_ADDRESS,
@@ -436,7 +455,7 @@ describe('watchPendingTransaction', () => {
   });
 
   it('syncs managed destination history after a confirmed transition', async () => {
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const settledTransaction: SettledTransaction = {
       ...pendingTransaction,
       hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
@@ -469,18 +488,21 @@ describe('watchPendingTransaction', () => {
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',
     };
-    const relayStatus = {
+    const relayStatus: RelayStatusSnapshot = {
       status: RelayExecutionStatus.Confirmed,
       updatedAtMs: 0,
       onchain: {
-        type: 'crosschain' as const,
+        scope: 'crosschain',
+        observed: 'both',
         origin: {
           chainId: 8453,
-          txHashes: ['0x1111111111111111111111111111111111111111111111111111111111111111' as const],
+          hashes: ['0x1111111111111111111111111111111111111111111111111111111111111111'],
+          kind: 'evm',
         },
         destination: {
           chainId: 10,
-          txHashes: ['0x2222222222222222222222222222222222222222222222222222222222222222' as const],
+          hashes: ['0x2222222222222222222222222222222222222222222222222222222222222222'],
+          kind: 'evm',
         },
       },
     };
@@ -524,7 +546,7 @@ describe('watchPendingTransaction', () => {
   });
 
   it('does not queue balance watching for failed transactions', async () => {
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const failedTransaction: SettledTransaction = {
       ...pendingTransaction,
       status: TransactionStatus.failed,
@@ -556,7 +578,7 @@ describe('watchPendingTransaction', () => {
 
   it('updates the local overlay before managed history sync finishes', async () => {
     const originHash: `0x${string}` = '0x1111111111111111111111111111111111111111111111111111111111111111';
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const confirmedTransaction: SettledTransaction = {
       ...pendingTransaction,
       hash: originHash,
@@ -575,10 +597,11 @@ describe('watchPendingTransaction', () => {
         status: RelayExecutionStatus.Confirmed,
         updatedAtMs: 0,
         onchain: {
-          type: 'singlechain',
-          origin: {
+          scope: 'singlechain',
+          transactions: {
             chainId: 8453,
-            txHashes: [originHash],
+            hashes: [originHash],
+            kind: 'evm',
           },
         },
       },
@@ -604,7 +627,7 @@ describe('watchPendingTransaction', () => {
   });
 
   it('drops a confirmed managed overlay immediately when relay provides no onchain hash', async () => {
-    const pendingTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
+    const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const confirmedTransaction: SettledTransaction = {
       ...pendingTransaction,
       status: TransactionStatus.confirmed,
@@ -658,7 +681,13 @@ function resetStores() {
   });
 }
 
-function buildManagedPendingTransaction({ hash, relayExecutionId }: { hash: string; relayExecutionId: string }): PendingTransaction {
+function buildManagedPendingTransaction({
+  hash,
+  relayExecutionId,
+}: {
+  hash: string;
+  relayExecutionId: RelayExecutionId;
+}): PendingTransaction {
   return {
     asset: null,
     chainId: 8453,
@@ -679,7 +708,7 @@ function buildManagedConfirmedTransaction({
   relayExecutionId,
 }: {
   hash: string;
-  relayExecutionId: string;
+  relayExecutionId: RelayExecutionId;
 }): ConfirmedManagedTransaction {
   return {
     ...buildManagedPendingTransaction({ hash, relayExecutionId }),

@@ -1,7 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
+import { type CallInput, type CallsPolicy } from '@rainbow-me/sdk';
 
 import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { buildStakeRnbwCalls, buildStakeRnbwExecutionPlan } from './stakeRnbwCalls';
@@ -24,9 +24,9 @@ jest.mock('@/utils/ethereumUtils', () => ({
 const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
 const STAKE_AMOUNT_RAW = '1000000000000000000';
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', STAKING_CHAIN_ID);
-const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } } satisfies CallsRequirements;
+const SPONSORED_POLICY = { atomic: true, sponsorship: 'required' } satisfies CallsPolicy;
 
-function buildApprovalCall(): Call {
+function buildApprovalCall(): CallInput {
   return {
     data: encodeFunctionData({
       abi: erc20Abi,
@@ -38,7 +38,7 @@ function buildApprovalCall(): Call {
   };
 }
 
-function buildStakeCall(): Call {
+function buildStakeCall(): CallInput {
   return {
     data: encodeFunctionData({
       abi: STAKING_ABI,
@@ -78,18 +78,18 @@ describe('stakeRnbwCalls', () => {
     ]);
   });
 
-  it('adds sponsor-paid requirements when staking can use sponsored execution', async () => {
+  it('adds sponsor-paid policy when staking can use sponsored execution', async () => {
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(true);
 
     await expect(buildStakeRnbwExecutionPlan({ address: ACCOUNT, provider, stakeAmountRaw: STAKE_AMOUNT_RAW })).resolves.toEqual({
       calls: [buildStakeCall()],
-      requirements: SPONSORED_REQUIREMENTS,
+      ...SPONSORED_POLICY,
     });
 
     expect(mockCanUseSponsoredRnbwStaking).toHaveBeenCalledWith(ACCOUNT, STAKING_CHAIN_ID);
   });
 
-  it('omits requirements when sponsorship is unavailable', async () => {
+  it('omits sponsorship policy when sponsorship is unavailable', async () => {
     await expect(buildStakeRnbwExecutionPlan({ address: ACCOUNT, provider, stakeAmountRaw: STAKE_AMOUNT_RAW })).resolves.toEqual({
       calls: [buildStakeCall()],
     });

@@ -6,7 +6,7 @@ import { isAddress, isHex, type Address, type Hex } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { createDelegationPublicClient, SPONSORED_CALLS_REQUIREMENTS } from '@/features/delegation/utils/calls';
+import { createDelegationPublicClient, SPONSORED_CALLS_POLICY } from '@/features/delegation/utils/calls';
 import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
 import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
@@ -14,7 +14,7 @@ import { canUseDelegatedExecution, supportsDelegatedExecution } from '@/features
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
-import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, type CallInput, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 // ============ Types ========================================================= //
 
@@ -26,14 +26,14 @@ type PredictSponsoredSendParams = {
 
 type PrepareSponsoredSendParams = {
   accountAddress: Address;
-  call: Call;
+  call: CallInput;
   chainId: ChainId;
   delegationSupported?: boolean;
   signal?: AbortSignal;
 };
 
 type ExecuteSponsoredSendParams = PrepareSponsoredSendParams & {
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   provider: StaticJsonRpcProvider;
   signer: Signer;
   transaction: Omit<NewTransaction, 'hash'>;
@@ -59,7 +59,7 @@ export async function prepareSponsoredSend({
   chainId,
   delegationSupported,
   signal,
-}: PrepareSponsoredSendParams): Promise<PreparedCallsExecution | null> {
+}: PrepareSponsoredSendParams): Promise<PreparedCallsExecution<'calls.managed'> | null> {
   if (signal?.aborted) return null;
   if (!canRequestSponsoredSend(chainId)) return null;
 
@@ -68,11 +68,11 @@ export async function prepareSponsoredSend({
   if (!canExecute) return null;
 
   const preparedCalls = await execute.prepare.calls({
+    ...SPONSORED_CALLS_POLICY,
     account: accountAddress,
     calls: [call],
     chainId,
     publicClient: createDelegationPublicClient(chainId, signal ? { signal } : undefined),
-    requirements: SPONSORED_CALLS_REQUIREMENTS,
   });
 
   if (signal?.aborted) return null;
@@ -87,44 +87,30 @@ export async function executeSponsoredSend({
   provider,
   signer,
   transaction,
-}: ExecuteSponsoredSendParams): Promise<ExecuteCallsResult | null> {
+}: ExecuteSponsoredSendParams): Promise<ExecutionResult<'calls.managed'> | null> {
   if (!(signer instanceof Wallet) || !canUseDelegatedExecution(accountAddress)) return null;
 
   const execution = await executeSendCall({ call, chainId, preparedCalls, provider, signer });
+  const failureMessage = await resolveManagedExecutionFailure({
+    executionId: execution.executionId,
+    status: execution.status,
+  });
 
-  if (execution.kind === 'calls.managed') {
-    const failureMessage = await resolveManagedExecutionFailure({
-      executionId: execution.executionId,
-      status: execution.status,
-    });
-
-    if (failureMessage) {
-      throw new RainbowError(`[executeSponsoredSend]: ${failureMessage}`);
-    }
-
-    trackCallsExecution({
-      address: accountAddress,
-      batch: false,
-      chainId,
-      execution,
-      transaction,
-    });
-    return execution;
+  if (failureMessage) {
+    throw new RainbowError(`[executeSponsoredSend]: ${failureMessage}`);
   }
 
-  const submittedTransaction = requireSingleWalletSendExecution(execution);
   trackCallsExecution({
     address: accountAddress,
     batch: false,
     chainId,
-    execution: submittedTransaction,
+    execution,
     transaction,
   });
-
   return execution;
 }
 
-export function buildSendCall(transaction: SendCallTransaction): Call {
+export function buildSendCall(transaction: SendCallTransaction): CallInput {
   const to = transaction.to?.toString();
   if (!to || !isAddress(to)) {
     throw new RainbowError(`[buildSendCall]: invalid transaction recipient`);
@@ -141,7 +127,7 @@ export function buildPendingSendTransaction({
   call,
   transaction,
 }: {
-  call: Call;
+  call: CallInput;
   transaction: Omit<NewTransaction, 'hash' | 'status' | 'txTo' | 'type'>;
 }): Omit<NewTransaction, 'hash'> {
   return {
@@ -167,12 +153,12 @@ function executeSendCall({
   provider,
   signer,
 }: {
-  call: Call;
+  call: CallInput;
   chainId: ChainId;
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   provider: StaticJsonRpcProvider;
   signer: Wallet;
-}): Promise<ExecuteCallsResult> {
+}): Promise<ExecutionResult<'calls.managed'>> {
   if (preparedCalls) {
     return execute.calls(preparedCalls, {
       chainId,
@@ -186,20 +172,12 @@ function executeSendCall({
   }
 
   return execute.calls({
+    ...SPONSORED_CALLS_POLICY,
     calls: [call],
     chainId,
     provider,
-    requirements: SPONSORED_CALLS_REQUIREMENTS,
     signer,
   });
-}
-
-function requireSingleWalletSendExecution(result: ExecuteCallsResult): ExecutionResult {
-  if (result.kind !== 'calls.wallet' || result.transactions.length !== 1) {
-    throw new RainbowError(`[executeSponsoredSend]: exact send execution must resolve to one wallet transaction`);
-  }
-
-  return result.transactions[0];
 }
 
 function parseCallValue(value: TransactionRequest['value']): bigint {

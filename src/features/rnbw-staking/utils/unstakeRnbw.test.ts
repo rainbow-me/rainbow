@@ -1,10 +1,12 @@
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
+import { type RelayExecutionId } from '@rainbow-me/sdk';
+
 import { STAKING_CHAIN_ID } from '../constants';
 import { type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { type RnbwStakingExecution } from './executeRnbwStakingCalls';
-import { type PreparedUnstakeRnbw } from './prepareUnstakeRnbw';
+import { prepareUnstakeRnbw } from './prepareUnstakeRnbw';
 import { unstakeRnbw } from './unstakeRnbw';
 
 const mockGetProvider = jest.fn();
@@ -14,6 +16,7 @@ const mockGetData = jest.fn<StakingPositionData | undefined, []>();
 const mockExecuteUnstakeRnbw = jest.fn<Promise<RnbwStakingExecution>, [unknown]>();
 const mockPollForStakingUpdate = jest.fn<Promise<boolean>, [string]>();
 const mockTrack = jest.fn();
+const mockPrepareUnstakeRnbw = jest.fn<Promise<unknown>, [unknown]>();
 
 jest.mock('@/analytics', () => ({
   analytics: {
@@ -50,6 +53,10 @@ jest.mock('./pollForStakingUpdate', () => ({
   pollForStakingUpdate: (originalStakedRnbwShares: string) => mockPollForStakingUpdate(originalStakedRnbwShares),
 }));
 
+jest.mock('./prepareUnstakeRnbw', () => ({
+  prepareUnstakeRnbw: (params: unknown) => mockPrepareUnstakeRnbw(params),
+}));
+
 jest.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
@@ -57,15 +64,16 @@ jest.mock('@/utils/ethereumUtils', () => ({
 const ACCOUNT: Address = '0x3333333333333333333333333333333333333333';
 const PRIVATE_KEY = '0x0123456789012345678901234567890123456789012345678901234567890123';
 const TX_HASH = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+const EXECUTION_ID: RelayExecutionId = '0x0101010101010101010101010101010101010101010101010101010101010101';
 const GAS_PARAMS = { maxFeePerGas: '10', maxPriorityFeePerGas: '1' };
 const PROVIDER = { name: 'provider' };
-const PREPARED_CALLS = {
+const PREPARED_UNSTAKE = {
   preparedCalls: {
-    executionId: 'prepared-unstake',
+    executionId: EXECUTION_ID,
     kind: 'calls.managed',
     review: { fees: { payer: 'sponsor' } },
   },
-} as unknown as PreparedUnstakeRnbw;
+};
 
 const POSITION: StakingPositionData = {
   allTiers: [],
@@ -93,8 +101,19 @@ const POSITION: StakingPositionData = {
   stakedRnbw: '1000000000000000000000',
   stakedValueInCurrency: '1000',
   stakingStartTime: '0',
-  tier: { level: 1 } as unknown as StakingPositionData['tier'],
+  tier: {
+    cashbackBps: 0,
+    level: 'STAKING_TIER_LEVEL_BASIC',
+    minStakeAmount: '0',
+    name: 'Basic',
+  },
 };
+
+async function prepareCallsForTest() {
+  const prepared = await prepareUnstakeRnbw({ accountAddress: ACCOUNT });
+  if (!prepared) throw new Error('Expected prepared unstake calls');
+  return prepared;
+}
 
 function manualExecution(): RnbwStakingExecution {
   return {
@@ -107,7 +126,7 @@ function manualExecution(): RnbwStakingExecution {
 function sponsoredExecution(): RnbwStakingExecution {
   return {
     executionMode: 'sponsored',
-    executionId: 'submitted-unstake',
+    executionId: EXECUTION_ID,
     waitForConfirmation: () => Promise.resolve(),
   };
 }
@@ -131,6 +150,7 @@ describe('unstakeRnbw', () => {
     mockFetch.mockResolvedValue(undefined);
     mockExecuteUnstakeRnbw.mockResolvedValue(manualExecution());
     mockPollForStakingUpdate.mockResolvedValue(true);
+    mockPrepareUnstakeRnbw.mockResolvedValue(PREPARED_UNSTAKE);
   });
 
   it('refreshes the staking position before submission and delegates to executeUnstakeRnbw', async () => {
@@ -241,11 +261,11 @@ describe('unstakeRnbw', () => {
   });
 
   it('passes prepared calls through to executeUnstakeRnbw when the resolved signer is a software wallet', async () => {
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) });
+    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: prepareCallsForTest() });
 
     expect(mockExecuteUnstakeRnbw).toHaveBeenCalledWith(
       expect.objectContaining({
-        preparedCalls: PREPARED_CALLS.preparedCalls,
+        preparedCalls: PREPARED_UNSTAKE.preparedCalls,
       })
     );
   });
@@ -254,7 +274,7 @@ describe('unstakeRnbw', () => {
     const hardwareSigner = { sendTransaction: jest.fn() };
     mockLoadWallet.mockResolvedValue(hardwareSigner);
 
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) });
+    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: prepareCallsForTest() });
 
     expect(mockExecuteUnstakeRnbw).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -266,14 +286,14 @@ describe('unstakeRnbw', () => {
   it('tracks executionId and sponsored execution mode in the success analytics payload', async () => {
     mockExecuteUnstakeRnbw.mockResolvedValue(sponsoredExecution());
 
-    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: prepareCallsForTest() });
     await result.waitForConfirmation();
 
     expect(mockTrack).toHaveBeenCalledWith('rnbw_staking.unstake', {
       chainId: STAKING_CHAIN_ID,
       executionMode: 'sponsored',
       txHash: undefined,
-      executionId: 'submitted-unstake',
+      executionId: EXECUTION_ID,
       stakedAmount: '1000',
       expectedExitFee: '50',
       expectedReceiveAmount: '950',
@@ -323,9 +343,7 @@ describe('unstakeRnbw', () => {
     const error = new Error('relay rejected execution');
     mockExecuteUnstakeRnbw.mockRejectedValueOnce(error);
 
-    await expect(unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) })).rejects.toBe(
-      error
-    );
+    await expect(unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: prepareCallsForTest() })).rejects.toBe(error);
 
     expect(mockTrack).toHaveBeenCalledWith('rnbw_staking.unstake.failed', {
       chainId: STAKING_CHAIN_ID,
@@ -339,13 +357,13 @@ describe('unstakeRnbw', () => {
     const error = new Error('relay reported failure');
     mockExecuteUnstakeRnbw.mockResolvedValueOnce({
       executionMode: 'sponsored',
-      executionId: 'submitted-unstake',
+      executionId: EXECUTION_ID,
       waitForConfirmation: async () => {
         throw error;
       },
     });
 
-    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) });
+    const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: prepareCallsForTest() });
     await expect(result.waitForConfirmation()).rejects.toBe(error);
 
     expect(mockTrack).toHaveBeenCalledWith('rnbw_staking.unstake.failed', {

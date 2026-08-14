@@ -1,15 +1,17 @@
 import type { Hash } from 'viem';
 
 import { type RainbowTransaction } from '@/entities/transactions';
-import { type RelayStatusSnapshot } from '@rainbow-me/sdk';
+import { type RelayOnchainEvidence, type RelayOnchainTransactions, type RelayStatusSnapshot } from '@rainbow-me/sdk';
+
+type RelayEvmTransactions = Extract<RelayOnchainTransactions, { kind: 'evm' }>;
 
 /**
  * Applies relay onchain hashes onto a local managed transaction overlay.
  */
 export function applyManagedExecutionStatus<T extends RainbowTransaction>(transaction: T, status: Pick<RelayStatusSnapshot, 'onchain'>): T {
-  const originTxHash = status.onchain?.origin.txHashes[0];
+  const originTxHash = readOriginEvmTransactions(status.onchain)?.hashes[0];
   const nextHash = originTxHash ?? transaction.hash;
-  const nextDestinationTxHashes = readDestinationTxHashes(status.onchain) ?? transaction.relayDestinationTxHashes;
+  const nextDestinationTxHashes = readDestinationEvmTransactions(status.onchain)?.hashes ?? transaction.relayDestinationTxHashes;
 
   if (nextHash === transaction.hash && areDestinationTxHashesEqual(nextDestinationTxHashes, transaction.relayDestinationTxHashes)) {
     return transaction;
@@ -20,6 +22,18 @@ export function applyManagedExecutionStatus<T extends RainbowTransaction>(transa
     hash: nextHash,
     relayDestinationTxHashes: nextDestinationTxHashes,
   };
+}
+
+/**
+ * Returns every EVM transaction group in relay evidence, ignoring unsupported
+ * Solana evidence without projecting it into Rainbow's EVM transaction model.
+ */
+export function getRelayEvmTransactions(onchain: RelayOnchainEvidence): readonly RelayEvmTransactions[] {
+  if (onchain.scope === 'singlechain' || onchain.observed !== 'both') {
+    return isRelayEvmTransactions(onchain.transactions) ? [onchain.transactions] : [];
+  }
+
+  return [onchain.origin, onchain.destination].filter(isRelayEvmTransactions);
 }
 
 /**
@@ -39,7 +53,25 @@ export function areDestinationTxHashesEqual(
   return currentTxHashes.every((hash, index) => hash === nextTxHashes[index]);
 }
 
-function readDestinationTxHashes(onchain: RelayStatusSnapshot['onchain']): readonly Hash[] | undefined {
-  if (!onchain || onchain.type !== 'crosschain' || onchain.destination.txHashes.length === 0) return undefined;
-  return onchain.destination.txHashes;
+function readOriginEvmTransactions(onchain: RelayStatusSnapshot['onchain']): RelayEvmTransactions | undefined {
+  if (!onchain) return undefined;
+
+  if (onchain.scope === 'singlechain') {
+    return isRelayEvmTransactions(onchain.transactions) ? onchain.transactions : undefined;
+  }
+
+  const origin = onchain.observed === 'both' ? onchain.origin : onchain.observed === 'origin' ? onchain.transactions : undefined;
+  return origin && isRelayEvmTransactions(origin) ? origin : undefined;
+}
+
+function readDestinationEvmTransactions(onchain: RelayStatusSnapshot['onchain']): RelayEvmTransactions | undefined {
+  if (!onchain || onchain.scope !== 'crosschain') return undefined;
+
+  const destination =
+    onchain.observed === 'both' ? onchain.destination : onchain.observed === 'destination' ? onchain.transactions : undefined;
+  return destination && isRelayEvmTransactions(destination) ? destination : undefined;
+}
+
+function isRelayEvmTransactions(transactions: RelayOnchainTransactions): transactions is RelayEvmTransactions {
+  return transactions.kind === 'evm';
 }

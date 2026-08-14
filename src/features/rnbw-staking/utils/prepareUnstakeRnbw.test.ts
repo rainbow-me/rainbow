@@ -1,13 +1,13 @@
 import { type Address } from 'viem';
 
-import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
+import { type CallInput, type CallsPlan, type CallsPolicy } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareUnstakeRnbw } from './prepareUnstakeRnbw';
 
 const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
+const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<CallsPlan>, [unknown]>();
 
 jest.mock('@rainbow-me/sdk', () => ({
   execute: {
@@ -44,14 +44,14 @@ jest.mock('./unstakeRnbwCalls', () => ({
 }));
 
 const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
-const UNSTAKE_CALL = { data: '0x1234', to: STAKING_CONTRACT_ADDRESS, value: 0n } satisfies Call;
-const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } } satisfies CallsRequirements;
+const UNSTAKE_CALL: CallInput = { data: '0x1234', to: STAKING_CONTRACT_ADDRESS, value: 0n };
+const SPONSORED_POLICY = { atomic: true, sponsorship: 'required' } satisfies CallsPolicy;
 
 describe('prepareUnstakeRnbw', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCanUseDelegatedExecution.mockReturnValue(true);
-    mockBuildUnstakeRnbwExecutionPlan.mockResolvedValue({ calls: [UNSTAKE_CALL], requirements: SPONSORED_REQUIREMENTS });
+    mockBuildUnstakeRnbwExecutionPlan.mockResolvedValue({ calls: [UNSTAKE_CALL], ...SPONSORED_POLICY });
     mockPrepareCalls.mockResolvedValue({
       executionId: 'prepared-unstake',
       kind: 'calls.managed',
@@ -76,7 +76,7 @@ describe('prepareUnstakeRnbw', () => {
       publicClient: expect.objectContaining({
         chain: expect.objectContaining({ id: STAKING_CHAIN_ID }),
       }),
-      requirements: SPONSORED_REQUIREMENTS,
+      ...SPONSORED_POLICY,
     });
   });
 
@@ -96,17 +96,5 @@ describe('prepareUnstakeRnbw', () => {
 
     expect(mockBuildUnstakeRnbwExecutionPlan).toHaveBeenCalledWith({ address: ACCOUNT });
     expect(mockPrepareCalls).not.toHaveBeenCalled();
-  });
-
-  it('skips preparation when the SDK does not return sponsor-paid calls', async () => {
-    mockPrepareCalls.mockResolvedValue({
-      kind: 'calls.wallet',
-      review: {
-        requiresDelegationAuthorization: false,
-        transactions: [],
-      },
-    });
-
-    await expect(prepareUnstakeRnbw({ accountAddress: ACCOUNT })).resolves.toBeNull();
   });
 });

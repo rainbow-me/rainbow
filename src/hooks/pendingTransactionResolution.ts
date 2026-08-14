@@ -15,7 +15,7 @@ import { applyManagedExecutionStatus } from '@/features/delegation/utils/managed
 import { relayService } from '@/features/delegation/utils/relayService';
 import { logger } from '@/logger';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
-import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk';
+import { RelayExecutionStatus, type RelayExecutionId, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 // ============ Types ========================================================= //
 
@@ -23,7 +23,7 @@ export type TrackedTransactionResolution =
   | { kind: 'pending'; relayStatus?: RelayStatusSnapshot; transaction: PendingTransaction }
   | { kind: 'settled'; relayStatus?: RelayStatusSnapshot; transaction: SettledTransaction };
 
-type ManagedTransaction = RainbowTransaction & { relayExecutionId: string };
+type ManagedTransaction = RainbowTransaction & { relayExecutionId: RelayExecutionId };
 
 // ============ API =========================================================== //
 
@@ -133,7 +133,7 @@ async function resolveManagedTrackedTransaction({
   transaction: ManagedTransaction;
 }): Promise<TrackedTransactionResolution> {
   const executionId = transaction.relayExecutionId;
-  const { status: relayStatus } = await relayService.getStatus(executionId);
+  const relayStatus = await relayService.getStatus(executionId);
 
   const trackedTransaction = applyManagedExecutionStatus(transaction, relayStatus);
   const isAwaitingOriginTxHash = isAwaitingRelayTransactionHash(trackedTransaction);

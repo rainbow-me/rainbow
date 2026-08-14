@@ -7,7 +7,14 @@ import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionT
 import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/utils/waitForManagedExecution';
 import { RainbowError } from '@/logger';
-import { execute, type Call, type CallsRequirements, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import {
+  execute,
+  type CallsPlan,
+  type EvmTransactionResult,
+  type ExecutionResult,
+  type PreparedCallsExecution,
+  type RelayExecutionId,
+} from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { waitForWalletTransactions } from './waitForWalletTransactions';
@@ -17,21 +24,13 @@ import { waitForWalletTransactions } from './waitForWalletTransactions';
 /** Execution lane used for the wallet-funded or relay-sponsored RNBW staking call. */
 export type RnbwStakingExecutionMode = 'manual' | 'sponsored';
 
-/** SDK exact-call plan accepted as a fallback when no prepared calls are available. */
-export type RnbwStakingExecutionPlan = {
-  calls: Call[];
-  requirements?: CallsRequirements;
-};
-
 /** Submitted RNBW staking SDK execution plus the confirmation waiter for its lane. */
 export type RnbwStakingExecution = {
   executionMode: RnbwStakingExecutionMode;
-  executionId?: string;
+  executionId?: RelayExecutionId;
   txHash?: string;
   waitForConfirmation: () => Promise<void>;
 };
-
-type WalletCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.wallet' }>;
 
 // ============ Execution ===================================================== //
 
@@ -51,7 +50,7 @@ export async function executeRnbwStakingCalls({
   transaction,
 }: {
   address: Address;
-  buildPlan?: () => Promise<RnbwStakingExecutionPlan>;
+  buildPlan?: () => Promise<CallsPlan>;
   errorPrefix: string;
   preparedCalls: PreparedCallsExecution | null;
   provider: StaticJsonRpcProvider;
@@ -106,7 +105,7 @@ export async function executeRnbwStakingCalls({
 
 // ============ Local Helpers ================================================= //
 
-function requireSubmittedTransaction(execution: WalletCallsExecution, errorPrefix: string): WalletCallsExecution['transactions'][number] {
+function requireSubmittedTransaction(execution: ExecutionResult<'calls.wallet'>, errorPrefix: string): EvmTransactionResult {
   const submittedTransaction = execution.transactions.at(-1);
   if (!submittedTransaction) {
     throw new RainbowError(`${errorPrefix}: wallet execution did not submit a transaction`);
@@ -114,10 +113,7 @@ function requireSubmittedTransaction(execution: WalletCallsExecution, errorPrefi
   return submittedTransaction;
 }
 
-function requireBuildPlan(
-  buildPlan: (() => Promise<RnbwStakingExecutionPlan>) | undefined,
-  errorPrefix: string
-): () => Promise<RnbwStakingExecutionPlan> {
+function requireBuildPlan(buildPlan: (() => Promise<CallsPlan>) | undefined, errorPrefix: string): () => Promise<CallsPlan> {
   if (!buildPlan) {
     throw new RainbowError(`${errorPrefix}: missing exact-call execution plan`);
   }

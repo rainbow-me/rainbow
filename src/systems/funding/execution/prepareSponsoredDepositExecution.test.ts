@@ -2,20 +2,20 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type CallsPlan } from '@rainbow-me/sdk';
 import { SwapType, type Quote } from '@rainbow-me/swaps';
 
 import { prepareSponsoredDepositExecution } from './prepareSponsoredDepositExecution';
 
 const mockCreateDelegationPublicClient = jest.fn<unknown, [ChainId]>();
 const mockPredictSponsoredCallsExecution = jest.fn<boolean, [unknown]>();
-const mockPrepareAtomicSwapCalls = jest.fn<Promise<Call[]>, [unknown]>();
-const mockPrepareCalls = jest.fn<Promise<PreparedCallsExecution>, [unknown]>();
+const mockPrepareAtomicSwapCalls = jest.fn<Promise<CallsPlan['calls']>, [unknown]>();
+const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
 
-const mockSponsoredCallsRequirements = {
-  atomic: 'required',
-  fees: { payer: 'sponsor' },
+const mockSponsoredCallsPolicy = {
+  atomic: true,
+  sponsorship: 'required',
 };
 
 jest.mock('@rainbow-me/sdk', () => ({
@@ -28,9 +28,9 @@ jest.mock('@rainbow-me/sdk', () => ({
 
 jest.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId) => mockCreateDelegationPublicClient(chainId),
-  SPONSORED_CALLS_REQUIREMENTS: {
-    atomic: 'required',
-    fees: { payer: 'sponsor' },
+  SPONSORED_CALLS_POLICY: {
+    atomic: true,
+    sponsorship: 'required',
   },
 }));
 
@@ -54,7 +54,7 @@ const PREPARED_CALLS = {
   executionId: 'prepared-deposit',
   kind: 'calls.managed',
   review: { fees: { payer: 'sponsor' } },
-} as PreparedCallsExecution;
+};
 
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', ChainId.polygon);
 
@@ -127,13 +127,13 @@ describe('prepareSponsoredDepositExecution', () => {
       ],
       chainId: ChainId.polygon,
       publicClient: { name: 'public-client' },
-      requirements: mockSponsoredCallsRequirements,
+      ...mockSponsoredCallsPolicy,
     });
   });
 
   it('reuses atomic swap preparation for RAP-backed deposit strategies', async () => {
     const quote = buildQuote();
-    const swapCall: Call = { data: '0xaaaa', to: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 0n };
+    const swapCall: CallInput = { data: '0xaaaa', to: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 0n };
     mockPrepareAtomicSwapCalls.mockResolvedValue([swapCall]);
 
     await expect(
@@ -155,7 +155,7 @@ describe('prepareSponsoredDepositExecution', () => {
     expect(mockPrepareCalls).toHaveBeenCalledWith(
       expect.objectContaining({
         calls: [swapCall],
-        requirements: mockSponsoredCallsRequirements,
+        ...mockSponsoredCallsPolicy,
       })
     );
   });

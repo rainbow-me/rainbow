@@ -13,7 +13,7 @@ import { type ParsedAsset } from '@/resources/assets/types';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { type Call } from '@rainbow-me/sdk';
+import { type CallInput } from '@rainbow-me/sdk';
 import { prepareFillCrosschainQuote, SwapType, type CrosschainQuote } from '@rainbow-me/swaps';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapSwapActionParameters } from '../references';
@@ -214,13 +214,12 @@ function buildCrosschainSwapTransaction(
 
 export const prepareCrosschainSwap = async ({
   parameters,
-  quote,
 }: PrepareActionProps<'crosschainSwap'>): Promise<{
-  call: Call;
+  call: CallInput;
   transaction: Omit<NewTransaction, 'hash'>;
 }> => {
   const nonce = requireNonce(parameters.nonce, 'crosschainSwap parameters.nonce');
-  const preparedCall = await prepareCrosschainSwapCall({ quote });
+  const preparedCall = await prepareCrosschainSwapCall({ quote: parameters.quote });
   const transaction = {
     ...buildCrosschainSwapTransaction(parameters, parameters.gasParams, nonce),
     to: preparedCall.to,
@@ -234,7 +233,7 @@ export const prepareCrosschainSwap = async ({
   };
 };
 
-export async function prepareCrosschainSwapCall({ quote }: { quote: CrosschainQuote }): Promise<Call> {
+export async function prepareCrosschainSwapCall({ quote }: { quote: CrosschainQuote }): Promise<CallInput> {
   const tx = await prepareFillCrosschainQuote(quote, REFERRER);
 
   return {

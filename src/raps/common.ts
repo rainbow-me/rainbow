@@ -13,12 +13,6 @@ export function createNewAction<T extends RapActionTypes>(type: T, parameters: R
   return newAction;
 }
 
-export function createNewRap<T extends RapActionTypes>(actions: RapAction<T>[]) {
-  return {
-    actions,
-  };
-}
-
 export const swapMetadataStorage = createMMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
 });

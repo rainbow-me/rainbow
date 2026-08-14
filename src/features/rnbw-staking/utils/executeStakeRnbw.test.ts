@@ -10,7 +10,7 @@ import { type Address } from 'viem';
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { time } from '@/framework/core/utils/time';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, type CallInput, type CallsPlan, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,
@@ -24,8 +24,8 @@ import { executeStakeRnbw } from './executeStakeRnbw';
 
 const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockBuildStakeRnbwCalls = jest.fn<Promise<Call[]>, [unknown]>();
-const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
+const mockBuildStakeRnbwCalls = jest.fn<Promise<CallsPlan['calls']>, [unknown]>();
+const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<CallsPlan>, [unknown]>();
 const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
 const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
@@ -88,10 +88,13 @@ const STAKE_AMOUNT_RAW = '1000000000000000000';
 const APPROVAL_TX_HASH = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 const TX_HASH = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
-const APPROVAL_CALL: Call = { data: '0x095ea7b3', to: RNBW_TOKEN_ADDRESS, value: 0n };
-const STAKE_CALL: Call = { data: '0xa694fc3a', to: STAKING_CONTRACT_ADDRESS, value: 0n };
-const SPONSORED_REQUIREMENTS: CallsRequirements = { atomic: 'required', fees: { payer: 'sponsor' } };
-const SPONSORED_PLAN = { calls: [APPROVAL_CALL, STAKE_CALL], requirements: SPONSORED_REQUIREMENTS };
+const APPROVAL_CALL: CallInput = { data: '0x095ea7b3', to: RNBW_TOKEN_ADDRESS, value: 0n };
+const STAKE_CALL: CallInput = { data: '0xa694fc3a', to: STAKING_CONTRACT_ADDRESS, value: 0n };
+const SPONSORED_PLAN: CallsPlan = {
+  atomic: true,
+  calls: [APPROVAL_CALL, STAKE_CALL],
+  sponsorship: 'required',
+};
 
 const GAS_PARAMS = { maxFeePerGas: '6000000', maxPriorityFeePerGas: '1000000' };
 const ESTIMATED_STAKE_GAS_LIMIT = BigNumber.from(103_406);
@@ -406,10 +409,11 @@ describe('executeStakeRnbw', () => {
     expect(mockExecuteCalls).toHaveBeenCalledWith(
       {
         calls: [APPROVAL_CALL, STAKE_CALL],
+        atomic: true,
         chainId: STAKING_CHAIN_ID,
         provider,
-        requirements: SPONSORED_REQUIREMENTS,
         signer,
+        sponsorship: 'required',
       },
       undefined
     );
