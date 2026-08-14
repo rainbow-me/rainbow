@@ -2,13 +2,13 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
+import { type RelayExecutionId } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
@@ -26,7 +26,7 @@ type UnstakeAnalyticsSnapshot = {
 };
 
 type UnstakeRnbwResult = {
-  executionId?: string;
+  executionId?: RelayExecutionId;
   txHash?: string;
   waitForConfirmation: () => Promise<void>;
 };
@@ -53,7 +53,7 @@ export async function unstakeRnbw({
 
     const resolvedPrepared = signer instanceof Wallet ? await preparedCallsPromise : null;
     const preparedCalls = resolvedPrepared?.preparedCalls ?? null;
-    executionMode = signer instanceof Wallet && isPreparedCallsExecutionSponsored(preparedCalls) ? 'sponsored' : 'manual';
+    executionMode = preparedCalls ? 'sponsored' : 'manual';
 
     const execution = await executeUnstakeRnbw({
       address,

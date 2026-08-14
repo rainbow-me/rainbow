@@ -8,6 +8,7 @@ import { type Transaction } from '@/features/positions/types/generated/transacti
 import { type SwapMetadata } from '@/raps/references';
 import type { AddCashCurrencyAsset } from '@/references/constants';
 import { type AddysAsset, type ParsedAsset } from '@/resources/assets/types';
+import { type RelayExecutionId } from '@rainbow-me/sdk';
 import { type SwapType } from '@rainbow-me/swaps';
 
 import { type ProtocolType } from '../protocolTypes';
@@ -107,7 +108,7 @@ export interface RainbowTransaction {
   explorerLabel?: string;
   explorerUrl?: string;
   /** Relay execution id when the transaction originated from managed relay execution. */
-  relayExecutionId?: string;
+  relayExecutionId?: RelayExecutionId;
   /** Destination-chain hashes the relay has reported for a managed crosschain execution. */
   relayDestinationTxHashes?: readonly Hash[];
   /** True when transaction uses batched execution (atomic swaps) - applies to both type 2 and type 4 */

@@ -1,9 +1,10 @@
 import { resolveApprovalRequirement } from './approval';
-import { createNewAction, createNewRap } from './common';
-import type { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { createNewAction } from './common';
+import type { RapSwapActionParameters, SwapRap } from './references';
 
-export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
-  let actions: RapAction<'crosschainSwap' | 'unlock'>[] = [];
+export const createUnlockAndCrosschainSwapRap = async (
+  swapParameters: RapSwapActionParameters<'crosschainSwap'>
+): Promise<SwapRap<'crosschainSwap'>> => {
   const { sellAmount, assetToBuy, quote, chainId, assetToSell } = swapParameters;
 
   const { allowanceTargetAddress, requiresApprove } = await resolveApprovalRequirement({
@@ -12,18 +13,17 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     sellAmount,
   });
 
-  if (requiresApprove && allowanceTargetAddress) {
-    const unlock = createNewAction('unlock', {
-      fromAddress: quote.from,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      chainId,
-      contractAddress: allowanceTargetAddress,
-    } satisfies RapUnlockActionParameters);
-    actions = actions.concat(unlock);
-  }
+  const unlock =
+    requiresApprove && allowanceTargetAddress
+      ? createNewAction('unlock', {
+          fromAddress: quote.from,
+          amount: sellAmount,
+          assetToUnlock: assetToSell,
+          chainId,
+          contractAddress: allowanceTargetAddress,
+        })
+      : null;
 
-  // create a swap rap
   const swap = createNewAction('crosschainSwap', {
     chainId,
     requiresApprove,
@@ -35,10 +35,7 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     assetToBuy,
     gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
-  } satisfies RapSwapActionParameters<'crosschainSwap'>);
-  actions = actions.concat(swap);
+  });
 
-  // create the overall rap
-  const newRap = createNewRap(actions);
-  return newRap;
+  return { actions: unlock ? [unlock, swap] : [swap], type: 'crosschainSwap' };
 };

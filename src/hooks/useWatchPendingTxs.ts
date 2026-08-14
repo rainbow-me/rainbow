@@ -7,7 +7,7 @@ import { event } from '@/analytics/event';
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { hasConfirmedOnchainHash, TransactionStatus, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { areDestinationTxHashesEqual } from '@/features/delegation/utils/managedExecutionStatus';
+import { areDestinationTxHashesEqual, getRelayEvmTransactions } from '@/features/delegation/utils/managedExecutionStatus';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
@@ -193,11 +193,10 @@ function getRelayTransactionsMissingFromHistory(
   currency: SupportedCurrencyKey,
   onchain: RelayOnchainEvidence
 ): Pick<RainbowTransaction, 'chainId' | 'hash'>[] {
-  const sources = onchain.type === 'crosschain' ? [onchain.origin, onchain.destination] : [onchain.origin];
   let relayTransactionsById: Record<string, Pick<RainbowTransaction, 'chainId' | 'hash'>> | undefined;
 
-  for (const { chainId, txHashes } of sources) {
-    for (const hash of txHashes) {
+  for (const { chainId, hashes } of getRelayEvmTransactions(onchain)) {
+    for (const hash of hashes) {
       (relayTransactionsById ??= {})[transactionId(chainId, hash)] ??= { chainId, hash };
     }
   }

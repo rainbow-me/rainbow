@@ -25,7 +25,7 @@ type CreateDepositPreparedCallsStoreParams = {
   readCurrentQuote: () => DepositQuoteResult;
 };
 
-export type DepositPreparedCallsStore = PreparedCallsStore<PreparedCallsExecution, SponsoredDepositQueryParams>;
+export type DepositPreparedCallsStore = PreparedCallsStore<PreparedCallsExecution<'calls.managed'>, SponsoredDepositQueryParams>;
 
 // ============ Store Factory ================================================= //
 
@@ -33,7 +33,7 @@ export function createDepositPreparedCallsStore({
   config,
   readCurrentQuote,
 }: CreateDepositPreparedCallsStoreParams): DepositPreparedCallsStore {
-  return createPreparedCallsStore<PreparedCallsExecution, SponsoredDepositQueryParams>(
+  return createPreparedCallsStore<PreparedCallsExecution<'calls.managed'>, SponsoredDepositQueryParams>(
     async ({ accountAddress, sourceChainId, quoteKey }) => {
       const quote = readCurrentQuote();
       if (!isValidQuote(quote)) return null;
@@ -61,7 +61,7 @@ export function createDepositPreparedCallsStore({
 export function getDepositPreparedCalls(
   store: DepositPreparedCallsStore,
   params: DepositGasHookParams
-): Promise<PreparedCallsExecution | null> {
+): Promise<PreparedCallsExecution<'calls.managed'> | null> {
   const queryParams = toSponsoredDepositQueryParams(params);
   if (!queryParams) return Promise.resolve(null);
   return store.getState().getPreparedCalls(queryParams);

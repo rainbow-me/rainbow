@@ -1,11 +1,11 @@
-import { RelayExecutionStatus, type RelayStatusSnapshot } from '@rainbow-me/sdk';
+import { RelayExecutionStatus, type RelayExecutionId, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 import { relayService } from './relayService';
 
 // ============ Types ========================================================= //
 
 type ManagedExecutionFailureParams = {
-  executionId: string;
+  executionId: RelayExecutionId;
   status: RelayExecutionStatus;
 };
 
@@ -19,7 +19,7 @@ export async function resolveManagedExecutionFailure({ executionId, status }: Ma
 
   try {
     const update = await relayService.getStatus(executionId);
-    return formatManagedExecutionFailure(update.status);
+    return formatManagedExecutionFailure(update);
   } catch {
     return fallbackManagedExecutionFailureMessage(status);
   }
@@ -30,8 +30,8 @@ export async function resolveManagedExecutionFailure({ executionId, status }: Ma
  */
 export function formatManagedExecutionFailure(status: RelayStatusSnapshot): string {
   const message = fallbackManagedExecutionFailureMessage(status.status);
-  if (status.errorMessage) return `${message}: ${status.errorMessage}`;
-  if (status.errorCode) return `${message}: ${status.errorCode}`;
+  if (status.error?.message) return `${message}: ${status.error.message}`;
+  if (status.error?.code) return `${message}: ${status.error.code}`;
   return message;
 }
 

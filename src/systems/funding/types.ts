@@ -225,10 +225,10 @@ export type DepositGasHookParams = Omit<DepositExecutionBaseParams, 'gasParams'>
 
 export type DepositSponsoredExecutionConfig = {
   /**
-   * Returns prepared exact calls for submit-time execution.
+   * Returns sponsor-paid managed calls for submit-time execution.
    * Return null to fall back to normal wallet-paid execution.
    */
-  getPreparedCalls: (params: DepositGasHookParams) => Promise<PreparedCallsExecution | null>;
+  getPreparedCalls: (params: DepositGasHookParams) => Promise<PreparedCallsExecution<'calls.managed'> | null>;
 };
 
 export type DepositGasConfig = {

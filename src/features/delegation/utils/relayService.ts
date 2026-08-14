@@ -13,19 +13,29 @@ import { getExperimentalFlag } from '@/features/config/stores/experimentalConfig
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { createRelayService } from '@rainbow-me/sdk';
 
-export type RelayStatusResponse = Awaited<ReturnType<typeof relayService.getStatus>>;
+const RELAY_DOMAIN = {
+  environment: 'production',
+  relayId: 'rainbow-relay',
+  relayVersion: 2n,
+};
 
 export const relayService = createRelayService(
   shouldUseGoBackend()
     ? {
         apiKey: PLATFORM_API_KEY,
         baseUrl: PLATFORM_BASE_URL,
-        quoteSigner: getAddress(RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER),
+        relayDomain: {
+          ...RELAY_DOMAIN,
+          prepareSigner: getAddress(RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER),
+        },
       }
     : {
         apiKey: RAINBOW_RELAY_API_KEY,
         baseUrl: RAINBOW_RELAY_URL,
-        quoteSigner: getAddress(RAINBOW_RELAY_QUOTE_SIGNER),
+        relayDomain: {
+          ...RELAY_DOMAIN,
+          prepareSigner: getAddress(RAINBOW_RELAY_QUOTE_SIGNER),
+        },
       }
 );
 

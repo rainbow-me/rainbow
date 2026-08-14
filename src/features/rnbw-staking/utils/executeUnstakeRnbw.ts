@@ -25,7 +25,7 @@ type ExecuteUnstakeRnbwParams = {
   address: Address;
   expectedReceiveAmountRaw: string;
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   provider: StaticJsonRpcProvider;
   signer: Signer;
 };
