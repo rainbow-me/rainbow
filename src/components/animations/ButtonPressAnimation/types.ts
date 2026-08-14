@@ -26,7 +26,7 @@ export interface ButtonPressAnimationProps
   /** @platform ios */
   compensateForTransformOrigin?: boolean;
   /** @platform ios */
-  onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
+  onCancel?: (event: { nativeEvent: { close: boolean; longPressFailed: boolean } }) => void;
   /**
    * Milliseconds, or -1 to use `duration`.
    * @platform ios
@@ -39,8 +39,6 @@ export interface ButtonPressAnimationProps
   /** @platform ios */
   isInteraction?: boolean;
 
-  /** @platform android */
-  reanimatedButton?: boolean;
   /** @platform android */
   backgroundColor?: string;
   /** @platform android */

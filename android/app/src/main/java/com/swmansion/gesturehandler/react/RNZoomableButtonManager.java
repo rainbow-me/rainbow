@@ -27,11 +27,13 @@ import java.util.Map;
 public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
     public static class ZoomableButtonViewGroup extends RNGestureHandlerButtonViewManager.ButtonViewGroup {
+        private static final Interpolator BEZIER_INTERPOLATOR = PathInterpolatorCompat.create(0.25f, 0.46f, 0.45f, 0.94f);
+        private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+
         private float mScaleTo = 0.86f;
         private int mDuration = 160;
         private float pivotX = 0.5f;
         private float pivotY = 0.5f;
-        private static final Interpolator bezierInterpolator = PathInterpolatorCompat.create(0.25f, 0.46f, 0.45f, 0.94f);
 
         private boolean isLongPress = false;
         private boolean shouldLongPressHoldPress = false;
@@ -42,7 +44,6 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private boolean didLongPressFire = false;
         private boolean mIsLongTaskScheduled = false;
 
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
         private Runnable mLongPressRunnable;
 
         public ZoomableButtonViewGroup(Context context) {
@@ -64,7 +65,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                     Animation.RELATIVE_TO_SELF, pivotY);
             anim.setFillAfter(true);
             anim.setDuration(mDuration);
-            anim.setInterpolator(bezierInterpolator);
+            anim.setInterpolator(BEZIER_INTERPOLATOR);
             this.startAnimation(anim);
         }
 
@@ -107,10 +108,21 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         @Override
         public void cancelLongPress() {
             if (mLongPressRunnable != null) {
-                mHandler.removeCallbacks(mLongPressRunnable);
+                MAIN_HANDLER.removeCallbacks(mLongPressRunnable);
             }
             mIsLongTaskScheduled = false;
             mIsTaskScheduled = false;
+        }
+
+        private void handleLongPressTimeout() {
+            mIsTaskScheduled = false;
+            mIsLongTaskScheduled = true;
+            onLongPress();
+            if (!shouldLongPressHoldPress) {
+                animate(false);
+                setPressed(false);
+                didLongPressFire = false;
+            }
         }
 
         private void startLongPressTimer() {
@@ -118,17 +130,10 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                 mIsTaskScheduled = true;
                 mIsLongTaskScheduled = false;
                 if (isLongPress) {
-                    mLongPressRunnable = () -> {
-                        mIsTaskScheduled = false;
-                        mIsLongTaskScheduled = true;
-                        onLongPress();
-                        if (!shouldLongPressHoldPress) {
-                            animate(false);
-                            setPressed(false);
-                            didLongPressFire = false;
-                        }
-                    };
-                    mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+                    if (mLongPressRunnable == null) {
+                        mLongPressRunnable = this::handleLongPressTimeout;
+                    }
+                    MAIN_HANDLER.postDelayed(mLongPressRunnable, mMinLongPressDuration);
                 }
             }
         }

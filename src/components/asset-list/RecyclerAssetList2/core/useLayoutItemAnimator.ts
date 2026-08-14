@@ -5,9 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
 
 import deviceUtils from '@/utils/deviceUtils';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
-import { ListFooter } from '../../../list';
+import { ListFooterHeight } from '../../../list/ListFooter';
 import { SectionHeaderHeight } from './ViewDimensions';
 import { type RecyclerListViewRef } from './ViewTypes';
 
@@ -64,6 +64,8 @@ class LayoutItemAnimator extends BaseItemAnimator {
   };
 }
 
+const FloatingActionButtonSize = 56;
+const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 const FabSizeWithPadding = FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 export default function useLayoutItemAnimator(
@@ -71,11 +73,6 @@ export default function useLayoutItemAnimator(
   topMarginRef: MutableRefObject<number>
 ) {
   const insets = useSafeAreaInsets();
-  const paddingBottom =
-    insets.bottom +
-    FabSizeWithPadding -
-    // @ts-ignore
-    ListFooter.height -
-    FloatingActionButtonSize / 2;
+  const paddingBottom = insets.bottom + FabSizeWithPadding - ListFooterHeight - FloatingActionButtonSize / 2;
   return useMemo(() => new LayoutItemAnimator(paddingBottom, topMarginRef, ref), [paddingBottom, ref, topMarginRef]);
 }

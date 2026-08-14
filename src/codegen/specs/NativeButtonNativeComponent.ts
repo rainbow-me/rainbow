@@ -7,17 +7,20 @@ type OnPressEvent = Readonly<{
 
 type OnCancelEvent = Readonly<{
   close: boolean;
-  state: CodegenTypes.Int32;
+  longPressFailed: boolean;
 }>;
 
 export interface NativeButtonProps extends ViewProps {
   activeOpacity?: CodegenTypes.Double;
+  cancelEnabled?: CodegenTypes.WithDefault<boolean, false>;
   disabled?: CodegenTypes.WithDefault<boolean, false>;
   duration?: CodegenTypes.WithDefault<CodegenTypes.Double, 160>;
   enableHapticFeedback?: CodegenTypes.WithDefault<boolean, true>;
   hapticType?: CodegenTypes.WithDefault<string, 'selection'>;
+  longPressGestureEnabled?: CodegenTypes.WithDefault<boolean, false>;
   minLongPressDuration?: CodegenTypes.WithDefault<CodegenTypes.Double, 500>;
   pressOutDuration?: CodegenTypes.WithDefault<CodegenTypes.Double, -1>;
+  pressStartEnabled?: CodegenTypes.WithDefault<boolean, false>;
   scaleTo?: CodegenTypes.WithDefault<CodegenTypes.Double, 0.86>;
   shouldLongPressHoldPress?: CodegenTypes.WithDefault<boolean, false>;
   throttle?: CodegenTypes.WithDefault<boolean, false>;

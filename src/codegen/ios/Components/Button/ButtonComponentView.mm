@@ -4,7 +4,6 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import <React/RCTConversions.h>
 #import <React/RCTViewComponentView.h>
 #import <react/renderer/components/rainbow/ComponentDescriptors.h>
 #import <react/renderer/components/rainbow/EventEmitters.h>
@@ -25,51 +24,84 @@ static NSTimeInterval OptionalSecondsFromMilliseconds(double milliseconds)
   return milliseconds == -1.0 ? -1.0 : SecondsFromMilliseconds(milliseconds);
 }
 
-static void GenerateHapticFeedback(NSString *hapticEffect)
+typedef NS_ENUM(uint8_t, ButtonHapticType) {
+  ButtonHapticTypeNone,
+  ButtonHapticTypeSelection,
+  ButtonHapticTypeNotificationError,
+  ButtonHapticTypeNotificationSuccess,
+  ButtonHapticTypeNotificationWarning,
+  ButtonHapticTypeImpactLight,
+  ButtonHapticTypeImpactMedium,
+  ButtonHapticTypeImpactHeavy,
+};
+
+static ButtonHapticType ButtonHapticTypeFromString(const std::string &hapticType)
 {
-  if (!hapticEffect) {
-    return;
+  if (hapticType == "error" || hapticType == "notificationError") {
+    return ButtonHapticTypeNotificationError;
   }
-
-  if ([hapticEffect isEqualToString:@"error"] || [hapticEffect isEqualToString:@"notificationError"]) {
-    UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
-    [generator notificationOccurred:UINotificationFeedbackTypeError];
-    return;
+  if (hapticType == "success" || hapticType == "notificationSuccess") {
+    return ButtonHapticTypeNotificationSuccess;
   }
-
-  if ([hapticEffect isEqualToString:@"success"] || [hapticEffect isEqualToString:@"notificationSuccess"]) {
-    UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
-    [generator notificationOccurred:UINotificationFeedbackTypeSuccess];
-    return;
+  if (hapticType == "warning" || hapticType == "notificationWarning") {
+    return ButtonHapticTypeNotificationWarning;
   }
-
-  if ([hapticEffect isEqualToString:@"warning"] || [hapticEffect isEqualToString:@"notificationWarning"]) {
-    UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
-    [generator notificationOccurred:UINotificationFeedbackTypeWarning];
-    return;
+  if (hapticType == "light" || hapticType == "impactLight") {
+    return ButtonHapticTypeImpactLight;
   }
-
-  if ([hapticEffect isEqualToString:@"light"] || [hapticEffect isEqualToString:@"impactLight"]) {
-    UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
-    [generator impactOccurred];
-    return;
+  if (hapticType == "medium" || hapticType == "impactMedium") {
+    return ButtonHapticTypeImpactMedium;
   }
-
-  if ([hapticEffect isEqualToString:@"medium"] || [hapticEffect isEqualToString:@"impactMedium"]) {
-    UIImpactFeedbackGenerator *generator =
-        [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
-    [generator impactOccurred];
-    return;
+  if (hapticType == "heavy" || hapticType == "impactHeavy") {
+    return ButtonHapticTypeImpactHeavy;
   }
+  return ButtonHapticTypeSelection;
+}
 
-  if ([hapticEffect isEqualToString:@"heavy"] || [hapticEffect isEqualToString:@"impactHeavy"]) {
-    UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
-    [generator impactOccurred];
-    return;
+static void GenerateHapticFeedback(ButtonHapticType hapticType)
+{
+  switch (hapticType) {
+    case ButtonHapticTypeNone:
+      return;
+    case ButtonHapticTypeSelection: {
+      static UISelectionFeedbackGenerator *generator = [UISelectionFeedbackGenerator new];
+      [generator selectionChanged];
+      return;
+    }
+    case ButtonHapticTypeNotificationError: {
+      static UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
+      [generator notificationOccurred:UINotificationFeedbackTypeError];
+      return;
+    }
+    case ButtonHapticTypeNotificationSuccess: {
+      static UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
+      [generator notificationOccurred:UINotificationFeedbackTypeSuccess];
+      return;
+    }
+    case ButtonHapticTypeNotificationWarning: {
+      static UINotificationFeedbackGenerator *generator = [UINotificationFeedbackGenerator new];
+      [generator notificationOccurred:UINotificationFeedbackTypeWarning];
+      return;
+    }
+    case ButtonHapticTypeImpactLight: {
+      static UIImpactFeedbackGenerator *generator =
+          [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+      [generator impactOccurred];
+      return;
+    }
+    case ButtonHapticTypeImpactMedium: {
+      static UIImpactFeedbackGenerator *generator =
+          [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+      [generator impactOccurred];
+      return;
+    }
+    case ButtonHapticTypeImpactHeavy: {
+      static UIImpactFeedbackGenerator *generator =
+          [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
+      [generator impactOccurred];
+      return;
+    }
   }
-
-  UISelectionFeedbackGenerator *generator = [UISelectionFeedbackGenerator new];
-  [generator selectionChanged];
 }
 
 static void SetAnchorPoint(UIView *view, CGPoint point)
@@ -108,11 +140,13 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   NSTimeInterval _durationSeconds;
   NSTimeInterval _pressOutDurationSeconds;
   CGFloat _scaleTo;
+  BOOL _cancelEnabled;
   BOOL _enableHapticFeedback;
-  NSString *_hapticType;
+  ButtonHapticType _hapticType;
   BOOL _useLateHaptic;
   BOOL _throttle;
   BOOL _shouldLongPressHoldPress;
+  BOOL _pressStartEnabled;
   CFTimeInterval _blockedUntil;
   BOOL _invalidated;
 }
@@ -126,20 +160,18 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 {
   if (self = [super initWithFrame:frame]) {
     _props = ButtonShadowNode::defaultSharedProps();
-    const auto &defaultProps = *std::static_pointer_cast<const ButtonProps>(_props);
-
-    _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressHandler:)];
-    [self addGestureRecognizer:_longPress];
+    const auto &defaultProps = static_cast<const ButtonProps &>(*_props);
 
     _durationSeconds = SecondsFromMilliseconds(defaultProps.duration);
     _pressOutDurationSeconds = OptionalSecondsFromMilliseconds(defaultProps.pressOutDuration);
     _scaleTo = defaultProps.scaleTo;
+    _cancelEnabled = defaultProps.cancelEnabled;
     _enableHapticFeedback = defaultProps.enableHapticFeedback;
-    _hapticType = RCTNSStringFromString(defaultProps.hapticType);
+    _hapticType = ButtonHapticTypeFromString(defaultProps.hapticType);
     _useLateHaptic = defaultProps.useLateHaptic;
     _throttle = defaultProps.throttle;
     _shouldLongPressHoldPress = defaultProps.shouldLongPressHoldPress;
-    _longPress.minimumPressDuration = SecondsFromMilliseconds(defaultProps.minLongPressDuration);
+    _pressStartEnabled = defaultProps.pressStartEnabled;
     self.userInteractionEnabled = !defaultProps.disabled;
     SetAnchorPoint(self, CGPointMake(0.5, 0.5));
 
@@ -167,14 +199,17 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
 - (void)prepareForRecycle
 {
-  [super prepareForRecycle];
   [self resetInteractionState];
+  const Props::Shared oldProps = _props;
+  static const auto defaultProps = ButtonShadowNode::defaultSharedProps();
+  [self updateProps:defaultProps oldProps:oldProps];
+  [super prepareForRecycle];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldButtonProps = *std::static_pointer_cast<const ButtonProps>(_props);
-  const auto &newButtonProps = *std::static_pointer_cast<const ButtonProps>(props);
+  const auto &oldButtonProps = static_cast<const ButtonProps &>(*_props);
+  const auto &newButtonProps = static_cast<const ButtonProps &>(*props);
 
   if (newButtonProps.disabled != oldButtonProps.disabled) {
     self.userInteractionEnabled = !newButtonProps.disabled;
@@ -190,6 +225,10 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
   if (newButtonProps.scaleTo != oldButtonProps.scaleTo) {
     _scaleTo = newButtonProps.scaleTo;
+  }
+
+  if (newButtonProps.cancelEnabled != oldButtonProps.cancelEnabled) {
+    _cancelEnabled = newButtonProps.cancelEnabled;
   }
 
   if (newButtonProps.enableHapticFeedback != oldButtonProps.enableHapticFeedback) {
@@ -208,16 +247,31 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     _shouldLongPressHoldPress = newButtonProps.shouldLongPressHoldPress;
   }
 
-  if (newButtonProps.minLongPressDuration != oldButtonProps.minLongPressDuration) {
+  if (newButtonProps.pressStartEnabled != oldButtonProps.pressStartEnabled) {
+    _pressStartEnabled = newButtonProps.pressStartEnabled;
+  }
+
+  if (newButtonProps.longPressGestureEnabled != oldButtonProps.longPressGestureEnabled) {
+    if (newButtonProps.longPressGestureEnabled) {
+      _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressHandler:)];
+      _longPress.minimumPressDuration = SecondsFromMilliseconds(newButtonProps.minLongPressDuration);
+      [self addGestureRecognizer:_longPress];
+    } else {
+      [self removeGestureRecognizer:_longPress];
+      _longPress = nil;
+    }
+  } else if (_longPress && newButtonProps.minLongPressDuration != oldButtonProps.minLongPressDuration) {
     _longPress.minimumPressDuration = SecondsFromMilliseconds(newButtonProps.minLongPressDuration);
   }
 
   if (newButtonProps.hapticType != oldButtonProps.hapticType) {
-    _hapticType = RCTNSStringFromString(newButtonProps.hapticType);
+    _hapticType = ButtonHapticTypeFromString(newButtonProps.hapticType);
   }
 
   if (newButtonProps.transformOrigin != oldButtonProps.transformOrigin) {
-    CGPoint origin = CGPointMake(newButtonProps.transformOrigin[0], newButtonProps.transformOrigin[1]);
+    CGPoint origin = newButtonProps.transformOrigin.size() == 2
+        ? CGPointMake(newButtonProps.transformOrigin[0], newButtonProps.transformOrigin[1])
+        : CGPointMake(0.5, 0.5);
     SetAnchorPoint(self, origin);
   }
 
@@ -236,16 +290,16 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
       .locationX = location.x,
       .locationY = location.y,
   };
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onPress(event);
+  static_cast<const ButtonEventEmitter &>(*_eventEmitter).onPress(event);
 }
 
 - (void)sendPressStart
 {
-  if (!_eventEmitter) {
+  if (!_pressStartEnabled || !_eventEmitter) {
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onPressStart({});
+  static_cast<const ButtonEventEmitter &>(*_eventEmitter).onPressStart({});
 }
 
 - (void)sendLongPress
@@ -254,7 +308,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onLongPress({});
+  static_cast<const ButtonEventEmitter &>(*_eventEmitter).onLongPress({});
 }
 
 - (void)sendLongPressEnded
@@ -263,19 +317,19 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)->onLongPressEnded({});
+  static_cast<const ButtonEventEmitter &>(*_eventEmitter).onLongPressEnded({});
 }
 
-- (void)sendCancelWithState:(UIGestureRecognizerState)state close:(BOOL)close
+- (void)sendCancelWithLongPressState:(UIGestureRecognizerState)longPressState close:(BOOL)close
 {
-  if (!_eventEmitter) {
+  if (!_cancelEnabled || !_eventEmitter) {
     return;
   }
 
-  std::dynamic_pointer_cast<const ButtonEventEmitter>(_eventEmitter)
-      ->onCancel({
-          .state = static_cast<int>(state),
-          .close = close,
+  static_cast<const ButtonEventEmitter &>(*_eventEmitter)
+      .onCancel({
+        .close = close,
+        .longPressFailed = longPressState == UIGestureRecognizerStateFailed,
       });
 }
 
@@ -296,7 +350,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
         [self sendLongPressEnded];
         _animator = [self
             animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
-                            useHaptic:nil];
+                           hapticType:ButtonHapticTypeNone];
       }
       break;
     default:
@@ -329,11 +383,9 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
 - (UIViewPropertyAnimator *)animateTapStartWithDuration:(double)duration
                                                   scale:(double)scale
-                                              useHaptic:(NSString *)useHaptic
+                                             hapticType:(ButtonHapticType)hapticType
 {
-  if (useHaptic) {
-    GenerateHapticFeedback(useHaptic);
-  }
+  GenerateHapticFeedback(hapticType);
 
   UIViewPropertyAnimator *animator =
       [[UIViewPropertyAnimator alloc] initWithDuration:duration
@@ -346,11 +398,9 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   return animator;
 }
 
-- (UIViewPropertyAnimator *)animateTapEndWithDuration:(double)duration useHaptic:(NSString *)useHaptic
+- (UIViewPropertyAnimator *)animateTapEndWithDuration:(double)duration hapticType:(ButtonHapticType)hapticType
 {
-  if (useHaptic) {
-    GenerateHapticFeedback(useHaptic);
-  }
+  GenerateHapticFeedback(hapticType);
 
   UIViewPropertyAnimator *animator = [[UIViewPropertyAnimator alloc] initWithDuration:duration
                                                                         controlPoint1:CGPointMake(0.25, 0.46)
@@ -376,8 +426,8 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   }
 
   _invalidated = NO;
-  NSString *haptic = (_useLateHaptic ? nil : (_enableHapticFeedback ? _hapticType : nil));
-  _animator = [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo useHaptic:haptic];
+  ButtonHapticType hapticType = !_useLateHaptic && _enableHapticFeedback ? _hapticType : ButtonHapticTypeNone;
+  _animator = [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo hapticType:hapticType];
 
   if (_shouldLongPressHoldPress) {
     [self sendPressAtLocation:_tapLocation];
@@ -404,9 +454,10 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
   static const CGFloat kTouchMoveTolerance = 80.0;
   if (![self touchInRange:location tolerance:kTouchMoveTolerance]) {
-    _animator = [self animateTapEndWithDuration:_durationSeconds useHaptic:nil];
+    _animator = [self animateTapEndWithDuration:_durationSeconds hapticType:ButtonHapticTypeNone];
   } else if ([self touchInRange:location tolerance:kTouchMoveTolerance * 0.8]) {
-    _animator = [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo useHaptic:nil];
+    _animator =
+        [self animateTapStartWithDuration:_durationSeconds scale:_scaleTo hapticType:ButtonHapticTypeNone];
   }
 }
 
@@ -424,10 +475,10 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   CGPoint location = [touch locationInView:self];
   static const CGFloat kTouchMoveTolerance = 80.0;
   if ([self touchInRange:location tolerance:kTouchMoveTolerance * 0.8]) {
-    NSString *useHaptic = (_useLateHaptic && _enableHapticFeedback) ? _hapticType : nil;
+    ButtonHapticType hapticType = _useLateHaptic && _enableHapticFeedback ? _hapticType : ButtonHapticTypeNone;
     _animator =
         [self animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
-                              useHaptic:useHaptic];
+                             hapticType:hapticType];
     if (!_shouldLongPressHoldPress) {
       [self sendPressAtLocation:location];
     }
@@ -448,13 +499,14 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
   UITouch *touch = touches.anyObject;
   if (touch && _hasTapLocation) {
     CGPoint location = [touch locationInView:self];
-    [self sendCancelWithState:_longPress.state close:[self isClose:location to:_tapLocation]];
+    UIGestureRecognizerState longPressState = _longPress ? _longPress.state : UIGestureRecognizerStatePossible;
+    [self sendCancelWithLongPressState:longPressState close:[self isClose:location to:_tapLocation]];
   }
 
   if (!_shouldLongPressHoldPress) {
     _animator =
         [self animateTapEndWithDuration:(_pressOutDurationSeconds == -1 ? _durationSeconds : _pressOutDurationSeconds)
-                              useHaptic:nil];
+                             hapticType:ButtonHapticTypeNone];
   }
 
   if (_throttle) {
