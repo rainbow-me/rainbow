@@ -11,7 +11,7 @@ import { useCardLinkFlowStore } from '@/features/cash/stores/cardLinkFlowStore';
 import * as i18n from '@/languages';
 
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { CARD_FIELD, useSetupContext } from '../setupContext';
+import { CARD_FIELD, useSetupContext, useSetupInputRef } from '../setupContext';
 import { goBackInSetup } from '../setupNavigation';
 
 const l = i18n.l.cash.deposit_setup.card_details;
@@ -21,6 +21,7 @@ export const CardDetailsStep = memo(function CardLinkForm() {
   const state = useCardLinkFlowStore(store => store.state);
   const reset = useCardLinkFlowStore.getState().reset;
   const bivoStore = getCardForm();
+  const cardNumberInputRef = useSetupInputRef();
   const setupTextStyle = useSetupInputTextStyle();
   const textStyle = useMemo(
     () => ({
@@ -46,6 +47,7 @@ export const CardDetailsStep = memo(function CardLinkForm() {
               bivoStore={bivoStore}
               cardIcon={false}
               fieldName={CARD_FIELD.number}
+              inputRef={cardNumberInputRef}
               onCardTypeChange={onCardTypeChange}
               onStateChange={refreshCardFormReadiness}
               placeholder={i18n.t(l.card_number)}

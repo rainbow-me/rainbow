@@ -1,0 +1,77 @@
+# PATCH CONTEXT
+# Why: Bivo's card-number component does not expose its native input, so retained
+#   setup pages cannot restore focus when they become active.
+# Remove when: @bivoglobal/payment-react-native exposes the card input ref.
+
+diff --git a/node_modules/@bivoglobal/payment-react-native/lib/module/components/BivoCardInput.js b/node_modules/@bivoglobal/payment-react-native/lib/module/components/BivoCardInput.js
+index 124a4c3..218c1ae 100644
+--- a/node_modules/@bivoglobal/payment-react-native/lib/module/components/BivoCardInput.js
++++ b/node_modules/@bivoglobal/payment-react-native/lib/module/components/BivoCardInput.js
+@@ -23,6 +23,7 @@ const detectCardType = value => {
+ export const BivoCardInput = ({
+   bivoStore,
+   fieldName,
++  inputRef,
+   placeholder,
+   onStateChange,
+   onError,
+@@ -96,6 +97,7 @@ export const BivoCardInput = ({
+         source: cardIcons[cardType],
+         style: styles.icon
+       }), /*#__PURE__*/_jsx(TextInput, {
++        ref: inputRef,
+         value: value,
+         onChangeText: handleChange,
+         onBlur: handleBlur,
+diff --git a/node_modules/@bivoglobal/payment-react-native/lib/typescript/src/components/BivoCardInput.d.ts b/node_modules/@bivoglobal/payment-react-native/lib/typescript/src/components/BivoCardInput.d.ts
+index 5e4574c..9615943 100644
+--- a/node_modules/@bivoglobal/payment-react-native/lib/typescript/src/components/BivoCardInput.d.ts
++++ b/node_modules/@bivoglobal/payment-react-native/lib/typescript/src/components/BivoCardInput.d.ts
+@@ -1,9 +1,10 @@
+ import React from 'react';
+-import type { ViewStyle, TextStyle } from 'react-native';
++import type { TextInput, ViewStyle, TextStyle } from 'react-native';
+ import { BivoSecureStore } from '../core/BivoSecureStore';
+ interface Props {
+     bivoStore: BivoSecureStore;
+     fieldName: string;
++    inputRef?: React.Ref<TextInput>;
+     placeholder?: string;
+     onStateChange?: (state: any) => void;
+     onError?: (error: {
+diff --git a/node_modules/@bivoglobal/payment-react-native/src/components/BivoCardInput.tsx b/node_modules/@bivoglobal/payment-react-native/src/components/BivoCardInput.tsx
+index 5918a93..e63b269 100644
+--- a/node_modules/@bivoglobal/payment-react-native/src/components/BivoCardInput.tsx
++++ b/node_modules/@bivoglobal/payment-react-native/src/components/BivoCardInput.tsx
+@@ -1,6 +1,6 @@
+ import React, { useRef, useState } from 'react';
+ import { View, TextInput, Image, Text, StyleSheet } from 'react-native';
+-import type { ViewStyle, TextStyle } from 'react-native';
++import type { TextInput as TextInputType, ViewStyle, TextStyle } from 'react-native';
+ import { BivoSecureStore } from '../core/BivoSecureStore';
+ import { Icons } from '../assets';
+ import { formatCardNumber } from '../utils/utils';
+@@ -8,6 +8,7 @@ import { formatCardNumber } from '../utils/utils';
+ interface Props {
+   bivoStore: BivoSecureStore;
+   fieldName: string;
++  inputRef?: React.Ref<TextInputType>;
+   placeholder?: string;
+   onStateChange?: (state: any) => void;
+   onError?: (error: { fieldName: string; message: string }) => void;
+@@ -43,6 +44,7 @@ const detectCardType = (value: string): string => {
+ export const BivoCardInput: React.FC<Props> = ({
+   bivoStore,
+   fieldName,
++  inputRef,
+   placeholder,
+   onStateChange,
+   onError,
+@@ -130,6 +132,7 @@ export const BivoCardInput: React.FC<Props> = ({
+       <View style={styles.row}>
+         {cardIcon && <Image source={cardIcons[cardType]} style={styles.icon} />}
+         <TextInput
++          ref={inputRef}
+           value={value}
+           onChangeText={handleChange}
+           onBlur={handleBlur}
