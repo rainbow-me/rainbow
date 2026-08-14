@@ -10,11 +10,7 @@ import type { ButtonPressAnimationProps, TransformOrigin } from './types';
 const ButtonWithTransformOrigin = styled(NativeButtonNativeComponent)(({ transformOrigin }: { transformOrigin?: TransformOrigin }) => {
   if (!transformOrigin) return {};
   const [x, y] = transformOrigin;
-  // 👇️ Here we want to set the button's top / left
-  // properties (relative to the parent wrapper view) to
-  // values opposite of the provided transformOrigin.
-  // This is necessary to do in order for the `transformOrigin` prop to
-  // work with NativeButton without effecting NativeButton's layout.
+  // Counter the native layer's anchor-point offset within the stable wrapper frame.
   const styles: ViewStyle = {};
 
   if (x !== 0.5) {
@@ -42,6 +38,10 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       testID,
       onPress,
       onLongPress,
+      onCancel,
+      onLongPressEnded,
+      onPressStart,
+      shouldLongPressHoldPress,
       accessible = true,
       ...rest
     },
@@ -53,29 +53,32 @@ const ButtonPressAnimation = React.forwardRef<React.ElementRef<typeof NativeButt
       () => (onLongPress ? () => onLongPress() : undefined),
       [onLongPress]
     );
+    const longPressGestureEnabled = Boolean(onLongPress || onCancel || onLongPressEnded || shouldLongPressHoldPress);
 
     const nativeProps: NativeButtonProps = {
       ...rest,
+      cancelEnabled: Boolean(onCancel),
       duration,
       enableHapticFeedback,
       hapticType,
+      longPressGestureEnabled,
       minLongPressDuration,
+      pressStartEnabled: Boolean(onPressStart),
       scaleTo,
       testID,
       transformOrigin: normalizedTransformOrigin,
       useLateHaptic,
       onPress: nativeOnPress,
+      onCancel,
       onLongPress: nativeOnLongPress,
+      onLongPressEnded,
+      onPressStart,
+      shouldLongPressHoldPress,
       accessible,
     };
 
     return compensateForTransformOrigin ? (
       <View collapsable={false}>
-        {/*
-        👆️ This wrapper View is necessary.
-        In order to compensate for the way our NativeButton's transformOrigin effects layout/positioning,
-        we set the NativeButton's left / top values relative to this wrapper View.
-      */}
         <ButtonWithTransformOrigin {...nativeProps} ref={ref} transformOrigin={normalizedTransformOrigin}>
           {children}
         </ButtonWithTransformOrigin>

@@ -1,5 +1,5 @@
 # PATCH CONTEXT
-# Five independently owned fixes, rebased after checking
+# Six independently owned fixes, rebased after checking
 # the exact 2.32.0 sources:
 #
 # 1) Keep ButtonViewGroup subclassable for Rainbow's Android
@@ -18,6 +18,9 @@
 #    Native's owned JSI binding hooks on both platforms. Remove when
 #    a published 2.x release no longer discovers the runtime through
 #    private bridge APIs.
+# 6) Type createNativeWrapper refs as the wrapped native instance its
+#    implementation returns. Remove when the published declaration no
+#    longer exposes a component constructor as the ref value.
 
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
@@ -296,3 +299,12 @@ diff --git a/node_modules/react-native-gesture-handler/android/src/main/jni/cpp-
 +        RNGestureHandlerModuleJSIBindings::registerNatives();
 +    });
  }
+diff --git a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+--- a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
++++ b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+@@ -1,4 +1,4 @@
+ import * as React from 'react';
+ import { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
+-export default function createNativeWrapper<P>(Component: React.ComponentType<P>, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentType<any>>>;
++export default function createNativeWrapper<C extends React.ElementType>(Component: C, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<React.ComponentProps<C> & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentRef<C>>>;
+ //# sourceMappingURL=createNativeWrapper.d.ts.map
