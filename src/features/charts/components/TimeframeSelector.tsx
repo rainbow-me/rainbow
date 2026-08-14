@@ -502,11 +502,11 @@ const styles = StyleSheet.create({
     paddingRight: RIGHT_INSET,
     paddingVertical: 12,
     position: 'relative',
-    width: Platform.OS === 'ios' ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
+    width: CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
   },
   hideChartToggleOverride: {
     paddingRight: BASE_HORIZONTAL_INSET,
-    width: Platform.OS === 'ios' ? undefined : CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
+    width: CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
   },
   leftFade: {
     height: '100%',
