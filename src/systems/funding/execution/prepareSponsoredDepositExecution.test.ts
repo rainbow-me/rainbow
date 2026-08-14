@@ -3,20 +3,20 @@ import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type CallsPlan } from '@rainbow-me/sdk';
 import { SwapType, type Quote } from '@rainbow-me/swaps';
 
 import { prepareSponsoredDepositExecution } from './prepareSponsoredDepositExecution';
 
 const mockCreateDelegationPublicClient = vi.fn<(...args: [ChainId]) => unknown>();
 const mockPredictSponsoredCallsExecution = vi.fn<(...args: [unknown]) => boolean>();
-const mockPrepareAtomicSwapCalls = vi.fn<(...args: [unknown]) => Promise<Call[]>>();
-const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<PreparedCallsExecution>>();
+const mockPrepareAtomicSwapCalls = vi.fn<(...args: [unknown]) => Promise<CallsPlan['calls']>>();
+const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<unknown>>();
 const mockSupportsDelegatedExecution = vi.fn<(...args: [unknown]) => Promise<boolean>>();
 
-const mockSponsoredCallsRequirements = {
-  atomic: 'required',
-  fees: { payer: 'sponsor' },
+const mockSponsoredCallsPolicy = {
+  atomic: true,
+  sponsorship: 'required',
 };
 
 vi.mock('@rainbow-me/sdk', () => ({
@@ -29,9 +29,9 @@ vi.mock('@rainbow-me/sdk', () => ({
 
 vi.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId) => mockCreateDelegationPublicClient(chainId),
-  SPONSORED_CALLS_REQUIREMENTS: {
-    atomic: 'required',
-    fees: { payer: 'sponsor' },
+  SPONSORED_CALLS_POLICY: {
+    atomic: true,
+    sponsorship: 'required',
   },
 }));
 
@@ -55,7 +55,7 @@ const PREPARED_CALLS = {
   executionId: 'prepared-deposit',
   kind: 'calls.managed',
   review: { fees: { payer: 'sponsor' } },
-} as PreparedCallsExecution;
+};
 
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', ChainId.polygon);
 
@@ -128,13 +128,13 @@ describe('prepareSponsoredDepositExecution', () => {
       ],
       chainId: ChainId.polygon,
       publicClient: { name: 'public-client' },
-      requirements: mockSponsoredCallsRequirements,
+      ...mockSponsoredCallsPolicy,
     });
   });
 
   it('reuses atomic swap preparation for RAP-backed deposit strategies', async () => {
     const quote = buildQuote();
-    const swapCall: Call = { data: '0xaaaa', to: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 0n };
+    const swapCall: CallInput = { data: '0xaaaa', to: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', value: 0n };
     mockPrepareAtomicSwapCalls.mockResolvedValue([swapCall]);
 
     await expect(
@@ -156,7 +156,7 @@ describe('prepareSponsoredDepositExecution', () => {
     expect(mockPrepareCalls).toHaveBeenCalledWith(
       expect.objectContaining({
         calls: [swapCall],
-        requirements: mockSponsoredCallsRequirements,
+        ...mockSponsoredCallsPolicy,
       })
     );
   });

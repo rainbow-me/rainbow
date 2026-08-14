@@ -4,10 +4,9 @@ import { convertNewTransactionToRainbowTransaction } from '@/parsers/transaction
 import { extractReplayableCall } from '@/raps/replay';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
-import { type ExecuteCallsResult, type ExecutionResult } from '@rainbow-me/sdk';
+import { type EvmTransactionResult, type ExecutionResult } from '@rainbow-me/sdk';
 
-type ManagedCallsExecution = Extract<ExecuteCallsResult, { kind: 'calls.managed' }>;
-type SubmittedCallsExecution = ManagedCallsExecution | ExecutionResult;
+type SubmittedCallsExecution = ExecutionResult<'calls.managed'> | EvmTransactionResult;
 
 /**
  * Registers a submitted SDK exact-call execution with the local pending transaction overlay.
@@ -41,7 +40,7 @@ function trackManagedCallsExecution({
 }: {
   address: string;
   batch: boolean;
-  execution: ManagedCallsExecution;
+  execution: ExecutionResult<'calls.managed'>;
   transaction: Omit<NewTransaction, 'hash'>;
 }): void {
   pendingTransactionsActions.addPendingTransaction({
@@ -66,7 +65,7 @@ function trackWalletCallsExecution({
   address: string;
   batch: boolean;
   chainId: ChainId;
-  execution: ExecutionResult;
+  execution: EvmTransactionResult;
   transaction: Omit<NewTransaction, 'hash'>;
 }): void {
   const executionTransaction = execution.transaction;

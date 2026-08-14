@@ -1,12 +1,10 @@
 import { isAllowedTargetContract } from '@rainbow-me/swaps';
 
 import { resolveApprovalRequirement } from './approval';
-import { createNewAction, createNewRap } from './common';
-import type { RapAction, RapSwapActionParameters } from './references';
+import { createNewAction } from './common';
+import type { RapSwapActionParameters, SwapRap } from './references';
 
-export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
-  let actions: RapAction<'swap' | 'unlock'>[] = [];
-
+export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParameters<'swap'>): Promise<SwapRap<'swap'>> => {
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
   const { allowanceTargetAddress, requiresApprove } = await resolveApprovalRequirement({
     quote,
@@ -14,25 +12,21 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     sellAmount,
   });
 
-  if (allowanceTargetAddress) {
-    const isAllowedTarget = isAllowedTargetContract(allowanceTargetAddress, chainId);
-    if (!isAllowedTarget) {
-      throw new Error('Target address not allowed');
-    }
-
-    if (requiresApprove) {
-      const unlock = createNewAction('unlock', {
-        fromAddress: quote.from,
-        amount: sellAmount,
-        assetToUnlock: assetToSell,
-        chainId,
-        contractAddress: allowanceTargetAddress,
-      });
-      actions = actions.concat(unlock);
-    }
+  if (allowanceTargetAddress && !isAllowedTargetContract(allowanceTargetAddress, chainId)) {
+    throw new Error('Target address not allowed');
   }
 
-  // create a swap rap
+  const unlock =
+    allowanceTargetAddress && requiresApprove
+      ? createNewAction('unlock', {
+          fromAddress: quote.from,
+          amount: sellAmount,
+          assetToUnlock: assetToSell,
+          chainId,
+          contractAddress: allowanceTargetAddress,
+        })
+      : null;
+
   const swap = createNewAction('swap', {
     chainId,
     sellAmount,
@@ -46,9 +40,6 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
   });
-  actions = actions.concat(swap);
 
-  // create the overall rap
-  const newRap = createNewRap(actions);
-  return newRap;
+  return { actions: unlock ? [unlock, swap] : [swap], type: 'swap' };
 };

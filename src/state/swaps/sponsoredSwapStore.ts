@@ -9,7 +9,7 @@ import { supportsDelegatedExecution } from '@/features/delegation/utils/willDele
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
-import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
+import { buildAtomicExecutionPolicy, prepareAtomicSwapCalls } from '@/raps/atomicSwapPreparation';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
@@ -105,11 +105,11 @@ async function fetchPreparedSponsoredSwap(): Promise<PreparedCallsExecution | nu
   const publicClient = createDelegationPublicClient(chainId);
 
   return execute.prepare.calls({
+    ...buildAtomicExecutionPolicy(chainId),
     account: address,
     chainId,
     calls,
     publicClient,
-    requirements: buildAtomicExecutionRequirements(chainId),
   });
 }
 

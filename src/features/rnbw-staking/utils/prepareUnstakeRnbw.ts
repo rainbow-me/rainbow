@@ -1,6 +1,6 @@
 import { type Address } from 'viem';
 
-import { createDelegationPublicClient, isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
+import { createDelegationPublicClient } from '@/features/delegation/utils/calls';
 import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
@@ -14,9 +14,9 @@ export type UnstakeRnbwPreparationParams = {
   accountAddress: Address;
 };
 
-/** Prepared unstaking execution for the wallet-funded portion of an unstake. */
+/** Sponsor-paid unstaking execution prepared for submission. */
 export type PreparedUnstakeRnbw = {
-  preparedCalls: PreparedCallsExecution;
+  preparedCalls: PreparedCallsExecution<'calls.managed'>;
 };
 
 // ============ Preparation =================================================== //
@@ -28,7 +28,7 @@ export async function prepareUnstakeRnbw({ accountAddress }: UnstakeRnbwPreparat
   if (!canUseDelegatedExecution(accountAddress)) return null;
 
   const plan = await buildUnstakeRnbwExecutionPlan({ address: accountAddress });
-  if (!plan.requirements) return null;
+  if (!('sponsorship' in plan)) return null;
 
   const preparedCalls = await execute.prepare.calls({
     ...plan,
@@ -36,8 +36,6 @@ export async function prepareUnstakeRnbw({ accountAddress }: UnstakeRnbwPreparat
     chainId: STAKING_CHAIN_ID,
     publicClient: createDelegationPublicClient(STAKING_CHAIN_ID),
   });
-
-  if (!isPreparedCallsExecutionSponsored(preparedCalls)) return null;
 
   return { preparedCalls };
 }
