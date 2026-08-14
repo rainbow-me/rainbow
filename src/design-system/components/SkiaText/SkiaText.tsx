@@ -8,7 +8,7 @@ import {
   type SkTextShadow,
   type Transforms3d,
 } from '@shopify/react-native-skia';
-import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
+import { isSharedValue, runOnUI, useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
 import { type TextAlign } from '@/components/text/types';
 import { type ColorMode, type TextColor } from '@/design-system/color/palettes';
@@ -64,7 +64,7 @@ export type SkiaTextProps = {
   size: TextSize;
   transform?: AnimatedProp<Transforms3d | undefined>;
   weight?: TextWeight;
-  width: AnimatedProp<number>;
+  width: number | SharedValue<number>;
   x: AnimatedProp<number>;
   y: AnimatedProp<number>;
 };
