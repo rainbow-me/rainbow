@@ -163,9 +163,11 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   public var isHapticFeedbackEnabled: Bool = false
 
   func findChildScrollViewDFS(view: UIView) -> UIScrollView? {
-    if panScrollableCache != nil {
-      return panScrollableCache
+    if let cachedScrollView = panScrollableCache, cachedScrollView.window != nil {
+      return cachedScrollView
     }
+    panScrollableCache = nil
+
     var foundScrollViews = 0
     var viewsToTraverse = [view]
     while !viewsToTraverse.isEmpty {

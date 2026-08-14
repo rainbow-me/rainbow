@@ -174,7 +174,6 @@ export const MenuHeader = ({
 }: MenuHeaderProps) => {
   return (
     <Box
-      height="full"
       paddingTop={paddingTop}
       paddingBottom={paddingBottom}
       justifyContent="center"
