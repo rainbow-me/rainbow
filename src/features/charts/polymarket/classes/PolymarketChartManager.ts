@@ -22,7 +22,6 @@ import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaTex
 import { type InteractionConfig, type LineEffectsConfig } from '@/features/charts/line/LineSeries';
 import { type ResponseByTheme } from '@/theme/types';
 import { deepFreeze } from '@/utils/deepFreeze';
-import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 
 import { Animator } from '../../candlestick/classes/Animator';
@@ -591,21 +590,16 @@ export class PolymarketChartManager {
       this.animationProgress.value = MIN_PROGRESS;
       this.rebuildChart();
 
-      this.animator.spring(
-        this.animationProgress,
-        MAX_PROGRESS,
-        normalizeSpringConfig(this.animationProgress.value, MAX_PROGRESS, this.config.animation.springConfig),
-        finished => {
-          if (!finished) return;
-          this.lineSeriesBuilder.clearAnimationState();
-          this.isAnimating = false;
-          this.previousBounds = null;
-          this.targetBounds = null;
-          this.chartMinY.value = newBounds.min;
-          this.chartMaxY.value = newBounds.max;
-          this.rebuildChart();
-        }
-      );
+      this.animator.spring(this.animationProgress, MAX_PROGRESS, this.config.animation.springConfig, finished => {
+        if (!finished) return;
+        this.lineSeriesBuilder.clearAnimationState();
+        this.isAnimating = false;
+        this.previousBounds = null;
+        this.targetBounds = null;
+        this.chartMinY.value = newBounds.min;
+        this.chartMaxY.value = newBounds.max;
+        this.rebuildChart();
+      });
     } else {
       this.lineSeriesBuilder.clearAnimationState();
       this.isAnimating = false;
@@ -626,16 +620,11 @@ export class PolymarketChartManager {
 
         const animationConfig = entranceAnimationConfig ?? springConfig;
 
-        this.animator.spring(
-          this.animationProgress,
-          MAX_PROGRESS,
-          normalizeSpringConfig(this.animationProgress.value, MAX_PROGRESS, animationConfig),
-          finished => {
-            if (!finished) return;
-            this.isEntranceAnimating = false;
-            this.rebuildChart();
-          }
-        );
+        this.animator.spring(this.animationProgress, MAX_PROGRESS, animationConfig, finished => {
+          if (!finished) return;
+          this.isEntranceAnimating = false;
+          this.rebuildChart();
+        });
       } else {
         this.rebuildChart();
       }
@@ -1038,7 +1027,7 @@ export class PolymarketChartManager {
     this.interactionProgress.value = 0;
     this.buildCrosshairPicture(x, true);
 
-    this.animator.spring(this.interactionProgress, 1, normalizeSpringConfig(0, 1, this.config.animation.springConfig));
+    this.animator.spring(this.interactionProgress, 1, this.config.animation.springConfig);
   }
 
   public onLongPressMove(x: number, state: GestureState): void {
@@ -1059,20 +1048,15 @@ export class PolymarketChartManager {
       this.crosshairPicture.value = this.blankPicture;
     }
 
-    this.animator.spring(
-      this.interactionProgress,
-      0,
-      normalizeSpringConfig(this.interactionProgress.value, 0, this.config.animation.springConfig),
-      finished => {
-        if (finished) {
-          this.interactionIndex = null;
-          this.interactionTimestamp = null;
-          this.interactionX = null;
-          if (this.activeInteraction) this.activeInteraction.value = undefined;
-          this.rebuildChart();
-        }
+    this.animator.spring(this.interactionProgress, 0, this.config.animation.springConfig, finished => {
+      if (finished) {
+        this.interactionIndex = null;
+        this.interactionTimestamp = null;
+        this.interactionX = null;
+        if (this.activeInteraction) this.activeInteraction.value = undefined;
+        this.rebuildChart();
       }
-    );
+    });
   }
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
