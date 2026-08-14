@@ -4,9 +4,11 @@
 #   across pod boundaries. Expo's current source owns a finite Objective-C
 #   protocol for that Swift delegate instead. RN's Android AAR also omits the
 #   jserrorhandler header required by its deprecated cxxreact forwarding header.
+#   Expo's bridgeless JSI setup must also read RN 0.87's RuntimeExecutor directly
+#   from ReactContext instead of constructing the deprecated CatalystInstance.
 # Remove when: Expo Modules Core includes both JSI owner headers, exposes its
 #   React delegate through EXReactDelegateProtocol, and supports RN 0.87's
-#   ErrorUtils header layout.
+#   ErrorUtils header layout and direct bridgeless RuntimeExecutor API.
 
 diff --git a/node_modules/expo-modules-core/ios/ExpoModulesCore.h b/node_modules/expo-modules-core/ios/ExpoModulesCore.h
 --- a/node_modules/expo-modules-core/ios/ExpoModulesCore.h
@@ -179,6 +181,18 @@ index 7d15bd5..fce5087 100644
 @@ -91 +91 @@
 -  private external fun invokeNative(code: String, errorMessage: String)
 +  private external fun invokeNative(code: String?, errorMessage: String)
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
+@@ -87,7 +87,7 @@
+           jsiContext.installJSIForBridgeless(
+             this,
+             jsRuntimePointer,
+-            reactContext.catalystInstance.runtimeExecutor!!
++            reactContext.runtimeExecutor!!
+           )
+         } else {
+           jsiContext.installJSI(
 diff --git a/node_modules/expo-modules-core/android/CMakeLists.txt b/node_modules/expo-modules-core/android/CMakeLists.txt
 --- a/node_modules/expo-modules-core/android/CMakeLists.txt
 +++ b/node_modules/expo-modules-core/android/CMakeLists.txt
