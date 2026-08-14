@@ -30,6 +30,7 @@ import Animated, {
   withSpring,
   withTiming,
   type SharedValue,
+  type WithSpringConfig,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -71,7 +72,6 @@ import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGu
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { normalizeSpringConfig, type DampingMassStiffnessConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 
 import { NoChartData } from '../../components/NoChartData';
@@ -109,6 +109,8 @@ type TokenProps =
       chainId?: undefined;
       symbol: HyperliquidSymbol;
     };
+
+type DampingMassStiffnessConfig = WithSpringConfig & Required<Pick<WithSpringConfig, 'damping' | 'mass' | 'stiffness'>>;
 
 type CandlestickConfig = {
   activeCandleCard: {
@@ -1157,15 +1159,7 @@ class CandlestickChartManager {
 
     if (animate) {
       if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
-        this.animator.spring(
-          [this.chartMinY, this.chartMaxY],
-          [min, max],
-          normalizeSpringConfig(
-            Math.abs(this.chartMinY.value - min),
-            Math.abs(this.chartMaxY.value - max),
-            this.config.animation.springConfig
-          )
-        );
+        this.animator.spring([this.chartMinY, this.chartMaxY], [min, max], this.config.animation.springConfig);
         const maxDisplayedVolume = this.getMaxDisplayedVolume(startIndex, endIndex);
         if (forceRebuildBounds || maxDisplayedVolume !== this.maxDisplayedVolume.value) {
           if (this.maxDisplayedVolume.value === -1) this.maxDisplayedVolume.value = maxDisplayedVolume;
