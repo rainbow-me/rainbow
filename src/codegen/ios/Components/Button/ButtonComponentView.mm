@@ -104,24 +104,11 @@ static void GenerateHapticFeedback(ButtonHapticType hapticType)
   }
 }
 
-static void SetAnchorPoint(UIView *view, CGPoint point)
+static CGAffineTransform ScaleTransform(CGSize size, CGPoint origin, CGFloat scale)
 {
-  CGPoint newPoint = CGPointMake(view.bounds.size.width * point.x, view.bounds.size.height * point.y);
-  CGPoint oldPoint = CGPointMake(
-      view.bounds.size.width * view.layer.anchorPoint.x, view.bounds.size.height * view.layer.anchorPoint.y);
-
-  newPoint = CGPointApplyAffineTransform(newPoint, view.transform);
-  oldPoint = CGPointApplyAffineTransform(oldPoint, view.transform);
-
-  CGPoint position = view.layer.position;
-  position.x -= oldPoint.x;
-  position.x += newPoint.x;
-
-  position.y -= oldPoint.y;
-  position.y += newPoint.y;
-
-  view.layer.position = position;
-  view.layer.anchorPoint = point;
+  const CGFloat translationX = (1.0 - scale) * (origin.x - 0.5) * size.width;
+  const CGFloat translationY = (1.0 - scale) * (origin.y - 0.5) * size.height;
+  return CGAffineTransformMake(scale, 0, 0, scale, translationX, translationY);
 }
 
 @interface ButtonComponentView : RCTViewComponentView <RCTButtonViewProtocol>
@@ -173,7 +160,6 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
     _shouldLongPressHoldPress = defaultProps.shouldLongPressHoldPress;
     _pressStartEnabled = defaultProps.pressStartEnabled;
     self.userInteractionEnabled = !defaultProps.disabled;
-    SetAnchorPoint(self, CGPointMake(0.5, 0.5));
 
     [self resetInteractionState];
   }
@@ -266,13 +252,6 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 
   if (newButtonProps.hapticType != oldButtonProps.hapticType) {
     _hapticType = ButtonHapticTypeFromString(newButtonProps.hapticType);
-  }
-
-  if (newButtonProps.transformOrigin != oldButtonProps.transformOrigin) {
-    CGPoint origin = newButtonProps.transformOrigin.size() == 2
-        ? CGPointMake(newButtonProps.transformOrigin[0], newButtonProps.transformOrigin[1])
-        : CGPointMake(0.5, 0.5);
-    SetAnchorPoint(self, origin);
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -387,12 +366,17 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 {
   GenerateHapticFeedback(hapticType);
 
+  const auto &buttonProps = static_cast<const ButtonProps &>(*_props);
+  const CGPoint transformOrigin = buttonProps.transformOrigin.size() == 2
+      ? CGPointMake(buttonProps.transformOrigin[0], buttonProps.transformOrigin[1])
+      : CGPointMake(0.5, 0.5);
+
   UIViewPropertyAnimator *animator =
       [[UIViewPropertyAnimator alloc] initWithDuration:duration
                                          controlPoint1:CGPointMake(0.25, 0.46)
                                          controlPoint2:CGPointMake(0.45, 0.94)
                                             animations:^{
-                                              self.transform = CGAffineTransformMakeScale(scale, scale);
+                                              self.transform = ScaleTransform(self.bounds.size, transformOrigin, scale);
                                             }];
   [animator startAnimation];
   return animator;

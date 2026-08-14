@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 
 import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
@@ -41,7 +41,7 @@ const ZoomableRawButton = requireNativeComponent<
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
-type ZoomableButtonRef = React.ElementRef<typeof ZoomableButton>;
+type ZoomableButtonRef = React.ComponentRef<typeof ZoomableButton>;
 
 const transparentColor = processColor('transparent');
 
@@ -127,8 +127,6 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
   }: ButtonElementProps,
   ref
 ) {
-  const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
-
   return disabled ? (
     <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
       {children}
@@ -148,7 +146,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       shouldActivateOnStart={shouldActivateOnStart}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       testID={testID}
-      transformOrigin={normalizedTransformOrigin}
+      transformOrigin={normalizeTransformOrigin(transformOrigin)}
       wrapperStyle={wrapperStyle}
       disallowInterruption={disallowInterruption}
       ref={ref}
