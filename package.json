@@ -202,7 +202,7 @@
     "@polymarket/clob-client-v2": "1.1.0",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/sdk": "0.4.0",
+    "@rainbow-me/sdk": "file:./rainbow-me-sdk-0.5.0.tgz",
     "@rainbow-me/swaps": "0.41.0",
     "@rainbow-me/token-launcher": "0.3.0",
     "@react-native-async-storage/async-storage": "1.23.1",
