@@ -90,9 +90,9 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   );
 
   const onPress = useCallback(
-    (tab: Tab) => {
+    (tab: Tab, index: number) => {
       'worklet';
-      selectedIndex.value = TABS[tab].index;
+      selectedIndex.value = index;
       runOnJS(handleTabPress)(tab);
     },
     [handleTabPress, selectedIndex]
@@ -185,7 +185,7 @@ const TabButton = ({
   icon: string;
   index: number;
   labelKey: string;
-  onPress: (tab: Tab) => void;
+  onPress: (tab: Tab, index: number) => void;
   selectedIndex: SharedValue<number>;
   value: Tab;
 }) => {
@@ -220,7 +220,7 @@ const TabButton = ({
       hitSlop={4}
       onPressWorklet={() => {
         'worklet';
-        onPress(value);
+        onPress(value, index);
       }}
       style={styles.button}
     >
@@ -236,7 +236,7 @@ const TabButton = ({
   );
 };
 
-const TabButtons = ({ onPress, selectedIndex }: { onPress: (tab: Tab) => void; selectedIndex: SharedValue<number> }) => {
+const TabButtons = ({ onPress, selectedIndex }: { onPress: (tab: Tab, index: number) => void; selectedIndex: SharedValue<number> }) => {
   return Object.values(TABS).map(({ icon, index, labelKey, value }) => (
     <TabButton index={index} key={value} labelKey={labelKey} icon={icon} onPress={onPress} selectedIndex={selectedIndex} value={value} />
   ));
