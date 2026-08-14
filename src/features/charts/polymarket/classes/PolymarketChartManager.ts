@@ -702,11 +702,7 @@ export class PolymarketChartManager {
     this.interactionTimestamps = new Uint32Array(0);
     this.interactionX = null;
 
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.blankPicture;
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
   }
 
   private getDataLength(): number {
@@ -743,9 +739,7 @@ export class PolymarketChartManager {
     const length = this.getDataLength();
     if (!length) {
       if (this.chartPicture.value !== this.blankPicture) {
-        const oldPicture = this.chartPicture.value;
         this.chartPicture.value = this.blankPicture;
-        oldPicture.dispose();
       }
       return;
     }
@@ -847,11 +841,7 @@ export class PolymarketChartManager {
       this.lineSeriesBuilder.drawAll(canvas, params, effectsConfig, progress, drawProgress, entranceYOffset);
     }
 
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
   }
 
   private drawHorizontalGridLines(canvas: SkCanvas, lineCount: number, maxPrice: number, minPrice: number): void {
@@ -1106,7 +1096,6 @@ export class PolymarketChartManager {
 
   public dispose(): void {
     this.animator.dispose();
-    this.blankPicture.dispose();
     this.lineSeriesBuilder.dispose();
     this.pictureRecorder.dispose();
 
