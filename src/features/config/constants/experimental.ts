@@ -78,7 +78,7 @@ const config = {
   [RNBW_REWARDS]: { settings: true, value: false },
   [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
-  [GO_RELAY_BACKEND]: { needsRestart: true, settings: true, value: true },
+  [GO_RELAY_BACKEND]: { needsRestart: true, settings: true, value: false },
   [SOLANA]: { settings: true, value: false },
 } as const;
 
