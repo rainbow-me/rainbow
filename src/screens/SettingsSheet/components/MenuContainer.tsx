@@ -1,9 +1,9 @@
 import React from 'react';
-import { Platform, ScrollView } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Box, Inset, Stack, type Space } from '@/design-system';
+import { Box, Stack, type Space } from '@/design-system';
 
 interface MenuContainerProps {
   scrollviewRef?: React.RefObject<ScrollView | null>;
@@ -17,13 +17,19 @@ const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px'
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    // ios scroll fix
-    <Inset bottom={{ custom: safeAreaInsets.bottom }} top={Platform.OS === 'ios' ? '12px' : undefined}>
+    <View
+      style={[
+        styles.container,
+        {
+          marginBottom: safeAreaInsets.bottom,
+          marginTop: Platform.OS === 'ios' ? 12 : undefined,
+        },
+      ]}
+    >
       <ScrollView
         ref={scrollviewRef}
         scrollEventThrottle={32}
-        // ios scroll fix
-        {...(Platform.OS === 'ios' && { style: { overflow: 'visible' } })}
+        style={[styles.scrollView, Platform.OS === 'ios' && styles.iosScrollView]}
         testID={testID}
       >
         <Box
@@ -38,8 +44,20 @@ const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px'
         </Box>
         {Footer}
       </ScrollView>
-    </Inset>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  iosScrollView: {
+    overflow: 'visible',
+  },
+  scrollView: {
+    flex: 1,
+  },
+});
 
 export default MenuContainer;

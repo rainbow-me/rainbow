@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, type ColorValue } from 'react-native';
+import { ScrollView, View, type ColorValue } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -29,6 +29,19 @@ export const SimpleSheet = ({
   const insets = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - insets.top;
+  const content = scrollEnabled ? (
+    <ScrollView
+      style={{ backgroundColor }}
+      contentContainerStyle={{
+        minHeight: customHeight ?? fullSheetHeight,
+      }}
+    >
+      {children}
+    </ScrollView>
+  ) : (
+    <View style={{ backgroundColor, height: customHeight ?? fullSheetHeight }}>{children}</View>
+  );
+
   return (
     <SlackSheet
       additionalTopPadding={useAdditionalTopPadding}
@@ -40,18 +53,7 @@ export const SimpleSheet = ({
       onDismiss={onDismiss}
       testID={testID}
     >
-      <ScrollView
-        scrollEnabled={scrollEnabled}
-        style={{
-          top: 0,
-          backgroundColor: backgroundColor,
-        }}
-        contentContainerStyle={{
-          minHeight: customHeight ?? fullSheetHeight,
-        }}
-      >
-        {children}
-      </ScrollView>
+      {content}
     </SlackSheet>
   );
 };
