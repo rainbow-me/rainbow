@@ -1,0 +1,27 @@
+# PATCH CONTEXT
+# Why: Keyboard Controller 1.22.3 treats two StatusBar methods removed in RN
+#   0.87 as required. The failed reflection aborts required method discovery,
+#   so RN's StatusBar initialization receives undefined constants on Android.
+# Provenance: upstream commit e3624b9bf53802b5cc62d961f30b5cf0159a5686.
+# Remove when: upgrading to a release containing that upstream commit.
+
+diff --git a/node_modules/react-native-keyboard-controller/android/src/main/java/com/reactnativekeyboardcontroller/modules/statusbar/StatusBarModuleProxy.kt b/node_modules/react-native-keyboard-controller/android/src/main/java/com/reactnativekeyboardcontroller/modules/statusbar/StatusBarModuleProxy.kt
+--- a/node_modules/react-native-keyboard-controller/android/src/main/java/com/reactnativekeyboardcontroller/modules/statusbar/StatusBarModuleProxy.kt
++++ b/node_modules/react-native-keyboard-controller/android/src/main/java/com/reactnativekeyboardcontroller/modules/statusbar/StatusBarModuleProxy.kt
+@@ -33,8 +33,14 @@
+       setHiddenMethod = clazz.getMethod("setHidden", Boolean::class.java)
+-      setColorMethod = clazz.getMethod("setColor", Double::class.java, Boolean::class.java)
+-      setTranslucentMethod = clazz.getMethod("setTranslucent", Boolean::class.java)
+       setStyleMethod = clazz.getMethod("setStyle", String::class.java)
+       getConstantsMethod = clazz.getMethod("getConstants")
++
++      // `setColor` and `setTranslucent` were removed from `StatusBarModule` in RN 0.87, so we look
++      // them up optionally - otherwise a single `NoSuchMethodException` would abort the whole
++      // initialization and leave every other method (and the module instance) unresolved.
++      setColorMethod =
++        runCatching { clazz.getMethod("setColor", Double::class.java, Boolean::class.java) }.getOrNull()
++      setTranslucentMethod =
++        runCatching { clazz.getMethod("setTranslucent", Boolean::class.java) }.getOrNull()
+     } catch (e: Exception) {
+       Logger.w(TAG, "Failed to initialize StatusBarModule via reflection", e)
+     }
