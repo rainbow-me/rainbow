@@ -62,7 +62,10 @@ tags:
 - assertVisible: '0.01 ETH'
 - assertVisible: 'rainbowwallet.eth'
 
-- longPressOn: 'Hold to Send'
+# iOS prefixes the label with the biometry glyph; Android renders it bare.
+# Matching loosely still fails if the button drops to 'Tap to Send', which is the
+# state we want to notice.
+- longPressOn: '.*Hold to Send'
 - runFlow: ../../utils/MaybeInputPin.yaml
 
 # Check toast data
