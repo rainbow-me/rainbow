@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { time } from '@/framework/core/utils/time';
-import { execute, type Call, type CallsRequirements, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, type CallInput, type CallsPlan, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {
   RNBW_DECIMALS,
@@ -25,7 +25,7 @@ import { executeUnstakeRnbw } from './executeUnstakeRnbw';
 
 const mockExecuteCalls = vi.fn<(...args: [unknown, unknown?]) => Promise<unknown>>();
 const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<unknown>>();
-const mockBuildUnstakeRnbwExecutionPlan = vi.fn<(...args: [unknown]) => Promise<{ calls: Call[]; requirements?: CallsRequirements }>>();
+const mockBuildUnstakeRnbwExecutionPlan = vi.fn<(...args: [unknown]) => Promise<CallsPlan>>();
 const mockCanUseDelegatedExecution = vi.fn<(...args: [Address]) => boolean>();
 const mockResolveManagedExecutionFailure = vi.fn<(...args: [unknown]) => Promise<string | null>>();
 const mockTrackCallsExecution = vi.fn<(...args: [unknown]) => void>();
@@ -94,7 +94,7 @@ const UNSTAKE_ALL_DATA = encodeFunctionData({ abi: STAKING_ABI, functionName: 'u
 const GAS_PARAMS = { maxFeePerGas: '10', maxPriorityFeePerGas: '1' };
 const ESTIMATED_GAS_LIMIT = '123456';
 
-const UNSTAKE_CALL: Call = { data: UNSTAKE_ALL_DATA, to: STAKING_CONTRACT_ADDRESS, value: 0n };
+const UNSTAKE_CALL: CallInput = { data: UNSTAKE_ALL_DATA, to: STAKING_CONTRACT_ADDRESS, value: 0n };
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', STAKING_CHAIN_ID);
 const signer = new Wallet(PRIVATE_KEY, provider);
 
@@ -199,13 +199,15 @@ function buildTransactionResponse({
   }));
 }
 
-async function prepareCalls(plan: unknown): Promise<PreparedCallsExecution> {
+async function prepareCalls(plan: unknown): Promise<PreparedCallsExecution<'calls.managed'>> {
   mockPrepareCalls.mockResolvedValueOnce(plan);
   return execute.prepare.calls({
+    atomic: true,
     calls: [UNSTAKE_CALL],
     chainId: STAKING_CHAIN_ID,
     provider,
     signer,
+    sponsorship: 'required',
   });
 }
 
@@ -219,68 +221,6 @@ describe('executeUnstakeRnbw', () => {
     mockWaitForManagedExecutionConfirmation.mockResolvedValue();
     mockBuildSyntheticRnbwSourceAsset.mockReturnValue(rnbwAsset);
     vi.spyOn(provider, 'estimateGas').mockResolvedValue(BigNumber.from(ESTIMATED_GAS_LIMIT));
-  });
-
-  it('tracks wallet exact-call execution when prepared calls resolve to a wallet-paid transaction', async () => {
-    const waitForTransaction = vi.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt());
-    const preparedCalls = await prepareCalls({
-      kind: 'calls.wallet',
-      review: {
-        requiresDelegationAuthorization: false,
-        transactions: [],
-      },
-    });
-
-    mockExecuteCalls.mockResolvedValue({
-      kind: 'calls.wallet',
-      transactions: [
-        {
-          hash: TX_HASH,
-          transaction: {
-            data: UNSTAKE_ALL_DATA,
-            gas: 21000n,
-            maxFeePerGas: 1n,
-            maxPriorityFeePerGas: 1n,
-            nonce: 1,
-            to: STAKING_CONTRACT_ADDRESS,
-            value: 0n,
-          },
-          type: 'eip1559',
-        },
-      ],
-    });
-
-    const result = await executeUnstakeRnbw({
-      address: ACCOUNT,
-      expectedReceiveAmountRaw: EXPECTED_RECEIVE_AMOUNT_RAW,
-      gasParams: GAS_PARAMS,
-      preparedCalls,
-      provider,
-      signer,
-    });
-
-    expect(result.executionMode).toBe('manual');
-    expect(result.txHash).toBe(TX_HASH);
-    expect(mockTrackCallsExecution).toHaveBeenCalledWith({
-      address: ACCOUNT,
-      batch: false,
-      chainId: STAKING_CHAIN_ID,
-      execution: expect.objectContaining({ hash: TX_HASH }),
-      transaction: expect.objectContaining({
-        from: ACCOUNT,
-        to: STAKING_CONTRACT_ADDRESS,
-        type: 'unstake',
-      }),
-    });
-    expect(mockExecuteCalls).toHaveBeenCalledWith(preparedCalls, {
-      chainId: STAKING_CHAIN_ID,
-      provider,
-      signer,
-    });
-
-    await result.waitForConfirmation();
-
-    expect(waitForTransaction).toHaveBeenCalledWith(TX_HASH, 1, time.minutes(2));
   });
 
   it('executes sponsored unstaking through the managed relay and waits through relay status', async () => {

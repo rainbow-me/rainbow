@@ -43,7 +43,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { executeSponsoredSend } from '../utils/sponsoredSend';
 import { executeSponsoredSendIfAvailable } from '../utils/sponsoredSendExecution';
@@ -107,8 +107,8 @@ type UseSendSubmitParams = {
   nativeCurrency: NativeCurrencyKey;
   recipient: RecipientProps;
   selected: ParsedAddressAsset | UniqueAsset | undefined;
-  sponsoredSendPreparedCall: Call | null;
-  sponsoredSendPreparedCalls: PreparedCallsExecution | null;
+  sponsoredSendPreparedCall: CallInput | null;
+  sponsoredSendPreparedCalls: PreparedCallsExecution<'calls.managed'> | null;
 };
 
 type UseSendSubmitResult = {
@@ -413,10 +413,10 @@ async function submitSponsoredSend({
 }: {
   accountAddress: string;
   amount: string;
-  call: Call | null;
+  call: CallInput | null;
   chainId: ChainId;
   chainName: string;
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   provider: StaticJsonRpcProvider;
   screen: SendSubmitScreen;
   selectedAddressAsset: ParsedAddressAsset | null;

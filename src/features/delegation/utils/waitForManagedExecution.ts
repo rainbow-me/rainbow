@@ -1,10 +1,10 @@
 import { time } from '@/framework/core/utils/time';
 import { ensureError, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
-import { RelayExecutionStatus } from '@rainbow-me/sdk';
+import { RelayExecutionStatus, type RelayExecutionId, type RelayExecutionUpdate } from '@rainbow-me/sdk';
 
 import { formatManagedExecutionFailure, isManagedExecutionFailure } from './managedExecutionFailure';
-import { relayService, type RelayStatusResponse } from './relayService';
+import { relayService } from './relayService';
 
 // ============ Constants ===================================================== //
 
@@ -16,13 +16,13 @@ const MANAGED_EXECUTION_TIMEOUT_MS = time.minutes(2);
 /**
  * Waits until a managed relay execution confirms or reaches a terminal failure.
  */
-export async function waitForManagedExecutionConfirmation(executionId: string): Promise<void> {
+export async function waitForManagedExecutionConfirmation(executionId: RelayExecutionId): Promise<void> {
   const startedAt = Date.now();
   let lastStatus: RelayExecutionStatus | null = null;
   let lastStatusErrorMessage: string | null = null;
 
   while (Date.now() - startedAt <= MANAGED_EXECUTION_TIMEOUT_MS) {
-    let update: RelayStatusResponse;
+    let update: RelayExecutionUpdate;
     try {
       update = await relayService.getStatus(executionId);
     } catch (error) {
@@ -31,13 +31,13 @@ export async function waitForManagedExecutionConfirmation(executionId: string): 
       continue;
     }
 
-    lastStatus = update.status.status;
+    lastStatus = update.status;
     lastStatusErrorMessage = null;
 
     if (lastStatus === RelayExecutionStatus.Confirmed) return;
 
     if (isManagedExecutionFailure(lastStatus)) {
-      throw new RainbowError(`[waitForManagedExecutionConfirmation]: ${formatManagedExecutionFailure(update.status)}`);
+      throw new RainbowError(`[waitForManagedExecutionConfirmation]: ${formatManagedExecutionFailure(update)}`);
     }
 
     await delay(MANAGED_EXECUTION_POLL_INTERVAL_MS);

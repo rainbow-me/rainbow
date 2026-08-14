@@ -1,12 +1,27 @@
+import { type Hash } from 'viem';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { logger } from '@/logger';
+import { RelayExecutionStatus, type RelayExecutionId, type RelayStatusSnapshot } from '@rainbow-me/sdk';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 
 const mockFetchRawTransaction = vi.fn();
 const mockGetStatus = vi.fn();
+const EXECUTION_ID: RelayExecutionId = '0x0101010101010101010101010101010101010101010101010101010101010101';
+
+vi.mock('@rainbow-me/sdk', () => ({
+  RelayExecutionStatus: {
+    AwaitingWallet: 'AWAITING_WALLET',
+    Confirmed: 'CONFIRMED',
+    Failed: 'FAILED',
+    Pending: 'PENDING',
+    Prepared: 'PREPARED',
+    Reverted: 'REVERTED',
+    Submitting: 'SUBMITTING',
+  },
+}));
 
 vi.mock('@/logger', () => ({
   logger: {
@@ -34,7 +49,7 @@ describe('pendingTransactionResolution', () => {
   it('tracks a managed transaction by relay status even after an onchain hash appears', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'PENDING',
+        status: RelayExecutionStatus.Pending,
         txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       })
     );
@@ -55,7 +70,7 @@ describe('pendingTransactionResolution', () => {
       kind: 'pending',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-        relayExecutionId: 'execution-1',
+        relayExecutionId: EXECUTION_ID,
       }),
     });
     expect(resolution.relayStatus?.status).toBe('PENDING');
@@ -106,7 +121,7 @@ describe('pendingTransactionResolution', () => {
     const transaction = buildManagedPendingTransaction();
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'PENDING',
+        status: RelayExecutionStatus.Pending,
       })
     );
 
@@ -143,7 +158,7 @@ describe('pendingTransactionResolution', () => {
   it('keeps a confirmed managed transaction settled while relay exposes a late origin hash', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'PENDING',
+        status: RelayExecutionStatus.Pending,
         txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       })
     );
@@ -159,7 +174,7 @@ describe('pendingTransactionResolution', () => {
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-        relayExecutionId: 'execution-1',
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.confirmed,
         title: 'swap.confirmed',
       }),
@@ -170,7 +185,7 @@ describe('pendingTransactionResolution', () => {
   it('settles a managed failure before an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'FAILED',
+        status: RelayExecutionStatus.Failed,
       })
     );
 
@@ -184,8 +199,8 @@ describe('pendingTransactionResolution', () => {
     expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
-        hash: 'execution-1',
-        relayExecutionId: 'execution-1',
+        hash: EXECUTION_ID,
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.failed,
         title: 'swap.failed',
       }),
@@ -195,7 +210,7 @@ describe('pendingTransactionResolution', () => {
   it('resolves a relay-confirmed managed transaction immediately once an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'CONFIRMED',
+        status: RelayExecutionStatus.Confirmed,
         txHash: '0x1111111111111111111111111111111111111111111111111111111111111111',
       })
     );
@@ -211,7 +226,7 @@ describe('pendingTransactionResolution', () => {
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x1111111111111111111111111111111111111111111111111111111111111111',
-        relayExecutionId: 'execution-1',
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.confirmed,
         title: 'swap.confirmed',
       }),
@@ -314,7 +329,7 @@ describe('pendingTransactionResolution', () => {
   it('settles a managed failure after an onchain hash exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'FAILED',
+        status: RelayExecutionStatus.Failed,
         txHash: '0x2222222222222222222222222222222222222222222222222222222222222222',
       })
     );
@@ -330,7 +345,7 @@ describe('pendingTransactionResolution', () => {
       kind: 'settled',
       transaction: expect.objectContaining({
         hash: '0x2222222222222222222222222222222222222222222222222222222222222222',
-        relayExecutionId: 'execution-1',
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.failed,
         title: 'swap.failed',
       }),
@@ -341,7 +356,7 @@ describe('pendingTransactionResolution', () => {
   it('trusts relay confirmation even when onchain evidence has not been attached yet', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'CONFIRMED',
+        status: RelayExecutionStatus.Confirmed,
       })
     );
 
@@ -355,8 +370,8 @@ describe('pendingTransactionResolution', () => {
     expect(resolution).toMatchObject({
       kind: 'settled',
       transaction: expect.objectContaining({
-        hash: 'execution-1',
-        relayExecutionId: 'execution-1',
+        hash: EXECUTION_ID,
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.confirmed,
         title: 'swap.confirmed',
       }),
@@ -364,8 +379,8 @@ describe('pendingTransactionResolution', () => {
     expect(logger.warn).toHaveBeenCalledWith(
       '[resolveTrackedTransaction]: managed relay execution finished without onchain transaction evidence',
       expect.objectContaining({
-        executionId: 'execution-1',
-        status: 'CONFIRMED',
+        executionId: EXECUTION_ID,
+        status: RelayExecutionStatus.Confirmed,
       })
     );
   });
@@ -411,7 +426,7 @@ describe('pendingTransactionResolution', () => {
   it('resolves through the onchain owner when relay is still pending but mined metadata already exists', async () => {
     mockGetStatus.mockResolvedValue(
       buildRelayStatus({
-        status: 'PENDING',
+        status: RelayExecutionStatus.Pending,
         txHash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
       })
     );
@@ -438,7 +453,7 @@ describe('pendingTransactionResolution', () => {
         confirmations: 1,
         hash: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
         minedAt: 100,
-        relayExecutionId: 'execution-1',
+        relayExecutionId: EXECUTION_ID,
         status: TransactionStatus.confirmed,
         title: 'swap.confirmed',
       }),
@@ -460,10 +475,10 @@ function buildManagedPendingTransaction() {
     asset: null,
     chainId: 8453,
     from: null,
-    hash: 'execution-1',
+    hash: EXECUTION_ID,
     network: 'Base',
     nonce: 7,
-    relayExecutionId: 'execution-1',
+    relayExecutionId: EXECUTION_ID,
     status: TransactionStatus.pending,
     title: 'swap.pending',
     to: null,
@@ -509,20 +524,25 @@ function buildPurchasePendingTransaction() {
   };
 }
 
-function buildRelayStatus({ status, txHash }: { status: 'PENDING' | 'FAILED' | 'CONFIRMED'; txHash?: `0x${string}` }) {
+function buildRelayStatus({
+  status,
+  txHash,
+}: {
+  status: RelayExecutionStatus.Pending | RelayExecutionStatus.Failed | RelayExecutionStatus.Confirmed;
+  txHash?: Hash;
+}): RelayStatusSnapshot {
   return {
-    status: {
-      status,
-      updatedAtMs: 0,
-      onchain: txHash
-        ? {
-            type: 'singlechain' as const,
-            origin: {
-              chainId: 8453,
-              txHashes: [txHash],
-            },
-          }
-        : undefined,
-    },
+    status,
+    updatedAtMs: 0,
+    onchain: txHash
+      ? {
+          scope: 'singlechain',
+          transactions: {
+            chainId: 8453,
+            hashes: [txHash],
+            kind: 'evm',
+          },
+        }
+      : undefined,
   };
 }

@@ -12,7 +12,7 @@ import { getProvider, toHex } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { ETH_ADDRESS } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
-import { type Call } from '@rainbow-me/sdk';
+import { type CallInput } from '@rainbow-me/sdk';
 
 import { type ActionProps, type PrepareActionProps, type RapActionResult, type RapUnlockActionParameters } from '../references';
 import { toTransactionAsset } from '../transactionAsset';
@@ -167,7 +167,7 @@ export async function prepareApprovalCall({
   spender: Address;
   tokenAddress: Address;
   useExactApproval?: boolean;
-}): Promise<Call | null> {
+}): Promise<CallInput | null> {
   const tx = await populateApprove({
     owner,
     tokenAddress,
@@ -185,7 +185,7 @@ export async function prepareApprovalCall({
   };
 }
 
-export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: Call | null }> => {
+export const prepareUnlock = async ({ parameters }: PrepareActionProps<'unlock'>): Promise<{ call: CallInput | null }> => {
   const tokenAddress = requireAddress(parameters.assetToUnlock.address, 'unlock asset address');
   return {
     call: await prepareApprovalCall({

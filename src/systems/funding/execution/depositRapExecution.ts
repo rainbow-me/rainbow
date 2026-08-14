@@ -40,7 +40,7 @@ type ExecutionParams = {
     RapSwapActionParameters<rapTypes.crosschainSwap | rapTypes.swap>,
     'gasFeeParamsBySpeed' | 'gasParams' | 'selectedGasFee'
   >;
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   wallet: Signer;
 };
 
@@ -52,7 +52,7 @@ export type ExecuteDepositRapParams = {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   gasParams: DepositGasParams;
   nonce: number;
-  preparedCalls: PreparedCallsExecution | null;
+  preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   quote: Quote | CrosschainQuote;
   wallet: Signer;
 };
@@ -256,7 +256,7 @@ function classifySponsorshipFailure(errorMessage: string): DepositSponsorshipFai
 
 async function executePreparedDirectTransfer(params: {
   assetChainId: ChainId;
-  preparedCalls: PreparedCallsExecution;
+  preparedCalls: PreparedCallsExecution<'calls.managed'>;
   wallet: Wallet;
 }): Promise<ExecutionResult> {
   const provider = getProvider({ chainId: params.assetChainId });
@@ -266,30 +266,21 @@ async function executePreparedDirectTransfer(params: {
     signer: params.wallet,
   });
 
-  if (execution.kind === 'calls.managed') {
-    const failureMessage = await resolveManagedExecutionFailure({
-      executionId: execution.executionId,
-      status: execution.status,
-    });
+  const failureMessage = await resolveManagedExecutionFailure({
+    executionId: execution.executionId,
+    status: execution.status,
+  });
 
-    if (failureMessage) {
-      return {
-        error: failureMessage,
-        sponsorshipAttempted: true,
-        sponsorshipFailureReason: classifySponsorshipFailure(failureMessage),
-        success: false,
-      };
-    }
-
-    return { isConfirmed: false, sponsorship: 'sponsored', success: true };
+  if (failureMessage) {
+    return {
+      error: failureMessage,
+      sponsorshipAttempted: true,
+      sponsorshipFailureReason: classifySponsorshipFailure(failureMessage),
+      success: false,
+    };
   }
 
-  if (execution.kind !== 'calls.wallet' || execution.transactions.length !== 1) {
-    throw new RainbowError('[depositRapExecution]: direct transfer exact calls must resolve to one wallet transaction');
-  }
-
-  const transaction = execution.transactions[0];
-  return { hash: transaction.hash, isConfirmed: false, sponsorship: 'walletPaid', success: true };
+  return { isConfirmed: false, sponsorship: 'sponsored', success: true };
 }
 
 // ============ Asset Building ================================================ //
