@@ -13,8 +13,6 @@
 
 using namespace facebook::react;
 
-static constexpr NSTimeInterval kDefaultDurationSeconds = 0.16;
-static constexpr NSTimeInterval kDefaultLongPressDurationSeconds = 0.5;
 static constexpr CFTimeInterval kThrottleDurationSeconds = 0.5;
 
 static NSTimeInterval SecondsFromMilliseconds(double milliseconds)
@@ -98,7 +96,7 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 @end
 
 @interface ButtonComponentView ()
-- (void)resetComponentState;
+- (void)resetInteractionState;
 @end
 
 @implementation ButtonComponentView {
@@ -128,47 +126,49 @@ static void SetAnchorPoint(UIView *view, CGPoint point)
 {
   if (self = [super initWithFrame:frame]) {
     _props = ButtonShadowNode::defaultSharedProps();
+    const auto &defaultProps = *std::static_pointer_cast<const ButtonProps>(_props);
 
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressHandler:)];
     [self addGestureRecognizer:_longPress];
 
-    [self resetComponentState];
+    _durationSeconds = SecondsFromMilliseconds(defaultProps.duration);
+    _pressOutDurationSeconds = OptionalSecondsFromMilliseconds(defaultProps.pressOutDuration);
+    _scaleTo = defaultProps.scaleTo;
+    _enableHapticFeedback = defaultProps.enableHapticFeedback;
+    _hapticType = RCTNSStringFromString(defaultProps.hapticType);
+    _useLateHaptic = defaultProps.useLateHaptic;
+    _throttle = defaultProps.throttle;
+    _shouldLongPressHoldPress = defaultProps.shouldLongPressHoldPress;
+    _longPress.minimumPressDuration = SecondsFromMilliseconds(defaultProps.minLongPressDuration);
+    self.userInteractionEnabled = !defaultProps.disabled;
+    SetAnchorPoint(self, CGPointMake(0.5, 0.5));
+
+    [self resetInteractionState];
   }
 
   return self;
 }
 
-- (void)resetComponentState
+- (void)resetInteractionState
 {
   [_animator stopAnimation:YES];
   _animator = nil;
 
-  _durationSeconds = kDefaultDurationSeconds;
-  _pressOutDurationSeconds = -1.0;
-  _scaleTo = 0.86;
-  _enableHapticFeedback = YES;
-  _hapticType = @"selection";
-  _useLateHaptic = YES;
-  _throttle = NO;
-  _shouldLongPressHoldPress = NO;
   _blockedUntil = 0;
   _invalidated = NO;
   _hasTapLocation = NO;
   _tapLocation = CGPointZero;
 
   _longPress.enabled = NO;
-  _longPress.minimumPressDuration = kDefaultLongPressDurationSeconds;
   _longPress.enabled = YES;
 
   self.transform = CGAffineTransformIdentity;
-  self.userInteractionEnabled = YES;
-  SetAnchorPoint(self, CGPointMake(0.5, 0.5));
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  [self resetComponentState];
+  [self resetInteractionState];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
