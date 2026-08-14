@@ -3367,7 +3367,7 @@ PODS:
     - Yoga
   - react-native-screen-corner-radius (0.2.3):
     - React
-  - react-native-skia (2.4.7):
+  - react-native-skia (2.11.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -5291,7 +5291,7 @@ SPEC CHECKSUMS:
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 3a6b38edff2a811fc1e27f5ff81249b24ea7e607
   react-native-screen-corner-radius: ebd0d3258fcc894571b41d25ee3db7569d375153
-  react-native-skia: 4060ed6425fa8f5f9853f452d7af5ff3ea1b1dd4
+  react-native-skia: 9e9b6d13824c7d38e043ad78ad37bb205c2ba833
   react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: e80af8136496193381065a0b3035aa2121bf4c10
