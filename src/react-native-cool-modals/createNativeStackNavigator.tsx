@@ -3,10 +3,8 @@ import * as React from 'react';
 import {
   createNavigatorFactory,
   StackRouter as OldStackRouter,
-  StackActions,
   useNavigationBuilder,
   type DefaultNavigatorOptions,
-  type EventArg,
   type ParamListBase,
   type StackActionHelpers,
   type StackNavigationState,
@@ -56,28 +54,6 @@ function NativeStackNavigator(props: NavigatorProps) {
     screenListeners,
     screenOptions,
   });
-
-  React.useEffect(
-    () =>
-      // @ts-expect-error: the parent tab navigator owns this event.
-      navigation.addListener?.('tabPress', (event: EventArg<'tabPress', true>) => {
-        const isFocused = navigation.isFocused();
-
-        // Run the operation in the next frame so we're sure all listeners have been run
-        // This is necessary to know if preventDefault() has been called
-        requestAnimationFrame(() => {
-          if (state.index > 0 && isFocused && !event.defaultPrevented) {
-            // When user taps on already focused tab and we're inside the tab,
-            // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
-          }
-        });
-      }),
-    [navigation, state.index, state.key]
-  );
 
   return (
     <NavigationContent>
