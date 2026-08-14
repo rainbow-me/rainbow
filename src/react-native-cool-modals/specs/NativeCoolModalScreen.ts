@@ -1,12 +1,4 @@
-import type React from 'react';
-import {
-  codegenNativeCommands,
-  codegenNativeComponent,
-  type CodegenTypes,
-  type ColorValue,
-  type HostComponent,
-  type ViewProps,
-} from 'react-native';
+import { codegenNativeComponent, type CodegenTypes, type ColorValue, type ViewProps } from 'react-native';
 
 type StackPresentation =
   | 'push'
@@ -55,16 +47,6 @@ export interface NativeProps extends ViewProps {
   topOffset?: CodegenTypes.WithDefault<CodegenTypes.Double, 42>;
   transitionDuration?: CodegenTypes.Double;
 }
-
-type NativeCoolModalScreen = HostComponent<NativeProps>;
-
-interface NativeCommands {
-  layout: (viewRef: React.ElementRef<NativeCoolModalScreen>) => void;
-}
-
-export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['layout'],
-});
 
 export default codegenNativeComponent<NativeProps>('RNCMScreen', {
   excludedPlatforms: ['android'],

@@ -5,7 +5,7 @@
 
 @implementation RNCMScreenViewController {
   __weak id _previousFirstResponder;
-  CGRect _lastViewFrame;
+  CGSize _lastViewSize;
   UIViewController *_parentVC;
   RNCMScreenComponentView *_initialView;
 }
@@ -54,10 +54,10 @@
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
-  [_parentVC viewDidLayoutSubviews];
 
-  if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
-    _lastViewFrame = self.view.frame;
+  CGSize viewSize = self.view.bounds.size;
+  if (!CGSizeEqualToSize(_lastViewSize, viewSize)) {
+    _lastViewSize = viewSize;
     [self.screenView updateBounds];
   }
 }
