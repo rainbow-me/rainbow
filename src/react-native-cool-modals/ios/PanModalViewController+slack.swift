@@ -73,7 +73,6 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   public var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   public var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
   var state: PanModalPresentationController.PresentationState? = nil
-  var disappeared = false
   var hiding = false
   var didHandleWillDismiss = false
   var ppview: UIView?
@@ -97,22 +96,6 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     hiding = true
     hackParent()
     panModalTransition(to: .hidden)
-  }
-
-  @objc public func jumpTo(long: NSNumber) {
-    if hasAskedAboutShortForm > 0 {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-        // actively waiting
-        self.jumpTo(long: long)
-      }
-      return
-    }
-    self.panModalSetNeedsLayoutUpdate()
-    if long.boolValue {
-      panModalTransition(to: .longForm)
-    } else {
-      panModalTransition(to: .shortForm)
-    }
   }
 
   @objc public func rejump() {
@@ -303,9 +286,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   var isShortFormEnabledInternal = 2
-  var hasAskedAboutShortForm = 2
   var isShortFormEnabled: Bool {
-    hasAskedAboutShortForm -= 1
     let startFromShortForm = self.config?.startFromShortForm ?? true
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
@@ -365,6 +346,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
   }
 
   override public func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     didHandleWillDismiss = false
     config?.notifyAppear()
   }
@@ -378,24 +360,7 @@ public class PanModalViewController: UIViewController, PanModalPresentable, UILa
     if !self.config!.customStack {
       config?.invalidateImpl()
     }
-    disappeared = true
     super.viewWillDisappear(animated)
-  }
-
-  var prevHeight: CGFloat = 0
-  override public func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    for i in 1...10 {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * Double(i)) {
-        if !self.disappeared {
-          let newHeight: CGFloat = self.panScrollable?.layer.frame.height ?? 0
-          if !newHeight.isEqual(to: self.prevHeight) {
-            self.prevHeight = newHeight
-            self.panModalSetNeedsLayoutUpdate()
-          }
-        }
-      }
-    }
   }
 }
 

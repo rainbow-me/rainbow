@@ -62,45 +62,50 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
 
   [super updateProps:props oldProps:oldProps];
 
-  _controller.modalInPresentation = !newScreenProps.gestureEnabled;
-  switch (newScreenProps.stackPresentation) {
-    case RNCMScreenStackPresentation::Push:
-      // ignored, we only need to keep in mind not to set presentation delegate
-      break;
-    case RNCMScreenStackPresentation::Modal:
-      _controller.modalPresentationStyle = UIModalPresentationAutomatic;
-      if (_controller.transDelegate != nil) {
-        _controller.modalPresentationStyle = UIModalPresentationCustom;
-      }
-      break;
-    case RNCMScreenStackPresentation::TransparentModal:
-      _controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
-      break;
-    case RNCMScreenStackPresentation::ContainedModal:
-      _controller.modalPresentationStyle = UIModalPresentationCurrentContext;
-      break;
-    case RNCMScreenStackPresentation::ContainedTransparentModal:
-      _controller.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-      break;
-    case RNCMScreenStackPresentation::FullScreenModal:
-      _controller.modalPresentationStyle = UIModalPresentationFullScreen;
-      break;
-    case facebook::react::RNCMScreenStackPresentation::FormSheet:
-      _controller.modalPresentationStyle = UIModalPresentationFormSheet;
-      break;
+  if (newScreenProps.gestureEnabled != oldScreenProps.gestureEnabled) {
+    _controller.modalInPresentation = !newScreenProps.gestureEnabled;
   }
 
-  switch (newScreenProps.stackAnimation) {
-    case RNCMScreenStackAnimation::Default:
-    case RNCMScreenStackAnimation::None:
-      // Default
-      break;
-    case RNCMScreenStackAnimation::Fade:
-      _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-      break;
-    case RNCMScreenStackAnimation::Flip:
-      _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-      break;
+  if (newScreenProps.stackPresentation != oldScreenProps.stackPresentation) {
+    switch (newScreenProps.stackPresentation) {
+      case RNCMScreenStackPresentation::Push:
+        // ignored, we only need to keep in mind not to set presentation delegate
+        break;
+      case RNCMScreenStackPresentation::Modal:
+        _controller.modalPresentationStyle =
+            _controller.transDelegate == nil ? UIModalPresentationAutomatic : UIModalPresentationCustom;
+        break;
+      case RNCMScreenStackPresentation::TransparentModal:
+        _controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        break;
+      case RNCMScreenStackPresentation::ContainedModal:
+        _controller.modalPresentationStyle = UIModalPresentationCurrentContext;
+        break;
+      case RNCMScreenStackPresentation::ContainedTransparentModal:
+        _controller.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        break;
+      case RNCMScreenStackPresentation::FullScreenModal:
+        _controller.modalPresentationStyle = UIModalPresentationFullScreen;
+        break;
+      case RNCMScreenStackPresentation::FormSheet:
+        _controller.modalPresentationStyle = UIModalPresentationFormSheet;
+        break;
+    }
+  }
+
+  if (newScreenProps.stackAnimation != oldScreenProps.stackAnimation) {
+    switch (newScreenProps.stackAnimation) {
+      case RNCMScreenStackAnimation::Default:
+      case RNCMScreenStackAnimation::None:
+        _controller.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        break;
+      case RNCMScreenStackAnimation::Fade:
+        _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        break;
+      case RNCMScreenStackAnimation::Flip:
+        _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        break;
+    }
   }
 
   if (newScreenProps.hidden != oldScreenProps.hidden && newScreenProps.hidden) {
@@ -144,16 +149,6 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
   // When a screen is mounted under UINavigationController, the navigation controller owns its size.
   // Ignore React layout for the screen itself and let the controller report its dimensions to the
   // shadow tree so React can lay out the screen's children.
-}
-
-- (void)layout
-{
-  [(PanModalViewController *)[_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
-}
-
-- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
-{
-  RCTRNCMScreenHandleCommand(self, commandName, args);
 }
 
 - (BOOL)presentationControllerShouldDismiss:(UIPresentationController *)presentationController
@@ -239,7 +234,7 @@ static inline const RNCMScreenProps &GetScreenComponentViewProps(const std::shar
   if (_state != nullptr) {
     auto newState = RNCMScreenState{RCTSizeFromCGSize(self.bounds.size), {0, 0}};
 
-    _state->updateState(std::move(newState));
+    _state->updateState(std::move(newState), EventQueue::UpdateMode::unstable_Immediate);
 
     // TODO: Requesting layout on every layout is wrong. We should look for a way to get rid of this.
     UINavigationController *navctr = _controller.navigationController;
