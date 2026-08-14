@@ -269,6 +269,12 @@ using namespace facebook::react;
   return _reactSubviews;
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  [self maybeAddToParentAndUpdateContainer];
+}
+
 - (void)maybeAddToParentAndUpdateContainer
 {
   BOOL wasScreenMounted = _controller.parentViewController != nil;
