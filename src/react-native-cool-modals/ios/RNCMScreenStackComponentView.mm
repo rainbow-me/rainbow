@@ -264,10 +264,13 @@ using namespace facebook::react;
   [_controller setViewControllers:@[ [UIViewController new] ]];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-missing-super-calls"
 - (NSArray<UIView *> *)reactSubviews
 {
   return _reactSubviews;
 }
+#pragma clang diagnostic pop
 
 - (void)didMoveToWindow
 {
