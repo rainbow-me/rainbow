@@ -1,20 +1,26 @@
-import type { TransformOrigin } from './types';
+import type { Direction, TransformOrigin } from './types';
 
-export function normalizeTransformOrigin(transformOrigin: TransformOrigin | string | undefined): TransformOrigin {
+const CENTER: TransformOrigin = [0.5, 0.5];
+const BOTTOM: TransformOrigin = [0.5, 1];
+const LEFT: TransformOrigin = [0, 0.5];
+const RIGHT: TransformOrigin = [1, 0.5];
+const TOP: TransformOrigin = [0.5, 0];
+
+export function normalizeTransformOrigin(transformOrigin: TransformOrigin | Direction | undefined): TransformOrigin {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
     return transformOrigin;
   }
 
   switch (transformOrigin) {
     case 'bottom':
-      return [0.5, 1];
+      return BOTTOM;
     case 'left':
-      return [0, 0.5];
+      return LEFT;
     case 'right':
-      return [1, 0.5];
+      return RIGHT;
     case 'top':
-      return [0.5, 1];
+      return TOP;
     default:
-      return [0.5, 0.5];
+      return CENTER;
   }
 }

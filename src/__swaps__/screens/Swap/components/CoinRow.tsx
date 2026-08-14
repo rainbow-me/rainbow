@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import { type GestureResponderEvent } from 'react-native';
 
 import { startCase } from 'lodash';
 import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
@@ -10,6 +9,7 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { type CoinRowItem } from '@/__swaps__/types/search';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type ButtonPressEvent } from '@/components/animations/ButtonPressAnimation/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
@@ -104,7 +104,7 @@ export function CoinRow({
   }, [address, mainnetAddress, chainId]);
 
   const onPressHandler = useCallback(
-    (event?: GestureResponderEvent) => {
+    (event?: ButtonPressEvent) => {
       event?.stopPropagation();
 
       if (output) {
