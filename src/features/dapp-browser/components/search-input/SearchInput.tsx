@@ -611,8 +611,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   searchBarContextMenu: {
-    marginTop: -6,
-    paddingTop: 6,
     width: SEARCH_BAR_WIDTH,
   },
   searchBarContextMenuContainer: {
