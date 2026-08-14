@@ -13,6 +13,7 @@ import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator
 import { useSetupContext } from '../setupContext';
 import { cancelSetup, goBackInSetup } from '../setupNavigation';
 import { SetupCancelButton } from './SetupCancelButton';
+import { SetupProgressIndicator } from './SetupProgressIndicator';
 
 export const SetupStepHeader = memo(function SetupStepHeader() {
   const { useActionStore } = useSetupContext();
@@ -20,10 +21,7 @@ export const SetupStepHeader = memo(function SetupStepHeader() {
   const submitting = useActionStore(s => s.loading === true);
 
   const hasHistory = useStoreSharedValue(useCashDepositSetupNavigationStore, s => s.history.length > 0);
-  const visible = useStoreSharedValue(
-    useCashDepositSetupNavigationStore,
-    s => !s.isRouteActive(Routes.CASH_SETUP_ALL_DONE) && !s.isRouteActive(Routes.CASH_SETUP_CARD_ADDED)
-  );
+  const visible = useStoreSharedValue(useCashDepositSetupNavigationStore, s => !s.isRouteActive(Routes.CASH_SETUP_CARD_ADDED));
 
   const headerStyle = useAnimatedStyle(() => ({
     opacity: visible.value ? 1 : 0,
@@ -53,6 +51,7 @@ export const SetupStepHeader = memo(function SetupStepHeader() {
           </Box>
         </ButtonPressAnimation>
       </Animated.View>
+      <SetupProgressIndicator />
       <SetupCancelButton disabled={submitting} onPress={cancelSetup} />
     </Animated.View>
   );
