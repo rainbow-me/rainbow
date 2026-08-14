@@ -29,7 +29,9 @@ const WaitCommitmentConfirmationContent = ({
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="12px">
               <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
-                <HourglassAnimation />
+                <Box alignItems="center" width="full">
+                  <HourglassAnimation />
+                </Box>
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
                     {i18n.t(i18n.l.profiles.confirm.transaction_pending)}

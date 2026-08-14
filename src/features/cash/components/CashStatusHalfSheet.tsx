@@ -4,8 +4,9 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
-import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text } from '@/design-system';
+import HourglassAnimation from '@/components/animations/HourglassAnimation';
+import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -54,6 +55,9 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
   const icon = props.status === 'success' ? props.successIcon : STATUS_ICONS[props.status];
   const iconColor = STATUS_ICON_COLORS[props.status];
   const isAlert = props.status === 'error' || props.status === 'warning';
+  const { isDarkMode } = useColorMode();
+  const blue = useForegroundColor('blue');
+  const panelColor = isDarkMode ? PANEL_BACKGROUND_DARK : PANEL_BACKGROUND_LIGHT;
 
   useEffect(() => {
     // A keyboard would cover the sheet, whose backdrop blocks any way to close it.
@@ -68,13 +72,17 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
       <View accessibilityViewIsModal style={styles.overlay} testID={`${props.testID}-overlay`}>
         <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.backdrop} />
         <Animated.View entering={PANEL_ENTERING_ANIMATION} exiting={PANEL_EXITING_ANIMATION} style={styles.panelHost}>
-          <PanelSheet handleProps={{ showBlur: false, top: 8 }} layoutAnimation={PANEL_RESIZE_ANIMATION} showTapToDismiss={false}>
+          <PanelSheet layoutAnimation={PANEL_RESIZE_ANIMATION} showHandle={false} showTapToDismiss={false}>
             <Animated.View entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)} key={props.status}>
               <Box paddingBottom={props.status === 'inProgress' ? '32px' : '20px'} paddingHorizontal="32px" paddingTop="52px">
                 <Box height={{ custom: 64 }} justifyContent="center">
-                  <Text color={iconColor} size="44pt" style={[styles.icon, isAlert && styles.alertIcon]} weight="heavy">
-                    {icon}
-                  </Text>
+                  {props.status === 'inProgress' ? (
+                    <HourglassAnimation backgroundColor={panelColor} color={blue} sandColor={panelColor} showBadge={false} size={58} />
+                  ) : (
+                    <Text color={iconColor} size="44pt" style={[styles.icon, isAlert && styles.alertIcon]} weight="heavy">
+                      {icon}
+                    </Text>
+                  )}
                 </Box>
 
                 <Box gap={24} paddingTop="32px">
