@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
+import { ThemeProvider, useTheme as useNavigationTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -10,7 +11,7 @@ import * as i18n from '@/languages';
 import { settingsOptions } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme/ThemeContext';
+import { useTheme as useAppTheme } from '@/theme/ThemeContext';
 
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import SecretWarning from './components/Backups/SecretWarning';
@@ -27,7 +28,8 @@ const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
-  const { colors } = useTheme();
+  const navigationTheme = useNavigationTheme();
+  const { colors } = useAppTheme();
   const { language } = useAccountSettings();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
@@ -40,113 +42,125 @@ export function SettingsSheet() {
   );
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
+  const settingsNavigationTheme = useMemo(
+    () => ({
+      ...navigationTheme,
+      colors: {
+        ...navigationTheme.colors,
+        background: colors.cardBackdrop,
+      },
+    }),
+    [colors.cardBackdrop, navigationTheme]
+  );
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} scrollEnabled={false} useAdditionalTopPadding>
-          <Stack.Navigator
-            screenOptions={{
-              ...memoSettingsOptions,
-              headerRight: renderHeaderRight,
-            }}
-          >
-            <Stack.Screen
-              name={Routes.SETTINGS_SECTION}
-              options={{
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: i18n.t(i18n.l.settings.label),
+          <ThemeProvider value={settingsNavigationTheme}>
+            <Stack.Navigator
+              screenOptions={{
+                ...memoSettingsOptions,
+                headerRight: renderHeaderRight,
               }}
             >
-              {() => (
-                <SettingsSection
-                  key={language}
-                  onCloseModal={goBack}
-                  onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
-                  onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
-                  onPressCurrency={sectionOnPressFactory(SettingsPages.currency.key)}
-                  onPressDev={sectionOnPressFactory(SettingsPages.dev.key)}
-                  onPressLanguage={sectionOnPressFactory(SettingsPages.language.key)}
-                  onPressNetwork={sectionOnPressFactory(SettingsPages.network.key)}
-                  onPressNotifications={sectionOnPressFactory(SettingsPages.notifications.key)}
-                  onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy.key)}
-                  onPressSupport={sectionOnPressFactory(SettingsPages.support.key)}
-                />
-              )}
-            </Stack.Screen>
-            {Object.values(SettingsPages).map(
-              ({ component, getTitle, key }) =>
-                component && (
-                  <Stack.Screen
-                    component={component}
-                    key={key}
-                    name={key}
-                    options={{
-                      cardStyleInterpolator: settingsCardStyleInterpolator,
-                      title: getTitle(),
-                    }}
-                    // @ts-ignore
-                    title={getTitle()}
+              <Stack.Screen
+                name={Routes.SETTINGS_SECTION}
+                options={{
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: i18n.t(i18n.l.settings.label),
+                }}
+              >
+                {() => (
+                  <SettingsSection
+                    key={language}
+                    onCloseModal={goBack}
+                    onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
+                    onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
+                    onPressCurrency={sectionOnPressFactory(SettingsPages.currency.key)}
+                    onPressDev={sectionOnPressFactory(SettingsPages.dev.key)}
+                    onPressLanguage={sectionOnPressFactory(SettingsPages.language.key)}
+                    onPressNetwork={sectionOnPressFactory(SettingsPages.network.key)}
+                    onPressNotifications={sectionOnPressFactory(SettingsPages.notifications.key)}
+                    onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy.key)}
+                    onPressSupport={sectionOnPressFactory(SettingsPages.support.key)}
                   />
-                )
-            )}
-            <Stack.Screen
-              component={WalletNotificationsSettings}
-              name={Routes.WALLET_NOTIFICATIONS_SETTINGS}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={WiewWalletBackup}
-              name={Routes.VIEW_WALLET_BACKUP}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={ViewCloudBackups}
-              name={Routes.VIEW_CLOUD_BACKUPS}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={ViewWalletDelegations}
-              name={Routes.VIEW_WALLET_DELEGATIONS}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={SecretWarning}
-              name={Routes.SECRET_WARNING}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={ShowSecretView}
-              name={Routes.SHOW_SECRET}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-            <Stack.Screen
-              component={SupportCategoryPickerView}
-              name={Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER}
-              options={({ route }: any) => ({
-                cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: route.params?.title,
-              })}
-            />
-          </Stack.Navigator>
+                )}
+              </Stack.Screen>
+              {Object.values(SettingsPages).map(
+                ({ component, getTitle, key }) =>
+                  component && (
+                    <Stack.Screen
+                      component={component}
+                      key={key}
+                      name={key}
+                      options={{
+                        cardStyleInterpolator: settingsCardStyleInterpolator,
+                        title: getTitle(),
+                      }}
+                      // @ts-ignore
+                      title={getTitle()}
+                    />
+                  )
+              )}
+              <Stack.Screen
+                component={WalletNotificationsSettings}
+                name={Routes.WALLET_NOTIFICATIONS_SETTINGS}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={WiewWalletBackup}
+                name={Routes.VIEW_WALLET_BACKUP}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={ViewCloudBackups}
+                name={Routes.VIEW_CLOUD_BACKUPS}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={ViewWalletDelegations}
+                name={Routes.VIEW_WALLET_DELEGATIONS}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={SecretWarning}
+                name={Routes.SECRET_WARNING}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={ShowSecretView}
+                name={Routes.SHOW_SECRET}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+              <Stack.Screen
+                component={SupportCategoryPickerView}
+                name={Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER}
+                options={({ route }: any) => ({
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
+                  title: route.params?.title,
+                })}
+              />
+            </Stack.Navigator>
+          </ThemeProvider>
         </SimpleSheet>
       )}
     </BackgroundProvider>
