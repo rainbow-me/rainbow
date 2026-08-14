@@ -2,17 +2,17 @@ import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { logger, RainbowError } from '@/logger';
 
 import { resolveApprovalRequirement } from './approval';
-import { createNewAction, createNewRap } from './common';
-import { type RapAction, type RapSwapActionParameters } from './references';
+import { createNewAction } from './common';
+import { type Rap, type RapAction, type RapSwapActionParameters } from './references';
 
-export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {
+export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>): Promise<Rap> {
   let actions: RapAction<'claimClaimable' | 'crosschainSwap' | 'unlock' | 'swap'>[] = [];
 
   const { sellAmount, assetToBuy, quote, chainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } = parameters;
 
   if (!additionalParams?.claimTxns.length) {
     logger.error(new RainbowError('[raps/claimClaimable]: claimTxns is undefined'));
-    return { actions: [] };
+    return { actions: [], type: 'claimClaimable' };
   }
 
   for (const claimTx of additionalParams.claimTxns) {
@@ -70,7 +70,5 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
     actions = actions.concat(crosschainSwap);
   }
 
-  // create the overall rap
-  const newRap = createNewRap(actions);
-  return newRap;
+  return { actions, type: 'claimClaimable' };
 }

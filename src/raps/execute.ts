@@ -9,10 +9,10 @@ import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } fro
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { buildAtomicExecutionRequirements } from '@/raps/atomicSwapPreparation';
+import { buildAtomicExecutionPolicy } from '@/raps/atomicSwapPreparation';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { execute, type Call, type ExecuteCallsResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, type CallsPlan, type EvmTransactionResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { swap, unlock } from './actions';
 import { claimClaimable } from './actions/claimClaimable';
@@ -22,7 +22,6 @@ import { prepareUnlock } from './actions/unlock';
 import { createClaimClaimableRap } from './claimClaimable';
 import type {
   ActionProps,
-  PrepareActionProps,
   Rap,
   RapAction,
   RapActionResponse,
@@ -30,20 +29,15 @@ import type {
   RapActionTypes,
   RapSwapActionParameters,
   RapTypes,
+  SwapRap,
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { requireAddress } from './validation';
 
-type AtomicPrepareActionType = Extract<RapActionTypes, 'unlock' | 'swap' | 'crosschainSwap'>;
-type PrepareActionResult = { call: Call | null } | { call: Call; transaction: Omit<NewTransaction, 'hash'> };
-type RapFactoryResult = { actions: RapAction<RapActionTypes>[] };
-type WalletExecuteRapOptions = { preparedCalls?: PreparedCallsExecution | null };
-
 type Executors = {
   action: { [K in RapActionTypes]: (props: ActionProps<K>) => Promise<RapActionResult> };
-  prepare: { [K in AtomicPrepareActionType]: (props: PrepareActionProps<K>) => Promise<PrepareActionResult> };
-  rapFactory: { [K in RapTypes]: (params: RapSwapActionParameters<K>) => Promise<RapFactoryResult> };
+  rapFactory: { [K in RapTypes]: (params: RapSwapActionParameters<K>) => Promise<Rap> };
 };
 
 const executors: Executors = {
@@ -53,11 +47,6 @@ const executors: Executors = {
     swap,
     unlock,
   },
-  prepare: {
-    crosschainSwap: prepareCrosschainSwap,
-    swap: prepareSwap,
-    unlock: prepareUnlock,
-  },
   rapFactory: {
     claimClaimable: createClaimClaimableRap,
     crosschainSwap: createUnlockAndCrosschainSwapRap,
@@ -65,16 +54,12 @@ const executors: Executors = {
   },
 };
 
-function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>): Promise<RapFactoryResult> {
-  return executors.rapFactory[type](swapParameters);
+function createRapByType<T extends RapTypes>(type: T, parameters: RapSwapActionParameters<T>): Promise<Rap> {
+  return executors.rapFactory[type](parameters);
 }
 
 function runAction<T extends RapActionTypes>(type: T, props: ActionProps<T>): Promise<RapActionResult> {
   return executors.action[type](props);
-}
-
-function runAtomicPrepareAction<T extends AtomicPrepareActionType>(type: T, props: PrepareActionProps<T>): Promise<PrepareActionResult> {
-  return executors.prepare[type](props);
 }
 
 async function executeAction<T extends RapActionTypes>({
@@ -118,6 +103,25 @@ async function executeAction<T extends RapActionTypes>({
   }
 }
 
+async function prepareAtomicSwapRap(
+  rap: SwapRap<'swap'> | SwapRap<'crosschainSwap'>
+): Promise<{ calls: CallsPlan['calls']; transaction: Omit<NewTransaction, 'hash'> }> {
+  const actions = rap.actions;
+  const unlockAction = actions.length === 2 ? actions[0] : null;
+  const swapAction = actions.length === 2 ? actions[1] : actions[0];
+
+  const unlockCall = unlockAction ? (await prepareUnlock({ parameters: unlockAction.parameters })).call : null;
+  const preparedSwap =
+    swapAction.type === 'swap'
+      ? await prepareSwap({ parameters: swapAction.parameters })
+      : await prepareCrosschainSwap({ parameters: swapAction.parameters });
+
+  return {
+    calls: unlockCall ? [unlockCall, preparedSwap.call] : [preparedSwap.call],
+    transaction: preparedSwap.transaction,
+  };
+}
+
 function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
   const actionTypes = actions.map(action => action.type);
   return actionTypes.join(' + ');
@@ -147,12 +151,11 @@ export async function walletExecuteRap<T extends RapTypes>(
   wallet: Signer,
   type: T,
   parameters: RapSwapActionParameters<T>,
-  options?: WalletExecuteRapOptions
+  options?: { preparedCalls?: PreparedCallsExecution | null }
 ): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> {
-  // NOTE: We don't care to track claimable raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
-    ? await createSwapRapByType(type, parameters)
-    : await executeFn(createSwapRapByType, {
+    ? await createRapByType(type, parameters)
+    : await executeFn(createRapByType, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.CreateRap,
         metadata: {
@@ -160,18 +163,11 @@ export async function walletExecuteRap<T extends RapTypes>(
         },
       })(type, parameters);
 
-  const actions = rap.actions;
   const rapName = getRapFullName(rap.actions);
-  const canAttemptAtomic = Boolean(parameters.atomic) && isAtomicRapType(type);
-  const cachedPreparedCalls = isAtomicRapType(type) ? (options?.preparedCalls ?? null) : null;
 
-  if (canAttemptAtomic && isAtomicRapType(type)) {
+  if (parameters.atomic && supportsAtomicExecution(rap)) {
     const { chainId, quote, nonce } = parameters;
     const provider = getProvider({ chainId });
-
-    if (!quote) {
-      return { nonce: undefined, hash: null, errorMessage: 'Quote is required for atomic execution' };
-    }
 
     if (!(wallet instanceof Wallet)) {
       return {
@@ -179,115 +175,93 @@ export async function walletExecuteRap<T extends RapTypes>(
         hash: null,
         errorMessage: 'Atomic execution requires a local wallet signer',
       };
-    } else if (nonce !== undefined) {
-      try {
-        const calls: Call[] = [];
-        const fromAddress = requireAddress(quote.from, 'atomic quote.from');
-        let pendingTransaction: Omit<NewTransaction, 'hash'> | null = null;
+    }
 
-        for (const action of actions) {
-          if (!isAtomicPrepareAction(action)) {
-            throw new Error(`Action type "${action.type}" does not support atomic execution`);
-          }
-
-          const prepareResult = await runAtomicPrepareAction(action.type, {
-            parameters: action.parameters,
-            wallet,
-            quote,
-          });
-
-          if (!cachedPreparedCalls && prepareResult.call) calls.push(prepareResult.call);
-
-          if ('transaction' in prepareResult) pendingTransaction = prepareResult.transaction;
-        }
-
-        if (!cachedPreparedCalls && !calls.length) {
-          return { nonce: undefined, hash: null, errorMessage: 'No calls to execute' };
-        }
-
-        const prepared =
-          cachedPreparedCalls ??
-          (await execute.prepare.calls({
-            signer: wallet,
-            provider,
-            chainId,
-            calls,
-            requirements: buildAtomicExecutionRequirements(chainId),
-          }));
-
-        const execution = await executeFn(execute.calls, {
-          screen: Screens.SWAPS,
-          operation: TimeToSignOperation.BroadcastTransaction,
-          metadata: { degenMode: swapsStore.getState().degenMode },
-        })(prepared, {
-          chainId,
-          provider,
-          signer: wallet,
-        });
-
-        if (execution.kind === 'calls.managed') {
-          const failureMessage = await resolveManagedExecutionFailure({
-            executionId: execution.executionId,
-            status: execution.status,
-          });
-
-          if (failureMessage) {
-            logger.error(new RainbowError(`[raps/execute]: ${rapName} - managed atomic execution failed before onchain submission`), {
-              executionId: execution.executionId,
-              status: execution.status,
-              failureMessage,
-            });
-            return { nonce: undefined, hash: null, errorMessage: failureMessage };
-          }
-
-          if (pendingTransaction) {
-            trackCallsExecution({
-              address: fromAddress,
-              batch: true,
-              chainId,
-              execution,
-              transaction: pendingTransaction,
-            });
-          }
-
-          logger.debug(`[${rapName}] submitted managed atomic execution`, {
-            executionId: execution.executionId,
-            status: execution.status,
-          });
-          return { nonce: undefined, hash: null, errorMessage: null };
-        }
-
-        const transactionResult = requireSingleWalletAtomicExecution(execution);
-
-        if (pendingTransaction) {
-          trackCallsExecution({
-            address: fromAddress,
-            batch: true,
-            chainId,
-            execution: transactionResult,
-            transaction: pendingTransaction,
-          });
-        }
-
-        logger.debug(`[${rapName}] executed atomically`, { hash: transactionResult.hash });
-        return { nonce: transactionResult.transaction.nonce, hash: transactionResult.hash, errorMessage: null };
-      } catch (e) {
-        const error = ensureError(e);
-        logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
-          message: error.message,
-          fallbackToSequential: false,
-        });
-
-        return { nonce: undefined, hash: null, errorMessage: error.message || 'Unknown error' };
-      }
-    } else {
+    if (nonce === undefined) {
       return {
         nonce: undefined,
         hash: null,
         errorMessage: 'Atomic execution requires nonce metadata',
       };
     }
+
+    try {
+      const fromAddress = requireAddress(quote.from, 'atomic quote.from');
+      const { calls, transaction } = await prepareAtomicSwapRap(rap);
+      const prepared =
+        options?.preparedCalls ??
+        (await execute.prepare.calls({
+          ...buildAtomicExecutionPolicy(chainId),
+          signer: wallet,
+          provider,
+          chainId,
+          calls,
+        }));
+
+      const execution = await executeFn(execute.calls, {
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.BroadcastTransaction,
+        metadata: { degenMode: swapsStore.getState().degenMode },
+      })(prepared, {
+        chainId,
+        provider,
+        signer: wallet,
+      });
+
+      if (execution.kind === 'calls.managed') {
+        const failureMessage = await resolveManagedExecutionFailure({
+          executionId: execution.executionId,
+          status: execution.status,
+        });
+
+        if (failureMessage) {
+          logger.error(new RainbowError(`[raps/execute]: ${rapName} - managed atomic execution failed before onchain submission`), {
+            executionId: execution.executionId,
+            status: execution.status,
+            failureMessage,
+          });
+          return { nonce: undefined, hash: null, errorMessage: failureMessage };
+        }
+
+        trackCallsExecution({
+          address: fromAddress,
+          batch: true,
+          chainId,
+          execution,
+          transaction,
+        });
+
+        logger.debug(`[${rapName}] submitted managed atomic execution`, {
+          executionId: execution.executionId,
+          status: execution.status,
+        });
+        return { nonce: undefined, hash: null, errorMessage: null };
+      }
+
+      const transactionResult = requireSingleWalletAtomicExecution(execution);
+
+      trackCallsExecution({
+        address: fromAddress,
+        batch: true,
+        chainId,
+        execution: transactionResult,
+        transaction,
+      });
+
+      logger.debug(`[${rapName}] executed atomically`, { hash: transactionResult.hash });
+      return { nonce: transactionResult.transaction.nonce, hash: transactionResult.hash, errorMessage: null };
+    } catch (e) {
+      const error = ensureError(e);
+      logger.error(new RainbowError(`[raps/execute]: ${rapName} - atomic execution failed`), {
+        message: error.message,
+        fallbackToSequential: false,
+      });
+
+      return { nonce: undefined, hash: null, errorMessage: error.message || 'Unknown error' };
+    }
   }
+
+  const actions = rap.actions;
 
   // Sequential execution path
   let nonce = parameters?.nonce;
@@ -343,15 +317,11 @@ export async function walletExecuteRap<T extends RapTypes>(
   return { errorMessage, hash, nonce };
 }
 
-function isAtomicPrepareAction(action: RapAction<RapActionTypes>): action is RapAction<AtomicPrepareActionType> {
-  return action.type === 'unlock' || action.type === 'swap' || action.type === 'crosschainSwap';
+function supportsAtomicExecution(rap: Rap): rap is SwapRap<'swap'> | SwapRap<'crosschainSwap'> {
+  return rap.type === 'swap' || rap.type === 'crosschainSwap';
 }
 
-function isAtomicRapType(type: RapTypes): type is 'swap' | 'crosschainSwap' {
-  return type === 'swap' || type === 'crosschainSwap';
-}
-
-function requireSingleWalletAtomicExecution(result: ExecuteCallsResult): ExecutionResult {
+function requireSingleWalletAtomicExecution(result: ExecutionResult<'calls.wallet' | 'calls.managed'>): EvmTransactionResult {
   if (result.kind !== 'calls.wallet' || result.transactions.length !== 1) {
     throw new Error('Atomic execution must resolve to exactly one wallet transaction');
   }

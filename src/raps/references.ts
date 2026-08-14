@@ -93,9 +93,15 @@ export interface RapAction<T extends RapActionTypes> {
   type: T;
 }
 
-export interface Rap {
-  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimClaimable'>[];
-}
+export type SwapRap<T extends 'swap' | 'crosschainSwap'> = {
+  actions: [RapAction<T>] | [RapAction<'unlock'>, RapAction<T>];
+  type: T;
+};
+
+export type Rap =
+  | SwapRap<'swap'>
+  | SwapRap<'crosschainSwap'>
+  | { actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimClaimable'>[]; type: 'claimClaimable' };
 
 export enum rapActions {
   swap = 'swap',
@@ -135,15 +141,6 @@ export interface ActionProps<T extends RapActionTypes> {
   gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
-type PrepareActionQuoteMap = {
-  swap: Quote;
-  crosschainSwap: CrosschainQuote;
-  unlock: Quote | CrosschainQuote;
-  claimClaimable: Quote | CrosschainQuote;
-};
-
 export interface PrepareActionProps<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
-  wallet: Signer;
-  quote: PrepareActionQuoteMap[T];
 }

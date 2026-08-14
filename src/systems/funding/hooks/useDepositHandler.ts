@@ -8,7 +8,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/utils/quotes';
-import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
@@ -475,7 +474,7 @@ async function resolveSponsoredPreparedCalls({
   config: DepositConfig;
   quote: Quote | CrosschainQuote;
   recipient: DepositGasHookParams['recipient'];
-}): Promise<PreparedCallsExecution | null> {
+}): Promise<PreparedCallsExecution<'calls.managed'> | null> {
   if (!config.sponsoredExecution) return null;
 
   if (!backendNetworksActions.isSponsorshipEligible(asset.chainId)) {
@@ -491,8 +490,7 @@ async function resolveSponsoredPreparedCalls({
   };
 
   try {
-    const preparedCalls = await config.sponsoredExecution.getPreparedCalls(hookParams);
-    return isPreparedCallsExecutionSponsored(preparedCalls) ? preparedCalls : null;
+    return await config.sponsoredExecution.getPreparedCalls(hookParams);
   } catch (error) {
     logger.warn('[useDepositHandler]: sponsored prepared calls unavailable', {
       error,
