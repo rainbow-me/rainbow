@@ -168,12 +168,20 @@ export const FlipButton = () => {
               blurIntensity={10}
               blurStyle={isDarkMode ? 'regular' : 'light'}
               style={[
-                AnimatedSwapStyles.flipButtonFetchingStyle,
-                styles.flipButton,
+                StyleSheet.absoluteFill,
+                styles.flipButtonLayer,
                 {
                   backgroundColor: Platform.OS === 'android' ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
-                  borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
                 },
+              ]}
+            />
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                styles.flipButtonLayer,
+                AnimatedSwapStyles.flipButtonFetchingStyle,
+                { borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5) },
               ]}
             />
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
@@ -218,16 +226,13 @@ const SpinnerComponent = () => {
 };
 
 const styles = StyleSheet.create({
-  flipButton: {
+  flipButtonLayer: {
     borderRadius: 15,
-    height: 30,
-    overflow: 'hidden',
-    position: 'absolute',
-    width: 30,
   },
   flipButtonContainer: {
     borderRadius: 15,
     height: 30,
+    overflow: 'hidden',
     width: 30,
   },
 });
