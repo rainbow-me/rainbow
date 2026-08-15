@@ -11,7 +11,8 @@
     },
     "ios": {
       "componentProvider": {
-        "Button": "ButtonComponentView"
+        "Button": "ButtonComponentView",
+        "RetainedView": "RetainedViewComponentView"
       }
     }
   }
