@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef, type RefObject } from 'react';
+import React, { memo, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { Platform, ScrollView, StyleSheet, View, type ScrollViewProps, type ViewStyle } from 'react-native';
 
 import Animated, {
@@ -36,7 +36,9 @@ const CHART_TOGGLE_SIZE = PILL.height;
 const RIGHT_INSET = BASE_HORIZONTAL_INSET + CHART_TOGGLE_SIZE + CHART_TOGGLE_LEFT_MARGIN;
 
 const CANDLE_RESOLUTION_COUNT = Object.keys(CANDLE_RESOLUTIONS).length;
-const CANDLESTICK_CONTENT_WIDTH = PILL.width * CANDLE_RESOLUTION_COUNT + PILL.gap * (CANDLE_RESOLUTION_COUNT - 1);
+const CANDLESTICK_PILLS_WIDTH = PILL.width * CANDLE_RESOLUTION_COUNT + PILL.gap * (CANDLE_RESOLUTION_COUNT - 1);
+const CANDLESTICK_CONTENT_WIDTH = CANDLESTICK_PILLS_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET;
+const CANDLESTICK_CONTENT_WIDTH_WITHOUT_TOGGLE = CANDLESTICK_PILLS_WIDTH + BASE_HORIZONTAL_INSET * 2;
 const LINE_CHART_PERIOD_COUNT = Object.keys(LINE_CHART_TIME_PERIODS).length;
 
 // ============ Types ========================================================== //
@@ -61,7 +63,7 @@ type TimeframeButtonProps = {
 
 // ============ Timeframe Components =========================================== //
 
-const { setCandleResolution, setLineChartTimePeriod } = chartsActions;
+const { setCandleResolution, setLineChartTimePeriod, toggleChartType } = chartsActions;
 
 function setTimeframe(selectedIndex: SharedValue<number>, { candleResolution, lineChartTimePeriod }: SetTimeframeParams): void {
   'worklet';
@@ -85,10 +87,20 @@ export const TimeframeSelector = memo(function TimeframeSelector({
   hideChartTypeToggle?: boolean;
 }) {
   const chartType = useChartType();
-  const initialState = useStableValue(() => getInitialState(chartType));
+  const initialSelection = useStableValue(() => getTimeframeSelection(chartType, hideChartTypeToggle));
+  const previousChartType = useRef(chartType);
   const scrollViewRef = useRef<ScrollView>(null);
-  const selectedIndex = useSharedValue(initialState.initialIndex);
+  const selectedIndex = useSharedValue(initialSelection.selectedIndex);
   const scrollViewProps = useMemo(() => getScrollViewProps(chartType, hideChartTypeToggle), [chartType, hideChartTypeToggle]);
+
+  useLayoutEffect(() => {
+    if (chartType === previousChartType.current) return;
+    previousChartType.current = chartType;
+
+    const selection = getTimeframeSelection(chartType, hideChartTypeToggle);
+    selectedIndex.value = selection.selectedIndex;
+    scrollViewRef.current?.scrollTo({ animated: false, ...selection.contentOffset });
+  }, [chartType, hideChartTypeToggle, selectedIndex]);
 
   const buttonWidth = useDerivedValue(() => {
     if (chartType === ChartType.Candlestick) return PILL.width;
@@ -109,7 +121,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
       <ScrollView
         centerContent={Platform.OS !== 'ios' || chartType === ChartType.Line || hideChartTypeToggle}
         contentContainerStyle={scrollViewProps.contentContainerStyle}
-        contentOffset={initialState.contentOffset}
+        contentOffset={initialSelection.contentOffset}
         horizontal
         maintainVisibleContentPosition={scrollViewProps.maintainVisibleContentPosition}
         ref={scrollViewRef}
@@ -145,13 +157,7 @@ export const TimeframeSelector = memo(function TimeframeSelector({
         style={hideChartTypeToggle ? [styles.rightFade, styles.symmetricalRightFade] : styles.rightFade}
       />
       {hideChartTypeToggle ? null : (
-        <ChartTypeToggle
-          backgroundColor={backgroundColor}
-          color={color}
-          initialChartType={initialState.initialChartType}
-          scrollViewRef={scrollViewRef}
-          selectedIndex={selectedIndex}
-        />
+        <ChartTypeToggle backgroundColor={backgroundColor} color={color} initialChartType={initialSelection.chartType} />
       )}
     </View>
   );
@@ -269,14 +275,10 @@ const ChartTypeToggle = memo(function ChartTypeToggle({
   backgroundColor,
   color,
   initialChartType,
-  scrollViewRef,
-  selectedIndex,
 }: {
   backgroundColor: string;
   color: string;
   initialChartType: ChartType;
-  scrollViewRef: RefObject<ScrollView | null>;
-  selectedIndex: SharedValue<number>;
 }) {
   const selectedChartType = useSharedValue(initialChartType);
 
@@ -299,15 +301,11 @@ const ChartTypeToggle = memo(function ChartTypeToggle({
     ),
   }));
 
-  const toggleChartType = useCallback(() => {
-    toggleChartTypeAndScroll(scrollViewRef, selectedIndex);
-  }, [selectedIndex, scrollViewRef]);
-
   const onPress = useCallback(() => {
     'worklet';
     selectedChartType.value = selectedChartType.value === ChartType.Candlestick ? ChartType.Line : ChartType.Candlestick;
     runOnJS(toggleChartType)();
-  }, [selectedChartType, toggleChartType]);
+  }, [selectedChartType]);
 
   return (
     <GestureHandlerButton
@@ -375,27 +373,33 @@ const Candle = ({
 
 // ============ Utilities ====================================================== //
 
-function getInitialState(chartType: ChartType): {
+function getTimeframeSelection(
+  chartType: ChartType,
+  hideChartTypeToggle?: boolean
+): {
+  chartType: ChartType;
   contentOffset: { x: number; y: number };
-  initialChartType: ChartType;
-  initialIndex: number;
+  selectedIndex: number;
 } {
-  const initialIndex = getInitialSelectedIndex(chartType);
-  const x = getInitialScrollPosition(initialIndex);
-  return { contentOffset: { x, y: 0 }, initialChartType: chartType, initialIndex };
+  const selectedIndex = getSelectedIndex(chartType);
+  const x = chartType === ChartType.Candlestick ? getCandlestickScrollPosition(selectedIndex, hideChartTypeToggle) : 0;
+  return { chartType, contentOffset: { x, y: 0 }, selectedIndex };
 }
 
-function getInitialSelectedIndex(chartType: ChartType): number {
+function getSelectedIndex(chartType: ChartType): number {
   return chartType === ChartType.Candlestick
     ? CANDLE_RESOLUTIONS[useChartsStore.getState().candleResolution].index
     : LINE_CHART_TIME_PERIODS[useChartsStore.getState().lineChartTimePeriod].index;
 }
 
-function getInitialScrollPosition(buttonIndex: number): number {
+function getCandlestickScrollPosition(buttonIndex: number, hideChartTypeToggle?: boolean): number {
   const buttonOffset = buttonIndex * (PILL.width + PILL.gap) + BASE_HORIZONTAL_INSET;
   const availableScrollWidth = DEVICE_WIDTH - BASE_HORIZONTAL_INSET * 2;
   const centerOffset = availableScrollWidth / 2;
-  return Math.max(0, buttonOffset - centerOffset);
+  const desiredScrollPosition = Math.max(0, buttonOffset - centerOffset);
+  const contentWidth = hideChartTypeToggle ? CANDLESTICK_CONTENT_WIDTH_WITHOUT_TOGGLE : CANDLESTICK_CONTENT_WIDTH;
+  const maximumScrollPosition = Math.max(0, contentWidth - DEVICE_WIDTH);
+  return Math.min(desiredScrollPosition, maximumScrollPosition);
 }
 
 function getScrollViewProps(
@@ -412,26 +416,6 @@ function getScrollViewProps(
     maintainVisibleContentPosition: Platform.OS === 'ios' ? undefined : { minIndexForVisible: 0 },
     style: styles.scrollView,
   };
-}
-
-function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, selectedIndex: SharedValue<number>): void {
-  const newChartType = chartsActions.toggleChartType();
-  const newSelectedIndex = getInitialSelectedIndex(newChartType);
-  const isLineChart = newChartType === ChartType.Line;
-  selectedIndex.value = newSelectedIndex;
-
-  if (Platform.OS === 'ios' && isLineChart) return;
-
-  const scrollTo = () =>
-    scrollViewRef.current?.setNativeProps({
-      contentOffset: {
-        x: isLineChart ? 0 : getInitialScrollPosition(newSelectedIndex),
-        y: 0,
-      },
-    });
-
-  if (Platform.OS === 'ios' || isLineChart) scrollTo();
-  else requestAnimationFrame(scrollTo);
 }
 
 // ============ Styles ========================================================= //
@@ -502,11 +486,11 @@ const styles = StyleSheet.create({
     paddingRight: RIGHT_INSET,
     paddingVertical: 12,
     position: 'relative',
-    width: CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET + RIGHT_INSET,
+    width: CANDLESTICK_CONTENT_WIDTH,
   },
   hideChartToggleOverride: {
     paddingRight: BASE_HORIZONTAL_INSET,
-    width: CANDLESTICK_CONTENT_WIDTH + BASE_HORIZONTAL_INSET * 2,
+    width: CANDLESTICK_CONTENT_WIDTH_WITHOUT_TOGGLE,
   },
   leftFade: {
     height: '100%',
