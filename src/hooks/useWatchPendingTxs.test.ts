@@ -492,9 +492,7 @@ describe('watchPendingTransaction', () => {
       status: RelayExecutionStatus.Confirmed,
       updatedAtMs: 0,
       onchain: {
-        scope: 'crosschain',
-        observed: 'both',
-        origin: {
+        source: {
           chainId: 8453,
           hashes: ['0x1111111111111111111111111111111111111111111111111111111111111111'],
           kind: 'evm',
@@ -577,11 +575,11 @@ describe('watchPendingTransaction', () => {
   });
 
   it('updates the local overlay before managed history sync finishes', async () => {
-    const originHash: `0x${string}` = '0x1111111111111111111111111111111111111111111111111111111111111111';
+    const sourceHash: `0x${string}` = '0x1111111111111111111111111111111111111111111111111111111111111111';
     const pendingTransaction = buildManagedPendingTransaction({ hash: EXECUTION_ID, relayExecutionId: EXECUTION_ID });
     const confirmedTransaction: SettledTransaction = {
       ...pendingTransaction,
-      hash: originHash,
+      hash: sourceHash,
       status: TransactionStatus.confirmed,
       title: 'swap.confirmed',
     };
@@ -597,10 +595,9 @@ describe('watchPendingTransaction', () => {
         status: RelayExecutionStatus.Confirmed,
         updatedAtMs: 0,
         onchain: {
-          scope: 'singlechain',
-          transactions: {
+          source: {
             chainId: 8453,
-            hashes: [originHash],
+            hashes: [sourceHash],
             kind: 'evm',
           },
         },
