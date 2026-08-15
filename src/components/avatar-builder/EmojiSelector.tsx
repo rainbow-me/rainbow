@@ -3,7 +3,7 @@ import { Dimensions, Platform, StyleSheet, View, type ViewStyle } from 'react-na
 
 import {
   State as GestureHandlerState,
-  ScrollView,
+  LegacyScrollView as ScrollView,
   TapGestureHandler,
   type TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';

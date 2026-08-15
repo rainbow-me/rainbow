@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
-import { Gesture, GestureDetector, type PanGesture } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, type LegacyPanGesture as PanGesture } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

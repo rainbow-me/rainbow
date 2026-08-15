@@ -1,7 +1,10 @@
 import React, { forwardRef, useCallback } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 
-import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
+import {
+  legacy_createNativeWrapper as createNativeWrapper,
+  type LegacyRawButtonProps as RawButtonProps,
+} from 'react-native-gesture-handler';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { normalizeTransformOrigin } from './normalizeTransformOrigin';

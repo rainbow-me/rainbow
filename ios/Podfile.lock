@@ -4114,7 +4114,7 @@ PODS:
     - Yoga
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -5352,7 +5352,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: 06021ce4fc65a1ad9a28c29b5ed78030b6b359b9
   RNFlashList: 3d84145e452acaf6592bbbdee8736a462e980f4c
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
-  RNGestureHandler: acdcc210495ed9fba5c904e91eaf1f476139069f
+  RNGestureHandler: f09eca0b47053142f7543f5c71d183f215ba5d81
   RNKeychain: 551d42b0ef53426f82551a0cc961cfa10ad33afa
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae

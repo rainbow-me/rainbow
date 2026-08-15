@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { ScrollView } from 'react-native-gesture-handler';
+import { LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
