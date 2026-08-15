@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
-import { ScrollView } from 'react-native-gesture-handler';
+import { LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';

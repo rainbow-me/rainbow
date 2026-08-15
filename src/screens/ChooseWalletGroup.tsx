@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Text as NativeText, View } from 'react-native';
 
 import chroma from 'chroma-js';
-import { ScrollView } from 'react-native-gesture-handler';
+import { LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';

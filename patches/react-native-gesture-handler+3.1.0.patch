@@ -1,0 +1,94 @@
+# PATCH CONTEXT
+# Four independently owned fixes, rebased against the exact 3.1.0 sources:
+#
+# 1) Keep ButtonViewGroup subclassable for Rainbow's Android integration.
+#    Remove when the subclass is eliminated or the class becomes open upstream.
+# 2) Preserve the app's immediate iOS scroll-touch response while retaining
+#    3.1's explicit delaysChildPressedState override. Remove when every consumer
+#    owns that choice or upstream adopts the required default.
+# 3) Reset a manually activated recognizer when the app resigns active so an
+#    interrupted gesture cannot remain stuck. Remove when upstream handles
+#    application deactivation.
+# 4) Type legacy_createNativeWrapper refs as the wrapped native instance its
+#    implementation returns. Remove when the published declaration does so.
+
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+@@ -377,7 +377,7 @@ class RNGestureHandlerButtonViewManager :
+ 
+   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
+ 
+-  class ButtonViewGroup(context: Context?) :
++  open class ButtonViewGroup(context: Context?) :
+     ViewGroup(context),
+     NativeViewGestureHandler.NativeViewGestureHandlerHook,
+     ReactPointerEventsView {
+diff --git a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+--- a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+@@ -122,7 +122,7 @@ - (instancetype)initWithTag:(NSNumber *)tag
+ {
+   if ((self = [super initWithTag:tag])) {
+     _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
+-    _delaysChildPressedState = YES;
++    _delaysChildPressedState = NO;
+   }
+   return self;
+ }
+@@ -135,7 +135,7 @@ - (void)updateConfig:(NSDictionary *)config
+   _yieldsToContinuousGestures = [RCTConvert BOOL:config[@"yieldsToContinuousGestures"]];
+ 
+   id delaysChildPressedState = config[@"delaysChildPressedState"];
+-  _delaysChildPressedState = delaysChildPressedState == nil ? YES : [RCTConvert BOOL:delaysChildPressedState];
++  _delaysChildPressedState = delaysChildPressedState == nil ? NO : [RCTConvert BOOL:delaysChildPressedState];
+ 
+ #if !TARGET_OS_OSX
+   // Config may be updated after the handler is bound to a view — re-apply to the connected
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+@@ -608,12 +608,28 @@ - (void)setManualActivation:(BOOL)manualActivation
+     if (_recognizer.view != nil) {
+       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+     }
++
++    [[NSNotificationCenter defaultCenter] addObserver:self
++                                            selector:@selector(handleAppWillResignActive:)
++                                                name:UIApplicationWillResignActiveNotification
++                                              object:nil];
+   } else if (_manualActivationRecognizer != nil) {
++    [[NSNotificationCenter defaultCenter] removeObserver:self
++                                                   name:UIApplicationWillResignActiveNotification
++                                                 object:nil];
+     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+     _manualActivationRecognizer = nil;
+   }
+ }
+ 
++- (void)handleAppWillResignActive:(NSNotification *)notification
++{
++  if (_manualActivationRecognizer != nil && _manualActivationRecognizer.enabled) {
++    _manualActivationRecognizer.enabled = NO;
++    _manualActivationRecognizer.enabled = YES;
++  }
++}
++
+ - (void)bindManualActivationToView:(RNGHUIView *)view
+ {
+   if (_manualActivationRecognizer != nil) {
+diff --git a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+--- a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
++++ b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+@@ -3,10 +3,5 @@ import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
+ /**
+  * @deprecated `createNativeWrapper` is deprecated and will be removed in favor of using `GestureDetector` with `Native` gesture directly.
+  */
+-export default function createNativeWrapper<P>(Component: React.ComponentType<P>, config?: Readonly<NativeViewGestureHandlerProps>): {
+-    (props: P & NativeViewGestureHandlerProps & {
+-        ref?: React.Ref<React.ComponentType<any> | null> | undefined;
+-    }): React.JSX.Element;
+-    displayName: any;
+-};
++export default function createNativeWrapper<C extends React.ElementType>(Component: C, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<React.ComponentProps<C> & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentRef<C>>>;
+ //# sourceMappingURL=createNativeWrapper.d.ts.map

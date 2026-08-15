@@ -1,7 +1,8 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
-import { Animated, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { ImgixImage } from '@/components/images';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -22,15 +23,14 @@ const styles = [margin.object(0, 10, Platform.OS === 'android' ? 0 : 3, 10), pos
 
 const RightAction = ({ onPress, progress, text, type, x }) => {
   const isEdit = type === 'edit';
-  const translateX = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [x, 0],
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(progress.value, [0, 1], [x, 0]) }],
+  }));
 
   const { colors } = useTheme();
 
   return (
-    <AnimatedCentered flex={1} marginRight={isEdit ? 0 : 10} style={{ transform: [{ translateX }] }}>
+    <AnimatedCentered flex={1} marginRight={isEdit ? 0 : 10} style={animatedStyle}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
         <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} size={30} />
         <Text

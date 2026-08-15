@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 
-import { Switch } from 'react-native-gesture-handler';
+import { LegacySwitch as Switch } from 'react-native-gesture-handler';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
