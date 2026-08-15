@@ -28,6 +28,9 @@ require Pod::Executable.execute_command('node', ['-p',
 
 prepare_react_native_project!
 
+# Native React patches require compiling React Native from source.
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
