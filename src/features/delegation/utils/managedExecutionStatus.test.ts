@@ -7,23 +7,19 @@ import { type RelayOnchainEvidence } from '@rainbow-me/sdk';
 import { applyManagedExecutionStatus, getRelayEvmTransactions } from './managedExecutionStatus';
 
 const INITIAL_HASH: Hash = '0x0101010101010101010101010101010101010101010101010101010101010101';
-const ORIGIN_HASH: Hash = '0x0202020202020202020202020202020202020202020202020202020202020202';
+const SOURCE_HASH: Hash = '0x0202020202020202020202020202020202020202020202020202020202020202';
 const DESTINATION_HASH: Hash = '0x0303030303030303030303030303030303030303030303030303030303030303';
 
-const ORIGIN_EVIDENCE: RelayOnchainEvidence = {
-  scope: 'crosschain',
-  observed: 'origin',
-  transactions: {
+const SOURCE_EVIDENCE: RelayOnchainEvidence = {
+  source: {
     chainId: 8453,
-    hashes: [ORIGIN_HASH],
+    hashes: [SOURCE_HASH],
     kind: 'evm',
   },
 };
 
 const DESTINATION_EVIDENCE: RelayOnchainEvidence = {
-  scope: 'crosschain',
-  observed: 'destination',
-  transactions: {
+  destination: {
     chainId: 10,
     hashes: [DESTINATION_HASH],
     kind: 'evm',
@@ -31,16 +27,16 @@ const DESTINATION_EVIDENCE: RelayOnchainEvidence = {
 };
 
 describe('managedExecutionStatus', () => {
-  it('applies origin-only EVM evidence to the tracked transaction hash', () => {
+  it('applies source-only EVM evidence to the tracked transaction hash', () => {
     const transaction = buildTransaction();
 
-    const updatedTransaction = applyManagedExecutionStatus(transaction, { onchain: ORIGIN_EVIDENCE });
+    const updatedTransaction = applyManagedExecutionStatus(transaction, { onchain: SOURCE_EVIDENCE });
 
-    expect(updatedTransaction.hash).toBe(ORIGIN_HASH);
+    expect(updatedTransaction.hash).toBe(SOURCE_HASH);
     expect(updatedTransaction.relayDestinationTxHashes).toBeUndefined();
   });
 
-  it('applies destination-only EVM evidence without replacing the tracked origin hash', () => {
+  it('applies destination-only EVM evidence without replacing the tracked source hash', () => {
     const transaction = buildTransaction();
 
     const updatedTransaction = applyManagedExecutionStatus(transaction, { onchain: DESTINATION_EVIDENCE });
@@ -49,8 +45,9 @@ describe('managedExecutionStatus', () => {
     expect(updatedTransaction.relayDestinationTxHashes).toEqual([DESTINATION_HASH]);
   });
 
-  it.each([ORIGIN_EVIDENCE, DESTINATION_EVIDENCE])('returns the observed EVM leg from partial crosschain evidence', evidence => {
-    expect(getRelayEvmTransactions(evidence)).toEqual([evidence.transactions]);
+  it('returns the observed EVM location from partial evidence', () => {
+    expect(getRelayEvmTransactions(SOURCE_EVIDENCE)).toEqual([SOURCE_EVIDENCE.source]);
+    expect(getRelayEvmTransactions(DESTINATION_EVIDENCE)).toEqual([DESTINATION_EVIDENCE.destination]);
   });
 });
 
