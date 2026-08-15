@@ -8,6 +8,7 @@ import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/
 import DiscoverSearch from '@/components/Discover/DiscoverSearch';
 import { Box } from '@/design-system';
 import { DiscoverSectionsPager } from '@/features/discover/components/DiscoverSectionsPager';
+import { RetainedView } from '@/framework/ui/components/RetainedView';
 
 type DiscoverScreenContentProps = {
   scrollOffset: SharedValue<number>;
@@ -24,9 +25,9 @@ export function DiscoverScreenContent({ scrollOffset }: DiscoverScreenContentPro
         <View>{isSearching ? <DiscoverSearch /> : <View />}</View>
       </View>
 
-      <View style={[styles.sectionsContainer, isSearching && styles.hidden]}>
+      <RetainedView style={[styles.sectionsContainer, isSearching && styles.hidden]}>
         <DiscoverSectionsPager scrollOffset={scrollOffset} />
-      </View>
+      </RetainedView>
     </Box>
   );
 }
