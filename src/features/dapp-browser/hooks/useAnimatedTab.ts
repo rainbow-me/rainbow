@@ -54,6 +54,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     tabViewGestureProgress,
     tabViewGestureState,
     tabViewProgress,
+    tabViewVisible,
   } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
@@ -204,9 +205,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     );
 
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
-    const pointerEvents = isTabBeingClosed
-      ? 'none'
-      : animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
+    const pointerEvents =
+      !isTabBeingClosed && !tabViewVisible.value && animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
         ? 'auto'
         : 'none';
 

@@ -117,10 +117,17 @@ export function useBrowserScrollView() {
   );
 
   const gestureManager = useMemo(() => {
-    const nativeScrollViewGesture = Gesture.Native();
+    const nativeScrollViewGesture = Gesture.Native()
+      .onTouchesDown((_, manager) => {
+        if (gestureManagerState.value === 'active') manager.fail();
+      })
+      .onTouchesMove((_, manager) => {
+        if (gestureManagerState.value === 'active') manager.fail();
+      });
 
     // Custom Pan Gesture
     const manualPanGesture = Gesture.Pan()
+      .blocksExternalGesture(nativeScrollViewGesture)
       .manualActivation(true)
       .onTouchesDown((e, manager) => {
         if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH DOWN');
@@ -292,7 +299,7 @@ export function useBrowserScrollView() {
         else resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
       });
 
-    return Gesture.Exclusive(manualPanGesture, nativeScrollViewGesture);
+    return Gesture.Simultaneous(manualPanGesture, nativeScrollViewGesture);
   }, [
     activeTabCloseGestures,
     animatedTabUrls,
