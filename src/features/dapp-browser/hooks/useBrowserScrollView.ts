@@ -34,7 +34,6 @@ import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { tabHitTest, type TabHitResult } from '../utils/tabHitTest';
 
 const ENABLE_PAN_LOGS = false;
-const ENABLE_SCROLL_VIEW_LOGS = false;
 
 export function useBrowserScrollView() {
   const {
@@ -118,22 +117,10 @@ export function useBrowserScrollView() {
   );
 
   const gestureManager = useMemo(() => {
-    // Native ScrollView Gesture
-    const nativeScrollViewGesture = Gesture.Native()
-      .onTouchesDown((_, manager) => {
-        if (ENABLE_SCROLL_VIEW_LOGS) console.log('[ScrollView Gesture] TOUCH DOWN');
-
-        if (gestureManagerState.value === 'active') manager.fail();
-      })
-      .onTouchesMove((_, manager) => {
-        if (ENABLE_SCROLL_VIEW_LOGS) console.log('[ScrollView Gesture] TOUCH MOVE');
-
-        if (gestureManagerState.value === 'active') manager.fail();
-      });
+    const nativeScrollViewGesture = Gesture.Native();
 
     // Custom Pan Gesture
     const manualPanGesture = Gesture.Pan()
-      .blocksExternalGesture(nativeScrollViewGesture)
       .manualActivation(true)
       .onTouchesDown((e, manager) => {
         if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH DOWN');
@@ -305,7 +292,7 @@ export function useBrowserScrollView() {
         else resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
       });
 
-    return Gesture.Simultaneous(manualPanGesture, nativeScrollViewGesture);
+    return Gesture.Exclusive(manualPanGesture, nativeScrollViewGesture);
   }, [
     activeTabCloseGestures,
     animatedTabUrls,
