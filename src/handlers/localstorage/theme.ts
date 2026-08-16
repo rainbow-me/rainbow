@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import { SystemBars } from 'react-native-edge-to-edge';
 
-import { Themes, type ThemesType } from '@/theme/ThemeContext';
+import { Themes, type ThemesType } from '@/theme/themes';
 
 import { getGlobal, saveGlobal } from './common';
 

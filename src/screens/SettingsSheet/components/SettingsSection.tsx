@@ -31,7 +31,8 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
-import { Themes, useTheme } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
+import { Themes } from '@/theme/themes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
