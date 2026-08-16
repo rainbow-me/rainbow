@@ -16,7 +16,7 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
-import { setHardwareTXError } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
@@ -294,7 +294,7 @@ export function useSendSubmit({
         });
 
         if (!(wallet instanceof Wallet)) {
-          setHardwareTXError(true);
+          setHardwareWalletTxError(true);
         }
         return false;
       }

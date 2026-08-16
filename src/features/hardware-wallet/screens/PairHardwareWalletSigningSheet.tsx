@@ -18,7 +18,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ActionButton } from '../components/ActionButton';
 import { Layout } from '../components/Layout';
-import { LedgerImportDeviceIdAtom } from '../navigation/PairHardwareWalletNavigator';
+import { ledgerImportDeviceIdAtom } from '../state/pairHardwareWalletState';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '../utils/ledger';
 import { TRANSLATIONS } from './constants';
 
@@ -85,7 +85,7 @@ export function PairHardwareWalletSigningSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
-  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const deviceId = useRecoilValue(ledgerImportDeviceIdAtom);
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     flowContext: params?.flowContext,
     showImportModal: true,

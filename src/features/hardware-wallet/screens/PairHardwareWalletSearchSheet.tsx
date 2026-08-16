@@ -11,12 +11,12 @@ import { ActionButton } from '../components/ActionButton';
 import { CancelButton } from '../components/CancelButton';
 import { Layout } from '../components/Layout';
 import { useLedgerImport } from '../hooks/useLedgerImport';
-import { LedgerImportDeviceIdAtom } from '../navigation/PairHardwareWalletNavigator';
+import { ledgerImportDeviceIdAtom } from '../state/pairHardwareWalletState';
 import { TRANSLATIONS } from './constants';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate, goBack } = useNavigation();
-  const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
+  const setDeviceId = useSetRecoilState(ledgerImportDeviceIdAtom);
   const [isConnected, setIsConnected] = React.useState(false);
 
   useLedgerImport({
