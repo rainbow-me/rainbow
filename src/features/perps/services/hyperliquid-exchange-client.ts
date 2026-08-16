@@ -12,11 +12,11 @@ import {
   calculatePositionSizeFromMarginAmount,
   getMarketType,
 } from '@/features/perps/utils/orders';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { isPositive, toFixedWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { checkIfReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS, RAINBOW_REFERRAL_CODE } from '../constants';

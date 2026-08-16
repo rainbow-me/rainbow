@@ -9,6 +9,18 @@ import { parseTimestampFromBackupFile } from '@/features/backup/backupFile';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import * as kc from '@/features/local-auth/keychain';
 import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
+import {
+  checkWalletsDamagedState,
+  cleanUpWalletKeys,
+  getAllWallets,
+  getSelectedWallet as getSelectedWalletFromKeychain,
+  loadAddress,
+  resetSelectedWallet as resetSelectedWalletInKeychain,
+  saveAddress,
+  saveAllWallets,
+  setSelectedWallet as setSelectedWalletInKeychain,
+} from '@/features/wallet/data/walletKeychain';
+import { type AllRainbowWallets, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
@@ -16,22 +28,6 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
 import { ensureError, logger, RainbowError } from '@/logger';
-import {
-  checkWalletsDamagedState,
-  cleanUpWalletKeys,
-  generateAccount,
-  getAllWallets,
-  getSelectedWallet as getSelectedWalletFromKeychain,
-  initializeWalletProfilePreference,
-  loadAddress,
-  resetSelectedWallet as resetSelectedWalletInKeychain,
-  saveAddress,
-  saveAllWallets,
-  setSelectedWallet as setSelectedWalletInKeychain,
-  type AllRainbowWallets,
-  type RainbowAccount,
-  type RainbowWallet,
-} from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
@@ -71,12 +67,6 @@ interface WalletsState {
   }: { address: Address; walletId: string } & Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'emoji' | 'image' | 'label'>>) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
-
-  createAccountInExistingWallet: (data: {
-    id: RainbowWallet['id'];
-    name: RainbowWallet['name'];
-    color: RainbowWallet['color'] | null;
-  }) => Promise<void>;
 
   setAllWalletsWithIdsAsBackedUp: (
     ids: RainbowWallet['id'][],
@@ -302,69 +292,6 @@ export const useWalletsStore = createBaseStore<WalletsState>(
           message: ensureError(error).message,
         });
       }
-    },
-
-    createAccountInExistingWallet: async ({ id, name, color }) => {
-      const { wallets } = get();
-
-      if (!wallets[id]) {
-        logger.error(new RainbowError(`[walletsStore - createAccountInExistingWallet]: Wallet ${id} not found`));
-      }
-
-      let index = 0;
-      for (const account of wallets[id].addresses) {
-        index = Math.max(index, account.index);
-      }
-
-      const newIndex = index + 1;
-      const account = await generateAccount(id, newIndex);
-      if (!account) {
-        throw new Error('[walletsStore - createAccountInExistingWallet]: No account generated');
-      }
-
-      const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
-      if (walletColorIndex == null) {
-        throw new Error(`[walletsStore - createAccountInExistingWallet]: No wallet color index: ${walletColorIndex}`);
-      }
-
-      set(state => {
-        const newWallets = {
-          ...state.wallets,
-          [id]: {
-            ...state.wallets[id],
-            addresses: [
-              ...state.wallets[id].addresses,
-              {
-                address: account.address,
-                avatar: null,
-                color: walletColorIndex,
-                index: newIndex,
-                label: name,
-                visible: true,
-              },
-            ],
-          },
-        };
-
-        return {
-          ...state,
-          accountAddress: ensureValidHex(account.address),
-          selected: newWallets[id],
-          wallets: newWallets,
-        };
-      });
-
-      initializeWalletProfilePreference(account.address, walletColorIndex);
-
-      const persist = Promise.all([
-        // persist to keychain - not necessary to wait this in many cases
-        saveSelectedWalletInKeychain(get().wallets[id], account.address),
-        saveAllWallets(get().wallets),
-      ]).then(() => {
-        return;
-      });
-
-      return persist;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
@@ -898,7 +825,6 @@ export const {
   clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
-  createAccountInExistingWallet,
   getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,

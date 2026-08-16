@@ -5,10 +5,10 @@ import { isEmpty } from 'lodash';
 
 import { normalizeAndroidBackupFilename, type CloudBackups } from '@/features/backup/backupFile';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
+import { type RainbowWallet } from '@/features/wallet/types';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { type RainbowWallet } from '@/model/wallet';
 import { getWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 

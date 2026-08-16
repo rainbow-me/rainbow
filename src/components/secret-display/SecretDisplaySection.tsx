@@ -10,13 +10,14 @@ import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { identifyWalletType } from '@/features/wallet/core/walletDerivation';
+import { createdWithBiometricError, loadPrivateKey } from '@/features/wallet/data/walletKeychain';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
 import useWalletManualBackup from '@/hooks/useWalletManualBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { createdWithBiometricError, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
+import { loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

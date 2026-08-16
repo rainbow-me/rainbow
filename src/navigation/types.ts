@@ -30,12 +30,12 @@ import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent
 import { type RainbowPosition } from '@/features/positions/types';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
+import { type RainbowWallet } from '@/features/wallet/types';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { type ChartTime } from '@/hooks/charts/useChartInfo';
-import { type RainbowWallet } from '@/model/wallet';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
 import { type WalletNotificationSettings } from '@/notifications/settings/types';

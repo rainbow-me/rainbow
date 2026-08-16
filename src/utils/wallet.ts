@@ -8,13 +8,14 @@ import { getEthApp } from '@/features/hardware-wallet/utils/ledger';
 import {
   identifyWalletType,
   type EthereumPrivateKey,
+  type EthereumWalletFromMnemonic,
   type EthereumWalletFromSeed,
   type EthereumWalletSeed,
   type ReadOnlyWallet,
 } from '@/features/wallet/core/walletDerivation';
 import { DEFAULT_HD_PATH, getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 
 const { RNBip39 } = NativeModules;
 
@@ -42,7 +43,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string,
   };
 };
 
-export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromSeed> => {
+export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromMnemonic> => {
   let seed;
   if (Platform.OS === 'ios') {
     seed = await mnemonicToSeed(mnemonic);
@@ -58,7 +59,7 @@ export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Pr
     address: ensureChecksumAddress(wallet.getAddress().toString('hex')),
     isHDWallet: true,
     root,
-    type: WalletTypes.mnemonic,
+    type: EthereumWalletType.mnemonic,
     hdnode: null,
     wallet,
     walletType: WalletLibraryType.bip39,

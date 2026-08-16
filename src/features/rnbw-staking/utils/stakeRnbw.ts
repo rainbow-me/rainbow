@@ -6,10 +6,10 @@ import { analytics } from '@/analytics';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 

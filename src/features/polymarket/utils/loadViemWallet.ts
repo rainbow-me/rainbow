@@ -7,9 +7,9 @@ import * as kc from '@/features/local-auth/keychain';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
+import { isHardwareWalletKey, loadPrivateKey } from '@/features/wallet/data/walletKeychain';
 import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { isHardwareWalletKey, loadPrivateKey } from '@/model/wallet';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 export async function loadViemWallet(address: Hex, provider: Provider) {

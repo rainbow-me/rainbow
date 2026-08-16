@@ -2,8 +2,9 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { type Address } from 'viem';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
-import { loadWallet, signPersonalMessage } from '@/model/wallet';
+import { signPersonalMessage } from '@/model/wallet';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { hasLinkedWalletInCache, useCashWalletStore, type LinkedWallet } from '../stores/cashWalletStore';

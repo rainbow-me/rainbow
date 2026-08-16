@@ -11,6 +11,7 @@ import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import * as kc from '@/features/local-auth/keychain';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
+import { type AllRainbowWallets, type RainbowWallet } from '@/features/wallet/types';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -29,7 +30,7 @@ import { getUserError } from '@/hooks/useWalletCloudBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { clearAllStorages } from '@/model/mmkv';
-import { createWallet, type AllRainbowWallets, type RainbowWallet } from '@/model/wallet';
+import { createWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';

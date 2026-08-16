@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { type Address } from 'viem';
 
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { type AllRainbowWallets } from '@/features/wallet/types';
 import { add } from '@/helpers/utilities';
-import { type AllRainbowWallets } from '@/model/wallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getWalletAddresses } from '@/state/wallets/walletsStore';
