@@ -1,8 +1,5 @@
-import { Platform } from 'react-native';
-
 import { useQuery } from '@tanstack/react-query';
-import { createPublicClient, http, isHash, type PublicClient } from 'viem';
-import { foundry } from 'viem/chains';
+import { isHash } from 'viem';
 
 import { TransactionStatus, type MinedTransaction, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
@@ -19,31 +16,8 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
+import { anvilChain, anvilConfirmedTransactions, anvilPublicClient } from './anvil';
 import { consolidatedTransactionsQueryKey, type consolidatedTransactionsQueryFunction } from './consolidatedTransactions';
-
-export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
-
-// Anvil uses a different RPC URL for Android emulators
-const ANVIL_RPC_URL = IS_TEST && Platform.OS === 'android' ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
-
-export const anvilChain = {
-  ...foundry,
-  id: 1337,
-  name: 'Ethereum',
-  network: 'ethereum',
-  rpcUrls: {
-    public: { http: [ANVIL_RPC_URL] },
-    default: { http: [ANVIL_RPC_URL] },
-  },
-} as const;
-
-let localPublicClient: PublicClient | null = null;
-if (IS_TEST) {
-  localPublicClient = createPublicClient({
-    chain: anvilChain,
-    transport: http(ANVIL_RPC_URL),
-  });
-}
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
@@ -86,11 +60,11 @@ export async function fetchRawTransaction({
     if (mockCashTransaction) return mockCashTransaction;
   }
 
-  if (IS_TEST && localPublicClient && chainId === anvilChain.id) {
+  if (IS_TEST && anvilPublicClient && chainId === anvilChain.id) {
     try {
       if (!isHash(hash)) throw new Error('Invalid transaction hash');
 
-      const receipt = await localPublicClient.getTransactionReceipt({ hash });
+      const receipt = await anvilPublicClient.getTransactionReceipt({ hash });
       if (!receipt) return null;
 
       const status = receipt.status === 'success' ? TransactionStatus.confirmed : TransactionStatus.failed;
@@ -126,8 +100,8 @@ export async function fetchRawTransaction({
 
       // Add to our E2E cache if confirmed and not already present
       if (status === TransactionStatus.confirmed) {
-        if (!e2eAnvilConfirmedTransactions.find(tx => tx.hash === minedTx.hash)) {
-          e2eAnvilConfirmedTransactions.unshift(minedTx);
+        if (!anvilConfirmedTransactions.find(tx => tx.hash === minedTx.hash)) {
+          anvilConfirmedTransactions.unshift(minedTx);
         }
       }
 
