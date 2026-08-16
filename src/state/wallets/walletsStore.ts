@@ -16,13 +16,13 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   checkWalletsDamagedState,
   cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
+  initializeWalletProfilePreference,
   loadAddress,
   resetSelectedWallet as resetSelectedWalletInKeychain,
   saveAddress,
@@ -34,7 +34,6 @@ import {
 } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
@@ -355,10 +354,7 @@ export const useWalletsStore = createBaseStore<WalletsState>(
         };
       });
 
-      setPreference(PreferenceActionType.init, 'profile', account.address, {
-        accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-        accountSymbol: addressHashedEmoji(account.address),
-      });
+      initializeWalletProfilePreference(account.address, walletColorIndex);
 
       const persist = Promise.all([
         // persist to keychain - not necessary to wait this in many cases

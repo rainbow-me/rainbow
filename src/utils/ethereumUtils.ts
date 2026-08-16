@@ -321,35 +321,6 @@ export const fetchContractABI = async (address: EthereumAddress) => {
 };
 
 /**
- * @desc Checks if a an address has previous transactions
- * @param  {String} address
- * @return {Promise<Boolean>}
- */
-const hasPreviousTransactions = (address: EthereumAddress): Promise<boolean> => {
-  return new Promise(async resolve => {
-    try {
-      const url = `https://aha.rainbow.me/?address=${address}`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        resolve(false);
-        return;
-      }
-
-      const parsedResponse: {
-        data: {
-          addresses: Record<string, boolean>;
-        };
-      } = await response.json();
-
-      resolve(parsedResponse?.data?.addresses[address.toLowerCase()] === true);
-    } catch (e) {
-      resolve(false);
-    }
-  });
-};
-
-/**
  * @desc Fetches the address' first transaction timestamp (in ms)
  * @param  {String} address
  * @return {Promise<number>}
@@ -464,7 +435,6 @@ export default {
   getPriceOfNativeAssetForNetwork,
   getTransactionBlockExplorerUrl,
   getUniqueId,
-  hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,
   openNftInBlockExplorer,

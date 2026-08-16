@@ -5,18 +5,16 @@ import { mnemonicToSeed } from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
 
 import { getEthApp } from '@/features/hardware-wallet/utils/ledger';
-import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
-import WalletTypes from '@/helpers/walletTypes';
 import {
-  DEFAULT_HD_PATH,
-  getHdPath,
   identifyWalletType,
-  WalletLibraryType,
   type EthereumPrivateKey,
   type EthereumWalletFromSeed,
   type EthereumWalletSeed,
   type ReadOnlyWallet,
-} from '@/model/wallet';
+} from '@/features/wallet/core/walletDerivation';
+import { DEFAULT_HD_PATH, getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
+import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
+import WalletTypes from '@/helpers/walletTypes';
 
 const { RNBip39 } = NativeModules;
 
