@@ -29,7 +29,6 @@ import {
   selectedWalletKey,
 } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
-import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
 import {
   identifyWalletType,
   type EthereumPrivateKey,
@@ -725,7 +724,7 @@ export const createWallet = async ({
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = await maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
+    const androidEncryptionPin = await kc.maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
 
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
@@ -1047,7 +1046,7 @@ export const getPrivateKey = async (
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
 
-    const androidEncryptionPin = await maybeAuthenticateWithPIN();
+    const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
     const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
       ...options,
       androidEncryptionPin,
@@ -1215,7 +1214,7 @@ export async function generateAccount(id: RainbowWallet['id'], index: number): P
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = await maybeAuthenticateWithPIN();
+    const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
@@ -1389,7 +1388,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       }
     } else {
       logger.debug('[wallet]: Getting seed directly', {}, DebugContext.wallet);
-      const androidEncryptionPin = await maybeAuthenticateWithPIN();
+      const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 

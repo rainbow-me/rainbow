@@ -11,7 +11,6 @@ import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import * as kc from '@/features/local-auth/keychain';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
-import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -237,7 +236,7 @@ export async function restoreBackup(data: string | { secrets: string }) {
   // ANDROID ONLY - pin auth if biometrics are disabled
   let userPIN: string | undefined;
   try {
-    userPIN = await maybeAuthenticateWithPINAndCreateIfNeeded();
+    userPIN = await kc.maybeAuthenticateWithPINAndCreateIfNeeded();
   } catch (e) {
     return RestoreCloudBackupResultStates.incorrectPinCode;
   }
@@ -319,7 +318,7 @@ export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<stri
     if (!userPIN && Object.values(processedSecrets).some(secret => secret.includes('cipher'))) {
       try {
         // eslint-disable-next-line require-atomic-updates
-        userPIN = await authenticateWithPIN();
+        userPIN = await kc.authenticateWithPIN();
       } catch (e) {
         throw new Error(CLOUD_BACKUP_ERRORS.WRONG_PIN);
       }
@@ -407,7 +406,7 @@ export async function restoreCloudBackup({
 
 async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, userPin?: string): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
-  const backupPIN = await decryptPIN(encryptedBackupPinData);
+  const backupPIN = await kc.decryptPIN(encryptedBackupPinData);
 
   // TODO: Eventual refactor of `createWallet` needed
   /**

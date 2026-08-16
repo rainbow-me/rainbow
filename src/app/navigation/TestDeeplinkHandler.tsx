@@ -7,7 +7,7 @@ import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
 import { MOCK_LINKED_CARD, useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { savePIN } from '@/features/local-auth/pinAuthentication';
+import { savePIN } from '@/features/local-auth/keychain';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
