@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 
-import { fetchImage } from '../utils/handlers';
+import { fetchENSImage } from '../utils/fetchENSImage';
 import { getENSData, saveENSData } from '../utils/localStorage';
 
 export const ensCoverQueryKey = (name: string) => ['ens-header', name];
@@ -15,7 +15,7 @@ export async function fetchENSCover(name: string, { cacheFirst }: { cacheFirst?:
     queryClient.setQueryData(ensCoverQueryKey(name), cachedCover);
     if (cacheFirst) return cachedCover as { imageUrl?: string | null };
   }
-  const cover = await fetchImage('header', name);
+  const cover = await fetchENSImage('header', name);
   saveENSData('header', name, cover);
   return cover;
 }

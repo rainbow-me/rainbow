@@ -7,7 +7,6 @@ import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { type Address } from 'viem';
 
-import { ImgixImage } from '@/components/images';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
@@ -22,7 +21,6 @@ import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firs
 import { handleNFTImages, MimeType } from '@/utils/handleNFTImages';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
-import { AvatarResolver } from '@/vendor/ens-avatar';
 
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
@@ -32,7 +30,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 import { prefetchENSAddress } from '../resources/addressQuery';
 import type { ENSRegistrationRecords, Records } from '../types/registration';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from './helpers';
-import { getENSData, getNameFromLabelhash, saveENSData } from './localStorage';
+import { getNameFromLabelhash } from './localStorage';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -291,26 +289,6 @@ export const fetchAccountDomains = async (address: string) => {
     address: address?.toLowerCase(),
   });
   return domains;
-};
-
-export const fetchImage = async (imageType: 'avatar' | 'header', ensName: string) => {
-  let imageUrl;
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  try {
-    const avatarResolver = new AvatarResolver(provider);
-    imageUrl = await avatarResolver.getImage(ensName, {
-      allowNonOwnerNFTs: true,
-      type: imageType,
-    });
-    ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])], 100);
-    saveENSData(imageType, ensName, { imageUrl });
-  } catch (err) {
-    // Fallback to storage images
-    const data = await getENSData(imageType, ensName);
-    imageUrl = data?.imageUrl as string;
-  }
-
-  return { imageUrl };
 };
 
 export const fetchRecords = async (ensName: string, { supportedOnly = true }: { supportedOnly?: boolean } = {}) => {
