@@ -27,7 +27,6 @@ const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildStakeRnbwCalls = jest.fn<Promise<CallsPlan['calls']>, [unknown]>();
 const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<CallsPlan>, [unknown]>();
 const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>();
 const mockAddNewTransaction = jest.fn<void, [unknown]>();
@@ -39,16 +38,6 @@ jest.mock('@rainbow-me/sdk', () => ({
       calls: (params: unknown) => mockPrepareCalls(params),
     },
   },
-  RelayExecutionStatus: {
-    Confirmed: 'CONFIRMED',
-    Failed: 'FAILED',
-    Pending: 'PENDING',
-    Reverted: 'REVERTED',
-  },
-}));
-
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
-  resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
 jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
@@ -251,7 +240,6 @@ describe('executeStakeRnbw', () => {
     mockBuildStakeRnbwCalls.mockResolvedValue([STAKE_CALL]);
     mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL] });
     mockCanUseDelegatedExecution.mockReturnValue(true);
-    mockResolveManagedExecutionFailure.mockResolvedValue(null);
     mockWaitForManagedExecutionConfirmation.mockResolvedValue();
   });
 
@@ -323,7 +311,6 @@ describe('executeStakeRnbw', () => {
     mockExecuteCalls.mockResolvedValue({
       executionId: 'submitted-stake',
       kind: 'calls.managed',
-      status: 'PENDING',
     });
 
     const result = await executeStakeRnbw({
@@ -342,10 +329,6 @@ describe('executeStakeRnbw', () => {
       provider,
       signer,
     });
-    expect(mockResolveManagedExecutionFailure).toHaveBeenCalledWith({
-      executionId: 'submitted-stake',
-      status: 'PENDING',
-    });
     expect(mockTrackCallsExecution).toHaveBeenCalledWith({
       address: ACCOUNT,
       batch: false,
@@ -353,7 +336,6 @@ describe('executeStakeRnbw', () => {
       execution: {
         executionId: 'submitted-stake',
         kind: 'calls.managed',
-        status: 'PENDING',
       },
       transaction: expect.objectContaining({
         asset: expect.objectContaining({
@@ -392,7 +374,6 @@ describe('executeStakeRnbw', () => {
     mockExecuteCalls.mockResolvedValue({
       executionId: 'raw-stake',
       kind: 'calls.managed',
-      status: 'PENDING',
     });
 
     const result = await executeStakeRnbw({

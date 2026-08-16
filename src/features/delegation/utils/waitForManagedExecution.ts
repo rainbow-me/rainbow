@@ -3,7 +3,6 @@ import { ensureError, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 import { RelayExecutionStatus, type RelayExecutionId, type RelayExecutionUpdate } from '@rainbow-me/sdk';
 
-import { formatManagedExecutionFailure, isManagedExecutionFailure } from './managedExecutionFailure';
 import { relayService } from './relayService';
 
 // ============ Constants ===================================================== //
@@ -36,8 +35,9 @@ export async function waitForManagedExecutionConfirmation(executionId: RelayExec
 
     if (lastStatus === RelayExecutionStatus.Confirmed) return;
 
-    if (isManagedExecutionFailure(lastStatus)) {
-      throw new RainbowError(`[waitForManagedExecutionConfirmation]: ${formatManagedExecutionFailure(update)}`);
+    const failureMessage = readManagedExecutionFailure(update);
+    if (failureMessage) {
+      throw new RainbowError(`[waitForManagedExecutionConfirmation]: ${failureMessage}`);
     }
 
     await delay(MANAGED_EXECUTION_POLL_INTERVAL_MS);
@@ -47,4 +47,12 @@ export async function waitForManagedExecutionConfirmation(executionId: RelayExec
   throw new RainbowError(
     `[waitForManagedExecutionConfirmation]: Timed out waiting for managed relay confirmation (${executionId}, last status: ${lastStatus ?? 'unknown'}${lastError})`
   );
+}
+
+function readManagedExecutionFailure(update: RelayExecutionUpdate): string | null {
+  if (update.status !== RelayExecutionStatus.Failed && update.status !== RelayExecutionStatus.Reverted) return null;
+
+  const message = update.status === RelayExecutionStatus.Reverted ? 'Managed relay execution reverted' : 'Managed relay execution failed';
+  const detail = update.error?.message ?? update.error?.code;
+  return detail ? `${message}: ${detail}` : message;
 }

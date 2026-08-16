@@ -5870,7 +5870,7 @@ __metadata:
 
 "@rainbow-me/sdk@file:./rainbow-me-sdk-0.5.0.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.5.0
-  resolution: "@rainbow-me/sdk@file:./rainbow-me-sdk-0.5.0.tgz#./rainbow-me-sdk-0.5.0.tgz::hash=26a0f3&locator=Rainbow%40workspace%3A."
+  resolution: "@rainbow-me/sdk@file:./rainbow-me-sdk-0.5.0.tgz#./rainbow-me-sdk-0.5.0.tgz::hash=b163b8&locator=Rainbow%40workspace%3A."
   dependencies:
     "@noble/ed25519": "npm:3.1.0"
     "@noble/hashes": "npm:2.2.0"
@@ -5894,7 +5894,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/b609819c94bb44a50acc3e87b110a92b149257e2d3d9541bb76ecec8939ca4c1c211d2d992ebd960a6a82cabb9bedc9596f42a190b47a1938ba02f24cdff107f
+  checksum: 10c0/c1fb1b3b263e5c1b5eea2906939ec19a6c2792706883c2f0d2bb9844f01393e902ef58c34b1afff0c86a4b39a24f1781baa48180ccf340da1ba0bad53e7daeae
   languageName: node
   linkType: hard
 

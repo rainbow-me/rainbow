@@ -26,7 +26,6 @@ const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
 const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<CallsPlan>, [unknown]>();
 const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>();
 const mockBuildSyntheticRnbwSourceAsset = jest.fn<ExtendedAnimatedAssetWithColors | null, []>();
@@ -39,16 +38,6 @@ jest.mock('@rainbow-me/sdk', () => ({
       calls: (params: unknown) => mockPrepareCalls(params),
     },
   },
-  RelayExecutionStatus: {
-    Confirmed: 'CONFIRMED',
-    Failed: 'FAILED',
-    Pending: 'PENDING',
-    Reverted: 'REVERTED',
-  },
-}));
-
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
-  resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
 jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
@@ -216,7 +205,6 @@ describe('executeUnstakeRnbw', () => {
     jest.clearAllMocks();
     mockBuildUnstakeRnbwExecutionPlan.mockResolvedValue({ calls: [UNSTAKE_CALL] });
     mockCanUseDelegatedExecution.mockReturnValue(true);
-    mockResolveManagedExecutionFailure.mockResolvedValue(null);
     mockWaitForManagedExecutionConfirmation.mockResolvedValue();
     mockBuildSyntheticRnbwSourceAsset.mockReturnValue(rnbwAsset);
     jest.spyOn(provider, 'estimateGas').mockResolvedValue(BigNumber.from(ESTIMATED_GAS_LIMIT));
@@ -232,7 +220,6 @@ describe('executeUnstakeRnbw', () => {
     mockExecuteCalls.mockResolvedValue({
       executionId: 'submitted-unstake',
       kind: 'calls.managed',
-      status: 'PENDING',
     });
 
     const result = await executeUnstakeRnbw({
@@ -252,10 +239,6 @@ describe('executeUnstakeRnbw', () => {
       provider,
       signer,
     });
-    expect(mockResolveManagedExecutionFailure).toHaveBeenCalledWith({
-      executionId: 'submitted-unstake',
-      status: 'PENDING',
-    });
     expect(mockTrackCallsExecution).toHaveBeenCalledWith({
       address: ACCOUNT,
       batch: false,
@@ -263,7 +246,6 @@ describe('executeUnstakeRnbw', () => {
       execution: {
         executionId: 'submitted-unstake',
         kind: 'calls.managed',
-        status: 'PENDING',
       },
       transaction: expect.objectContaining({
         from: ACCOUNT,
@@ -275,33 +257,6 @@ describe('executeUnstakeRnbw', () => {
     await result.waitForConfirmation();
 
     expect(mockWaitForManagedExecutionConfirmation).toHaveBeenCalledWith('submitted-unstake');
-  });
-
-  it('tracks the managed relay failure and throws when sponsored execution reports failure', async () => {
-    const preparedCalls = await prepareCalls({
-      executionId: 'prepared-unstake',
-      kind: 'calls.managed',
-      review: { fees: { payer: 'sponsor' } },
-    });
-
-    mockExecuteCalls.mockResolvedValue({
-      executionId: 'submitted-unstake',
-      kind: 'calls.managed',
-      status: 'FAILED',
-    });
-    mockResolveManagedExecutionFailure.mockResolvedValue('relay reported failure');
-
-    await expect(
-      executeUnstakeRnbw({
-        address: ACCOUNT,
-        expectedReceiveAmountRaw: EXPECTED_RECEIVE_AMOUNT_RAW,
-        gasParams: GAS_PARAMS,
-        preparedCalls,
-        provider,
-        signer,
-      })
-    ).rejects.toThrow('[executeUnstakeRnbw]: relay reported failure');
-    expect(mockTrackCallsExecution).not.toHaveBeenCalled();
   });
 
   it('executes unstaking through wallet exact calls when prepared calls are unavailable', async () => {

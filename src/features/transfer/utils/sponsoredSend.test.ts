@@ -21,7 +21,6 @@ const mockCreateDelegationPublicClient = jest.fn<unknown, [ChainId, { signal?: A
 const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
 const mockIsSponsorshipEligible = jest.fn<boolean, [ChainId]>();
 const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
 const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 
@@ -59,10 +58,6 @@ jest.mock('@/features/delegation/utils/calls', () => ({
 
 jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
   trackCallsExecution: (params: unknown) => mockTrackCallsExecution(params),
-}));
-
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
-  resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
 jest.mock('@/features/delegation/utils/willDelegate', () => ({
@@ -131,7 +126,6 @@ describe('sponsoredSend', () => {
       kind: 'calls.managed',
       review: { fees: { payer: 'sponsor' } },
     });
-    mockResolveManagedExecutionFailure.mockResolvedValue(null);
     mockSupportsDelegatedExecution.mockResolvedValue(true);
   });
 
@@ -247,7 +241,6 @@ describe('sponsoredSend', () => {
     const managedExecution = {
       executionId: 'submitted-send',
       kind: 'calls.managed',
-      status: 'PENDING',
     };
     mockExecuteCalls.mockResolvedValue(managedExecution);
 
@@ -264,10 +257,6 @@ describe('sponsoredSend', () => {
         signer,
       }
     );
-    expect(mockResolveManagedExecutionFailure).toHaveBeenCalledWith({
-      executionId: 'submitted-send',
-      status: 'PENDING',
-    });
     expect(mockTrackCallsExecution).toHaveBeenCalledWith({
       address: ACCOUNT,
       batch: false,
@@ -281,7 +270,6 @@ describe('sponsoredSend', () => {
     const managedExecution = {
       executionId: 'submitted-send',
       kind: 'calls.managed',
-      status: 'PENDING',
     };
     mockExecuteCalls.mockResolvedValue(managedExecution);
 
@@ -304,18 +292,5 @@ describe('sponsoredSend', () => {
       execution: managedExecution,
       transaction: pendingTransaction,
     });
-  });
-
-  it('raises managed execution failures before tracking the send', async () => {
-    mockExecuteCalls.mockResolvedValue({
-      executionId: 'failed-send',
-      kind: 'calls.managed',
-      status: 'FAILED',
-    });
-    mockResolveManagedExecutionFailure.mockResolvedValue('relay reverted');
-
-    await expect(executeWith()).rejects.toThrow('[executeSponsoredSend]: relay reverted');
-
-    expect(mockTrackCallsExecution).not.toHaveBeenCalled();
   });
 });
