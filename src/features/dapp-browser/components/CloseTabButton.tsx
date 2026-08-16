@@ -9,14 +9,10 @@ import { Box, TextIcon, useColorMode } from '@/design-system';
 import deviceUtils from '@/utils/deviceUtils';
 
 import { RAINBOW_HOME } from '../constants/constants';
-import { TAB_VIEW_COLUMN_WIDTH } from '../constants/Dimensions';
+import { TAB_VIEW_COLUMN_WIDTH, X_BUTTON_PADDING, X_BUTTON_SIZE } from '../constants/Dimensions';
 import { useBrowserContext } from '../context/BrowserContext';
 import { TabViewGestureStates, type TabId } from '../types';
 import { getTabInfo } from '../utils/getTabInfo';
-
-export const X_BUTTON_SIZE = 22;
-export const X_BUTTON_PADDING = 6;
-export const X_BUTTON_TAPPABLE_AREA = X_BUTTON_SIZE + X_BUTTON_PADDING * 2;
 
 const INVERTED_WEBVIEW_SCALE = deviceUtils.dimensions.width / TAB_VIEW_COLUMN_WIDTH;
 const SINGLE_TAB_INVERTED_WEBVIEW_SCALE = 10 / 7;

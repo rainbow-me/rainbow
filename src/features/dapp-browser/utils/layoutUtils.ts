@@ -3,8 +3,13 @@ import { Platform } from 'react-native';
 import { DEVICE_HEIGHT as SCREEN_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import { X_BUTTON_PADDING, X_BUTTON_SIZE } from '../components/CloseTabButton';
-import { INVERTED_MULTI_TAB_SCALE_DIFF, INVERTED_SINGLE_TAB_SCALE, TAB_VIEW_ROW_HEIGHT } from '../constants/Dimensions';
+import {
+  INVERTED_MULTI_TAB_SCALE_DIFF,
+  INVERTED_SINGLE_TAB_SCALE,
+  TAB_VIEW_ROW_HEIGHT,
+  X_BUTTON_PADDING,
+  X_BUTTON_SIZE,
+} from '../constants/Dimensions';
 
 const HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
 

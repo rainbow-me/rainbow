@@ -1,6 +1,5 @@
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-import { X_BUTTON_TAPPABLE_AREA } from '../components/CloseTabButton';
 import {
   SINGLE_TAB_SCALE,
   TAB_VIEW_COLUMN_GAP,
@@ -11,6 +10,7 @@ import {
   TAB_VIEW_SINGLE_TAB_WIDTH,
   TAB_VIEW_TAB_HEIGHT,
   TOP_INSET,
+  X_BUTTON_TAPPABLE_AREA,
 } from '../constants/Dimensions';
 
 export type TabHitResult = {
