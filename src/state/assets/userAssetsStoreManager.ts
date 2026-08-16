@@ -2,7 +2,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import reduxStore from '@/redux/store';
+import { NativeCurrencyKeys } from '@/features/currency/types';
 
 import { type UserAssetsStoreType } from './types';
 
@@ -18,7 +18,7 @@ export const userAssetsStoreManager = createBaseStore<StoreManagerState>(
   set => ({
     address: null,
     cachedStore: null,
-    currency: reduxStore.getState().settings.nativeCurrency,
+    currency: NativeCurrencyKeys.USD,
     hiddenAssetBalances: {},
 
     setHiddenAssetBalance: (address, balance) => {
