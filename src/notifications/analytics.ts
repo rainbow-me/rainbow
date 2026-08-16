@@ -1,7 +1,7 @@
 import { RESULTS } from 'react-native-permissions';
 
 import { analytics } from '@/analytics';
-import { getPermissionStatus } from '@/notifications/permissions';
+import { getNotificationPermissionStatus } from '@/notifications/permissionStatus';
 import { WALLET_GROUPS_STORAGE_KEY, WALLET_TOPICS_STORAGE_KEY, WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { notificationSettingsStorage } from '@/notifications/settings/storage';
 import type { GlobalNotificationTopicType, GroupSettings, WalletNotificationSettings } from '@/notifications/settings/types';
@@ -27,7 +27,7 @@ export const trackPushNotificationPermissionStatus = async (status: PushNotifica
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
 
 export const resolveAndTrackPushNotificationPermissionStatus = async () => {
-  const permissionStatus = await getPermissionStatus();
+  const permissionStatus = await getNotificationPermissionStatus();
   let statusToReport: PushNotificationPermissionStatus = 'never asked';
 
   if (permissionStatus === RESULTS.GRANTED || permissionStatus === RESULTS.LIMITED) {

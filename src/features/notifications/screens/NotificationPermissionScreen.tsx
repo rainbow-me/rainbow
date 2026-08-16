@@ -18,7 +18,8 @@ import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
+import { requestNotificationPermission } from '@/notifications/permissions';
+import { isNotificationPermissionGranted } from '@/notifications/permissionStatus';
 import { useTheme } from '@/theme/ThemeContext';
 
 const TRANSLATIONS = i18n.l.promos.notifications_launch;
