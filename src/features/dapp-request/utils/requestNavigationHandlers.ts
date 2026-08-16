@@ -14,12 +14,12 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { type Address } from 'viem';
 
-import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
+import { MobileWalletProtocolUserErrors } from '@/features/dapp-request/utils/mobileWalletProtocolErrors';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/onSessionRequest';
+import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/handleSessionRequestResponse';
 import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
 import {
   type WalletconnectApprovalSheetRouteParams,
