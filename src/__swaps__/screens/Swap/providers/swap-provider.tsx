@@ -312,7 +312,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const preparedCalls = canExecuteDelegatedSwap ? await preparedSwapPromise : null;
 
-      const { errorMessage } = await executeFn(walletExecuteRap, {
+      const { errorMessage, managedExecutionError } = await executeFn(walletExecuteRap, {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: { degenMode },
@@ -350,7 +350,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         if (errorMessage !== 'handled') {
           logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
 
-          if (isInsufficientSponsorBalanceError(errorMessage)) {
+          if (isInsufficientSponsorBalanceError(managedExecutionError?.code ?? errorMessage)) {
             backendNetworksActions.disableSponsorshipUntilNextFetch(parameters.chainId);
             Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), i18n.t(i18n.l.swap.sponsorship_unavailable));
             return;

@@ -4,7 +4,6 @@ import { Wallet } from '@ethersproject/wallet';
 import type { NewTransaction } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
 import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
@@ -12,7 +11,14 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import { buildAtomicExecutionPolicy } from '@/raps/atomicSwapPreparation';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { execute, type CallsPlan, type EvmTransactionResult, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import {
+  execute,
+  ManagedExecutionFailedError,
+  type CallsPlan,
+  type EvmTransactionResult,
+  type ExecutionSubmission,
+  type PreparedCallsExecution,
+} from '@rainbow-me/sdk';
 
 import { swap, unlock } from './actions';
 import { claimClaimable } from './actions/claimClaimable';
@@ -152,7 +158,12 @@ export async function walletExecuteRap<T extends RapTypes>(
   type: T,
   parameters: RapSwapActionParameters<T>,
   options?: { preparedCalls?: PreparedCallsExecution | null }
-): Promise<{ errorMessage: string | null; hash: string | null; nonce: number | undefined }> {
+): Promise<{
+  errorMessage: string | null;
+  hash: string | null;
+  managedExecutionError?: ManagedExecutionFailedError;
+  nonce: number | undefined;
+}> {
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createRapByType(type, parameters)
     : await executeFn(createRapByType, {
@@ -209,20 +220,6 @@ export async function walletExecuteRap<T extends RapTypes>(
       });
 
       if (execution.kind === 'calls.managed') {
-        const failureMessage = await resolveManagedExecutionFailure({
-          executionId: execution.executionId,
-          status: execution.status,
-        });
-
-        if (failureMessage) {
-          logger.error(new RainbowError(`[raps/execute]: ${rapName} - managed atomic execution failed before onchain submission`), {
-            executionId: execution.executionId,
-            status: execution.status,
-            failureMessage,
-          });
-          return { nonce: undefined, hash: null, errorMessage: failureMessage };
-        }
-
         trackCallsExecution({
           address: fromAddress,
           batch: true,
@@ -233,7 +230,6 @@ export async function walletExecuteRap<T extends RapTypes>(
 
         logger.debug(`[${rapName}] submitted managed atomic execution`, {
           executionId: execution.executionId,
-          status: execution.status,
         });
         return { nonce: undefined, hash: null, errorMessage: null };
       }
@@ -257,7 +253,12 @@ export async function walletExecuteRap<T extends RapTypes>(
         fallbackToSequential: false,
       });
 
-      return { nonce: undefined, hash: null, errorMessage: error.message || 'Unknown error' };
+      return {
+        errorMessage: error.message || 'Unknown error',
+        hash: null,
+        managedExecutionError: e instanceof ManagedExecutionFailedError ? e : undefined,
+        nonce: undefined,
+      };
     }
   }
 
@@ -321,7 +322,7 @@ function supportsAtomicExecution(rap: Rap): rap is SwapRap<'swap'> | SwapRap<'cr
   return rap.type === 'swap' || rap.type === 'crosschainSwap';
 }
 
-function requireSingleWalletAtomicExecution(result: ExecutionResult<'calls.wallet' | 'calls.managed'>): EvmTransactionResult {
+function requireSingleWalletAtomicExecution(result: ExecutionSubmission<'calls.wallet' | 'calls.managed'>): EvmTransactionResult {
   if (result.kind !== 'calls.wallet' || result.transactions.length !== 1) {
     throw new Error('Atomic execution must resolve to exactly one wallet transaction');
   }
