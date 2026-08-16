@@ -16,16 +16,9 @@ import { Box, Separator, Text } from '@/design-system';
 import { type EthereumAddress } from '@/entities/wallet';
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
-import {
-  FOOTER_HEIGHT,
-  MAX_PANEL_HEIGHT,
-  PANEL_HEADER_HEIGHT,
-  PANEL_INSET_HORIZONTAL,
-  type AddressItem,
-  type AddressMenuAction,
-  type AddressMenuActionData,
-} from '@/screens/change-wallet/ChangeWalletSheet';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
+import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_HEADER_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
+import { type AddressItem, type AddressMenuAction, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { position } from '@/styles';
 

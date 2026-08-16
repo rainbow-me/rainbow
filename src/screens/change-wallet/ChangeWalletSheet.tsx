@@ -35,6 +35,8 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
+import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
+import { AddressMenuAction, type AddressItem, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
@@ -48,48 +50,15 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
 
-export const PANEL_INSET_HORIZONTAL = 20;
-export const MAX_PANEL_HEIGHT = Math.min(690, DEVICE_HEIGHT - 100);
-export const PANEL_HEADER_HEIGHT = 58;
-export const FOOTER_HEIGHT = 91;
-
-export enum AddressMenuAction {
-  Edit = 'edit',
-  Notifications = 'notifications',
-  Remove = 'remove',
-  Copy = 'copy',
-  Settings = 'settings',
-}
-
-export type AddressMenuActionData = {
-  address: string;
-};
-
 const RowTypes = {
   ADDRESS: 1,
   EMPTY: 2,
 };
-
-export interface AddressItem {
-  id: EthereumAddress;
-  address: EthereumAddress;
-  color: number;
-  emoji: string | undefined;
-  isReadOnly: boolean;
-  isLedger: boolean;
-  isSelected: boolean;
-  label: string;
-  rowType: number;
-  walletId: string;
-  balance: string;
-  image: string | null | undefined;
-}
 
 export default function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();

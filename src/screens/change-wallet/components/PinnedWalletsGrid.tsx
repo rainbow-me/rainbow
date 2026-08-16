@@ -26,7 +26,8 @@ import { useTheme } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
 import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
 
-import { AddressMenuAction, PANEL_INSET_HORIZONTAL, type AddressItem, type AddressMenuActionData } from '../ChangeWalletSheet';
+import { PANEL_INSET_HORIZONTAL } from '../layout';
+import { AddressMenuAction, type AddressItem, type AddressMenuActionData } from '../model';
 import { AddressAvatar } from './AddressAvatar';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 
