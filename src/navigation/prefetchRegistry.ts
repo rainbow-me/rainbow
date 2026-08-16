@@ -6,16 +6,12 @@ import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymark
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { deepFreeze } from '@/utils/deepFreeze';
 
 type PrefetchRegistry = Readonly<{
   [key in Route]?: [undefined] extends [RootStackParamList[key]] ? () => void : (params: RootStackParamList[key]) => void;
 }>;
 
-/**
- * A registry of routes to prefetch functions to be called ahead of navigation.
- */
-export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
+const prefetchRegistry: PrefetchRegistry = {
   [Routes.EXPANDED_ASSET_SHEET_V2]: ({ asset }) => {
     prefetchCandlestickData(asset);
   },
@@ -50,4 +46,11 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
     usePolymarketOrderBookStore.getState().setTokenId(tokenId);
     usePolymarketFeeInfoStore.getState().setConditionId(position.conditionId);
   },
-});
+};
+
+/**
+ * Runs a route's prefetch handler synchronously. Routes without a handler are ignored.
+ */
+export function prefetchRoute<RouteName extends Route>(routeName: RouteName, params: RootStackParamList[RouteName]): void {
+  prefetchRegistry[routeName]?.(params);
+}

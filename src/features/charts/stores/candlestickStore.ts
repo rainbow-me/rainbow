@@ -125,8 +125,7 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
 }
 
 /**
- * Prefetches candlestick data for a given token.
- * @param token - The token to prefetch candlestick data for.
+ * Sets the chart asset and for candlestick charts, prefetches data.
  */
 export function prefetchCandlestickData(asset: Token | ExpandedSheetParamAsset): void {
   const token = typeof asset === 'string' ? asset : { address: asset.address, chainId: asset.chainId };
