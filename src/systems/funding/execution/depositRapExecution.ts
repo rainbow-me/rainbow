@@ -3,7 +3,6 @@ import { ethers, Wallet } from 'ethers';
 
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
-import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -13,7 +12,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { rapTypes, type RapSwapActionParameters } from '@/raps/references';
 import erc20ABI from '@/references/erc20-abi.json';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { execute, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, ManagedExecutionFailedError, type PreparedCallsExecution } from '@rainbow-me/sdk';
 import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import {
@@ -156,7 +155,7 @@ async function executeTransaction(strategy: ExecutionStrategy, params: Execution
 
 async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 'swap'): Promise<ExecutionResult> {
   const shouldTryAtomic = !!params.preparedCalls;
-  const { errorMessage, hash } = await executeFn(walletExecuteRap, {
+  const { errorMessage, hash, managedExecutionError } = await executeFn(walletExecuteRap, {
     operation: TimeToSignOperation.SignTransaction,
     screen: Screens.FUNDING_DEPOSIT,
   })(
@@ -176,7 +175,7 @@ async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 
   );
 
   if (errorMessage) {
-    const sponsorshipFailureReason = shouldTryAtomic ? classifySponsorshipFailure(errorMessage) : undefined;
+    const sponsorshipFailureReason = shouldTryAtomic ? classifySponsorshipFailure(managedExecutionError ?? errorMessage) : undefined;
     if (errorMessage !== 'handled') {
       const extractedError = errorMessage.split('[')[0];
       return {
@@ -244,12 +243,12 @@ async function executeDirectTransfer(params: ExecutionParams, recipient: string)
   }
 }
 
-function classifySponsorshipFailure(errorMessage: string): DepositSponsorshipFailureReason {
-  if (isInsufficientSponsorBalanceError(errorMessage)) return 'insufficientSponsorBalance';
-  if (errorMessage.includes('Managed relay execution failed') || errorMessage.includes('Managed relay execution reverted')) {
-    return 'sponsoredRelayExecutionFailed';
+function classifySponsorshipFailure(error: string | ManagedExecutionFailedError): DepositSponsorshipFailureReason {
+  if (error instanceof ManagedExecutionFailedError) {
+    return isInsufficientSponsorBalanceError(error.code) ? 'insufficientSponsorBalance' : 'sponsoredRelayExecutionFailed';
   }
-  return 'unknownSponsorshipFailure';
+
+  return isInsufficientSponsorBalanceError(error) ? 'insufficientSponsorBalance' : 'unknownSponsorshipFailure';
 }
 
 async function executePreparedDirectTransfer(params: {
@@ -258,22 +257,19 @@ async function executePreparedDirectTransfer(params: {
   wallet: Wallet;
 }): Promise<ExecutionResult> {
   const provider = getProvider({ chainId: params.assetChainId });
-  const execution = await execute.calls(params.preparedCalls, {
-    chainId: params.assetChainId,
-    provider,
-    signer: params.wallet,
-  });
+  try {
+    await execute.calls(params.preparedCalls, {
+      chainId: params.assetChainId,
+      provider,
+      signer: params.wallet,
+    });
+  } catch (error) {
+    if (!(error instanceof ManagedExecutionFailedError)) throw error;
 
-  const failureMessage = await resolveManagedExecutionFailure({
-    executionId: execution.executionId,
-    status: execution.status,
-  });
-
-  if (failureMessage) {
     return {
-      error: failureMessage,
+      error: error.message,
       sponsorshipAttempted: true,
-      sponsorshipFailureReason: classifySponsorshipFailure(failureMessage),
+      sponsorshipFailureReason: classifySponsorshipFailure(error),
       success: false,
     };
   }
