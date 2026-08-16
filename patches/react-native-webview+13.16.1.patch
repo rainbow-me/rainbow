@@ -99,10 +99,10 @@ index 0000000..d8c44b0
 +#endif // RCT_NEW_ARCH_ENABLED
 diff --git a/node_modules/react-native-webview/apple/RNCWebViewRetainedContainer.mm b/node_modules/react-native-webview/apple/RNCWebViewRetainedContainer.mm
 new file mode 100644
-index 0000000..b2ac95b
+index 0000000..8d25fc8
 --- /dev/null
 +++ b/node_modules/react-native-webview/apple/RNCWebViewRetainedContainer.mm
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,58 @@
 +#import <React/RCTView.h>
 +#import <React/RCTViewManager.h>
 +
@@ -127,6 +127,15 @@ index 0000000..b2ac95b
 +@end
 +
 +@implementation RNCWebViewRetainedContainer
++
++- (instancetype)initWithFrame:(CGRect)frame
++{
++  if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const RNCWebViewRetainedContainerProps>();
++    _props = defaultProps;
++  }
++  return self;
++}
 +
 ++ (ComponentDescriptorProvider)componentDescriptorProvider
 +{
