@@ -4,8 +4,8 @@ import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/po
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
 import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { processRawPolymarketPosition } from '@/features/polymarket/utils/processRawPolymarketPosition';
 import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
-import { processRawPolymarketPosition } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { RainbowError } from '@/logger';
