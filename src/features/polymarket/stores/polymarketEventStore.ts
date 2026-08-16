@@ -1,6 +1,7 @@
 import { createQueryStore } from '@storesjs/stores';
 
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
@@ -12,7 +13,6 @@ import { RainbowError } from '@/logger';
 type FetchParams = { eventId: string | null };
 
 type PolymarketEventStoreState = {
-  eventId: string | null;
   getMarkets: (sortOrder?: MarketSortOrder) => PolymarketMarket[] | undefined;
 };
 
@@ -29,12 +29,11 @@ type MarketSortOrder = (typeof MarketSortOrder)[keyof typeof MarketSortOrder];
 export const usePolymarketEventStore = createQueryStore<PolymarketEvent, FetchParams, PolymarketEventStoreState>(
   {
     fetcher: fetchPolymarketEvent,
-    params: { eventId: ($, store) => $(store).eventId },
+    params: { eventId: $ => $(polymarketEventIdStore).eventId },
     staleTime: time.minutes(2),
     cacheTime: time.minutes(10),
   },
   (_, get) => ({
-    eventId: null,
     getMarkets: sortOrder => {
       const event = get().getData();
       const markets = event?.markets;
@@ -60,10 +59,6 @@ function sortMarkets(markets: PolymarketMarket[], sortOrder: MarketSortOrder) {
         return Number(a.groupItemThreshold) - Number(b.groupItemThreshold);
     }
   });
-}
-
-export function prefetchPolymarketEvent(eventId: string) {
-  usePolymarketEventStore.setState({ eventId });
 }
 
 async function fetchPolymarketEvent({ eventId }: FetchParams, abortController: AbortController | null): Promise<PolymarketEvent> {

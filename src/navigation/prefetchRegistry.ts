@@ -1,7 +1,7 @@
 import { polymarketChartsActions } from '@/features/charts/polymarket/stores/polymarketStore';
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
-import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventStore';
+import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import Routes, { type Route } from '@/navigation/routesNames';
