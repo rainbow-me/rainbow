@@ -1,16 +1,7 @@
 import { HYPERLIQUID_TOKEN_ID_SUFFIX, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
-import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
-import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
-import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
-import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
-import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { PerpPositionSide, type OrderSide, type PerpMarket } from '@/features/perps/types';
-import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
+import { PerpPositionSide, type OrderSide } from '@/features/perps/types';
 import { toFixedWorklet } from '@/framework/core/safeMath';
 import { ensureError } from '@/logger';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 
 export function getHyperliquidTokenId(symbol?: string): string {
   if (!symbol) return '';
@@ -48,32 +39,8 @@ export function formatCompactPerpPercentChange(percentChange: number): string {
   return `${numericValue.toFixed(2)}%`;
 }
 
-export function navigateToNewPositionScreen(market: PerpMarket) {
-  void useHlNewPositionStore.getState().setMarket(market);
-  PerpsNavigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
-}
-
-export function navigateToPerpDetailScreen(symbol: string) {
-  const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (!market) return;
-  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, { market }));
-}
-
 export function convertSide(side: 'B' | 'A'): OrderSide {
   return side === 'B' ? 'buy' : 'sell';
-}
-
-export async function refetchHyperliquidBalance(): Promise<void> {
-  await hyperliquidAccountActions.fetch(undefined, { force: true });
-}
-
-export async function refetchHyperliquidStores() {
-  await Promise.allSettled([
-    hlOpenOrdersStoreActions.fetch(undefined, { force: true }),
-    hlTradesStoreActions.fetch(undefined, { force: true }),
-    hyperliquidMarketsActions.fetch(undefined, { force: true }),
-    hyperliquidAccountActions.fetch(undefined, { force: true }),
-  ]);
 }
 
 // Error strings are in the format: "Order ${orderNumber}: ${message}. asset=${assetId}"

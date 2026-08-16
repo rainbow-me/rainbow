@@ -7,8 +7,7 @@ import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams } from '@/systems/funding/types';
 
 import { getHyperliquidExchangeClient } from './services';
-import { useHyperliquidAccountStore } from './stores/hyperliquidAccountStore';
-import { refetchHyperliquidBalance } from './utils';
+import { refetchHyperliquidBalance, useHyperliquidAccountStore } from './stores/hyperliquidAccountStore';
 
 // ============ Config ========================================================= //
 
