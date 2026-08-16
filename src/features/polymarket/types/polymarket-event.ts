@@ -1,7 +1,7 @@
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { type POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { type League } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
+import { type ResponseByTheme } from '@/theme/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
 export type UmaResolutionStatus = 'pending' | 'proposed' | 'disputed' | 'resolved';

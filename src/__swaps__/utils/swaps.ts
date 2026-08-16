@@ -36,6 +36,7 @@ import * as i18n from '@/languages';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
+import { type ResponseByTheme } from '@/theme/types';
 import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
 
 import { swapsStore } from '../../state/swaps/swapsStore';
@@ -48,11 +49,6 @@ const TEST_MODE_SLIPPAGE_BIPS = 9999; // 99.99% slippage for test mode
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
-export type ResponseByTheme<T> = {
-  light: T;
-  dark: T;
-};
-
 export function getColorValueForThemeWorklet(values: ResponseByTheme<string> | undefined, isDarkMode: boolean): string;
 export function getColorValueForThemeWorklet<T>(
   values: ResponseByTheme<T> | undefined,

@@ -13,7 +13,8 @@ import {
 import { convertToRGBA, interpolateColor } from 'react-native-reanimated';
 
 import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/theme/types';
 
 import { buildSmoothedPath, buildSmoothedPathAnimated, LineSmoothing } from './LineSmoothingAlgorithms';
 import { type DrawParams } from './types';

@@ -1,6 +1,6 @@
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
+import { type ResponseByTheme } from '@/theme/types';
 
 export function getOutcomeTeam({
   outcome,

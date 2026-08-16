@@ -1,6 +1,5 @@
 import { getAddress } from 'viem';
 
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { getLeague } from '@/features/polymarket/leagues';
 import { type PolymarketPosition, type PolymarketTeamInfo, type RawPolymarketPosition } from '@/features/polymarket/types';
@@ -16,6 +15,7 @@ import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { type ResponseByTheme } from '@/theme/types';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   return {
