@@ -3,7 +3,7 @@ import { type CashDepositSetupRoute, type PerpsRoute } from '@/navigation/types'
 
 import { createVirtualNavigator } from './createVirtualNavigator';
 
-jest.mock('@/navigation/Navigation', () => ({
+jest.mock('@/navigation/RouteContext', () => ({
   UseRouteProvider: ({ children }: { children: unknown }) => children,
 }));
 

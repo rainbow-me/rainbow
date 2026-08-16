@@ -1,5 +1,5 @@
 import { HYPERLIQUID_TOKEN_ID_SUFFIX, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';

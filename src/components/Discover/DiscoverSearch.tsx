@@ -15,9 +15,9 @@ import { Network } from '@/features/network/types/backendNetworks';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import deviceUtils from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 

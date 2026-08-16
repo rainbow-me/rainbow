@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 
-import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

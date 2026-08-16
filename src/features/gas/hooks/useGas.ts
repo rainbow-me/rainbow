@@ -9,7 +9,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import { type AppState } from '@/redux/store';
 import { ETH_ADDRESS } from '@/references/constants';
 import {

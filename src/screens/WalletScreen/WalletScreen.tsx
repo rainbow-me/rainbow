@@ -21,7 +21,7 @@ import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';

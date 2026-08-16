@@ -10,7 +10,7 @@ import { ColorModeProvider, Stack, Text } from '@/design-system';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import type Routes from '@/navigation/routesNames';
 
 export const RnbwRewardsEstimateSheet = memo(function RnbwRewardsEstimateSheet() {

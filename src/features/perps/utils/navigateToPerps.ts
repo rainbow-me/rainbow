@@ -1,4 +1,4 @@
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';

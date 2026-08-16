@@ -10,7 +10,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
-import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { PolymarketSearchButton } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchButton';
 import { PolymarketSearchFooter } from '@/features/polymarket/screens/polymarket-navigator/PolymarketSearchFooter';
 import { opacity } from '@/framework/ui/utils/opacity';

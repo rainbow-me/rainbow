@@ -10,7 +10,7 @@ import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
-import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import assertNever from '@/helpers/assertNever';
 import Routes from '@/navigation/routesNames';

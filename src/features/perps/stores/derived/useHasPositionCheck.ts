@@ -1,6 +1,6 @@
 import { createDerivedStore } from '@storesjs/stores';
 
-import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import { usePerpsNavigationStore } from '@/features/perps/navigation/perpsNavigation';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';

@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { EXTRA_WEBVIEW_HEIGHT } from '../constants/Dimensions';

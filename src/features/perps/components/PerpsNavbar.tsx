@@ -8,7 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, Text, TextIcon } from '@/design-system';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
-import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import { usePerpsNavigationStore } from '@/features/perps/navigation/perpsNavigation';
 import * as i18n from '@/languages';
 import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import Navigation from '@/navigation/Navigation';

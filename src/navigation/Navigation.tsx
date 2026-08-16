@@ -1,15 +1,13 @@
-import { createContext, useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import {
   CommonActions,
   StackActions,
   useNavigation as useReactNavigation,
-  useRoute as useReactNavigationRoute,
   type NavigationAction,
   type NavigationContainerRef,
   type NavigationState,
   type Route as ReactNavigationRoute,
-  type RouteProp,
 } from '@react-navigation/native';
 import { type StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
 import { useCallbackOne } from 'use-memo-one';
@@ -29,13 +27,6 @@ let navigationRef: NavigationContainerRef<RootStackParamList> | null = null;
 // ============ Public Types =================================================== //
 
 export type { Route };
-
-export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
-
-export type UseRouteHook = {
-  <RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName>;
-  (): RouteProp<RootStackParamList, Route>;
-};
 
 export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
   ? [screen: RouteName, params?: RootStackParamList[RouteName]]
@@ -82,20 +73,6 @@ export function useNavigation<RouteName extends Route>() {
     }),
     [navigation, goBack, setOptions]
   );
-}
-
-// ============ useRoute Context =============================================== //
-
-const UseRouteContext = createContext<UseRouteHook>(useDefaultUseRoute);
-export const UseRouteProvider = UseRouteContext.Provider;
-
-export function useRoute<RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName> {
-  const useRouteHook = useContext(UseRouteContext);
-  return useRouteHook();
-}
-
-function useDefaultUseRoute<RouteName extends Route = Route>(): RouteProp<RootStackParamList, RouteName> {
-  return useReactNavigationRoute<RouteProp<RootStackParamList, RouteName>>();
 }
 
 // ============ Core Navigation Functions ====================================== //
@@ -208,7 +185,7 @@ function dispatchAction<RouteName extends Route>(
     if (navigationRef?.isReady()) {
       cancelPendingRouteChange();
       prefetchRegistry[routeName]?.(params);
-      setActiveRoute(routeName);
+      setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
       navigationRef.dispatch(action);
     }
   }

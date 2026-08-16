@@ -327,7 +327,7 @@ export type SettingsSheetParams = {
   initialRoute?: keyof SettingsStackParams;
 };
 
-type RouteParams = {
+type ParamsByRoute = {
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly?: boolean;
     currentAccountAddress?: string;
@@ -742,31 +742,33 @@ type RouteParams = {
 /**
  * Computes whether the `params` argument may be omitted when navigating to a `Route`.
  */
-type AreRouteParamsOptional<K extends keyof RouteParams> = [undefined] extends [RouteParams[K]]
+type AreRouteParamsOptional<K extends keyof ParamsByRoute> = [undefined] extends [ParamsByRoute[K]]
   ? true
-  : [RouteParams[K]] extends [NavigatorScreenParams<unknown>]
+  : [ParamsByRoute[K]] extends [NavigatorScreenParams<unknown>]
     ? true
-    : [RouteParams[K]] extends [object]
-      ? AreAllKeysOptional<RouteParams[K]>
+    : [ParamsByRoute[K]] extends [object]
+      ? AreAllKeysOptional<ParamsByRoute[K]>
       : false;
 
 /**
  * Routes with explicitly required params.
  */
 type RoutesWithRequiredParams = {
-  [K in keyof RouteParams]: AreRouteParamsOptional<K> extends true ? never : K;
-}[keyof RouteParams];
+  [K in keyof ParamsByRoute]: AreRouteParamsOptional<K> extends true ? never : K;
+}[keyof ParamsByRoute];
 
 /**
  * All routes mapped to their respective param types.
  */
 export type RootStackParamList = {
-  [K in RoutesWithRequiredParams]: RouteParams[K];
+  [K in RoutesWithRequiredParams]: ParamsByRoute[K];
 } & {
-  [K in Exclude<keyof RouteParams, RoutesWithRequiredParams>]?: RouteParams[K];
+  [K in Exclude<keyof ParamsByRoute, RoutesWithRequiredParams>]?: ParamsByRoute[K];
 } & {
-  [K in Exclude<Route, keyof RouteParams>]?: undefined;
+  [K in Exclude<Route, keyof ParamsByRoute>]?: undefined;
 };
+
+export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
 
 /**
  * Routes with optional params or no params at all.

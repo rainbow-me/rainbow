@@ -1,6 +1,6 @@
 import { useListen } from '@storesjs/stores';
 
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 /**

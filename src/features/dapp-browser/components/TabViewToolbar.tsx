@@ -13,7 +13,7 @@ import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { position } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

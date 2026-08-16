@@ -16,7 +16,7 @@ import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBa
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { delay } from '@/utils/delay';
 
 import { MembershipTierCard } from './components/MembershipTierCard';
