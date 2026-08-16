@@ -4,6 +4,7 @@ import type { Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
+import { getUniqueId } from '@/entities/assetId';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
@@ -18,7 +19,6 @@ import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { useAssetUpdatesStore, type AssetUpdateTransaction, type WatchedAssetUpdateTransaction } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore, type StaleBalancesByChainId } from '@/state/staleBalances';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 const EMPTY_ASSETS: Record<string, UserAsset> = {};

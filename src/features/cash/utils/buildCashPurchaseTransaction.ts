@@ -1,7 +1,7 @@
+import { getUniqueId } from '@/entities/assetId';
 import { buildTransactionTitle, TransactionDirection, TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
 import { convertAmountToRawAmount, convertRawAmountToBalance } from '@/helpers/utilities';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
 
 import { CASH_USDC_BY_NETWORK, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from '../constants';

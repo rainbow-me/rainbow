@@ -1,3 +1,4 @@
+import { getUniqueId } from '@/entities/assetId';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -5,7 +6,6 @@ import { type Asset, type NetworkMapping } from '@/features/positions/types/gene
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { type AddysAsset, type ParsedAsset } from './types';
 

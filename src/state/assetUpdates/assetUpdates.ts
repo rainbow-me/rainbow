@@ -2,10 +2,10 @@ import { createBaseStore } from '@storesjs/stores';
 import type { Address } from 'viem';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 // ============ Types ========================================================== //
 

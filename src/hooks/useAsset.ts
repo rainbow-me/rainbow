@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { type Address } from 'viem';
 
+import { getUniqueId } from '@/entities/assetId';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type AppState } from '@/redux/store';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import useAccountAsset from './useAccountAsset';
 

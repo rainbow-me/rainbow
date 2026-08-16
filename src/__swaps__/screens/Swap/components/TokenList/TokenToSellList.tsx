@@ -11,12 +11,12 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { analytics } from '@/analytics';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
+import { getUniqueId } from '@/entities/assetId';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';

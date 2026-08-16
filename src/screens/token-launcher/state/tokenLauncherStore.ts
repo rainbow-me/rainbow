@@ -6,6 +6,7 @@ import { parseEther, type Account, type Chain, type PublicClient, type Transport
 
 import { analytics } from '@/analytics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { getUniqueId } from '@/entities/assetId';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
 import { IS_STORE_INSTALL } from '@/env';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
@@ -21,7 +22,6 @@ import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { Protocol, TokenLauncherSDKError, type LaunchTokenResponse } from '@rainbow-me/token-launcher';
 
 import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';

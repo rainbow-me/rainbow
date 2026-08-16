@@ -7,6 +7,7 @@ import { type UniqueId } from '@/__swaps__/types/assets';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useColorMode } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -21,7 +22,6 @@ import { useExternalToken, type FormattedExternalAsset } from '@/resources/asset
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 export enum SectionId {
   PROFIT = 'profit',

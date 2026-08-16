@@ -17,7 +17,6 @@ export default {
   getNativeAssetForNetwork: jest.fn(),
   getNetworkNativeAsset: jest.fn(),
   getPriceOfNativeAssetForNetwork: jest.fn(),
-  getUniqueId: jest.fn(),
   isEthAddress: jest.fn(),
   openAddressInBlockExplorer: jest.fn(),
   openNftInBlockExplorer: jest.fn(),

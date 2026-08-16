@@ -8,6 +8,7 @@ import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type EthereumAddress } from '@/entities/wallet';
@@ -41,11 +42,6 @@ import { openInBrowser } from '@/utils/openInBrowser';
  * @returns `${address}_${network}`
  */
 export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
-
-export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => {
-  'worklet';
-  return `${address}_${chainId}`;
-};
 
 /**
  * @desc Get the address and chainId from a unique ID
@@ -434,7 +430,6 @@ export default {
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
   getTransactionBlockExplorerUrl,
-  getUniqueId,
   isEthAddress,
   openAddressInBlockExplorer,
   openNftInBlockExplorer,

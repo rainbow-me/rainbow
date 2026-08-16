@@ -3,6 +3,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 
+import { getUniqueId } from '@/entities/assetId';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { isHexString } from '@/handlers/web3';
 import { convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
@@ -99,7 +100,7 @@ const getTransactionDisplayDetails = async (transaction, nativeCurrency, timesta
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const accountAssetUniqueId = ethereumUtils.getUniqueId(contractAddress, chainId);
+    const accountAssetUniqueId = getUniqueId(contractAddress, chainId);
     const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;

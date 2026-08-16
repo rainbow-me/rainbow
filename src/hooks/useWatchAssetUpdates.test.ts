@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals
 import type { Address } from 'viem';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { TransactionDirection } from '@/entities/transactions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
@@ -12,7 +13,6 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { watchAssetUpdates } from './useWatchAssetUpdates';
 

@@ -7,6 +7,7 @@ import { create } from 'zustand';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
+import { getUniqueId } from '@/entities/assetId';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -30,7 +31,6 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { deepEqual } from '@/worklets/comparisons';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 

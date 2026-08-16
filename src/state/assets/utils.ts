@@ -1,6 +1,7 @@
 import { type Address } from 'viem';
 
 import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { AssetType } from '@/entities/assetTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
@@ -14,7 +15,6 @@ import { logger, RainbowError } from '@/logger';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import {
   type Asset,
