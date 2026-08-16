@@ -8,9 +8,10 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
+import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
-import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
+import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
