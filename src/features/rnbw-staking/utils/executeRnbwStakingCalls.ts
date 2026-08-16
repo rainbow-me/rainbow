@@ -4,14 +4,13 @@ import { type Address } from 'viem';
 
 import { type NewTransaction } from '@/entities/transactions';
 import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { waitForManagedExecutionConfirmation } from '@/features/delegation/utils/waitForManagedExecution';
 import { RainbowError } from '@/logger';
 import {
   execute,
   type CallsPlan,
   type EvmTransactionResult,
-  type ExecutionResult,
+  type ExecutionSubmission,
   type PreparedCallsExecution,
   type RelayExecutionId,
 } from '@rainbow-me/sdk';
@@ -79,15 +78,6 @@ export async function executeRnbwStakingCalls({
     };
   }
 
-  const failureMessage = await resolveManagedExecutionFailure({
-    executionId: execution.executionId,
-    status: execution.status,
-  });
-
-  if (failureMessage) {
-    throw new RainbowError(`${errorPrefix}: ${failureMessage}`);
-  }
-
   trackCallsExecution({
     address,
     batch: false,
@@ -105,7 +95,7 @@ export async function executeRnbwStakingCalls({
 
 // ============ Local Helpers ================================================= //
 
-function requireSubmittedTransaction(execution: ExecutionResult<'calls.wallet'>, errorPrefix: string): EvmTransactionResult {
+function requireSubmittedTransaction(execution: ExecutionSubmission<'calls.wallet'>, errorPrefix: string): EvmTransactionResult {
   const submittedTransaction = execution.transactions.at(-1);
   if (!submittedTransaction) {
     throw new RainbowError(`${errorPrefix}: wallet execution did not submit a transaction`);

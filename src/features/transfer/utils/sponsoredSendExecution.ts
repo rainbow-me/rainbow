@@ -10,7 +10,7 @@ import { encodeErc20Transfer } from '@/features/token/core/services/erc20Calldat
 import { parsePositiveRawAmount } from '@/features/token/core/services/tokenAmount';
 import { isNativeAsset } from '@/handlers/assets';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { type CallInput, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { type CallInput, type ExecutionSubmission, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { buildPendingSendTransaction } from './sponsoredSend';
 
@@ -22,7 +22,7 @@ type ExecuteSponsoredSendWithTracking = (params: {
   provider: StaticJsonRpcProvider;
   signer: Signer;
   transaction: Omit<NewTransaction, 'hash'>;
-}) => Promise<ExecutionResult<'calls.managed'> | null>;
+}) => Promise<ExecutionSubmission<'calls.managed'> | null>;
 
 type BuildSendCallFromSendDetailsParams = {
   amount: string;

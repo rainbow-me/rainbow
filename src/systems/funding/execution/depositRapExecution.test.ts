@@ -1,7 +1,9 @@
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { Wallet as EthersWallet } from 'ethers';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { execute, ManagedExecutionFailedError } from '@rainbow-me/sdk';
 import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { executeDepositRap } from './depositRapExecution';
@@ -11,7 +13,7 @@ const mockEncodeFunctionData = vi.fn();
 const mockEstimateGasWithPadding = vi.fn();
 const mockExecuteCalls = vi.fn();
 const mockGetProvider = vi.fn();
-const mockResolveManagedExecutionFailure = vi.fn();
+const mockPrepareCalls = vi.fn();
 const mockToHex = vi.fn();
 const mockWalletExecuteRap = vi.fn();
 
@@ -32,15 +34,25 @@ vi.mock('ethers', () => ({
 vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (...args: unknown[]) => mockExecuteCalls(...args),
+    prepare: {
+      calls: (...args: unknown[]) => mockPrepareCalls(...args),
+    },
+  },
+  ManagedExecutionFailedError: class ManagedExecutionFailedError extends Error {
+    readonly code: string;
+    readonly executionId: string;
+
+    constructor(executionId: string, error: { code: string; message?: string } | undefined) {
+      super(error?.message ?? error?.code ?? 'Managed execution failed');
+      this.name = 'ManagedExecutionFailedError';
+      this.code = error?.code ?? 'MANAGED_EXECUTION_FAILED';
+      this.executionId = executionId;
+    }
   },
 }));
 
 vi.mock('@/raps/execute', () => ({
   walletExecuteRap: (...args: unknown[]) => mockWalletExecuteRap(...args),
-}));
-
-vi.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
-  resolveManagedExecutionFailure: (...args: unknown[]) => mockResolveManagedExecutionFailure(...args),
 }));
 
 vi.mock('@/features/delegation/utils/sponsoredCalls', () => ({
@@ -157,6 +169,43 @@ const DIRECT_TRANSFER_CONFIG = {
 
 const MOCK_PROVIDER = { provider: 'base' };
 const MOCK_CONNECTED_WALLET = { signer: 'connected' };
+const PREPARE_PROVIDER = new StaticJsonRpcProvider('http://127.0.0.1:8545', 8453);
+const PREPARE_SIGNER = new EthersWallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
+
+async function prepareManagedCalls(executionId: string) {
+  mockPrepareCalls.mockResolvedValue({
+    executionId,
+    kind: 'calls.managed',
+    review: { fees: { payer: 'sponsor' } },
+  });
+
+  return execute.prepare.calls({
+    atomic: true,
+    calls: [{ data: '0x', to: '0x5555555555555555555555555555555555555555', value: 0n }],
+    chainId: 8453,
+    provider: PREPARE_PROVIDER,
+    signer: PREPARE_SIGNER,
+    sponsorship: 'required',
+  });
+}
+
+async function executePreparedDirectDeposit(executionId: string) {
+  const preparedCalls = await prepareManagedCalls(executionId);
+  const wallet = new EthersWallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
+  const result = await executeDepositRap({
+    asset: MOCK_ASSET as never,
+    assetChainId: 8453 as never,
+    config: DIRECT_TRANSFER_CONFIG as never,
+    gasFeeParamsBySpeed: {} as never,
+    gasParams: { gasPrice: '1' } as never,
+    nonce: 7,
+    preparedCalls,
+    quote: buildQuote(8453),
+    wallet,
+  });
+
+  return { preparedCalls, result, wallet };
+}
 
 describe('executeDepositRap', () => {
   beforeEach(() => {
@@ -295,30 +344,12 @@ describe('executeDepositRap', () => {
   });
 
   it('executes prepared direct transfers through exact calls when source asset matches target token', async () => {
-    const wallet = new EthersWallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
-    const preparedCalls = {
-      executionId: 'managed-direct-123',
-      kind: 'calls.managed',
-      review: { fees: { payer: 'sponsor' } },
-    } as never;
     mockExecuteCalls.mockResolvedValue({
       executionId: 'managed-direct-123',
       kind: 'calls.managed',
-      status: 'PENDING',
     });
-    mockResolveManagedExecutionFailure.mockResolvedValue(null);
 
-    const result = await executeDepositRap({
-      asset: MOCK_ASSET as never,
-      assetChainId: 8453 as never,
-      config: DIRECT_TRANSFER_CONFIG as never,
-      gasFeeParamsBySpeed: {} as never,
-      gasParams: { gasPrice: '1' } as never,
-      nonce: 7,
-      preparedCalls,
-      quote: buildQuote(8453),
-      wallet,
-    });
+    const { preparedCalls, result, wallet } = await executePreparedDirectDeposit('managed-direct-123');
 
     expect(result).toEqual({
       executionStrategy: 'directTransfer',
@@ -334,15 +365,30 @@ describe('executeDepositRap', () => {
       provider: MOCK_PROVIDER,
       signer: wallet,
     });
-    expect(mockResolveManagedExecutionFailure).toHaveBeenCalledWith({
-      executionId: 'managed-direct-123',
-      status: 'PENDING',
+  });
+
+  it('returns prepared direct transfer rejections as sponsored execution failures', async () => {
+    mockExecuteCalls.mockRejectedValue(
+      new ManagedExecutionFailedError('0x1234', {
+        code: 'SIMULATION_FAILED',
+        message: 'Relay simulation failed',
+      })
+    );
+
+    const { result } = await executePreparedDirectDeposit('managed-direct-123');
+
+    expect(result).toEqual({
+      error: 'Relay simulation failed',
+      sponsorshipAttempted: true,
+      sponsorshipFailureReason: 'sponsoredRelayExecutionFailed',
+      success: false,
     });
   });
 
   it('treats managed atomic execution without hash as success when sponsored calls are supplied', async () => {
     mockWalletExecuteRap.mockResolvedValue({ errorMessage: null, hash: null, nonce: undefined });
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
+    const preparedCalls = await prepareManagedCalls('managed-123');
 
     const result = await executeDepositRap({
       asset: MOCK_ASSET as never,
@@ -351,11 +397,7 @@ describe('executeDepositRap', () => {
       gasFeeParamsBySpeed: {} as never,
       gasParams: {} as never,
       nonce: 2,
-      preparedCalls: {
-        executionId: 'managed-123',
-        kind: 'calls.managed',
-        review: { fees: { payer: 'sponsor' } },
-      } as never,
+      preparedCalls,
       quote: buildQuote(8453),
       wallet,
     });
@@ -426,12 +468,18 @@ describe('executeDepositRap', () => {
   });
 
   it('classifies depleted sponsor wallet failures', async () => {
+    const managedExecutionError = new ManagedExecutionFailedError('0x1234', {
+      code: 'INSUFFICIENT_SPONSOR_BALANCE',
+      message: 'Sponsor wallet depleted',
+    });
     mockWalletExecuteRap.mockResolvedValue({
-      errorMessage: 'Managed relay execution failed [INSUFFICIENT_SPONSOR_BALANCE]',
+      errorMessage: managedExecutionError.message,
       hash: null,
+      managedExecutionError,
       nonce: undefined,
     });
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
+    const preparedCalls = await prepareManagedCalls('managed-456');
 
     const result = await executeDepositRap({
       asset: MOCK_ASSET as never,
@@ -440,17 +488,13 @@ describe('executeDepositRap', () => {
       gasFeeParamsBySpeed: {} as never,
       gasParams: {} as never,
       nonce: 5,
-      preparedCalls: {
-        executionId: 'managed-456',
-        kind: 'calls.managed',
-        review: { fees: { payer: 'sponsor' } },
-      } as never,
+      preparedCalls,
       quote: buildQuote(8453),
       wallet,
     });
 
     expect(result).toEqual({
-      error: 'Managed relay execution failed ',
+      error: 'Sponsor wallet depleted',
       sponsorshipAttempted: true,
       sponsorshipFailureReason: 'insufficientSponsorBalance',
       success: false,
@@ -458,12 +502,18 @@ describe('executeDepositRap', () => {
   });
 
   it('classifies managed relay execution failures separately from sponsor balance failures', async () => {
+    const managedExecutionError = new ManagedExecutionFailedError('0x1234', {
+      code: 'SIMULATION_FAILED',
+      message: 'Relay simulation failed',
+    });
     mockWalletExecuteRap.mockResolvedValue({
-      errorMessage: 'Managed relay execution reverted',
+      errorMessage: managedExecutionError.message,
       hash: null,
+      managedExecutionError,
       nonce: undefined,
     });
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
+    const preparedCalls = await prepareManagedCalls('managed-789');
 
     const result = await executeDepositRap({
       asset: MOCK_ASSET as never,
@@ -472,17 +522,13 @@ describe('executeDepositRap', () => {
       gasFeeParamsBySpeed: {} as never,
       gasParams: {} as never,
       nonce: 6,
-      preparedCalls: {
-        executionId: 'managed-789',
-        kind: 'calls.managed',
-        review: { fees: { payer: 'sponsor' } },
-      } as never,
+      preparedCalls,
       quote: buildQuote(8453),
       wallet,
     });
 
     expect(result).toEqual({
-      error: 'Managed relay execution reverted',
+      error: 'Relay simulation failed',
       sponsorshipAttempted: true,
       sponsorshipFailureReason: 'sponsoredRelayExecutionFailed',
       success: false,
