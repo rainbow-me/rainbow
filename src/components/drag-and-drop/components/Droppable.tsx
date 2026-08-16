@@ -5,8 +5,9 @@ import Animated, { useAnimatedStyle, withTiming, type AnimatedProps } from 'reac
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
-import { useDroppable, type UseDraggableOptions } from '../hooks';
-import type { AnimatedStyleWorklet } from '../types';
+import type { UseDraggableOptions } from '../hooks/useDraggable';
+import { useDroppable } from '../hooks/useDroppable';
+import type { AnimatedStyleWorklet } from '../types/common';
 
 export type DroppableProps = AnimatedProps<ViewProps> &
   UseDraggableOptions & {

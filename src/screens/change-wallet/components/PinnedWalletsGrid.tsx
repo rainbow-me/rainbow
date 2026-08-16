@@ -8,7 +8,9 @@ import type { Address } from 'viem';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
-import { Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
+import { Draggable } from '@/components/drag-and-drop/components/Draggable';
+import { DraggableGrid, type DraggableGridProps } from '@/components/drag-and-drop/features/sort/components/DraggableGrid';
+import type { UniqueIdentifier } from '@/components/drag-and-drop/types/common';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';

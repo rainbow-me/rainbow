@@ -4,8 +4,11 @@ import { type LayoutRectangle } from 'react-native';
 import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 
 import { useDndContext } from '../../../DndContext';
-import type { UniqueIdentifier } from '../../../types';
-import { applyOffset, arraysEqual, doesOverlapOnAxis, moveArrayIndex, type Direction, type Rectangle } from '../../../utils';
+import type { UniqueIdentifier } from '../../../types/common';
+import { arraysEqual } from '../../../utils/array';
+import { doesOverlapOnAxis } from '../../../utils/collision';
+import { applyOffset, type Direction, type Rectangle } from '../../../utils/geometry';
+import { moveArrayIndex } from '../../../utils/reanimated';
 
 export type ShouldSwapWorklet = (activeLayout: Rectangle, itemLayout: Rectangle, direction: Direction) => boolean;
 

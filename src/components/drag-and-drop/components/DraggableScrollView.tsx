@@ -3,10 +3,10 @@ import React, { type ComponentProps, type ReactElement } from 'react';
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 import { useDndContext } from '../DndContext';
-import { type UseDraggableSortOptions } from '../features';
 import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';
-import { useChildrenIds } from '../hooks';
-import { swapByItemCenterPoint } from '../utils';
+import { type UseDraggableSortOptions } from '../features/sort/hooks/useDraggableSort';
+import { useChildrenIds } from '../hooks/useChildrenIds';
+import { swapByItemCenterPoint } from '../utils/swap';
 
 type AnimatedScrollViewProps = ComponentProps<typeof Animated.ScrollView>;
 

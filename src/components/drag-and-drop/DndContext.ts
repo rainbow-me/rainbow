@@ -4,8 +4,9 @@ import type { LayoutRectangle, View } from 'react-native';
 import type { GestureEventPayload } from 'react-native-gesture-handler';
 import type { SharedValue } from 'react-native-reanimated';
 
-import type { DraggableConstraints, SharedPoint } from './hooks';
-import type { SharedData, UniqueIdentifier } from './types';
+import type { DraggableConstraints } from './hooks/useDraggable';
+import type { SharedPoint } from './hooks/useSharedPoint';
+import type { SharedData, UniqueIdentifier } from './types/common';
 
 export type ItemOptions = { id: UniqueIdentifier; data: SharedData; disabled: boolean };
 export type DraggableItemOptions = ItemOptions & DraggableConstraints;

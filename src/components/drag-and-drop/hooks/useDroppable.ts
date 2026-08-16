@@ -6,9 +6,11 @@ import { runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reani
 import { useLayoutWorklet } from '@/hooks/reanimated/useLayoutWorklet';
 
 import { useDndContext } from '../DndContext';
-import { useLatestSharedValue, useNodeRef } from '../hooks';
-import type { Data, NativeElement, UniqueIdentifier } from '../types';
-import { assert, isReanimatedSharedValue } from '../utils';
+import type { Data, NativeElement, UniqueIdentifier } from '../types/common';
+import { assert } from '../utils/assert';
+import { isReanimatedSharedValue } from '../utils/reanimated';
+import { useLatestSharedValue } from './useLatestSharedValue';
+import { useNodeRef } from './useNodeRef';
 
 export type UseDroppableOptions = { id: UniqueIdentifier; data?: Data; disabled?: boolean };
 

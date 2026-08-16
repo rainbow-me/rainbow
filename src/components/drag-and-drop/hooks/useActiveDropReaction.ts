@@ -1,7 +1,7 @@
 import { useAnimatedReaction } from 'react-native-reanimated';
 
 import { useDndContext } from '../DndContext';
-import type { UniqueIdentifier } from '../types';
+import type { UniqueIdentifier } from '../types/common';
 
 export const useActiveDropReaction = (id: UniqueIdentifier, callback: (isActive: boolean) => void) => {
   const { droppableActiveId: activeId } = useDndContext();

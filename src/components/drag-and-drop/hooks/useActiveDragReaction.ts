@@ -2,7 +2,7 @@ import { State } from 'react-native-gesture-handler';
 import { useAnimatedReaction } from 'react-native-reanimated';
 
 import { useDndContext } from '../DndContext';
-import type { UniqueIdentifier } from '../types';
+import type { UniqueIdentifier } from '../types/common';
 
 export const useActiveDragReaction = (id: UniqueIdentifier, callback: (isActive: boolean) => void) => {
   const { draggableActiveId: activeId, panGestureState } = useDndContext();

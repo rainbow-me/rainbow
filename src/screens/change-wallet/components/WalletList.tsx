@@ -7,8 +7,10 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
-import { DndProvider, Draggable, type DraggableScrollViewProps, type UniqueIdentifier } from '@/components/drag-and-drop';
-import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { Draggable } from '@/components/drag-and-drop/components/Draggable';
+import { DraggableScrollView, type DraggableScrollViewProps } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { DndProvider } from '@/components/drag-and-drop/DndProvider';
+import type { UniqueIdentifier } from '@/components/drag-and-drop/types/common';
 import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Separator, Text } from '@/design-system';
 import { type EthereumAddress } from '@/entities/wallet';

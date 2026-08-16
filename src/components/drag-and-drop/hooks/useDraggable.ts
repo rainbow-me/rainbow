@@ -6,9 +6,11 @@ import { runOnUI, useSharedValue } from 'react-native-reanimated';
 import { useLayoutWorklet } from '@/hooks/reanimated/useLayoutWorklet';
 
 import { useDndContext, type DraggableState } from '../DndContext';
-import { useLatestSharedValue, useNodeRef } from '../hooks';
-import { type Data, type NativeElement, type UniqueIdentifier } from '../types';
-import { assert, isReanimatedSharedValue } from '../utils';
+import { type Data, type NativeElement, type UniqueIdentifier } from '../types/common';
+import { assert } from '../utils/assert';
+import { isReanimatedSharedValue } from '../utils/reanimated';
+import { useLatestSharedValue } from './useLatestSharedValue';
+import { useNodeRef } from './useNodeRef';
 import { useSharedPoint } from './useSharedPoint';
 
 export type DraggableConstraints = {
