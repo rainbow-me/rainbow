@@ -3,7 +3,7 @@ import { NativeModules, Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 import { analytics } from '@/analytics';
-import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
+import { isSplashScreenHidden } from '@/app/splashScreenState';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import currentColors from '@/theme/currentColors';
