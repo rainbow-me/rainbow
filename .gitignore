@@ -141,3 +141,8 @@ anvil.log
 # deps-check output consumed by CI
 deps-report.md
 deps-comment.md
+
+# Agent workspaces
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.local.json
