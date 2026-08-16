@@ -26,7 +26,6 @@ import {
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { getUserError } from '@/hooks/useWalletCloudBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { clearAllStorages } from '@/model/mmkv';
@@ -37,6 +36,7 @@ import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 
+import { getBackupErrorMessage } from './getBackupErrorMessage';
 import { backupsStore, CloudBackupState } from './stores/backupsStore';
 
 const { DeviceUUID } = NativeModules;
@@ -181,7 +181,7 @@ export async function backupAllWalletsToCloud({
     onSuccess?.(password);
   } catch (error) {
     if (error instanceof Error) {
-      const userError = getUserError(error);
+      const userError = getBackupErrorMessage(error);
       onError?.(userError);
       captureException(error);
       analytics.track(analytics.event.backupError, {
