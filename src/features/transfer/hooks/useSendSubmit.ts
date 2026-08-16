@@ -41,7 +41,7 @@ import { interactionsCountQueryKey } from '@/resources/addys/interactions';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 

@@ -25,7 +25,7 @@ import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getNextNonce } from '@/state/nonces';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export interface GasInfo {

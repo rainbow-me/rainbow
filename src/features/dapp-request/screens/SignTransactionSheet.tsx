@@ -47,7 +47,7 @@ import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, TimeToSignOperation } from '@/state/performance/performance';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';

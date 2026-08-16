@@ -19,7 +19,7 @@ jest.mock('@/handlers/web3', () => ({
   toHex: jest.fn(),
 }));
 
-jest.mock('@/state/pendingTransactions', () => ({
+jest.mock('@/state/pendingTransactions/addNewTransaction', () => ({
   addNewTransaction: jest.fn(),
 }));
 
