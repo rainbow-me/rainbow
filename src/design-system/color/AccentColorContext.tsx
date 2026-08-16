@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo, type ReactNode } from 'react
 
 import chroma from 'chroma-js';
 
-import { useBackgroundColor } from '../components/BackgroundProvider/BackgroundProvider';
+import { ColorModeContext } from './ColorMode';
 import { type BackgroundColorValue } from './palettes';
 
 export const AccentColorContext = createContext<BackgroundColorValue | null>(null);
@@ -24,14 +24,14 @@ export function useAccentColor(): BackgroundColorValue {
  * @description Sets the `"accent"` color for an entire subtree of the app.
  */
 export function AccentColorProvider({ color, children }: AccentColorProviderProps) {
-  const blue = useBackgroundColor('blue');
-  const contextValue = useMemo(() => {
+  const { backgroundColors } = useContext(ColorModeContext);
+  const contextValue = useMemo<BackgroundColorValue>(() => {
     const isValid = chroma.valid(color);
     return {
-      color: isValid ? color : blue,
+      color: isValid ? color : backgroundColors.blue.color,
       mode: isValid && chroma.contrast(color, '#fff') > 2.125 ? 'darkTinted' : 'lightTinted',
-    } as const;
-  }, [blue, color]);
+    };
+  }, [backgroundColors.blue.color, color]);
 
   return <AccentColorContext.Provider value={contextValue}>{children}</AccentColorContext.Provider>;
 }
