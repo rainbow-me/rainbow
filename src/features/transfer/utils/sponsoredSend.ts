@@ -8,13 +8,12 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions/
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { createDelegationPublicClient, SPONSORED_CALLS_POLICY } from '@/features/delegation/utils/calls';
 import { trackCallsExecution } from '@/features/delegation/utils/callsExecutionTracking';
-import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { predictSponsoredCallsExecution } from '@/features/delegation/utils/sponsoredCalls';
 import { canUseDelegatedExecution, supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { RainbowError } from '@/logger';
-import { execute, type CallInput, type ExecutionResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
+import { execute, type CallInput, type ExecutionSubmission, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 // ============ Types ========================================================= //
 
@@ -87,19 +86,10 @@ export async function executeSponsoredSend({
   provider,
   signer,
   transaction,
-}: ExecuteSponsoredSendParams): Promise<ExecutionResult<'calls.managed'> | null> {
+}: ExecuteSponsoredSendParams): Promise<ExecutionSubmission<'calls.managed'> | null> {
   if (!(signer instanceof Wallet) || !canUseDelegatedExecution(accountAddress)) return null;
 
   const execution = await executeSendCall({ call, chainId, preparedCalls, provider, signer });
-  const failureMessage = await resolveManagedExecutionFailure({
-    executionId: execution.executionId,
-    status: execution.status,
-  });
-
-  if (failureMessage) {
-    throw new RainbowError(`[executeSponsoredSend]: ${failureMessage}`);
-  }
-
   trackCallsExecution({
     address: accountAddress,
     batch: false,
@@ -158,7 +148,7 @@ function executeSendCall({
   preparedCalls: PreparedCallsExecution<'calls.managed'> | null;
   provider: StaticJsonRpcProvider;
   signer: Wallet;
-}): Promise<ExecutionResult<'calls.managed'>> {
+}): Promise<ExecutionSubmission<'calls.managed'>> {
   if (preparedCalls) {
     return execute.calls(preparedCalls, {
       chainId,
