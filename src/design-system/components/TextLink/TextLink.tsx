@@ -1,23 +1,21 @@
 import React, { useCallback, type ReactNode } from 'react';
 import { Text as NativeText, type TextStyle } from 'react-native';
 
-import { openInBrowser } from '@/utils/openInBrowser';
-
 const style: TextStyle = {
   textDecorationLine: 'underline',
 };
 
 export interface TextLinkProps {
-  url: string;
   children: ReactNode;
-  handleLinkPress?: (url: string) => void;
+  handleLinkPress: (url: string) => void;
+  url: string;
 }
 
 /**
  * @description Renders a plain, static text link, designed to be used within a
  * block of text.
  */
-export function TextLink({ children, url, handleLinkPress = openInBrowser }: TextLinkProps) {
+export function TextLink({ children, handleLinkPress, url }: TextLinkProps) {
   const onPressHandler = useCallback(() => {
     handleLinkPress(url);
   }, [handleLinkPress, url]);
