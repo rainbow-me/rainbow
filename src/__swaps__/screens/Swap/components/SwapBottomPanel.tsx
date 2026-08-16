@@ -13,7 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, Separator, useColorMode } from '@/design-system';
 import { RNBW_REWARDS } from '@/features/config/constants/experimental';

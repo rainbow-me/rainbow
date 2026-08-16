@@ -15,7 +15,8 @@ import Animated, {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { CUSTOM_KEYBOARD_HEIGHT, LONG_PRESS_DELAY_DURATION, LONG_PRESS_REPEAT_DURATION } from '@/__swaps__/screens/Swap/constants';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { type InputKeys } from '@/__swaps__/types/swap';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';

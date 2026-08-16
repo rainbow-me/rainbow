@@ -3,7 +3,8 @@ import { Platform, Pressable, StyleSheet } from 'react-native';
 
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ContactAvatar } from '@/components/contacts';

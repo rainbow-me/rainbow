@@ -5,17 +5,17 @@ import { createBaseStore } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
-import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { getSelectedGas, getSelectedSpeedSuggestion, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import {
   getCachedCurrentBaseFee,
-  getSelectedSpeedSuggestion,
   useBaseFee,
   useChainSupportsPriorityFee,
   useGasTrend,

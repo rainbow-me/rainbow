@@ -32,6 +32,7 @@ import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettin
 import { ReviewButton } from './components/ReviewButton';
 import { SwapWarning } from './components/SwapWarning';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import { SyncSwapStateAndSharedValues } from './providers/SyncSwapStateAndSharedValues';
 import { useSwapsSearchStore } from './resources/search/searchV2';
 
 /** README
@@ -90,6 +91,7 @@ export function SwapScreen() {
       <AbsolutePortalRoot />
       <NavigateToSwapSettingsTrigger />
       <WalletAddressObserver />
+      <SyncSwapStateAndSharedValues />
     </SwapProvider>
   );
 }

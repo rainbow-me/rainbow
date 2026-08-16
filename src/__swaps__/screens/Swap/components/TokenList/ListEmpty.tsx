@@ -12,8 +12,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapContext } from '../../providers/swap-provider';
-import { BUY_LIST_HEADER_HEIGHT } from './TokenToBuyList';
-import { SELL_LIST_HEADER_HEIGHT } from './TokenToSellList';
+import { BUY_LIST_HEADER_HEIGHT, SELL_LIST_HEADER_HEIGHT } from './constants';
 
 type ListEmptyProps = {
   action?: 'swap' | 'bridge';
