@@ -11,8 +11,8 @@ import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from '@/components/asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
 import ImagePreviewOverlay from '@/components/images/ImagePreviewOverlay';
-import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
 
+import { ProfileSheetConfigContext } from './profile/ProfileSheetConfigContext';
 import ProfileSheetHeader from './profile/ProfileSheetHeader';
 
 const extraPadding = { paddingBottom: 144 };

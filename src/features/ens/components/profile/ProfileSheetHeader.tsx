@@ -12,7 +12,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
@@ -26,6 +25,7 @@ import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileCover from './ProfileCover';
 import ProfileDescription from './ProfileDescription';
+import { ProfileSheetConfigContext } from './ProfileSheetConfigContext';
 import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags';
 
 export default function ProfileSheetHeader({
