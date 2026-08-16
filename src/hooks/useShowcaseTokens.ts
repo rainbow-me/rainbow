@@ -5,10 +5,11 @@ import { useMutation } from '@tanstack/react-query';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
 import { queryClient } from '@/react-query';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { showcaseTokensQueryKey } from '@/state/nfts/tokenPreferences';
 import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
+import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 
 export default function useShowcaseTokens(address?: string) {
   const accountAddress = useAccountAddress();

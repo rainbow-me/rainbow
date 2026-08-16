@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -157,7 +157,7 @@ export default function ENSConfirmRegisterSheet() {
       // revalidate nft data for ens collection
       const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
       useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
-      useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
+      useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {

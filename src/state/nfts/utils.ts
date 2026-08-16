@@ -1,17 +1,9 @@
-import { type Address } from 'viem';
-
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
-import { fetchHiddenTokens, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { fetchShowcaseTokens, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { queryClient } from '@/react-query';
 import { fetchNFTData, nftsQueryKey, type NFTData } from '@/resources/nfts';
 import { parseUniqueId } from '@/resources/nfts/utils';
-import { STALE_TIME } from '@/state/nfts/createNftsStore';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { type NftsState } from '@/state/nfts/types';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export function isDataComplete(tokens: string[]) {
@@ -94,111 +86,4 @@ export function mergeMaps<T>(map1: Map<string, T>, map2: Map<string, T>) {
       yield* map2;
     })()
   );
-}
-
-export function getShowcaseAndHiddenTokenIds(address: Address | string, category?: 'showcase' | 'hidden') {
-  if (category) {
-    const tokens =
-      category === 'showcase'
-        ? (queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [])
-        : (queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? []);
-
-    return new Set(tokens);
-  }
-
-  const showcaseTokens = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [];
-  const hiddenTokens = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
-
-  return new Set([...showcaseTokens, ...hiddenTokens]);
-}
-
-export async function getHiddenAndShowcaseCollectionIds(
-  address: Address | string,
-  category: 'showcase' | 'hidden'
-): Promise<{ collectionIds: Set<string> }>;
-export async function getHiddenAndShowcaseCollectionIds(address: Address | string): Promise<{
-  showcaseCollectionIds: Set<string>;
-  hiddenCollectionIds: Set<string>;
-}>;
-export async function getHiddenAndShowcaseCollectionIds(
-  address: Address | string,
-  category?: 'showcase' | 'hidden'
-): Promise<{ collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> }> {
-  if (category) {
-    const tokens = category === 'showcase' ? await fetchShowcaseTokens({ address }) : await fetchHiddenTokens({ address });
-
-    return {
-      collectionIds: new Set(
-        tokens.map(uniqueId => {
-          const { network, contractAddress } = parseUniqueId(uniqueId);
-          return `${network}_${contractAddress}`.toLowerCase();
-        })
-      ),
-    };
-  }
-
-  const [showcaseTokens, hiddenTokens] = await Promise.all([fetchShowcaseTokens({ address }), fetchHiddenTokens({ address })]);
-
-  return {
-    showcaseCollectionIds: new Set(
-      showcaseTokens.map(uniqueId => {
-        const { network, contractAddress } = parseUniqueId(uniqueId);
-        return `${network}_${contractAddress}`.toLowerCase();
-      })
-    ),
-    hiddenCollectionIds: new Set(
-      hiddenTokens.map(uniqueId => {
-        const { network, contractAddress } = parseUniqueId(uniqueId);
-        return `${network}_${contractAddress}`.toLowerCase();
-      })
-    ),
-  };
-}
-
-export async function pruneStaleAndClosedCollections({
-  address,
-  set,
-}: {
-  address: Address | string;
-  set: (state: Partial<NftsState>) => void;
-}) {
-  const { nftsByCollection, fetchedCollections } = useNftsStore.getState(address);
-  const { openCollections } = useOpenCollectionsStore.getState(address);
-
-  const { showcaseCollectionIds, hiddenCollectionIds } = await getHiddenAndShowcaseCollectionIds(address);
-
-  const isHiddenOpen = openCollections['hidden'] ?? false;
-
-  const newNftsByCollection = new Map(nftsByCollection);
-
-  for (const [collectionId, isOpen] of Object.entries(openCollections)) {
-    const normalizedCollectionId = collectionId.toLowerCase();
-
-    // don't prune if the collection is still open or showcase / hidden (we have to check against all ids for those)
-    if (
-      isOpen ||
-      normalizedCollectionId === 'showcase' ||
-      showcaseCollectionIds.has(normalizedCollectionId) || // never prune showcase collections
-      (isHiddenOpen && hiddenCollectionIds.has(normalizedCollectionId))
-    ) {
-      continue;
-    }
-
-    const collection = nftsByCollection.get(normalizedCollectionId);
-    if (!collection) {
-      continue;
-    }
-
-    const now = Date.now();
-    const lastFetched = fetchedCollections[normalizedCollectionId];
-    const timeSinceFetch = lastFetched ? now - lastFetched : 0;
-
-    if (lastFetched && timeSinceFetch < STALE_TIME) {
-      continue;
-    }
-
-    newNftsByCollection.delete(normalizedCollectionId);
-  }
-
-  set({ nftsByCollection: newNftsByCollection });
 }

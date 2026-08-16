@@ -9,14 +9,13 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
-import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { hiddenTokensQueryKey, showcaseTokensQueryKey } from '@/state/nfts/tokenPreferences';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 
@@ -42,7 +41,7 @@ export const refreshAccountData = async () => {
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
-    useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) }),
+    useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) }),
   ]).then(() => refreshWalletInfo({ useCachedENS: true }));
 };
 
