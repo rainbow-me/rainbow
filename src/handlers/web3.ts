@@ -8,7 +8,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther, parseUnits } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
-import { startsWith } from 'lodash';
+import { replace, startsWith } from 'lodash';
 import { type Address, type Hex } from 'viem';
 
 import { AssetType } from '@/entities/assetTypes';
@@ -36,7 +36,6 @@ import { CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/referenc
 import ethUnits from '@/references/ethereum-units.json';
 import smartContractMethods from '@/references/smartcontract-methods.json';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import ethereumUtils from '@/utils/ethereumUtils';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -570,6 +569,18 @@ const estimateAssetBalancePortion = (asset: ParsedAddressAsset | UniqueAsset): s
   return '0';
 };
 
+function removeHexPrefix(hex: string): string {
+  return replace(hex.toLowerCase(), '0x', '');
+}
+
+function padLeft(value: string, width: number, padding = '0'): string {
+  return value.length >= width ? value : new Array(width - value.length + 1).join(padding) + value;
+}
+
+function getDataString(functionHash: string, values: string[]): string {
+  return functionHash + values.map(value => padLeft(value, 64)).join('');
+}
+
 /**
  * @desc Generates a transaction data string for a token transfer.
  * @param value The value to transfer.
@@ -578,7 +589,7 @@ const estimateAssetBalancePortion = (asset: ParsedAddressAsset | UniqueAsset): s
  */
 export const getDataForTokenTransfer = (value: string, to: string): string => {
   const transferMethodHash = smartContractMethods.token_transfer.hash;
-  const data = ethereumUtils.getDataString(transferMethodHash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(value)]);
+  const data = getDataString(transferMethodHash, [removeHexPrefix(to), convertStringToHex(value)]);
   return data;
 };
 
@@ -598,15 +609,15 @@ export const getDataForNftTransfer = (
   let data: string | undefined;
   if (contractAddress === CRYPTO_KITTIES_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
+    data = getDataString(transferMethod.hash, [removeHexPrefix(to), convertStringToHex(tokenId)]);
   } else if (contractAddress === CRYPTO_PUNKS_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
+    data = getDataString(transferMethod.hash, [removeHexPrefix(to), convertStringToHex(tokenId)]);
   } else if (standard === NftTokenType.Erc1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
-    data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(from),
-      ethereumUtils.removeHexPrefix(to),
+    data = getDataString(transferMethodHash, [
+      removeHexPrefix(from),
+      removeHexPrefix(to),
       convertStringToHex(tokenId),
       convertStringToHex('1'),
       convertStringToHex('160'),
@@ -614,11 +625,7 @@ export const getDataForNftTransfer = (
     ]);
   } else if (standard === NftTokenType.Erc721) {
     const transferMethod = smartContractMethods.erc721_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [
-      ethereumUtils.removeHexPrefix(from),
-      ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(tokenId),
-    ]);
+    data = getDataString(transferMethod.hash, [removeHexPrefix(from), removeHexPrefix(to), convertStringToHex(tokenId)]);
   }
   return data;
 };

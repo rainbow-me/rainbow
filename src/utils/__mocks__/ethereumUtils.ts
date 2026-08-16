@@ -10,7 +10,6 @@ export default {
   getBalanceAmount: jest.fn(),
   getBasicSwapGasLimit: jest.fn(),
   getBlockExplorer: jest.fn(),
-  getDataString: jest.fn(),
   getEtherscanHostForNetwork: jest.fn(),
   getHash: jest.fn(),
   getMultichainAssetAddress: jest.fn(),
@@ -22,6 +21,4 @@ export default {
   openNftInBlockExplorer: jest.fn(),
   openTokenEtherscanURL: jest.fn(),
   openTransactionInBlockExplorer: jest.fn(),
-  padLeft: jest.fn(),
-  removeHexPrefix: jest.fn(),
 };

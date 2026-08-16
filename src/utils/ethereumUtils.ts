@@ -4,7 +4,7 @@ import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproj
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
-import { cloneDeep, isEmpty, isString, replace } from 'lodash';
+import { cloneDeep, isEmpty, isString } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
@@ -245,39 +245,6 @@ const getBalanceAmount = (
 const getHash = (txn: RainbowTransaction | NewTransaction) => txn.hash?.split('-').shift();
 
 /**
- * @desc remove hex prefix
- * @param  {String} hex
- * @return {String}
- */
-const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
-
-/**
- * @desc pad string to specific width and padding
- * @param  {String} n
- * @param  {Number} width
- * @param  {String} z
- * @return {String}
- */
-const padLeft = (n: string, width: number, z = '0') => {
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-};
-
-/**
- * @desc get ethereum contract call data string
- * @param  {String} func
- * @param  {Array}  arrVals
- * @return {String}
- */
-const getDataString = (func: string, arrVals: string[]) => {
-  let val = '';
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
-  for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
-  const data = func + val;
-  return data;
-};
-
-/**
  * @desc get etherscan host from network string
  * @param  {String} network
  */
@@ -420,7 +387,6 @@ export default {
   getBalanceAmount,
   getBasicSwapGasLimit,
   getBlockExplorer,
-  getDataString,
   getEtherscanHostForNetwork,
   getHash,
   getNativeAssetForNetwork,
@@ -432,6 +398,4 @@ export default {
   openNftInBlockExplorer,
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
-  padLeft,
-  removeHexPrefix,
 };
