@@ -8,7 +8,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
 import { getWallets } from '@/state/wallets/walletsStore';
 
-import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '../backup';
+import { parseTimestampFromFilename, type BackupFile, type CloudBackups } from '../backupFile';
 
 const mutex = new Mutex();
 

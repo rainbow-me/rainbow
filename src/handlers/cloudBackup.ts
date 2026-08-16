@@ -5,12 +5,11 @@ import { sortBy } from 'lodash';
 import RNCloudFs from 'react-native-cloud-fs';
 import RNFS from 'react-native-fs';
 
-import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
+import { normalizeAndroidBackupFilename, REMOTE_BACKUP_WALLET_DIR, type BackupFile, type CloudBackups } from '@/features/backup/backupFile';
 import { logger, RainbowError } from '@/logger';
 
 import AesEncryptor from '../handlers/aesEncryption';
 
-const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 export const USERDATA_FILE = 'UserData.json';
 
 const encryptor = new AesEncryptor();
@@ -42,10 +41,6 @@ export function parseBackupJson(value: string) {
   } catch {
     throw new Error(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
   }
-}
-
-export function normalizeAndroidBackupFilename(filename: string) {
-  return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
 }
 
 export async function logoutFromGoogleDrive() {

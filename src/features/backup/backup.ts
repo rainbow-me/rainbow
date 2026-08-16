@@ -21,7 +21,6 @@ import {
   isCloudBackupAvailable,
   login,
   logoutFromGoogleDrive,
-  normalizeAndroidBackupFilename,
   parseBackupJson,
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -43,53 +42,6 @@ import { backupsStore, CloudBackupState } from './stores/backupsStore';
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
-
-export interface CloudBackups {
-  files: BackupFile[];
-}
-
-export interface BackupFile {
-  isDirectory: boolean;
-  isFile: boolean;
-  lastModified: string;
-  name: string;
-  path: string;
-  size: number;
-  uri: string;
-}
-
-export const parseTimestampFromFilename = (filename: string) => {
-  const name = normalizeAndroidBackupFilename(filename);
-  return Number(
-    name
-      .replace('.backup_', '')
-      .replace('backup_', '')
-      .replace('.json', '')
-      .replace('.icloud', '')
-      .replace('rainbow.me/wallet-backups/', '')
-  );
-};
-
-/**
- * Parse the timestamp from a backup file name
- * @param filename - The name of the backup file backup_${now}.json
- * @returns The timestamp as a number
- */
-export const parseTimestampFromBackupFile = (filename: string | null): number | undefined => {
-  if (!filename) {
-    return;
-  }
-  const match = filename.match(/backup_(\d+)\.json/);
-  if (!match) {
-    return;
-  }
-
-  if (Number.isNaN(Number(match[1]))) {
-    return;
-  }
-
-  return Number(match[1]);
-};
 
 type BackupPassword = string;
 

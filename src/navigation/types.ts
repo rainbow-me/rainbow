@@ -15,7 +15,7 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
-import { type BackupFile, type CloudBackups } from '@/features/backup/backup';
+import { type BackupFile, type CloudBackups } from '@/features/backup/backupFile';
 import { type ActiveTabRef } from '@/features/dapp-browser/types';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
 import { type RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';

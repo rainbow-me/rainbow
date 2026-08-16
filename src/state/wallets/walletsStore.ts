@@ -5,7 +5,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { type Address } from 'viem';
 
 import { normalizeAddress } from '@/features/address/core/address';
-import { parseTimestampFromBackupFile } from '@/features/backup/backup';
+import { parseTimestampFromBackupFile } from '@/features/backup/backupFile';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import * as kc from '@/features/local-auth/keychain';
 import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
