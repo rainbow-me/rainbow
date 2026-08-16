@@ -276,10 +276,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
         'clamp'
       );
 
-    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
-    const zIndex = Math.round(
-      scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0)
-    );
+    const isTabBeingClosed = currentlyBeingClosedTabIds.value.includes(tabId);
+    const zIndex = Math.round(scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (isTabBeingClosed ? 9999 : 0));
 
     return { zIndex };
   });
