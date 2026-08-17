@@ -1,42 +1,27 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-react-native';
 
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import visaLogo from '@/features/cash/assets/visa.png';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
 import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
-import { CardBrand } from '@/features/cash/services/rampClient';
+import { useCardLinkFlowStore } from '@/features/cash/stores/cardLinkFlowStore';
 import * as i18n from '@/languages';
 
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { CARD_FIELD, useCardLinkFlow } from './useCardLinkFlow';
+import { CARD_FIELD, useSetupContext } from '../setupContext';
+import { goBackInSetup } from '../setupNavigation';
 
 const l = i18n.l.cash.deposit_setup.card_details;
 
 export const CardDetailsStep = memo(function CardLinkForm() {
-  const {
-    state,
-    bivoStore,
-    cardBrand,
-    fieldErrors,
-    isReady,
-    showOnlyVisaError,
-    onCardTypeChange,
-    onFieldBlur,
-    onFieldFocus,
-    onFieldStateChange,
-    reset,
-    submit,
-  } = useCardLinkFlow();
-  const { next, back } = useCashDepositSetupNavigation();
+  const { getCardForm, onCardTypeChange, refreshCardFormReadiness } = useSetupContext();
+  const state = useCardLinkFlowStore(store => store.state);
+  const reset = useCardLinkFlowStore.getState().reset;
+  const bivoStore = getCardForm();
   const setupTextStyle = useSetupInputTextStyle();
-  const red = useForegroundColor('red');
-
-  // The border stays mounted (transparent) so toggling it never changes field
-  // geometry; iOS padding shrinks by the border width to keep the height intact.
   const textStyle = useMemo(
     () => ({
       ...setupTextStyle,
@@ -46,89 +31,66 @@ export const CardDetailsStep = memo(function CardLinkForm() {
     }),
     [setupTextStyle]
   );
-  const errorTextStyle = useMemo(() => ({ ...textStyle, borderColor: red }), [red, textStyle]);
-
-  useEffect(() => {
-    if (state === 'success') {
-      next();
-    }
-  }, [next, state]);
-
-  const cancel = useCallback(() => {
+  const cardNumberTextStyle = useMemo(() => ({ ...textStyle, paddingRight: 60 }), [textStyle]);
+  const cancel = () => {
     reset();
-    back();
-  }, [back, reset]);
+    goBackInSetup();
+  };
 
   return (
     <>
-      <SetupStepLayout actionDisabled={!isReady} onAction={submit} title={i18n.t(l.title)}>
+      <SetupStepLayout title={i18n.t(l.title)}>
         <Box paddingTop="24px">
           <View>
             <BivoCardInput
               bivoStore={bivoStore}
               cardIcon={false}
-              defaultError={false}
               fieldName={CARD_FIELD.number}
-              onBlur={() => onFieldBlur(CARD_FIELD.number)}
               onCardTypeChange={onCardTypeChange}
-              onFocus={() => onFieldFocus(CARD_FIELD.number)}
-              onStateChange={onFieldStateChange}
+              onStateChange={refreshCardFormReadiness}
               placeholder={i18n.t(l.card_number)}
               required
-              textStyle={{ ...(fieldErrors[CARD_FIELD.number] ? errorTextStyle : textStyle), paddingRight: 60 }}
+              textStyle={cardNumberTextStyle}
             />
-            {cardBrand === CardBrand.Visa && (
-              <View pointerEvents="none" style={styles.visaBadge}>
-                <Image resizeMode="contain" source={visaLogo} style={styles.visaLogo} />
-              </View>
-            )}
+            <View pointerEvents="none" style={styles.visaBadge}>
+              <Image resizeMode="contain" source={visaLogo} style={styles.visaLogo} />
+            </View>
           </View>
+          <Box paddingBottom="4px" paddingLeft="4px">
+            <Text color="labelSecondary" size="13pt" weight="semibold">
+              {i18n.t(l.only_visa)}
+            </Text>
+          </Box>
           <Box flexDirection="row" gap={12}>
             <BivoTextInput
               bivoStore={bivoStore}
-              containerStyle={{ flex: 1 }}
-              defaultError={false}
+              containerStyle={styles.flex}
               fieldName={CARD_FIELD.expiry}
               keyboardType="number-pad"
-              onBlur={() => onFieldBlur(CARD_FIELD.expiry)}
-              onFocus={() => onFieldFocus(CARD_FIELD.expiry)}
-              onStateChange={onFieldStateChange}
+              onStateChange={refreshCardFormReadiness}
               placeholder={i18n.t(l.expiry)}
               required
-              textStyle={fieldErrors[CARD_FIELD.expiry] ? errorTextStyle : textStyle}
+              textStyle={textStyle}
             />
             <BivoCVCInput
               bivoStore={bivoStore}
-              containerStyle={{ flex: 1 }}
-              defaultError={false}
+              containerStyle={styles.flex}
               fieldName={CARD_FIELD.cvc}
-              onBlur={() => onFieldBlur(CARD_FIELD.cvc)}
-              onFocus={() => onFieldFocus(CARD_FIELD.cvc)}
-              onStateChange={onFieldStateChange}
+              onStateChange={refreshCardFormReadiness}
               placeholder={i18n.t(l.cvc)}
               required
-              textStyle={fieldErrors[CARD_FIELD.cvc] ? errorTextStyle : textStyle}
+              textStyle={textStyle}
             />
           </Box>
           <BivoTextInput
             bivoStore={bivoStore}
-            defaultError={false}
             fieldName={CARD_FIELD.zip}
             keyboardType="number-pad"
-            onBlur={() => onFieldBlur(CARD_FIELD.zip)}
-            onFocus={() => onFieldFocus(CARD_FIELD.zip)}
-            onStateChange={onFieldStateChange}
+            onStateChange={refreshCardFormReadiness}
             placeholder={i18n.t(l.zip)}
             required
-            textStyle={fieldErrors[CARD_FIELD.zip] ? errorTextStyle : textStyle}
+            textStyle={textStyle}
           />
-          {showOnlyVisaError && (
-            <Box paddingTop="12px">
-              <Text color="red" size="13pt" weight="semibold">
-                {i18n.t(l.only_visa)}
-              </Text>
-            </Box>
-          )}
         </Box>
       </SetupStepLayout>
 
@@ -154,6 +116,9 @@ export const CardDetailsStep = memo(function CardLinkForm() {
 });
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   visaBadge: {
     alignItems: 'center',
     backgroundColor: '#1B33C3',

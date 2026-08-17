@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, type ReactNode, type RefCallback } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 
-import { useListen } from '@storesjs/stores';
+import { BivoSecureStore } from '@bivoglobal/payment-react-native';
+import { createBaseStore, useListen } from '@storesjs/stores';
+import { BIVO_ENV, BIVO_VAULT_ID } from 'react-native-dotenv';
 
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
@@ -9,6 +11,16 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
 import { useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
+import { createSetupActionStore } from './setupAction';
+
+export const CARD_FIELD = {
+  number: 'card',
+  expiry: 'exp',
+  cvc: 'cvv',
+  zip: 'zip',
+} as const;
+
+const CARD_FIELDS = Object.values(CARD_FIELD);
 
 type SetupContextValue = ReturnType<typeof createSetupContext>;
 
@@ -22,6 +34,14 @@ function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean 
 export function createSetupContext() {
   const inputs = new Map<CashDepositSetupRoute, TextInput>();
   let suspendedInput: ReturnType<typeof TextInput.State.currentlyFocusedInput> | null = null;
+  let cardForm: BivoSecureStore | undefined;
+  let isVisa = false;
+  const getCardForm = () => (cardForm ??= new BivoSecureStore(BIVO_VAULT_ID, BIVO_ENV));
+  const cardFormStore = createBaseStore<{ isReady: boolean }>(() => ({ isReady: false }));
+  const refreshCardFormReadiness = () => {
+    const isReady = isVisa && !getCardForm().isSubmitDisabled(CARD_FIELDS);
+    if (cardFormStore.getState().isReady !== isReady) cardFormStore.setState({ isReady });
+  };
 
   function focusInput(route: CashDepositSetupRoute) {
     if (!selectIsSetupScreenActive(useNavigationStore.getState())) return;
@@ -35,6 +55,7 @@ export function createSetupContext() {
 
   return {
     focusInput,
+    getCardForm,
     registerInput: (route: CashDepositSetupRoute, input: TextInput | null) => {
       if (input) inputs.set(route, input);
       else inputs.delete(route);
@@ -49,6 +70,12 @@ export function createSetupContext() {
         Keyboard.dismiss();
       }
     },
+    onCardTypeChange: (cardType: string) => {
+      // Bivo calls onStateChange immediately after this for the same edit; that callback publishes readiness.
+      isVisa = cardType === 'visa';
+    },
+    refreshCardFormReadiness,
+    useActionStore: createSetupActionStore(getCardForm, cardFormStore),
   };
 }
 

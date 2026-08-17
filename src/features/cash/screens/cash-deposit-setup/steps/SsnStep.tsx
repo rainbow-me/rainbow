@@ -1,31 +1,23 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 
 import { Box, Text } from '@/design-system';
 import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import * as i18n from '@/languages';
 
-import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useSetupInputRef } from '../setupContext';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.ssn;
 
 export const SsnStep = memo(function SsnStep() {
-  const storedLast4 = useCashSetupSessionStore(state =>
-    state.session.status === 'phoneVerified' ? (state.session.governmentId?.value ?? '') : ''
-  );
-  const [digits, setDigits] = useState(storedLast4);
+  const digits = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.ssnLast4 : ''));
   const inputRef = useRef<TextInput>(null);
   const registerInput = useSetupInputRef();
   const inputTextStyle = useSetupInputTextStyle();
-  const { next } = useCashDepositSetupNavigation();
-  const canContinue = isValidUsSsnLast4(digits);
 
   const focusInput = useCallback(() => inputRef.current?.focus(), []);
-  const onChangeText = useCallback((text: string) => setDigits(text.replace(/\D/g, '')), []);
   const setInputRef = useCallback(
     (input: TextInput | null) => {
       inputRef.current = input;
@@ -34,14 +26,8 @@ export const SsnStep = memo(function SsnStep() {
     [registerInput]
   );
 
-  const submit = useCallback(() => {
-    if (!isValidUsSsnLast4(digits)) return;
-    useCashSetupSessionStore.getState().setGovernmentId(createUsSsnLast4GovernmentId(digits));
-    next();
-  }, [digits, next]);
-
   return (
-    <SetupStepLayout actionDisabled={!canContinue} onAction={submit} title={i18n.t(l.title)}>
+    <SetupStepLayout title={i18n.t(l.title)}>
       <Box gap={12} paddingTop="24px">
         <Pressable accessible={false} onPress={focusInput}>
           <Box alignItems="center" background="fillTertiary" borderRadius={20} flexDirection="row" style={styles.inputRow}>
@@ -51,7 +37,7 @@ export const SsnStep = memo(function SsnStep() {
             <TextInput
               keyboardType="number-pad"
               maxLength={4}
-              onChangeText={onChangeText}
+              onChangeText={useCashSetupSessionStore.getState().setSsnLast4}
               ref={setInputRef}
               style={[inputTextStyle, styles.input]}
               testID="cash-setup-ssn-input"

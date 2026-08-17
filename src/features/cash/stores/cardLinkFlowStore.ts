@@ -11,10 +11,11 @@ import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
 
 export type CardLinkState = 'entry' | 'submitting' | 'submitError' | 'success';
+export type CardLinkResult = 'completed' | 'cancelled' | 'failed' | 'skipped';
 
 type CardLinkFlowStore = {
   state: CardLinkState;
-  submit: (bivoStore: BivoSecureStore, cardBrand: CardBrand) => Promise<void>;
+  submit: (bivoStore: BivoSecureStore, cardBrand: CardBrand) => Promise<CardLinkResult>;
   reset: () => void;
 };
 
@@ -24,7 +25,8 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
   state: 'entry',
 
   submit: async (bivoStore, cardBrand) => {
-    if (get().state === 'submitting') return;
+    const { state } = get();
+    if (state === 'submitting' || state === 'success') return 'skipped';
 
     const controller = new AbortController();
     inFlight = controller;
@@ -32,20 +34,22 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
 
     try {
       const card = await linkCardWithVault(bivoStore, cardBrand, controller);
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted) return 'cancelled';
       useCashPaymentMethodStore.getState().setLinkedCard(card);
       analytics.track(analytics.event.cashCardLinked, { brand: card.brand });
       set({ state: 'success' });
+      return 'completed';
     } catch (e) {
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted) return 'cancelled';
       // Sign-in cancellation is a deliberate dismissal, not a failure: back to the form, silently.
       if (isPasskeyCancellation(e)) {
         set({ state: 'entry' });
-        return;
+        return 'cancelled';
       }
       logger.error(new RainbowError('[cardLinkFlowStore]: Failed to link card', e));
       analytics.track(analytics.event.cashCardLinkFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'submitError' });
+      return 'failed';
     } finally {
       if (inFlight === controller) inFlight = null;
     }

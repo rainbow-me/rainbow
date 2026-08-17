@@ -38,10 +38,6 @@ jest.mock('../../../stores/cashAccountStore', () => ({
   useCashAccountStore: { getState: jest.fn() },
 }));
 
-jest.mock('../useCashDepositSetupNavigation', () => ({
-  useCashDepositSetupNavigation: jest.fn(),
-}));
-
 const mockAddPasskey = addPasskey as jest.Mock;
 const mockFinishAddPasskey = finishAddPasskey as jest.Mock;
 const mockCreatePasskeyCredential = createPasskeyCredential as jest.Mock;

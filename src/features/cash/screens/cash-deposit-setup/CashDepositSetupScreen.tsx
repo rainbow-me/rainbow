@@ -1,10 +1,13 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
-import { Box } from '@/design-system';
+import { Box, useBackgroundColor } from '@/design-system';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -16,8 +19,10 @@ import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStor
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
+import { SetupActionButton } from './components/SetupActionButton';
+import { SetupStepHeader } from './components/SetupStepHeader';
 import { createSetupContext, SetupProvider } from './setupContext';
-import { useIsSetupSubmittingStore } from './setupSubmittingStore';
+import { cancelSetup, completeSetupStep } from './setupNavigation';
 import { SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
@@ -31,7 +36,6 @@ import { SsnStep } from './steps/SsnStep';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
-import { useCashDepositSetupNavigation } from './useCashDepositSetupNavigation';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_PHONE]: <PhoneStep />,
@@ -46,24 +50,25 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
 };
 
 export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
+  const insets = useSafeAreaInsets();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
   const setup = useStableValue(createSetupContext);
-  const { next, cancel } = useCashDepositSetupNavigation();
 
   useHardwareBackOnFocus(
     () => {
-      if (useIsSetupSubmittingStore.getState() || getIsCashHalfSheetOpen()) return true;
+      if (setup.useActionStore.getState().loading || getIsCashHalfSheetOpen()) return true;
       const { activeRoute, history } = useCashDepositSetupNavigationStore.getState();
       if (history.length) {
         CashDepositSetupNavigation.goBack();
       } else if (activeRoute === Routes.CASH_SETUP_CARD_ADDED) {
-        next();
+        completeSetupStep();
       } else {
-        cancel();
+        cancelSetup();
       }
       return true;
     },
     false,
-    [next, cancel]
+    []
   );
 
   useCleanup(() => {
@@ -78,25 +83,34 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
 
   return (
     <Box style={styles.container}>
-      <SetupProvider value={setup}>
-        {useStableValue(() => (
-          <SmoothPager
-            enableSwipeToGoBack={false}
-            enableSwipeToGoForward={false}
-            lazy
-            navigation={CashDepositSetupNavigator.Pager}
-            onPageActivated={setup.focusInput}
-            scaleTo={1}
-            springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
-          >
-            {SETUP_STEP_ORDER.map(route => (
-              <SmoothPager.Page id={route} key={route}>
-                <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
-              </SmoothPager.Page>
-            ))}
-          </SmoothPager>
-        ))}
-      </SetupProvider>
+      <KeyboardAvoidingView
+        behavior="padding"
+        // The resting CTA uses the safe-area inset; the open-keyboard gap is 20 points.
+        keyboardVerticalOffset={20 - insets.bottom}
+        style={[styles.keyboardAvoidingView, { backgroundColor: surfacePrimaryElevated }]}
+      >
+        <SetupProvider value={setup}>
+          {useStableValue(() => (
+            <SmoothPager
+              enableSwipeToGoBack={false}
+              enableSwipeToGoForward={false}
+              lazy
+              navigation={CashDepositSetupNavigator.Pager}
+              onPageActivated={setup.focusInput}
+              scaleTo={1}
+              springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
+            >
+              {SETUP_STEP_ORDER.map(route => (
+                <SmoothPager.Page id={route} key={route}>
+                  <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
+                </SmoothPager.Page>
+              ))}
+            </SmoothPager>
+          ))}
+          <SetupStepHeader />
+          <SetupActionButton />
+        </SetupProvider>
+      </KeyboardAvoidingView>
       <AbsolutePortalRoot />
     </Box>
   );
@@ -105,5 +119,9 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+    width: '100%',
   },
 });

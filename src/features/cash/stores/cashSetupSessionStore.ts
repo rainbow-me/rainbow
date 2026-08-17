@@ -1,32 +1,17 @@
 import { createBaseStore } from '@storesjs/stores';
 
-export type CashSetupDateOfBirth = {
-  year: number;
-  month: number;
-  day: number;
-};
-
-export type CashSetupIdentity = {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: CashSetupDateOfBirth;
-};
+import {
+  createCashSetupIdentity,
+  createUsSsnLast4GovernmentId,
+  isValidUsSsnLast4,
+  type CashSetupGovernmentId,
+  type CashSetupIdentity,
+  type CashSetupIdentityDraft,
+} from '../services/cashSetupIdentityService';
 
 // Identifies one accepted phone submission by reference, so async results can
 // be checked against the submission that started them.
 export type PhoneChallenge = Readonly<{ kind: 'signup'; userId: string }> | Readonly<{ kind: 'resume'; resumeId: string }>;
-
-export type CashSetupGovernmentIdKind = 'GOVERNMENT_ID_KIND_SSN_LAST4';
-
-declare const cashSetupUsSsnLast4Brand: unique symbol;
-
-export type CashSetupUsSsnLast4 = string & { readonly [cashSetupUsSsnLast4Brand]: true };
-
-export type CashSetupGovernmentId = {
-  countryCode: 'US';
-  kind: CashSetupGovernmentIdKind;
-  value: CashSetupUsSsnLast4;
-};
 
 type EmptyCashSetupSession = {
   status: 'empty';
@@ -49,8 +34,8 @@ type VerifiedCashSetupSession = {
   phoneNationalNumber: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
-  identity: CashSetupIdentity | null;
-  governmentId: CashSetupGovernmentId | null;
+  identity: CashSetupIdentityDraft;
+  ssnLast4: string;
 };
 
 type CashSetupSession =
@@ -61,61 +46,83 @@ type CashSetupSession =
 
 type CashSetupSessionStore = {
   session: CashSetupSession;
+  getGovernmentId: () => CashSetupGovernmentId | null;
+  getIdentity: () => CashSetupIdentity | null;
   getIsCurrentChallenge: (challenge: PhoneChallenge) => boolean;
   setPhoneSubmitted: (params: { challenge: PhoneChallenge; phoneNationalNumber: string; resendAfter: number }) => void;
   setPhoneAlreadyRegistered: (phoneNationalNumber: string) => void;
   setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
   setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
-  setIdentity: (identity: CashSetupIdentity) => void;
-  setGovernmentId: (governmentId: CashSetupGovernmentId) => void;
+  setDateOfBirth: (dateOfBirth: CashSetupIdentityDraft['dateOfBirth']) => void;
+  setFirstName: (firstName: string) => void;
+  setLastName: (lastName: string) => void;
+  setSsnLast4: (ssnLast4: string) => void;
   reset: () => void;
 };
 
 const EMPTY_SESSION: EmptyCashSetupSession = { status: 'empty' };
+const EMPTY_IDENTITY: CashSetupIdentityDraft = { firstName: '', lastName: '', dateOfBirth: null };
 
 // Intentionally memory-only (PII)
-export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((set, get) => ({
-  session: EMPTY_SESSION,
-  getIsCurrentChallenge: challenge => {
+export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((set, get) => {
+  const setIdentityField = <Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) => {
     const { session } = get();
-    return session.status === 'phoneSubmitted' && session.challenge === challenge;
-  },
-  setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) =>
-    set({ session: { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter } }),
-  setPhoneAlreadyRegistered: phoneNationalNumber => set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } }),
-  setResendAfter: (challenge, resendAfter) =>
-    set(state => {
-      const { session } = state;
-      if (session.status !== 'phoneSubmitted' || session.challenge !== challenge || session.resendAfter === resendAfter) return state;
-      return { session: { ...session, resendAfter } };
-    }),
-  setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) =>
-    set(state => {
-      const { session } = state;
-      if (session.status !== 'phoneSubmitted' || session.challenge !== challenge) return state;
-      return {
-        session: {
-          status: 'phoneVerified',
-          phoneNationalNumber: session.phoneNationalNumber,
-          bootstrapToken,
-          bootstrapTokenExpiresAt: expiresAt,
-          identity: null,
-          governmentId: null,
-        },
-      };
-    }),
-  setIdentity: identity => {
-    const { session } = get();
-    if (session.status !== 'phoneVerified') return;
-    set({ session: { ...session, identity } });
-  },
-  setGovernmentId: governmentId => {
-    const { session } = get();
-    if (session.status !== 'phoneVerified') return;
-    set({ session: { ...session, governmentId } });
-  },
-  reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
-}));
+    if (session.status !== 'phoneVerified' || session.identity[field] === value) return;
+    set({ session: { ...session, identity: { ...session.identity, [field]: value } } });
+  };
+
+  return {
+    session: EMPTY_SESSION,
+    getGovernmentId: () => {
+      const { session } = get();
+      return session.status === 'phoneVerified' && isValidUsSsnLast4(session.ssnLast4)
+        ? createUsSsnLast4GovernmentId(session.ssnLast4)
+        : null;
+    },
+    getIdentity: () => {
+      const { session } = get();
+      return session.status === 'phoneVerified' ? createCashSetupIdentity(session.identity) : null;
+    },
+    getIsCurrentChallenge: challenge => {
+      const { session } = get();
+      return session.status === 'phoneSubmitted' && session.challenge === challenge;
+    },
+    setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) =>
+      set({ session: { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter } }),
+    setPhoneAlreadyRegistered: phoneNationalNumber => set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } }),
+    setResendAfter: (challenge, resendAfter) =>
+      set(state => {
+        const { session } = state;
+        if (session.status !== 'phoneSubmitted' || session.challenge !== challenge || session.resendAfter === resendAfter) return state;
+        return { session: { ...session, resendAfter } };
+      }),
+    setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) =>
+      set(state => {
+        const { session } = state;
+        if (session.status !== 'phoneSubmitted' || session.challenge !== challenge) return state;
+        return {
+          session: {
+            status: 'phoneVerified',
+            phoneNationalNumber: session.phoneNationalNumber,
+            bootstrapToken,
+            bootstrapTokenExpiresAt: expiresAt,
+            identity: EMPTY_IDENTITY,
+            ssnLast4: '',
+          },
+        };
+      }),
+    setDateOfBirth: dateOfBirth => setIdentityField('dateOfBirth', dateOfBirth),
+    setFirstName: firstName => setIdentityField('firstName', firstName),
+    setLastName: lastName => setIdentityField('lastName', lastName),
+    setSsnLast4: value => {
+      const { session } = get();
+      const ssnLast4 = value.replace(/\D/g, '').slice(0, 4);
+      if (session.status !== 'phoneVerified' || session.ssnLast4 === ssnLast4) return;
+      set({ session: { ...session, ssnLast4 } });
+    },
+    reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
+  };
+});
 
 export function selectIsPhoneVerified(state: CashSetupSessionStore): boolean {
   return state.session.status === 'phoneVerified' && state.session.bootstrapTokenExpiresAt > Date.now();

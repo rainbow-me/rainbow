@@ -1,38 +1,39 @@
-import React, { memo } from 'react';
+import React, { memo, type ReactNode } from 'react';
+import { StyleSheet } from 'react-native';
 
-import { CashStepLayout, type CashStepLayoutProps } from '@/features/cash/components/CashStepLayout';
-import * as i18n from '@/languages';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator';
-import { useIsSetupSubmittingStore } from '../setupSubmittingStore';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { SetupCancelButton } from './SetupCancelButton';
+import { Box, Text } from '@/design-system';
 
-type SetupStepLayoutProps = Omit<
-  CashStepLayoutProps,
-  'actionLabel' | 'actionTestID' | 'backDisabled' | 'backTestID' | 'headerRight' | 'onAction' | 'onBack'
-> & {
-  /** Overrides the default "Next" CTA label. */
-  actionLabel?: string;
-  /** Overrides the default `next()` press handler. */
-  onAction?: () => void;
+type SetupStepLayoutProps = {
+  title: string;
+  subtitle?: string;
+  children?: ReactNode;
 };
 
-export const SetupStepLayout = memo(function SetupStepLayout({ actionLabel, onAction, ...props }: SetupStepLayoutProps) {
-  const { next, back, cancel } = useCashDepositSetupNavigation();
-  const submitting = useIsSetupSubmittingStore();
-  const hasHistory = useCashDepositSetupNavigationStore(state => state.history.length > 0);
+export const SetupStepLayout = memo(function SetupStepLayout({ title, subtitle, children }: SetupStepLayoutProps) {
+  const insets = useSafeAreaInsets();
 
   return (
-    <CashStepLayout
-      {...props}
-      actionLabel={actionLabel ?? i18n.t(i18n.l.cash.deposit_setup.next)}
-      actionTestID="cash-setup-next"
-      backDisabled={submitting}
-      backTestID="cash-setup-back"
-      headerRight={<SetupCancelButton disabled={submitting} onPress={cancel} />}
-      onAction={onAction ?? next}
-      onBack={hasHistory ? back : undefined}
-    />
+    <Box background="surfacePrimaryElevated" height="full" paddingHorizontal="24px" width="full" style={{ paddingTop: insets.top + 60 }}>
+      <Box gap={24} paddingTop="24px">
+        <Text color="label" size="26pt" weight="heavy">
+          {title}
+        </Text>
+        {subtitle != null && (
+          <Text color="labelSecondary" size="17pt / 135%" weight="bold">
+            {subtitle}
+          </Text>
+        )}
+      </Box>
+
+      <Box style={styles.body}>{children}</Box>
+    </Box>
   );
+});
+
+const styles = StyleSheet.create({
+  body: {
+    flex: 1,
+  },
 });

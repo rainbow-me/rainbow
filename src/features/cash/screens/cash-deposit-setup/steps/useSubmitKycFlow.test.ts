@@ -76,8 +76,10 @@ beforeEach(() => {
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
   session().setPhoneVerified(challenge(), { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
-  session().setIdentity(IDENTITY);
-  session().setGovernmentId(GOVERNMENT_ID);
+  session().setFirstName(IDENTITY.firstName);
+  session().setLastName(IDENTITY.lastName);
+  session().setDateOfBirth(IDENTITY.dateOfBirth);
+  session().setSsnLast4(GOVERNMENT_ID.value);
   mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Approved });
   mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
 });
