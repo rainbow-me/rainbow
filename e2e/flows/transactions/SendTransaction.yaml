@@ -95,7 +95,7 @@ tags:
     id: toast-expanded-.*
 # Check transaction sheet
 - assertVisible: 'Sending'
-- assertVisible: '.*Tx Hash*.'
+- assertVisible: '.*Tx Hash.*'
 - assertVisible:
     id: 'view-details-action-button'
 - swipe:
