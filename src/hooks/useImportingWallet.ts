@@ -368,7 +368,7 @@ export default function useImportingWallet({
           }, 100);
         }
       } catch (error) {
-        logger.error(new RainbowError(`[useImportingWallet]: Error importing wallet: ${error}`));
+        logger.error(new RainbowError('[useImportingWallet]: Error importing wallet', error));
         resetOnFailure();
 
         // Refocus input for retry

@@ -150,7 +150,7 @@ export default function useWalletCloudBackup() {
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}: ${e}`));
+        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}`, e));
         analytics.track(
           cloudPlatform === 'Google Drive' ? analytics.event.errorDuringGoogleDriveBackup : analytics.event.errorDuringICloudBackup,
           {
@@ -169,7 +169,7 @@ export default function useWalletCloudBackup() {
         !!onSuccess && onSuccess(password);
         return true;
       } catch (e) {
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));
+        logger.error(new RainbowError('[useWalletCloudBackup]: error while trying to save wallet backup state', e));
         const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
         analytics.track(analytics.event.errorUpdatingBackupStatus, {

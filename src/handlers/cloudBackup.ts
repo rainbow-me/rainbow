@@ -27,6 +27,7 @@ export const CLOUD_BACKUP_ERRORS = {
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
   MISSING_PIN: 'The PIN code you entered is invalid',
   WRONG_PIN: 'The PIN code you entered is wrong',
+  MALFORMED_BACKUP_DATA: 'Backup data is malformed',
 };
 
 export function normalizeAndroidBackupFilename(filename: string) {
@@ -199,8 +200,14 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     logger.debug(`[cloudBackup]: Got cloud document ${filename}`);
     const backedUpDataStringified = await encryptor.decrypt(backupPassword, encryptedData);
     if (backedUpDataStringified) {
-      const backedUpData = JSON.parse(backedUpDataStringified);
-      return backedUpData;
+      try {
+        return JSON.parse(backedUpDataStringified);
+      } catch {
+        // Decryption already succeeded, so this is a corrupt backup rather than a wrong password, and
+        // what failed to parse is decrypted backup contents. JSON.parse quotes its input back inside
+        // the SyntaxError it throws, so that error is dropped rather than logged or passed as a cause.
+        throw new Error(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
+      }
     } else {
       logger.error(new RainbowError('[cloudBackup]: We couldnt decrypt the data'));
       const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
