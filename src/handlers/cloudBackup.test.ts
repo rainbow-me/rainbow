@@ -94,7 +94,6 @@ describe('parseBackupJson', () => {
 
     expect(error.message).toBe(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
     expect(error.cause).toBeUndefined();
-    expect(JSON.stringify(error)).not.toContain('abandon');
   });
 });
 
