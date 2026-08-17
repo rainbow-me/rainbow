@@ -32,6 +32,8 @@ export function getUserError(e: Error) {
       return i18n.t(i18n.l.back_up.errors.missing_pin);
     case CLOUD_BACKUP_ERRORS.WRONG_PIN:
       return i18n.t(i18n.l.back_up.wrong_pin);
+    case CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA:
+      return i18n.t(i18n.l.back_up.errors.malformed_backup_data);
     default:
       return i18n.t(i18n.l.back_up.errors.generic, {
         errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),

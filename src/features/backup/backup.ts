@@ -22,6 +22,7 @@ import {
   login,
   logoutFromGoogleDrive,
   normalizeAndroidBackupFilename,
+  parseBackupJson,
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -487,7 +488,7 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
       }
 
       const valueStr = backedUpData[key];
-      const parsedValue = JSON.parse(valueStr);
+      const parsedValue = parseBackupJson(valueStr);
 
       let secretPhraseOrOldAndroidBackupPrivateKey: string | any; // TODO: Strengthen this type
       /*

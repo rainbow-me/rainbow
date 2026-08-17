@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { CLOUD_BACKUP_ERRORS, getDataFromCloud } from './cloudBackup';
+import { CLOUD_BACKUP_ERRORS, getDataFromCloud, parseBackupJson } from './cloudBackup';
 
 jest.mock('react-native-cloud-fs', () => ({
   getIcloudDocument: jest.fn(() => Promise.resolve('encrypted-blob')),
@@ -62,6 +62,39 @@ describe('getDataFromCloud', () => {
     expect(error.message).toBe(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
     expect(error.message).not.toContain('abandon');
     expect(error.message).not.toContain('is not valid JSON');
+  });
+});
+
+describe('parseBackupJson', () => {
+  test('parses a well-formed entry', () => {
+    expect(parseBackupJson('{"seedphrase":"secret"}')).toEqual({ seedphrase: 'secret' });
+  });
+
+  test('reports malformed data without quoting what it failed to parse', () => {
+    let error!: Error;
+    try {
+      parseBackupJson(DECRYPTED_PLAINTEXT);
+    } catch (e) {
+      error = e as Error;
+    }
+
+    expect(error.message).toBe(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
+    expect(error.message).not.toContain('abandon');
+  });
+
+  test('carries no cause, so the parse error cannot travel onward as one', () => {
+    // Attaching the SyntaxError as a cause would put the quoted fragment back into telemetry, and
+    // the seed-phrase rule needs eight consecutive wordlist words to catch it.
+    let error!: Error;
+    try {
+      parseBackupJson(DECRYPTED_PLAINTEXT);
+    } catch (e) {
+      error = e as Error;
+    }
+
+    expect(error.message).toBe(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
+    expect(error.cause).toBeUndefined();
+    expect(JSON.stringify(error)).not.toContain('abandon');
   });
 });
 
