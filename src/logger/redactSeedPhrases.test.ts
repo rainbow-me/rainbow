@@ -3,6 +3,8 @@ import { describe, expect, test } from '@jest/globals';
 import { redactIdentifiers } from '@/logger/redactIdentifiers';
 import { redactSeedPhrases } from '@/logger/redactSeedPhrases';
 
+const titleCase = (phrase: string) => phrase.replace(/\b[a-z]/g, letter => letter.toUpperCase());
+
 const TWELVE_WORDS = 'legal winner thank year wave sausage worth useful legal winner thank yellow';
 const TWENTY_FOUR_WORDS =
   'letter advice cage absurd amount doctor acoustic avoid letter advice cage above ' +
@@ -65,6 +67,35 @@ describe('redactSeedPhrases', () => {
     const wrapped = 'legal winner thank year wave\nsausage  worth\tuseful legal winner thank yellow';
 
     expect(redactSeedPhrases(wrapped)).toBe('[seed phrase]');
+  });
+
+  test('catches a mnemonic whatever its casing', () => {
+    // A canonical mnemonic is lowercase, but a phrase that has been through a keyboard, a note app
+    // or a UI that renders it in title case has not stayed canonical. The net assumes nothing.
+    expect(redactSeedPhrases(titleCase(TWELVE_WORDS))).toBe('[seed phrase]');
+    expect(redactSeedPhrases(TWELVE_WORDS.toUpperCase())).toBe('[seed phrase]');
+    expect(redactSeedPhrases(titleCase(TWENTY_FOUR_WORDS))).toBe('[seed phrase]');
+  });
+
+  test('catches a mnemonic whose casing is inconsistent word to word', () => {
+    const mixed = 'Legal WINNER thank Year wave SAUSAGE worth Useful legal WINNER thank Yellow';
+
+    expect(redactSeedPhrases(mixed)).toBe('[seed phrase]');
+  });
+
+  test('redacts the whole phrase when only the first word is capitalized', () => {
+    // The eleven lowercase words after it are a run in their own right, so this case already
+    // redacted to `Legal [seed phrase]`. One word leaves nothing to brute force, but it is a leak.
+    const [first, ...rest] = TWELVE_WORDS.split(' ');
+    const capitalized = [titleCase(first), ...rest].join(' ');
+
+    expect(redactSeedPhrases(capitalized)).toBe('[seed phrase]');
+  });
+
+  test('leaves title-cased prose alone, so folding case did not widen the net', () => {
+    const viem = 'The Total Cost (Gas * Gas Fee + Value) Of Executing This Transaction Exceeds The Balance Of The Account';
+
+    expect(redactSeedPhrases(viem)).toBe(viem);
   });
 
   test('runs as part of redactIdentifiers, so every caller gets it', () => {

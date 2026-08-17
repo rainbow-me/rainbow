@@ -5,10 +5,14 @@ const MIN_RUN = 8;
 const PLACEHOLDER = '[seed phrase]';
 
 /**
- * Every BIP-39 English word is 3 to 8 lowercase letters, so this only has to consider runs of those.
- * Narrow enough to skip most text outright, since this runs over every string on every event.
+ * Every BIP-39 English word is 3 to 8 letters, so this only has to consider runs of those. Narrow
+ * enough to skip most text outright, since this runs over every string on every event.
+ *
+ * Case-insensitive to err on the side of caution. A canonical mnemonic is lowercase, but this is a
+ * safety net, so it should not assume the string that reaches it is canonical. Folding case admits
+ * no new words, so the wordlist is still what keeps ordinary prose out.
  */
-const CANDIDATE_RUN = /[a-z]{3,8}(?:\s+[a-z]{3,8})+/g;
+const CANDIDATE_RUN = /[a-z]{3,8}(?:\s+[a-z]{3,8})+/gi;
 
 export function redactSeedPhrases(text: string): string {
   return text.replace(CANDIDATE_RUN, run => {
@@ -21,7 +25,7 @@ export function redactSeedPhrases(text: string): string {
 
     while (index < words.length) {
       let end = index;
-      while (end < words.length && BIP39_WORDS.has(words[end])) end += 1;
+      while (end < words.length && BIP39_WORDS.has(words[end].toLowerCase())) end += 1;
 
       if (end - index >= MIN_RUN) {
         output.push(PLACEHOLDER);
