@@ -49,12 +49,12 @@ type HourglassAnimationProps = {
   size?: number;
 };
 
-export default function HourglassAnimation({
+export function HourglassAnimation({
   backgroundColor,
   color,
   sandColor = '#FFF',
   showBadge = true,
-  size = 120,
+  size = 58,
 }: HourglassAnimationProps = {}) {
   const accentColor = useForegroundColor('accent');
   const bodyBackground = useBackgroundColor('body (Deprecated)');
