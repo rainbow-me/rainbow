@@ -1,12 +1,11 @@
+import { redactSeedPhrases } from '@/logger/redactSeedPhrases';
+
 /**
- * Replaces identifier-shaped values in free text on its way to Sentry. Shape-based rather than a
- * known-value list, because SDKs interpolate their own values into their own messages: e.g an ethers
- * `CALL_EXCEPTION` carries the JSON-RPC request id, so one recurring failure reads as a different
- * string every time. That costs titles and message search rather than grouping, which for these
- * events keys on the stack.
- *
- * Not a secret filter, and must not be relied on as one. Anything below the length floor or
- * containing punctuation passes straight through.
+ * Replaces identifier-shaped and secret values in free text on its way to Sentry. Shape-based rather
+ * than a known-value list, because SDKs interpolate their own values into their own messages: e.g an
+ * ethers `CALL_EXCEPTION` carries the JSON-RPC request id, so one recurring failure reads as a
+ * different string every time. That costs titles and message search rather than grouping, which for
+ * these events keys on the stack.
  */
 const PATTERNS: [RegExp, string][] = [
   // Boundaries are hand-written because `\b` counts `_` as a word character, so it skips the address
@@ -27,5 +26,6 @@ const PATTERNS: [RegExp, string][] = [
 ];
 
 export function redactIdentifiers(text: string): string {
-  return PATTERNS.reduce((redacted, [pattern, placeholder]) => redacted.replace(pattern, placeholder), text);
+  const withoutSeedPhrases = redactSeedPhrases(text);
+  return PATTERNS.reduce((redacted, [pattern, placeholder]) => redacted.replace(pattern, placeholder), withoutSeedPhrases);
 }

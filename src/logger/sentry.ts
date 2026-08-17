@@ -80,6 +80,10 @@ function redactValues(container: Record<string, unknown> | unknown[], depth = 0)
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
 
+  // Both default to false, but we want to explicit about it since these could reveal mnemonics etc.
+  attachScreenshot: false,
+  attachViewHierarchy: false,
+
   beforeBreadcrumb: sanitizeBreadcrumb,
   beforeSend(event, hint) {
     // iOS merges its own network breadcrumbs onto the event after `beforeBreadcrumb` has run, so this
