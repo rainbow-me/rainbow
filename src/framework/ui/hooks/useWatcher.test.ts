@@ -24,6 +24,7 @@ describe('useWatcher', () => {
     jest.useFakeTimers();
     jest.clearAllMocks();
     mockUseEffect.mockImplementation((effect: () => void | (() => void)) => {
+      cleanup?.();
       cleanup = effect() ?? undefined;
     });
   });
@@ -79,6 +80,24 @@ describe('useWatcher', () => {
 
     await jest.advanceTimersByTimeAsync(1);
     expect(watchFunction).toHaveBeenCalledTimes(2);
+  });
+
+  it('aborts and clears scheduled work when disabled', async () => {
+    const watchFunction = jest.fn<(abortController: AbortController) => Promise<void>>().mockResolvedValue();
+
+    useWatcher({ interval: 1_000, watchFunction });
+    await flushPromises();
+
+    const abortController = watchFunction.mock.calls[0][0];
+    expect(jest.getTimerCount()).toBe(1);
+
+    useWatcher({ enabled: false, interval: 1_000, watchFunction });
+
+    expect(abortController.signal.aborted).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
+
+    await jest.advanceTimersByTimeAsync(1_000);
+    expect(watchFunction).toHaveBeenCalledTimes(1);
   });
 });
 

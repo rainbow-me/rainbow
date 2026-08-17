@@ -150,14 +150,14 @@ describe('watchPendingTransaction', () => {
     jest.useRealTimers();
   });
 
-  it('polls one transaction per tick in round-robin order', async () => {
+  it('polls caller-supplied transactions one at a time in round-robin order', async () => {
     const firstTransaction = buildManagedPendingTransaction({ hash: 'execution-1', relayExecutionId: 'execution-1' });
     const secondTransaction = buildManagedPendingTransaction({ hash: 'execution-2', relayExecutionId: 'execution-2' });
     const watch = useWatchPendingTransactions({ address: TEST_ADDRESS });
 
     pendingTransactionsActions.setPendingTransactions({
       address: TEST_ADDRESS,
-      pendingTransactions: [firstTransaction, secondTransaction],
+      pendingTransactions: [secondTransaction, firstTransaction],
     });
     mockResolveTrackedTransaction
       .mockResolvedValueOnce({ kind: 'pending', transaction: firstTransaction })
