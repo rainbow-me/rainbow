@@ -44,7 +44,7 @@ export function useVerifyPhoneFlow(): {
   }, []);
 
   useEffect(() => {
-    if (resendAfter == null) {
+    if (resendAfter == null || state === 'verifying' || state === 'verified') {
       setResendCooldownSeconds(0);
       return;
     }
@@ -57,7 +57,7 @@ export function useVerifyPhoneFlow(): {
     const id = setInterval(update, time.seconds(1));
     update();
     return () => clearInterval(id);
-  }, [resendAfter]);
+  }, [resendAfter, state]);
 
   return {
     state,

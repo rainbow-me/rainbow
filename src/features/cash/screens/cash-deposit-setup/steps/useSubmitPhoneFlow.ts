@@ -36,8 +36,9 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
   digits: '',
 
   setDigits: text => {
+    if (get().state === 'submitting') return;
     clearPhoneAlreadyRegistered();
-    set(({ state }) => ({ digits: extractNationalDigits(text), state: state === 'submitting' ? state : 'entry' }));
+    set({ digits: extractNationalDigits(text), state: 'entry' });
   },
 
   submit: async () => {

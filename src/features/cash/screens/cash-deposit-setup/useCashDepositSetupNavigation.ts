@@ -6,7 +6,6 @@ import Routes from '@/navigation/routesNames';
 import { useCashAccountStore } from '../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { useSetupCancelSheetStore } from './setupCancelSheetStore';
 import { getNextSetupStep } from './steps';
 
 export function useCashDepositSetupNavigation() {
@@ -29,11 +28,11 @@ export function useCashDepositSetupNavigation() {
     const { status } = useCashSetupSessionStore.getState().session;
     const hasProgressToLose = status === 'phoneSubmitted' || status === 'phoneVerified';
     if (!hasPasskey && hasProgressToLose) {
-      useSetupCancelSheetStore.getState().open();
+      navigate(Routes.CASH_SETUP_CANCEL_SHEET);
     } else {
       dismissScreen();
     }
-  }, [dismissScreen]);
+  }, [dismissScreen, navigate]);
 
   const back = useCallback(() => {
     if (useCashDepositSetupNavigationStore.getState().history.length) {

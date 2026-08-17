@@ -12,6 +12,7 @@ import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashShee
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
+import { SetupCancelSheet } from '@/features/cash/screens/cash-deposit-setup/components/SetupCancelSheet';
 import { CashSignInScreen } from '@/features/cash/screens/cash-sign-in/CashSignInScreen';
 import { PaymentMethodsSheet } from '@/features/cash/screens/payment-methods-sheet/PaymentMethodsSheet';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -291,6 +292,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />
       <BSStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} />
       <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} options={cashDepositSetupSheetPreset} />
+      <BSStack.Screen component={SetupCancelSheet} name={Routes.CASH_SETUP_CANCEL_SHEET} />
       <BSStack.Screen component={CashSignInScreen} name={Routes.CASH_SIGN_IN_SCREEN} options={cashDepositSetupSheetPreset} />
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
