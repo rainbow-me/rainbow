@@ -455,8 +455,9 @@ export const AddCashSheet = memo(function AddCashSheet() {
   }, [navigation]);
 
   const handleAddFrom = useCallback(() => {
+    if (isProcessing) return;
     navigation.navigate(Routes.CASH_PAYMENT_METHODS_SHEET);
-  }, [navigation]);
+  }, [isProcessing, navigation]);
 
   const handleSettings = useCallback(() => {
     // TODO(cash): open cash settings once they land.

@@ -67,7 +67,12 @@ export const PaymentMethodsSheet = memo(function PaymentMethodsSheet() {
   const [cardPendingRemoval, setCardPendingRemoval] = useState<LinkedCard | null>(null);
 
   const handleConfirmRemoval = useCallback(async (card: LinkedCard) => {
-    if ((await cardRemovalFlowActions.remove(card)) !== 'failed') return;
+    const result = await cardRemovalFlowActions.remove(card);
+    if (result === 'removed') {
+      setCardPendingRemoval(null);
+      return;
+    }
+    if (result !== 'failed') return;
     setCardPendingRemoval(null);
     Alert.alert(i18n.t(l.remove_error_title), i18n.t(l.remove_error_description));
   }, []);

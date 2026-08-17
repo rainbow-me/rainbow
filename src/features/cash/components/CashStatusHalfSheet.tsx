@@ -104,7 +104,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
                   <Box gap={16} paddingTop="32px">
                     <CashActionButton {...props.primaryAction} variant="tinted" />
                     {props.secondaryAction && (
-                      <CashActionButton color={props.status === 'warning' ? 'red' : 'blue'} {...props.secondaryAction} variant="plain" />
+                      <CashActionButton {...props.secondaryAction} color={props.status === 'warning' ? 'red' : 'blue'} variant="plain" />
                     )}
                   </Box>
                 )}
