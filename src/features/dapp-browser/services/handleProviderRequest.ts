@@ -361,6 +361,5 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     getChainNativeCurrency: chainId => useBackendNetworksStore.getState().getChainsNativeAsset()[chainId],
   });
 
-  // @ts-ignore
-  messenger.listeners['providerRequest']?.({ data, meta });
+  messenger.dispatch({ data, meta });
 };
