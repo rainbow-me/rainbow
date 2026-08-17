@@ -11,7 +11,9 @@ import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibili
 import { CashActionButton } from './CashActionButton';
 
 type HalfSheetAction = {
+  disabled?: boolean;
   label: string;
+  loading?: boolean;
   onPress: () => void;
   testID: string;
 };
@@ -88,37 +90,21 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
 
                 {props.status === 'success' && (
                   <Box paddingTop="32px">
-                    <CashActionButton label={props.action.label} onPress={props.action.onPress} shadow testID={props.action.testID} />
+                    <CashActionButton {...props.action} shadow />
                   </Box>
                 )}
 
                 {props.status === 'reviewing' && (
                   <Box paddingTop="32px">
-                    <CashActionButton
-                      label={props.action.label}
-                      onPress={props.action.onPress}
-                      testID={props.action.testID}
-                      variant="tinted"
-                    />
+                    <CashActionButton {...props.action} variant="tinted" />
                   </Box>
                 )}
 
                 {isAlert && (
                   <Box gap={16} paddingTop="32px">
-                    <CashActionButton
-                      label={props.primaryAction.label}
-                      onPress={props.primaryAction.onPress}
-                      testID={props.primaryAction.testID}
-                      variant="tinted"
-                    />
+                    <CashActionButton {...props.primaryAction} variant="tinted" />
                     {props.secondaryAction && (
-                      <CashActionButton
-                        color={props.status === 'warning' ? 'red' : 'blue'}
-                        label={props.secondaryAction.label}
-                        onPress={props.secondaryAction.onPress}
-                        testID={props.secondaryAction.testID}
-                        variant="plain"
-                      />
+                      <CashActionButton {...props.secondaryAction} color={props.status === 'warning' ? 'red' : 'blue'} variant="plain" />
                     )}
                   </Box>
                 )}

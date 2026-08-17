@@ -188,6 +188,12 @@ export async function listCards(abortController?: AbortController | null): Promi
   return (data.cards ?? []).map(toLinkedCard);
 }
 
+export async function deleteCard(cardId: string, abortController?: AbortController | null): Promise<void> {
+  await authorizedRequest('addCash', headers =>
+    getCashPlatformClient().delete(`/ramp/payment-methods/${encodeURIComponent(cardId)}`, { abortController, headers })
+  );
+}
+
 // ---- Wallet link -----------------------------------------------------------
 
 export type RampWallet = { id: string; address: string };

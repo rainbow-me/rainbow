@@ -34,6 +34,7 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import { AccountAvatar } from './AccountAvatar';
+import { AddCardHint } from './AddCardHint';
 import { AddFromRow } from './AddFromRow';
 import { AmountDisplay } from './AmountDisplay';
 import { PendingOrderContent } from './PendingOrderContent';
@@ -256,7 +257,7 @@ function PresetAmountContent({
     <>
       <AddCashHeader onSettings={onSettings} topPadding="28px" />
       <AmountPresetGrid onMore={onMore} onSelectPreset={onSelectPreset} selectedAmount={amount.selectedPresetAmount} />
-      {linkedCard && <AddFromRow card={linkedCard} onPress={onAddFrom} />}
+      {linkedCard ? <AddFromRow card={linkedCard} onPress={onAddFrom} /> : <AddCardHint />}
       <AddCashActionButton
         canSubmitAmount={canSubmitAmount}
         hasLinkedCard={linkedCard != null}
@@ -295,8 +296,14 @@ function KeypadAmountContent({
       <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)} style={styles.amountArea}>
         <AmountDisplay displayedAmount={amount.displayedAmount} />
       </Box>
-      <KeypadFundingCaption />
-      {linkedCard && <AddFromRow card={linkedCard} onPress={onAddFrom} />}
+      {linkedCard ? (
+        <>
+          <KeypadFundingCaption />
+          <AddFromRow card={linkedCard} onPress={onAddFrom} />
+        </>
+      ) : (
+        <AddCardHint />
+      )}
       <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px" paddingTop="24px">
         <NumberPad
           activeFieldId={amount.activeFieldId}
@@ -448,8 +455,9 @@ export const AddCashSheet = memo(function AddCashSheet() {
   }, [navigation]);
 
   const handleAddFrom = useCallback(() => {
-    // TODO(cash): open the payment-method picker (APP-3780)
-  }, []);
+    if (isProcessing) return;
+    navigation.navigate(Routes.CASH_PAYMENT_METHODS_SHEET);
+  }, [isProcessing, navigation]);
 
   const handleSettings = useCallback(() => {
     // TODO(cash): open cash settings once they land.

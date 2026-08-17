@@ -3,25 +3,9 @@ import { StyleSheet } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, useForegroundColor } from '@/design-system';
-import { type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
+import { VisaBadge } from '@/features/cash/components/VisaBadge';
+import type { LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
 import * as i18n from '@/languages';
-
-function VisaBadge() {
-  return (
-    <Box
-      alignItems="center"
-      borderRadius={6}
-      height={{ custom: 20 }}
-      justifyContent="center"
-      style={styles.visaBadge}
-      width={{ custom: 28 }}
-    >
-      <Text align="center" color="white" size="icon 8px" weight="heavy">
-        {'VISA'}
-      </Text>
-    </Box>
-  );
-}
 
 export function AddFromRow({ card, onPress }: { card: LinkedCard; onPress: () => void }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
@@ -57,8 +41,5 @@ const styles = StyleSheet.create({
     borderRadius: 1,
     height: 1,
     marginHorizontal: 28,
-  },
-  visaBadge: {
-    backgroundColor: '#1B33C3',
   },
 });

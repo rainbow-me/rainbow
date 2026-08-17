@@ -13,6 +13,7 @@ import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWall
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
 import { CashDepositSetupScreen } from '@/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen';
 import { CashSignInScreen } from '@/features/cash/screens/cash-sign-in/CashSignInScreen';
+import { PaymentMethodsSheet } from '@/features/cash/screens/payment-methods-sheet/PaymentMethodsSheet';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { ControlPanel } from '@/features/dapp-browser/screens/ControlPanel';
@@ -293,6 +294,7 @@ function BSNavigator() {
       <BSStack.Screen component={CashSignInScreen} name={Routes.CASH_SIGN_IN_SCREEN} options={cashDepositSetupSheetPreset} />
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
+      <BSStack.Screen component={PaymentMethodsSheet} name={Routes.CASH_PAYMENT_METHODS_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
       <BSStack.Screen component={PolymarketRedeemPositionSheet} name={Routes.POLYMARKET_MANAGE_POSITION_SHEET} />

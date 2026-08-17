@@ -1545,6 +1545,7 @@
       "add_cash_screen": {
         "add_from": "Add From",
         "add_credit_card": "Add Credit Card",
+        "add_a_card_to_continue": "Add a card to continue",
         "hold_to_add": "Hold to Add",
         "enter_amount": "Enter Amount",
         "money_is_added_in": "Money is added in",
@@ -1558,6 +1559,15 @@
         "payment_rejected": "Your card declined this payment",
         "wallet_check_error_title": "Couldn’t Continue",
         "wallet_check_error_generic": "We couldn’t check your wallet. Try again"
+      },
+      "payment_methods": {
+        "title": "Add From",
+        "remove_card": "Remove Card",
+        "remove_title": "Remove Card?",
+        "remove_description": "Are you sure you want to remove %{card}? This can’t be undone.",
+        "keep_card": "Keep Card",
+        "remove_error_title": "Couldn’t Remove Card",
+        "remove_error_description": "Something went wrong. Try again"
       },
       "add_wallet": {
         "title": "Connect new wallet",
