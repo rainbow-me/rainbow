@@ -85,6 +85,21 @@ describe('pendingTransactionResolution', () => {
     expect(resolution.transaction).toBe(transaction);
   });
 
+  it('propagates onchain lookup failures to the owning watcher', async () => {
+    const error = new Error('rate limited');
+    mockFetchRawTransaction.mockRejectedValue(error);
+
+    await expect(
+      resolveTrackedTransaction({
+        abortController: null,
+        address: '0x123',
+        currency: 'ETH',
+        transaction: buildOnchainPendingTransaction(),
+      })
+    ).rejects.toBe(error);
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
   it('keeps a managed pending transaction unchanged while relay is still working and no hash exists', async () => {
     const transaction = buildManagedPendingTransaction();
     mockGetStatus.mockResolvedValue(
@@ -108,7 +123,7 @@ describe('pendingTransactionResolution', () => {
     expect(mockFetchRawTransaction).not.toHaveBeenCalled();
   });
 
-  it('propagates relay refresh failures to the watcher', async () => {
+  it('propagates relay refresh failures to the owning watcher', async () => {
     const error = new Error('relay unavailable');
     mockGetStatus.mockRejectedValue(error);
 
@@ -120,6 +135,7 @@ describe('pendingTransactionResolution', () => {
         transaction: buildManagedConfirmedTransaction(),
       })
     ).rejects.toBe(error);
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it('keeps a confirmed managed transaction settled while relay exposes a late origin hash', async () => {
