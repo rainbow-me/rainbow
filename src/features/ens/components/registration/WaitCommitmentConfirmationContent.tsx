@@ -30,7 +30,7 @@ const WaitCommitmentConfirmationContent = ({
             <Inset horizontal="12px">
               <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
                 <Box alignItems="center" width="full">
-                  <HourglassAnimation size={120} />
+                  <HourglassAnimation showBadge size={120} />
                 </Box>
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">

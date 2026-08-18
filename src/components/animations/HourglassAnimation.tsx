@@ -53,7 +53,7 @@ export function HourglassAnimation({
   backgroundColor,
   color,
   sandColor = '#FFF',
-  showBadge = true,
+  showBadge = false,
   size = 58,
 }: HourglassAnimationProps = {}) {
   const accentColor = useForegroundColor('accent');
