@@ -219,7 +219,7 @@ export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
 
   animation: {
     enableCrosshairPulse: false,
-    springConfig: { mass: 0.1, stiffness: 50, damping: 50 },
+    springConfig: { mass: 0.1, stiffness: 50, damping: 50, preserveVelocityOnRetarget: true },
   },
 
   candles: {

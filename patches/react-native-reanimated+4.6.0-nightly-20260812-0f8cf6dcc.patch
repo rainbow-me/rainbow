@@ -1,5 +1,5 @@
 # PATCH CONTEXT
-# Two hunks:
+# Three changes:
 #
 # 1) REANodesManager.mm — opt into ProMotion's variable refresh
 #    rate on iOS 15+ via `preferredFrameRateRange = (80, 120, 120)`
@@ -18,6 +18,13 @@
 #    Linear Issue: TBD.
 #    Remove when: upstream guards against null in
 #    `processColorsInProps` (consider filing a PR).
+#
+# 3) Spring implementation/config/declaration — add an opt-in that preserves
+#    inherited velocity when a spring target reverses. Reanimated
+#    4 now unconditionally clears wrong-direction velocity; Rainbow's
+#    candlestick animations depend on that continuity across changing targets.
+#    Upstream commit: 0e7360443cc73769b314045ddfb9c262423df6ad.
+#    Remove when: upstream exposes equivalent retarget control.
 
 diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
 --- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
@@ -48,3 +55,95 @@ diff --git a/node_modules/react-native-reanimated/src/common/style/processors/co
      props[key] = Array.isArray(value)
        ? value.map((c) => processColor(c))
        : processColor(value);
+diff --git a/node_modules/react-native-reanimated/src/animation/spring/spring.ts b/node_modules/react-native-reanimated/src/animation/spring/spring.ts
+--- a/node_modules/react-native-reanimated/src/animation/spring/spring.ts
++++ b/node_modules/react-native-reanimated/src/animation/spring/spring.ts
+@@ -68,6 +68,7 @@
+       overshootClamping: false,
+       energyThreshold: 6e-9,
+       velocity: 0,
++      preserveVelocityOnRetarget: false,
+       reduceMotion: undefined,
+       clamp: undefined,
+     } as const;
+@@ -190,8 +191,13 @@
+-      // Inertia is only preserved when it already points toward toValue.
++      // Inertia is preserved by default only when it already points toward toValue.
+       const toValueNum = Number(animation.toValue);
++      const preserveRetargetVelocity =
++        config.preserveVelocityOnRetarget &&
++        previousAnimation?.toValue !== undefined &&
++        previousAnimation.toValue !== animation.toValue;
+       if (
+-        (toValueNum > value && animation.velocity < 0) ||
+-        (toValueNum < value && animation.velocity > 0)
++        !preserveRetargetVelocity &&
++        ((toValueNum > value && animation.velocity < 0) ||
++          (toValueNum < value && animation.velocity > 0))
+       ) {
+         animation.velocity = 0;
+       }
+diff --git a/node_modules/react-native-reanimated/src/animation/spring/springConfigs.ts b/node_modules/react-native-reanimated/src/animation/spring/springConfigs.ts
+--- a/node_modules/react-native-reanimated/src/animation/spring/springConfigs.ts
++++ b/node_modules/react-native-reanimated/src/animation/spring/springConfigs.ts
+@@ -70,6 +70,9 @@
+  *   Defaults to false.
+  * @param energyThreshold - Relative energy threshold below which the spring
+  *   will snap to `toValue` without further oscillations. Defaults to 6e-9.
++ * @param preserveVelocityOnRetarget - Whether an interrupted spring retains
++ *   inherited velocity that initially points away from its new target.
++ *   Defaults to false.
+  * @param reduceMotion - Determines how the animation responds to the device's
+  *   reduced motion accessibility setting. Default to `ReduceMotion.System` -
+  *   {@link ReduceMotion}.
+@@ -81,6 +84,7 @@
+     overshootClamping?: boolean;
+     energyThreshold?: number;
+     velocity?: number;
++    preserveVelocityOnRetarget?: boolean;
+     reduceMotion?: ReduceMotion;
+   } & MutuallyExclusiveUnion<
+     [
+diff --git a/node_modules/react-native-reanimated/lib/typescript/animation/spring/springConfigs.d.ts b/node_modules/react-native-reanimated/lib/typescript/animation/spring/springConfigs.d.ts
+--- a/node_modules/react-native-reanimated/lib/typescript/animation/spring/springConfigs.d.ts
++++ b/node_modules/react-native-reanimated/lib/typescript/animation/spring/springConfigs.d.ts
+@@ -59,6 +59,9 @@
+  *   Defaults to false.
+  * @param energyThreshold - Relative energy threshold below which the spring
+  *   will snap to `toValue` without further oscillations. Defaults to 6e-9.
++ * @param preserveVelocityOnRetarget - Whether an interrupted spring retains
++ *   inherited velocity that initially points away from its new target.
++ *   Defaults to false.
+  * @param reduceMotion - Determines how the animation responds to the device's
+  *   reduced motion accessibility setting. Default to `ReduceMotion.System` -
+  *   {@link ReduceMotion}.
+@@ -69,6 +72,7 @@
+     overshootClamping?: boolean;
+     energyThreshold?: number;
+     velocity?: number;
++    preserveVelocityOnRetarget?: boolean;
+     reduceMotion?: ReduceMotion;
+ } & MutuallyExclusiveUnion<[
+     {
+diff --git a/node_modules/react-native-reanimated/lib/module/animation/spring/spring.js b/node_modules/react-native-reanimated/lib/module/animation/spring/spring.js
+--- a/node_modules/react-native-reanimated/lib/module/animation/spring/spring.js
++++ b/node_modules/react-native-reanimated/lib/module/animation/spring/spring.js
+@@ -35,6 +35,7 @@
+       overshootClamping: false,
+       energyThreshold: 6e-9,
+       velocity: 0,
++      preserveVelocityOnRetarget: false,
+       reduceMotion: undefined,
+       clamp: undefined
+     };
+@@ -121,7 +122,8 @@
+       // Clip velocity that would drive the first frame away from the new target.
+-      // Inertia is only preserved when it already points toward toValue.
++      // Inertia is preserved by default only when it already points toward toValue.
+       const toValueNum = Number(animation.toValue);
+-      if (toValueNum > value && animation.velocity < 0 || toValueNum < value && animation.velocity > 0) {
++      const preserveRetargetVelocity = config.preserveVelocityOnRetarget && previousAnimation?.toValue !== undefined && previousAnimation.toValue !== animation.toValue;
++      if (!preserveRetargetVelocity && (toValueNum > value && animation.velocity < 0 || toValueNum < value && animation.velocity > 0)) {
+         animation.velocity = 0;
+       }
+       if (triggeredTwice) {
