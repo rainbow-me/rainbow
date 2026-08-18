@@ -62,7 +62,7 @@ export function createPagerGestureState(): PagerGestureState {
 
 // ============ Animation Coordinates ========================================== //
 
-// Reanimated produces smoother motion on device when page positions span this larger range.
+/** Reanimated produces smoother motion on device when page positions span this larger range. */
 const SCALE_FACTOR = 200;
 
 /** Converts an animated pager index back to page units. */
@@ -390,22 +390,30 @@ export function beginPagerGesture(
   'worklet';
   const activePageIndex = activeIndex.value;
   const motionPeer = gestureState.motionPeerIndex;
-  const interruptsMotion = motionPeer !== -1 && motionPeer !== activePageIndex;
+  const hasMotionPeer = motionPeer !== -1 && motionPeer !== activePageIndex;
 
+  let usesMotionPair = false;
   let sourceIndex = activePageIndex;
   let targetIndex = getPagerTargetIndex(targetSide === -1 ? gestureState.leftTarget : gestureState.rightTarget);
 
-  if (interruptsMotion) {
-    const peerIsTarget = (positions[motionPeer].value - positions[activePageIndex].value) * targetSide > 0;
-    sourceIndex = peerIsTarget ? activePageIndex : motionPeer;
-    targetIndex = peerIsTarget ? motionPeer : activePageIndex;
+  if (hasMotionPeer) {
+    const activePosition = positions[activePageIndex].value;
+    const peerPosition = positions[motionPeer].value;
+    const peerIsTarget = (peerPosition - activePosition) * targetSide > 0;
+    const peerIsVisualSource = Math.abs(peerPosition) < Math.abs(activePosition);
+
+    if (peerIsTarget || peerIsVisualSource) {
+      usesMotionPair = true;
+      sourceIndex = peerIsTarget ? activePageIndex : motionPeer;
+      targetIndex = peerIsTarget ? motionPeer : activePageIndex;
+    }
   }
 
   if (targetIndex < 0 || targetIndex === sourceIndex) return;
   cancelPagerAnimations(positions, pageIndex);
 
   const sourcePosition = positions[sourceIndex];
-  if (!interruptsMotion) placePagerTarget(positions, sourceIndex, targetIndex, targetSide);
+  if (!usesMotionPair) placePagerTarget(positions, sourceIndex, targetIndex, targetSide);
 
   let trailingIndex = -1;
   let trailingDistance = SCALE_FACTOR;
