@@ -101,16 +101,8 @@ tags:
     id: cash-setup-next
 - extendedWaitUntil:
     visible:
-      text: 'Enter email'
+      id: cash-setup-success-action
     timeout: 10000
-- repeat:
-    while:
-      notVisible:
-        id: cash-setup-success-action
-    commands:
-      - tapOn:
-          id: cash-setup-next
-      - waitForAnimationToEnd
 - tapOn:
     id: cash-setup-success-action
 - assertVisible:
