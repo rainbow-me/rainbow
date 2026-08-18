@@ -2106,7 +2106,27 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
+        "name": "src/features/perps/screens/perps-account-screen/PerpsAccountScreen.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/perps/screens/perps-account-screen/OpenPositionsSection.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/perps/components/PerpPositionCard.tsx",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -57045,274 +57065,6 @@
   {
     "type": "cycle",
     "from": "src/features/perps/screens/PerpsNavigator.tsx",
-    "to": "src/components/SmoothPager/SmoothPager.tsx",
-    "unresolvedTo": "@/components/SmoothPager/SmoothPager",
-    "dependencyTypes": [
-      "aliased",
-      "aliased-tsconfig",
-      "aliased-tsconfig-paths",
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/design-system/index.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/design-system/components/MarkdownText/MarkdownText.tsx",
-        "dependencyTypes": [
-          "local",
-          "export"
-        ]
-      },
-      {
-        "name": "src/design-system/components/TextLink/TextLink.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/openInBrowser.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/Navigation.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/prefetchRegistry.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/charts/stores/candlestickStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/userAssetsStoreManager.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/store.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/reducers.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/settings.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/handlers/web3.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/ethereumUtils.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/userAssets.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/wallets/walletsStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/backup/backup.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/model/wallet.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/navigation/HardwareWalletTxNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/screens/PairHardwareWalletAgainSheet.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/components/NanoXDeviceAnimation.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/theme/ThemeContext.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/onNavigationStateChange.js",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/navigation/navigationStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/virtualNavigators.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/perps/screens/PerpsNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/features/perps/screens/PerpsNavigator.tsx",
     "to": "src/features/perps/components/SheetHandle.tsx",
     "unresolvedTo": "@/features/perps/components/SheetHandle",
     "dependencyTypes": [
@@ -65647,26 +65399,6 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
         "name": "src/design-system/index.ts",
         "dependencyTypes": [
           "aliased",
@@ -66233,26 +65965,6 @@
       },
       {
         "name": "src/features/perps/screens/PerpsNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -85665,274 +85377,6 @@
       },
       {
         "name": "src/features/polymarket/screens/polymarket-navigator/PolymarketNavbar.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/features/polymarket/screens/polymarket-navigator/PolymarketNavigator.tsx",
-    "to": "src/components/SmoothPager/SmoothPager.tsx",
-    "unresolvedTo": "@/components/SmoothPager/SmoothPager",
-    "dependencyTypes": [
-      "aliased",
-      "aliased-tsconfig",
-      "aliased-tsconfig-paths",
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/design-system/index.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/design-system/components/MarkdownText/MarkdownText.tsx",
-        "dependencyTypes": [
-          "local",
-          "export"
-        ]
-      },
-      {
-        "name": "src/design-system/components/TextLink/TextLink.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/openInBrowser.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/Navigation.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/prefetchRegistry.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/charts/stores/candlestickStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/userAssetsStoreManager.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/store.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/reducers.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/redux/settings.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/handlers/web3.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/utils/ethereumUtils.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/userAssets.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/wallets/walletsStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/backup/backup.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/model/wallet.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/navigation/HardwareWalletTxNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/screens/PairHardwareWalletAgainSheet.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/hardware-wallet/components/NanoXDeviceAnimation.tsx",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/theme/ThemeContext.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/onNavigationStateChange.js",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/navigation/navigationStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/navigation/virtualNavigators.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/polymarket/screens/polymarket-navigator/PolymarketNavigator.tsx",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -106518,26 +105962,6 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
         "name": "src/design-system/index.ts",
         "dependencyTypes": [
           "aliased",
@@ -106631,7 +106055,7 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
+        "name": "src/design-system/index.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -106641,7 +106065,80 @@
         ]
       },
       {
-        "name": "src/__swaps__/utils/swaps.ts",
+        "name": "src/design-system/components/MarkdownText/MarkdownText.tsx",
+        "dependencyTypes": [
+          "local",
+          "export"
+        ]
+      },
+      {
+        "name": "src/design-system/components/TextLink/TextLink.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/utils/openInBrowser.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/navigation/Navigation.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "src/navigation/onNavigationStateChange.js",
+    "to": "src/state/navigation/navigationStore.ts",
+    "unresolvedTo": "@/state/navigation/navigationStore",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/state/navigation/navigationStore.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/navigation/virtualNavigators.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/perps/screens/PerpsNavigator.tsx",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -106693,6 +106190,161 @@
           "local",
           "import"
         ]
+      },
+      {
+        "name": "src/navigation/prefetchRegistry.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/charts/stores/candlestickStore.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/assets/userAssetsStoreManager.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/redux/store.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/redux/reducers.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/redux/settings.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/handlers/web3.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/utils/ethereumUtils.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/assets/userAssets.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/wallets/walletsStore.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/backup/backup.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/model/wallet.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/hardware-wallet/navigation/HardwareWalletTxNavigator.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/hardware-wallet/screens/PairHardwareWalletAgainSheet.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/hardware-wallet/components/NanoXDeviceAnimation.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/theme/ThemeContext.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/navigation/onNavigationStateChange.js",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
       }
     ]
   },
@@ -106715,26 +106367,6 @@
     "cycle": [
       {
         "name": "src/features/polymarket/screens/polymarket-navigator/PolymarketNavigator.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -108243,17 +107875,7 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
+        "name": "src/features/perps/components/PerpsNavigatorFooter.tsx",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
@@ -108493,17 +108115,7 @@
         ]
       },
       {
-        "name": "src/components/SmoothPager/SmoothPager.tsx",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/__swaps__/utils/swaps.ts",
+        "name": "src/features/perps/components/PerpsNavigatorFooter.tsx",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",
