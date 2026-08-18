@@ -103,7 +103,7 @@
     "lint:js": "eslint --cache . --quiet",
     "lint:js:ci": "eslint . --quiet",
     "lint:js-types": "./scripts/check-js-types.sh",
-    "lint:ts": "yarn tsc --skipLibCheck --noEmit",
+    "lint:ts": "yarn tsc --noEmit",
     "nuke": "./scripts/nuke.sh",
     "prepare": "husky install",
     "rc-push": "./scripts/rc-push.sh",
