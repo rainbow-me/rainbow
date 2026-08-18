@@ -108,6 +108,9 @@ jobs:
           wait_for_boot: true
           boot_timeout_seconds: 180
 
+      # Most iOS users have biometrics enabled. The E2E suite should exercise that
+      # configuration; a fresh simulator is unenrolled and drops the send button out of
+      # hold-to-authorize. Keep ahead of first launch, useBiometryType caches the read.
       - name: Enroll Face ID
         run: ./scripts/e2e-ios-enroll-biometrics.sh
         env:

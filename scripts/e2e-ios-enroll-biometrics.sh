@@ -2,15 +2,10 @@
 
 set -euo pipefail
 
-# A freshly booted simulator has Face ID available but not enrolled. The app reads
-# that as passcode-only, which disables hold-to-authorize and relabels the send
-# button, so the send journeys can't run at all and iOS would otherwise be testing
-# an interaction almost no user gets.
-#
 # There is no simctl command for enrollment. The Simulator's Features menu posts
 # this notification and LAContext acts on it immediately. Since that is
-# undocumented, check it took rather than assume: a silent no-op here surfaces as
-# an unrelated-looking element-not-found several steps into the send flows.
+# undocumented, check it took rather than assume: a silent no-op would otherwise
+# surface far downstream.
 
 KEY="com.apple.BiometricKit.enrollmentChanged"
 DEVICE="${DEVICE_UDID:-booted}"
