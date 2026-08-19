@@ -84,23 +84,24 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
   (set, get) => {
     function applyTerminalOrder(order: TerminalBuyOrder): void {
       if (order.status === OrderStatus.Completed) {
-        analytics.track(analytics.event.cashBuyOrderCompleted, {
-          fiatAmount: toAnalyticsAmount(order.fiatAmount.amount),
-          fiatCurrency: order.fiatAmount.currency,
-          cryptoAmount: toAnalyticsAmount(order.cryptoAmount.amount),
-          network: order.cryptoAmount.asset.network,
-          timeToUsdcMs: new Date(order.completedTime).getTime() - new Date(order.createdTime).getTime(),
-        });
+        const { completedTime, createdTime, cryptoAmount, fiatAmount } = order;
+        if (cryptoAmount && fiatAmount && createdTime !== undefined && completedTime !== undefined) {
+          analytics.track(analytics.event.cashBuyOrderCompleted, {
+            fiatAmount: toAnalyticsAmount(fiatAmount.amount),
+            fiatCurrency: fiatAmount.currency,
+            cryptoAmount: toAnalyticsAmount(cryptoAmount.amount),
+            network: cryptoAmount.asset.network,
+            timeToUsdcMs: completedTime - createdTime,
+          });
+        }
         try {
-          // The ramp echoes the address lowercased, while every reader of the pending-transaction store
-          // keys off the app's checksummed account address.
           const walletAddress = requireAddress(order.walletAddress, '[cashBuyOrderStore] ramp returned an invalid wallet address');
           pendingTransactionsActions.addPendingTransaction({
             address: walletAddress,
             pendingTransaction: buildCashPurchaseTransaction({ order, walletAddress }),
           });
         } catch (error) {
-          logger.error(new RainbowError('[cashBuyOrderStore] failed to enqueue purchase transaction', { error }), {
+          logger.error(new RainbowError('[cashBuyOrderStore] failed to enqueue purchase transaction', error), {
             orderId: order.id,
             transactionHash: order.transactionHash,
           });
@@ -123,9 +124,9 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
 
     async function submitBuyOrderSpec({ spec, submittedAt }: { spec: BuyOrderSpec; submittedAt: number }): Promise<void> {
       try {
-        const created = await createBuyOrder({ ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
+        await createBuyOrder({ ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
         if (!isCurrentSubmission(spec)) return;
-        set({ status: { step: 'polling', orderId: created.id, order: null, submittedAt } });
+        set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
       } catch (error) {
         if (!isCurrentSubmission(spec)) return;
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
@@ -189,8 +190,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           }
         } catch (error) {
           if (abortController?.signal.aborted) return;
-          // Transient poll failure; retry on the watcher's next tick.
-          logger.error(new RainbowError('[cashBuyOrderStore] getOrder failed', error));
+          throw error;
         } finally {
           abortController?.signal.removeEventListener('abort', propagateAbort);
         }
