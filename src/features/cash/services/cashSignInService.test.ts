@@ -118,7 +118,7 @@ describe('ensureAccessToken', () => {
     expect(tokenStore().token).toBeNull();
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
-      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'login rejected' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
     ]);
   });
 
@@ -137,7 +137,7 @@ describe('ensureAccessToken', () => {
     expect(mockStartLogin).not.toHaveBeenCalled();
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
-      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'No cash account recorded on this device' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
     ]);
   });
 });
@@ -180,7 +180,7 @@ describe('signInWithPhone', () => {
     expect(tokenStore().token).toBeNull();
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'signInScreen' }],
-      ['cash.sign_in_failed', { trigger: 'signInScreen', reason: 'finalize failed' }],
+      ['cash.sign_in_failed', { trigger: 'signInScreen', reason: 'unknown' }],
     ]);
   });
 });

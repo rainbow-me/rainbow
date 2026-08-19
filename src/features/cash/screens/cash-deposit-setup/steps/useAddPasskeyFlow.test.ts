@@ -112,12 +112,12 @@ describe('useAddPasskeyFlowStore.submit', () => {
     expect(flow().state).toBe('entry');
   });
 
-  it('fails with the error message when the ceremony throws', async () => {
+  it('fails and reports the failure when the ceremony throws', async () => {
     mockCreatePasskeyCredential.mockRejectedValue(new Error('ceremony broke'));
 
     await expect(flow().submit()).resolves.toBe('failed');
 
-    expect(track).toHaveBeenCalledWith('cash.passkey_failed', { reason: 'ceremony broke' });
+    expect(track).toHaveBeenCalledWith('cash.passkey_failed', { reason: 'unknown' });
     expect(setUserId).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('error');
@@ -128,7 +128,7 @@ describe('useAddPasskeyFlowStore.submit', () => {
 
     await expect(flow().submit()).resolves.toBe('failed');
 
-    expect(track).toHaveBeenCalledWith('cash.passkey_failed', { reason: 'network down' });
+    expect(track).toHaveBeenCalledWith('cash.passkey_failed', { reason: 'unknown' });
     expect(setUserId).not.toHaveBeenCalled();
   });
 

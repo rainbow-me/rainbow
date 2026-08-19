@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
+import { toAnalyticsAmount } from '@/analytics/utils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -404,7 +405,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
   // Sample the amount whenever the user taps a preset chip.
   const handleSelectPreset = useCallback(
     (presetAmount: number) => {
-      analytics.track(analytics.event.cashAmountEntered, { amount: String(presetAmount), entryMode: 'preset' });
+      analytics.track(analytics.event.cashAmountEntered, { amount: toAnalyticsAmount(presetAmount), entryMode: 'preset' });
       amount.selectPresetAmount(presetAmount);
     },
     [amount]
@@ -413,7 +414,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
   // Sample each keypad amount the user types; `canSubmit` skips the "0" reset and empty values.
   useEffect(() => {
     if (mode !== 'keypad' || !amount.canSubmit) return;
-    analytics.track(analytics.event.cashAmountEntered, { amount: amount.amount, entryMode: 'keypad' });
+    analytics.track(analytics.event.cashAmountEntered, { amount: toAnalyticsAmount(amount.amount), entryMode: 'keypad' });
   }, [mode, amount.canSubmit, amount.amount]);
 
   // A deposit can only credit a wallet the Cash account has linked, so resolve that first: the token

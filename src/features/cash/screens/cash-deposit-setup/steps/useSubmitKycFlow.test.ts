@@ -205,12 +205,12 @@ describe('useSubmitKycFlowStore.submit', () => {
     expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
   });
 
-  it('fails with the error message when the submission throws', async () => {
+  it('fails and reports the failure when the submission throws', async () => {
     mockSubmitOnboarding.mockRejectedValue(new Error('network down'));
 
     await expect(flow().submit()).resolves.toBe('failed');
 
-    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'network down' });
+    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'unknown' });
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('error');
   });

@@ -118,7 +118,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       }
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to verify phone', e));
       analytics.track(analytics.event.cashPhoneVerifyFailed, {
-        reason: e instanceof Error ? e.message : String(e),
+        reason: getTelemetryErrorReason(e),
         mode: challenge.kind,
       });
       set({ code: '', state: 'error' });

@@ -3,6 +3,7 @@ import { time } from '@/framework/core/utils/time';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
+import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
@@ -56,7 +57,7 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
     if (isPasskeyCancellation(error)) {
       analytics.track(analytics.event.cashSignInCancelled, { trigger });
     } else {
-      analytics.track(analytics.event.cashSignInFailed, { trigger, reason: error instanceof Error ? error.message : String(error) });
+      analytics.track(analytics.event.cashSignInFailed, { trigger, reason: getTelemetryErrorReason(error) });
     }
     throw error;
   }

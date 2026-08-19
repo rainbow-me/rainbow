@@ -9,6 +9,7 @@ import { delay } from '@/utils/delay';
 import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycStatus, submitOnboarding, type KycOutcome } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 
 export const KYC_POLL_INTERVAL_MS = time.seconds(3);
 
@@ -64,7 +65,7 @@ export const useSubmitKycFlowStore = createBaseStore<SubmitKycFlowStore>((set, g
     } catch (e) {
       if (isStale()) return 'cancelled';
       logger.error(new RainbowError('[useSubmitKycFlow]: Failed to submit KYC', e));
-      analytics.track(analytics.event.cashKycFailed, { reason: e instanceof Error ? e.message : String(e) });
+      analytics.track(analytics.event.cashKycFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });
       return 'failed';
     }

@@ -214,7 +214,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(flow().state).toBe('error');
     expect(flow().code).toBe('');
     expect(session().status).toBe('phoneSubmitted');
-    expect(track).toHaveBeenCalledWith('cash.phone_verify_failed', { reason: 'wrong code', mode: 'signup' });
+    expect(track).toHaveBeenCalledWith('cash.phone_verify_failed', { reason: 'unknown', mode: 'signup' });
     expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
     expect(logger.error).toHaveBeenCalled();
   });
