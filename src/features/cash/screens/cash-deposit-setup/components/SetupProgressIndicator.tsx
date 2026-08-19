@@ -36,11 +36,14 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
     };
   });
 
-  const progressStyle = useAnimatedStyle(() => ({
-    backgroundColor: fillColor.value,
-    shadowColor: fillColor.value,
-    width: withTiming(progress.value * INDICATOR_WIDTH, TIMING_CONFIGS.slowestFadeConfig),
-  }));
+  const progressStyle = useAnimatedStyle(() => {
+    const backgroundColor = fillColor.value;
+    return {
+      backgroundColor,
+      shadowColor: backgroundColor,
+      width: withTiming(progress.value * INDICATOR_WIDTH, TIMING_CONFIGS.slowestFadeConfig),
+    };
+  });
 
   useAnimatedReaction(
     () => blue,
