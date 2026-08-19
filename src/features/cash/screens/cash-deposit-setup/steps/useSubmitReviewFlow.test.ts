@@ -194,16 +194,23 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(logger.warn).toHaveBeenCalled();
   });
 
-  it('stops writing once the flow is reset, so an abandoned poll cannot resurface later', async () => {
+  it('ignores an active status poll after the flow is reset', async () => {
+    const poll = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const pollStarted = Promise.withResolvers<void>();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
-    mockDelay.mockImplementationOnce(() => {
-      flow().reset();
-      return Promise.resolve();
+    mockGetUserStatus.mockImplementationOnce(() => {
+      pollStarted.resolve();
+      return poll.promise;
     });
 
-    await expect(flow().submit()).resolves.toBe('cancelled');
+    const submission = flow().submit();
+    await pollStarted.promise;
+    flow().reset();
+    poll.resolve({ kycStatus: KycStatus.Approved });
 
-    expect(mockGetUserStatus).not.toHaveBeenCalled();
+    await expect(submission).resolves.toBe('cancelled');
+
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
     expect(flow().state).toBe('entry');
     expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
   });

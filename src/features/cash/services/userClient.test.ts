@@ -31,8 +31,12 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-function platformError(code: unknown) {
-  return new RainbowFetchError({ message: 'phone already registered', responseBody: { code, message: 'phone already registered' } });
+function platformError(code: unknown, httpStatus?: number) {
+  return new RainbowFetchError({
+    message: 'phone already registered',
+    response: httpStatus === undefined ? undefined : new Response(null, { status: httpStatus }),
+    responseBody: { code, message: 'phone already registered' },
+  });
 }
 
 describe('createUserWithPhone', () => {
@@ -178,19 +182,19 @@ describe('account recovery', () => {
   });
 
   it.each([
-    { code: 403, outcome: 'identityMismatch' },
+    { code: 403, httpStatus: 403, outcome: 'identityMismatch' },
     { code: 1320, outcome: 'sessionInvalid' },
     { code: 1321, outcome: 'codeInvalid' },
     { code: 1323, outcome: 'signupIncomplete' },
-    { code: 1340, outcome: 'accessBlocked' },
-  ])('maps recovery error code $code to $outcome', async ({ code, outcome }) => {
-    post.mockRejectedValue(platformError(code));
+    { code: 1340, httpStatus: 403, outcome: 'accessBlocked' },
+  ])('maps recovery error body code $code to $outcome', async ({ code, httpStatus, outcome }) => {
+    post.mockRejectedValue(platformError(code, httpStatus));
 
     await expect(finishRecovery(finishParams)).resolves.toEqual({ outcome });
   });
 
-  it('rethrows an unrecognized recovery error', async () => {
-    const error = platformError(1399);
+  it('rethrows an unrecognized HTTP 403 recovery error', async () => {
+    const error = platformError(7, 403);
     post.mockRejectedValue(error);
 
     await expect(finishRecovery(finishParams)).rejects.toBe(error);
