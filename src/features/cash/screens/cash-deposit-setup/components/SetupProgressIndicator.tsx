@@ -36,7 +36,7 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
     };
   });
 
-  const progressStyle = useAnimatedStyle(() => {
+  const progressBarStyle = useAnimatedStyle(() => {
     const backgroundColor = fillColor.value;
     return {
       backgroundColor,
@@ -49,22 +49,24 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
     () => blue,
     (current, previous) => {
       if (previous === null) return;
-      if (exitProgress.value === 0) fillColor.value = current;
+      const isBarStillBlue = progress.value < 1 && exitProgress.value === 0;
+      if (isBarStillBlue) fillColor.value = current;
     },
     [blue]
   );
 
   useAnimatedReaction(
     () => progress.value,
-    (progress, previous) => {
+    (current, previous) => {
       if (previous === null) return;
 
-      if (progress === 1 && previous < 1 && exitProgress.value === 0) {
-        fillColor.value = withTiming(green, TIMING_CONFIGS.slowestFadeConfig, isFinished => {
-          if (isFinished) exitProgress.value = withTiming(1, TIMING_CONFIGS.slowestFadeConfig);
-        });
-        triggerHaptics('notificationSuccess');
-      }
+      const didCompleteSetup = current === 1 && previous < 1 && exitProgress.value === 0;
+      if (!didCompleteSetup) return;
+
+      fillColor.value = withTiming(green, TIMING_CONFIGS.slowestFadeConfig, isFinished => {
+        if (isFinished) exitProgress.value = withTiming(1, TIMING_CONFIGS.slowestFadeConfig);
+      });
+      triggerHaptics('notificationSuccess');
     },
     [green]
   );
@@ -79,7 +81,7 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
       style={[styles.container, containerStyle]}
       width={INDICATOR_WIDTH}
     >
-      <Animated.View style={[styles.progress, { backgroundColor: blue }, progressStyle]} />
+      <Animated.View style={[styles.progressBar, { backgroundColor: blue }, progressBarStyle]} />
     </Box>
   );
 });
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
   },
-  progress: {
+  progressBar: {
     borderCurve: 'continuous',
     borderRadius: INDICATOR_HEIGHT / 2,
     height: '100%',
