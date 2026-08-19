@@ -1,7 +1,15 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, useForegroundColor } from '@/design-system';
@@ -20,19 +28,40 @@ const PROGRESS_STEP_COUNT = FINAL_PROGRESS_STEP_INDEX - FIRST_PROGRESS_STEP_INDE
 
 export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
   const blue = useForegroundColor('blue');
+  const green = useForegroundColor('green');
+  const fillColor = useSharedValue(blue);
+
+  const exitProgress = useSharedValue(0);
   const progress = useStoreSharedValue(useCashDepositSetupNavigationStore, s => getSetupProgress(s.activeRoute));
+  const showProgressBar = useDerivedValue(() => progress.value > 0 && exitProgress.value < 1);
 
   const containerStyle = useAnimatedStyle(() => {
-    const visible = progress.value > 0;
+    const show = showProgressBar.value;
     return {
-      opacity: withTiming(visible ? 1 : 0, TIMING_CONFIGS.buttonPressConfig),
-      transform: [{ scale: withTiming(visible ? 1 : 1.02, TIMING_CONFIGS.buttonPressConfig) }],
+      opacity: withTiming(show ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
+      transform: [{ scale: withTiming(show ? 1 : 0.925, TIMING_CONFIGS.slowFadeConfig) }],
     };
   });
 
   const progressStyle = useAnimatedStyle(() => ({
+    backgroundColor: fillColor.value,
     width: withSpring(progress.value * INDICATOR_WIDTH, SPRING_CONFIGS.snappyMediumSpringConfig),
   }));
+
+  useAnimatedReaction(
+    () => progress.value,
+    (progress, previous) => {
+      if (previous === null || exitProgress.value !== 0) return;
+
+      if (progress === 1 && previous < 1) {
+        fillColor.value = withTiming(green, TIMING_CONFIGS.slowestFadeConfig, isFinished => {
+          if (isFinished) exitProgress.value = withTiming(1, TIMING_CONFIGS.slowestFadeConfig);
+        });
+        triggerHaptics('notificationSuccess');
+      }
+    },
+    []
+  );
 
   return (
     <Box
