@@ -1,17 +1,10 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, {
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, useForegroundColor } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -45,7 +38,7 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
 
   const progressStyle = useAnimatedStyle(() => ({
     backgroundColor: fillColor.value,
-    width: withSpring(progress.value * INDICATOR_WIDTH, SPRING_CONFIGS.snappyMediumSpringConfig),
+    width: withTiming(progress.value * INDICATOR_WIDTH, TIMING_CONFIGS.slowestFadeConfig),
   }));
 
   useAnimatedReaction(
