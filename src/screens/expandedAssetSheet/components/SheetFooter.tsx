@@ -100,7 +100,7 @@ export function SheetFooter() {
                 color={accentColors.color}
                 height={BUTTON_SIZE}
                 inputType={SwapAssetType.outputAsset}
-                label={i18n.t(i18n.l.button.buy)}
+                label={i18n.t(i18n.l.expanded_state.asset.buy_asset, { assetSymbol: asset.symbol })}
               />
             )}
           </Columns>

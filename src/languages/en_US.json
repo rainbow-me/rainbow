@@ -663,6 +663,7 @@
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
+        "buy_asset": "Buy %{assetSymbol}",
         "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
         "l2_disclaimer": "This %{symbol} is on the %{network} network",
