@@ -38,22 +38,32 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
 
   const progressStyle = useAnimatedStyle(() => ({
     backgroundColor: fillColor.value,
+    shadowColor: fillColor.value,
     width: withTiming(progress.value * INDICATOR_WIDTH, TIMING_CONFIGS.slowestFadeConfig),
   }));
 
   useAnimatedReaction(
+    () => blue,
+    (current, previous) => {
+      if (previous === null) return;
+      if (exitProgress.value === 0) fillColor.value = current;
+    },
+    [blue]
+  );
+
+  useAnimatedReaction(
     () => progress.value,
     (progress, previous) => {
-      if (previous === null || exitProgress.value !== 0) return;
+      if (previous === null) return;
 
-      if (progress === 1 && previous < 1) {
+      if (progress === 1 && previous < 1 && exitProgress.value === 0) {
         fillColor.value = withTiming(green, TIMING_CONFIGS.slowestFadeConfig, isFinished => {
           if (isFinished) exitProgress.value = withTiming(1, TIMING_CONFIGS.slowestFadeConfig);
         });
         triggerHaptics('notificationSuccess');
       }
     },
-    []
+    [green]
   );
 
   return (
@@ -66,7 +76,7 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
       style={[styles.container, containerStyle]}
       width={INDICATOR_WIDTH}
     >
-      <Animated.View style={[styles.progress, { backgroundColor: blue, shadowColor: blue }, progressStyle]} />
+      <Animated.View style={[styles.progress, { backgroundColor: blue }, progressStyle]} />
     </Box>
   );
 });
@@ -82,6 +92,7 @@ const styles = StyleSheet.create({
     left: '50%',
     marginLeft: -INDICATOR_WIDTH / 2,
     marginTop: -INDICATOR_HEIGHT / 2,
+    overflow: 'visible',
     position: 'absolute',
     top: '50%',
   },
@@ -89,8 +100,8 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: INDICATOR_HEIGHT / 2,
     height: '100%',
-    shadowOffset: { height: 0, width: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
+    shadowOffset: { height: 3, width: 0 },
+    shadowOpacity: 0.24,
+    shadowRadius: 6,
   },
 });
