@@ -444,7 +444,8 @@ const SmoothPagerComponent = <Page extends string>({
     if (navigation) {
       unsubscribe = navigation.subscribe(handleNavigationState);
 
-      const initialState = navigation.getState();
+      const navigationState = navigation.getState();
+      const initialState = registry.indexById.has(navigationState.page) ? navigationState : registry.navigationState;
       const initialStateIndex = registry.indexById.get(initialState.page);
 
       if (initialStateIndex === registry.initialIndex) {
