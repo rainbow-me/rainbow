@@ -30,6 +30,7 @@ export const CashActionButton = memo(function CashActionButton({
   variant = 'solid',
 }: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
+  const spinnerColor = useForegroundColor(color);
   const isDisabled = disabled || loading;
   const textColor = variant === 'solid' ? 'white' : color;
 
@@ -60,7 +61,7 @@ export const CashActionButton = memo(function CashActionButton({
           {label}
         </Text>
 
-        {loading ? <Spinner color={variant === 'solid' ? 'white' : blue} size={24} style={styles.spinner} /> : null}
+        {loading ? <Spinner color={variant === 'solid' ? 'white' : spinnerColor} size={24} style={styles.spinner} /> : null}
       </Box>
     </ButtonPressAnimation>
   );
