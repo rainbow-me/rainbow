@@ -86,7 +86,7 @@ export function cancelPagerAnimations(positions: readonly PagerPosition[], pageI
 }
 
 function animateValue(
-  value: SharedValue<number>,
+  sharedValue: SharedValue<number>,
   destination: number,
   animation: PagerAnimation,
   velocity?: number,
@@ -95,9 +95,9 @@ function animateValue(
   'worklet';
   if (animation.type === 'spring') {
     const config = velocity === undefined ? animation.config : { ...animation.config, velocity };
-    value.value = withSpring(destination, config, callback);
+    sharedValue.value = withSpring(destination, config, callback);
   } else {
-    value.value = withTiming(destination, animation.config, callback);
+    sharedValue.value = withTiming(destination, animation.config, callback);
   }
 }
 
@@ -164,8 +164,8 @@ function settlePages(
             gestureState.motionPeerIndex = -1;
           }
 
-          const isPageIndexStale = pageIndex && pageIndex.value !== upscalePagerIndex(settledIndex);
-          const skipSettlement = !isPageIndexStale || !tracksRest || !restState || !onSettled || restState.value !== PAGER_REST_REQUESTED;
+          const isPageIndexSettled = pageIndex === undefined || pageIndex.value === upscalePagerIndex(settledIndex);
+          const skipSettlement = !isPageIndexSettled || !tracksRest || !restState || !onSettled || restState.value !== PAGER_REST_REQUESTED;
           if (skipSettlement) return;
 
           completePagerRest(gestureState, restState, settledIndex, onSettled);
