@@ -12,7 +12,7 @@ fi
 baseline_pattern=$(grep -oE '^TS[0-9]+' "$BASELINE" | paste -sd '|' -)
 
 # Run tsc with checkJs and capture JS file errors
-js_errors=$(npx tsc --skipLibCheck --noEmit --checkJs 2>&1 | grep '\.js\b.*error TS' || true)
+js_errors=$(npx tsc --noEmit --checkJs 2>&1 | grep '\.js\b.*error TS' || true)
 
 if [ -z "$js_errors" ]; then
   echo "No JS type errors found."
