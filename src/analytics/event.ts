@@ -7,6 +7,7 @@ import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
+import { type TelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
 import { type RequestSource } from '@/features/dapp-request/types';
@@ -126,7 +127,10 @@ export const event = {
   cashBuyOrderSubmitted: 'cash.buy_submitted',
   cashBuyOrderCompleted: 'cash.buy_completed',
   cashBuyOrderFailed: 'cash.buy_failed',
+  cashWalletCheckFailed: 'cash.wallet_check_failed',
   cashPhoneSubmitted: 'cash.phone_submitted',
+  cashPhoneSubmitFailed: 'cash.phone_submit_failed',
+  cashPhoneResendFailed: 'cash.phone_resend_failed',
   cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
@@ -553,7 +557,17 @@ export type EventProperties = {
     failureReason: OrderFailureReason | null;
     errorCode: 'PAYMENT_REJECTED' | 'GENERIC';
   };
+  [event.cashWalletCheckFailed]: {
+    reason: TelemetryErrorReason;
+  };
   [event.cashPhoneSubmitted]: {
+    mode: 'signup' | 'resume';
+  };
+  [event.cashPhoneSubmitFailed]: {
+    reason: TelemetryErrorReason;
+  };
+  [event.cashPhoneResendFailed]: {
+    reason: TelemetryErrorReason;
     mode: 'signup' | 'resume';
   };
   [event.cashPhoneAlreadyRegistered]: {

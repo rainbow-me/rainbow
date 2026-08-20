@@ -14,6 +14,7 @@ import {
   verifyPhone,
   type KycOutcome,
 } from '../services/userClient';
+import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
 
 export const OTP_LENGTH = 6;
@@ -148,6 +149,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
     } catch (e) {
       if (!sessionStore.getIsCurrentChallenge(challenge)) return;
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to resend code', e));
+      analytics.track(analytics.event.cashPhoneResendFailed, { reason: getTelemetryErrorReason(e), mode: challenge.kind });
     } finally {
       set(state => (state.resending === challenge ? { resending: null } : state));
     }
