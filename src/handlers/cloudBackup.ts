@@ -27,7 +27,22 @@ export const CLOUD_BACKUP_ERRORS = {
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
   MISSING_PIN: 'The PIN code you entered is invalid',
   WRONG_PIN: 'The PIN code you entered is wrong',
+  MALFORMED_BACKUP_DATA: 'Backup data is malformed',
 };
+
+/**
+ * Decryption has already succeeded wherever this runs, so a parse failure means corrupt data rather
+ * than a wrong password, and what failed to parse is backup contents. `JSON.parse` quotes part of its
+ * input back inside the `SyntaxError` it throws, so that error is dropped rather than logged, wrapped
+ * or attached as a cause.
+ */
+export function parseBackupJson(value: string) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new Error(CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA);
+  }
+}
 
 export function normalizeAndroidBackupFilename(filename: string) {
   return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
@@ -199,8 +214,7 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     logger.debug(`[cloudBackup]: Got cloud document ${filename}`);
     const backedUpDataStringified = await encryptor.decrypt(backupPassword, encryptedData);
     if (backedUpDataStringified) {
-      const backedUpData = JSON.parse(backedUpDataStringified);
-      return backedUpData;
+      return parseBackupJson(backedUpDataStringified);
     } else {
       logger.error(new RainbowError('[cloudBackup]: We couldnt decrypt the data'));
       const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);

@@ -22,6 +22,7 @@ import {
   login,
   logoutFromGoogleDrive,
   normalizeAndroidBackupFilename,
+  parseBackupJson,
 } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -487,7 +488,7 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
       }
 
       const valueStr = backedUpData[key];
-      const parsedValue = JSON.parse(valueStr);
+      const parsedValue = parseBackupJson(valueStr);
 
       let secretPhraseOrOldAndroidBackupPrivateKey: string | any; // TODO: Strengthen this type
       /*
@@ -534,7 +535,7 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
     }
     return true;
   } catch (e) {
-    logger.error(new RainbowError(`[backup]: Error restoring specific backup into keychain: ${e}`));
+    logger.error(new RainbowError('[backup]: Error restoring specific backup into keychain', e));
     return false;
   }
 }
@@ -612,7 +613,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     }
     return null;
   } catch (e) {
-    logger.error(new RainbowError(`[backup]: Error while fetching backup password: ${e}`));
+    logger.error(new RainbowError('[backup]: Error while fetching backup password', e));
     return null;
   }
 }

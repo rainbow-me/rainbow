@@ -32,6 +32,8 @@ export function getUserError(e: Error) {
       return i18n.t(i18n.l.back_up.errors.missing_pin);
     case CLOUD_BACKUP_ERRORS.WRONG_PIN:
       return i18n.t(i18n.l.back_up.wrong_pin);
+    case CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA:
+      return i18n.t(i18n.l.back_up.errors.malformed_backup_data);
     default:
       return i18n.t(i18n.l.back_up.errors.generic, {
         errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),
@@ -150,7 +152,7 @@ export default function useWalletCloudBackup() {
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}: ${e}`));
+        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}`, e));
         analytics.track(
           cloudPlatform === 'Google Drive' ? analytics.event.errorDuringGoogleDriveBackup : analytics.event.errorDuringICloudBackup,
           {
@@ -169,7 +171,7 @@ export default function useWalletCloudBackup() {
         !!onSuccess && onSuccess(password);
         return true;
       } catch (e) {
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));
+        logger.error(new RainbowError('[useWalletCloudBackup]: error while trying to save wallet backup state', e));
         const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
         analytics.track(analytics.event.errorUpdatingBackupStatus, {
