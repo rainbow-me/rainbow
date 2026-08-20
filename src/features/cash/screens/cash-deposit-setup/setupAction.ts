@@ -76,8 +76,9 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
       case Routes.CASH_SETUP_CONFIRM_PHONE: {
         const state = $(useVerifyPhoneFlowStore, s => s.state);
         const isFullCode = $(useVerifyPhoneFlowStore, s => s.code.length === OTP_LENGTH);
+        const isResending = $(useVerifyPhoneFlowStore, s => s.resending !== null);
         return {
-          disabled: !isFullCode || state === 'verified',
+          disabled: !isFullCode || isResending || state === 'verified',
           label,
           loading: state === 'verifying',
           onPress: submitPhoneCode,
