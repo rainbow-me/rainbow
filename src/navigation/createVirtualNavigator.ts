@@ -14,7 +14,10 @@ export type VirtualNavigator<VirtualRoute extends Route> = {
   getActiveRoute: () => VirtualRoute;
   getActiveRouteState: () => ActiveRouteState<VirtualRoute>;
   getParams: <R extends VirtualRoute>(route: R) => RouteParams<R> | undefined;
-  goBack: () => void;
+  /**
+   * Returns to the previous route, or starts a new path at the fallback when history is empty.
+   */
+  goBack: <R extends VirtualRoute>(fallbackRoute?: R, fallbackParams?: RouteParams<R>) => void;
   goForward: () => void;
   isRouteActive: (route: VirtualRoute) => boolean;
   navigate: <R extends VirtualRoute>(route: R, params?: RouteParams<R>) => void;
@@ -74,13 +77,29 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
 
     getParams: route => get().params[route],
 
-    goBack: () => {
+    goBack: (...fallback) => {
+      const didSpecifyFallbackParams = fallback.length > 1;
+      const [fallbackRoute, fallbackParams] = fallback;
+
       set(state => {
-        if (!state.history.length) return state;
+        if (state.history.length) {
+          return {
+            activeRoute: state.history[state.history.length - 1],
+            future: [...state.future, state.activeRoute],
+            history: state.history.slice(0, -1),
+          };
+        }
+
+        if (fallbackRoute === undefined) return state;
+
+        const didParamsChange = didSpecifyFallbackParams && !shallowEqual(fallbackParams, state.params[fallbackRoute]);
+        if (state.activeRoute === fallbackRoute && !state.future.length && !didParamsChange) return state;
+
         return {
-          activeRoute: state.history[state.history.length - 1],
-          future: [...state.future, state.activeRoute],
-          history: state.history.slice(0, -1),
+          activeRoute: fallbackRoute,
+          future: [],
+          history: [],
+          params: didParamsChange ? { ...state.params, [fallbackRoute]: fallbackParams } : state.params,
         };
       });
       setActiveRoute(get().activeRoute);
