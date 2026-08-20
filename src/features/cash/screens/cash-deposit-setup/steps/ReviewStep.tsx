@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 
+import { shallowEqual } from '@storesjs/stores';
+
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
@@ -70,8 +72,8 @@ function ReviewRow({
 }
 
 export const ReviewStep = memo(function ReviewStep() {
-  const identity = useCashSetupSessionStore(state => state.getIdentity());
-  const governmentId = useCashSetupSessionStore(state => state.getGovernmentId());
+  const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
+  const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
   const state = useSubmitKycFlowStore(store => store.state);
   const submitting = state === 'submitting';
 
