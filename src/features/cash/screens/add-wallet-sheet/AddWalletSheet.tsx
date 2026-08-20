@@ -13,6 +13,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { usePreventSheetDismissal } from '@/navigation/usePreventSheetDismissal';
 import { useAccountProfileInfo, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 
@@ -79,6 +80,9 @@ export const AddWalletSheet = memo(function AddWalletSheet() {
 
   const { state, confirm } = useWalletLinkFlow({ onLinked: handleLinked, walletAddress });
   const isUnsupportedWallet = isReadOnlyWallet || isHardwareWallet;
+  const isLinking = state === 'linking';
+
+  usePreventSheetDismissal(isLinking);
 
   useFocusEffect(
     useCallback(() => {

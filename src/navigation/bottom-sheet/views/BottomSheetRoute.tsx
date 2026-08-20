@@ -133,7 +133,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         {...props}
       />
     ),
-    [backdropOpacity, backdropStyle]
+    [backdropOpacity, backdropPressBehavior, backdropStyle]
   );
 
   return (

@@ -37,6 +37,9 @@ import type Routes from './routesNames';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
+/** Height of the band at the top of a cool modal that the pan-to-dismiss gesture responds to. */
+export const DEFAULT_COOL_MODAL_HEADER_HEIGHT = 25;
+
 export type CoolModalConfigOptions = StackNavigationOptions & {
   allowsDragToDismiss?: boolean;
   allowsTapToDismiss?: boolean;
@@ -100,7 +103,7 @@ const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOpt
   customStack: true,
   disableShortFormAfterTransitionToLongForm: params.disableShortFormAfterTransitionToLongForm,
   gestureEnabled: true,
-  headerHeight: params.headerHeight || 25,
+  headerHeight: params.headerHeight || DEFAULT_COOL_MODAL_HEADER_HEIGHT,
   ignoreBottomOffset: true,
   isShortFormEnabled: params.isShortFormEnabled,
   longFormHeight: params.longFormHeight,

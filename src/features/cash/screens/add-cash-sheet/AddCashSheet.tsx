@@ -26,6 +26,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { usePreventSheetDismissal } from '@/navigation/usePreventSheetDismissal';
 import { USDC_ADDRESS } from '@/references/constants';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -336,6 +337,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const previousPhase = usePrevious(phase);
   const errorCode = useCashBuyOrderStore(state => (state.status.step === 'error' ? state.status.errorCode : null));
   const isPolling = useCashBuyOrderStore(state => state.status.step === 'polling');
+  const isSubmitting = useCashBuyOrderStore(state => state.status.step === 'submitting');
   const submittedAt = useCashBuyOrderStore(state =>
     state.status.step === 'submitting' || state.status.step === 'polling' ? state.status.submittedAt : null
   );
@@ -344,6 +346,11 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const walletCheckRef = useRef<AbortController | null>(null);
   const isPending = phase === 'pending';
   const isProcessing = isCheckingWallet || isPending;
+
+  // The spec is already on disk under its own id and `resumePendingSubmission` replays it, so a dismissal
+  // here is recoverable — but only if the user comes back. Hold the sheet for the one request rather than
+  // let a stray backdrop tap drop them out of the flow mid-commit.
+  usePreventSheetDismissal(isSubmitting);
 
   // The pending view takes over only once the order has been in flight longer than the configured
   // delay; until then the hold-to-add button's processing state is the only affordance.

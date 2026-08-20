@@ -14,6 +14,7 @@ import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashP
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
+import { usePreventSheetDismissal } from '@/navigation/usePreventSheetDismissal';
 
 const l = i18n.l.cash.payment_methods;
 const cardRemovalFlowActions = createStoreActions(useCardRemovalFlowStore);
@@ -77,13 +78,7 @@ export const PaymentMethodsSheet = memo(function PaymentMethodsSheet() {
     Alert.alert(i18n.t(l.remove_error_title), i18n.t(l.remove_error_description));
   }, []);
 
-  useEffect(
-    () =>
-      navigation.addListener('beforeRemove', event => {
-        if (useCardRemovalFlowStore.getState().state === 'removing') event.preventDefault();
-      }),
-    [navigation]
-  );
+  usePreventSheetDismissal(useCardRemovalFlowStore(state => state.state === 'removing'));
 
   useEffect(() => {
     if (linkedCard || !navigation.isFocused()) return;
