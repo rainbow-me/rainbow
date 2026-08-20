@@ -73,8 +73,8 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   },
 
   submit: async () => {
-    const { code, state } = get();
-    if (code.length !== OTP_LENGTH || state === 'verifying' || state === 'verified') return 'failed';
+    const { code, resending, state } = get();
+    if (code.length !== OTP_LENGTH || resending !== null || state === 'verifying' || state === 'verified') return 'failed';
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
     if (session.status !== 'phoneSubmitted') return 'failed';
