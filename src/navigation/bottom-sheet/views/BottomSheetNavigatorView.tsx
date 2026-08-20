@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { NavigationHelpersContext, StackActions, type StackNavigationState } from '@react-navigation/native';
 
 import useForceUpdate from '@/hooks/useForceUpdate';
+import { onDidPop } from '@/navigation/Navigation';
 import { type RootStackParamList } from '@/navigation/types';
 
 import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
@@ -63,6 +64,7 @@ const BottomSheetNavigatorView = ({ descriptors, state, navigation }: Props) => 
         target: state.key,
       });
     }
+    onDidPop();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
