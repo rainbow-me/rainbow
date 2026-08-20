@@ -101,10 +101,10 @@ tags:
     id: cash-setup-next
 - extendedWaitUntil:
     visible:
-      id: cash-setup-success-action
+      text: 'You’re all done!'
     timeout: 10000
 - tapOn:
-    id: cash-setup-success-action
+    id: cash-setup-next
 - assertVisible:
     text: 'Enter card details'
 - tapOn: 'Card number'
@@ -121,6 +121,6 @@ tags:
 - assertVisible:
     text: 'Card added'
 - tapOn:
-    id: cash-setup-success-action
+    id: cash-setup-next
 - assertVisible:
     id: cash-deposit-add-cash-add-from
