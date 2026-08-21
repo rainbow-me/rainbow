@@ -9677,7 +9677,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.9"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.6.2"
-    react-native-reanimated: "npm:4.6.0-nightly-20260812-0f8cf6dcc"
+    react-native-reanimated: "npm:4.6.0"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.9.0"
@@ -9700,7 +9700,7 @@ __metadata:
     react-native-vision-camera: "npm:4.7.3"
     react-native-webview: "rainbow-me/rainbow-react-native-webview#58c541df40fbf8c68c49146b0e1dd6502875150a"
     react-native-widgetkit: "npm:1.0.9"
-    react-native-worklets: "npm:0.13.0-nightly-20260812-0f8cf6dcc"
+    react-native-worklets: "npm:0.12.1"
     react-navigation-backhandler: "npm:2.0.3"
     react-primitives: "npm:0.8.1"
     react-redux: "npm:7.2.1"
@@ -22964,17 +22964,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:4.6.0-nightly-20260812-0f8cf6dcc":
-  version: 4.6.0-nightly-20260812-0f8cf6dcc
-  resolution: "react-native-reanimated@npm:4.6.0-nightly-20260812-0f8cf6dcc"
+"react-native-reanimated@npm:4.6.0":
+  version: 4.6.0
+  resolution: "react-native-reanimated@npm:4.6.0"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.3.1"
     semver: "npm:^7.7.3"
   peerDependencies:
     react: "*"
     react-native: 0.83 - 0.87
-    react-native-worklets: "*"
-  checksum: 10c0/6e8a8d31466ef0f99dc51c64412b6bbe65be650f485f58f808cb98ffd31edc5c028ee4f4e5ee480b8c60872dc7ac95bdfd0d92e856aaab845127d30148ae1bd4
+    react-native-worklets: 0.12.x
+  checksum: 10c0/947c9038b9c876a5e77364afd4b256327e05317537022b283aa76dc35af20b5cb4786989117fd1c3926c583595165703903e91ab3c204f90fdb6296022eff614
   languageName: node
   linkType: hard
 
@@ -23283,9 +23283,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.13.0-nightly-20260812-0f8cf6dcc":
-  version: 0.13.0-nightly-20260812-0f8cf6dcc
-  resolution: "react-native-worklets@npm:0.13.0-nightly-20260812-0f8cf6dcc"
+"react-native-worklets@npm:0.12.1":
+  version: 0.12.1
+  resolution: "react-native-worklets@npm:0.12.1"
   dependencies:
     "@babel/generator": "npm:^7.27.1"
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
@@ -23306,7 +23306,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.83 - 0.87
-  checksum: 10c0/f793422ae2abfb43a4db8995e49aa9fcb2ea1edbab77ede6212b1f81eb42b4c9176fb0198a945716c5aa41f87035fc7c320958b6b4454a08001e6be36c939258
+  checksum: 10c0/86b9043ed2ceacd3dada3f94d62393a5bb54c7a26877e5bb54171cd4455b34f4148009a6b41bf53be70f265444bd7fff287f4d0fd8599e27d476c10e6cd7923f
   languageName: node
   linkType: hard
 

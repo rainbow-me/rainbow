@@ -13,7 +13,7 @@
 # 2) colors.ts — null-guard `processColorsInProps` so passing a
 #    `null` / `undefined` color (e.g. from a conditional animated
 #    color) doesn't crash the worklet. Not upstreamed; absent from
-#    the exact admitted 4.6 nightly.
+#    stable 4.6.0.
 #    Upstream Issue: none filed yet.
 #    Linear Issue: TBD.
 #    Remove when: upstream guards against null in
