@@ -11,14 +11,14 @@ import { EthereumWalletType } from '@/helpers/walletTypes';
 export type EthereumPrivateKey = string;
 export type EthereumWalletSeed = string;
 
-export interface ReadOnlyWallet {
+export type ReadOnlyWallet = {
   address: EthereumAddress;
   privateKey: string | null;
-}
+};
 
 export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
 
-export interface EthereumWalletFromSeed {
+export type EthereumWalletFromSeed = {
   address: EthereumAddress;
   hdnode: HDNode | null;
   isHDWallet: boolean;
@@ -26,20 +26,19 @@ export interface EthereumWalletFromSeed {
   type: EthereumWalletType;
   wallet: EthereumWallet | null;
   walletType: WalletLibraryType;
-}
+};
 
+/**
+ * Determines the {@link EthereumWalletType} based on the provided wallet seed.
+ */
 export function identifyWalletType(walletSeed: EthereumWalletSeed): EthereumWalletType {
   if (isHexStringIgnorePrefix(walletSeed) && addHexPrefix(walletSeed).length === 66) {
     return EthereumWalletType.privateKey;
   }
-  if (isValidBluetoothDeviceId(walletSeed)) {
-    return EthereumWalletType.bluetooth;
-  }
-  if (isValidMnemonic(walletSeed)) {
-    return EthereumWalletType.mnemonic;
-  }
-  if (isValidAddress(walletSeed)) {
-    return EthereumWalletType.readOnly;
-  }
+
+  if (isValidBluetoothDeviceId(walletSeed)) return EthereumWalletType.bluetooth;
+  if (isValidMnemonic(walletSeed)) return EthereumWalletType.mnemonic;
+  if (isValidAddress(walletSeed)) return EthereumWalletType.readOnly;
+
   return EthereumWalletType.seed;
 }
