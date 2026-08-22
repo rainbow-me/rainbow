@@ -10,14 +10,14 @@ describe('transaction attempt setup', () => {
     const { calls, ledger, result } = runTransactionRetry(false);
     expect(result.status).toBe(0);
     expect(calls).toEqual(['start', 'fund', 'maestro-1', 'reset', 'fund', 'maestro-2']);
-    expect(ledger.at(-1)).toEqual(expect.objectContaining({ attempts: 2, status: 'retried' }));
+    expect(ledger.at(-1)).toEqual(expect.objectContaining({ attempts: 2, pass_duration: expect.any(Number), status: 'retried' }));
   });
 
   it('restarts and funds Anvil when resetting the fork fails', () => {
     const { calls, ledger, result } = runTransactionRetry(true);
     expect(result.status).toBe(0);
     expect(calls).toEqual(['start', 'fund', 'maestro-1', 'reset', 'reset', 'reset', 'start', 'fund', 'maestro-2']);
-    expect(ledger.at(-1)).toEqual(expect.objectContaining({ attempts: 2, status: 'retried' }));
+    expect(ledger.at(-1)).toEqual(expect.objectContaining({ attempts: 2, pass_duration: expect.any(Number), status: 'retried' }));
   });
 });
 

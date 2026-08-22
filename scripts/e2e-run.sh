@@ -10,7 +10,6 @@ ANVIL_RPC="http://127.0.0.1:8545"
 TEST_WALLET_BALANCE_WEI="0x1158e460913d00000" # 20 ETH
 ARGS=()
 SHARD_TOTAL=1
-SHARD_INDEX=0
 SHARD_LABEL=1
 TEST_FILES=()
 ANVIL_PID=""
@@ -219,8 +218,6 @@ if ! [[ "$MAX_ATTEMPTS" =~ ^[1-9][0-9]*$ ]]; then
   echo "Retries must be a positive integer" >&2
   exit 2
 fi
-SHARD_INDEX=$((SHARD_LABEL - 1))
-
 RESULTS_FILE="$RESULTS_FOLDER/shard-$SHARD_LABEL.jsonl"
 
 json_string() {
@@ -246,9 +243,10 @@ test_id() {
 # shard killed partway through leaves its unrun tests as "planned" rather than
 # leaving them out of the file altogether.
 record() {
-  printf '{"shard":%s,"platform":%s,"test":%s,"status":%s,"attempts":%s,"duration":%s,"failure_class":null,"artifact_dir":%s}\n' \
+  printf '{"shard":%s,"platform":%s,"test":%s,"status":%s,"attempts":%s,"duration":%s,"pass_duration":%s,"failure_class":null,"artifact_dir":%s}\n' \
     "$SHARD_LABEL" "$(json_string "$PLATFORM")" "$(json_string "$1")" "$(json_string "$2")" \
-    "$(json_number_or_null "${3:-}")" "$(json_number_or_null "${4:-}")" "$(json_string_or_null "${5:-}")" \
+    "$(json_number_or_null "${3:-}")" "$(json_number_or_null "${4:-}")" "$(json_number_or_null "${6:-}")" \
+    "$(json_string_or_null "${5:-}")" \
     >> "$RESULTS_FILE"
 }
 
@@ -273,19 +271,34 @@ if [[ -f "$FLOW" ]]; then
   echo "🧪 Running single test file: $FLOW"
   TEST_FILES=("$FLOW")
 else
-  ALL_TESTS=($(find "$FLOW" -name '*.yaml' | sort))
-  for i in "${!ALL_TESTS[@]}"; do
-    if (( i % SHARD_TOTAL == SHARD_INDEX )); then
-      TEST_FILES+=("${ALL_TESTS[$i]}")
-    fi
-  done
+  if [[ ! -d "$FLOW" ]]; then
+    echo "Flow path does not exist: $FLOW" >&2
+    exit 2
+  fi
+
+  if [[ $SHARD_TOTAL -gt 1 ]]; then
+    SHARD_PLATFORM="${PLATFORM:-local}"
+    HISTORY_FILE="${E2E_TIMINGS_FILE:-.cache/e2e-timings/$SHARD_PLATFORM.tsv}"
+    SELECTION_FILE="$ARTIFACTS_FOLDER/sharding/selection.txt"
+    PLAN_FILE="$ARTIFACTS_FOLDER/sharding/plan.tsv"
+    node tools/e2e-sharding/index.ts plan "$SHARD_PLATFORM" "$SHARD_TOTAL" "$SHARD_LABEL" "$FLOW" "$HISTORY_FILE" "$SELECTION_FILE" "$PLAN_FILE"
+    while IFS= read -r test_file; do
+      if [ -n "$test_file" ]; then
+        TEST_FILES+=("$test_file")
+      fi
+    done < "$SELECTION_FILE"
+  else
+    while IFS= read -r test_file; do
+      TEST_FILES+=("$test_file")
+    done < <(find "$FLOW" -name '*.yaml' -type f | sort)
+  fi
 
   if [[ $SHARD_TOTAL -gt 1 ]]; then
     if [[ ${#TEST_FILES[@]} -eq 0 ]]; then
       echo "⚠️ No tests selected for shard $SHARD_LABEL out of $SHARD_TOTAL"
       exit 0
     fi
-    echo "🧪 Running shard $((SHARD_INDEX + 1))/$SHARD_TOTAL:"
+    echo "🧪 Running shard $SHARD_LABEL/$SHARD_TOTAL:"
     printf ' - %s\n' "${TEST_FILES[@]}"
   fi
 fi
@@ -302,6 +315,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
   SUCCESS=false
   SHOULD_RECORD=false
   RESULT_DIR=""
+  PASSED_ATTEMPT_DURATION=""
   TEST_START_TIME=$(date +%s)
   for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
@@ -335,6 +349,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       END_TIME=$(date +%s)
       DURATION=$((END_TIME - START_TIME))
       SUCCESS=true
+      PASSED_ATTEMPT_DURATION=$DURATION
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
       echo
 
@@ -382,7 +397,7 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
     EXIT_CODE=1
   fi
 
-  record "$TEST_ID" "$STATUS" "$ATTEMPT" "$TEST_DURATION" "$RESULT_DIR"
+  record "$TEST_ID" "$STATUS" "$ATTEMPT" "$TEST_DURATION" "$RESULT_DIR" "$PASSED_ATTEMPT_DURATION"
 done
 
 exit $EXIT_CODE

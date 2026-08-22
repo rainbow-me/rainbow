@@ -122,6 +122,20 @@ jobs:
           mv rainbow-env/dotenv .env
           rm -rf rainbow-env
 
+      - name: Setup Node
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+
+      - name: Restore E2E timing history
+        continue-on-error: true
+        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: .cache/e2e-timings/android.tsv
+          key: e2e-timings-v1-android-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-v1-android-
+
       - name: Install Maestro and Anvil
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
         with:
@@ -199,6 +213,15 @@ jobs:
         with:
           node-version-file: '.node-version'
 
+      - name: Restore E2E timing history
+        continue-on-error: true
+        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: .cache/e2e-timings/android.tsv
+          key: e2e-timings-v1-android-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            e2e-timings-v1-android-
+
       - name: Download shard results
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
@@ -208,6 +231,19 @@ jobs:
 
       - name: Render summary
         run: node tools/e2e-summary/index.ts e2e-results "$SHARD_TOTAL"
+
+      - name: Update E2E timing history
+        id: update-e2e-timings
+        continue-on-error: true
+        run: node tools/e2e-sharding/index.ts update android e2e-results .cache/e2e-timings/android.tsv
+
+      - name: Save E2E timing history
+        if: steps.update-e2e-timings.outcome == 'success'
+        continue-on-error: true
+        uses: actions/cache/save@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: .cache/e2e-timings/android.tsv
+          key: e2e-timings-v1-android-${{ github.run_id }}-${{ github.run_attempt }}
 
   perf-tests:
     name: Perf Tests
