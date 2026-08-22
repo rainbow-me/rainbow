@@ -102,7 +102,7 @@
     "lint:deps": "tsx tools/deps-check/index.ts",
     "lint:deps:baseline:update": "tsx tools/deps-check/index.ts --update-baseline",
     "lint:js": "eslint --cache . --quiet",
-    "lint:js:ci": "eslint . --quiet",
+    "lint:js:ci": "eslint --cache --cache-strategy content --cache-location .cache/eslint/ci.eslintcache . --quiet",
     "lint:js-types": "./scripts/check-js-types.sh",
     "lint:ts": "yarn tsc --noEmit",
     "nuke": "./scripts/nuke.sh",

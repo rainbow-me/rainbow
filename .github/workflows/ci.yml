@@ -63,8 +63,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-prettier-${{ hashFiles('yarn.lock', 'package.json', '.node-version', '.prettierrc.js', '.prettierignore') }}-
 
-      - name: Remove ESLint cache
-        run: rm -f .eslintcache
+      - name: Cache ESLint results
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: .cache/eslint
+          key: ${{ runner.os }}-${{ runner.arch }}-eslint-${{ hashFiles('yarn.lock', 'package.json', '.node-version', '.eslintrc.js', '.eslintignore', 'globalVariables.js', 'babel.config.js', 'tsconfig.json', 'src/browser/tsconfig.json', 'src/graphql/.eslintrc.js') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-eslint-${{ hashFiles('yarn.lock', 'package.json', '.node-version', '.eslintrc.js', '.eslintignore', 'globalVariables.js', 'babel.config.js', 'tsconfig.json', 'src/browser/tsconfig.json', 'src/graphql/.eslintrc.js') }}-
 
       - name: Lint
         run: yarn lint:ci
