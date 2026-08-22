@@ -65,7 +65,7 @@ tags:
     id: review-panel
 - runFlow:
     when:
-      platform: ios
+      platform: iOS
     commands:
       - assertVisible:
           id: review-panel-min-received-or-max-sold-label

@@ -6,10 +6,10 @@ appId: ${APP_ID}
       platform: Android
     commands:
       - tapOn:
-          text: '1'
+          id: numpad-button-1
           repeat: 4
           delay: 1000
       - tapOn:
-          text: '1'
+          id: numpad-button-1
           repeat: 4
           delay: 1000

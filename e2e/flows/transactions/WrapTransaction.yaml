@@ -43,7 +43,7 @@ tags:
 
 - runFlow:
     when:
-      platform: ios
+      platform: iOS
     commands:
       # Test flip button
       - assertVisible: '1 ETH 􀄭 1 WETH'
@@ -105,13 +105,26 @@ tags:
             id: balance-coin-row-Wrapped Ether
           timeout: 30000
 # Unwrap Weth
-- tapOn: '.*Ethereum.*'
+- tapOn:
+    id: balance-coin-row-Ethereum
+- extendedWaitUntil:
+    visible:
+      id: swap-action-button
+    timeout: 30000
 - tapOn:
     id: swap-action-button
+- extendedWaitUntil:
+    visible:
+      id: token-to-buy-wrapped-ether-1
+    timeout: 30000
 - tapOn:
     id: token-to-buy-wrapped-ether-1
 - tapOn:
     id: flip-button
+- extendedWaitUntil:
+    visible:
+      id: swap-bottom-action-button
+    timeout: 30000
 - longPressOn:
     id: swap-bottom-action-button
 - runFlow: ../../utils/MaybeInputPin.yaml

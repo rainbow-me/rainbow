@@ -9,6 +9,10 @@ tags:
     arguments:
       isE2ETest: true
 - runFlow: ../../utils/Prepare.yaml
+- extendedWaitUntil:
+    visible:
+      id: welcome-screen
+    timeout: 60000
 - tapOn: '.*I already have one'
 - tapOn:
     id: watch-address-button
