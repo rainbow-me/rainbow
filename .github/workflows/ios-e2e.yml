@@ -25,7 +25,7 @@ jobs:
       contents: read
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     timeout-minutes: 45
     outputs:
       artifact-id: ${{ steps.build.outputs.artifact-id }}
@@ -61,7 +61,7 @@ jobs:
         shard-index: [1, 2, 3, 4]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     timeout-minutes: 30
     env:
       SHARD_INDEX: ${{ matrix.shard-index }}
@@ -91,14 +91,24 @@ jobs:
           install_args: maestro foundry
 
       - name: Download and Unpack IPA artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
-          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name '*.tar.gz' -type f -print -quit)
+          if [ -z "$APP_ARCHIVE_PATH" ]; then
+            echo 'Downloaded artifact contains no app archive' >&2
+            exit 1
+          fi
           tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
-          APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
-          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
+          APP_PATH=$(find downloaded-artifacts -name '*.app' -type d -print -quit)
+          if [ -z "$APP_PATH" ]; then
+            echo 'Downloaded archive contains no app bundle' >&2
+            exit 1
+          fi
+          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> "$GITHUB_ENV"
 
       - uses: futureware-tech/simulator-action@e89aa8f93d3aec35083ff49d2854d07f7186f7f5 # v5
         id: simulator

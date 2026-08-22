@@ -26,7 +26,7 @@ jobs:
       contents: read
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     outputs:
       artifact-id: ${{ steps.rock-remote-build-android.outputs.artifact-id }}
 
@@ -92,7 +92,7 @@ jobs:
       actions: read
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
-      cancel-in-progress: false
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
     env:
       SHARD_INDEX: ${{ matrix.shard-index }}
@@ -128,12 +128,18 @@ jobs:
           install_args: maestro foundry
 
       - name: Download and Unpack APK artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
-          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
-          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+          APK_PATH=$(find downloaded-artifacts -name '*.apk' -type f -print -quit)
+          if [ -z "$APK_PATH" ]; then
+            echo 'Downloaded artifact contains no APK' >&2
+            exit 1
+          fi
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> "$GITHUB_ENV"
         shell: bash
 
       - name: Setup Android Emulator
@@ -227,12 +233,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Download and Unpack APK artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          ./scripts/download-github-artifact.sh "${{ needs.build.outputs.artifact-id }}" artifact.zip
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
-          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
-          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+          APK_PATH=$(find downloaded-artifacts -name '*.apk' -type f -print -quit)
+          if [ -z "$APK_PATH" ]; then
+            echo 'Downloaded artifact contains no APK' >&2
+            exit 1
+          fi
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> "$GITHUB_ENV"
         shell: bash
 
       - name: Run tests
