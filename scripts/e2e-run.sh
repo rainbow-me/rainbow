@@ -14,6 +14,8 @@ SHARD_INDEX=0
 SHARD_LABEL=1
 TEST_FILES=()
 ANVIL_PID=""
+ANVIL_START_COUNT=0
+TEST_WALLET_ADDRESS=""
 PLATFORM=""
 RECORD_ON_FAILURE=false
 MAX_ATTEMPTS=1
@@ -62,6 +64,97 @@ start_recording() {
   fi
 }
 
+stop_anvil() {
+  if [ -n "${ANVIL_PID:-}" ]; then
+    echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
+    kill "$ANVIL_PID" 2>/dev/null || true
+    wait "$ANVIL_PID" 2>/dev/null || true
+    ANVIL_PID=""
+  fi
+}
+
+test_needs_anvil() {
+  [[ "$1" == *'/transactions/'* ]]
+}
+
+wait_for_anvil() {
+  local max_attempts="${ANVIL_READY_ATTEMPTS:-60}"
+  if ! [[ "$max_attempts" =~ ^[1-9][0-9]*$ ]]; then
+    echo "ANVIL_READY_ATTEMPTS must be a positive integer" >&2
+    exit 2
+  fi
+
+  for attempt in $(seq 1 "$max_attempts"); do
+    if cast block-number --rpc-url "$ANVIL_RPC" >/dev/null 2>&1; then
+      echo "✅ Anvil ready at $ANVIL_RPC"
+      return
+    fi
+
+    echo "⏳ Waiting for Anvil ($attempt/$max_attempts)..."
+    sleep 1
+  done
+
+  echo "❌ Anvil did not become ready. See $ARTIFACTS_FOLDER/anvil/mainnet.log" >&2
+  tail -n 100 "$ARTIFACTS_FOLDER/anvil/mainnet.log" >&2 || true
+  exit 1
+}
+
+start_anvil() {
+  echo "🔌 Starting Anvil..."
+
+  while IFS= read -r existing_pid; do
+    if [ -n "$existing_pid" ]; then
+      kill "$existing_pid" 2>/dev/null || true
+    fi
+  done < <(lsof -t -i:8545 -c anvil 2>/dev/null || true)
+  sleep 1
+
+  mkdir -p "$ARTIFACTS_FOLDER/anvil"
+  ANVIL_START_COUNT=$((ANVIL_START_COUNT + 1))
+  printf '\n===== Anvil start %s at %s =====\n' "$ANVIL_START_COUNT" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$ARTIFACTS_FOLDER/anvil/mainnet.log"
+  ./scripts/anvil.sh --host 0.0.0.0 >> "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
+  ANVIL_PID=$!
+  wait_for_anvil
+}
+
+reset_anvil() {
+  for attempt in 1 2 3; do
+    if ./scripts/anvil.sh reset "$ANVIL_RPC" >/dev/null 2>&1; then
+      echo "✅ Anvil reset to the configured fork block"
+      wait_for_anvil
+      return
+    fi
+
+    echo "⏳ Resetting Anvil ($attempt/3)..."
+    sleep 0.2
+  done
+
+  return 1
+}
+
+fund_test_wallet() {
+  # Derive the address from the imported key so a key change cannot silently fund
+  # a different account and fail later as an insufficient-balance transaction.
+  if [ -z "$TEST_WALLET_ADDRESS" ]; then
+    TEST_WALLET_ADDRESS=$(cast wallet address --private-key "$DEV_PKEY")
+  fi
+
+  cast rpc anvil_setBalance "$TEST_WALLET_ADDRESS" "$TEST_WALLET_BALANCE_WEI" --rpc-url "$ANVIL_RPC" > /dev/null
+  echo "💰 Funded $TEST_WALLET_ADDRESS with $(cast to-unit "$TEST_WALLET_BALANCE_WEI" ether) ETH"
+}
+
+prepare_anvil_for_attempt() {
+  if [ -z "$ANVIL_PID" ]; then
+    start_anvil
+  elif ! reset_anvil; then
+    echo "⚠️ Anvil reset failed. Restarting Anvil..."
+    stop_anvil
+    start_anvil
+  fi
+
+  fund_test_wallet
+}
+
 # Trap cleanup.
 cleanup() {
   # Stop any ongoing recording without parameters (for emergency cleanup)
@@ -74,10 +167,7 @@ cleanup() {
     fi
     RECORDING_PID=""
   fi
-  if [ -n "${ANVIL_PID:-}" ]; then
-    echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
-    kill "$ANVIL_PID" 2>/dev/null || true
-  fi
+  stop_anvil
 }
 
 handle_interrupt() {
@@ -100,8 +190,6 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --shard-index)
-      # Ensure SHARD_INDEX is zero-based.
-      SHARD_INDEX=$(( $2 - 1 ))
       SHARD_LABEL="$2"
       shift
       ;;
@@ -122,6 +210,16 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+if ! [[ "$SHARD_TOTAL" =~ ^[1-9][0-9]*$ && "$SHARD_LABEL" =~ ^[1-9][0-9]*$ ]] || ((SHARD_LABEL > SHARD_TOTAL)); then
+  echo "Shard index must be between 1 and shard total" >&2
+  exit 2
+fi
+if ! [[ "$MAX_ATTEMPTS" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Retries must be a positive integer" >&2
+  exit 2
+fi
+SHARD_INDEX=$((SHARD_LABEL - 1))
 
 RESULTS_FILE="$RESULTS_FOLDER/shard-$SHARD_LABEL.jsonl"
 
@@ -194,49 +292,6 @@ fi
 
 record_planned
 
-# Start Anvil only if any test path includes "transaction".
-NEEDS_ANVIL=false
-for FILE in "${TEST_FILES[@]}"; do
-  if [[ "$FILE" == *"/transactions/"* ]]; then
-    NEEDS_ANVIL=true
-    break
-  fi
-done
-
-if $NEEDS_ANVIL; then
-  echo "🔌 Transaction test detected. Starting Anvil..."
-
-  ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null || true)
-  if [ -n "$ANVIL_PID" ]; then kill "$ANVIL_PID" 2>/dev/null || true; fi
-  sleep 1
-
-  mkdir -p "$ARTIFACTS_FOLDER/anvil"
-  ./scripts/anvil.sh --host 0.0.0.0 > "$ARTIFACTS_FOLDER/anvil/mainnet.log" 2>&1 &
-  ANVIL_PID=$!
-
-  # Wait for the chain to answer rather than assuming it is up, since funding below
-  # depends on it. A fork can take a while to hydrate on a cold RPC cache.
-  ANVIL_READY=false
-  for _ in $(seq 1 60); do
-    if cast block-number --rpc-url "$ANVIL_RPC" > /dev/null 2>&1; then
-      ANVIL_READY=true
-      break
-    fi
-    sleep 1
-  done
-  if ! $ANVIL_READY; then
-    echo "❌ Anvil did not become ready. See $ARTIFACTS_FOLDER/anvil/mainnet.log"
-    exit 1
-  fi
-
-  # Fund the wallet the tests import. Derive the address from the key rather than
-  # hardcoding it, so changing the key cannot fund the wrong account and leave every
-  # transaction test failing on insufficient funds, several steps from the cause.
-  TEST_WALLET_ADDRESS=$(cast wallet address --private-key "$DEV_PKEY")
-  cast rpc anvil_setBalance "$TEST_WALLET_ADDRESS" "$TEST_WALLET_BALANCE_WEI" --rpc-url "$ANVIL_RPC" > /dev/null
-  echo "💰 Funded $TEST_WALLET_ADDRESS with $(cast to-unit "$TEST_WALLET_BALANCE_WEI" ether) ETH"
-fi
-
 # Run tests with retries.
 EXIT_CODE=0
 for TEST_FILE in "${TEST_FILES[@]}"; do
@@ -253,6 +308,10 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
     START_TIME=$(date +%s)
     DEBUG_OUTPUT="$ARTIFACTS_FOLDER/maestro/⏱️-$TEST_NAME-$ATTEMPT"
+
+    if test_needs_anvil "$TEST_FILE"; then
+      prepare_anvil_for_attempt
+    fi
 
     # Start recording for attempts after first failure
     if [ "$SHOULD_RECORD" = "true" ]; then
@@ -308,11 +367,14 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
     fi
   done
 
-
-  TEST_DURATION=$(( $(date +%s) - TEST_START_TIME ))
+  TEST_DURATION=$(($(date +%s) - TEST_START_TIME))
 
   if $SUCCESS; then
-    if [[ $ATTEMPT -eq 1 ]]; then STATUS=passed; else STATUS=retried; fi
+    if [[ $ATTEMPT -eq 1 ]]; then
+      STATUS=passed
+    else
+      STATUS=retried
+    fi
   else
     STATUS=failed
     echo "❌ Failed after $MAX_ATTEMPTS attempt(s): $TEST_NAME"
@@ -322,6 +384,5 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
 
   record "$TEST_ID" "$STATUS" "$ATTEMPT" "$TEST_DURATION" "$RESULT_DIR"
 done
-
 
 exit $EXIT_CODE
