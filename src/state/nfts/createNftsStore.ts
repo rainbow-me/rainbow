@@ -25,6 +25,7 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import {
   type Collection,
   type CollectionId,
+  type FetchNftCollectionOptions,
   type NftParams,
   type NftsQueryData,
   type NftsState,
@@ -184,6 +185,28 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
     return EMPTY_RETURN_DATA;
   }
 };
+
+function fetchedNftCount(data: NftsQueryData, collectionId: CollectionId): number {
+  if (collectionId === 'showcase' || collectionId === 'hidden') {
+    let count = 0;
+    for (const collection of data.nftsByCollection.values()) {
+      count += collection.size;
+    }
+    return count;
+  }
+
+  return data.nftsByCollection.get(collectionId)?.size ?? 0;
+}
+
+function hasFetchedExpectedNfts(
+  data: NftsQueryData | null | undefined,
+  collectionId: CollectionId,
+  expectedCount?: number
+): data is NftsQueryData {
+  if (!data?.nftsByCollection.size) return false;
+  if (collectionId !== 'showcase' && collectionId !== 'hidden' && !data.nftsByCollection.has(collectionId)) return false;
+  return expectedCount === undefined || fetchedNftCount(data, collectionId) >= expectedCount;
+}
 
 function createSelector<T>(
   selectorFn: (
@@ -418,8 +441,9 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
-      async fetchNftCollection(collectionId, force = false) {
+      async fetchNftCollection(collectionId, options: FetchNftCollectionOptions = {}) {
         const normalizedCollectionId = collectionId.toLowerCase();
+        const { expectedCount, force = false } = options;
 
         let addressPromises = collectionsPromises.get(address);
         if (!addressPromises) {
@@ -469,7 +493,7 @@ export const createNftsStore = (address: Address | string) =>
             }
           } else {
             const collection = getNftsByCollection(normalizedCollectionId);
-            if (collection && !isEmpty(collection)) {
+            if (collection && (expectedCount === undefined ? !isEmpty(collection) : collection.size >= expectedCount)) {
               return;
             }
           }
@@ -480,11 +504,10 @@ export const createNftsStore = (address: Address | string) =>
             try {
               const data = await fetch(
                 { collectionId: normalizedCollectionId },
-                { force, skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
+                { force: force || expectedCount !== undefined, skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
               );
 
-              // retry clause for if there are no nfts in the collection data
-              if (!data?.nftsByCollection.size) continue;
+              if (!hasFetchedExpectedNfts(data, normalizedCollectionId, expectedCount)) continue;
 
               const now = Date.now();
               set(state => ({

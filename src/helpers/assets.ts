@@ -337,14 +337,15 @@ export const buildBriefUniqueTokenList = (
     }
 
     for (const { id, imageUrl, name, totalCount } of collections.values()) {
-      let adjustedTotalCount = totalCount;
+      const total = Number(totalCount) || 0;
+      let adjustedTotalCount = total;
 
       if (isShowcaseDataMigrated && isHiddenDataMigrated) {
         const specialCount = specialTokensByCollection.get(id.toLowerCase()) || 0;
-        adjustedTotalCount = String(Math.max(0, Number(totalCount) - specialCount));
+        adjustedTotalCount = Math.max(0, total - specialCount);
       }
 
-      if (Number(adjustedTotalCount) === 0) {
+      if (adjustedTotalCount === 0) {
         continue;
       }
 
@@ -356,7 +357,7 @@ export const buildBriefUniqueTokenList = (
         uid: id,
       });
 
-      for (let index = 0; index < Number(adjustedTotalCount); index++) {
+      for (let index = 0; index < adjustedTotalCount; index++) {
         const uniqueId = `${id}_${index}`;
         result.push({ index, type: CellType.NFT, uid: uniqueId, collectionId: id });
       }
