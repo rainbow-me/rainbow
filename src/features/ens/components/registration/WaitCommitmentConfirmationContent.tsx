@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import HourglassAnimation from '@/components/animations/HourglassAnimation';
+import { HourglassAnimation } from '@/components/animations/HourglassAnimation';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
@@ -29,7 +29,9 @@ const WaitCommitmentConfirmationContent = ({
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="12px">
               <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
-                <HourglassAnimation />
+                <Box alignItems="center" width="full">
+                  <HourglassAnimation showBadge size={120} />
+                </Box>
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
                     {i18n.t(i18n.l.profiles.confirm.transaction_pending)}
