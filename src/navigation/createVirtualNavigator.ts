@@ -3,6 +3,7 @@ import React from 'react';
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { UseRouteProvider, type RouteParams, type UseRouteHook } from '@/navigation/Navigation';
+import { type PagerNavigation, type PagerNavigationState } from '@/navigation/pagerNavigation';
 import { type Route } from '@/navigation/routesNames';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 import { shallowEqual } from '@/worklets/comparisons';
@@ -13,7 +14,11 @@ export type VirtualNavigator<VirtualRoute extends Route> = {
   getActiveRoute: () => VirtualRoute;
   getActiveRouteState: () => ActiveRouteState<VirtualRoute>;
   getParams: <R extends VirtualRoute>(route: R) => RouteParams<R> | undefined;
-  goBack: () => void;
+  /**
+   * Returns to the previous route, or starts a new path at the fallback when history is empty.
+   */
+  goBack: <R extends VirtualRoute>(fallbackRoute?: R, fallbackParams?: RouteParams<R>) => void;
+  goForward: () => void;
   isRouteActive: (route: VirtualRoute) => boolean;
   navigate: <R extends VirtualRoute>(route: R, params?: RouteParams<R>) => void;
   resetNavigationState: () => void;
@@ -22,7 +27,8 @@ export type VirtualNavigator<VirtualRoute extends Route> = {
 
 type VirtualNavigationState<VirtualRoute extends Route> = {
   activeRoute: VirtualRoute;
-  history: VirtualRoute[];
+  future: readonly VirtualRoute[];
+  history: readonly VirtualRoute[];
   params: { [R in VirtualRoute]?: RouteParams<R> };
 };
 
@@ -40,23 +46,23 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
   initialRoute: VirtualRoute;
   routes: readonly VirtualRoute[];
   options?: {
+    /** Resolves the route at which each new pager binding enters. */
+    getEntryRoute?: () => VirtualRoute;
     /** When the group changes between two routes, `navigate` clears history instead of appending to it. */
     getRouteGroup?: (route: VirtualRoute) => string;
     keyPrefix?: string;
-    onRouteChange?: (route: VirtualRoute) => void;
   };
 }) {
   const routeKeyPrefix = options?.keyPrefix ?? 'virtual';
-  const initialState: Pick<VirtualNavigationState<VirtualRoute>, 'activeRoute' | 'history' | 'params'> = {
+  const initialState: VirtualNavigationState<VirtualRoute> = {
     activeRoute: initialRoute,
+    future: [],
     history: [],
     params: {},
   };
 
   const useNavigationStore = createBaseStore<VirtualNavigationStore<VirtualRoute>>((set, get) => ({
-    activeRoute: initialState.activeRoute,
-    history: initialState.history,
-    params: initialState.params,
+    ...initialState,
 
     getActiveRoute: () => get().activeRoute,
 
@@ -71,12 +77,41 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
 
     getParams: route => get().params[route],
 
-    goBack: () => {
+    goBack: (...fallback) => {
+      const didSpecifyFallbackParams = fallback.length > 1;
+      const [fallbackRoute, fallbackParams] = fallback;
+
       set(state => {
-        if (!state.history.length) return state;
+        if (state.history.length) {
+          return {
+            activeRoute: state.history[state.history.length - 1],
+            future: [...state.future, state.activeRoute],
+            history: state.history.slice(0, -1),
+          };
+        }
+
+        if (fallbackRoute === undefined) return state;
+
+        const didParamsChange = didSpecifyFallbackParams && !shallowEqual(fallbackParams, state.params[fallbackRoute]);
+        if (state.activeRoute === fallbackRoute && !state.future.length && !didParamsChange) return state;
+
         return {
-          activeRoute: state.history[state.history.length - 1],
-          history: state.history.slice(0, -1),
+          activeRoute: fallbackRoute,
+          future: [],
+          history: [],
+          params: didParamsChange ? { ...state.params, [fallbackRoute]: fallbackParams } : state.params,
+        };
+      });
+      setActiveRoute(get().activeRoute);
+    },
+
+    goForward: () => {
+      set(state => {
+        if (!state.future.length) return state;
+        return {
+          activeRoute: state.future[state.future.length - 1],
+          future: state.future.slice(0, -1),
+          history: [...state.history, state.activeRoute],
         };
       });
       setActiveRoute(get().activeRoute);
@@ -91,15 +126,14 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
       set(state => {
         const didParamsChange = didSpecifyParams && !shallowEqual(params, state.params[route]);
         if (state.activeRoute === route) {
-          if (didParamsChange) {
-            return { params: { ...state.params, [route]: params } };
-          }
+          if (didParamsChange) return { params: { ...state.params, [route]: params } };
           return state;
         }
         const getRouteGroup = options?.getRouteGroup;
         const crossesGroupBoundary = getRouteGroup != null && getRouteGroup(route) !== getRouteGroup(state.activeRoute);
         return {
           activeRoute: route,
+          future: [],
           history: crossesGroupBoundary ? [] : [...state.history, state.activeRoute],
           params: didParamsChange ? { ...state.params, [route]: params } : state.params,
         };
@@ -120,27 +154,6 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
 
   const navigationActions = createStoreActions(useNavigationStore);
 
-  const indexToRoute = routes.reduce<Record<number, VirtualRoute>>((map, route, index) => {
-    map[index] = route;
-    return map;
-  }, {});
-
-  function handlePagerIndexChange(index: number): void {
-    const route = indexToRoute[index];
-    const { activeRoute, history } = useNavigationStore.getState();
-
-    if (route === activeRoute) {
-      options?.onRouteChange?.(route);
-      return;
-    }
-
-    if (history.length && history[history.length - 1] === route) {
-      navigationActions.goBack();
-    } else {
-      navigationActions.navigate(route);
-    }
-  }
-
   function createRouteHook(route: VirtualRoute): UseRouteHook {
     const routeInfo = {
       key: `${routeKeyPrefix}:${String(route)}`,
@@ -149,13 +162,52 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
     return () => routeInfo;
   }
 
-  const RouteProvider = ({ children, name }: { children: React.ReactNode; name: VirtualRoute }) =>
-    React.createElement(UseRouteProvider, { value: createRouteHook(name) }, children);
+  const routeHooks = new Map<VirtualRoute, UseRouteHook | undefined>();
+  routes.forEach(route => routeHooks.set(route, undefined));
+
+  function getRouteHook(route: VirtualRoute): UseRouteHook | undefined {
+    if (!routeHooks.has(route)) return;
+    let hook = routeHooks.get(route);
+    if (!hook) routeHooks.set(route, (hook = createRouteHook(route)));
+    return hook;
+  }
+
+  const RouteProvider = ({ children, name }: { children: React.ReactNode; name: VirtualRoute }) => {
+    const useRoute = getRouteHook(name);
+    if (!useRoute) throw new Error(`Virtual route "${name}" is not registered.`);
+    return React.createElement(UseRouteProvider, { value: useRoute }, children);
+  };
+
+  function selectPagerState({ activeRoute, future, history }: VirtualNavigationState<VirtualRoute>): PagerNavigationState<VirtualRoute> {
+    return {
+      back: history.at(-1),
+      forward: future.at(-1),
+      page: activeRoute,
+    };
+  }
+
+  const pagerNavigation: PagerNavigation<VirtualRoute> = {
+    beginPath: () => {
+      const activeRoute = options?.getEntryRoute?.() ?? useNavigationStore.getState().activeRoute;
+      useNavigationStore.setState(state => {
+        if (state.activeRoute === activeRoute && !state.history.length && !state.future.length) return state;
+        return { activeRoute, future: [], history: [] };
+      });
+      return selectPagerState(useNavigationStore.getState());
+    },
+    getState: () => selectPagerState(useNavigationStore.getState()),
+    goBack: navigationActions.goBack,
+    goForward: navigationActions.goForward,
+    navigate: page => {
+      if (routeHooks.has(page)) navigationActions.navigate(page);
+    },
+    subscribe: listener => useNavigationStore.subscribe(selectPagerState, listener, { equalityFn: shallowEqual }),
+  };
 
   return {
     Navigation: navigationActions,
+    Pager: pagerNavigation,
     Route: RouteProvider,
-    handlePagerIndexChange,
     useNavigationStore,
   };
 }

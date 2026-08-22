@@ -81,7 +81,7 @@ const PerpsSearchScreenFooter = () => {
   return (
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
-        onPress={() => PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN)}
+        onPress={() => PerpsNavigation.goBack(Routes.PERPS_ACCOUNT_SCREEN)}
         backgroundColor={accentColors.opacity12}
         borderColor={accentColors.opacity6}
         textColor={accentColors.opacity100}
@@ -295,7 +295,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
       )}
       <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
         <BackButton
-          onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
+          onPress={() => PerpsNavigation.goBack(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
           backgroundColor={button.backgroundColor}
           borderColor={button.borderColor}
           textColor={button.backTextColor}

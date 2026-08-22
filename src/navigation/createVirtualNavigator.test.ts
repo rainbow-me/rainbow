@@ -1,5 +1,5 @@
 import Routes from '@/navigation/routesNames';
-import { type CashDepositSetupRoute } from '@/navigation/types';
+import { type CashDepositSetupRoute, type PerpsRoute } from '@/navigation/types';
 
 import { createVirtualNavigator } from './createVirtualNavigator';
 
@@ -30,6 +30,13 @@ function createNavigator(withGroups: boolean) {
     initialRoute: ROUTES[0],
     routes: ROUTES,
     options: withGroups ? { getRouteGroup: route => GROUPS[route] } : undefined,
+  });
+}
+
+function createPerpsNavigator() {
+  return createVirtualNavigator<PerpsRoute>({
+    initialRoute: Routes.PERPS_ACCOUNT_SCREEN,
+    routes: [Routes.PERPS_ACCOUNT_SCREEN, Routes.PERPS_SEARCH_SCREEN, Routes.PERPS_NEW_POSITION_SCREEN],
   });
 }
 
@@ -77,5 +84,38 @@ describe('createVirtualNavigator getRouteGroup', () => {
     Navigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
     Navigation.navigate(Routes.CASH_SETUP_IDENTITY);
     expect(useNavigationStore.getState().history).toEqual([Routes.CASH_SETUP_PHONE, Routes.CASH_SETUP_CONFIRM_PHONE]);
+  });
+});
+
+describe('createVirtualNavigator goBack', () => {
+  it('uses history before a direct-entry fallback', () => {
+    const { Navigation, useNavigationStore } = createPerpsNavigator();
+    Navigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+    Navigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
+
+    Navigation.goBack(Routes.PERPS_ACCOUNT_SCREEN);
+
+    expect(useNavigationStore.getState()).toMatchObject({
+      activeRoute: Routes.PERPS_SEARCH_SCREEN,
+      future: [Routes.PERPS_NEW_POSITION_SCREEN],
+      history: [Routes.PERPS_ACCOUNT_SCREEN],
+    });
+  });
+
+  it('starts a fallback path when direct entry has no history', () => {
+    const { Navigation, Pager, useNavigationStore } = createPerpsNavigator();
+    Navigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
+    Pager.beginPath?.();
+
+    Navigation.goBack(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+
+    expect(useNavigationStore.getState()).toMatchObject({
+      activeRoute: Routes.PERPS_SEARCH_SCREEN,
+      future: [],
+      history: [],
+      params: {
+        [Routes.PERPS_SEARCH_SCREEN]: { type: 'newPosition' },
+      },
+    });
   });
 });

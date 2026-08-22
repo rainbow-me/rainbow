@@ -1,7 +1,6 @@
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type RootStackParamList } from '@/navigation/types';
 import { device } from '@/storage';
 
 export const HAS_SEEN_PERPS_EXPLAIN_KEY = 'hasSeenPerpsExplainSheet';
@@ -20,11 +19,11 @@ export function maybeNavigateToPerpsExplainSheet(navigationAction: () => void): 
   });
 }
 
-export function navigateToPerps(params?: RootStackParamList[typeof Routes.PERPS_NAVIGATOR]) {
-  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_NAVIGATOR, params));
+export function navigateToPerps() {
+  maybeNavigateToPerpsExplainSheet(() => Navigation.handleAction(Routes.PERPS_NAVIGATOR));
 }
 
 export function navigateToPerpsSearch() {
   PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'search' });
-  navigateToPerps({ initialPerpsPage: Routes.PERPS_SEARCH_SCREEN });
+  navigateToPerps();
 }
