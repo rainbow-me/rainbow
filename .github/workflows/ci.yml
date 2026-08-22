@@ -55,6 +55,14 @@ jobs:
           google-services: 'true'
           is-testing: 'true'
 
+      - name: Cache Prettier results
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        with:
+          path: .cache/prettier
+          key: ${{ runner.os }}-${{ runner.arch }}-prettier-${{ hashFiles('yarn.lock', 'package.json', '.node-version', '.prettierrc.js', '.prettierignore') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-prettier-${{ hashFiles('yarn.lock', 'package.json', '.node-version', '.prettierrc.js', '.prettierignore') }}-
+
       - name: Remove ESLint cache
         run: rm -f .eslintcache
 

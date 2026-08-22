@@ -91,6 +91,7 @@ rainbow-scripts
 patches/react-native-webview*
 
 .eslintcache
+.cache/
 
 
 # Ts-coverage
