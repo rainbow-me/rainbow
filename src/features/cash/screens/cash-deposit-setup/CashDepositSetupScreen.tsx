@@ -96,7 +96,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
               enableSwipeToGoForward={false}
               lazy
               navigation={CashDepositSetupNavigator.Pager}
-              onPageActivated={setup.focusInput}
+              onPageActivated={setup.handlePageActivated}
               scaleTo={1}
               springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
             >

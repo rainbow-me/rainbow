@@ -1,7 +1,14 @@
 import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -10,6 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator';
+import { useSetupContext } from '../setupContext';
 import { SETUP_STEP_ORDER } from '../steps';
 
 const INDICATOR_HEIGHT = 8;
@@ -19,13 +27,24 @@ const FIRST_PROGRESS_STEP_INDEX = SETUP_STEP_ORDER.indexOf(Routes.CASH_SETUP_IDE
 const FINAL_PROGRESS_STEP_INDEX = SETUP_STEP_ORDER.indexOf(Routes.CASH_SETUP_ALL_DONE);
 const PROGRESS_STEP_COUNT = FINAL_PROGRESS_STEP_INDEX - FIRST_PROGRESS_STEP_INDEX + 1;
 
+function getSetupProgress(activeRoute: (typeof SETUP_STEP_ORDER)[number]): number {
+  'worklet';
+  const activeStepIndex = SETUP_STEP_ORDER.indexOf(activeRoute);
+  if (activeStepIndex < FIRST_PROGRESS_STEP_INDEX || activeStepIndex > FINAL_PROGRESS_STEP_INDEX) return 0;
+  return (activeStepIndex - FIRST_PROGRESS_STEP_INDEX + 1) / PROGRESS_STEP_COUNT;
+}
+
 export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
+  const { handleProgressSettled } = useSetupContext();
   const blue = useForegroundColor('blue');
   const green = useForegroundColor('green');
+
+  const activeRoute = useStoreSharedValue(useCashDepositSetupNavigationStore, s => s.activeRoute);
+  const animatedProgress = useSharedValue(0);
+  const exitProgress = useSharedValue(0);
   const fillColor = useSharedValue(blue);
 
-  const exitProgress = useSharedValue(0);
-  const progress = useStoreSharedValue(useCashDepositSetupNavigationStore, s => getSetupProgress(s.activeRoute));
+  const progress = useDerivedValue(() => getSetupProgress(activeRoute.value));
   const showProgressBar = useDerivedValue(() => progress.value > 0 && exitProgress.value < 1);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -41,9 +60,25 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
     return {
       backgroundColor,
       shadowColor: backgroundColor,
-      width: withTiming(progress.value * INDICATOR_WIDTH, TIMING_CONFIGS.slowestFadeConfig),
+      width: animatedProgress.value * INDICATOR_WIDTH,
     };
   });
+
+  useAnimatedReaction(
+    () => activeRoute.value,
+    route => {
+      const destination = getSetupProgress(route);
+      if (animatedProgress.value === destination) {
+        runOnJS(handleProgressSettled)(route);
+        return;
+      }
+
+      animatedProgress.value = withTiming(destination, TIMING_CONFIGS.slowestFadeConfig, isFinished => {
+        if (isFinished && activeRoute.value === route) runOnJS(handleProgressSettled)(route);
+      });
+    },
+    [handleProgressSettled]
+  );
 
   useAnimatedReaction(
     () => blue,
@@ -85,12 +120,6 @@ export const SetupProgressIndicator = memo(function SetupProgressIndicator() {
     </Box>
   );
 });
-
-function getSetupProgress(activeRoute: (typeof SETUP_STEP_ORDER)[number]): number {
-  const activeStepIndex = SETUP_STEP_ORDER.indexOf(activeRoute);
-  if (activeStepIndex < FIRST_PROGRESS_STEP_INDEX || activeStepIndex > FINAL_PROGRESS_STEP_INDEX) return 0;
-  return (activeStepIndex - FIRST_PROGRESS_STEP_INDEX + 1) / PROGRESS_STEP_COUNT;
-}
 
 const styles = StyleSheet.create({
   container: {

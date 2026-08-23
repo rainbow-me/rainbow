@@ -26,13 +26,9 @@ type SetupContextValue = ReturnType<typeof createSetupContext>;
 
 const SetupContext = createContext<SetupContextValue | null>(null);
 
-function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean {
-  // Native entry and sheet dismissal expose the screen route; virtual navigation exposes its active step.
-  return isRouteActive(Routes.CASH_DEPOSIT_SETUP_SCREEN) || isRouteActive(useCashDepositSetupNavigationStore.getState().activeRoute);
-}
-
 export function createSetupContext() {
   const inputs = new Map<CashDepositSetupRoute, TextInput>();
+  let deferredInputRoute: CashDepositSetupRoute | undefined;
   let suspendedInput: ReturnType<typeof TextInput.State.currentlyFocusedInput> | null = null;
 
   const cardFormStore = createBaseStore<{ isReady: boolean; isVisa: boolean }>(() => ({ isReady: false, isVisa: false }));
@@ -50,19 +46,37 @@ export function createSetupContext() {
     });
   }
 
-  function focusInput(route: CashDepositSetupRoute): void {
+  function handlePageActivated(route: CashDepositSetupRoute): void {
     if (!selectIsSetupScreenActive(useNavigationStore.getState())) return;
+
+    deferredInputRoute = undefined;
     const input = inputs.get(route);
-    if (input) {
+
+    if (!input) {
+      Keyboard.dismiss();
+    } else if (Keyboard.isVisible() || TextInput.State.currentlyFocusedInput()) {
+      // Transfer focus before an already presented keyboard can begin dismissing.
       if (!input.isFocused()) input.focus();
     } else {
-      Keyboard.dismiss();
+      deferredInputRoute = route;
     }
   }
 
+  function handleProgressSettled(route: CashDepositSetupRoute) {
+    if (deferredInputRoute !== route || useCashDepositSetupNavigationStore.getState().activeRoute !== route) {
+      return;
+    }
+
+    deferredInputRoute = undefined;
+    const input = inputs.get(route);
+
+    if (input && !input.isFocused()) input.focus();
+  }
+
   return {
-    focusInput,
     getCardForm,
+    handlePageActivated,
+    handleProgressSettled,
     registerInput: (route: CashDepositSetupRoute, input: TextInput | null): void => {
       if (input) inputs.set(route, input);
       else inputs.delete(route);
@@ -105,4 +119,12 @@ export function useSetupInputRef(): RefCallback<TextInput> {
   const { registerInput } = useSetupContext();
   const { name: route } = useRoute<CashDepositSetupRoute>();
   return useCallback(input => registerInput(route, input), [registerInput, route]);
+}
+
+/**
+ * Native entry and sheet dismissal expose the screen route;
+ * virtual navigation exposes its active step.
+ */
+function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean {
+  return isRouteActive(Routes.CASH_DEPOSIT_SETUP_SCREEN) || isRouteActive(useCashDepositSetupNavigationStore.getState().activeRoute);
 }
