@@ -66,11 +66,15 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   kycOutcome: null,
   resending: null,
 
-  setCode: code => set(({ state }) => ({ code, state: state === 'error' ? 'entry' : state })),
+  setCode: code => {
+    const { state } = get();
+    if (state === 'verifying' || state === 'verified') return;
+    set({ code, state: state === 'error' ? 'entry' : state });
+  },
 
   submit: async () => {
-    const { code, state } = get();
-    if (code.length !== OTP_LENGTH || state === 'verifying' || state === 'verified') return 'failed';
+    const { code, resending, state } = get();
+    if (code.length !== OTP_LENGTH || resending !== null || state === 'verifying' || state === 'verified') return 'failed';
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
     if (session.status !== 'phoneSubmitted') return 'failed';
@@ -122,7 +126,8 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   },
 
   resend: async () => {
-    if (get().resending !== null) return;
+    const { resending, state } = get();
+    if (resending !== null || state === 'verifying' || state === 'verified') return;
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
     if (session.status !== 'phoneSubmitted' || Date.now() < session.resendAfter) return;
@@ -148,8 +153,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
     }
   },
 
-  // Narrower than reset() on purpose: the step stays mounted behind the pager, so
-  // restoring 'entry' would re-enable its OTP input and flash the keyboard.
+  // Dismiss the outcome without undoing the session's completed phone verification.
   clearKycOutcome: () => set({ kycOutcome: null }),
 
   reset: () => set({ code: '', kycOutcome: null, resending: null, state: 'entry' }),

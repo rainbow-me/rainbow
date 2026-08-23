@@ -8,6 +8,7 @@ import * as i18n from '@/languages';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../../utils/phoneNumber';
 import { SetupStepLayout } from '../components/SetupStepLayout';
+import { useSetupInputRef } from '../setupContext';
 import { useSubmitPhoneFlow } from './useSubmitPhoneFlow';
 
 const l = i18n.l.cash.deposit_setup.phone;
@@ -16,6 +17,7 @@ export const PhoneStep = memo(function PhoneStep() {
   const { state, digits, setDigits, submit } = useSubmitPhoneFlow();
   const alreadyRegistered = useCashSetupSessionStore(s => s.session.status === 'phoneAlreadyRegistered');
   const submitting = state === 'submitting';
+  const inputRef = useSetupInputRef();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const inputTextStyle = useSetupInputTextStyle();
@@ -36,12 +38,11 @@ export const PhoneStep = memo(function PhoneStep() {
             </Text>
           </Box>
           <TextInput
-            autoFocus
-            editable={!submitting}
             keyboardType="phone-pad"
             onChangeText={setDigits}
             placeholder={i18n.t(l.placeholder)}
             placeholderTextColor={labelQuaternary}
+            ref={inputRef}
             style={[inputTextStyle, styles.input]}
             testID="cash-setup-phone-input"
             textContentType="telephoneNumber"

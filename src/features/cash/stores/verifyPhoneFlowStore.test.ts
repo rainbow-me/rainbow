@@ -239,6 +239,26 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(flow().state).toBe('entry');
   });
 
+  it('ignores a submit while a resend is pending', async () => {
+    let resolveResend!: (value: { resendAfter: number }) => void;
+    mockResendPhoneCode.mockReturnValue(
+      new Promise(resolve => {
+        resolveResend = resolve;
+      })
+    );
+
+    const resend = flow().resend();
+    flow().setCode(CODE);
+
+    const result = await flow().submit();
+    resolveResend({ resendAfter: RESEND_AFTER });
+    await resend;
+
+    expect(result).toBe('failed');
+    expect(mockVerifyPhone).not.toHaveBeenCalled();
+    expect(flow().state).toBe('entry');
+  });
+
   it('discards a verification that resolves after the session was replaced', async () => {
     let resolveVerify!: (value: typeof TOKEN) => void;
     mockVerifyPhone.mockReturnValue(

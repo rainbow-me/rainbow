@@ -1,12 +1,10 @@
-import React, { memo, useEffect } from 'react';
-import { Keyboard, StyleSheet } from 'react-native';
+import React, { memo } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { Box, Text } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
 
-import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useAddPasskeyFlow } from './useAddPasskeyFlow';
 
@@ -16,12 +14,7 @@ const KEY_ICON = '􀟖';
 
 export const PasskeyStep = memo(function PasskeyStep() {
   const { reset, state, submit } = useAddPasskeyFlow();
-  const isActiveStep = useCashDepositSetupNavigationStore(s => s.activeRoute === Routes.CASH_SETUP_PASSKEY);
   const submitting = state === 'submitting';
-
-  useEffect(() => {
-    if (isActiveStep) Keyboard.dismiss();
-  }, [isActiveStep]);
 
   return (
     <>

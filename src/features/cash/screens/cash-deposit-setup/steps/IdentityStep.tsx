@@ -9,6 +9,7 @@ import * as i18n from '@/languages';
 import { formatDateOfBirth, isValidDateOfBirth, isValidLegalName, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore, type CashSetupDateOfBirth } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
+import { useSetupInputRef } from '../setupContext';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.identity;
@@ -35,6 +36,7 @@ export const IdentityStep = memo(function IdentityStep() {
   const [dateOfBirth, setDateOfBirth] = useState<CashSetupDateOfBirth | null>(storedIdentity?.dateOfBirth ?? null);
   const canContinue = isValidLegalName(firstName) && isValidLegalName(lastName) && dateOfBirth !== null && isValidDateOfBirth(dateOfBirth);
   const inputTextStyle = useSetupInputTextStyle();
+  const firstNameInputRef = useSetupInputRef();
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const { next } = useCashDepositSetupNavigation();
   const handleDateOfBirthChange = useCallback((date: Date) => setDateOfBirth(toDateOfBirth(date)), []);
@@ -64,11 +66,11 @@ export const IdentityStep = memo(function IdentityStep() {
           <TextInput
             autoCapitalize="words"
             autoCorrect={false}
-            autoFocus
             maxLength={100}
             onChangeText={setFirstName}
             placeholder={i18n.t(l.first_name)}
             placeholderTextColor={labelQuaternary}
+            ref={firstNameInputRef}
             style={[inputTextStyle, styles.nameInput]}
             testID="cash-setup-first-name-input"
             textContentType="givenName"

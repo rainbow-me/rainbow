@@ -16,8 +16,7 @@ import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStor
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { SetupCancelSheet } from './components/SetupCancelSheet';
-import { useSetupCancelSheetStore } from './setupCancelSheetStore';
+import { createSetupContext, SetupProvider } from './setupContext';
 import { useIsSetupSubmittingStore } from './setupSubmittingStore';
 import { SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
@@ -47,6 +46,7 @@ const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
 };
 
 export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
+  const setup = useStableValue(createSetupContext);
   const { next, cancel } = useCashDepositSetupNavigation();
 
   useHardwareBackOnFocus(
@@ -74,28 +74,29 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     useSubmitKycFlowStore.getState().reset();
     useAddPasskeyFlowStore.getState().reset();
     useCardLinkFlowStore.getState().reset();
-    useSetupCancelSheetStore.getState().close();
   });
 
   return (
     <Box style={styles.container}>
-      {useStableValue(() => (
-        <SmoothPager
-          enableSwipeToGoBack={false}
-          enableSwipeToGoForward={false}
-          lazy
-          navigation={CashDepositSetupNavigator.Pager}
-          scaleTo={1}
-          springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
-        >
-          {SETUP_STEP_ORDER.map(route => (
-            <SmoothPager.Page id={route} key={route}>
-              <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
-            </SmoothPager.Page>
-          ))}
-        </SmoothPager>
-      ))}
-      <SetupCancelSheet />
+      <SetupProvider value={setup}>
+        {useStableValue(() => (
+          <SmoothPager
+            enableSwipeToGoBack={false}
+            enableSwipeToGoForward={false}
+            lazy
+            navigation={CashDepositSetupNavigator.Pager}
+            onPageActivated={setup.focusInput}
+            scaleTo={1}
+            springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
+          >
+            {SETUP_STEP_ORDER.map(route => (
+              <SmoothPager.Page id={route} key={route}>
+                <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
+              </SmoothPager.Page>
+            ))}
+          </SmoothPager>
+        ))}
+      </SetupProvider>
       <AbsolutePortalRoot />
     </Box>
   );

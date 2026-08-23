@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useRef, type Ref } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
 import { Box, Text, useForegroundColor } from '@/design-system';
@@ -7,37 +7,22 @@ type OtpInputProps = {
   value: string;
   onChange: (code: string) => void;
   length: number;
-  disabled?: boolean;
   error?: boolean;
-  focused?: boolean;
+  inputRef?: Ref<TextInput>;
   testID?: string;
 };
 
-export const OtpInput = memo(function OtpInput({
-  value,
-  onChange,
-  length,
-  disabled = false,
-  error = false,
-  focused = true,
-  testID = 'otp-input',
-}: OtpInputProps) {
+export const OtpInput = memo(function OtpInput({ value, onChange, length, error = false, inputRef, testID = 'otp-input' }: OtpInputProps) {
   const red = useForegroundColor('red');
-  const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    if (disabled || !focused) inputRef.current?.blur();
-    else inputRef.current?.focus();
-  }, [disabled, focused]);
+  const fallbackInputRef = useRef<TextInput>(null);
 
   const onChangeText = useCallback(
     (text: string) => {
-      if (disabled) return;
       const digits = text.replace(/\D/g, '').slice(0, length);
       if (digits === value) return;
       onChange(digits);
     },
-    [disabled, length, onChange, value]
+    [length, onChange, value]
   );
 
   return (
@@ -65,7 +50,7 @@ export const OtpInput = memo(function OtpInput({
         keyboardType="number-pad"
         maxLength={length}
         onChangeText={onChangeText}
-        ref={inputRef}
+        ref={inputRef ?? fallbackInputRef}
         style={styles.hiddenInput}
         testID={testID}
         textContentType="oneTimeCode"
