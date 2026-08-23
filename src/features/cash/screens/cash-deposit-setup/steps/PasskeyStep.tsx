@@ -14,8 +14,7 @@ const l = i18n.l.cash.deposit_setup.passkey;
 const KEY_ICON = '􀟖';
 
 export const PasskeyStep = memo(function PasskeyStep() {
-  const state = useAddPasskeyFlowStore(store => store.state);
-  const reset = useAddPasskeyFlowStore.getState().reset;
+  const hasError = useAddPasskeyFlowStore(s => s.state === 'error');
 
   return (
     <>
@@ -27,11 +26,15 @@ export const PasskeyStep = memo(function PasskeyStep() {
         </Box>
       </SetupStepLayout>
 
-      {state === 'error' && (
+      {hasError && (
         <CashStatusHalfSheet
           description={i18n.t(l.error_description)}
           primaryAction={{ label: i18n.t(l.try_again), onPress: submitPasskey, testID: 'cash-setup-passkey-error-retry' }}
-          secondaryAction={{ label: i18n.t(i18n.l.button.cancel), onPress: reset, testID: 'cash-setup-passkey-error-cancel' }}
+          secondaryAction={{
+            label: i18n.t(i18n.l.button.cancel),
+            onPress: useAddPasskeyFlowStore.getState().reset,
+            testID: 'cash-setup-passkey-error-cancel',
+          }}
           status="error"
           testID="cash-setup-passkey-error"
           title={i18n.t(l.error_title)}

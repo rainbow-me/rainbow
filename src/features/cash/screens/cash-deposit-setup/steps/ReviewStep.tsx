@@ -19,24 +19,6 @@ import { useSubmitKycFlowStore } from './useSubmitKycFlow';
 const l = i18n.l.cash.deposit_setup.review;
 const kycL = i18n.l.cash.deposit_setup.kyc;
 
-function editIdentity() {
-  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);
-}
-
-function editSsn() {
-  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_SSN);
-}
-
-function continueAfterVerification() {
-  useSubmitKycFlowStore.getState().reset();
-  completeSetupStep();
-}
-
-function editIdentityAfterFailure() {
-  useSubmitKycFlowStore.getState().reset();
-  editIdentity();
-}
-
 function ReviewRow({
   disabled,
   label,
@@ -61,7 +43,7 @@ function ReviewRow({
         </Text>
       </Box>
       <ButtonPressAnimation disabled={disabled} onPress={onEdit} scaleTo={0.9} testID={testID}>
-        <Box background="fillTertiary" borderRadius={14} height={{ custom: 28 }} justifyContent="center" paddingHorizontal="12px">
+        <Box background="fillTertiary" borderRadius={14} height={28} justifyContent="center" paddingHorizontal="12px">
           <Text color="label" size="13pt" weight="bold">
             {i18n.t(l.edit)}
           </Text>
@@ -71,45 +53,51 @@ function ReviewRow({
   );
 }
 
+const ReviewDetails = memo(function ReviewDetails({ submitting }: { submitting: boolean }) {
+  const identity = useCashSetupSessionStore(s => s.getIdentity(), shallowEqual);
+  const governmentId = useCashSetupSessionStore(s => s.getGovernmentId(), shallowEqual);
+
+  return (
+    <SetupStepLayout subtitle={i18n.t(l.subtitle)} title={i18n.t(l.title)}>
+      {identity && governmentId ? (
+        <Box paddingTop="24px">
+          <Box background="fillTertiary" borderRadius={20} paddingHorizontal="16px" paddingVertical="4px">
+            <ReviewRow
+              disabled={submitting}
+              label={i18n.t(l.name)}
+              onEdit={editIdentity}
+              testID="cash-setup-review-edit-identity"
+              value={`${identity.firstName} ${identity.lastName}`}
+            />
+            <Separator color="separatorTertiary" />
+            <ReviewRow
+              disabled={submitting}
+              label={i18n.t(l.date_of_birth)}
+              onEdit={editIdentity}
+              testID="cash-setup-review-edit-dob"
+              value={formatDateOfBirth(identity.dateOfBirth)}
+            />
+            <Separator color="separatorTertiary" />
+            <ReviewRow
+              disabled={submitting}
+              label={i18n.t(l.ssn)}
+              onEdit={editSsn}
+              testID="cash-setup-review-edit-ssn"
+              value={formatUsSsnMasked(governmentId.value)}
+            />
+          </Box>
+        </Box>
+      ) : null}
+    </SetupStepLayout>
+  );
+});
+
 export const ReviewStep = memo(function ReviewStep() {
-  const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
-  const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
-  const state = useSubmitKycFlowStore(store => store.state);
-  const submitting = state === 'submitting';
+  const state = useSubmitKycFlowStore(s => s.state);
 
   return (
     <>
-      <SetupStepLayout subtitle={i18n.t(l.subtitle)} title={i18n.t(l.title)}>
-        {identity && governmentId && (
-          <Box paddingTop="24px">
-            <Box background="fillTertiary" borderRadius={20} paddingHorizontal="16px" paddingVertical="4px">
-              <ReviewRow
-                disabled={submitting}
-                label={i18n.t(l.name)}
-                onEdit={editIdentity}
-                testID="cash-setup-review-edit-identity"
-                value={`${identity.firstName} ${identity.lastName}`}
-              />
-              <Separator color="separatorTertiary" />
-              <ReviewRow
-                disabled={submitting}
-                label={i18n.t(l.date_of_birth)}
-                onEdit={editIdentity}
-                testID="cash-setup-review-edit-dob"
-                value={formatDateOfBirth(identity.dateOfBirth)}
-              />
-              <Separator color="separatorTertiary" />
-              <ReviewRow
-                disabled={submitting}
-                label={i18n.t(l.ssn)}
-                onEdit={editSsn}
-                testID="cash-setup-review-edit-ssn"
-                value={formatUsSsnMasked(governmentId.value)}
-              />
-            </Box>
-          </Box>
-        )}
-      </SetupStepLayout>
+      <ReviewDetails submitting={state === 'submitting'} />
 
       {state === 'submitting' ? (
         <CashStatusHalfSheet
@@ -136,3 +124,21 @@ export const ReviewStep = memo(function ReviewStep() {
     </>
   );
 });
+
+function editIdentity(): void {
+  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);
+}
+
+function editSsn(): void {
+  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_SSN);
+}
+
+function continueAfterVerification(): void {
+  useSubmitKycFlowStore.getState().reset();
+  completeSetupStep();
+}
+
+function editIdentityAfterFailure(): void {
+  useSubmitKycFlowStore.getState().reset();
+  editIdentity();
+}
