@@ -2,12 +2,20 @@ export const US_COUNTRY_CALLING_CODE = '1';
 
 export const NATIONAL_NUMBER_LENGTH = 10;
 
-// Pasted or AutoFilled values may carry the +1 country code on top of the 10 national digits.
+/**
+ * Returns up to 10 digits from a US phone number, removing a leading
+ * country code from longer input.
+ */
 export function extractNationalDigits(text: string): string {
+  const trimmedText = text.trimStart();
+  const hasCountryCallingCodePrefix =
+    trimmedText.startsWith(US_COUNTRY_CALLING_CODE) || trimmedText.startsWith(`+${US_COUNTRY_CALLING_CODE}`);
+
   let digits = text.replace(/\D/g, '');
-  if (digits.length > NATIONAL_NUMBER_LENGTH && digits.startsWith(US_COUNTRY_CALLING_CODE)) {
+  if (digits.length > NATIONAL_NUMBER_LENGTH && hasCountryCallingCodePrefix) {
     digits = digits.slice(US_COUNTRY_CALLING_CODE.length);
   }
+
   return digits.slice(0, NATIONAL_NUMBER_LENGTH);
 }
 
