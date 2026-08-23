@@ -3,7 +3,7 @@ import { type ViewProps } from 'react-native';
 
 import Animated, { Easing, FadeIn, FadeOut, type AnimatedProps, type AnimatedStyle } from 'react-native-reanimated';
 
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import { type Route } from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 

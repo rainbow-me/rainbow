@@ -10,7 +10,7 @@ import { HTTPS_PREFIX, isMissingValidProtocolWorklet, isValidWebUrlWorklet } fro
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../../constants/constants';

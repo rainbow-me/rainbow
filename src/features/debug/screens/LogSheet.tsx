@@ -11,6 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { openInBrowser } from '@/utils/openInBrowser';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export interface LogEntry {
@@ -45,7 +46,13 @@ export const LogSheet = () => {
                 </Text>
                 {section.message ? (
                   <>
-                    <MarkdownText color="label" listSpace="12px" paragraphSpace={{ custom: 0 }} size="14px / 19px (Deprecated)">
+                    <MarkdownText
+                      color="label"
+                      handleLinkPress={openInBrowser}
+                      listSpace="12px"
+                      paragraphSpace={{ custom: 0 }}
+                      size="14px / 19px (Deprecated)"
+                    >
                       {`\`\`\`\n${section.message}\n\`\`\``}
                     </MarkdownText>
                     <View style={styles.separatorContainer}>

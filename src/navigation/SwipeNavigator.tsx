@@ -24,7 +24,6 @@ import Animated, {
   type DerivedValue,
   type SharedValue,
 } from 'react-native-reanimated';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -62,7 +61,7 @@ import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
-import { BASE_TAB_BAR_HEIGHT } from '@/navigation/constants';
+import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
 import {
   RecyclerListViewScrollToTopProvider,
   useRecyclerListViewScrollToTopContext,
@@ -78,12 +77,6 @@ import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ProfileScreen from '../screens/ProfileScreen';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { type Route } from './routesNames';
-
-export const TAB_BAR_HEIGHT = getTabBarHeight();
-
-function getTabBarHeight() {
-  return BASE_TAB_BAR_HEIGHT + (initialWindowMetrics?.insets.bottom ?? 0) + 6;
-}
 
 const DOUBLE_PRESS_DELAY = 400;
 const TAB_BAR_BORDER_RADIUS = BASE_TAB_BAR_HEIGHT / 2;

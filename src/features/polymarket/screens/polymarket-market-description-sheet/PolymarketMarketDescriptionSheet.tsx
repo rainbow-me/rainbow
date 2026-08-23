@@ -10,7 +10,7 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, globalColors, MarkdownText, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import type Routes from '@/navigation/routesNames';
 import useUntrustedUrlOpener from '@/navigation/useUntrustedUrlOpener';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';

@@ -3,7 +3,7 @@ import { useMemo, type RefObject } from 'react';
 import { useListen, type Listener, type ListenHandle, type Selector } from '@storesjs/stores';
 
 import { useStableValue } from '@/hooks/useStableValue';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import { type Route } from '@/navigation/routesNames';
 import { type ListenHandleTuple, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';

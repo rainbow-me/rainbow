@@ -1,6 +1,6 @@
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PerpPositionSide, type PerpMarket, type TriggerOrderType } from '@/features/perps/types';

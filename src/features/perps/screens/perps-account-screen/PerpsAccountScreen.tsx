@@ -7,10 +7,10 @@ import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFa
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
 import { FOOTER_HEIGHT, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { usePerpsNavigationStore } from '@/features/perps/navigation/perpsNavigation';
 import { PerpsAccountBalanceCard } from '@/features/perps/screens/perps-account-screen/AccountBalanceCard';
 import { MarketsSection } from '@/features/perps/screens/perps-account-screen/MarketsSection';
 import { OpenPositionsSection } from '@/features/perps/screens/perps-account-screen/OpenPositionsSection';
-import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

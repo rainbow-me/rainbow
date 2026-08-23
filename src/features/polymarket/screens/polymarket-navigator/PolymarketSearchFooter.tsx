@@ -10,7 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { PolymarketNavigation } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { PolymarketNavigation } from '@/features/polymarket/navigation/polymarketNavigation';
 import { polymarketEventSearchActions } from '@/features/polymarket/stores/polymarketEventSearchStore';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';

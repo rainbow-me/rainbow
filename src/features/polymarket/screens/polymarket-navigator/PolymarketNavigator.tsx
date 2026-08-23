@@ -5,6 +5,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box, useColorMode } from '@/design-system';
 import { POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { PolymarketNavigation, PolymarketPager, PolymarketRoute } from '@/features/polymarket/navigation/polymarketNavigation';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
 import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 import { PolymarketProvider, usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
@@ -14,18 +15,8 @@ import { PolymarketSheetHandle } from '@/features/polymarket/screens/polymarket-
 import { PolymarketSearchScreen } from '@/features/polymarket/screens/polymarket-search-screen/PolymarketSearchScreen';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
-import { createVirtualNavigator } from '@/navigation/createVirtualNavigator';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
-import { type PolymarketRoute } from '@/navigation/types';
-
-const Navigator = createVirtualNavigator<PolymarketRoute>({
-  initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
-  routes: [Routes.POLYMARKET_BROWSE_EVENTS_SCREEN, Routes.POLYMARKET_ACCOUNT_SCREEN, Routes.POLYMARKET_SEARCH_SCREEN],
-});
-
-export const PolymarketNavigation = Navigator.Navigation;
-export const usePolymarketNavigationStore = Navigator.useNavigationStore;
 
 export const PolymarketNavigator = memo(function PolymarketNavigator() {
   return (
@@ -71,27 +62,27 @@ const PolymarketNavigatorContent = () => {
           <SmoothPager
             enableSwipeToGoBack
             enableSwipeToGoForward="always"
-            navigation={Navigator.Pager}
+            navigation={PolymarketPager}
             scaleTo={1}
             springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
             waitFor={categorySelectorRef}
           >
             <SmoothPager.Page id={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
-              <Navigator.Route name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
+              <PolymarketRoute name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}>
                 <PolymarketBrowseEventsScreen />
-              </Navigator.Route>
+              </PolymarketRoute>
             </SmoothPager.Page>
 
             <SmoothPager.Page id={Routes.POLYMARKET_ACCOUNT_SCREEN} lazy>
-              <Navigator.Route name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
+              <PolymarketRoute name={Routes.POLYMARKET_ACCOUNT_SCREEN}>
                 <PolymarketAccountScreen />
-              </Navigator.Route>
+              </PolymarketRoute>
             </SmoothPager.Page>
 
             <SmoothPager.Page id={Routes.POLYMARKET_SEARCH_SCREEN} lazy>
-              <Navigator.Route name={Routes.POLYMARKET_SEARCH_SCREEN}>
+              <PolymarketRoute name={Routes.POLYMARKET_SEARCH_SCREEN}>
                 <PolymarketSearchScreen />
-              </Navigator.Route>
+              </PolymarketRoute>
             </SmoothPager.Page>
           </SmoothPager>
         ))}

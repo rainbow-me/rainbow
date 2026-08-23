@@ -8,9 +8,9 @@ import { GradientText } from '@/components/text';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
+import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 const BORDER_RADIUS = 28;
 

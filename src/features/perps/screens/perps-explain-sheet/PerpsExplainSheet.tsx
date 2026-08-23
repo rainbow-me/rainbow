@@ -16,7 +16,7 @@ import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 
 const translations = i18n.l.perps.explain_sheet;
 

@@ -16,7 +16,7 @@ import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/navigation/perpsNavigation';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';

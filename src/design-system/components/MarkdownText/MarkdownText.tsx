@@ -87,9 +87,9 @@ export type MarkdownTextProps = {
   color: TextProps['color'];
   heading1Color?: TextProps['color'];
   heading2Color?: TextProps['color'];
+  handleLinkPress: (url: string) => void;
   paragraphSpace: Space;
   listSpace: Space;
-  handleLinkPress?: (url: string) => void;
   paragraphWeight?: Extract<TextProps['weight'], 'regular' | 'medium'>;
 };
 

@@ -19,8 +19,8 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';

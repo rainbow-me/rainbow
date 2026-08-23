@@ -5,7 +5,7 @@ import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withT
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import usePrevious from '@/hooks/usePrevious';
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';

@@ -3,7 +3,7 @@ import { Keyboard, TextInput } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
 
-import { useRoute } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';

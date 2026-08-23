@@ -2,9 +2,10 @@ import React from 'react';
 
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
-import { UseRouteProvider, type RouteParams, type UseRouteHook } from '@/navigation/Navigation';
 import { type PagerNavigation, type PagerNavigationState } from '@/navigation/pagerNavigation';
+import { UseRouteProvider, type UseRouteHook } from '@/navigation/RouteContext';
 import { type Route } from '@/navigation/routesNames';
+import { type RouteParams } from '@/navigation/types';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 import { shallowEqual } from '@/worklets/comparisons';
 

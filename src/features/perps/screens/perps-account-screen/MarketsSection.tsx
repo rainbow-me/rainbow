@@ -6,7 +6,7 @@ import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortO
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOrderLabels';
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import { useHyperliquidMarketsStore, useSortedHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
 import { opacity } from '@/framework/ui/utils/opacity';

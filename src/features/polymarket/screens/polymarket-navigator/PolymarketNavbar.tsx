@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, Text, TextShadow } from '@/design-system';
-import { usePolymarketNavigationStore } from '@/features/polymarket/screens/polymarket-navigator/PolymarketNavigator';
+import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import * as i18n from '@/languages';
 import { type VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import Routes from '@/navigation/routesNames';
