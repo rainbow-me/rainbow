@@ -58,8 +58,9 @@ export function isHardwareWalletKey(key: string | null): key is HardwareKey {
   return Boolean(deviceId && index && remainder.length === 0 && /^\d+$/.test(index));
 }
 
-async function loadLegacySeedPhrase(): Promise<EthereumWalletSeed | null> {
+async function loadLegacySeedPhrase(): Promise<EthereumWalletSeed | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated | null> {
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
+  if (seedPhrase === kc.ErrorType.UserCanceled || seedPhrase === kc.ErrorType.NotAuthenticated) return seedPhrase;
   return typeof seedPhrase === 'string' ? seedPhrase : null;
 }
 
@@ -282,6 +283,8 @@ export async function migrateWalletSecrets(): Promise<MigratedSecretsResult | nu
   try {
     logger.debug('[wallet]: Migrating wallet secrets', {}, DebugContext.wallet);
     const seedphrase = await loadLegacySeedPhrase();
+
+    if (seedphrase === kc.ErrorType.UserCanceled || seedphrase === kc.ErrorType.NotAuthenticated) return null;
 
     if (!seedphrase) {
       await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);

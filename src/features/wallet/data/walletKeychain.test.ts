@@ -10,6 +10,7 @@ import {
   getPrivateKey,
   isHardwareWalletKey,
   loadAddress,
+  migrateWalletSecrets,
   saveAllWallets,
   saveKeyForWallet,
 } from './walletKeychain';
@@ -32,6 +33,7 @@ jest.mock('@/features/local-auth/keychain', () => ({
 jest.mock('@/features/local-auth/legacyKeychain', () => ({
   loadString: jest.fn(),
   publicAccessControlOptions: { accessible: 'public' },
+  saveString: jest.fn(),
 }));
 
 jest.mock('@/navigation/Navigation', () => ({
@@ -109,6 +111,16 @@ describe('walletKeychain', () => {
 
     await expect(getPrivateKey(ADDRESS)).resolves.toBe(kc.ErrorType.UserCanceled);
   });
+
+  it.each([kc.ErrorType.UserCanceled, kc.ErrorType.NotAuthenticated])(
+    'does not complete legacy migration after keychain error %s',
+    async error => {
+      jest.mocked(legacyKeychain.loadString).mockResolvedValue(error);
+
+      await expect(migrateWalletSecrets()).resolves.toBeNull();
+      expect(legacyKeychain.saveString).not.toHaveBeenCalled();
+    }
+  );
 
   it('rejects a malformed hardware wallet key before writing it', async () => {
     await expect(saveKeyForWallet(ADDRESS, 'not-a-hardware-key', true)).rejects.toThrow('Invalid hardware wallet key');
