@@ -9,10 +9,10 @@ export function isENSAddressFormat(address: string | undefined): boolean {
   return topLevelDomain === 'eth';
 }
 
-export function isUnstoppableAddressFormat(address: string): boolean {
+export function isUnstoppableAddressFormat(address: string | undefined): boolean {
   'worklet';
-  const parts = address.split('.');
-  if (parts.length === 1) return false;
+  const parts = address?.split('.');
+  if (!parts || parts.length === 1) return false;
 
   const topLevelDomain = parts[parts.length - 1]?.toLowerCase();
   return topLevelDomain !== undefined && supportedUnstoppableDomains.includes(topLevelDomain);
