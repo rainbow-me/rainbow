@@ -14,9 +14,10 @@ import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
 const l = i18n.l.cash.deposit_setup.phone;
 
 export const PhoneStep = memo(function PhoneStep() {
-  const state = useSubmitPhoneFlowStore(store => store.state);
-  const digits = useSubmitPhoneFlowStore(store => store.digits);
+  const isError = useSubmitPhoneFlowStore(s => s.state === 'error');
+  const digits = useSubmitPhoneFlowStore(s => s.digits);
   const alreadyRegistered = useCashSetupSessionStore(s => s.session.status === 'phoneAlreadyRegistered');
+
   const inputRef = useSetupInputRef();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -43,7 +44,7 @@ export const PhoneStep = memo(function PhoneStep() {
             value={formatNationalNumber(digits)}
           />
         </Box>
-        {(state === 'error' || alreadyRegistered) && (
+        {(isError || alreadyRegistered) && (
           <Text color="red" size="17pt" weight="semibold">
             {i18n.t(alreadyRegistered ? l.already_registered : l.error)}
           </Text>
