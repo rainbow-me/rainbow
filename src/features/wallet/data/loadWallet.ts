@@ -38,12 +38,12 @@ export async function loadWallet<S extends Screen>({
   }
 
   if (privateKey !== ErrorType.NotAuthenticated) {
-    if (isHardwareWalletKey(privateKey)) {
+    if (isHardwareWallet && isHardwareWalletKey(privateKey)) {
       const [deviceId, index] = privateKey.split('/');
       if (deviceId && index !== undefined) {
         return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
       }
-    } else if (privateKey) {
+    } else if (!isHardwareWallet && privateKey) {
       return new Wallet(privateKey, provider);
     }
   }
