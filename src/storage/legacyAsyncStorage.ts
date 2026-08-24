@@ -14,11 +14,13 @@ type VersionedLegacyValue = {
 
 export async function getLegacyAsyncStorageValue<T>(key = '', version = LEGACY_ASYNC_STORAGE_VERSION): Promise<T | null> {
   try {
-    const result = await storage.load<T & VersionedLegacyValue>({
+    const result: (T & VersionedLegacyValue) | null = await storage.load<T & VersionedLegacyValue>({
       autoSync: false,
       key,
       syncInBackground: false,
     });
+    if (!result) return null;
+
     if (result.storageVersion === version) {
       return result;
     }
