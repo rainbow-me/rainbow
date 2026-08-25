@@ -116,12 +116,13 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     setDateOfBirth: dateOfBirth => setIdentityField('dateOfBirth', dateOfBirth),
     setFirstName: firstName => setIdentityField('firstName', firstName),
     setLastName: lastName => setIdentityField('lastName', lastName),
-    setSsnLast4: value => {
-      const { session } = get();
-      const ssnLast4 = value.replace(/\D/g, '').slice(0, 4);
-      if (session.status !== 'phoneVerified' || session.ssnLast4 === ssnLast4) return;
-      set({ session: { ...session, ssnLast4 } });
-    },
+    setSsnLast4: value =>
+      set(state => {
+        const { session } = state;
+        const ssnLast4 = value.replace(/\D/g, '').slice(0, 4);
+        if (session.status !== 'phoneVerified' || session.ssnLast4 === ssnLast4) return state;
+        return { session: { ...session, ssnLast4 } };
+      }),
     reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
   };
 });

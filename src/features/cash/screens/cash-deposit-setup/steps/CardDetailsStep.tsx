@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-react-native';
@@ -17,11 +17,16 @@ import { goBackInSetup } from '../setupNavigation';
 const l = i18n.l.cash.deposit_setup.card_details;
 
 export const CardDetailsStep = memo(function CardLinkForm() {
-  const { getCardForm, onCardTypeChange, refreshCardFormReadiness } = useSetupContext();
-  const state = useCardLinkFlowStore(store => store.state);
-  const reset = useCardLinkFlowStore.getState().reset;
+  const { getCardForm, onCardTypeChange, refreshCardFormReadiness, useCardFormStore } = useSetupContext();
+
+  const isError = useCardLinkFlowStore(s => s.state === 'submitError');
+  const isSubmitting = useCardLinkFlowStore(s => s.state === 'submitting');
+  const isVisa = useCardFormStore(s => s.isVisa);
+
   const bivoStore = getCardForm();
+  const reset = useCardLinkFlowStore.getState().reset;
   const setupTextStyle = useSetupInputTextStyle();
+
   const textStyle = useMemo(
     () => ({
       ...setupTextStyle,
@@ -31,11 +36,13 @@ export const CardDetailsStep = memo(function CardLinkForm() {
     }),
     [setupTextStyle]
   );
+
   const cardNumberTextStyle = useMemo(() => ({ ...textStyle, paddingRight: 60 }), [textStyle]);
-  const cancel = () => {
+
+  const cancel = useCallback(() => {
     reset();
     goBackInSetup();
-  };
+  }, [reset]);
 
   return (
     <>
@@ -52,9 +59,11 @@ export const CardDetailsStep = memo(function CardLinkForm() {
               required
               textStyle={cardNumberTextStyle}
             />
-            <View pointerEvents="none" style={styles.visaBadge}>
-              <Image resizeMode="contain" source={visaLogo} style={styles.visaLogo} />
-            </View>
+            {isVisa ? (
+              <View pointerEvents="none" style={styles.visaBadge}>
+                <Image resizeMode="contain" source={visaLogo} style={styles.visaLogo} />
+              </View>
+            ) : null}
           </View>
           <Box paddingBottom="4px" paddingLeft="4px">
             <Text color="labelSecondary" size="13pt" weight="semibold">
@@ -94,14 +103,14 @@ export const CardDetailsStep = memo(function CardLinkForm() {
         </Box>
       </SetupStepLayout>
 
-      {state === 'submitting' ? (
+      {isSubmitting ? (
         <CashStatusHalfSheet
           description={i18n.t(l.adding_description)}
           status="inProgress"
           testID="cash-setup-card-adding"
           title={i18n.t(l.adding_title)}
         />
-      ) : state === 'submitError' ? (
+      ) : isError ? (
         <CashStatusHalfSheet
           description={i18n.t(l.error_description)}
           primaryAction={{ label: i18n.t(l.edit_details), onPress: reset, testID: 'cash-setup-card-error-edit' }}

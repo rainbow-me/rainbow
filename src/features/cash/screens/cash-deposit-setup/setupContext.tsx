@@ -34,16 +34,23 @@ function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean 
 export function createSetupContext() {
   const inputs = new Map<CashDepositSetupRoute, TextInput>();
   let suspendedInput: ReturnType<typeof TextInput.State.currentlyFocusedInput> | null = null;
-  let cardForm: BivoSecureStore | undefined;
-  let isVisa = false;
-  const getCardForm = () => (cardForm ??= new BivoSecureStore(BIVO_VAULT_ID, BIVO_ENV));
-  const cardFormStore = createBaseStore<{ isReady: boolean }>(() => ({ isReady: false }));
-  const refreshCardFormReadiness = () => {
-    const isReady = isVisa && !getCardForm().isSubmitDisabled(CARD_FIELDS);
-    if (cardFormStore.getState().isReady !== isReady) cardFormStore.setState({ isReady });
-  };
 
-  function focusInput(route: CashDepositSetupRoute) {
+  const cardFormStore = createBaseStore<{ isReady: boolean; isVisa: boolean }>(() => ({ isReady: false, isVisa: false }));
+  let cardForm: BivoSecureStore | undefined;
+
+  function getCardForm(): BivoSecureStore {
+    return (cardForm ??= new BivoSecureStore(BIVO_VAULT_ID, BIVO_ENV));
+  }
+
+  function refreshCardFormReadiness(): void {
+    const isReady = cardFormStore.getState().isVisa && !getCardForm().isSubmitDisabled(CARD_FIELDS);
+    cardFormStore.setState(state => {
+      if (state.isReady === isReady) return state;
+      return { ...state, isReady };
+    });
+  }
+
+  function focusInput(route: CashDepositSetupRoute): void {
     if (!selectIsSetupScreenActive(useNavigationStore.getState())) return;
     const input = inputs.get(route);
     if (input) {
@@ -56,11 +63,11 @@ export function createSetupContext() {
   return {
     focusInput,
     getCardForm,
-    registerInput: (route: CashDepositSetupRoute, input: TextInput | null) => {
+    registerInput: (route: CashDepositSetupRoute, input: TextInput | null): void => {
       if (input) inputs.set(route, input);
       else inputs.delete(route);
     },
-    handleScreenActivity: (active: boolean) => {
+    handleScreenActivity: (active: boolean): void => {
       if (active) {
         const input = suspendedInput;
         suspendedInput = null;
@@ -70,12 +77,16 @@ export function createSetupContext() {
         Keyboard.dismiss();
       }
     },
-    onCardTypeChange: (cardType: string) => {
-      // Bivo calls onStateChange immediately after this for the same edit; that callback publishes readiness.
-      isVisa = cardType === 'visa';
+    onCardTypeChange: (cardType: string): void => {
+      cardFormStore.setState(state => {
+        const isVisa = cardType === 'visa';
+        if (state.isVisa === isVisa) return state;
+        return { ...state, isVisa };
+      });
     },
     refreshCardFormReadiness,
     useActionStore: createSetupActionStore(getCardForm, cardFormStore),
+    useCardFormStore: cardFormStore,
   };
 }
 
