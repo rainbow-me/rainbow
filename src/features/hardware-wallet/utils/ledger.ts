@@ -1,9 +1,9 @@
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
+import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { getHdPath, WalletLibraryType } from '@/model/wallet';
 
 /**
  * Common Ledger Error Codes

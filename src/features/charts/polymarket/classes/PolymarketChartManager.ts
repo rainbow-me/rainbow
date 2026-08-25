@@ -17,10 +17,10 @@ import { State as GestureState } from 'react-native-gesture-handler';
 import { type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { type InteractionConfig, type LineEffectsConfig } from '@/features/charts/line/LineSeries';
+import { type ResponseByTheme } from '@/theme/types';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';

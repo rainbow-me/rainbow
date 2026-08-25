@@ -13,9 +13,9 @@ import { type StackNavigationOptions, type StackNavigationProp } from '@react-na
 import { useCallbackOne } from 'use-memo-one';
 
 import { IS_DEV } from '@/env';
+import { prefetchRoute } from '@/navigation/prefetchRegistry';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 
-import { prefetchRegistry } from './prefetchRegistry';
 import Routes, { NATIVE_ROUTES, type Route } from './routesNames';
 import { type RootStackParamList, type RoutesWithOptionalParams } from './types';
 import { VIRTUAL_NAVIGATORS } from './virtualNavigators';
@@ -184,7 +184,7 @@ function dispatchAction<RouteName extends Route>(
   function dispatch(): void {
     if (navigationRef?.isReady()) {
       cancelPendingRouteChange();
-      prefetchRegistry[routeName]?.(params);
+      prefetchRoute(routeName, params);
       setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
       navigationRef.dispatch(action);
     }

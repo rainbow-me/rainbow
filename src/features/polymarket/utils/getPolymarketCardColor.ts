@@ -1,10 +1,10 @@
 import chroma from 'chroma-js';
 
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { type ResponseByTheme } from '@/theme/types';
 import { withTimeout } from '@/utils/promise';
 
 const IMAGE_COLOR_TIMEOUT_MS = 600;

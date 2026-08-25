@@ -4,10 +4,10 @@ import type { Address } from 'viem';
 import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { getUniqueId } from '@/entities/assetId';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type HlBuilderSettings } from '@/features/perps/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const DEFAULT_SLIPPAGE_BIPS = 500;

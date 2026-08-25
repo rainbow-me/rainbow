@@ -9,8 +9,8 @@ import { type Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { signTypedData, type SignTypedDataVersion, type TypedMessage } from '@metamask/eth-sig-util';
 import { generateMnemonic } from 'bip39';
-import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
-import { type hdkey as EthereumHDKey, type default as LibWallet } from 'ethereumjs-wallet';
+import { toBuffer, toChecksumAddress } from 'ethereumjs-util';
+import { type default as LibWallet } from 'ethereumjs-wallet';
 import { findKey, isEmpty } from 'lodash';
 import { type GetOptions, type SetOptions } from 'react-native-keychain';
 
@@ -30,7 +30,16 @@ import {
 } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
 import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
-import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
+import {
+  identifyWalletType,
+  type EthereumPrivateKey,
+  type EthereumWallet,
+  type EthereumWalletFromSeed,
+  type EthereumWalletSeed,
+} from '@/features/wallet/core/walletDerivation';
+import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
+import { hasPreviousTransactions } from '@/features/wallet/data/hasPreviousTransactions';
+import { addHexPrefix, isHexString } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { createSignature } from '@/helpers/signingWallet';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -44,18 +53,13 @@ import { initializeNotificationSettingsForAddresses } from '@/notifications/sett
 import type { AddressWithRelationship } from '@/notifications/settings/types';
 import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
 import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { lightModeThemeColors } from '../styles/colors';
-import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 import { PreferenceActionType, setPreference } from './preferences';
 
-export type EthereumPrivateKey = string;
-type EthereumMnemonic = string;
-type EthereumSeed = string;
-export type EthereumWalletSeed = EthereumAddress | EthereumPrivateKey | EthereumMnemonic | EthereumSeed;
 type HardwareKey = `${string}/${number}`;
 
 interface WalletInitialized {
@@ -90,23 +94,6 @@ interface TypedData {
   };
   message: object;
 }
-
-export interface ReadOnlyWallet {
-  address: EthereumAddress;
-  privateKey: string | null;
-}
-
-export interface EthereumWalletFromSeed {
-  hdnode: null | HDNode;
-  isHDWallet: boolean;
-  wallet: null | EthereumWallet;
-  type: EthereumWalletType;
-  walletType: WalletLibraryType;
-  root: null | EthereumHDKey;
-  address: EthereumAddress;
-}
-
-export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
 
 export interface RainbowAccount {
   index: number;
@@ -173,18 +160,11 @@ interface MigratedSecretsResult {
   type: EthereumWalletType;
 }
 
-export enum WalletLibraryType {
-  ethers = 'ethers',
-  bip39 = 'bip39',
-  ledger = 'ledger',
-}
-
 const privateKeyVersion = 1.0;
 const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
-export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = {
@@ -220,16 +200,6 @@ export const isHardwareWalletKey = (key: string | null) => {
     return true;
   }
   return false;
-};
-
-export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: number }): string => {
-  switch (type) {
-    // @see https://github.com/LedgerHQ/ledger-live/wiki/LLC:derivation for info in BIP-44 and ledger derivations
-    case WalletLibraryType.ledger:
-      return `m/44'/60'/${index}'/0/0`;
-    default:
-      return `${DEFAULT_HD_PATH}/${index}`;
-  }
 };
 
 export type InitializeWalletParams = CreateWalletParams & {
@@ -606,28 +576,16 @@ export const saveAddress = async (address: EthereumAddress, accessControlOptions
   return keychain.saveString(addressKey, address, accessControlOptions);
 };
 
-export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWalletType => {
-  if (isHexStringIgnorePrefix(walletSeed) && addHexPrefix(walletSeed).length === 66) {
-    return EthereumWalletType.privateKey;
-  }
-  // Bluetooth device id (Ledger nano x)
-  if (isValidBluetoothDeviceId(walletSeed)) {
-    return EthereumWalletType.bluetooth;
-  }
-  // 12 or 24 words seed phrase
-  if (isValidMnemonic(walletSeed)) {
-    return EthereumWalletType.mnemonic;
-  }
-  // Public address (0x)
-  if (isValidAddress(walletSeed)) {
-    return EthereumWalletType.readOnly;
-  }
-  // seed
-  return EthereumWalletType.seed;
-};
+/** Starts writing the account's initial profile color and symbol. */
+export function initializeWalletProfilePreference(address: EthereumAddress, colorIndex: number): void {
+  void setPreference(PreferenceActionType.init, 'profile', address, {
+    accountColor: lightModeThemeColors.avatarBackgrounds[colorIndex],
+    accountSymbol: addressHashedEmoji(address),
+  });
+}
 
 type CreateWalletParams = {
-  seed?: null | EthereumSeed;
+  seed?: null | EthereumWalletSeed;
   color?: null | number;
   name?: null | string;
   isRestoring?: boolean;
@@ -801,10 +759,7 @@ export const createWallet = async ({
       logger.debug(`[wallet]: generating signature`, {}, DebugContext.wallet);
       await createSignature(walletAddress, pkey);
       // Save the color
-      setPreference(PreferenceActionType.init, 'profile', address, {
-        accountColor: lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
-        accountSymbol: profileUtils.addressHashedEmoji(address),
-      });
+      initializeWalletProfilePreference(address, colorIndexForWallet);
     }
 
     // Initiate auto account discovery for imported wallets via seedphrase
@@ -839,7 +794,7 @@ export const createWallet = async ({
 
         let hasTxHistory = false;
         try {
-          hasTxHistory = await ethereumUtils.hasPreviousTransactions(nextWallet.address);
+          hasTxHistory = await hasPreviousTransactions(nextWallet.address);
         } catch (error) {
           logger.error(new RainbowError('[wallet]: Error getting txn history for address'), { error });
         }
@@ -893,10 +848,7 @@ export const createWallet = async ({
             logger.debug(`[wallet]: enabling web profile`, {}, DebugContext.wallet);
             await createSignature(nextWallet.address, nextWallet.privateKey);
             // Save the color
-            setPreference(PreferenceActionType.init, 'profile', nextWallet.address, {
-              accountColor: lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
-              accountSymbol: addressHashedEmoji(nextWallet.address),
-            });
+            initializeWalletProfilePreference(nextWallet.address, colorIndexForWallet);
           }
 
           index += 1;
@@ -1249,7 +1201,8 @@ export function setCallbackAfterObtainingSeedsFromKeychainOrError(callback: () =
   callbackAfterSeeds = callback;
 }
 
-export const generateAccount = async (id: RainbowWallet['id'], index: number): Promise<null | Wallet | ReadOnlyWallet> => {
+/** Derives and stores an indexed account for an existing wallet. */
+export async function generateAccount(id: RainbowWallet['id'], index: number): Promise<Wallet | null> {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
     let seedphrase;
@@ -1303,7 +1256,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
     logger.error(new RainbowError('[wallet]: Error generating account for keychain'), { error });
     return null;
   }
-};
+}
 
 const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
   try {

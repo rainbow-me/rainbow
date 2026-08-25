@@ -24,7 +24,7 @@ import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/util
 import { margin, padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { parseTimestampFromFilename, type BackupFile } from '../backup';
+import { parseTimestampFromFilename, type BackupFile } from '../backupFile';
 import { backupsStore, CloudBackupState, LoadingStates } from '../stores/backupsStore';
 
 const Title = styled(RNText).attrs({

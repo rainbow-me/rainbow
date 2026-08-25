@@ -5,6 +5,7 @@ import { type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controlle
 import { type SharedValue } from 'react-native-reanimated';
 
 import { useColorMode } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type BackendNetwork } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
@@ -14,7 +15,6 @@ import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme/ThemeContext';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';

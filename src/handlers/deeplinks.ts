@@ -10,6 +10,7 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { getUniqueId } from '@/entities/assetId';
 import { FiatProviderName } from '@/entities/f2c';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -25,7 +26,7 @@ import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
-import { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
+import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {

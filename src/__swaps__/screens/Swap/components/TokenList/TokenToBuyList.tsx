@@ -17,13 +17,13 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
+import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { equalWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapsSearchStore } from '../../resources/search/searchV2';

@@ -5,6 +5,7 @@ import isEqual from 'react-fast-compare';
 
 import { type AddressOrEth, type UniqueId } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
+import { getUniqueId } from '@/entities/assetId';
 import type { RainbowToken } from '@/entities/tokens';
 import { IS_TEST } from '@/env';
 import { NativeCurrencyKeys } from '@/features/currency/types';
@@ -14,7 +15,6 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references/constants';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import promiseUtils from '@/utils/promise';
 
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';

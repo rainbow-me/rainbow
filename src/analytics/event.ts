@@ -16,8 +16,8 @@ import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/t
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
-import { type WalletLibraryType } from '@/model/wallet';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { type TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import {

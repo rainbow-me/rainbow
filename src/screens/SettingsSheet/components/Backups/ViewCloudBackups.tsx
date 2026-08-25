@@ -6,7 +6,7 @@ import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
 import { Box } from '@/design-system';
-import { parseTimestampFromFilename, type BackupFile } from '@/features/backup/backup';
+import { parseTimestampFromFilename, type BackupFile } from '@/features/backup/backupFile';
 import { backupsStore, CloudBackupState, LoadingStates } from '@/features/backup/stores/backupsStore';
 import styled from '@/framework/ui/styled-thing';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';

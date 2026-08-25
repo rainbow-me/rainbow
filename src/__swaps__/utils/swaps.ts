@@ -15,6 +15,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { globalColors } from '@/design-system';
 import { palettes, type ForegroundColor } from '@/design-system/color/palettes';
+import { getUniqueId } from '@/entities/assetId';
 import { IS_TEST } from '@/env';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -35,7 +36,7 @@ import * as i18n from '@/languages';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
-import { getUniqueId } from '@/utils/ethereumUtils';
+import { type ResponseByTheme } from '@/theme/types';
 import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
 
 import { swapsStore } from '../../state/swaps/swapsStore';
@@ -48,11 +49,6 @@ const TEST_MODE_SLIPPAGE_BIPS = 9999; // 99.99% slippage for test mode
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
-export type ResponseByTheme<T> = {
-  light: T;
-  dark: T;
-};
-
 export function getColorValueForThemeWorklet(values: ResponseByTheme<string> | undefined, isDarkMode: boolean): string;
 export function getColorValueForThemeWorklet<T>(
   values: ResponseByTheme<T> | undefined,

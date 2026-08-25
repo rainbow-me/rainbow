@@ -6,6 +6,7 @@ import qs from 'qs';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
+import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -14,7 +15,6 @@ import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import erc20ABI from '@/references/erc20-abi.json';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { parseTokenSearchAcrossNetworks, parseTokenSearchResults } from './utils';
 

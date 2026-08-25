@@ -4,10 +4,11 @@ import { type StaticJsonRpcProvider, type TransactionRequest } from '@ethersproj
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
-import { cloneDeep, isEmpty, isString, replace } from 'lodash';
+import { cloneDeep, isEmpty, isString } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { type EthereumAddress } from '@/entities/wallet';
@@ -19,7 +20,6 @@ import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { add, fromWei, greaterThan, subtract } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
-import store from '@/redux/store';
 import { ETH_ADDRESS, OVM_GAS_PRICE_ORACLE } from '@/references/constants';
 import ethUnits from '@/references/ethereum-units.json';
 import optimismGasOracleAbi from '@/references/optimism-gas-oracle-abi.json';
@@ -30,6 +30,7 @@ import {
   type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -41,11 +42,6 @@ import { openInBrowser } from '@/utils/openInBrowser';
  * @returns `${address}_${network}`
  */
 export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
-
-export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => {
-  'worklet';
-  return `${address}_${chainId}`;
-};
 
 /**
  * @desc Get the address and chainId from a unique ID
@@ -100,7 +96,7 @@ export const getNativeAssetForNetwork = async ({
 }): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset({ chainId });
   const accountAddress = getAccountAddress();
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = userAssetsStoreManager.getState().currency;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
@@ -157,7 +153,7 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
   return accountAssets[loweredUniqueId];
 };
 const getExternalAssetFromCache = (uniqueId: string) => {
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = userAssetsStoreManager.getState().currency;
   const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
 
   try {
@@ -205,7 +201,7 @@ const getAssetPrice = (
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = userAssetsStoreManager.getState().currency;
   const address = (useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
 
   const { data: nativeAsset } = useExternalToken({
@@ -249,39 +245,6 @@ const getBalanceAmount = (
 const getHash = (txn: RainbowTransaction | NewTransaction) => txn.hash?.split('-').shift();
 
 /**
- * @desc remove hex prefix
- * @param  {String} hex
- * @return {String}
- */
-const removeHexPrefix = (hex: string) => replace(hex.toLowerCase(), '0x', '');
-
-/**
- * @desc pad string to specific width and padding
- * @param  {String} n
- * @param  {Number} width
- * @param  {String} z
- * @return {String}
- */
-const padLeft = (n: string, width: number, z = '0') => {
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-};
-
-/**
- * @desc get ethereum contract call data string
- * @param  {String} func
- * @param  {Array}  arrVals
- * @return {String}
- */
-const getDataString = (func: string, arrVals: string[]) => {
-  let val = '';
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
-  for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
-  const data = func + val;
-  return data;
-};
-
-/**
  * @desc get etherscan host from network string
  * @param  {String} network
  */
@@ -318,35 +281,6 @@ export const fetchContractABI = async (address: EthereumAddress) => {
   const abi = parsedResponse.result;
   AsyncStorage.setItem(`abi-${address}`, abi);
   return abi;
-};
-
-/**
- * @desc Checks if a an address has previous transactions
- * @param  {String} address
- * @return {Promise<Boolean>}
- */
-const hasPreviousTransactions = (address: EthereumAddress): Promise<boolean> => {
-  return new Promise(async resolve => {
-    try {
-      const url = `https://aha.rainbow.me/?address=${address}`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        resolve(false);
-        return;
-      }
-
-      const parsedResponse: {
-        data: {
-          addresses: Record<string, boolean>;
-        };
-      } = await response.json();
-
-      resolve(parsedResponse?.data?.addresses[address.toLowerCase()] === true);
-    } catch (e) {
-      resolve(false);
-    }
-  });
 };
 
 /**
@@ -427,9 +361,6 @@ const calculateL1FeeOptimism = async (
     } else {
       newTx.gasLimit = toHex(newTx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
     }
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
-    const currentGasPrice = store.getState().gas.selectedGasPrice?.value?.amount;
-    if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     const serializedTx = serialize(newTx);
 
@@ -456,20 +387,15 @@ export default {
   getBalanceAmount,
   getBasicSwapGasLimit,
   getBlockExplorer,
-  getDataString,
   getEtherscanHostForNetwork,
   getHash,
   getNativeAssetForNetwork,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
   getTransactionBlockExplorerUrl,
-  getUniqueId,
-  hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,
   openNftInBlockExplorer,
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
-  padLeft,
-  removeHexPrefix,
 };

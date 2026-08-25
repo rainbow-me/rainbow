@@ -1,5 +1,5 @@
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type ResponseByTheme } from '@/theme/types';
 
 import { MAX_POLYMARKET_SERIES, selectTopMarketsForChart } from '../stores/polymarketChartStore';
 import { DEFAULT_SERIES_PALETTE, SERIES_PALETTES, type SeriesPaletteColors } from '../types';

@@ -6,6 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainImage } from '@/features/network/components/ChainImage';
@@ -24,7 +25,6 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import deviceUtils from '@/utils/deviceUtils';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';

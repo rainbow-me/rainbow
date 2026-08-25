@@ -1,4 +1,4 @@
-import { type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { type ResponseByTheme } from '@/theme/types';
 
 export type PolymarketGameMetadata = {
   teams: string[];

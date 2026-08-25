@@ -2,6 +2,7 @@ import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -9,7 +10,6 @@ import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';

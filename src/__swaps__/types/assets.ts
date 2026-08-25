@@ -3,8 +3,7 @@ import type { Address } from 'viem';
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { type ChainId, type ChainName } from '@/features/network/types/backendNetworks';
 import type { ETH_ADDRESS } from '@/references/constants';
-
-import { type ResponseByTheme } from '../utils/swaps';
+import { type ResponseByTheme } from '@/theme/types';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 

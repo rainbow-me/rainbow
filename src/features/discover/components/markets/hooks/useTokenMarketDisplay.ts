@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
+import { getUniqueId } from '@/entities/assetId';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/charts/stores/tokenLineChartsStore';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
@@ -10,7 +11,6 @@ import { type TokenPlacementItem } from '@/features/placements/stores/derived/to
 import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useColorForAsset from '@/hooks/useColorForAsset';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);
 const MARKET_CHART_PRICE_CHANGE_COLORS = {

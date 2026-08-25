@@ -3,9 +3,8 @@ import { Platform } from 'react-native';
 import { format } from 'date-fns';
 import { isEmpty } from 'lodash';
 
-import { type CloudBackups } from '@/features/backup/backup';
+import { normalizeAndroidBackupFilename, type CloudBackups } from '@/features/backup/backupFile';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
-import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';

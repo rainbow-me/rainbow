@@ -10,11 +10,11 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import useAsset from '@/hooks/useAsset';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 

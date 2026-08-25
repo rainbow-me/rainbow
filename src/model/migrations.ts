@@ -10,6 +10,7 @@ import RNFS from 'react-native-fs';
 import { createMMKV } from 'react-native-mmkv';
 
 import { type UniqueId } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/entities/assetId';
 import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
@@ -40,7 +41,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
-import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';

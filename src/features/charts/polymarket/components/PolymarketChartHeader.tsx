@@ -5,12 +5,13 @@ import { type BaseStore, type QueryStoreState } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
-import { getColorValueForThemeWorklet, type ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
+import { type ResponseByTheme } from '@/theme/types';
 import { formatTimestamp, type FormatTimestampOptions } from '@/worklets/dates';
 
 import { type ActiveInteractionData } from '../classes/PolymarketChartManager';

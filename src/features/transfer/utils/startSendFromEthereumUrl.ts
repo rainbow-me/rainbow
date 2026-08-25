@@ -3,6 +3,7 @@ import { InteractionManager, Platform } from 'react-native';
 // @ts-expect-error eth-url-parser ships no type declarations
 import { parse } from 'eth-url-parser';
 
+import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -44,7 +45,7 @@ export async function startSendFromEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    const targetUniqueId = ethereumUtils.getUniqueId(ethUrl.target_address, chainId);
+    const targetUniqueId = getUniqueId(ethUrl.target_address, chainId);
     asset = ethereumUtils.getAccountAsset(targetUniqueId);
     if (!asset || isZero(asset?.balance?.amount ?? '0')) {
       Alert.alert(i18n.t(i18n.l.wallet.alerts.ooops), i18n.t(i18n.l.wallet.alerts.dont_have_asset_in_wallet));
