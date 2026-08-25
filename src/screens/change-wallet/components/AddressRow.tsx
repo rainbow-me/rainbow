@@ -19,9 +19,9 @@ import {
 import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';
-import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/ChangeWalletSheet';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
+import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress } from '@/utils/abbreviations';

@@ -1,7 +1,7 @@
 import { useAnimatedStyle } from 'react-native-reanimated';
 
-import { useDndContext } from '..';
-import type { AnimatedStyle, UniqueIdentifier } from '../types';
+import { useDndContext } from '../DndContext';
+import type { AnimatedStyle, UniqueIdentifier } from '../types/common';
 
 export type UseDroppableStyleCallback<StyleT extends AnimatedStyle> = (_: { isActive: boolean; isDisabled: boolean }) => StyleT;
 

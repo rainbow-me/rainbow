@@ -1,6 +1,6 @@
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import type { Point } from '../utils';
+import type { Point } from '../utils/geometry';
 
 export type SharedPoint = Point<SharedValue<number>>;
 

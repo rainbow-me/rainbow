@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useAnimatedReaction } from 'react-native-reanimated';
 
 import { useDndContext } from '../../../DndContext';
-import { swapByItemHorizontalAxis, swapByItemVerticalAxis } from '../../../utils';
+import { swapByItemHorizontalAxis, swapByItemVerticalAxis } from '../../../utils/swap';
 import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSort';
 
 export type UseDraggableStackOptions = Pick<

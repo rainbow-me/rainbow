@@ -7,9 +7,9 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { navigateToPerpDetailScreen } from '@/features/perps/navigation/marketNavigation';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpsPosition } from '@/features/perps/types';
-import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { opacity } from '@/framework/ui/utils/opacity';

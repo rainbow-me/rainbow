@@ -7,23 +7,18 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
-import { DndProvider, Draggable, type DraggableScrollViewProps, type UniqueIdentifier } from '@/components/drag-and-drop';
-import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { Draggable } from '@/components/drag-and-drop/components/Draggable';
+import { DraggableScrollView, type DraggableScrollViewProps } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { DndProvider } from '@/components/drag-and-drop/DndProvider';
+import type { UniqueIdentifier } from '@/components/drag-and-drop/types/common';
 import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Separator, Text } from '@/design-system';
 import { type EthereumAddress } from '@/entities/wallet';
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
-import {
-  FOOTER_HEIGHT,
-  MAX_PANEL_HEIGHT,
-  PANEL_HEADER_HEIGHT,
-  PANEL_INSET_HORIZONTAL,
-  type AddressItem,
-  type AddressMenuAction,
-  type AddressMenuActionData,
-} from '@/screens/change-wallet/ChangeWalletSheet';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
+import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_HEADER_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
+import { type AddressItem, type AddressMenuAction, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { position } from '@/styles';
 

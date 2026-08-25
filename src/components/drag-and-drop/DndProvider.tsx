@@ -24,9 +24,10 @@ import {
   type Layouts,
   type Offsets,
 } from './DndContext';
-import { useSharedPoint } from './hooks';
-import type { UniqueIdentifier } from './types';
-import { animatePointWithSpring, applyOffset, includesPoint, overlapsRectangle, type Point, type Rectangle } from './utils';
+import { useSharedPoint } from './hooks/useSharedPoint';
+import type { UniqueIdentifier } from './types/common';
+import { applyOffset, includesPoint, overlapsRectangle, type Point, type Rectangle } from './utils/geometry';
+import { animatePointWithSpring } from './utils/reanimated';
 
 type WaitForRef =
   | React.RefObject<GestureType | undefined>

@@ -5,8 +5,8 @@ import { type Address } from 'viem';
 import { USD_DECIMALS } from '@/features/currency/constants';
 import type { OrderStatusResponse } from '@/features/perps/services/hyperliquid-exchange-client';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { refetchHyperliquidStores } from '@/features/perps/utils';
 import { truncateToDecimals } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
@@ -72,6 +72,19 @@ export const hyperliquidAccountActions = createStoreActions(useHyperliquidAccoun
   createTriggerOrder,
   withdraw,
 });
+
+export async function refetchHyperliquidBalance(): Promise<void> {
+  await hyperliquidAccountActions.fetch(undefined, { force: true });
+}
+
+async function refetchHyperliquidStores(): Promise<void> {
+  await Promise.allSettled([
+    hlOpenOrdersStoreActions.fetch(undefined, { force: true }),
+    hlTradesStoreActions.fetch(undefined, { force: true }),
+    hyperliquidMarketsActions.fetch(undefined, { force: true }),
+    hyperliquidAccountActions.fetch(undefined, { force: true }),
+  ]);
+}
 
 async function fetchHyperliquidAccount(
   _: HyperliquidAccountParams,

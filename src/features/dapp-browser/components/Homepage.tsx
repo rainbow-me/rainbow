@@ -9,7 +9,10 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { DndProvider, Draggable, DraggableGrid, type DraggableGridProps, type UniqueIdentifier } from '@/components/drag-and-drop';
+import { Draggable } from '@/components/drag-and-drop/components/Draggable';
+import { DndProvider } from '@/components/drag-and-drop/DndProvider';
+import { DraggableGrid, type DraggableGridProps } from '@/components/drag-and-drop/features/sort/components/DraggableGrid';
+import type { UniqueIdentifier } from '@/components/drag-and-drop/types/common';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FeaturedResultStack, type FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 import { ImgixImage } from '@/components/images';

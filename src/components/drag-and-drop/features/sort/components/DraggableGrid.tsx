@@ -1,7 +1,7 @@
 import React, { useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
 import { View, type FlexStyle, type ViewProps } from 'react-native';
 
-import { useChildrenIds } from '../../../hooks';
+import { useChildrenIds } from '../../../hooks/useChildrenIds';
 import { useDraggableGrid, type UseDraggableGridOptions } from '../hooks/useDraggableGrid';
 
 export type DraggableGridProps = Pick<ViewProps, 'style'> &
