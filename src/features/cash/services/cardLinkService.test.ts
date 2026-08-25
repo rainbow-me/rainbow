@@ -46,7 +46,7 @@ describe('linkCardWithVault', () => {
 
     expect(order).toEqual(['session', 'submit', 'complete']);
     expect(mockStart).toHaveBeenCalledWith(abortController);
-    expect(mockSubmit).toHaveBeenCalledWith(SESSION.linkUrl, SESSION.token);
+    expect(mockSubmit).toHaveBeenCalledWith(SESSION.token);
     expect(mockComplete).toHaveBeenCalledWith({ brand: CARD_BRAND, providerCardId: 'provider-card-1' }, abortController);
   });
 
