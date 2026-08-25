@@ -6,37 +6,26 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, useColorMode } from '@/design-system';
 
-import { SetupCancelButton } from './SetupCancelButton';
-
-type SetupSuccessStepAccessory =
-  | {
-      type: 'cancel';
-      onPress: () => void;
-    }
-  | {
-      type: 'handle';
-    };
-
 type SetupSuccessStepLayoutProps = {
-  accessory: SetupSuccessStepAccessory;
   description: string;
+  showHandle?: boolean;
   title: string;
 };
 
 const CHECKMARK_CIRCLE = '􀁢';
 
-export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({ accessory, description, title }: SetupSuccessStepLayoutProps) {
+export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({
+  description,
+  showHandle,
+  title,
+}: SetupSuccessStepLayoutProps) {
   const insets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
   const handleColor = isDarkMode ? DEFAULT_HANDLE_COLOR_DARK : DEFAULT_HANDLE_COLOR_LIGHT;
 
   return (
     <Box background="surfacePrimaryElevated" height="full" width="full">
-      {accessory.type === 'cancel' ? (
-        <Box position="absolute" right={{ custom: 16 }} top={{ custom: insets.top + 4 }} zIndex={1}>
-          <SetupCancelButton onPress={accessory.onPress} testID="cash-setup-success-cancel" />
-        </Box>
-      ) : (
+      {showHandle && (
         <Box alignItems="center" left="0px" position="absolute" right="0px" top={{ custom: insets.top + 4 }} zIndex={1}>
           <Box backgroundColor={handleColor} borderRadius={3} height={{ custom: 5 }} width={{ custom: 36 }} />
         </Box>
