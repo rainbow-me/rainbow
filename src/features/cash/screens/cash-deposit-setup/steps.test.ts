@@ -1,7 +1,7 @@
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 
-import { getFirstSetupStep, getNextSetupStep, SETUP_STEP_ORDER } from './steps';
+import { getFirstSetupStep, getNextSetupStep, isSetupEditDetour, SETUP_STEP_ORDER } from './steps';
 
 describe('Cash Deposit Setup steps', () => {
   it('maps a setup status to its first step', () => {
@@ -22,5 +22,12 @@ describe('Cash Deposit Setup steps', () => {
     }
     expect(visited).toEqual([...SETUP_STEP_ORDER]);
     expect(getNextSetupStep(Routes.CASH_SETUP_CARD_ADDED)).toBeNull();
+  });
+
+  it('identifies edits that return to the review step', () => {
+    expect(isSetupEditDetour(Routes.CASH_SETUP_IDENTITY, Routes.CASH_SETUP_REVIEW)).toBe(true);
+    expect(isSetupEditDetour(Routes.CASH_SETUP_SSN, Routes.CASH_SETUP_REVIEW)).toBe(true);
+    expect(isSetupEditDetour(Routes.CASH_SETUP_IDENTITY, Routes.CASH_SETUP_CONFIRM_PHONE)).toBe(false);
+    expect(isSetupEditDetour(Routes.CASH_SETUP_IDENTITY, undefined)).toBe(false);
   });
 });

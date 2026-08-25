@@ -40,6 +40,11 @@ export function getNextSetupStep(current: CashDepositSetupRoute): CashDepositSet
   return SETUP_STEP_ORDER[index + 1] ?? null;
 }
 
+/** True when completing this earlier step should return through history to the review step. */
+export function isSetupEditDetour(current: CashDepositSetupRoute, historyTop: CashDepositSetupRoute | undefined): boolean {
+  return historyTop !== undefined && SETUP_STEP_ORDER.indexOf(historyTop) > SETUP_STEP_ORDER.indexOf(current);
+}
+
 const SETUP_STEP_FOR_STATUS: Record<Exclude<CashDepositSetupStatus, 'ready'>, CashDepositSetupRoute> = {
   needsIdentity: Routes.CASH_SETUP_PHONE,
   needsCard: Routes.CASH_SETUP_CARD_DETAILS,

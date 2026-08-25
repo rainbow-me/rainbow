@@ -1,4 +1,6 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
+
+import { shallowEqual } from '@storesjs/stores';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text } from '@/design-system';
@@ -11,11 +13,29 @@ import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore'
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
 import { KycOutcomeSheet } from '../components/KycOutcomeSheet';
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
-import { useSubmitKycFlow } from './useSubmitKycFlow';
+import { completeSetupStep } from '../setupNavigation';
+import { useSubmitKycFlowStore } from './useSubmitKycFlow';
 
 const l = i18n.l.cash.deposit_setup.review;
 const kycL = i18n.l.cash.deposit_setup.kyc;
+
+function editIdentity() {
+  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);
+}
+
+function editSsn() {
+  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_SSN);
+}
+
+function continueAfterVerification() {
+  useSubmitKycFlowStore.getState().reset();
+  completeSetupStep();
+}
+
+function editIdentityAfterFailure() {
+  useSubmitKycFlowStore.getState().reset();
+  editIdentity();
+}
 
 function ReviewRow({
   disabled,
@@ -52,32 +72,14 @@ function ReviewRow({
 }
 
 export const ReviewStep = memo(function ReviewStep() {
-  const identity = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.identity : null));
-  const governmentId = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.governmentId : null));
-  const { next } = useCashDepositSetupNavigation();
-  const { reset, state, submit } = useSubmitKycFlow();
+  const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
+  const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
+  const state = useSubmitKycFlowStore(store => store.state);
   const submitting = state === 'submitting';
-
-  const editIdentity = useCallback(() => CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY), []);
-  const editSsn = useCallback(() => CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_SSN), []);
-  const continueAfterVerification = useCallback(() => {
-    reset();
-    next();
-  }, [reset, next]);
-  const editIdentityAfterFailure = useCallback(() => {
-    reset();
-    editIdentity();
-  }, [reset, editIdentity]);
 
   return (
     <>
-      <SetupStepLayout
-        actionDisabled={!identity || !governmentId}
-        actionLabel={i18n.t(l.confirm)}
-        onAction={submit}
-        subtitle={i18n.t(l.subtitle)}
-        title={i18n.t(l.title)}
-      >
+      <SetupStepLayout subtitle={i18n.t(l.subtitle)} title={i18n.t(l.title)}>
         {identity && governmentId && (
           <Box paddingTop="24px">
             <Box background="fillTertiary" borderRadius={20} paddingHorizontal="16px" paddingVertical="4px">

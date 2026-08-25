@@ -30,6 +30,7 @@ export const CashActionButton = memo(function CashActionButton({
   variant = 'solid',
 }: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
+  const spinnerColor = useForegroundColor(color);
   const isDisabled = disabled || loading;
   const textColor = variant === 'solid' ? 'white' : color;
 
@@ -56,13 +57,11 @@ export const CashActionButton = memo(function CashActionButton({
         ]}
         width="full"
       >
-        {loading ? (
-          <Spinner color={variant === 'solid' ? 'white' : blue} size={24} />
-        ) : (
-          <Text align="center" color={textColor} size={textSize} weight="heavy">
-            {label}
-          </Text>
-        )}
+        <Text align="center" color={textColor} size={textSize} weight="heavy">
+          {label}
+        </Text>
+
+        {loading ? <Spinner color={variant === 'solid' ? 'white' : spinnerColor} size={24} style={styles.spinner} /> : null}
       </Box>
     </ButtonPressAnimation>
   );
@@ -80,5 +79,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
+  },
+  spinner: {
+    position: 'absolute',
+    right: 16,
+    top: 12,
   },
 });

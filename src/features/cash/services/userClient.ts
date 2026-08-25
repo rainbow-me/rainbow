@@ -4,9 +4,9 @@ import { time } from '@/framework/core/utils/time';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
 
-import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from '../stores/cashSetupSessionStore';
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
+import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from './cashSetupIdentityService';
 
 const PHONE_ALREADY_REGISTERED = 1300;
 const REGISTERED_WITH_PASSKEY = 1303;

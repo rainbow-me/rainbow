@@ -82,7 +82,7 @@ export const CashStepLayout = memo(function CashStepLayout({
           <Text color="label" size="26pt" weight="heavy">
             {title}
           </Text>
-          {subtitle != null && (
+          {subtitle == null ? null : (
             <Text color="labelSecondary" size="17pt / 135%" weight="bold">
               {subtitle}
             </Text>

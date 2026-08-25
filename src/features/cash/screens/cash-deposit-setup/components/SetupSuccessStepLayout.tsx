@@ -5,9 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, useColorMode } from '@/design-system';
-import { CashActionButton } from '@/features/cash/components/CashActionButton';
 
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 import { SetupCancelButton } from './SetupCancelButton';
 
 type SetupSuccessStepAccessory =
@@ -20,27 +18,17 @@ type SetupSuccessStepAccessory =
     };
 
 type SetupSuccessStepLayoutProps = {
-  actionLabel: string;
   accessory: SetupSuccessStepAccessory;
   description: string;
-  onAction?: () => void;
   title: string;
 };
 
 const CHECKMARK_CIRCLE = '􀁢';
 
-export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({
-  actionLabel,
-  accessory,
-  description,
-  onAction,
-  title,
-}: SetupSuccessStepLayoutProps) {
-  const { next } = useCashDepositSetupNavigation();
+export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({ accessory, description, title }: SetupSuccessStepLayoutProps) {
   const insets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
   const handleColor = isDarkMode ? DEFAULT_HANDLE_COLOR_DARK : DEFAULT_HANDLE_COLOR_LIGHT;
-  const actionBottom = Math.max(insets.bottom + 2, 24);
 
   return (
     <Box background="surfacePrimaryElevated" height="full" width="full">
@@ -80,10 +68,6 @@ export const SetupSuccessStepLayout = memo(function SetupSuccessStepLayout({
             </Text>
           </Box>
         </Box>
-      </Box>
-
-      <Box bottom={{ custom: actionBottom }} left={{ custom: 20 }} position="absolute" right={{ custom: 20 }}>
-        <CashActionButton label={actionLabel} onPress={onAction ?? next} shadow testID="cash-setup-success-action" />
       </Box>
     </Box>
   );

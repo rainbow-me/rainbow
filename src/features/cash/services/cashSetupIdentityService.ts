@@ -1,6 +1,32 @@
 import { isExists, startOfDay } from 'date-fns';
 
-import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupUsSsnLast4 } from '../stores/cashSetupSessionStore';
+export type CashSetupDateOfBirth = {
+  year: number;
+  month: number;
+  day: number;
+};
+
+export type CashSetupIdentity = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: CashSetupDateOfBirth;
+};
+
+export type CashSetupIdentityDraft = Omit<CashSetupIdentity, 'dateOfBirth'> & {
+  dateOfBirth: CashSetupDateOfBirth | null;
+};
+
+export type CashSetupGovernmentIdKind = 'GOVERNMENT_ID_KIND_SSN_LAST4';
+
+declare const cashSetupUsSsnLast4Brand: unique symbol;
+
+export type CashSetupUsSsnLast4 = string & { readonly [cashSetupUsSsnLast4Brand]: true };
+
+export type CashSetupGovernmentId = {
+  countryCode: 'US';
+  kind: CashSetupGovernmentIdKind;
+  value: CashSetupUsSsnLast4;
+};
 
 const MAX_LEGAL_NAME_LENGTH = 100;
 const LEGAL_NAME_PATTERN = /^\p{L}+(?:[ '-]\p{L}+)*$/u;
@@ -8,6 +34,11 @@ const LEGAL_NAME_PATTERN = /^\p{L}+(?:[ '-]\p{L}+)*$/u;
 export function isValidLegalName(value: string): boolean {
   const trimmed = value.trim();
   return trimmed.length <= MAX_LEGAL_NAME_LENGTH && LEGAL_NAME_PATTERN.test(trimmed);
+}
+
+export function createCashSetupIdentity({ firstName, lastName, dateOfBirth }: CashSetupIdentityDraft): CashSetupIdentity | null {
+  if (!isValidLegalName(firstName) || !isValidLegalName(lastName) || !dateOfBirth || !isValidDateOfBirth(dateOfBirth)) return null;
+  return { firstName: firstName.trim(), lastName: lastName.trim(), dateOfBirth };
 }
 
 export function isValidDateOfBirth(dateOfBirth: CashSetupDateOfBirth, today = new Date()): boolean {

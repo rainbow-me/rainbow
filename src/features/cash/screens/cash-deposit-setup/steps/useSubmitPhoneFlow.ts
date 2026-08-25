@@ -1,6 +1,4 @@
-import { useCallback } from 'react';
-
-import { createBaseStore, createStoreActions } from '@storesjs/stores';
+import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
@@ -10,7 +8,6 @@ import { useCashSetupSessionStore, type PhoneChallenge } from '../../../stores/c
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 import { extractNationalDigits, NATIONAL_NUMBER_LENGTH } from '../../../utils/phoneNumber';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 export type SubmitPhoneState = 'entry' | 'submitting' | 'error';
 
@@ -81,17 +78,3 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     set({ digits: '', state: 'entry' });
   },
 }));
-
-const submitPhoneFlowActions = createStoreActions(useSubmitPhoneFlowStore);
-
-export function useSubmitPhoneFlow(): Pick<SubmitPhoneFlowStore, 'state' | 'digits' | 'setDigits'> & { submit: () => Promise<void> } {
-  const { next } = useCashDepositSetupNavigation();
-  const state = useSubmitPhoneFlowStore(s => s.state);
-  const digits = useSubmitPhoneFlowStore(s => s.digits);
-
-  const submit = useCallback(async () => {
-    if (await submitPhoneFlowActions.submit()) next();
-  }, [next]);
-
-  return { state, digits, setDigits: submitPhoneFlowActions.setDigits, submit };
-}

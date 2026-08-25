@@ -23,13 +23,7 @@ export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
 
   return (
     <>
-      <SetupStepLayout
-        actionDisabled={code.length !== OTP_LENGTH}
-        actionLabel={i18n.t(l.confirm)}
-        actionLoading={submitted}
-        onAction={submit}
-        title={i18n.t(l.title)}
-      >
+      <SetupStepLayout title={i18n.t(l.title)}>
         <Box gap={16} paddingTop="24px">
           <OtpInput
             error={state === 'error'}

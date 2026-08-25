@@ -6,11 +6,10 @@ import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInput
 import { useDatePicker } from '@/framework/ui/hooks/useDatePicker';
 import * as i18n from '@/languages';
 
-import { formatDateOfBirth, isValidDateOfBirth, isValidLegalName, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
-import { useCashSetupSessionStore, type CashSetupDateOfBirth } from '../../../stores/cashSetupSessionStore';
+import { formatDateOfBirth, toDate, toDateOfBirth } from '../../../services/cashSetupIdentityService';
+import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { useSetupInputRef } from '../setupContext';
-import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 const l = i18n.l.cash.deposit_setup.identity;
 
@@ -28,18 +27,16 @@ function getInitialDateOfBirth(maximumDate: Date): Date {
 }
 
 export const IdentityStep = memo(function IdentityStep() {
-  const storedIdentity = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.identity : null));
-  const [firstName, setFirstName] = useState(storedIdentity?.firstName ?? '');
-  const [lastName, setLastName] = useState(storedIdentity?.lastName ?? '');
+  const identity = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.identity : null));
+  const firstName = identity?.firstName ?? '';
+  const lastName = identity?.lastName ?? '';
+  const dateOfBirth = identity?.dateOfBirth ?? null;
   const [maximumDateOfBirth] = useState(getMaximumDateOfBirth);
   const [initialDateOfBirth] = useState(() => getInitialDateOfBirth(maximumDateOfBirth));
-  const [dateOfBirth, setDateOfBirth] = useState<CashSetupDateOfBirth | null>(storedIdentity?.dateOfBirth ?? null);
-  const canContinue = isValidLegalName(firstName) && isValidLegalName(lastName) && dateOfBirth !== null && isValidDateOfBirth(dateOfBirth);
   const inputTextStyle = useSetupInputTextStyle();
   const firstNameInputRef = useSetupInputRef();
   const labelQuaternary = useForegroundColor('labelQuaternary');
-  const { next } = useCashDepositSetupNavigation();
-  const handleDateOfBirthChange = useCallback((date: Date) => setDateOfBirth(toDateOfBirth(date)), []);
+  const handleDateOfBirthChange = useCallback((date: Date) => useCashSetupSessionStore.getState().setDateOfBirth(toDateOfBirth(date)), []);
   const { openPicker, picker } = useDatePicker({
     confirmLabel: i18n.t(i18n.l.button.done),
     initialDate: initialDateOfBirth,
@@ -49,25 +46,15 @@ export const IdentityStep = memo(function IdentityStep() {
     value: dateOfBirth ? toDate(dateOfBirth) : null,
   });
 
-  const submit = useCallback(() => {
-    if (!canContinue) return;
-    useCashSetupSessionStore.getState().setIdentity({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      dateOfBirth,
-    });
-    next();
-  }, [canContinue, dateOfBirth, firstName, lastName, next]);
-
   return (
-    <SetupStepLayout actionDisabled={!canContinue} onAction={submit} title={i18n.t(l.title)}>
+    <SetupStepLayout title={i18n.t(l.title)}>
       <Box paddingTop="24px">
         <Box flexDirection="row" gap={12}>
           <TextInput
             autoCapitalize="words"
             autoCorrect={false}
             maxLength={100}
-            onChangeText={setFirstName}
+            onChangeText={useCashSetupSessionStore.getState().setFirstName}
             placeholder={i18n.t(l.first_name)}
             placeholderTextColor={labelQuaternary}
             ref={firstNameInputRef}
@@ -80,7 +67,7 @@ export const IdentityStep = memo(function IdentityStep() {
             autoCapitalize="words"
             autoCorrect={false}
             maxLength={100}
-            onChangeText={setLastName}
+            onChangeText={useCashSetupSessionStore.getState().setLastName}
             placeholder={i18n.t(l.last_name)}
             placeholderTextColor={labelQuaternary}
             style={[inputTextStyle, styles.nameInput]}
