@@ -53,9 +53,13 @@ describe('unstakeRnbwCalls', () => {
   });
 
   it('omits requirements when sponsorship is unavailable', async () => {
-    await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
-      calls: [buildUnstakeCall()],
+    await withRemoteConfig({ sponsored_rnbw_unstaking_enabled: true }, async () => {
+      await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
+        calls: [buildUnstakeCall()],
+      });
     });
+
+    expect(mockCanUseSponsoredRnbwStaking).toHaveBeenCalledWith(ACCOUNT, STAKING_CHAIN_ID);
   });
 
   it('omits requirements when the feature flag is off, even if sponsored execution is available', async () => {

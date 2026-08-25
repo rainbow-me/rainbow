@@ -73,6 +73,15 @@ describe('withRemoteConfig', () => {
     expect(nftsEnabled()).toBe(true);
   });
 
+  it('restores only once a thenable that is not a native Promise settles', async () => {
+    const thenable = <T>(value: T): PromiseLike<T> => ({ then: onFulfilled => Promise.resolve(value).then(onFulfilled) });
+
+    const pending = withRemoteConfig({ nfts_enabled: false }, () => thenable('done'));
+    expect(nftsEnabled()).toBe(false);
+    await expect(pending).resolves.toBe('done');
+    expect(nftsEnabled()).toBe(true);
+  });
+
   it('restores when an async block rejects', async () => {
     await expect(withRemoteConfig({ nfts_enabled: false }, () => Promise.reject(new Error('boom')))).rejects.toThrow('boom');
     expect(nftsEnabled()).toBe(true);

@@ -4,6 +4,9 @@ export type MockedRemoteConfigValues = Partial<Pick<RainbowConfig, RemoteConfigK
 
 let values: MockedRemoteConfigValues = {};
 
+const isThenable = (value: unknown): value is PromiseLike<unknown> =>
+  typeof (value as PromiseLike<unknown> | null | undefined)?.then === 'function';
+
 export const mockedRemoteConfig = (): RainbowConfig => values as RainbowConfig;
 
 export function setRemoteConfig(config: MockedRemoteConfigValues): void {
@@ -26,7 +29,7 @@ export function withRemoteConfig<T>(config: MockedRemoteConfigValues, body: () =
     throw error;
   }
 
-  if (result instanceof Promise) return result.finally(restore) as T;
+  if (isThenable(result)) return Promise.resolve(result).finally(restore) as T;
   restore();
   return result;
 }
