@@ -4,6 +4,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
+import { setRemoteConfig, withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
@@ -24,10 +25,6 @@ const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unkn
 const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
 const mockTrackCallsExecution = jest.fn<void, [unknown]>();
 
-const mockRemoteConfig = {
-  sponsored_sends_enabled: true,
-};
-
 const mockSponsoredCallsRequirements = {
   atomic: 'required',
   fees: { payer: 'sponsor' },
@@ -42,9 +39,8 @@ jest.mock('@rainbow-me/sdk', () => ({
   },
 }));
 
-jest.mock('@/features/config/stores/remoteConfig', () => ({
-  getRemoteConfig: () => mockRemoteConfig,
-}));
+jest.mock('@/features/config/stores/remoteConfig');
+setRemoteConfig({ sponsored_sends_enabled: true });
 
 jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
@@ -127,7 +123,6 @@ function executeWith(params?: Partial<Parameters<typeof executeSponsoredSend>[0]
 describe('sponsoredSend', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRemoteConfig.sponsored_sends_enabled = true;
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockCreateDelegationPublicClient.mockReturnValue(publicClient);
     mockIsSponsorshipEligible.mockReturnValue(true);
@@ -141,12 +136,10 @@ describe('sponsoredSend', () => {
   });
 
   it('requires remote config and a valid address before predicting sponsored sends', () => {
-    mockRemoteConfig.sponsored_sends_enabled = false;
-
-    expect(predictSponsoredSend({ address: ACCOUNT, chainId })).toBe(false);
-    expect(mockCanUseDelegatedExecution).not.toHaveBeenCalled();
-
-    mockRemoteConfig.sponsored_sends_enabled = true;
+    withRemoteConfig({ sponsored_sends_enabled: false }, () => {
+      expect(predictSponsoredSend({ address: ACCOUNT, chainId })).toBe(false);
+      expect(mockCanUseDelegatedExecution).not.toHaveBeenCalled();
+    });
 
     expect(predictSponsoredSend({ address: 'not-an-address', chainId })).toBe(false);
     expect(mockCanUseDelegatedExecution).not.toHaveBeenCalled();

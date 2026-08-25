@@ -35,11 +35,7 @@ jest.mock('@/framework/data/http/rainbowFetch', () => ({
   rainbowFetch: jest.fn(),
 }));
 
-jest.mock('@/features/config/stores/remoteConfig', () => ({
-  useRemoteConfigStore: mockStore({
-    getRemoteConfigKey: jest.fn(() => false),
-  }),
-}));
+jest.mock('@/features/config/stores/remoteConfig');
 
 function mockStore<T>(state: T) {
   return Object.assign(jest.fn(), {

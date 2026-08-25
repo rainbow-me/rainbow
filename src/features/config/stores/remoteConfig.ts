@@ -242,7 +242,7 @@ export const DEFAULT_CONFIG = {
   go_relay_backend_enabled: true,
 } as const satisfies Readonly<RainbowConfig>;
 
-type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
+export type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
 
 // ============ Firebase Defaults ============================================== //
 
