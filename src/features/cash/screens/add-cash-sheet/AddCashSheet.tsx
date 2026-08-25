@@ -16,6 +16,7 @@ import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyServi
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
 import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
+import { getTelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useWatcher } from '@/framework/ui/hooks/useWatcher';
@@ -438,6 +439,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
     } catch (error) {
       if (controller.signal.aborted || isPasskeyCancellation(error)) return;
       logger.error(new RainbowError('[AddCashSheet]: Failed to resolve the deposit wallet', error));
+      analytics.track(analytics.event.cashWalletCheckFailed, { reason: getTelemetryErrorReason(error) });
       Alert.alert(
         i18n.t(i18n.l.cash.add_cash_screen.wallet_check_error_title),
         i18n.t(i18n.l.cash.add_cash_screen.wallet_check_error_generic)

@@ -128,7 +128,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         set({ status: { step: 'polling', orderId: created.id, order: null, submittedAt } });
       } catch (error) {
         if (!isCurrentSubmission(spec)) return;
-        logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed'), { error });
+        logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
         analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
         set({ status: { step: 'error', errorCode: 'GENERIC', order: null, spec: isDefinitiveRejection(error) ? undefined : spec } });
         // A 404 says the backend did not recognise something this order named, and the linked wallet
@@ -190,7 +190,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         } catch (error) {
           if (abortController?.signal.aborted) return;
           // Transient poll failure; retry on the watcher's next tick.
-          logger.error(new RainbowError('[cashBuyOrderStore] getOrder failed'), { error });
+          logger.error(new RainbowError('[cashBuyOrderStore] getOrder failed', error));
         } finally {
           abortController?.signal.removeEventListener('abort', propagateAbort);
         }

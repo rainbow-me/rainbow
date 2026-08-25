@@ -12,6 +12,7 @@ jest.mock('@/analytics', () => ({
     event: {
       cashPhoneVerified: 'cash.phone_verified',
       cashPhoneVerifyFailed: 'cash.phone_verify_failed',
+      cashPhoneResendFailed: 'cash.phone_resend_failed',
       cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
       cashKycApproved: 'cash.kyc_approved',
       cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
@@ -393,6 +394,16 @@ describe('useVerifyPhoneFlowStore.resend', () => {
       phoneNationalNumber: '4155550100',
       resendAfter: RESEND_AFTER,
     });
+    expect(flow().resending).toBeNull();
+  });
+
+  it('reports the failure and clears the in-flight flag when the resend throws', async () => {
+    mockResendPhoneCode.mockRejectedValue(new Error('resend failed'));
+
+    await flow().resend();
+
+    expect(track).toHaveBeenCalledWith('cash.phone_resend_failed', { reason: 'unknown', mode: 'signup' });
+    expect(logger.error).toHaveBeenCalled();
     expect(flow().resending).toBeNull();
   });
 

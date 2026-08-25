@@ -9,7 +9,11 @@ import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
 jest.mock('@/analytics', () => ({
   analytics: {
     track: jest.fn(),
-    event: { cashPhoneSubmitted: 'cash.phone_submitted', cashPhoneAlreadyRegistered: 'cash.phone_already_registered' },
+    event: {
+      cashPhoneSubmitted: 'cash.phone_submitted',
+      cashPhoneSubmitFailed: 'cash.phone_submit_failed',
+      cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+    },
   },
 }));
 
@@ -120,7 +124,8 @@ describe('useSubmitPhoneFlowStore.submit', () => {
 
     expect(flow().state).toBe('error');
     expect(session().status).toBe('empty');
-    expect(track).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith('cash.phone_submit_failed', { reason: 'unknown' });
+    expect(track).not.toHaveBeenCalledWith('cash.phone_submitted', expect.anything());
     expect(logger.error).toHaveBeenCalled();
   });
 
@@ -158,7 +163,8 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(flow().state).toBe('error');
     expect(flow().digits).toBe(DIGITS);
     expect(session().status).toBe('empty');
-    expect(track).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith('cash.phone_submit_failed', { reason: 'unknown' });
+    expect(track).not.toHaveBeenCalledWith('cash.phone_submitted', expect.anything());
     expect(logger.error).toHaveBeenCalled();
   });
 

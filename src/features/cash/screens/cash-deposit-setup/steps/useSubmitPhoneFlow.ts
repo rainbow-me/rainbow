@@ -8,6 +8,7 @@ import { logger, RainbowError } from '@/logger';
 import { createUserWithPhone, startSignupResume } from '../../../services/userClient';
 import { useCashSetupSessionStore, type PhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
+import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 import { extractNationalDigits, NATIONAL_NUMBER_LENGTH } from '../../../utils/phoneNumber';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
@@ -69,6 +70,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return true;
     } catch (e) {
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
+      analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });
       return false;
     }
