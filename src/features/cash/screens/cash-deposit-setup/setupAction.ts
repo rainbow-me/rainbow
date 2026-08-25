@@ -10,7 +10,7 @@ import { CardBrand } from '../../services/rampClient';
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { NATIONAL_NUMBER_LENGTH } from '../../utils/phoneNumber';
-import { useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
+import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { completeSetupStep, goBackInSetup } from './setupNavigation';
 import { isSetupEditDetour } from './steps';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
@@ -26,7 +26,10 @@ type SetupAction = {
 };
 
 async function submitPhone(): Promise<void> {
-  if (await useSubmitPhoneFlowStore.getState().submit()) completeSetupStep();
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if ((await useSubmitPhoneFlowStore.getState().submit()) && CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) {
+    completeSetupStep();
+  }
 }
 
 export async function submitPhoneCode(): Promise<void> {

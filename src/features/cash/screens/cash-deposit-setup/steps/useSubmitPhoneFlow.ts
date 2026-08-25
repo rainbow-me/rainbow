@@ -43,6 +43,14 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     const { digits, state } = get();
     if (digits.length !== NATIONAL_NUMBER_LENGTH || state === 'submitting') return false;
 
+    // A code is already out for this number, so advance to let the user enter it.
+    // Re-submitting would send a second one, which the resend cooldown forbids.
+    const { session } = useCashSetupSessionStore.getState();
+    if (session.status === 'phoneSubmitted' && session.phoneNationalNumber === digits) {
+      useVerifyPhoneFlowStore.getState().reset();
+      return true;
+    }
+
     clearPhoneAlreadyRegistered();
     set({ state: 'submitting' });
     try {
