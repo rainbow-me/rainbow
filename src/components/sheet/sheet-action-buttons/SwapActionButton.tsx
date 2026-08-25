@@ -27,10 +27,10 @@ type SwapActionButtonProps = {
   textColor?: string;
   label?: string;
   /**
-   * Distinguishes multiple swap entry points rendered side by side, e.g. the buy/sell
-   * pair on the expanded asset sheet footer.
+   * Identifies the swap entry point, e.g. the buy/sell pair on the expanded asset
+   * sheet footer. Rendered by SheetActionButton as `${testID}-action-button`.
    */
-  testID?: string;
+  testID: string;
   weight?: string;
 };
 
@@ -41,7 +41,7 @@ function SwapActionButton({
   icon,
   inputType,
   label,
-  testID = 'swap',
+  testID,
   weight = 'heavy',
   ...props
 }: SwapActionButtonProps) {
