@@ -9,6 +9,7 @@ import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 import { useCashDepositSetupNavigation } from '../useCashDepositSetupNavigation';
 
 export type AddPasskeyState = 'entry' | 'submitting' | 'error';
@@ -49,7 +50,7 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
         return 'cancelled';
       }
       logger.error(new RainbowError('[useAddPasskeyFlow]: Failed to add passkey', e));
-      analytics.track(analytics.event.cashPasskeyFailed, { reason: e instanceof Error ? e.message : String(e) });
+      analytics.track(analytics.event.cashPasskeyFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });
       return 'failed';
     }

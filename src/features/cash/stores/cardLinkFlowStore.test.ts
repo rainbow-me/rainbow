@@ -90,7 +90,7 @@ describe('cardLinkFlowStore', () => {
 
     expect(flow().state).toBe('submitError');
     expect(linkedCard()).toBeNull();
-    expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'vault exploded' });
+    expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'unknown' });
   });
 
   it('ignores a second submit while one is in flight', async () => {

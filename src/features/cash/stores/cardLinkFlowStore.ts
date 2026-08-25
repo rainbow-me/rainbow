@@ -7,6 +7,7 @@ import { logger, RainbowError } from '@/logger';
 import { linkCardWithVault } from '../services/cardLinkService';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import type { CardBrand } from '../services/rampClient';
+import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
 
 export type CardLinkState = 'entry' | 'submitting' | 'submitError' | 'success';
@@ -43,7 +44,7 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
         return;
       }
       logger.error(new RainbowError('[cardLinkFlowStore]: Failed to link card', e));
-      analytics.track(analytics.event.cashCardLinkFailed, { reason: e instanceof Error ? e.message : String(e) });
+      analytics.track(analytics.event.cashCardLinkFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'submitError' });
     } finally {
       if (inFlight === controller) inFlight = null;

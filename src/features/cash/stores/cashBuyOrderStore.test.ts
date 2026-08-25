@@ -1,3 +1,4 @@
+import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
@@ -18,6 +19,19 @@ import {
 import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, type CashBuyStatus } from './cashBuyOrderStore';
 import { useCashWalletStore } from './cashWalletStore';
+
+jest.mock('@/analytics', () => ({
+  analytics: {
+    track: jest.fn(),
+    event: {
+      cashBuyOrderSubmitted: 'cash.buy_submitted',
+      cashBuyOrderCompleted: 'cash.buy_completed',
+      cashBuyOrderFailed: 'cash.buy_failed',
+    },
+  },
+}));
+
+jest.mock('@/features/local-auth/legacyKeychain', () => ({}));
 
 jest.mock('@/logger', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
@@ -50,6 +64,7 @@ const createBuyOrder = rampCreateBuyOrder as jest.Mock;
 const getOrder = rampGetOrder as jest.Mock;
 const addPendingTransaction = pendingTransactionsActions.addPendingTransaction as jest.Mock;
 const buildPurchaseTransaction = buildCashPurchaseTransaction as jest.Mock;
+const track = analytics.track as jest.Mock;
 
 const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 
@@ -112,6 +127,14 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('submitBuyOrder', () => {
+  it('rounds the amount before tracking a submitted order', async () => {
+    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
+
+    await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '123.456789' });
+
+    expect(track).toHaveBeenCalledWith(analytics.event.cashBuyOrderSubmitted, { amount: 123 });
+  });
+
   it('builds a spec, creates the order, and surfaces the created order id as pending', async () => {
     createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
 
@@ -304,6 +327,26 @@ describe('syncActiveOrder', () => {
     });
     expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
     expect(phase()).toBe('success');
+  });
+
+  it('rounds the fiat and crypto amounts before tracking a completed order', async () => {
+    const completedOrder = {
+      ...COMPLETED_ORDER,
+      fiatAmount: { ...COMPLETED_ORDER.fiatAmount, amount: '123.456789' },
+      cryptoAmount: { ...COMPLETED_ORDER.cryptoAmount, amount: '0.123456789' },
+    };
+    startPolling(PROCESSING_ORDER);
+    getOrder.mockResolvedValue(completedOrder);
+
+    await getState().syncActiveOrder();
+
+    expect(track).toHaveBeenCalledWith(analytics.event.cashBuyOrderCompleted, {
+      fiatAmount: 123,
+      fiatCurrency: 'USD',
+      cryptoAmount: 0.123,
+      network: RampNetwork.Base,
+      timeToUsdcMs: 6_000,
+    });
   });
 
   // usePendingTransactionsStore is a raw-keyed map and every reader looks the row up under the app's

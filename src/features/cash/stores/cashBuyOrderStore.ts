@@ -2,6 +2,7 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import { v4 as uuidv4 } from 'uuid';
 
 import { analytics } from '@/analytics';
+import { toAnalyticsAmount } from '@/analytics/utils';
 import { requireAddress } from '@/features/address/core/requireAddress';
 import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
@@ -84,10 +85,9 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     function applyTerminalOrder(order: TerminalBuyOrder): void {
       if (order.status === OrderStatus.Completed) {
         analytics.track(analytics.event.cashBuyOrderCompleted, {
-          orderId: order.id,
-          fiatAmount: order.fiatAmount.amount,
+          fiatAmount: toAnalyticsAmount(order.fiatAmount.amount),
           fiatCurrency: order.fiatAmount.currency,
-          cryptoAmount: order.cryptoAmount.amount,
+          cryptoAmount: toAnalyticsAmount(order.cryptoAmount.amount),
           network: order.cryptoAmount.asset.network,
           timeToUsdcMs: new Date(order.completedTime).getTime() - new Date(order.createdTime).getTime(),
         });
@@ -146,7 +146,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         const { status } = get();
         if (selectCashBuyPhase({ status }) === 'pending') return;
 
-        analytics.track(analytics.event.cashBuyOrderSubmitted, { amount: depositAmount });
+        analytics.track(analytics.event.cashBuyOrderSubmitted, { amount: toAnalyticsAmount(depositAmount) });
 
         // decides whether the new submission should reuse the order id
         // from a previous failed attempt with not definitive rejection

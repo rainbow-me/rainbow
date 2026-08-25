@@ -7,6 +7,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { isPasskeyCancellation } from '../../services/cashPasskeyService';
 import { linkWalletWithSignature, WalletSignatureError } from '../../services/walletLinkService';
+import { getTelemetryErrorReason } from '../../utils/getTelemetryErrorReason';
 
 export type WalletLinkState = 'idle' | 'linking' | 'linked' | 'error';
 
@@ -43,7 +44,7 @@ export function useWalletLinkFlow({ onLinked, walletAddress }: { onLinked: () =>
         return;
       }
       logger.error(new RainbowError('[useWalletLinkFlow]: Failed to link wallet', e));
-      analytics.track(analytics.event.cashWalletLinkFailed, { reason: e instanceof Error ? e.message : String(e) });
+      analytics.track(analytics.event.cashWalletLinkFailed, { reason: getTelemetryErrorReason(e) });
       // Recovered by confirming again rather than a dedicated retry: the timestamp is inside the
       // signed message, so replaying the old signature would land outside the server's skew window.
       setState('error');

@@ -534,20 +534,19 @@ export type EventProperties = {
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
   [event.cashAmountEntered]: {
-    /** The chosen USD amount as a decimal string, e.g. "50". */
-    amount: string;
+    /** The chosen USD amount. */
+    amount: number | undefined;
     /** Which amount-entry surface the user used first. */
     entryMode: 'preset' | 'keypad';
   };
   [event.cashBuyOrderSubmitted]: {
-    /** The submitted USD amount as a decimal string. */
-    amount: string;
+    /** The submitted USD amount. */
+    amount: number | undefined;
   };
   [event.cashBuyOrderCompleted]: {
-    orderId: string;
-    fiatAmount: string;
+    fiatAmount: number | undefined;
     fiatCurrency: string;
-    cryptoAmount: string;
+    cryptoAmount: number | undefined;
     network: RampNetwork;
     /** Milliseconds from order creation to completion, derived from the backend `createdTime`/`completedTime`. */
     timeToUsdcMs: number;
@@ -577,7 +576,7 @@ export type EventProperties = {
     mode: 'signup' | 'resume';
   };
   [event.cashPhoneVerifyFailed]: {
-    reason: string;
+    reason: TelemetryErrorReason;
     mode: 'signup' | 'resume';
   };
   [event.cashKycSubmitted]: undefined;
@@ -586,24 +585,24 @@ export type EventProperties = {
     source: 'submit' | 'resume';
   };
   [event.cashKycFailed]: {
-    reason: string;
+    reason: TelemetryErrorReason | 'rejected';
   };
   [event.cashPasskeySubmitted]: undefined;
   [event.cashPasskeyAdded]: undefined;
   [event.cashPasskeyFailed]: {
-    reason: string;
+    reason: TelemetryErrorReason;
   };
   [event.cashCardLinked]: {
     /** Display brand of the linked card, e.g. "Visa". */
     brand: string;
   };
   [event.cashCardLinkFailed]: {
-    reason: string;
+    reason: TelemetryErrorReason;
   };
   [event.cashWalletLinkPrompted]: undefined;
   [event.cashWalletLinked]: undefined;
   [event.cashWalletLinkFailed]: {
-    reason: string;
+    reason: TelemetryErrorReason;
   };
   [event.cashSignInSubmitted]: {
     trigger: CashSignInTrigger;
@@ -613,7 +612,7 @@ export type EventProperties = {
   };
   [event.cashSignInFailed]: {
     trigger: CashSignInTrigger;
-    reason: string;
+    reason: TelemetryErrorReason;
   };
   [event.cashSignInCancelled]: {
     trigger: CashSignInTrigger;
