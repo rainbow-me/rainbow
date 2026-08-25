@@ -100,9 +100,10 @@ export const AddWalletSheet = memo(function AddWalletSheet() {
   }
 
   const isError = state === 'error';
+  const isLinking = state === 'linking' || state === 'linked';
 
   return (
-    <PanelSheet>
+    <PanelSheet showTapToDismiss={!isLinking}>
       <Box paddingBottom="20px" paddingHorizontal="20px" paddingTop="52px">
         <Stack space="32px">
           <Box paddingHorizontal="12px">
@@ -123,7 +124,7 @@ export const AddWalletSheet = memo(function AddWalletSheet() {
           </Box>
           <CashActionButton
             label={i18n.t(isError ? i18n.l.cash.add_wallet.retry : i18n.l.cash.add_wallet.confirm)}
-            loading={state === 'linking' || state === 'linked'}
+            loading={isLinking}
             onPress={confirm}
             testID="cash-deposit-add-wallet-confirm"
           />

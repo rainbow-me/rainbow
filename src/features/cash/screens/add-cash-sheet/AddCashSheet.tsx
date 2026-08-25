@@ -12,7 +12,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { ORDER_POLL_INTERVAL_MS } from '@/features/cash/constants';
+import { ORDER_POLL_INTERVAL_MS, ORDER_SUBMISSION_RETRY_BASE_DELAY_MS } from '@/features/cash/constants';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
@@ -337,6 +337,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const phase = useCashBuyPhase();
   const previousPhase = usePrevious(phase);
   const errorCode = useCashBuyOrderStore(state => (state.status.step === 'error' ? state.status.errorCode : null));
+  const isSubmitting = useCashBuyOrderStore(state => state.status.step === 'submitting');
   const isPolling = useCashBuyOrderStore(state => state.status.step === 'polling');
   const submittedAt = useCashBuyOrderStore(state =>
     state.status.step === 'submitting' || state.status.step === 'polling' ? state.status.submittedAt : null
@@ -372,15 +373,16 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
-  // On open, replay a submit interrupted before an order id came back; otherwise clear the settled
-  // previous run so the sheet starts fresh.
+  // Keep recovered in-flight state; otherwise clear the settled previous run so the sheet starts fresh.
   useEffect(() => {
-    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending') {
-      cashBuyOrderActions.resumePendingSubmission();
-    } else {
-      cashBuyOrderActions.reset();
-    }
+    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) !== 'pending') cashBuyOrderActions.reset();
   }, []);
+
+  useWatcher({
+    enabled: isSubmitting,
+    interval: ORDER_SUBMISSION_RETRY_BASE_DELAY_MS,
+    watchFunction: cashBuyOrderActions.resumePendingSubmission,
+  });
 
   useWatcher({
     enabled: isPolling,
@@ -481,6 +483,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       layoutAnimation={PANEL_LAYOUT}
       panelStyle={isKeypad ? styles.fullScreenPanel : undefined}
       showHandle={!isKeypad}
+      showTapToDismiss={!isProcessing}
     >
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
         {view === 'pending' ? (

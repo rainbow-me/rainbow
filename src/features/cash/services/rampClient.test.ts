@@ -8,6 +8,7 @@ import {
   completeCardLinkSession,
   createBuyOrder,
   getOrder,
+  isDefinitiveRejection,
   OrderStatus,
   RampCryptoAsset,
   RampNetwork,
@@ -143,5 +144,23 @@ describe('buy orders', () => {
       abortController,
       headers: { Authorization: 'Bearer jwt-1' },
     });
+  });
+});
+
+// Callers use this to decide whether a failed write may still have taken effect, so every status
+// answered `true` here is one whose retry is allowed to create a second order.
+describe('isDefinitiveRejection', () => {
+  const cases: { error: unknown; expected: boolean; label: string }[] = [
+    { label: '400', error: fetchError(400, 'bad request'), expected: true },
+    { label: '404', error: fetchError(404, 'not found'), expected: true },
+    { label: '408', error: fetchError(408, 'request timeout'), expected: false },
+    { label: '422', error: fetchError(422, 'unprocessable'), expected: true },
+    { label: '429', error: fetchError(429, 'too many requests'), expected: false },
+    { label: '500', error: fetchError(500, 'server error'), expected: false },
+    { label: 'a transport error with no response', error: new Error('network down'), expected: false },
+  ];
+
+  it.each(cases)('answers $expected for $label', ({ error, expected }) => {
+    expect(isDefinitiveRejection(error)).toBe(expected);
   });
 });

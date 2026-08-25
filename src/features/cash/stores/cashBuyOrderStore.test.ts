@@ -128,17 +128,21 @@ beforeEach(() => {
 
 describe('submitBuyOrder', () => {
   it('rounds the amount before tracking a submitted order', async () => {
-    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
-
     await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '123.456789' });
 
     expect(track).toHaveBeenCalledWith(analytics.event.cashBuyOrderSubmitted, { amount: 123 });
+    expect(createBuyOrder).not.toHaveBeenCalled();
   });
 
-  it('builds a spec, creates the order, and surfaces the created order id as pending', async () => {
+  it('builds a spec for the watcher to submit', async () => {
     createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+
+    expect(createBuyOrder).not.toHaveBeenCalled();
+    expect(getState().status).toEqual({ step: 'submitting', spec: SPEC, submittedAt: expect.any(Number) });
+
+    await getState().resumePendingSubmission();
 
     expect(createBuyOrder).toHaveBeenCalledWith({ ...SPEC, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
     expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
@@ -150,6 +154,7 @@ describe('submitBuyOrder', () => {
     getOrder.mockResolvedValue(COMPLETED_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumePendingSubmission();
 
     expect(phase()).toBe('pending');
     expect(addPendingTransaction).not.toHaveBeenCalled();
@@ -161,65 +166,80 @@ describe('submitBuyOrder', () => {
     expect(phase()).toBe('success');
   });
 
-  it('surfaces a GENERIC error when order creation throws', async () => {
-    createBuyOrder.mockRejectedValue(new Error('network down'));
+  it('surfaces a GENERIC error when the backend definitively rejects order creation', async () => {
+    createBuyOrder.mockRejectedValue(fetchError(422));
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumePendingSubmission();
 
     expect(logger.error).toHaveBeenCalled();
-    expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null, spec: SPEC });
+    expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null });
     expect(phase()).toBe('error');
   });
 
-  // An ambiguous failure (transport error, 5xx) leaves it unknown whether the order was created, so
-  // a retry with the same inputs must replay the same id — the backend then returns the existing
-  // order instead of creating a second one.
-  it('replays the same order id when retrying after an ambiguous failure', async () => {
+  it('replays the same order id when resuming after an ambiguous failure', async () => {
     createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce(CREATED_PENDING_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
-    await getState().submitBuyOrder(SUBMIT_INPUT);
+    await expect(getState().resumePendingSubmission()).rejects.toThrow('network down');
+
+    expect(getOrder).not.toHaveBeenCalled();
+    expect(createBuyOrder).toHaveBeenCalledTimes(1);
+    expect(getState().status).toEqual({ step: 'submitting', spec: SPEC, submittedAt: expect.any(Number) });
+
+    await getState().resumePendingSubmission();
 
     expect(createBuyOrder).toHaveBeenCalledTimes(2);
     expect(createBuyOrder.mock.calls[1][0].id).toBe(SPEC.id);
     expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
   });
 
+  it('keeps the submission pending when a resumed replay also fails ambiguously', async () => {
+    createBuyOrder.mockRejectedValue(new Error('network down'));
+
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+    await expect(getState().resumePendingSubmission()).rejects.toThrow('network down');
+    await expect(cashBuyOrderActions.resumePendingSubmission()).rejects.toThrow('network down');
+
+    expect(createBuyOrder).toHaveBeenCalledTimes(2);
+    expect(getState().status).toEqual({ step: 'submitting', spec: SPEC, submittedAt: expect.any(Number) });
+    expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
+    expect(phase()).toBe('pending');
+  });
+
   it('generates a fresh order id when retrying after a definitive backend rejection', async () => {
     createBuyOrder.mockRejectedValueOnce(fetchError(422)).mockResolvedValueOnce({ ...CREATED_PENDING_ORDER, id: 'order-2' });
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
-    expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null, spec: undefined });
+    await getState().resumePendingSubmission();
+    expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null });
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumePendingSubmission();
     expect(createBuyOrder.mock.calls[1][0].id).toBe('order-2');
-  });
-
-  it('generates a fresh order id when the retried inputs differ from the retained spec', async () => {
-    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ ...CREATED_PENDING_ORDER, id: 'order-2' });
-
-    await getState().submitBuyOrder(SUBMIT_INPUT);
-    await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '100' });
-
-    expect(createBuyOrder.mock.calls[1][0]).toMatchObject({ id: 'order-2', depositAmount: '100' });
   });
 
   // A 404 is the only handle the ramp surface gives on "the wallet you named is not linked", so it
   // is the one failure that invalidates the cache. Every other failure leaves it alone.
-  const cacheOutcomes: { label: string; failure: unknown; cleared: boolean }[] = [
-    { label: 'a 404', failure: fetchError(404), cleared: true },
-    { label: 'a 500', failure: fetchError(500), cleared: false },
-    { label: 'a transport error with no response', failure: new Error('network down'), cleared: false },
+  const cacheOutcomes: { label: string; failure: unknown; cleared: boolean; expectedPhase: 'error' | 'pending' }[] = [
+    { label: 'a 404', failure: fetchError(404), cleared: true, expectedPhase: 'error' },
+    { label: 'a 408', failure: fetchError(408), cleared: false, expectedPhase: 'pending' },
+    { label: 'a 429', failure: fetchError(429), cleared: false, expectedPhase: 'pending' },
+    { label: 'a 500', failure: fetchError(500), cleared: false, expectedPhase: 'pending' },
+    { label: 'a transport error with no response', failure: new Error('network down'), cleared: false, expectedPhase: 'pending' },
   ];
 
-  it.each(cacheOutcomes)('$label leaves the linked-wallet cache cleared=$cleared', async ({ failure, cleared }) => {
+  it.each(cacheOutcomes)('$label leaves the linked-wallet cache cleared=$cleared', async ({ failure, cleared, expectedPhase }) => {
     useCashWalletStore.setState({ linkedWallets: [LINKED_WALLET] });
     createBuyOrder.mockRejectedValue(failure);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState()
+      .resumePendingSubmission()
+      .catch(() => undefined);
 
     expect(useCashWalletStore.getState().linkedWallets).toEqual(cleared ? [] : [LINKED_WALLET]);
-    expect(phase()).toBe('error');
+    expect(phase()).toBe(expectedPhase);
   });
 
   it('keeps the linked-wallet cache when the order is created', async () => {
@@ -227,6 +247,7 @@ describe('submitBuyOrder', () => {
     createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumePendingSubmission();
 
     expect(useCashWalletStore.getState().linkedWallets).toEqual([LINKED_WALLET]);
   });
@@ -239,7 +260,8 @@ describe('submitBuyOrder', () => {
       })
     );
 
-    const inFlight = getState().submitBuyOrder(SUBMIT_INPUT); // sets 'submitting' → pending, then awaits createBuyOrder
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+    const inFlight = getState().resumePendingSubmission();
     await getState().submitBuyOrder(SUBMIT_INPUT); // guard sees 'pending' and returns immediately
 
     expect(createBuyOrder).toHaveBeenCalledTimes(1);
@@ -419,58 +441,82 @@ describe('resumePendingSubmission', () => {
     expect(phase()).toBe('pending');
   });
 
+  it('returns to idle when the passkey prompt is cancelled', async () => {
+    store.setState({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
+    createBuyOrder.mockRejectedValue(new Error('UserCancelled'));
+
+    await getState().resumePendingSubmission();
+
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
+    expect(getState().status).toEqual({ step: 'idle' });
+  });
+
   it('is a no-op when there is no pending spec', async () => {
     await getState().resumePendingSubmission(); // idle from beforeEach
     expect(createBuyOrder).not.toHaveBeenCalled();
   });
 });
 
-// A dismiss/reopen replays the persisted spec while the original POST may still be in flight, so
-// two requests for the same order id can settle in either order. The first result wins; the
-// straggler must not clobber it.
-describe('concurrent submissions of the same spec', () => {
-  it('drops a late failure once a replay has already reached polling', async () => {
-    let rejectOriginal: (error: Error) => void = () => undefined;
-    createBuyOrder
-      .mockReturnValueOnce(
-        new Promise((_resolve, reject) => {
-          rejectOriginal = reject;
-        })
-      )
-      .mockResolvedValueOnce(CREATED_PENDING_ORDER);
+describe('an in-flight submission', () => {
+  it('drops a result that lands after the submission was reset', async () => {
+    let resolveCreate: (created: CreatedBuyOrder) => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise<CreatedBuyOrder>(resolve => {
+        resolveCreate = resolve;
+      })
+    );
 
-    const original = getState().submitBuyOrder(SUBMIT_INPUT); // hangs in flight
-    await getState().resumePendingSubmission(); // reopen replays the same spec and resolves first
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+    const inFlight = getState().resumePendingSubmission();
+    getState().reset();
+    resolveCreate(CREATED_PENDING_ORDER);
+    await inFlight;
 
-    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
-
-    rejectOriginal(new Error('timeout'));
-    await original;
-
-    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
-    expect(phase()).toBe('pending');
+    expect(getState().status).toEqual({ step: 'idle' });
   });
 
-  it('drops a late success once polling has already advanced past submission', async () => {
-    let resolveOriginal: (created: CreatedBuyOrder) => void = () => undefined;
+  it('drops a late success after a concurrent resume has advanced to polling', async () => {
+    let resolveFirstCreate: (created: CreatedBuyOrder) => void = () => undefined;
     createBuyOrder
       .mockReturnValueOnce(
         new Promise<CreatedBuyOrder>(resolve => {
-          resolveOriginal = resolve;
+          resolveFirstCreate = resolve;
         })
       )
       .mockResolvedValueOnce(CREATED_PENDING_ORDER);
+    store.setState({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
 
-    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    const firstResume = getState().resumePendingSubmission();
     await getState().resumePendingSubmission();
     getOrder.mockResolvedValue(PENDING_ORDER);
     await getState().syncActiveOrder();
 
-    resolveOriginal(CREATED_PENDING_ORDER);
-    await original;
+    resolveFirstCreate(CREATED_PENDING_ORDER);
+    await firstResume;
 
-    // The late success must not rewind `order` to null.
-    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: PENDING_ORDER, submittedAt: expect.any(Number) });
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: PENDING_ORDER, submittedAt: SUBMITTED_AT });
+  });
+
+  it('drops a late failure after a concurrent resume has advanced to polling', async () => {
+    let rejectFirstCreate: (error: RainbowFetchError) => void = () => undefined;
+    createBuyOrder
+      .mockReturnValueOnce(
+        new Promise<CreatedBuyOrder>((_resolve, reject) => {
+          rejectFirstCreate = reject;
+        })
+      )
+      .mockResolvedValueOnce(CREATED_PENDING_ORDER);
+    store.setState({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
+
+    const firstResume = getState().resumePendingSubmission();
+    await getState().resumePendingSubmission();
+
+    rejectFirstCreate(fetchError(422));
+    await firstResume;
+
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: SUBMITTED_AT });
+    expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
   });
 });
 
