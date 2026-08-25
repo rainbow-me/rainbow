@@ -24,6 +24,10 @@ jest.mock('@/logger', () => ({
   RainbowError: class extends Error {},
 }));
 
+beforeEach(() => {
+  staticSignatureLRU.clear();
+});
+
 describe('maybeSignUri', () => {
   it('encodes the source URL into the path and signs it', () => {
     expect(maybeSignUri('https://rainbowme-res.cloudinary.com/image/upload/assets/ethereum/aaa.png', { w: 40, h: 40 })).toBe(
@@ -79,6 +83,14 @@ describe('maybeSignUri', () => {
     const source = 'https://example.com/preseeded.png';
     staticSignatureLRU.set(cacheKey(source, 40), 'cached-sentinel');
     expect(maybeSignUri(source, { w: 40 })).toBe('cached-sentinel');
+  });
+
+  it('keys fm separately, so one uri and width can hold two formats', () => {
+    const source = 'https://example.com/two-formats.svg';
+    const png = maybeSignUri(source, { w: 40, fm: 'png' });
+
+    expect(maybeSignUri(source, { w: 40, fm: 'gif' })).not.toBe(png);
+    expect(maybeSignUri(source, { w: 40, fm: 'png' })).toBe(png);
   });
 
   it('skipCaching ignores a cached entry and re-signs', () => {
