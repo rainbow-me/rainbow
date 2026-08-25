@@ -1,4 +1,4 @@
-import { createBaseStore } from '@storesjs/stores';
+import { createBaseStore, shallowEqual } from '@storesjs/stores';
 
 import {
   createCashSetupIdentity,
@@ -65,11 +65,13 @@ const EMPTY_IDENTITY: CashSetupIdentityDraft = { firstName: '', lastName: '', da
 
 // Intentionally memory-only (PII)
 export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((set, get) => {
-  const setIdentityField = <Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) => {
-    const { session } = get();
-    if (session.status !== 'phoneVerified' || session.identity[field] === value) return;
-    set({ session: { ...session, identity: { ...session.identity, [field]: value } } });
-  };
+  function setIdentityField<Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) {
+    set(state => {
+      const { session } = state;
+      if (session.status !== 'phoneVerified' || shallowEqual(session.identity[field], value)) return state;
+      return { session: { ...session, identity: { ...session.identity, [field]: value } } };
+    });
+  }
 
   return {
     session: EMPTY_SESSION,
