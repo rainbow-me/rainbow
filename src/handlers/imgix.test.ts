@@ -1,4 +1,7 @@
-import { getSizedImageUrl, maybeSignSource, maybeSignUri } from './imgix';
+import { getSizedImageUrl, maybeSignSource, maybeSignUri, staticSignatureLRU } from './imgix';
+
+// The LRU keys off the options as passed, before the pixel ratio is applied.
+const cacheKey = (uri: string, w?: number, fm?: string) => `${uri}-${w}-${fm}`;
 
 jest.mock('react-native-dotenv', () => ({
   IMGIX_DOMAIN: 'rainbow.imgix.net',
@@ -66,15 +69,24 @@ describe('maybeSignUri', () => {
     expect(maybeSignUri(undefined)).toBeUndefined();
   });
 
-  it('serves a repeated (uri, w, fm) from cache', () => {
+  it('caches the signed URL under the pre-scaling (uri, w, fm)', () => {
     const source = 'https://example.com/cached.png';
-    expect(maybeSignUri(source, { w: 40, h: 40 })).toBe(maybeSignUri(source, { w: 40, h: 40 }));
+    const signed = maybeSignUri(source, { w: 40, h: 40 });
+    expect(staticSignatureLRU.get(cacheKey(source, 40))).toBe(signed);
   });
 
-  it('skipCaching bypasses the cache but yields the same URL', () => {
+  it('returns a cached entry rather than re-signing', () => {
+    const source = 'https://example.com/preseeded.png';
+    staticSignatureLRU.set(cacheKey(source, 40), 'cached-sentinel');
+    expect(maybeSignUri(source, { w: 40 })).toBe('cached-sentinel');
+  });
+
+  it('skipCaching ignores a cached entry and re-signs', () => {
     const source = 'https://example.com/skip.png';
-    const first = maybeSignUri(source, { w: 40 });
-    expect(maybeSignUri(source, { w: 40 }, true)).toBe(first);
+    staticSignatureLRU.set(cacheKey(source, 40), 'cached-sentinel');
+    expect(maybeSignUri(source, { w: 40 }, true)).toBe(
+      'https://rainbow.imgix.net/https%3A%2F%2Fexample.com%2Fskip.png?w=120&s=4a6292056d91627774dde3f9c77442ef'
+    );
   });
 });
 
