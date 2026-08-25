@@ -7,6 +7,7 @@ import { RAINBOW_COIN_EFFECT } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { AssetContextMenu } from '../AssetContextMenu';
 
 export const NameAndLogoSection = memo(function NameAndLogoSection() {
   const { basicAsset: asset, isRainbowToken, accentColors } = useExpandedAssetSheetContext();
@@ -14,18 +15,21 @@ export const NameAndLogoSection = memo(function NameAndLogoSection() {
 
   return (
     <Box gap={20}>
-      {(isRainbowToken || shouldUseRainbowCoinEffect) && asset.iconUrl ? (
-        <RainbowCoinEffect color={accentColors.color} imageUrl={asset.iconUrl} size={44} />
-      ) : (
-        <RainbowCoinIcon
-          chainSize={20}
-          size={44}
-          icon={asset.iconUrl ?? ''}
-          chainId={asset.chainId}
-          color={accentColors.color}
-          symbol={asset.symbol}
-        />
-      )}
+      <Box alignItems="center" flexDirection="row" justifyContent="space-between">
+        {(isRainbowToken || shouldUseRainbowCoinEffect) && asset.iconUrl ? (
+          <RainbowCoinEffect color={accentColors.color} imageUrl={asset.iconUrl} size={44} />
+        ) : (
+          <RainbowCoinIcon
+            chainSize={20}
+            size={44}
+            icon={asset.iconUrl ?? ''}
+            chainId={asset.chainId}
+            color={accentColors.color}
+            symbol={asset.symbol}
+          />
+        )}
+        <AssetContextMenu />
+      </Box>
       <TextShadow blur={12} shadowOpacity={0.24}>
         <Text color={{ custom: accentColors.color }} numberOfLines={2} size="22pt" testID={`chart-header-${asset.name}`} weight={'heavy'}>
           {asset.name}
