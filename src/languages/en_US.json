@@ -1628,7 +1628,10 @@
           "edit": "Edit",
           "error_title": "We couldn’t verify your details",
           "error_description": "Please double-check your details and try again.",
-          "edit_details": "Edit Details"
+          "edit_details": "Edit Details",
+          "submission_error_title": "Something went wrong",
+          "submission_error_description": "We couldn’t complete verification. Please try again.",
+          "try_again": "Try Again"
         },
         "recovery_locked": {
           "title": "Account recovery is locked",

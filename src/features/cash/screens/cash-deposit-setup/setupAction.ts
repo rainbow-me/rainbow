@@ -51,7 +51,7 @@ export async function submitPasskey(): Promise<void> {
   else if (result === 'recovered') completeSetup();
 }
 
-async function submitReview(): Promise<void> {
+export async function submitReview(): Promise<void> {
   const result = await useSubmitReviewFlowStore.getState().submit();
   if (result === 'recovered') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
   else if (result === 'phoneCodeRequired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);

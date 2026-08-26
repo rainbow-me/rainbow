@@ -16,6 +16,7 @@ import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore'
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
 import { KycOutcomeSheet } from '../components/KycOutcomeSheet';
 import { SetupStepLayout } from '../components/SetupStepLayout';
+import { submitReview } from '../setupAction';
 import { completeSetupStep } from '../setupNavigation';
 import { useSubmitReviewFlowStore } from './useSubmitReviewFlow';
 
@@ -36,9 +37,8 @@ function continueAfterVerification() {
   completeSetupStep();
 }
 
-function editIdentityAfterFailure() {
+function returnToReview() {
   useSubmitReviewFlowStore.getState().reset();
-  editIdentity();
 }
 
 function contactSupport() {
@@ -140,17 +140,29 @@ export const ReviewStep = memo(function ReviewStep() {
           testID="cash-setup-recovery-locked"
           title={i18n.t(recoveryLockedL.title)}
         />
-      ) : state === 'error' ? (
+      ) : state === 'identityMismatch' ? (
         <CashStatusHalfSheet
           description={i18n.t(l.error_description)}
           primaryAction={{
             label: i18n.t(l.edit_details),
-            onPress: editIdentityAfterFailure,
+            onPress: returnToReview,
             testID: 'cash-setup-kyc-error-edit-details',
           }}
           status="error"
           testID="cash-setup-kyc-error"
           title={i18n.t(l.error_title)}
+        />
+      ) : state === 'error' ? (
+        <CashStatusHalfSheet
+          description={i18n.t(l.submission_error_description)}
+          primaryAction={{
+            label: i18n.t(l.try_again),
+            onPress: submitReview,
+            testID: 'cash-setup-review-error-try-again',
+          }}
+          status="error"
+          testID="cash-setup-review-error"
+          title={i18n.t(l.submission_error_title)}
         />
       ) : state === 'entry' ? null : (
         <KycOutcomeSheet onContinue={continueAfterVerification} outcome={state} />

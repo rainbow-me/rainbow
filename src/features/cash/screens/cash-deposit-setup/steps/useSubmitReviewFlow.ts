@@ -22,7 +22,7 @@ import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason'
 
 export const KYC_POLL_INTERVAL_MS = time.seconds(3);
 
-export type SubmitReviewState = 'entry' | 'submitting' | 'error' | 'locked' | KycOutcome;
+export type SubmitReviewState = 'entry' | 'submitting' | 'identityMismatch' | 'error' | 'locked' | KycOutcome;
 
 type SubmitReviewResult =
   | 'approved'
@@ -84,7 +84,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
             return 'recovered';
 
           case 'identityMismatch':
-            set({ state: 'error' });
+            set({ state: 'identityMismatch' });
             return 'failed';
 
           case 'codeInvalid':
