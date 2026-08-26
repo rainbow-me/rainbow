@@ -1,0 +1,96 @@
+appId: ${APP_ID}
+tags:
+  - cash
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+- runFlow:
+    file: ../../utils/SetExperimentalFlag.yaml
+    env:
+      FLAG: Cash
+      VALUE: 'true'
+- tapOn:
+    id: buy-button
+- assertVisible:
+    id: cash-deposit-intro-set-up-account
+- tapOn:
+    id: cash-deposit-intro-set-up-account
+- assertVisible:
+    text: 'Connect your phone number'
+# Mock 5550001303 starts account recovery instead of the already-registered dead end.
+- tapOn:
+    id: cash-setup-phone-input
+- inputText: '5550001303'
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Confirm your phone'
+    timeout: 10000
+- waitForAnimationToEnd
+# Recovery retains the OTP until Review submits it with the identity details.
+- inputText: '000000'
+- extendedWaitUntil:
+    visible:
+      text: 'Enter some information about yourself'
+    timeout: 10000
+- tapOn:
+    id: cash-setup-first-name-input
+- inputText: 'Ada'
+- tapOn:
+    id: cash-setup-last-name-input
+- inputText: 'Lovelace'
+- tapOn:
+    id: cash-setup-dob-input
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: cash-setup-dob-picker
+      - tapOn:
+          id: cash-setup-dob-picker-confirm
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: android:id/datePicker
+      - tapOn:
+          id: android:id/button1
+- tapOn:
+    id: cash-setup-next
+- assertVisible:
+    text: 'Enter the last 4 digits of your SSN'
+- tapOn:
+    id: cash-setup-ssn-input
+- inputText: '6789'
+- tapOn:
+    id: cash-setup-next
+- assertVisible:
+    text: 'Review your information'
+- assertVisible:
+    text: 'Ada Lovelace'
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      text: 'Add a Passkey'
+    timeout: 10000
+- assertNotVisible:
+    id: cash-setup-kyc-success-overlay
+# Recovery completes setup after passkey enrollment; an account with no saved card returns to Add Cash.
+- tapOn:
+    id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      id: cash-deposit-add-cash-add-card
+    timeout: 15000
+- assertNotVisible:
+    id: cash-deposit-add-cash-add-from

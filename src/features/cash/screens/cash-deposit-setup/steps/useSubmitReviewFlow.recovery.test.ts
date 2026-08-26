@@ -96,7 +96,7 @@ describe('useSubmitReviewFlowStore.submit recovery', () => {
 
     await expect(flow().submit()).resolves.toBe('failed');
 
-    expect(flow().state).toBe('error');
+    expect(flow().state).toBe('identityMismatch');
     expect(verifyFlow().code).toBe(CODE);
     expect(sessionStore().session).toMatchObject({ status: 'recovery', identity: IDENTITY, ssnLast4 });
   });
@@ -155,14 +155,16 @@ describe('useSubmitReviewFlowStore.submit recovery', () => {
     expect(mockFinishRecovery).toHaveBeenCalledTimes(1);
   });
 
-  it('reports an unexpected request failure without changing the recovery session', async () => {
-    mockFinishRecovery.mockRejectedValue(new Error('network down'));
+  it('keeps an unexpected request failure retryable without changing the recovery session', async () => {
+    mockFinishRecovery.mockRejectedValueOnce(new Error('network down'));
 
     await expect(flow().submit()).resolves.toBe('failed');
 
     expect(flow().state).toBe('error');
     expect(sessionStore().session).toMatchObject({ status: 'recovery', challenge: CHALLENGE });
     expect(logger.error).toHaveBeenCalled();
+
+    await expect(flow().submit()).resolves.toBe('recovered');
   });
 
   it('does not apply a recovery result after the setup session changes', async () => {
