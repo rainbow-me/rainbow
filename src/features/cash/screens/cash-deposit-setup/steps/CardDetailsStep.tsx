@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import { BivoCardInput, BivoCVCInput, BivoTextInput } from '@bivoglobal/payment-react-native';
@@ -9,7 +9,9 @@ import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSh
 import { useSetupInputTextStyle } from '@/features/cash/components/useSetupInputTextStyle';
 import { useCardLinkFlowStore } from '@/features/cash/stores/cardLinkFlowStore';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
 
+import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator';
 import { SetupStepLayout } from '../components/SetupStepLayout';
 import { CARD_FIELD, useSetupContext } from '../setupContext';
 import { goBackInSetup } from '../setupNavigation';
@@ -21,6 +23,7 @@ export const CardDetailsStep = memo(function CardLinkForm() {
 
   const isError = useCardLinkFlowStore(s => s.state === 'submitError');
   const isSubmitting = useCardLinkFlowStore(s => s.state === 'submitting');
+  const isCardStepActive = useCashDepositSetupNavigationStore(s => s.activeRoute === Routes.CASH_SETUP_CARD_DETAILS);
   const isVisa = useCardFormStore(s => s.isVisa);
 
   const bivoStore = getCardForm();
@@ -38,6 +41,15 @@ export const CardDetailsStep = memo(function CardLinkForm() {
   );
 
   const cardNumberTextStyle = useMemo(() => ({ ...textStyle, paddingRight: 60 }), [textStyle]);
+
+  useEffect(() => {
+    if (!isCardStepActive) {
+      useCardFormStore.setState(state => (state.isReady || state.isVisa ? { isReady: false, isVisa: false } : state));
+      return;
+    }
+
+    return () => bivoStore.clearFields();
+  }, [bivoStore, isCardStepActive, useCardFormStore]);
 
   const cancel = useCallback(() => {
     reset();
@@ -57,6 +69,7 @@ export const CardDetailsStep = memo(function CardLinkForm() {
               onStateChange={refreshCardFormReadiness}
               placeholder={i18n.t(l.card_number)}
               required
+              allowContextMenu
               textStyle={cardNumberTextStyle}
             />
             {isVisa ? (

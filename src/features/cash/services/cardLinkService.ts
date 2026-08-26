@@ -35,7 +35,7 @@ export async function linkCardWithVault(
   }
 
   const session = await startCardLinkSession(abortController);
-  const result = await withTimeout(bivoStore.submit(session.linkUrl, session.token), BIVO_SUBMIT_TIMEOUT, 'Bivo vault submit timed out');
+  const result = await withTimeout(bivoStore.submit(session.token), BIVO_SUBMIT_TIMEOUT, 'Bivo vault submit timed out');
   // bivo SDK does not have a way to pass abort controller, so we check here manually
   throwIfAborted(abortController);
   if (!isBivoSubmitResult(result)) throw new Error('Bivo vault returned an unexpected response');
