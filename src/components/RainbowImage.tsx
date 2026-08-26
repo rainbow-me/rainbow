@@ -5,7 +5,7 @@ import { FasterImageView, type FasterImageProps, type ImageOptions } from '@cand
 import FastImage from 'react-native-fast-image';
 
 import { withStaticProperties } from '../helpers/withStaticProperties';
-import { memoFn } from '../utils/memoFn';
+import { getImageType, type DetectedImageExtension } from './images/imageType';
 
 export type RainbowImageProps = {
   source: Omit<ImageOptions, 'resizeMode'> | number;
@@ -130,18 +130,6 @@ export const RainbowImage = withStaticProperties(RainbowImageInternal, {
   },
 });
 
-const fastImageExtension = {
-  png: 'png',
-  jpg: 'jpg',
-  jpeg: 'jpeg',
-  bmp: 'bmp',
-  webp: 'webp',
-  gif: 'gif',
-  avif: 'avif',
-} as const;
-
-type FastImageExtensions = keyof typeof fastImageExtension;
-type DetectedImageExtension = FastImageExtensions | 'unknown';
 type ImageHandler = 'faster-image' | 'fast-image' | 'image';
 
 const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => {
@@ -153,20 +141,3 @@ const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => 
   }
   return 'image';
 };
-
-const pathRegex = /fm=([a-z]+)/;
-
-const getImageType = memoFn((path: string): DetectedImageExtension => {
-  try {
-    const url = new URL(path);
-    if (url.host.includes('imgix.net')) {
-      const [, type = 'png'] = path.match(pathRegex) || [];
-      return fastImageExtension[type as FastImageExtensions] || 'unknown';
-    }
-    const pathname = url.pathname;
-    const extension = pathname.split('.').pop()?.toLowerCase() || '';
-    return fastImageExtension[extension as FastImageExtensions] || 'unknown';
-  } catch {
-    return 'unknown';
-  }
-});
