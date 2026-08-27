@@ -3,7 +3,7 @@ import { Keyboard, TextInput } from 'react-native';
 
 import { BivoSecureStore } from '@bivoglobal/payment-react-native';
 import { createBaseStore, useListen } from '@storesjs/stores';
-import { BIVO_ENV, BIVO_VAULT_ID } from 'react-native-dotenv';
+import { BIVO_ENV, BIVO_VAULT_ID, IS_TESTING } from 'react-native-dotenv';
 
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
@@ -39,7 +39,10 @@ export function createSetupContext() {
   let cardForm: BivoSecureStore | undefined;
 
   function getCardForm(): BivoSecureStore {
-    return (cardForm ??= new BivoSecureStore(BIVO_VAULT_ID, BIVO_ENV));
+    return (cardForm ??= new BivoSecureStore(
+      IS_TESTING === 'true' ? 'Rainbow' : BIVO_VAULT_ID,
+      IS_TESTING === 'true' ? 'sandbox' : BIVO_ENV
+    ));
   }
 
   function refreshCardFormReadiness(): void {

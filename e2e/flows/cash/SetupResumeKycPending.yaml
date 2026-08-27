@@ -24,9 +24,21 @@ tags:
 - assertVisible:
     text: 'Connect your phone number'
 # Mock 5550001305 resumes like 1304 does, but its KYC decision never arrives.
+# Separate commands let the controlled formatter settle between digits.
 - tapOn:
     id: cash-setup-phone-input
-- inputText: '5550001305'
+- inputText: '5'
+- inputText: '5'
+- inputText: '5'
+- inputText: '0'
+- inputText: '0'
+- inputText: '0'
+- inputText: '1'
+- inputText: '3'
+- inputText: '0'
+- inputText: '5'
+- assertVisible:
+    text: '\(555\) 000-1305'
 - tapOn:
     id: cash-setup-next
 - extendedWaitUntil:
