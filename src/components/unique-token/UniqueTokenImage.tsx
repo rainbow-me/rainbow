@@ -6,7 +6,6 @@ import { BlurView } from 'react-native-blur-view';
 import { Text, useColorMode } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
-import { logger } from '@/logger';
 import { type Colors } from '@/styles';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
@@ -83,13 +82,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const [errorLoadingImage, setErrorLoadingImage] = useState(false);
 
   const onLoad = useCallback(() => setIsLoading(false), [setIsLoading]);
-  const onError = useCallback(
-    (...args: unknown[]) => {
-      logger.warn(`[UniqueTokenImage] Error loading image: ${args} for ${uniqueId}`);
-      setErrorLoadingImage(true);
-    },
-    [setErrorLoadingImage, uniqueId]
-  );
+  const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
     return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
