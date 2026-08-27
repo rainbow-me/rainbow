@@ -1,4 +1,5 @@
 import { analytics } from '@/analytics';
+import { setRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
@@ -19,9 +20,10 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/features/config/stores/remoteConfig', () => ({
-  getRemoteConfig: () => ({ cash_kyc_review_delay_ms: 60_000 }),
-}));
+const REVIEW_DELAY_MS = 60_000;
+
+jest.mock('@/features/config/stores/remoteConfig');
+setRemoteConfig({ cash_kyc_review_delay_ms: REVIEW_DELAY_MS });
 
 jest.mock('@/logger', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
@@ -54,7 +56,6 @@ const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 
 const SSN_LAST4 = '6789';
 if (!isValidUsSsnLast4(SSN_LAST4)) throw new Error('expected a valid SSN last four');
 const GOVERNMENT_ID = createUsSsnLast4GovernmentId(SSN_LAST4);
-const REVIEW_DELAY_MS = 60_000;
 
 function fakeClock(start = 1_750_000_000_000) {
   let clock = start;

@@ -1,20 +1,18 @@
 import { encodeFunctionData, type Address } from 'viem';
 
+import { withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { buildUnstakeRnbwCalls, buildUnstakeRnbwExecutionPlan } from './unstakeRnbwCalls';
 
 const mockCanUseSponsoredRnbwStaking = jest.fn<Promise<boolean>, [Address, number]>();
-const mockGetRemoteConfig = jest.fn<{ sponsored_rnbw_unstaking_enabled: boolean }, []>();
 
 jest.mock('./canUseSponsoredRnbwStaking', () => ({
   canUseSponsoredRnbwStaking: (address: Address, chainId: number) => mockCanUseSponsoredRnbwStaking(address, chainId),
 }));
 
-jest.mock('@/features/config/stores/remoteConfig', () => ({
-  getRemoteConfig: () => mockGetRemoteConfig(),
-}));
+jest.mock('@/features/config/stores/remoteConfig');
 
 jest.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
@@ -35,7 +33,6 @@ describe('unstakeRnbwCalls', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(false);
-    mockGetRemoteConfig.mockReturnValue({ sponsored_rnbw_unstaking_enabled: true });
   });
 
   it('builds a single unstakeAll call', () => {
@@ -45,26 +42,33 @@ describe('unstakeRnbwCalls', () => {
   it('adds sponsor-paid requirements when unstaking can use sponsored execution and flag is on', async () => {
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(true);
 
-    await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
-      calls: [buildUnstakeCall()],
-      requirements: SPONSORED_REQUIREMENTS,
+    await withRemoteConfig({ sponsored_rnbw_unstaking_enabled: true }, async () => {
+      await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
+        calls: [buildUnstakeCall()],
+        requirements: SPONSORED_REQUIREMENTS,
+      });
     });
 
     expect(mockCanUseSponsoredRnbwStaking).toHaveBeenCalledWith(ACCOUNT, STAKING_CHAIN_ID);
   });
 
   it('omits requirements when sponsorship is unavailable', async () => {
-    await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
-      calls: [buildUnstakeCall()],
+    await withRemoteConfig({ sponsored_rnbw_unstaking_enabled: true }, async () => {
+      await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
+        calls: [buildUnstakeCall()],
+      });
     });
+
+    expect(mockCanUseSponsoredRnbwStaking).toHaveBeenCalledWith(ACCOUNT, STAKING_CHAIN_ID);
   });
 
   it('omits requirements when the feature flag is off, even if sponsored execution is available', async () => {
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(true);
-    mockGetRemoteConfig.mockReturnValue({ sponsored_rnbw_unstaking_enabled: false });
 
-    await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
-      calls: [buildUnstakeCall()],
+    await withRemoteConfig({ sponsored_rnbw_unstaking_enabled: false }, async () => {
+      await expect(buildUnstakeRnbwExecutionPlan({ address: ACCOUNT })).resolves.toEqual({
+        calls: [buildUnstakeCall()],
+      });
     });
 
     expect(mockCanUseSponsoredRnbwStaking).not.toHaveBeenCalled();
