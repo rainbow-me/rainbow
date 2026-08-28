@@ -30,6 +30,7 @@ export const RAINBOW_TOASTS = 'Rainbow Toasts';
 export const PERPS = 'Perps';
 export const POLYMARKET = 'Polymarket';
 export const CASH = 'Cash';
+export const CASH_BALANCE = 'Cash Balance';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
 export const RNBW_REWARDS = 'RNBW Rewards';
 export const RNBW_MEMBERSHIP = 'RNBW Membership';
@@ -70,6 +71,7 @@ const config = {
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
   [POLYMARKET]: { settings: true, value: false },
   [CASH]: { settings: true, value: false },
+  [CASH_BALANCE]: { settings: true, value: false },
   [RNBW_REWARDS]: { settings: true, value: false },
   [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
