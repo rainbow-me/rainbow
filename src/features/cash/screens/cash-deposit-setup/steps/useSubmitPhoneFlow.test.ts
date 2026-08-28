@@ -176,6 +176,41 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(flow().digits).toBe('415');
   });
 
+  it('advances without re-sending when a code is already out for the same number', async () => {
+    flow().setDigits(DIGITS);
+    await flow().submit();
+    const pending = session();
+    useVerifyPhoneFlowStore.setState({ state: 'error' });
+    jest.clearAllMocks();
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockCreateUserWithPhone).not.toHaveBeenCalled();
+    expect(mockStartSignupResume).not.toHaveBeenCalled();
+    expect(session()).toBe(pending);
+    expect(track).not.toHaveBeenCalled();
+    expect(useVerifyPhoneFlowStore.getState().state).toBe('entry');
+  });
+
+  it('sends a new code when the number is edited after a submit', async () => {
+    const OTHER_DIGITS = '4155550199';
+    flow().setDigits(DIGITS);
+    await flow().submit();
+    jest.clearAllMocks();
+    mockCreateUserWithPhone.mockResolvedValue({ ...RESPONSE, userId: 'user-2' });
+
+    flow().setDigits(OTHER_DIGITS);
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockCreateUserWithPhone).toHaveBeenCalledWith({ nationalNumber: OTHER_DIGITS });
+    expect(session()).toEqual({
+      status: 'phoneSubmitted',
+      challenge: { kind: 'signup', userId: 'user-2' },
+      phoneNationalNumber: OTHER_DIGITS,
+      resendAfter: RESPONSE.resendAfter,
+    });
+  });
+
   it('ignores an incomplete number', async () => {
     flow().setDigits('415555010');
 
