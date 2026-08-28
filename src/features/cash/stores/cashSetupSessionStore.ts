@@ -21,6 +21,11 @@ type EmptyCashSetupSession = {
   status: 'empty';
 };
 
+type PersonalDetailsDraft = {
+  identity: CashSetupIdentityDraft;
+  ssnLast4: string;
+};
+
 type PhoneSubmittedCashSetupSession = {
   status: 'phoneSubmitted';
   phoneNationalNumber: string;
@@ -28,13 +33,11 @@ type PhoneSubmittedCashSetupSession = {
   resendAfter: number;
 };
 
-type RecoveryCashSetupSession = {
+type RecoveryCashSetupSession = PersonalDetailsDraft & {
   status: 'recovery';
   phoneNationalNumber: string;
   challenge: RecoveryPhoneChallenge;
   resendAfter: number;
-  identity: CashSetupIdentityDraft;
-  ssnLast4: string;
 };
 
 type PhoneAlreadyRegisteredCashSetupSession = {
@@ -42,14 +45,12 @@ type PhoneAlreadyRegisteredCashSetupSession = {
   phoneNationalNumber: string;
 };
 
-type VerifiedCashSetupSession = {
+type VerifiedCashSetupSession = PersonalDetailsDraft & {
   status: 'phoneVerified';
   source: PhoneChallenge['kind'];
   phoneNationalNumber: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
-  identity: CashSetupIdentityDraft;
-  ssnLast4: string;
 };
 
 type CashSetupSession =
@@ -63,6 +64,7 @@ type CashSetupSessionStore = {
   session: CashSetupSession;
   getGovernmentId: () => CashSetupGovernmentId | null;
   getIdentity: () => CashSetupIdentity | null;
+  getPersonalDetailsDraft: <Field extends keyof PersonalDetailsDraft>(field: Field) => PersonalDetailsDraft[Field] | null;
   getIsCurrentChallenge: (challenge: PhoneChallenge) => boolean;
   setPhoneSubmitted: (params: { challenge: PhoneChallenge; phoneNationalNumber: string; resendAfter: number }) => void;
   setPhoneAlreadyRegistered: (phoneNationalNumber: string) => void;
@@ -98,6 +100,10 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     getIdentity: () => {
       const { session } = get();
       return hasIdentityDraft(session) ? createCashSetupIdentity(session.identity) : null;
+    },
+    getPersonalDetailsDraft: field => {
+      const { session } = get();
+      return hasIdentityDraft(session) ? session[field] : null;
     },
     getIsCurrentChallenge: challenge => {
       const { session } = get();
