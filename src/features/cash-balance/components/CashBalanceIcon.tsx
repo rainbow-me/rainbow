@@ -5,10 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 
 import { Box } from '@/design-system';
+import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 
 const SIZE = 44;
-const CASH_GREEN = '#08B44F';
-const CASH_GREEN_BORDER = '#0FAE52';
 
 const DOLLAR_SIGN_FILL_PATH =
   'M35.7674 42.7507C34.5981 42.9151 33.8634 42.2969 33.693 41.0842C33.6454 40.7454 33.3535 40.4965 33.0116 40.4828C29.8375 40.3553 28.0074 39.0185 27.2369 37.7811C26.9884 37.3744 26.8449 36.9823 26.7983 36.6503C26.6035 35.2643 27.3956 34.1961 29.0702 33.9607C30.2685 33.7923 31.1189 34.2911 31.8343 35.1917C32.4243 35.9332 33.3097 36.4712 35.0277 36.2298C36.7869 35.9678 37.7227 35.1885 37.5725 34.1202C37.4548 33.2829 36.5898 32.8892 34.6109 32.7404L32.7061 32.5959C28.4947 32.275 25.781 30.6689 25.3448 27.565C24.8726 24.2053 26.7777 21.6936 30.2232 20.5388C30.5398 20.4327 30.7467 20.1206 30.7003 19.7899C30.5298 18.5773 31.0656 17.7806 32.235 17.6162C33.39 17.4539 34.139 18.07 34.3095 19.2827C34.3572 19.6223 34.6477 19.8727 34.9902 19.8912C37.8625 20.0464 39.8415 21.2694 40.6681 22.8351C40.8487 23.1778 40.9716 23.5285 41.0264 23.9183C41.1928 25.1021 40.3743 25.9827 38.9018 26.1897C37.8046 26.3439 36.9332 26.0099 36.0818 25.0843C35.3002 24.2373 34.3896 23.9383 33.1047 24.1189C31.4878 24.3461 30.7129 25.1175 30.8529 26.1137C30.9686 26.9366 31.8643 27.4437 33.767 27.5738L35.5212 27.6953C39.7739 27.9957 42.4504 29.6511 42.8725 32.654C43.3693 36.1889 41.0865 38.7222 37.7664 39.8453C37.4578 39.9497 37.2568 40.2544 37.3022 40.577C37.4726 41.7897 36.9224 42.5884 35.7674 42.7507Z';
@@ -22,18 +21,18 @@ export const CashBalanceIcon = memo(function CashBalanceIcon({ size = SIZE }: { 
       width={{ custom: size }}
       height={{ custom: size }}
       borderRadius={size / 2}
-      backgroundColor={CASH_GREEN}
-      borderColor={{ custom: CASH_GREEN_BORDER }}
+      backgroundColor={CASH_BALANCE_COLORS.icon}
+      borderColor={{ custom: CASH_BALANCE_COLORS.iconBorder }}
       borderWidth={1.33}
       alignItems="center"
       justifyContent="center"
       shadow={{
         custom: {
           ios: [
-            { x: 0, y: 4, blur: 8, opacity: 0.3, color: { custom: CASH_GREEN } },
+            { x: 0, y: 4, blur: 8, opacity: 0.3, color: { custom: CASH_BALANCE_COLORS.icon } },
             { x: 0, y: 2, blur: 4, opacity: 0.04, color: 'shadowFar' },
           ],
-          android: { elevation: 12, opacity: 1, color: { custom: CASH_GREEN } },
+          android: { elevation: 12, opacity: 1, color: { custom: CASH_BALANCE_COLORS.icon } },
         },
       }}
     >

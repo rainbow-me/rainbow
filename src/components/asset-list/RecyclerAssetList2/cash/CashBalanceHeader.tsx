@@ -5,8 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CashBalanceHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/core/ViewDimensions';
-import { Box, Inline, Text } from '@/design-system';
+import { Box, Inline, Stack, Text } from '@/design-system';
 import { CashBalanceIcon } from '@/features/cash-balance/components/CashBalanceIcon';
+import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
@@ -15,8 +16,6 @@ import Routes from '@/navigation/routesNames';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 
 const ADD_BUTTON_HEIGHT = 36;
-const ADD_BUTTON_GRADIENT = ['#22D185', '#00BB3E'] as const;
-const ADD_BUTTON_GREEN = '#00BB3E';
 
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
   const { balanceDisplay } = useCashBalance();
@@ -48,22 +47,20 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
       >
         <Inline alignVertical="center" horizontalSpace="12px" wrap={false}>
           <CashBalanceIcon />
-          <Box>
+          <Stack space="12px">
             <Text color="labelQuaternary" size="15pt" weight="semibold">
               {i18n.t(i18n.l.account.tab_cash)}
             </Text>
-            <Box paddingTop="12px">
-              <Text color="label" size="17pt" weight="bold">
-                {balanceDisplay}
-              </Text>
-            </Box>
-          </Box>
+            <Text color="label" size="17pt" weight="bold">
+              {balanceDisplay}
+            </Text>
+          </Stack>
         </Inline>
 
         <ButtonPressAnimation onPress={handleAddPress} scaleTo={0.94} testID="cash-balance-header-add-button">
           <Box
             as={LinearGradient}
-            colors={ADD_BUTTON_GRADIENT}
+            colors={CASH_BALANCE_COLORS.addButtonGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 0.75, y: 1 }}
             alignItems="center"
@@ -71,14 +68,14 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
             paddingHorizontal="12px"
             height={{ custom: ADD_BUTTON_HEIGHT }}
             borderRadius={ADD_BUTTON_HEIGHT / 2}
-            backgroundColor={ADD_BUTTON_GREEN}
+            backgroundColor={CASH_BALANCE_COLORS.addButton}
             shadow={{
               custom: {
                 ios: [
-                  { x: 0, y: 4, blur: 6, opacity: 0.3, color: { custom: ADD_BUTTON_GREEN } },
+                  { x: 0, y: 4, blur: 6, opacity: 0.3, color: { custom: CASH_BALANCE_COLORS.addButton } },
                   { x: 0, y: 1, blur: 2, opacity: 0.04, color: 'shadowFar' },
                 ],
-                android: { elevation: 8, opacity: 1, color: { custom: ADD_BUTTON_GREEN } },
+                android: { elevation: 8, opacity: 1, color: { custom: CASH_BALANCE_COLORS.addButton } },
               },
             }}
           >
