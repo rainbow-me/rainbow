@@ -120,6 +120,12 @@ class Button : RCTView {
     if invalidated {
       return
     }
+
+    if ancestorScrollViewRecognizedPan() {
+      touchesCancelled(touches, with: event)
+      return
+    }
+
     if let touch = touches.first {
       let location = touch.location(in: self)
       if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
@@ -176,5 +182,21 @@ class Button : RCTView {
       (self.tapLocation!.x - tolerance)...(self.tapLocation!.x + tolerance) ~= location.x &&
       (self.tapLocation!.y - tolerance)...(self.tapLocation!.y + tolerance) ~= location.y
     )
+  }
+
+  private func ancestorScrollViewRecognizedPan() -> Bool {
+    var view = superview
+    while let ancestor = view {
+      if let scrollView = ancestor as? UIScrollView {
+        switch scrollView.panGestureRecognizer.state {
+        case .began, .changed, .ended, .cancelled:
+          return true
+        default:
+          break
+        }
+      }
+      view = ancestor.superview
+    }
+    return false
   }
 }
