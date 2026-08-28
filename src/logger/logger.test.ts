@@ -96,6 +96,19 @@ describe('general functionality', () => {
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
   });
 
+  test('a throwing transport does not stop the others or escape to the caller', () => {
+    const logger = new Logger();
+    const throwing = jest.fn(() => {
+      throw new Error('transport exploded');
+    });
+    const next = jest.fn();
+    logger.addTransport(throwing);
+    logger.addTransport(next);
+
+    expect(() => logger.error(new RainbowError('x'))).not.toThrow();
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {
     const logger = new Logger({
       debug: 'delegation',
