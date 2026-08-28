@@ -1,8 +1,8 @@
 import React, { memo, useCallback } from 'react';
 
-import { useRoute } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CashBalanceHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/core/ViewDimensions';
 import { Box, Inline, Stack, Text } from '@/design-system';
@@ -20,7 +20,6 @@ const ADD_BUTTON_HEIGHT = 36;
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
   const { balanceDisplay } = useCashBalance();
   const navigate = useNavigationForNonReadOnlyWallets();
-  const { name: routeName } = useRoute();
   const { route: addCashRoute } = useAddCashRoute();
 
   const handleAddPress = useCallback(() => {
@@ -29,6 +28,7 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
       return;
     }
     navigate(addCashRoute);
+    analytics.track(analytics.event.navigationAddCash, { category: 'cash balance widget' });
   }, [addCashRoute, navigate]);
 
   return (
@@ -43,7 +43,7 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
         alignItems="center"
         justifyContent="space-between"
         shadow="12px"
-        testID={`cash-balance-header-${routeName}`}
+        testID="cash-balance-header"
       >
         <Inline alignVertical="center" horizontalSpace="12px" wrap={false}>
           <CashBalanceIcon />
