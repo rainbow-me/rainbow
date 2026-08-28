@@ -84,16 +84,18 @@ describe('general functionality', () => {
     logger.warn('message', null);
   });
 
-  test('logger.error expects a RainbowError', () => {
+  test('logger.error keeps a non-RainbowError as the cause', () => {
     const logger = new Logger();
-
     const mockTransport = jest.fn();
-
     logger.addTransport(mockTransport);
 
-    logger.error(new Error());
+    const original = new Error('boom');
+    logger.error(original as unknown as RainbowError);
 
-    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
+    const [, reported] = mockTransport.mock.calls[0] as [LogLevel, RainbowError, unknown];
+    expect(reported).toBeInstanceOf(RainbowError);
+    expect(reported.message).toBe('logger.error was not provided a RainbowError');
+    expect(reported.cause).toBe(original);
   });
 
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {
