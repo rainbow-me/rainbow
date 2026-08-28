@@ -109,25 +109,6 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
       if (response.status >= 500) return null;
     }
 
-    // Check if this is a captureMessage call.
-    //
-    // captureMessage events (logger.warn, logger.log) have event.message
-    // but no event.exception. captureException events (logger.error) always
-    // have event.exception, so this guard skips them.
-    if (event.message && !event.exception) {
-      // Without this, attachStacktrace adds a synthetic stack that Sentry
-      // groups on instead of the message. Since all messages route through
-      // sentryTransport, the stacks are nearly identical, and minor platform
-      // differences (Hermes function names, bundle filenames) split iOS and
-      // Android into separate issues.
-      //
-      // Grouping by message is the correct semantic for warnings/logs since
-      // the message describes what happened. In practice messages are
-      // naturally unique per call site (most use context prefixes like
-      // "[Positions] ..."). The stack trace is still preserved on each
-      // event for debugging, it just no longer drives the grouping.
-      event.fingerprint = [event.message];
-    }
     return event;
   },
 
