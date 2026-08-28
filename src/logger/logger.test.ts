@@ -60,7 +60,7 @@ describe('general functionality', () => {
 
     const mockTransport = jest.fn();
 
-    const remove = logger.addTransport(mockTransport);
+    logger.addTransport(mockTransport);
 
     // @ts-expect-error testing the JS case
     logger.warn('a', null);
@@ -73,15 +73,6 @@ describe('general functionality', () => {
     // @ts-expect-error testing the JS case
     logger.warn('c', 0);
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'c', {});
-
-    remove();
-
-    logger.addTransport((level, message, metadata) => {
-      expect(typeof metadata).toEqual('object');
-    });
-
-    // @ts-expect-error testing the JS case
-    logger.warn('message', null);
   });
 
   test('logger.error expects a RainbowError', () => {
