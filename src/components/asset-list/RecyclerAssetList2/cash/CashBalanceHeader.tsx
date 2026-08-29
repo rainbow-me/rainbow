@@ -68,7 +68,7 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
             paddingHorizontal="12px"
             height={{ custom: ADD_BUTTON_HEIGHT }}
             borderRadius={ADD_BUTTON_HEIGHT / 2}
-            backgroundColor={CASH_BALANCE_COLORS.addButton}
+            background="green"
             shadow="12px green"
           >
             <Text color="white" size="17pt" weight="heavy">
