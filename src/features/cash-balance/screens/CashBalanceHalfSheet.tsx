@@ -18,10 +18,15 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { USDC_ADDRESS } from '@/references/constants';
+import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
 
 // Matches the arrow used by the send button elsewhere (wallet screen / expanded asset sheet)
 const SEND_ICON = '􀈟';
 const BUTTON_HEIGHT = 48;
+// Shown when there's no held Base USDC asset to source an icon from — same fallback pattern
+// used by the perps and Add Cash USDC icons.
+const USDC_ICON_URL = getUrlForTrustIconFallback(USDC_ADDRESS, ChainId.mainnet) ?? undefined;
 
 function CashBalanceHalfSheetHeader() {
   return (
@@ -39,7 +44,7 @@ function CashBalanceSubLabelIcon({ asset, size }: { asset: ParsedSearchAsset | u
     <RainbowCoinIcon
       chainId={ChainId.base}
       color={asset?.colors?.primary}
-      icon={asset?.icon_url}
+      icon={asset?.icon_url ?? USDC_ICON_URL}
       showBadge={false}
       size={size}
       symbol={asset?.symbol ?? 'USDC'}
