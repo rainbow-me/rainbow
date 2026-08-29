@@ -18,7 +18,7 @@ import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 const ADD_BUTTON_HEIGHT = 36;
 
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
-  const { balanceDisplay } = useCashBalance();
+  const balanceDisplay = useCashBalance();
   const navigate = useNavigationForNonReadOnlyWallets();
   const { route: addCashRoute } = useAddCashRoute();
 
