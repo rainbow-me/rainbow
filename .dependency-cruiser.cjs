@@ -91,29 +91,29 @@ const runtimeRules = [
 ];
 
 // A layered module is a feature or the framework that has been split into
-// ui/data/core. The capture group carries the module root into `to`, so the
-// rule compares a file with its own module's layers and never with another
-// module's (cross-module imports are a separate concern). Anchoring on the real
-// layer directories rather than a bare `core/` keeps legacy folders that share
-// the name out of scope.
-const LAYERED_MODULE = '^(src/features/[^/]+|src/framework)/';
+// ui/data/core. Layer is a property of the code's subject, not of the module,
+// so core/ may not import ui/ or data/ of any layered module, its own or
+// another's: another feature's store is still IO. Anchoring on the real layer
+// directories rather than a bare `core/` keeps legacy folders that share the
+// name out of scope.
+const LAYERED_MODULE = '(src/features/[^/]+|src/framework)';
 
 const sourceRules = [
   {
     name: 'layer-core-is-a-leaf',
     severity: 'error',
     comment:
-      "core/ holds a module's models and pure domain logic and imports nothing from its own ui/ or data/. Allowed layer edges are ui → data, ui → core and data → core only; anything else inverts the dependency direction and drags rendering or IO concerns into the layer that is supposed to be testable without them.",
-    from: { path: `${LAYERED_MODULE}core/` },
-    to: { path: '^$1/(ui|data)/' },
+      "core/ holds a module's models and pure domain logic and imports nothing from any ui/ or data/ layer. Allowed layer edges are ui → data, ui → core and data → core only; anything else inverts the dependency direction and drags rendering or IO concerns into the layer that is supposed to be testable without them.",
+    from: { path: `^${LAYERED_MODULE}/core/` },
+    to: { path: `^${LAYERED_MODULE}/(ui|data)/` },
   },
   {
     name: 'layer-data-does-not-import-ui',
     severity: 'error',
     comment:
-      'data/ holds stores, API clients and transforms and imports nothing from its own ui/. Rendering depends on state and IO, never the other way round; a store that needs something from a component is a store holding UI runtime concerns that belong in a ui/ hook.',
-    from: { path: `${LAYERED_MODULE}data/` },
-    to: { path: '^$1/ui/' },
+      'data/ holds stores, API clients and transforms and imports nothing from any ui/ layer. Rendering depends on state and IO, never the other way round; a store that needs something from a component is a store holding UI runtime concerns that belong in a ui/ hook.',
+    from: { path: `^${LAYERED_MODULE}/data/` },
+    to: { path: `^${LAYERED_MODULE}/ui/` },
   },
 ];
 
