@@ -142,6 +142,13 @@ const graphs = {
       ...sharedOptions,
       tsPreCompilationDeps: true,
       doNotFollow: { path: 'node_modules' },
+      enhancedResolveOptions: {
+        ...sharedOptions.enhancedResolveOptions,
+        // Type imports may land on a declaration file. Listed last so a
+        // sibling .ts/.js still wins; without it the edge is unresolved and
+        // the layer rules never see it.
+        extensions: [...extensions, '.d.ts'],
+      },
     },
   },
 };

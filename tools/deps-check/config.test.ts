@@ -3,7 +3,11 @@ import { GRAPHS, type Graph } from './internal/cruise';
 type RuleConfig = { name: string; from: { path?: string }; to: { path?: string; circular?: boolean } };
 type Config = {
   forbidden: RuleConfig[];
-  options: { tsPreCompilationDeps?: boolean | string; doNotFollow?: { path?: string } };
+  options: {
+    tsPreCompilationDeps?: boolean | string;
+    doNotFollow?: { path?: string };
+    enhancedResolveOptions?: { extensions?: string[] };
+  };
 };
 
 function loadConfig(graph: string): Config {
@@ -80,6 +84,10 @@ describe('.dependency-cruiser.cjs', () => {
 
     it('never carries a cycle rule', () => {
       expect(configs.source.forbidden.some(r => r.to.circular)).toBe(false);
+    });
+
+    it('resolves extensionless imports that land on declaration files', () => {
+      expect(configs.source.options.enhancedResolveOptions?.extensions).toContain('.d.ts');
     });
 
     describe('layer-core-is-a-leaf', () => {
