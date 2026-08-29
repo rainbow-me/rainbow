@@ -11,6 +11,12 @@ export function isValidAppStoreUrl(url: string): boolean {
   return APP_STORE_URL_PREFIXES.some(prefix => url.startsWith(prefix));
 }
 
+export function isRestorableUrlWorklet(url: string | undefined): url is string {
+  'worklet';
+  if (!url) return false;
+  return url === RAINBOW_HOME || !isMissingValidProtocolWorklet(url);
+}
+
 export const normalizeUrlWorklet = (url: string): string => {
   'worklet';
   if (!url) {
