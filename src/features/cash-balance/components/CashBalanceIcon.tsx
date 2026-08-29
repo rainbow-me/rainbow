@@ -20,15 +20,7 @@ export const CashBalanceIcon = memo(function CashBalanceIcon({ size = SIZE }: { 
       borderWidth={1.33}
       alignItems="center"
       justifyContent="center"
-      shadow={{
-        custom: {
-          ios: [
-            { x: 0, y: 4, blur: 8, opacity: 0.3, color: { custom: CASH_BALANCE_COLORS.icon } },
-            { x: 0, y: 2, blur: 4, opacity: 0.04, color: 'shadowFar' },
-          ],
-          android: { elevation: 12, opacity: 1, color: { custom: CASH_BALANCE_COLORS.icon } },
-        },
-      }}
+      shadow="12px green"
     >
       <Box
         as={LinearGradient}
