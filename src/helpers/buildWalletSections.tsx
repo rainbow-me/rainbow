@@ -170,12 +170,14 @@ const buildBriefWalletSections = (
   const cashBalanceSection = cashBalanceEnabled ? withCashBalanceSection() : EMPTY_ARRAY;
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
+  // Sections above are fixed-position and unconditional relative to one another; only the
+  // ordering of perps/polymarket/content below varies by which of them has content to show.
+  const prefixSections = [...headerSection, ...featureCardSection, ...cashBalanceSection];
+
   if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
-        ...headerSection,
-        ...featureCardSection,
-        ...cashBalanceSection,
+        ...prefixSections,
         ...perpsSection,
         ...polymarketSection,
         ...tokensHeaderSection,
@@ -190,9 +192,7 @@ const buildBriefWalletSections = (
   if (hasPerpsContent && !hasPolymarketContent) {
     return {
       briefSectionsData: [
-        ...headerSection,
-        ...featureCardSection,
-        ...cashBalanceSection,
+        ...prefixSections,
         ...perpsSection,
         ...tokensHeaderSection,
         ...contentSection,
@@ -206,9 +206,7 @@ const buildBriefWalletSections = (
   }
   return {
     briefSectionsData: [
-      ...headerSection,
-      ...featureCardSection,
-      ...cashBalanceSection,
+      ...prefixSections,
       ...contentSection,
       ...perpsSection,
       ...polymarketSection,
