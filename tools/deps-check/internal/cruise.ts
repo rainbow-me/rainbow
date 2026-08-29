@@ -13,10 +13,10 @@ export type CruiseSummary = {
 
 /**
  * The graphs .dependency-cruiser.cjs exports, selected by DEPCRUISE_GRAPH. Each
- * rule lives on exactly one graph, so unioning the two summaries loses nothing
- * and double-counts nothing.
+ * rule lives on exactly one graph, so unioning the summaries loses nothing and
+ * double-counts nothing.
  */
-export const GRAPHS = ['first-party', 'third-party'] as const;
+export const GRAPHS = ['runtime', 'source'] as const;
 export type Graph = (typeof GRAPHS)[number];
 
 const TMP = mkdtempSync(join(tmpdir(), 'deps-check-'));

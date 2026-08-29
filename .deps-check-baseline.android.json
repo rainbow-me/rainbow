@@ -163,6 +163,66 @@
   },
   {
     "type": "cycle",
+    "from": "src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx",
+    "to": "src/features/ens/components/ExternalENSProfileScrollView.tsx",
+    "unresolvedTo": "@/features/ens/components/ExternalENSProfileScrollView",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/features/ens/components/ExternalENSProfileScrollView.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/ens/components/profile/ProfileSheetHeader.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/screens/ProfileSheet.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/asset-list/RecyclerAssetList2/index.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
     "from": "src/components/coin-row/FastTransactionCoinRow.tsx",
     "to": "src/components/coin-row/FastTransactionStatusBadge.tsx",
     "unresolvedTo": "./FastTransactionStatusBadge",
@@ -340,6 +400,59 @@
   },
   {
     "type": "cycle",
+    "from": "src/features/ens/components/ExternalENSProfileScrollView.tsx",
+    "to": "src/screens/ProfileSheet.tsx",
+    "unresolvedTo": "@/screens/ProfileSheet",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/screens/ProfileSheet.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/asset-list/RecyclerAssetList2/index.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/features/ens/components/ExternalENSProfileScrollView.tsx",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
     "from": "src/features/ens/components/profile/ProfileSheetHeader.tsx",
     "to": "src/screens/ProfileSheet.tsx",
     "unresolvedTo": "@/screens/ProfileSheet",
@@ -401,105 +514,6 @@
       {
         "name": "src/features/ens/hooks/useENSAvatar.ts",
         "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/features/ens/hooks/useENSCover.ts",
-    "to": "src/features/ens/utils/handlers.ts",
-    "unresolvedTo": "../utils/handlers",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/features/ens/utils/handlers.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/ens/hooks/useENSCover.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/features/ens/hooks/useENSRecords.ts",
-    "to": "src/features/ens/utils/handlers.ts",
-    "unresolvedTo": "../utils/handlers",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/features/ens/utils/handlers.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/ens/hooks/useENSRecords.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/features/ens/utils/handlers.ts",
-    "to": "src/utils/profileUtils.ts",
-    "unresolvedTo": "@/utils/profileUtils",
-    "dependencyTypes": [
-      "aliased",
-      "aliased-tsconfig",
-      "aliased-tsconfig-paths",
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/utils/profileUtils.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/features/ens/utils/handlers.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
           "local",
           "import"
         ]
@@ -1274,6 +1288,55 @@
   {
     "type": "cycle",
     "from": "src/model/wallet.ts",
+    "to": "src/state/performance/performance.ts",
+    "unresolvedTo": "@/state/performance/performance",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/state/performance/performance.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/wallets/walletsStore.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/model/wallet.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "src/model/wallet.ts",
     "to": "src/state/wallets/walletsStore.ts",
     "unresolvedTo": "@/state/wallets/walletsStore",
     "dependencyTypes": [
@@ -1449,6 +1512,75 @@
   },
   {
     "type": "cycle",
+    "from": "src/notifications/settings/firebase.ts",
+    "to": "src/notifications/tokens.ts",
+    "unresolvedTo": "@/notifications/tokens",
+    "dependencyTypes": [
+      "aliased",
+      "aliased-tsconfig",
+      "aliased-tsconfig-paths",
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/notifications/tokens.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/notifications/permissions.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/notifications/settings/initialization.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/notifications/settings/settings.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/notifications/settings/firebase.ts",
+        "dependencyTypes": [
+          "aliased",
+          "aliased-tsconfig",
+          "aliased-tsconfig-paths",
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
     "from": "src/resources/transactions/consolidatedTransactions.ts",
     "to": "src/resources/transactions/transaction.ts",
     "unresolvedTo": "./transaction",
@@ -1479,6 +1611,43 @@
   },
   {
     "type": "cycle",
+    "from": "src/state/assets/createUserAssetsStore.ts",
+    "to": "src/state/assets/utils.ts",
+    "unresolvedTo": "./utils",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/state/assets/utils.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/assets/userAssets.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/state/assets/createUserAssetsStore.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
     "from": "src/state/assets/positionsSync.ts",
     "to": "src/state/assets/userAssets.ts",
     "unresolvedTo": "./userAssets",
@@ -1500,43 +1669,6 @@
       },
       {
         "name": "src/state/assets/positionsSync.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/state/assets/utils.ts",
-    "to": "src/state/assets/userAssets.ts",
-    "unresolvedTo": "./userAssets",
-    "dependencyTypes": [
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/state/assets/userAssets.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/createUserAssetsStore.ts",
-        "dependencyTypes": [
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/assets/utils.ts",
         "dependencyTypes": [
           "local",
           "import"
@@ -1694,55 +1826,6 @@
       },
       {
         "name": "src/state/nonces/index.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "src/state/performance/performance.ts",
-    "to": "src/state/wallets/walletsStore.ts",
-    "unresolvedTo": "@/state/wallets/walletsStore",
-    "dependencyTypes": [
-      "aliased",
-      "aliased-tsconfig",
-      "aliased-tsconfig-paths",
-      "local",
-      "import"
-    ],
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "src/state/wallets/walletsStore.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/model/wallet.ts",
-        "dependencyTypes": [
-          "aliased",
-          "aliased-tsconfig",
-          "aliased-tsconfig-paths",
-          "local",
-          "import"
-        ]
-      },
-      {
-        "name": "src/state/performance/performance.ts",
         "dependencyTypes": [
           "aliased",
           "aliased-tsconfig",

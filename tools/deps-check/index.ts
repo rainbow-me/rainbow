@@ -10,7 +10,7 @@
  * dependency-cruiser resolves one platform per run (foo.ios / foo.android),
  * so every check runs once per platform; the union of the two runs sees every
  * edge that can ship on either platform. Each platform run cruises both graphs
- * declared in .dependency-cruiser.cjs (first-party, third-party) and unions
+ * declared in .dependency-cruiser.cjs (runtime, source) and unions
  * their violations; see internal/cruise.ts.
  *
  * Usage:
