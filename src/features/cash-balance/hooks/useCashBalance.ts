@@ -1,5 +1,5 @@
 import { CASH_BALANCE_USDC_BY_CHAIN_ID } from '@/features/cash-balance/constants';
-import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -18,6 +18,11 @@ export function useCashBalance(): string {
           userAsset => userAsset.chainId === ChainId.base && userAsset.address.toLowerCase() === CASH_BALANCE_ADDRESS
         )
       : undefined;
-    return asset?.native.balance.display ?? convertAmountToNativeDisplay(0, nativeCurrency);
+    // Recomputed from amount + price rather than reading asset.native.balance.display, which is
+    // cached from the last fetch and can still reflect the previous nativeCurrency while a
+    // currency-change refetch is in flight (userAssetsStore uses keepPreviousData).
+    return asset
+      ? convertAmountAndPriceToNativeDisplay(asset.balance.amount, asset.price?.value ?? 0, nativeCurrency).display
+      : convertAmountToNativeDisplay(0, nativeCurrency);
   });
 }
