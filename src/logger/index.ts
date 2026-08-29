@@ -235,7 +235,7 @@ export class Logger {
     if (error instanceof RainbowError) {
       this.transport(LogLevel.Error, error, metadata);
     } else {
-      this.transport(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), metadata);
+      this.transport(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`, ensureError(error)), metadata);
     }
   }
 
