@@ -69,15 +69,7 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
             height={{ custom: ADD_BUTTON_HEIGHT }}
             borderRadius={ADD_BUTTON_HEIGHT / 2}
             backgroundColor={CASH_BALANCE_COLORS.addButton}
-            shadow={{
-              custom: {
-                ios: [
-                  { x: 0, y: 4, blur: 6, opacity: 0.3, color: { custom: CASH_BALANCE_COLORS.addButton } },
-                  { x: 0, y: 1, blur: 2, opacity: 0.04, color: 'shadowFar' },
-                ],
-                android: { elevation: 8, opacity: 1, color: { custom: CASH_BALANCE_COLORS.addButton } },
-              },
-            }}
+            shadow="12px green"
           >
             <Text color="white" size="17pt" weight="heavy">
               {i18n.t(i18n.l.button.add)}
