@@ -239,6 +239,25 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(session()).toMatchObject({ status: 'recovery', challenge: { recoveryId: 'recovery-1' } });
   });
 
+  it('does not accept a recovery OTP while a resend is pending', async () => {
+    const resend = Promise.withResolvers<{ recoveryId: string; resendAfter: number }>();
+    mockStartRecovery.mockReturnValue(resend.promise);
+    startAccountRecovery();
+    flow().setCode(CODE);
+
+    const pending = flow().resend();
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(flow().state).toBe('entry');
+    expect(session()).toMatchObject({ status: 'recovery', challenge: { recoveryId: 'recovery-1' } });
+
+    resend.resolve({ recoveryId: 'recovery-2', resendAfter: RESEND_AFTER });
+    await pending;
+
+    expect(flow().code).toBe('');
+    expect(session()).toMatchObject({ status: 'recovery', challenge: { recoveryId: 'recovery-2' } });
+  });
+
   it('clears the code, stores no token, and reports the failure when verification throws', async () => {
     mockVerifyPhone.mockRejectedValue(new Error('wrong code'));
     flow().setCode(CODE);
@@ -386,6 +405,19 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockVerifyPhone).toHaveBeenCalledTimes(1);
     resolveVerify(TOKEN);
     await expect(first).resolves.toBe('verified');
+  });
+
+  it('does not resend while verification is active', async () => {
+    const verify = Promise.withResolvers<typeof TOKEN>();
+    mockVerifyPhone.mockReturnValue(verify.promise);
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    await flow().resend();
+
+    expect(mockResendPhoneCode).not.toHaveBeenCalled();
+    verify.resolve(TOKEN);
+    await pending;
   });
 
   // The Confirm button is briefly tappable again between acceptance and the pager moving on.

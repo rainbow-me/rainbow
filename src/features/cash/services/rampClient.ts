@@ -187,6 +187,8 @@ export async function listCards({
   abortController?: AbortController | null;
   trigger: CashSignInTrigger;
 }): Promise<LinkedCard[]> {
+  if (IS_TESTING === 'true') return [];
+
   const { data } = await authorizedRequest(trigger, headers =>
     getCashPlatformClient().get<ListCardsResponse>('/ramp/payment-methods/cards', { abortController, headers })
   );
