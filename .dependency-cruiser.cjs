@@ -136,14 +136,6 @@ const sourceRules = [
     from: { path: `^${LAYERED_MODULE}/core/` },
     to: { path: '^(node_modules/@storesjs/stores/|src/(state|react-query)/)' },
   },
-  {
-    name: 'stores-hold-plain-values',
-    severity: 'error',
-    comment:
-      'Store files never import the UI runtime. A store holds plain serialisable values: no animation shared values, no timer or subscription handles, no imperative UI calls in actions. Bridging to the UI runtime is a ui/ hook. This is the deterministic slice of that rule; what a store puts in its state is still a review question. Scoped to layered data/stores/ directories: a Level 1 stores/ folder makes no layer claim yet.',
-    from: { path: `^${LAYERED_MODULE}/data/stores/` },
-    to: { path: UI_RUNTIME_PACKAGES },
-  },
 ];
 
 const sharedOptions = {

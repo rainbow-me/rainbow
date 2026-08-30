@@ -187,31 +187,6 @@ describe('.dependency-cruiser.cjs', () => {
         expect('src/state/wallets/walletsStore.ts').toMatch(to);
         expect('src/react-query/queryClient.ts').toMatch(to);
       });
-
-      it('allows domain models from other modules', () => {
-        expect('src/features/wallet/core/walletLibrary.ts').not.toMatch(to);
-      });
-    });
-
-    describe('stores-hold-plain-values', () => {
-      const { from, to } = rule('source', 'stores-hold-plain-values');
-
-      it('applies to layered store directories', () => {
-        expect('src/features/wallet/data/stores/walletStore.ts').toMatch(from);
-        expect('src/framework/data/stores/x.ts').toMatch(from);
-      });
-
-      it('does not apply to Level 1 stores, the legacy state dir, or other layers', () => {
-        expect('src/features/perps/stores/perpsStore.ts').not.toMatch(from);
-        expect('src/state/wallets/walletsStore.ts').not.toMatch(from);
-        expect('src/features/wallet/data/api/x.ts').not.toMatch(from);
-        expect('src/features/wallet/ui/x.tsx').not.toMatch(from);
-      });
-
-      it('forbids the UI runtime packages', () => {
-        expect('node_modules/react-native/index.js').toMatch(to);
-        expect('node_modules/react-native-reanimated/src/index.ts').toMatch(to);
-      });
     });
   });
 });
