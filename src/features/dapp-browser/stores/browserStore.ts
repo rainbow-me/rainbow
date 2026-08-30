@@ -191,15 +191,16 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
           set(state => {
             const tabIdToUse = tabId || state.getActiveTabId();
             const existingTabData = state.getTabData(tabIdToUse);
+            const urlToSet = normalizeUrlWorklet(url);
+            if (!urlToSet) return state;
 
-            const isGoingHome = existingTabData?.url && url === RAINBOW_HOME;
+            const isGoingHome = existingTabData?.url && urlToSet === RAINBOW_HOME;
             const canGoBack = isGoingHome ? false : existingTabData?.canGoBack || false;
             const canGoForward = isGoingHome ? false : existingTabData?.canGoForward || false;
             const newTabsData = new Map(state.tabsData);
 
             const existingUrl = existingTabData?.url || '';
             const persistedUrl = state.persistedTabUrls[tabIdToUse] || '';
-            const urlToSet = normalizeUrlWorklet(url);
             const shouldForceUrlUpdate = !isGoingHome && existingUrl === urlToSet && persistedUrl !== existingUrl;
 
             /**

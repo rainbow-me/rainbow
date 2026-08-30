@@ -21,7 +21,7 @@ import { handleProviderRequestApp } from '../services/handleProviderRequest';
 import { type BrowserHistoryStore } from '../stores/browserHistoryStore';
 import { useBrowserStore, type BrowserState } from '../stores/browserStore';
 import { type TabId } from '../types';
-import { isValidAppStoreUrl } from '../utils/browserUtils';
+import { isValidAppStoreUrl, normalizeUrlWorklet } from '../utils/browserUtils';
 import { addReferralToDappBrowserUrl } from '../utils/dappReferrals';
 
 interface UseWebViewHandlersParams {
@@ -211,10 +211,13 @@ export function useWebViewHandlers({
         return;
       }
 
-      const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
-      if (currentUrl === targetUrl) return;
+      const newTabUrl = normalizeUrlWorklet(targetUrl);
+      if (!newTabUrl) return;
 
-      Navigation.setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: targetUrl });
+      const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
+      if (currentUrl === newTabUrl) return;
+
+      Navigation.setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: newTabUrl });
     },
     [tabId]
   );

@@ -9,7 +9,7 @@ import { generateUniqueId } from '@/worklets/strings';
 import { RAINBOW_HOME } from '../constants/constants';
 import { useBrowserStore } from '../stores/browserStore';
 import { TabViewGestureStates, type BrowserWorkletsContextType, type ScreenshotType, type TabOperation } from '../types';
-import { isRestorableUrlWorklet, normalizeUrlWorklet } from '../utils/browserUtils';
+import { normalizeUrlWorklet } from '../utils/browserUtils';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
@@ -99,8 +99,9 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   const updateTabUrlWorklet = useCallback(
     ({ tabId, url }: { tabId: string; url: string }) => {
       'worklet';
-      if (!isRestorableUrlWorklet(url)) return;
-      animatedTabUrls.modify(urls => ({ ...urls, [tabId]: normalizeUrlWorklet(url) }));
+      const normalizedUrl = normalizeUrlWorklet(url);
+      if (!normalizedUrl) return;
+      animatedTabUrls.modify(urls => ({ ...urls, [tabId]: normalizedUrl }));
     },
     [animatedTabUrls]
   );

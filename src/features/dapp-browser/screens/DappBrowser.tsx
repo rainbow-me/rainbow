@@ -33,7 +33,7 @@ import { useScreenshotAndScrollTriggers } from '../hooks/useScreenshotAndScrollT
 import { useBrowserHistoryStore } from '../stores/browserHistoryStore';
 import { useBrowserStore } from '../stores/browserStore';
 import { TabViewGestureStates, type AnimatedTabUrls } from '../types';
-import { isRestorableUrlWorklet } from '../utils/browserUtils';
+import { normalizeUrlWorklet } from '../utils/browserUtils';
 import { addReferralToDappBrowserUrl } from '../utils/dappReferrals';
 import { schedulePruneScreenshots } from '../utils/screenshots';
 
@@ -76,7 +76,13 @@ const NewTabTrigger = () => {
 
   const route = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_SCREEN>>();
   const requestedUrl = route.params?.url;
-  const newTabUrl = isRestorableUrlWorklet(requestedUrl) ? addReferralToDappBrowserUrl(requestedUrl) : undefined;
+  const normalizedUrl = normalizeUrlWorklet(requestedUrl);
+  const newTabUrl = normalizedUrl ? addReferralToDappBrowserUrl(normalizedUrl) : undefined;
+  const shouldClearRequestedUrl = Boolean(requestedUrl && !newTabUrl);
+
+  useEffect(() => {
+    if (shouldClearRequestedUrl) setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: undefined });
+  }, [shouldClearRequestedUrl]);
 
   useAnimatedReaction(
     () => newTabUrl,

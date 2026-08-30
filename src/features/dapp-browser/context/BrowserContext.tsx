@@ -28,7 +28,7 @@ import {
   type BrowserContextType,
   type BrowserTabBarContextType,
 } from '../types';
-import { isRestorableUrlWorklet, normalizeUrlWorklet } from '../utils/browserUtils';
+import { normalizeUrlWorklet } from '../utils/browserUtils';
 import { addReferralToDappBrowserUrl } from '../utils/dappReferrals';
 import { calculateTabViewBorderRadius } from '../utils/layoutUtils';
 
@@ -164,10 +164,11 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     (originalUrl: string, tabId?: string) => {
       const { url: activeTabUrl } = activeTabInfo.value;
       const tabIdToUse = tabId || activeTabId.value;
-      const url = addReferralToDappBrowserUrl(originalUrl);
-      if (!isRestorableUrlWorklet(url)) return;
+      const normalizedUrl = normalizeUrlWorklet(originalUrl);
+      if (!normalizedUrl) return;
+      const url = addReferralToDappBrowserUrl(normalizedUrl);
 
-      if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabUrl)) {
+      if (url === activeTabUrl) {
         refreshPage();
       } else {
         goToPage(url, tabIdToUse);
@@ -175,7 +176,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
       runOnUI(() => {
         const tabIdToUse = tabId || activeTabId.value;
-        animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: normalizeUrlWorklet(url) }));
+        animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: url }));
       })();
     },
     [activeTabId, activeTabInfo, animatedTabUrls, goToPage, refreshPage]
