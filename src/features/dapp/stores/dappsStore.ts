@@ -3,7 +3,6 @@ import { createQueryStore } from '@storesjs/stores';
 import { formatUrl } from '@/features/dapp-browser/utils/browserUtils';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
-import { logger, RainbowError } from '@/logger';
 
 export type Dapp = {
   colors: {
@@ -50,39 +49,30 @@ export const useDappsStore = createQueryStore<Dapp[], never, DappsState>(
 );
 
 async function fetchDapps(): Promise<Dapp[]> {
-  try {
-    const response = await metadataClient.getdApps();
+  const response = await metadataClient.getdApps();
 
-    if (!response || !response.dApps) return [];
+  if (!response || !response.dApps) return [];
 
-    return response.dApps
-      .filter(dapp => dapp && dapp.status !== 'SCAM')
-      .map(dapp =>
-        dapp
-          ? {
-              colors: { primary: dapp.colors.primary, fallback: dapp.colors.fallback, shadow: dapp.colors.shadow },
-              iconUrl: dapp.iconURL,
-              name: dapp.name,
-              report: { url: dapp.report.url },
-              search: {
-                normalizedName: dapp.name.toLowerCase().split(' ').filter(Boolean).join(' '),
-                normalizedNameTokens: dapp.name.toLowerCase().split(' ').filter(Boolean),
-                normalizedUrlTokens: dapp.url
-                  .toLowerCase()
-                  .replace(/(^\w+:|^)\/\//, '') // Remove protocol from URL
-                  .split(/\/|\?|&|=|\./) // Split the URL into tokens
-                  .filter(Boolean),
-              },
-              shortName: dapp.shortName,
-              status: dapp.status,
-              trending: dapp.trending || false,
-              url: dapp.url,
-              urlDisplay: formatUrl(dapp.url),
-            }
-          : ({} as Dapp)
-      );
-  } catch (e: unknown) {
-    logger.error(new RainbowError('[dapps]: Failed to fetch dApps'), { message: e instanceof Error ? e.message : 'Unknown error' });
-    return [];
-  }
+  return response.dApps
+    .filter((dapp): dapp is NonNullable<typeof dapp> => !!dapp && dapp.status !== 'SCAM')
+    .map(dapp => ({
+      colors: { primary: dapp.colors.primary, fallback: dapp.colors.fallback, shadow: dapp.colors.shadow },
+      iconUrl: dapp.iconURL,
+      name: dapp.name,
+      report: { url: dapp.report.url },
+      search: {
+        normalizedName: dapp.name.toLowerCase().split(' ').filter(Boolean).join(' '),
+        normalizedNameTokens: dapp.name.toLowerCase().split(' ').filter(Boolean),
+        normalizedUrlTokens: dapp.url
+          .toLowerCase()
+          .replace(/(^\w+:|^)\/\//, '') // Remove protocol from URL
+          .split(/\/|\?|&|=|\./) // Split the URL into tokens
+          .filter(Boolean),
+      },
+      shortName: dapp.shortName,
+      status: dapp.status,
+      trending: dapp.trending || false,
+      url: dapp.url,
+      urlDisplay: formatUrl(dapp.url),
+    }));
 }
