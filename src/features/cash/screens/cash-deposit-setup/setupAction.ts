@@ -11,11 +11,11 @@ import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { NATIONAL_NUMBER_LENGTH } from '../../utils/phoneNumber';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { completeSetupStep, goBackInSetup } from './setupNavigation';
+import { completeSetup, completeSetupStep } from './setupNavigation';
 import { isSetupEditDetour } from './steps';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
-import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 type SetupAction = {
   disabled?: boolean;
@@ -35,11 +35,26 @@ async function submitPhone(): Promise<void> {
 export async function submitPhoneCode(): Promise<void> {
   const result = await useVerifyPhoneFlowStore.getState().submit();
   if (result === 'verified') completeSetupStep();
-  else if (result === 'signupAlreadyComplete') goBackInSetup();
+  else if (result === 'recoveryCodeAccepted') {
+    const sessionStore = useCashSetupSessionStore.getState();
+    if (sessionStore.getIdentity() && sessionStore.getGovernmentId()) {
+      CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_REVIEW);
+    } else {
+      completeSetupStep();
+    }
+  }
 }
 
 export async function submitPasskey(): Promise<void> {
-  if ((await useAddPasskeyFlowStore.getState().submit()) === 'completed') completeSetupStep();
+  const result = await useAddPasskeyFlowStore.getState().submit();
+  if (result === 'completed') completeSetupStep();
+  else if (result === 'recovered') completeSetup();
+}
+
+export async function submitReview(): Promise<void> {
+  const result = await useSubmitReviewFlowStore.getState().submit();
+  if (result === 'recovered') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
+  else if (result === 'phoneCodeRequired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
 }
 
 export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardFormStore: BaseStore<{ isReady: boolean }>) {
@@ -81,7 +96,7 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
         const isFullCode = $(useVerifyPhoneFlowStore, s => s.code.length === OTP_LENGTH);
         const isResending = $(useVerifyPhoneFlowStore, s => s.resending !== null);
         return {
-          disabled: !isFullCode || isResending || state === 'verified',
+          disabled: !isFullCode || isResending || state === 'submitted',
           label,
           loading: state === 'verifying',
           onPress: submitPhoneCode,
@@ -96,12 +111,12 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
 
       case Routes.CASH_SETUP_REVIEW: {
         const isReady = $(useCashSetupSessionStore, s => s.getIdentity() !== null && s.getGovernmentId() !== null);
-        const state = $(useSubmitKycFlowStore, s => s.state);
+        const state = $(useSubmitReviewFlowStore, s => s.state);
         return {
           disabled: !isReady || state !== 'entry',
           label,
           loading: state === 'submitting',
-          onPress: useSubmitKycFlowStore.getState().submit,
+          onPress: submitReview,
         };
       }
 

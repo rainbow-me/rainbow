@@ -12,7 +12,7 @@ import { useSetupInputRef } from '../setupContext';
 const l = i18n.l.cash.deposit_setup.ssn;
 
 export const SsnStep = memo(function SsnStep() {
-  const digits = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.ssnLast4 : ''));
+  const digits = useCashSetupSessionStore(s => s.getPersonalDetailsDraft('ssnLast4') ?? '');
   const inputRef = useRef<TextInput>(null);
   const registerInput = useSetupInputRef();
   const inputTextStyle = useSetupInputTextStyle();

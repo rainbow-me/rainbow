@@ -21,8 +21,8 @@ jest.mock('./steps/useAddPasskeyFlow', () => ({
   useAddPasskeyFlowStore: {},
 }));
 
-jest.mock('./steps/useSubmitKycFlow', () => ({
-  useSubmitKycFlowStore: {},
+jest.mock('./steps/useSubmitReviewFlow', () => ({
+  useSubmitReviewFlowStore: {},
 }));
 
 const DIGITS = '4155550100';

@@ -560,24 +560,24 @@ export type EventProperties = {
     reason: TelemetryErrorReason;
   };
   [event.cashPhoneSubmitted]: {
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneSubmitFailed]: {
     reason: TelemetryErrorReason;
   };
   [event.cashPhoneResendFailed]: {
     reason: TelemetryErrorReason;
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneAlreadyRegistered]: {
-    outcome: 'registeredWithPasskey' | 'alreadyRegistered' | 'signupAlreadyComplete';
+    outcome: 'alreadyRegistered';
   };
   [event.cashPhoneVerified]: {
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneVerifyFailed]: {
     reason: TelemetryErrorReason;
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;

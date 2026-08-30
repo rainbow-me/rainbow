@@ -6,18 +6,23 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
 import * as i18n from '@/languages';
+import { goBack } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { RAINBOW_SUPPORT_URL } from '@/references/constants';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 import { formatDateOfBirth, formatUsSsnMasked } from '../../../services/cashSetupIdentityService';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
 import { KycOutcomeSheet } from '../components/KycOutcomeSheet';
 import { SetupStepLayout } from '../components/SetupStepLayout';
+import { submitReview } from '../setupAction';
 import { completeSetupStep } from '../setupNavigation';
-import { useSubmitKycFlowStore } from './useSubmitKycFlow';
+import { useSubmitReviewFlowStore } from './useSubmitReviewFlow';
 
 const l = i18n.l.cash.deposit_setup.review;
 const kycL = i18n.l.cash.deposit_setup.kyc;
+const recoveryLockedL = i18n.l.cash.deposit_setup.recovery_locked;
 
 function editIdentity() {
   CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);
@@ -28,13 +33,17 @@ function editSsn() {
 }
 
 function continueAfterVerification() {
-  useSubmitKycFlowStore.getState().reset();
+  useSubmitReviewFlowStore.getState().reset();
   completeSetupStep();
 }
 
-function editIdentityAfterFailure() {
-  useSubmitKycFlowStore.getState().reset();
-  editIdentity();
+function returnToReview() {
+  useSubmitReviewFlowStore.getState().reset();
+}
+
+function contactSupport() {
+  openInBrowser(RAINBOW_SUPPORT_URL);
+  goBack();
 }
 
 function ReviewRow({
@@ -74,7 +83,7 @@ function ReviewRow({
 export const ReviewStep = memo(function ReviewStep() {
   const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
   const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
-  const state = useSubmitKycFlowStore(store => store.state);
+  const state = useSubmitReviewFlowStore(store => store.state);
   const submitting = state === 'submitting';
 
   return (
@@ -118,17 +127,42 @@ export const ReviewStep = memo(function ReviewStep() {
           testID="cash-setup-kyc-verifying"
           title={i18n.t(kycL.verifying_title)}
         />
-      ) : state === 'error' ? (
+      ) : state === 'locked' ? (
+        <CashStatusHalfSheet
+          description={i18n.t(recoveryLockedL.description)}
+          primaryAction={{
+            label: i18n.t(kycL.contact_support),
+            onPress: contactSupport,
+            testID: 'cash-setup-recovery-locked-support',
+          }}
+          secondaryAction={{ label: i18n.t(kycL.close), onPress: goBack, testID: 'cash-setup-recovery-locked-close' }}
+          status="error"
+          testID="cash-setup-recovery-locked"
+          title={i18n.t(recoveryLockedL.title)}
+        />
+      ) : state === 'identityMismatch' ? (
         <CashStatusHalfSheet
           description={i18n.t(l.error_description)}
           primaryAction={{
             label: i18n.t(l.edit_details),
-            onPress: editIdentityAfterFailure,
+            onPress: returnToReview,
             testID: 'cash-setup-kyc-error-edit-details',
           }}
           status="error"
           testID="cash-setup-kyc-error"
           title={i18n.t(l.error_title)}
+        />
+      ) : state === 'error' ? (
+        <CashStatusHalfSheet
+          description={i18n.t(l.submission_error_description)}
+          primaryAction={{
+            label: i18n.t(l.try_again),
+            onPress: submitReview,
+            testID: 'cash-setup-review-error-try-again',
+          }}
+          status="error"
+          testID="cash-setup-review-error"
+          title={i18n.t(l.submission_error_title)}
         />
       ) : state === 'entry' ? null : (
         <KycOutcomeSheet onContinue={continueAfterVerification} outcome={state} />

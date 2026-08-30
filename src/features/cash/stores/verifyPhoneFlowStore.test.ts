@@ -2,8 +2,16 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
-import { finishSignupResume, getUserStatus, KycStatus, resendPhoneCode, startSignupResume, verifyPhone } from '../services/userClient';
-import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
+import {
+  finishSignupResume,
+  getUserStatus,
+  KycStatus,
+  resendPhoneCode,
+  startRecovery,
+  startSignupResume,
+  verifyPhone,
+} from '../services/userClient';
+import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from './verifyPhoneFlowStore';
 
 jest.mock('@/analytics', () => ({
@@ -13,7 +21,7 @@ jest.mock('@/analytics', () => ({
       cashPhoneVerified: 'cash.phone_verified',
       cashPhoneVerifyFailed: 'cash.phone_verify_failed',
       cashPhoneResendFailed: 'cash.phone_resend_failed',
-      cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+      cashPhoneSubmitted: 'cash.phone_submitted',
       cashKycApproved: 'cash.kyc_approved',
       cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
       cashKycFailed: 'cash.kyc_failed',
@@ -41,17 +49,19 @@ jest.mock('../services/userClient', () => ({
   finishSignupResume: jest.fn(),
   getUserStatus: jest.fn(),
   resendPhoneCode: jest.fn(),
+  startRecovery: jest.fn(),
   startSignupResume: jest.fn(),
   verifyPhone: jest.fn(),
 }));
 
-const mockVerifyPhone = verifyPhone as jest.Mock;
-const mockFinishSignupResume = finishSignupResume as jest.Mock;
-const mockGetUserStatus = getUserStatus as jest.Mock;
-const mockDelay = delay as jest.Mock;
-const mockResendPhoneCode = resendPhoneCode as jest.Mock;
-const mockStartSignupResume = startSignupResume as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockVerifyPhone = jest.mocked(verifyPhone);
+const mockFinishSignupResume = jest.mocked(finishSignupResume);
+const mockGetUserStatus = jest.mocked(getUserStatus);
+const mockDelay = jest.mocked(delay);
+const mockResendPhoneCode = jest.mocked(resendPhoneCode);
+const mockStartRecovery = jest.mocked(startRecovery);
+const mockStartSignupResume = jest.mocked(startSignupResume);
+const track = jest.mocked(analytics.track);
 
 const CODE = '123456';
 const TOKEN = { bootstrapToken: 'bst_1', expiresAt: 1_750_000_000_000 };
@@ -65,8 +75,10 @@ const challenge = () => {
   if (current.status !== 'phoneSubmitted') throw new Error('expected a phoneSubmitted session');
   return current.challenge;
 };
-const submitPhone = (challenge: PhoneChallenge, phoneNationalNumber = '4155550100') =>
+const submitPhone = (challenge: PhoneVerificationChallenge, phoneNationalNumber = '4155550100') =>
   store().setPhoneSubmitted({ challenge, phoneNationalNumber, resendAfter: 0 });
+const startAccountRecovery = (recoveryId = 'recovery-1') =>
+  store().setPhoneSubmitted({ challenge: { kind: 'recovery', recoveryId }, phoneNationalNumber: '4155550100', resendAfter: 0 });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -77,6 +89,7 @@ beforeEach(() => {
   mockFinishSignupResume.mockResolvedValue({ outcome: 'verified', ...TOKEN });
   mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Unspecified });
   mockResendPhoneCode.mockResolvedValue({ resendAfter: RESEND_AFTER });
+  mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-2', resendAfter: RESEND_AFTER });
   mockStartSignupResume.mockResolvedValue({ resumeId: 'rcv_2', resendAfter: RESEND_AFTER });
 });
 
@@ -97,7 +110,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
       bootstrapTokenExpiresAt: TOKEN.expiresAt,
     });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'signup' });
-    expect(flow().state).toBe('verified');
+    expect(flow().state).toBe('submitted');
   });
 
   it('verifies a resume challenge through FinishSignupResume', async () => {
@@ -128,7 +141,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(flow().kycOutcome).toBe(expected);
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
-    expect(flow().state).toBe('verified');
+    expect(flow().state).toBe('submitted');
   });
 
   it.each([
@@ -191,18 +204,39 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockGetUserStatus).not.toHaveBeenCalled();
   });
 
-  it('marks the phone as already registered when the resumed account turns out to have a passkey', async () => {
+  it('switches to account recovery when the resumed account turns out to have a passkey', async () => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
     mockFinishSignupResume.mockResolvedValue({ outcome: 'signupAlreadyComplete' });
     flow().setCode(CODE);
 
-    await expect(flow().submit()).resolves.toBe('signupAlreadyComplete');
+    await expect(flow().submit()).resolves.toBe('recoveryStarted');
 
-    expect(session()).toEqual({ status: 'phoneAlreadyRegistered', phoneNationalNumber: '4155550100' });
-    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome: 'signupAlreadyComplete' });
+    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: '4155550100' });
+    expect(session()).toEqual({
+      status: 'recovery',
+      challenge: { kind: 'recovery', recoveryId: 'recovery-2' },
+      phoneNationalNumber: '4155550100',
+      resendAfter: RESEND_AFTER,
+      identity: { firstName: '', lastName: '', dateOfBirth: null },
+      ssnLast4: '',
+    });
+    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'recovery' });
     expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
     expect(flow().state).toBe('entry');
     expect(flow().code).toBe('');
+  });
+
+  it('retains a recovery OTP for the personal-details submission', async () => {
+    startAccountRecovery();
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('recoveryCodeAccepted');
+
+    expect(mockVerifyPhone).not.toHaveBeenCalled();
+    expect(mockFinishSignupResume).not.toHaveBeenCalled();
+    expect(flow().state).toBe('submitted');
+    expect(flow().code).toBe(CODE);
+    expect(session()).toMatchObject({ status: 'recovery', challenge: { recoveryId: 'recovery-1' } });
   });
 
   it('clears the code, stores no token, and reports the failure when verification throws', async () => {
@@ -362,7 +396,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     await expect(flow().submit()).resolves.toBe('failed');
 
     expect(mockVerifyPhone).toHaveBeenCalledTimes(1);
-    expect(flow().state).toBe('verified');
+    expect(flow().state).toBe('submitted');
   });
 });
 
@@ -393,6 +427,24 @@ describe('useVerifyPhoneFlowStore.resend', () => {
       challenge: { kind: 'resume', resumeId: 'rcv_2' },
       phoneNationalNumber: '4155550100',
       resendAfter: RESEND_AFTER,
+    });
+    expect(flow().resending).toBeNull();
+  });
+
+  it('re-arms recovery with a fresh challenge while preserving the identity draft', async () => {
+    startAccountRecovery();
+    store().setFirstName('Ada');
+    store().setLastName('Lovelace');
+    store().setDateOfBirth({ year: 1815, month: 12, day: 10 });
+
+    await flow().resend();
+
+    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: '4155550100' });
+    expect(session()).toMatchObject({
+      status: 'recovery',
+      challenge: { kind: 'recovery', recoveryId: 'recovery-2' },
+      resendAfter: RESEND_AFTER,
+      identity: { firstName: 'Ada', lastName: 'Lovelace' },
     });
     expect(flow().resending).toBeNull();
   });

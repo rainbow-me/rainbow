@@ -15,8 +15,8 @@ const l = i18n.l.cash.deposit_setup.confirm_phone;
 
 export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
   const { state, code, kycOutcome, continueAfterKyc, setCode, submit, resend, resending, resendCooldownSeconds } = useVerifyPhoneFlow();
-  // Verification is single-flight and terminal once the code is accepted.
-  const submitted = state === 'verifying' || state === 'verified';
+  // Keep the retained OTP input disabled after advancing.
+  const submitted = state === 'verifying' || state === 'submitted';
   const inputRef = useSetupInputRef();
   const cooling = resendCooldownSeconds > 0;
   const resendDisabled = submitted || cooling || resending;

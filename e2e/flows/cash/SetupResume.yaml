@@ -23,41 +23,6 @@ tags:
     id: cash-deposit-intro-set-up-account
 - assertVisible:
     text: 'Connect your phone number'
-# A phone registered with a passkey (mock 1303) dead-ends with the already-registered message.
-- tapOn:
-    id: cash-setup-phone-input
-- inputText: '5'
-- inputText: '5'
-- inputText: '5'
-- inputText: '0'
-- inputText: '0'
-- inputText: '0'
-- inputText: '1'
-- inputText: '3'
-- inputText: '0'
-- inputText: '3'
-- tapOn:
-    id: cash-setup-next
-- extendedWaitUntil:
-    visible:
-      text: 'This number is already connected to an account.'
-    timeout: 10000
-- tapOn:
-    id: cash-setup-phone-input
-- eraseText
-# Erasing the reformatting input can strand the cursor mid-string and leave digits behind,
-# which then scrambles the retyped number. Re-tap to move the cursor to the end and erase
-# again until the field is empty, then verify the retyped number before submitting.
-- repeat:
-    times: 3
-    while:
-      visible:
-        text: '\(.*'
-    commands:
-      - tapOn:
-          id: cash-setup-phone-input
-      - eraseText
-      - waitForAnimationToEnd
 - inputText: '5'
 - inputText: '5'
 - inputText: '5'
@@ -80,28 +45,8 @@ tags:
       text: 'Confirm your phone'
     timeout: 10000
 - waitForAnimationToEnd
-# The 1322 guardrail (mock code 001322) pops back to the phone step with the message.
-- inputText: '0'
-- inputText: '0'
-- inputText: '1'
-- inputText: '3'
-- inputText: '2'
-- inputText: '2'
-- extendedWaitUntil:
-    visible:
-      text: 'Connect your phone number'
-    timeout: 10000
-- assertVisible:
-    text: 'This number is already connected to an account.'
-# The kept digits resume again; the mock OTP finishes the resume, and the mock
-# account's approved KYC (mock GetUserStatus) is acknowledged before Add Passkey.
-- tapOn:
-    id: cash-setup-next
-- extendedWaitUntil:
-    visible:
-      text: 'Confirm your phone'
-    timeout: 10000
-- waitForAnimationToEnd
+# The mock OTP finishes the resume, and the mock account's approved KYC is
+# acknowledged before Add Passkey.
 - inputText: '0'
 - inputText: '0'
 - inputText: '0'

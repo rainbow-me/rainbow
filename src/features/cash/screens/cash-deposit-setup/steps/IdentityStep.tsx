@@ -27,7 +27,7 @@ function getInitialDateOfBirth(maximumDate: Date): Date {
 }
 
 export const IdentityStep = memo(function IdentityStep() {
-  const identity = useCashSetupSessionStore(state => (state.session.status === 'phoneVerified' ? state.session.identity : null));
+  const identity = useCashSetupSessionStore(s => s.getPersonalDetailsDraft('identity'));
   const firstName = identity?.firstName ?? '';
   const lastName = identity?.lastName ?? '';
   const dateOfBirth = identity?.dateOfBirth ?? null;

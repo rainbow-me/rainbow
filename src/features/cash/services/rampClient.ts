@@ -180,8 +180,14 @@ export async function completeCardLinkSession(
   return toLinkedCard(data.card);
 }
 
-export async function listCards(abortController?: AbortController | null): Promise<LinkedCard[]> {
-  const { data } = await authorizedRequest('signInScreen', headers =>
+export async function listCards({
+  abortController,
+  trigger,
+}: {
+  abortController?: AbortController | null;
+  trigger: CashSignInTrigger;
+}): Promise<LinkedCard[]> {
+  const { data } = await authorizedRequest(trigger, headers =>
     getCashPlatformClient().get<ListCardsResponse>('/ramp/payment-methods/cards', { abortController, headers })
   );
   // protojson drops empty repeated fields, so an account with no cards responds `{}`.

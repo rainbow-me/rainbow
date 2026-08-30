@@ -34,8 +34,8 @@ import { PhoneStep } from './steps/PhoneStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { SsnStep } from './steps/SsnStep';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
-import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_PHONE]: <PhoneStep />,
@@ -76,7 +76,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     useCashSetupSessionStore.getState().reset();
     useSubmitPhoneFlowStore.getState().reset();
     useVerifyPhoneFlowStore.getState().reset();
-    useSubmitKycFlowStore.getState().reset();
+    useSubmitReviewFlowStore.getState().reset();
     useAddPasskeyFlowStore.getState().reset();
     useCardLinkFlowStore.getState().reset();
   });

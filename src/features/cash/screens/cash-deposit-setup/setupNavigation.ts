@@ -19,6 +19,10 @@ export function completeSetupStep(): void {
     return;
   }
 
+  completeSetup();
+}
+
+export function completeSetup(): void {
   goBack();
   navigate(Routes.ADD_CASH_SHEET);
 }
@@ -26,7 +30,7 @@ export function completeSetupStep(): void {
 export function cancelSetup(): void {
   const hasPasskey = useCashAccountStore.getState().userId != null;
   const { status } = useCashSetupSessionStore.getState().session;
-  if (!hasPasskey && (status === 'phoneSubmitted' || status === 'phoneVerified')) {
+  if (!hasPasskey && (status === 'phoneSubmitted' || status === 'recovery' || status === 'phoneVerified')) {
     navigate(Routes.CASH_SETUP_CANCEL_SHEET);
   } else {
     goBack();
