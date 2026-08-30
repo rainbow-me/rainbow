@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { parseResponse } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { greaterThan } from '@/helpers/utilities';
+import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import type { LinkedCard } from '../stores/cashPaymentMethodStore';
@@ -77,27 +78,50 @@ const epochMsSchema = z
   .transform(value => new Date(value).getTime())
   .refine(Number.isFinite);
 
+type RampContractIssue = { code: string; path: string };
+
+function toRampContractIssues(issues: z.ZodIssue[], prefix: (string | number)[] = []): RampContractIssue[] {
+  return issues.map(issue => ({ code: issue.code, path: [...prefix, ...issue.path].join('.') || '<root>' }));
+}
+
+function reportRampContractViolation(source: string, issues: RampContractIssue[], metadata?: Record<string, unknown>): void {
+  logger.warn(`[rampClient] normalized malformed response from ${source}`, { issues, ...metadata });
+}
+
 /** A value the client cannot use degrades to `undefined`, so a readable status is never lost to a field the order can do without. */
-const lenient = <S extends z.ZodTypeAny>(schema: S) => schema.optional().catch(undefined);
-const validRowsSchema = <S extends z.ZodTypeAny>(schema: S) =>
+const lenient = <S extends z.ZodTypeAny>(source: string, schema: S) =>
+  schema.optional().catch(ctx => {
+    reportRampContractViolation(source, toRampContractIssues(ctx.error.issues));
+    return undefined;
+  });
+
+const validRowsSchema = <S extends z.ZodTypeAny>(source: string, schema: S) =>
   z
     .array(z.unknown())
     .default([])
-    .transform(rows =>
-      rows.flatMap((row): z.infer<S>[] => {
+    .transform(rows => {
+      const valid: z.infer<S>[] = [];
+      const issues: RampContractIssue[] = [];
+
+      for (const [index, row] of rows.entries()) {
         const result = schema.safeParse(row);
-        return result.success ? [result.data] : [];
-      })
-    );
+        if (result.success) valid.push(result.data);
+        else issues.push(...toRampContractIssues(result.error.issues, [index]));
+      }
+
+      if (issues.length) reportRampContractViolation(source, issues, { totalRows: rows.length });
+      return valid;
+    });
 
 const buyOrderSchema = z.discriminatedUnion('status', [
   z.object({ status: z.literal(OrderStatus.Pending) }),
   z.object({ status: z.literal(OrderStatus.Processing) }),
   z.object({
     status: z.literal(OrderStatus.Completed),
-    completedTime: lenient(epochMsSchema),
-    createdTime: lenient(epochMsSchema),
+    completedTime: lenient('getOrder', epochMsSchema),
+    createdTime: lenient('getOrder', epochMsSchema),
     cryptoAmount: lenient(
+      'getOrder',
       z.object({
         amount: z.string().refine(value => greaterThan(value, 0)),
         asset: z
@@ -105,9 +129,9 @@ const buyOrderSchema = z.discriminatedUnion('status', [
           .transform(({ network }) => ({ network })),
       })
     ),
-    fiatAmount: lenient(z.object({ amount: z.string(), currency: z.string() })),
-    transactionHash: lenient(z.string()),
-    walletAddress: lenient(z.string()),
+    fiatAmount: lenient('getOrder', z.object({ amount: z.string(), currency: z.string() })),
+    transactionHash: lenient('getOrder', z.string()),
+    walletAddress: lenient('getOrder', z.string()),
   }),
   z.object({
     status: z.literal(OrderStatus.Failed),
@@ -147,7 +171,7 @@ type CompleteCardLinkSessionRequest = { providerCardId: string; brand: CardBrand
 const completeCardLinkSessionResponseSchema = z.object({ card: rampCardSchema });
 
 // protojson drops empty repeated fields, so an account with no cards responds `{}`.
-const listCardsResponseSchema = z.object({ cards: validRowsSchema(rampCardSchema) });
+const listCardsResponseSchema = z.object({ cards: validRowsSchema('listCards', rampCardSchema) });
 
 const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Unspecified]: 'Card',
@@ -237,7 +261,7 @@ export async function deleteCard(cardId: string, abortController?: AbortControll
 const rampWalletSchema = z.object({ id: z.string().min(1), address: z.string().min(1) });
 export type RampWallet = z.infer<typeof rampWalletSchema>;
 
-const listWalletsResponseSchema = z.object({ wallets: validRowsSchema(rampWalletSchema) });
+const listWalletsResponseSchema = z.object({ wallets: validRowsSchema('listWallets', rampWalletSchema) });
 const linkWalletResponseSchema = z.object({ wallet: rampWalletSchema.pick({ id: true }) });
 
 export type WalletSignature = {
@@ -276,11 +300,14 @@ export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void
 }
 
 export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
-  if (IS_TESTING === 'true') return e2eGetOrder(orderId);
-
-  const { data } = await authorizedRequest('addCash', headers =>
-    getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
-  );
+  const data =
+    IS_TESTING === 'true'
+      ? e2eGetOrderResponse(orderId)
+      : (
+          await authorizedRequest('addCash', headers =>
+            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+          )
+        ).data;
   return { ...parseResponse(getOrderResponseSchema, data, 'getOrder').order, id: orderId };
 }
 
@@ -292,8 +319,8 @@ export async function getOrder(orderId: string, abortController?: AbortControlle
 const E2E_ORDER_PATH = [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Processing, OrderStatus.Completed] as const;
 
 type E2EOrderRecord = {
-  completedTime?: number;
-  createdTime: number;
+  completedTime?: string;
+  createdTime: string;
   cryptoAsset: RampAsset;
   depositAmount: string;
   step: number;
@@ -306,7 +333,7 @@ function e2eCreateBuyOrder(params: CreateBuyOrderParams): void {
   if (e2eOrders.has(params.id)) return;
 
   e2eOrders.set(params.id, {
-    createdTime: Date.now(),
+    createdTime: new Date().toISOString(),
     cryptoAsset: params.cryptoAsset,
     depositAmount: params.depositAmount,
     step: 0,
@@ -314,7 +341,7 @@ function e2eCreateBuyOrder(params: CreateBuyOrderParams): void {
   });
 }
 
-function e2eGetOrder(orderId: string): BuyOrder {
+function e2eGetOrderResponse(orderId: string) {
   const record = e2eOrders.get(orderId);
   if (!record) throw new RampError(`Unknown order ${orderId}`);
   if (record.step < E2E_ORDER_PATH.length - 1) record.step += 1;
@@ -322,21 +349,23 @@ function e2eGetOrder(orderId: string): BuyOrder {
   const status = E2E_ORDER_PATH[record.step];
   switch (status) {
     case OrderStatus.Completed:
-      record.completedTime ??= Date.now();
+      record.completedTime ??= new Date().toISOString();
       return {
-        id: orderId,
-        status,
-        // E2E treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
-        cryptoAmount: { amount: record.depositAmount, asset: { network: record.cryptoAsset.network } },
-        fiatAmount: { amount: record.depositAmount, currency: 'USD' },
-        createdTime: record.createdTime,
-        walletAddress: record.walletAddress,
-        transactionHash: `mock-tx-${orderId}`,
-        completedTime: record.completedTime,
+        order: {
+          id: orderId,
+          status,
+          // E2E treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
+          cryptoAmount: { amount: record.depositAmount, asset: record.cryptoAsset },
+          fiatAmount: { amount: record.depositAmount, currency: 'USD' },
+          createdTime: record.createdTime,
+          walletAddress: record.walletAddress,
+          transactionHash: `mock-tx-${orderId}`,
+          completedTime: record.completedTime,
+        },
       };
     case OrderStatus.Processing:
-      return { id: orderId, status };
+      return { order: { id: orderId, status } };
     default:
-      return { id: orderId, status: OrderStatus.Pending };
+      return { order: { id: orderId, status: OrderStatus.Pending } };
   }
 }

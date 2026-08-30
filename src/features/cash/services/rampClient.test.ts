@@ -1,5 +1,6 @@
 import { ResponseParseError } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getCashPlatformClient } from './cashPlatformClient';
@@ -30,6 +31,10 @@ jest.mock('./cashPlatformClient', () => ({
 
 jest.mock('./cashSignInService', () => ({
   ensureAccessToken: jest.fn(),
+}));
+
+jest.mock('@/logger', () => ({
+  logger: { warn: jest.fn() },
 }));
 
 const get = jest.fn();
@@ -258,6 +263,7 @@ describe('response validation', () => {
       id: CREATE_BUY_ORDER_PARAMS.id,
       status: OrderStatus.Completed,
     });
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
   const unusableCryptoAmounts: { label: string; body: unknown }[] = [
@@ -278,6 +284,11 @@ describe('response validation', () => {
     expect(order.status).toBe(OrderStatus.Completed);
     if (order.status !== OrderStatus.Completed) throw new Error('Expected a completed order');
     expect(order.cryptoAmount).toBeUndefined();
+    expect(logger.warn).toHaveBeenCalledWith('[rampClient] normalized malformed response from getOrder', {
+      issues: expect.arrayContaining([
+        expect.objectContaining({ code: expect.any(String), path: expect.stringContaining('order.cryptoAmount') }),
+      ]),
+    });
   });
 
   it('falls back to unspecified for a failure reason the client does not model', async () => {
@@ -346,6 +357,10 @@ describe('response validation', () => {
     });
 
     await expect(listWallets()).resolves.toEqual([{ id: 'wallet-valid', address: '0xabc' }]);
+    expect(logger.warn).toHaveBeenCalledWith('[rampClient] normalized malformed response from listWallets', {
+      issues: [{ code: 'too_small', path: '0.address' }],
+      totalRows: 2,
+    });
   });
 
   it('drops invalid cards without losing valid cards', async () => {
@@ -358,9 +373,7 @@ describe('response validation', () => {
       },
     });
 
-    await expect(listCards({ trigger: 'signInScreen' })).resolves.toEqual([
-      { brand: 'Mastercard', id: 'card-valid', last4: '8990' },
-    ]);
+    await expect(listCards({ trigger: 'signInScreen' })).resolves.toEqual([{ brand: 'Mastercard', id: 'card-valid', last4: '8990' }]);
   });
 
   it('reads an empty wallet list from an empty envelope', async () => {
