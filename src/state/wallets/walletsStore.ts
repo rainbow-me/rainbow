@@ -57,6 +57,9 @@ interface WalletsState {
   wallets: AllRainbowWallets;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
+  /** Adds an account to a wallet, makes the account active, and returns the updated wallet. */
+  addAccountToWallet: (walletId: RainbowWallet['id'], account: RainbowAccount) => RainbowWallet;
+
   updateAccountInfo: ({
     address,
     color,
@@ -127,6 +130,28 @@ export const useWalletsStore = createBaseStore<WalletsState>(
     updateWallets: updatedWallets => {
       set({ wallets: updatedWallets });
       return saveAllWallets(updatedWallets);
+    },
+
+    addAccountToWallet: (walletId, account) => {
+      const { wallets } = get();
+      const wallet = wallets[walletId];
+      if (!wallet) throw new Error(`[walletsStore]: Wallet ${walletId} not found`);
+
+      const updatedWallet = {
+        ...wallet,
+        addresses: [...wallet.addresses, account],
+      };
+
+      set({
+        accountAddress: ensureValidHex(account.address),
+        selected: updatedWallet,
+        wallets: {
+          ...wallets,
+          [walletId]: updatedWallet,
+        },
+      });
+
+      return updatedWallet;
     },
 
     updateAccountInfo: ({ address, avatar, color, emoji, image, label, walletId }) => {
@@ -822,6 +847,7 @@ export function checkIfReadOnlyWallet(address: string) {
 
 // export static functions
 export const {
+  addAccountToWallet,
   clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
