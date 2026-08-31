@@ -152,7 +152,9 @@ export const useWalletsStore = createBaseStore<WalletsState>(
         };
       });
 
-      return get().wallets[walletId];
+      const state = get();
+      void state.refreshWalletInfo({ addresses: [account.address], useCachedENS: true });
+      return state.wallets[walletId];
     },
 
     updateAccountInfo: ({ address, avatar, color, emoji, image, label, walletId }) => {
