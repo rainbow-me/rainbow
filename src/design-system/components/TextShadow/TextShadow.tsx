@@ -78,9 +78,6 @@ export const TextShadow = ({
         color={{ custom: 'transparent' }}
         size={children.props.size}
         style={[internalShadowStyle, children.props.style, internalPositionStyle]}
-        // The child Text nests inside this Text and flattens into it on the native
-        // side, which strips the child's own testID from the element tree. Hoist it
-        // here so the rendered element keeps the caller's identity.
         testID={children.props.testID}
         weight={children.props.weight}
       >
