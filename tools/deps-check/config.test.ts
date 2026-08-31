@@ -30,10 +30,22 @@ function loadConfig(graph: string): Config {
 const configs = Object.fromEntries(GRAPHS.map(graph => [graph, loadConfig(graph)])) as Record<Graph, Config>;
 const ruleNames = (config: Config) => config.forbidden.map(rule => rule.name);
 
-function rule(graph: Graph, name: string): { from: RegExp; to: RegExp } {
+function rule(graph: Graph, name: string): { from: RegExp; fromPathNot: RegExp; to: RegExp; toPathNot: (fromPath: string) => RegExp } {
   const found = configs[graph].forbidden.find(r => r.name === name);
   if (!found) throw new Error(`rule ${name} is not on the ${graph} graph`);
-  return { from: new RegExp(found.from.path ?? '(?!)'), to: new RegExp(found.to.path ?? '(?!)') };
+  const from = new RegExp(found.from.path ?? '(?!)');
+  return {
+    from,
+    fromPathNot: new RegExp(found.from.pathNot ?? '(?!)'),
+    to: new RegExp(found.to.path ?? '(?!)'),
+    // dependency-cruiser substitutes the from match's capture groups into
+    // to.pathNot ($1); resolve them the same way to test the pair.
+    toPathNot(fromPath: string): RegExp {
+      const match = from.exec(fromPath);
+      if (!match) throw new Error(`from does not match ${fromPath}`);
+      return new RegExp((found?.to.pathNot ?? '(?!)').replace(/\$(\d)/g, (_, i) => match[Number(i)]));
+    },
+  };
 }
 
 describe('.dependency-cruiser.cjs', () => {
@@ -125,10 +137,7 @@ describe('.dependency-cruiser.cjs', () => {
     });
 
     describe('nothing-imports-app', () => {
-      const found = configs.source.forbidden.find(r => r.name === 'nothing-imports-app');
-      if (!found) throw new Error('rule nothing-imports-app is not on the source graph');
-      const fromPathNot = new RegExp(found.from.pathNot ?? '(?!)');
-      const to = new RegExp(found.to.path ?? '(?!)');
+      const { fromPathNot, to } = rule('source', 'nothing-imports-app');
 
       it('applies to everything except the entry point and app/ itself', () => {
         expect('src/components/TapToDismiss.tsx').not.toMatch(fromPathNot);
@@ -148,18 +157,7 @@ describe('.dependency-cruiser.cjs', () => {
     });
 
     describe('screens-are-feature-internal', () => {
-      const found = configs.source.forbidden.find(r => r.name === 'screens-are-feature-internal');
-      if (!found) throw new Error('rule screens-are-feature-internal is not on the source graph');
-      const from = new RegExp(found.from.path ?? '(?!)');
-      const to = new RegExp(found.to.path ?? '(?!)');
-
-      // dependency-cruiser substitutes the from match's capture groups into
-      // to.pathNot ($1); resolve them the same way to test the pair.
-      function toPathNot(fromPath: string): RegExp {
-        const match = from.exec(fromPath);
-        if (!match) throw new Error(`from does not match ${fromPath}`);
-        return new RegExp((found?.to.pathNot ?? '(?!)').replace(/\$(\d)/g, (_, i) => match[Number(i)]));
-      }
+      const { from, to, toPathNot } = rule('source', 'screens-are-feature-internal');
 
       it('applies to files inside a feature', () => {
         expect('src/features/discover/utils/sportsSurfaceIntent.ts').toMatch(from);
