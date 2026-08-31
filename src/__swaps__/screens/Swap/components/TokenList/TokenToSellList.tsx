@@ -21,8 +21,6 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
-export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
-
 const SCROLL_INDICATOR_INSETS = {
   focused: {
     bottom: 28 + (EXPANDED_INPUT_HEIGHT - TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT),

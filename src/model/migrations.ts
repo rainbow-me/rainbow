@@ -44,13 +44,14 @@ import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from 
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
-import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
+import { getGlobal } from '../handlers/localstorage/common';
 import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { type BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
+import { removeLegacyAsyncStorageValue } from '../storage/legacyAsyncStorage';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   DEFAULT_WALLET_NAME,
@@ -312,7 +313,7 @@ export default async function runMigrations() {
 
   const v8 = async () => {
     logger.debug('[runMigrations]: wiping old metadata');
-    await deprecatedRemoveLocal(IMAGE_METADATA);
+    removeLegacyAsyncStorageValue(IMAGE_METADATA);
   };
 
   migrations.push(v8);

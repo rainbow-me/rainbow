@@ -5,7 +5,7 @@ import smartWalletIcon from '@/assets/smartWalletIcon.png';
 import smartWalletRevoke from '@/assets/smartWalletRevoke.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/design-system';
-import { TransactionStatus, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
+import { type RainbowTransaction } from '@/entities/transactions';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -21,80 +21,8 @@ import Routes from '@rainbow-me/routes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import { ImgixImage } from '../images';
-import Spinner from '../Spinner';
 import { CardSize } from '../unique-token/CardSize';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-
-const getIconTopMargin = (type: TransactionType) => {
-  switch (type) {
-    case 'swap':
-      return 1;
-    case 'mint':
-      return -1;
-
-    default:
-      return 0;
-  }
-};
-const activityTypeIcon: Record<TransactionType, string> = {
-  airdrop: '􀐚',
-  approve: '􀁢',
-  contract_interaction: '􀉆',
-  receive: '􀄩',
-  send: '􀈟',
-  swap: '􀖅',
-  bid: '􀑍',
-  burn: '􀙬',
-  mint: '􀫸',
-  purchase: '􀍣',
-  sale: '􀋡',
-  wrap: '􀑉',
-  unwrap: '􀑉',
-  cancel: '􀁠',
-  repay: '􀄹',
-  bridge: '􀄹',
-  stake: '􀄷',
-  unstake: '􀄲',
-  withdraw: '􀄲',
-  deposit: '􀄷',
-  delegate: '􀁢',
-  revoke: '􀁎',
-  revoke_delegation: '􀁎',
-  speed_up: '􀓎',
-  claim: '􀄩',
-  borrow: '􀄩',
-  deployment: '􀄩',
-  launch: '􀓎',
-};
-
-export const ActivityTypeIcon = ({
-  transaction: { status, type },
-  color,
-}: {
-  transaction: Pick<RainbowTransaction, 'status' | 'type'>;
-  color: string;
-}) => {
-  if (status === TransactionStatus.pending) {
-    return <Spinner color={color} size={11} style={{ marginTop: -1, paddingRight: 2 }} />;
-  }
-
-  if (status === 'failed')
-    return (
-      <Text color={{ custom: color }} weight="semibold" size="12pt" align="center">
-        {'􀀲'}
-      </Text>
-    );
-
-  const symbol = activityTypeIcon[type];
-  if (!symbol) return null;
-  return (
-    <View style={{ marginTop: getIconTopMargin(type) }}>
-      <Text color={{ custom: color }} weight="semibold" size="12pt">
-        {symbol}
-      </Text>
-    </View>
-  );
-};
 
 const BottomRow = React.memo(function BottomRow({
   transaction,

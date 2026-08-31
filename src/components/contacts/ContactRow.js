@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
+import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core/domainFormat';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ENS_DOMAIN } from '@/features/ens/utils/helpers';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';

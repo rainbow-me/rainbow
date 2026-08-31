@@ -2,7 +2,8 @@ import React from 'react';
 
 import { useDerivedValue } from 'react-native-reanimated';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
 import * as i18n from '@/languages';

@@ -16,6 +16,7 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -30,7 +31,6 @@ import {
   multiply,
   omitFlatten,
 } from '@/helpers/utilities';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { logger, RainbowError } from '@/logger';
 import { CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references/constants';
 import ethUnits from '@/references/ethereum-units.json';
