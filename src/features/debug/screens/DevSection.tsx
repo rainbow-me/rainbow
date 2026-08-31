@@ -14,7 +14,7 @@ import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
 import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
+import { RevokeReason } from '@/features/delegation/types/revokeReason';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/utils/status';
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';

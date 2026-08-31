@@ -1,12 +1,12 @@
 import { isEventCardDisplay } from '@/features/placements/surfaces/constants';
 import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { getLeagueId, type LeagueId } from '@/features/polymarket/leagues';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import {
   getSportsEventScheduleBucket,
   isLiveSportsEvent,
   type SportsEventScheduleBucket,
-} from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+} from '@/features/polymarket/utils/buildPolymarketSportsEventsListData';
 
 export type SportsSurfaceIntent = { status: 'live' } | { timeBucket: Extract<SportsEventScheduleBucket, 'today'> } | { leagueId: LeagueId };
 

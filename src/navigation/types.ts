@@ -18,7 +18,7 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backupFile';
 import { type ActiveTabRef } from '@/features/dapp-browser/types';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
-import { type RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
+import { type RevokeReason } from '@/features/delegation/types/revokeReason';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/utils/meteorology';
