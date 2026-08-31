@@ -1,5 +1,6 @@
 module.exports = {
   preset: '@react-native/jest-preset',
+  resolver: './config/test/jest-resolver.js',
   setupFiles: ['./config/test/jest-setup.js'],
   testMatch: ['**/*.(spec|test).[tj]s?(x)'],
   testPathIgnorePatterns: ['node_modules', '/e2e/', '\\.disabled\\.[jt]sx?$'],
