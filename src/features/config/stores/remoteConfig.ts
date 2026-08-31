@@ -41,6 +41,7 @@ export interface RainbowConfig extends Record<
   cash_kyc_review_delay_ms: number;
 
   /* Booleans */
+  image_cdn_enabled: boolean;
   f2c_enabled: boolean;
   op_rewards_enabled: boolean;
   swagg_enabled: boolean;
@@ -177,6 +178,7 @@ export const DEFAULT_CONFIG = {
   cash_kyc_review_delay_ms: time.seconds(60),
 
   /* Booleans */
+  image_cdn_enabled: false,
   f2c_enabled: true,
   op_rewards_enabled: false,
   swagg_enabled: true,
