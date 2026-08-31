@@ -15,12 +15,9 @@ import {
 } from '@/features/polymarket/components/polymarket-sport-event-list-item/PolymarketSportEventListItem';
 import { DEFAULT_SPORTS_LEAGUE_KEY, NAVIGATOR_FOOTER_CLEARANCE, NAVIGATOR_FOOTER_HEIGHT } from '@/features/polymarket/constants';
 import { getLeagueId } from '@/features/polymarket/leagues';
-import {
-  buildPolymarketSportsEventsListData,
-  type SportsListItem,
-} from '@/features/polymarket/screens/polymarket-sports-events-screen/buildPolymarketSportsEventsListData';
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { buildPolymarketSportsEventsListData, type SportsListItem } from '@/features/polymarket/utils/buildPolymarketSportsEventsListData';
 import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
