@@ -5,8 +5,7 @@ Fork of [@ensdomains/ens-avatar](https://github.com/ensdomains/ens-avatar) at v0
 ## What it does
 
 Resolves ENS avatar and cover/header images. Given an ENS name, it reads the `avatar` or `header` text record from the
-resolver, parses CAIP-22/CAIP-29 NFT URIs, resolves IPFS/base64 URIs, and returns an image URL. SVG images are converted
-to PNG via `@/handlers/svgs` for React Native compatibility.
+resolver, parses CAIP-22/CAIP-29 NFT URIs, resolves IPFS/base64 URIs, and returns an image URL.
 
 ## Why forked
 

@@ -3,8 +3,6 @@ import { Buffer } from 'buffer';
 import { Contract } from '@ethersproject/contracts';
 import { type BaseProvider } from '@ethersproject/providers';
 
-import svgToPngIfNeeded from '@/handlers/svgs';
-
 import { type AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 
@@ -34,7 +32,7 @@ export default class ERC1155 {
         _resolvedUri = Buffer.from(resolvedURI.replace('data:application/json;base64,', ''), 'base64').toString();
       }
       const data = JSON.parse(_resolvedUri);
-      image = svgToPngIfNeeded(data?.image, false);
+      image = opts?.transformImageUri ? opts.transformImageUri(data?.image) : data?.image;
     }
 
     return { image };

@@ -13,6 +13,7 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { ensClient } from '@/graphql';
 import { NftTokenType } from '@/graphql/__generated__/arc';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
@@ -300,6 +301,7 @@ export const fetchImage = async (imageType: 'avatar' | 'header', ensName: string
     const avatarResolver = new AvatarResolver(provider);
     imageUrl = await avatarResolver.getImage(ensName, {
       allowNonOwnerNFTs: true,
+      transformImageUri: uri => svgToPngIfNeeded(uri, false),
       type: imageType,
     });
     ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])], 100);
