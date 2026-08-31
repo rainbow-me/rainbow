@@ -186,6 +186,7 @@ describe('.dependency-cruiser.cjs', () => {
         expect('node_modules/@storesjs/stores/dist/index.js').toMatch(to);
         expect('src/state/wallets/walletsStore.ts').toMatch(to);
         expect('src/react-query/queryClient.ts').toMatch(to);
+        expect('src/redux/store.ts').toMatch(to);
       });
     });
   });

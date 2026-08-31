@@ -132,9 +132,9 @@ const sourceRules = [
     name: 'layer-core-has-no-state',
     severity: 'error',
     comment:
-      'core/ knows domain models and pure rules only; it never creates or reads stores, whether via the store library or the legacy state and query layers. Reading state from core/ makes the pure layer depend on IO and load order; the read belongs in data/ (a derived store) or at the call site.',
+      'core/ knows domain models and pure rules only; it never creates or reads stores, whether via the store library or the legacy state, query and redux layers. Reading state from core/ makes the pure layer depend on IO and load order; the read belongs in data/ (a derived store) or at the call site.',
     from: { path: `^${LAYERED_MODULE}/core/` },
-    to: { path: '^(node_modules/@storesjs/stores/|src/(state|react-query)/)' },
+    to: { path: '^(node_modules/@storesjs/stores/|src/(state|react-query|redux)/)' },
   },
 ];
 
