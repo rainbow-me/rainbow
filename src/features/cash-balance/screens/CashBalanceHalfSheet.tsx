@@ -1,9 +1,11 @@
-import React, { memo, useCallback } from 'react';
-import { Platform } from 'react-native';
+import React, { memo, useCallback, useState } from 'react';
+import { Platform, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AbsolutePortal, AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
@@ -14,7 +16,6 @@ import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useCashBalanceAddPress } from '@/features/cash-balance/hooks/useCashBalanceAddPress';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -125,13 +126,50 @@ function CashBalanceActionButton({
   );
 }
 
+// Popped up over the half sheet when Withdraw is pressed, matching the Figma mini sheet — no
+// action button, dismissed by tapping anywhere on it.
+const WITHDRAW_SHEET_ENTERING_ANIMATION = SlideInDown.springify().damping(70).mass(0.8).stiffness(500);
+const WITHDRAW_SHEET_EXITING_ANIMATION = SlideOutDown.springify().damping(70).mass(0.8).stiffness(500);
+
+// Memoized so the live-ticking balance re-rendering CashBalanceHalfSheet doesn't recreate this
+// element on every tick — AbsolutePortal re-adds its children whenever that reference changes,
+// which otherwise thrashes the portaled node before it ever gets a chance to paint.
+const CashBalanceWithdrawComingSoonSheet = memo(function CashBalanceWithdrawComingSoonSheet({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <AbsolutePortal>
+      <TouchableWithoutFeedback onPress={onDismiss}>
+        <View accessibilityViewIsModal style={styles.overlay} testID="cash-balance-withdraw-coming-soon-overlay">
+          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.backdrop} />
+          <Animated.View entering={WITHDRAW_SHEET_ENTERING_ANIMATION} exiting={WITHDRAW_SHEET_EXITING_ANIMATION} style={styles.panelHost}>
+            <PanelSheet showTapToDismiss={false}>
+              <Box paddingBottom="32px" paddingHorizontal="32px" paddingTop="52px">
+                <CashBalanceIcon size={52} />
+                <Box paddingTop="16px">
+                  <Text color="label" size="26pt" weight="heavy">
+                    {i18n.t(i18n.l.cash_balance.half_sheet.withdraw_coming_soon)}
+                  </Text>
+                </Box>
+              </Box>
+            </PanelSheet>
+          </Animated.View>
+        </View>
+      </TouchableWithoutFeedback>
+    </AbsolutePortal>
+  );
+});
+
 export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
   const { asset, balanceDisplay, hasBalance } = useCashBalance();
   const navigate = useNavigationForNonReadOnlyWallets();
   const handleAddPress = useCashBalanceAddPress('cash balance half sheet');
+  const [showWithdrawComingSoon, setShowWithdrawComingSoon] = useState(false);
 
   const handleWithdrawPress = useCallback(() => {
-    Alert.alert(i18n.t(i18n.l.cash_balance.half_sheet.withdraw_coming_soon));
+    setShowWithdrawComingSoon(true);
+  }, []);
+
+  const handleDismissWithdrawComingSoon = useCallback(() => {
+    setShowWithdrawComingSoon(false);
   }, []);
 
   const handleSendPress = useCallback(() => {
@@ -185,6 +223,29 @@ export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
           </Columns>
         </Box>
       </Box>
+
+      {showWithdrawComingSoon && <CashBalanceWithdrawComingSoonSheet onDismiss={handleDismissWithdrawComingSoon} />}
+
+      {/* This screen is presented as its own native modal layer, so the app-level
+          AbsolutePortalRoot (rendered underneath it) can't paint the sheet above — mount a
+          scoped one here too, matching PaymentMethodsSheet/CashDepositSetupScreen/Swap. */}
+      <AbsolutePortalRoot style={styles.portal} />
     </PanelSheet>
   );
+});
+
+const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.44)',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  panelHost: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  portal: {
+    zIndex: 30001,
+  },
 });

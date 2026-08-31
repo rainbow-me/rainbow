@@ -1694,7 +1694,7 @@
       "half_sheet": {
         "title": "Cash Balance",
         "subtitle": "Cash is your USDC on Base",
-        "withdraw_coming_soon": "Cash withdrawals are coming soon."
+        "withdraw_coming_soon": "Cash withdrawals\nare coming soon"
       }
     },
     "points": {
