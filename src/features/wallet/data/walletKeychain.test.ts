@@ -8,7 +8,6 @@ import {
   checkWalletsDamagedState,
   getAllWallets,
   getPrivateKey,
-  isHardwareWalletKey,
   loadAddress,
   migrateWalletSecrets,
   saveAllWallets,
@@ -125,14 +124,6 @@ describe('walletKeychain', () => {
   it('rejects a malformed hardware wallet key before writing it', async () => {
     await expect(saveKeyForWallet(ADDRESS, 'not-a-hardware-key', true)).rejects.toThrow('Invalid hardware wallet key');
     expect(kc.setObject).not.toHaveBeenCalled();
-  });
-
-  it('recognizes only hardware keys with one device ID and a numeric account index', () => {
-    expect(isHardwareWalletKey('device-id/12')).toBe(true);
-    expect(isHardwareWalletKey('device-id/')).toBe(false);
-    expect(isHardwareWalletKey('/12')).toBe(false);
-    expect(isHardwareWalletKey('device-id/account')).toBe(false);
-    expect(isHardwareWalletKey('device-id/12/extra')).toBe(false);
   });
 
   it('marks an iOS wallet as damaged when its keychain key cannot be checked', async () => {

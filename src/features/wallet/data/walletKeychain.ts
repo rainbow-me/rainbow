@@ -17,13 +17,13 @@ import {
   selectedWalletKey,
 } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
+import { isHardwareWalletKey, type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { identifyWalletType, type EthereumPrivateKey, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import {
   EncryptionType,
   type AllRainbowWallets,
   type AllRainbowWalletsData,
-  type HardwareKey,
   type MigratedSecretsResult,
   type PrivateKeyData,
   type RainbowSelectedWalletData,
@@ -44,19 +44,11 @@ const SEED_PHRASE_VERSION = 1;
 const SELECTED_WALLET_VERSION = 1;
 export const ALL_WALLETS_VERSION = 1;
 
-export const createdWithBiometricError = 'createdWithBiometricError';
-
 const authenticationPrompt = {
   get title(): string {
     return i18n.t(i18n.l.wallet.authenticate.please);
   },
 };
-
-export function isHardwareWalletKey(key: string | null): key is HardwareKey {
-  if (!key) return false;
-  const [deviceId, index, ...remainder] = key.split('/');
-  return Boolean(deviceId && index && remainder.length === 0 && /^\d+$/.test(index));
-}
 
 async function loadLegacySeedPhrase(): Promise<EthereumWalletSeed | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated | null> {
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });

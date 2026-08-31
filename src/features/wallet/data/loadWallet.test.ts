@@ -2,7 +2,8 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 
 import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
-import { isHardwareWalletKey, loadPrivateKey } from '@/features/wallet/data/walletKeychain';
+import { isHardwareWalletKey } from '@/features/wallet/core/hardwareWalletKey';
+import { loadPrivateKey } from '@/features/wallet/data/walletKeychain';
 import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import Navigation from '@/navigation/Navigation';
@@ -13,8 +14,8 @@ import { loadWallet } from './loadWallet';
 
 jest.mock('@ethersproject/wallet', () => ({ Wallet: jest.fn() }));
 jest.mock('@/features/hardware-wallet/utils/LedgerSigner', () => ({ LedgerSigner: jest.fn() }));
+jest.mock('@/features/wallet/core/hardwareWalletKey', () => ({ isHardwareWalletKey: jest.fn() }));
 jest.mock('@/features/wallet/data/walletKeychain', () => ({
-  isHardwareWalletKey: jest.fn(),
   loadAddress: jest.fn(),
   loadPrivateKey: jest.fn(),
 }));

@@ -1,10 +1,9 @@
 import { type HDNode } from '@ethersproject/hdnode';
 
 import { type EthereumAddress } from '@/entities/wallet';
+import { type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { type EthereumPrivateKey, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
-
-export type HardwareKey = `${string}/${number}`;
 
 export interface RainbowAccount {
   index: number;
