@@ -13,9 +13,7 @@ export const TapToDismiss = memo(function TapToDismiss() {
 });
 
 const styles = StyleSheet.create({
-  cover: {
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
-  },
+  // The cover must catch taps across the parent's entire area no matter how that
+  // parent lays out its children; anchoring all four edges guarantees that.
+  cover: StyleSheet.absoluteFillObject,
 });
