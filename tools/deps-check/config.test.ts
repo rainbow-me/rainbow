@@ -1,6 +1,6 @@
 import { GRAPHS, type Graph } from './internal/cruise';
 
-type RuleConfig = { name: string; from: { path?: string }; to: { path?: string; circular?: boolean } };
+type RuleConfig = { name: string; from: { path?: string; pathNot?: string }; to: { path?: string; pathNot?: string; circular?: boolean } };
 type Config = {
   forbidden: RuleConfig[];
   options: {
@@ -121,6 +121,68 @@ describe('.dependency-cruiser.cjs', () => {
 
       it('does not classify legacy directories as layers', () => {
         expect('src/components/ui/x.tsx').not.toMatch(to);
+      });
+    });
+
+    describe('nothing-imports-app', () => {
+      const found = configs.source.forbidden.find(r => r.name === 'nothing-imports-app');
+      if (!found) throw new Error('rule nothing-imports-app is not on the source graph');
+      const fromPathNot = new RegExp(found.from.pathNot ?? '(?!)');
+      const to = new RegExp(found.to.path ?? '(?!)');
+
+      it('applies to everything except the entry point and app/ itself', () => {
+        expect('src/components/TapToDismiss.tsx').not.toMatch(fromPathNot);
+        expect('src/features/wallet/ui/x.tsx').not.toMatch(fromPathNot);
+        expect('src/App.tsx').toMatch(fromPathNot);
+        expect('src/app/navigation/DeeplinkHandler.tsx').toMatch(fromPathNot);
+      });
+
+      it('forbids imports into app/', () => {
+        expect('src/app/error-boundary/ErrorBoundary.tsx').toMatch(to);
+      });
+
+      it('does not catch paths that merely start with app', () => {
+        expect('src/application/x.ts').not.toMatch(to);
+        expect('src/Apple.tsx').not.toMatch(fromPathNot);
+      });
+    });
+
+    describe('screens-are-feature-internal', () => {
+      const found = configs.source.forbidden.find(r => r.name === 'screens-are-feature-internal');
+      if (!found) throw new Error('rule screens-are-feature-internal is not on the source graph');
+      const from = new RegExp(found.from.path ?? '(?!)');
+      const to = new RegExp(found.to.path ?? '(?!)');
+
+      // dependency-cruiser substitutes the from match's capture groups into
+      // to.pathNot ($1); resolve them the same way to test the pair.
+      function toPathNot(fromPath: string): RegExp {
+        const match = from.exec(fromPath);
+        if (!match) throw new Error(`from does not match ${fromPath}`);
+        return new RegExp((found?.to.pathNot ?? '(?!)').replace(/\$(\d)/g, (_, i) => match[Number(i)]));
+      }
+
+      it('applies to files inside a feature', () => {
+        expect('src/features/discover/utils/sportsSurfaceIntent.ts').toMatch(from);
+      });
+
+      it('does not apply to non-feature code, so route tables stay free to import screens', () => {
+        expect('src/navigation/Routes.ios.tsx').not.toMatch(from);
+        expect('src/screens/Diagnostics/index.tsx').not.toMatch(from);
+      });
+
+      it("forbids importing another feature's screens/", () => {
+        const screen = 'src/features/polymarket/screens/x/List.tsx';
+        expect(screen).toMatch(to);
+        expect(screen).not.toMatch(toPathNot('src/features/discover/utils/x.ts'));
+      });
+
+      it("allows a feature's own screens/", () => {
+        expect('src/features/polymarket/screens/x/List.tsx').toMatch(toPathNot('src/features/polymarket/hooks/x.ts'));
+      });
+
+      it("allows another feature's public surface", () => {
+        expect('src/features/polymarket/utils/x.ts').not.toMatch(to);
+        expect('src/features/rnbw-rewards/components/SpinnableCoin.tsx').not.toMatch(to);
       });
     });
 
