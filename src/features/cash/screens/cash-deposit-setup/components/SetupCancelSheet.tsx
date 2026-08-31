@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import { TapToDismiss } from '@/components/PanelSheet/PanelSheet';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { CashStatusPanel } from '@/features/cash/components/CashStatusHalfSheet';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';

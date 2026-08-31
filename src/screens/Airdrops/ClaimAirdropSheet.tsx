@@ -20,7 +20,8 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import {
   AnimatedText,
   Bleed,

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import chroma from 'chroma-js';
@@ -19,6 +19,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ImgixImage } from '@/components/images';
 import { SmoothPager, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import {
   AnimatedText,
   Bleed,
@@ -48,7 +49,6 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import * as i18n from '@/languages';
-import Navigation from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
@@ -305,14 +305,6 @@ export const ControlPanel = () => {
     </>
   );
 };
-
-export const TapToDismiss = memo(function TapToDismiss() {
-  return (
-    <TouchableWithoutFeedback onPress={Navigation.goBack}>
-      <View style={controlPanelStyles.cover} />
-    </TouchableWithoutFeedback>
-  );
-});
 
 const getHighContrastAccentColor = (accentColor: string, isDarkMode: boolean) => {
   const contrast = chroma.contrast(accentColor, isDarkMode ? '#191A1C' : globalColors.white100);
@@ -1071,11 +1063,6 @@ const controlPanelStyles = StyleSheet.create({
     padding: 16,
     textShadowOffset: { height: 0, width: 0 },
     textShadowRadius: 16,
-  },
-  cover: {
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
   },
   homePanel: {
     height: '100%',
