@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getCashPlatformClient } from './cashPlatformClient';
-import { ensureAccessToken } from './cashSignInService';
+import { ensureAccessToken, getCachedAccessToken } from './cashSignInService';
 import {
   CardBrand,
   completeCardLinkSession,
@@ -12,6 +12,7 @@ import {
   getOrder,
   linkWallet,
   listCards,
+  listCardsWithCachedAuth,
   listWallets,
   OrderFailureReason,
   OrderStatus,
@@ -31,6 +32,7 @@ jest.mock('./cashPlatformClient', () => ({
 
 jest.mock('./cashSignInService', () => ({
   ensureAccessToken: jest.fn(),
+  getCachedAccessToken: jest.fn(),
 }));
 
 jest.mock('@/logger', () => ({
@@ -40,6 +42,7 @@ jest.mock('@/logger', () => ({
 const get = jest.fn();
 const post = jest.fn();
 const mockEnsureAccessToken = ensureAccessToken as jest.Mock;
+const mockGetCachedAccessToken = jest.mocked(getCachedAccessToken);
 
 // `tokenExpiresTime` rides along on the wire but nothing reads it, so the parsed session drops it.
 const SESSION = { linkUrl: 'https://link', token: 'vault-token', tokenExpiresTime: '2026-07-24T00:00:00Z' };
@@ -97,6 +100,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   (getCashPlatformClient as jest.Mock).mockReturnValue({ get, post });
   mockEnsureAccessToken.mockResolvedValue('jwt-1');
+  mockGetCachedAccessToken.mockReturnValue('jwt-1');
   useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-1', expiresAt: Date.now() + 60_000 });
   post.mockResolvedValue({ data: SESSION });
 });
@@ -138,6 +142,50 @@ describe('startCardLinkSession', () => {
     await expect(startCardLinkSession()).rejects.toThrow('server error');
     expect(post).toHaveBeenCalledTimes(1);
     expect(useCashAuthTokenStore.getState().token).not.toBeNull();
+  });
+});
+
+describe('listCardsWithCachedAuth', () => {
+  it('returns authRequired without sending a request when no token is cached', async () => {
+    mockGetCachedAccessToken.mockReturnValue(null);
+
+    await expect(listCardsWithCachedAuth()).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(get).not.toHaveBeenCalled();
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('returns parsed cards without starting a ceremony when a token is cached', async () => {
+    get.mockResolvedValue({ data: {} });
+
+    await expect(listCardsWithCachedAuth()).resolves.toEqual({ kind: 'success', data: [] });
+
+    expect(get).toHaveBeenCalledWith('/ramp/payment-methods/cards', {
+      abortController: undefined,
+      headers: { Authorization: 'Bearer jwt-1' },
+    });
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('clears a rejected cached token and returns authRequired without retrying', async () => {
+    get.mockRejectedValue(fetchError(401, 'unauthorized'));
+
+    await expect(listCardsWithCachedAuth()).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(get).toHaveBeenCalledTimes(1);
+    expect(useCashAuthTokenStore.getState().token).toBeNull();
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('keeps a token minted by a newer sign-in when a stale request is rejected', async () => {
+    get.mockImplementation(async () => {
+      useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-2', expiresAt: Date.now() + 60_000 });
+      throw fetchError(401, 'unauthorized');
+    });
+
+    await expect(listCardsWithCachedAuth()).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(useCashAuthTokenStore.getState().token?.accessToken).toBe('jwt-2');
   });
 });
 

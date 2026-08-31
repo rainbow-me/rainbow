@@ -4,10 +4,8 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
 import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '../../../services/cashPasskeyService';
-import { listCards } from '../../../services/rampClient';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
-import { useCashPaymentMethodStore } from '../../../stores/cashPaymentMethodStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 
@@ -42,17 +40,6 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
 
       useCashAccountStore.getState().setUserId(userId);
       analytics.track(analytics.event.cashPasskeyAdded);
-
-      if (recovering) {
-        try {
-          const [card] = await listCards({ trigger: 'recovery' });
-          if (card) useCashPaymentMethodStore.getState().setLinkedCard(card);
-        } catch (error) {
-          if (!isPasskeyCancellation(error)) {
-            logger.error(new RainbowError('[useAddPasskeyFlow]: Failed to restore recovered account', error));
-          }
-        }
-      }
 
       set({ state: 'entry' });
       return recovering ? 'recovered' : 'completed';
