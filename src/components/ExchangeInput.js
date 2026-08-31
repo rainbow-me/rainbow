@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
-import TextInputMask from 'react-native-text-input-mask';
+import { MaskedTextInput } from 'react-native-advanced-input-mask';
 
 import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
@@ -18,7 +18,7 @@ const AndroidMaskWrapper = styled.View({
   top: 11.5,
 });
 
-const Input = styled(TextInputMask).attrs({
+const Input = styled(MaskedTextInput).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
 })(props => ({
@@ -79,7 +79,7 @@ const ExchangeInput = (
   const handleChange = useCallback(
     event => {
       if (isFocused && !isTouched) {
-        InteractionManager.runAfterInteractions(() => setIsTouched(true));
+        requestIdleCallback(() => setIsTouched(true));
       }
 
       onChange?.(event);

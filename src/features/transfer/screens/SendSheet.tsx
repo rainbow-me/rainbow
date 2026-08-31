@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
+import { Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty, isEqual, isString } from 'lodash';
@@ -496,7 +496,7 @@ export function SendSheet() {
       navigate(Routes.EXPLAIN_SHEET, {
         onClose: () => {
           // Nasty workaround to take control over useMagicAutofocus :S
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             setTimeout(() => {
               recipientFieldRef?.current?.focus();
             }, 210);

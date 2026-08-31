@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform, type StyleProp, type ViewStyle } from 'react-native';
+import React, { type ComponentProps } from 'react';
+import { Platform } from 'react-native';
 
 import Reanimated from 'react-native-reanimated';
 
@@ -8,6 +8,7 @@ import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPr
 import { RowWithMargins } from '@/components/layout';
 import { Emoji, Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
+import { opacity } from '@/framework/ui/utils/opacity';
 import { shadow } from '@/styles';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
@@ -46,7 +47,14 @@ const DarkShadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: {
   width: 236,
 }));
 const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
+  boxShadow: [
+    {
+      offsetX: 0,
+      offsetY: 5,
+      blurRadius: 15,
+      color: opacity(colors.shadow, isDarkMode ? 0 : 0.4),
+    },
+  ],
   borderRadius: 30,
   height: 60,
   position: 'absolute',
@@ -56,18 +64,17 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
         left: -3,
         top: -3,
       }
-    : {
-        elevation: 30,
-      }),
+    : {}),
 }));
 
-interface Props extends ButtonPressAnimationProps {
+interface Props extends Omit<ButtonPressAnimationProps, 'style'> {
   height: number;
   textColor: string;
   text: string;
   emoji: string;
-  shadowStyle?: StyleProp<ViewStyle>;
-  darkShadowStyle?: StyleProp<ViewStyle>;
+  style?: ComponentProps<typeof Reanimated.View>['style'];
+  shadowStyle?: ComponentProps<typeof Reanimated.View>['style'];
+  darkShadowStyle?: ComponentProps<typeof Reanimated.View>['style'];
 }
 
 export const WelcomeScreenRainbowButton = ({

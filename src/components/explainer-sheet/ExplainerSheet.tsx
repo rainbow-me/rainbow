@@ -89,7 +89,7 @@ const DefaultPanelBackground = memo(function DefaultPanelBackground({ gradientCo
       <LinearGradient
         locations={[0, 0.25, 0.5, 1]}
         colors={reverseGradientColors as unknown as LinearGradientProps['colors']}
-        style={{ ...StyleSheet.absoluteFillObject, opacity: 0.1 }}
+        style={{ ...StyleSheet.absoluteFill, opacity: 0.1 }}
       />
     </View>
   );
@@ -178,7 +178,6 @@ const Step = memo(function Step({
         </Box>
         <AnimatedBlurView
           blurStyle={'plain'}
-          // @ts-expect-error the type created when using createAnimatedComponent is not correct
           blurIntensity={blurIntensity}
           style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }, blurViewHackFix]}
         />

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert } from 'react-native';
 
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
@@ -166,7 +166,7 @@ function PanelContent({ symbol }: PanelContentProps) {
 
       if (closedTrade) {
         setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade: closedTrade });
           });
         }, time.ms(250));

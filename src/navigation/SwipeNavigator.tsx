@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { InteractionManager, Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { createMaterialTopTabNavigator, type MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
@@ -255,7 +255,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           break;
         case TAB_BAR_ICONS[Routes.DISCOVER_SCREEN]:
           navigation.navigate(Routes.DISCOVER_SCREEN);
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             discoverOpenSearchFnRef?.();
           });
           break;

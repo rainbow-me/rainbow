@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { Switch } from 'react-native-gesture-handler';
+import { LegacySwitch as Switch } from 'react-native-gesture-handler';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';

@@ -96,16 +96,14 @@ function ENSAvatarPlaceholder({
 }) {
   return (
     <ButtonPressAnimation
-      onCancel={({ nativeEvent: { state, close } }) => {
-        // Ensure the press has been triggered
-        if (state === 5 && close) {
+      onCancel={({ nativeEvent: { close, longPressFailed } }) => {
+        if (longPressFailed && close) {
           triggerHaptics('selection');
           onPress();
         }
       }}
       onPress={onPress}
       onPressStart={onPressStart}
-      reanimatedButton={false}
       scaleTo={0.8}
       testID={testID}
     >

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 
@@ -26,7 +25,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const onNetworkChange = useCallback(
     async (chainId: ChainId) => {
       dispatch(settingsUpdateNetwork(chainId));
-      InteractionManager.runAfterInteractions(async () => {
+      requestIdleCallback(async () => {
         analytics.track(analytics.event.changedNetwork, { chainId });
       });
     },

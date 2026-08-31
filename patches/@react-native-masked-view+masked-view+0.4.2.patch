@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-masked-view/masked-view/android/build.gradle b/node_modules/@react-native-masked-view/masked-view/android/build.gradle
+index 27fc1a9..b2c8dc8 100644
+--- a/node_modules/@react-native-masked-view/masked-view/android/build.gradle
++++ b/node_modules/@react-native-masked-view/masked-view/android/build.gradle
+@@ -53,3 +53,7 @@ android {
+   }
+-
++
++  buildFeatures {
++    buildConfig true
++  }
++
+   defaultConfig {

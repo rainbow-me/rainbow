@@ -1,5 +1,3 @@
-import { InteractionManager } from 'react-native';
-
 import isEmpty from 'lodash/isEmpty';
 
 import {
@@ -38,7 +36,7 @@ export const subscribeExistingNotificationsSettings = () => {
 
   if (isEmpty(currentSettings)) return;
 
-  InteractionManager.runAfterInteractions(() => {
+  requestIdleCallback(() => {
     publishAndSaveNotificationSettings({ globalSettings, walletSettings: currentSettings, skipPreSave: true });
   });
 };
@@ -53,7 +51,7 @@ export const initializeNotificationSettingsForAllAddresses = (addresses: Address
 
   if (!newSettings) return;
 
-  InteractionManager.runAfterInteractions(() => {
+  requestIdleCallback(() => {
     publishAndSaveNotificationSettings({ globalSettings, walletSettings: newSettings });
   });
 };
@@ -65,7 +63,7 @@ export const initializeNotificationSettingsForAllAddresses = (addresses: Address
 export const initializeNotificationSettingsForAddresses = (addresses: AddressWithRelationship[]) => {
   const proposedSettings = createInitialSettingsForNewlyAddedAddresses(addresses);
   const globalSettings = getAllGlobalNotificationSettingsFromStorage();
-  InteractionManager.runAfterInteractions(() => {
+  requestIdleCallback(() => {
     publishAndSaveNotificationSettings({ globalSettings, walletSettings: proposedSettings });
   });
 };

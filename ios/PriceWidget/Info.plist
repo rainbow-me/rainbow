@@ -30,7 +30,7 @@
 	<key>RAINBOW_TOKEN_LIST_URL</key>
 	<string>$(RAINBOW_TOKEN_LIST_URL)</string>
 	<key>RCTNewArchEnabled</key>
-	<false/>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SF-Pro-Rounded-Bold.otf</string>

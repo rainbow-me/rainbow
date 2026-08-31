@@ -1,17 +1,20 @@
 package me.rainbow
-import android.content.res.Configuration
-import expo.modules.ApplicationLifecycleDispatcher
-import expo.modules.ReactNativeHostWrapper
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.shopify.reactnativeperformance.ReactNativePerformance
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ReactNativeHostWrapper
 import io.branch.rnbranch.RNBranchModule
+import me.rainbow.NativeModules.AppInstallInfo.AppInstallInfoPackage
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage
 import me.rainbow.NativeModules.Internals.InternalPackage
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
@@ -19,56 +22,59 @@ import me.rainbow.NativeModules.RNBip39.RNBip39Package
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
-import me.rainbow.NativeModules.AppInstallInfo.AppInstallInfoPackage
-import com.shopify.reactnativeperformance.ReactNativePerformance;
 
 class MainApplication : Application(), ReactApplication {
-    override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
-        override fun getUseDeveloperSupport(): Boolean {
-            return BuildConfig.DEBUG
+    override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
+        this,
+        object : DefaultReactNativeHost(this@MainApplication) {
+            override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
+
+            override fun getPackages(): List<ReactPackage> {
+                val packages: MutableList<ReactPackage> = PackageList(this).packages
+                // Packages that cannot be autolinked yet can be added manually here, for example:
+                packages.add(RNBip39Package())
+                packages.add(RNBackHandlerPackage())
+                packages.add(RNTextAnimatorPackage())
+                packages.add(RNZoomableButtonPackage())
+                packages.add(InternalPackage())
+                packages.add(RNHapticsPackage())
+                packages.add(NavbarHeightPackage())
+                packages.add(AppInstallInfoPackage())
+                return packages
+            }
+
+            override fun getJSMainModuleName(): String = "index"
+
+            override val isNewArchEnabled: Boolean
+                get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+
+            override val isHermesEnabled: Boolean
+                get() = BuildConfig.IS_HERMES_ENABLED
         }
+    )
 
-        override fun getPackages(): List<ReactPackage> {
-            val packages: MutableList<ReactPackage> = PackageList(this).packages
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            packages.add(RNBip39Package())
-            packages.add(RNBackHandlerPackage())
-            packages.add(RNTextAnimatorPackage())
-            packages.add(RNZoomableButtonPackage())
-            packages.add(InternalPackage())
-            packages.add(RNHapticsPackage())
-            packages.add(NavbarHeightPackage())
-            packages.add(AppInstallInfoPackage())
-            return packages
-        }
-
-        override fun getJSMainModuleName(): String = "index"
-
-        override val isNewArchEnabled: Boolean
-            get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-        override val isHermesEnabled: Boolean
-            get() = BuildConfig.IS_HERMES_ENABLED
-    })
+    override val reactHost: ReactHost
+        get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
 
     override fun onCreate() {
-        ReactNativePerformance.onAppStarted();
+        ReactNativePerformance.onAppStarted()
         super.onCreate()
         appContext = this
         loadReactNative(this)
         // Branch logging for debugging
         RNBranchModule.enableLogging()
         RNBranchModule.getAutoInstance(this)
-      ApplicationLifecycleDispatcher.onApplicationCreate(this)
-  }
+        ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+    }
 
     companion object {
         private lateinit var appContext: Context
 
         fun getAppContext(): Context = appContext
     }
-
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-  }
 }

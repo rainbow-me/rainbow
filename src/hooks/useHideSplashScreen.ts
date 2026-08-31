@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { InteractionManager, NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import { SystemBars } from 'react-native-edge-to-edge';
 
@@ -32,7 +32,7 @@ export const hideSplashScreen = async () => {
     if (Platform.OS === 'ios') {
       SystemBars.setHidden({ statusBar: false });
     } else {
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         SystemBars.setHidden({ statusBar: false });
       });
     }

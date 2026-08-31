@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   outcomePillGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     opacity: 0.14,
   },
   overflowHidden: {
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   lightModeCardFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: opacity(globalColors.white100, 0.89),
   },
 });

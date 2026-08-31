@@ -1,5 +1,3 @@
-import { InteractionManager } from 'react-native';
-
 import * as env from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
@@ -112,7 +110,7 @@ export async function runMigrations(migrations: (() => Migration)[]) {
 
     if (!migratedAt) {
       if (isDeferable) {
-        InteractionManager.runAfterInteractions(() => runMigration(migration));
+        requestIdleCallback(() => runMigration(migration));
       } else {
         await runMigration(migration);
       }

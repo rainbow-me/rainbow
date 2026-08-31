@@ -1,4 +1,5 @@
 import React from 'react';
+import { type ViewStyle } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
@@ -171,12 +172,12 @@ const TabBarIconContent = React.memo(function TabBarIconContent({
   innerIconColor,
   size = TAB_BAR_ICON_SIZE,
 }: {
-  discoverTabInnerFillColor: AnimatedStyle;
+  discoverTabInnerFillColor: AnimatedStyle<ViewStyle>;
   hasTransparentInnerFill: boolean;
   icon: string;
-  iconColor: AnimatedStyle;
-  innerFillColor: AnimatedStyle;
-  innerIconColor: AnimatedStyle;
+  iconColor: AnimatedStyle<ViewStyle>;
+  innerFillColor: AnimatedStyle<ViewStyle>;
+  innerIconColor: AnimatedStyle<ViewStyle>;
   size: number | undefined;
 }) {
   return (

@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { debounce } from 'lodash';
@@ -77,9 +76,7 @@ function WalletScreen() {
   const handleWalletScreenMount = useCallback(() => {
     hideSplashScreen();
     requestIdleCallback(() => {
-      InteractionManager.runAfterInteractions(() => {
-        useNavigationStore.setState({ isWalletScreenMounted: true });
-      });
+      useNavigationStore.setState({ isWalletScreenMounted: true });
     });
   }, []);
 

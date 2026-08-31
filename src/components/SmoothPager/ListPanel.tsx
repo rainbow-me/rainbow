@@ -326,7 +326,7 @@ export const Panel = ({
   innerBorderWidth?: number;
   outerBorderColor?: string;
   outerBorderWidth?: number;
-  style?: StyleProp<ViewStyle> | AnimatedStyle;
+  style?: StyleProp<ViewStyle> | AnimatedStyle<ViewStyle>;
 }) => {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');

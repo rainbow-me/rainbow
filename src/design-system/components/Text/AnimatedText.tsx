@@ -1,5 +1,4 @@
-import React, { useMemo, type ComponentRef } from 'react';
-import { type StyleProp, type TextStyle } from 'react-native';
+import React, { useMemo, type ComponentProps, type ComponentRef } from 'react';
 
 import AnimateableText from 'react-native-animateable-text';
 import { useAnimatedProps, type DerivedValue, type SharedValue } from 'react-native-reanimated';
@@ -16,14 +15,16 @@ export type SharedOrDerivedValueText =
   | (SharedValue<string | undefined> | DerivedValue<string | undefined>)
   | (SharedValue<string | null | undefined> | DerivedValue<string | null | undefined>);
 
-export type AnimatedTextProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = {
+export type AnimatedTextValue = Pick<DerivedValue, 'value'>;
+
+export type AnimatedTextProps<T extends AnimatedTextValue = SharedOrDerivedValueText> = {
   align?: 'center' | 'left' | 'right';
   color?: TextColor | CustomColor;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
   selectable?: boolean;
   size: TextSize;
-  style?: StyleProp<TextStyle>;
+  style?: ComponentProps<typeof AnimateableText>['style'];
   tabularNumbers?: boolean;
   testID?: string;
   uppercase?: boolean;
@@ -36,7 +37,7 @@ export type AnimatedTextChildProps = {
   selector?: undefined;
 };
 
-export type AnimatedTextSelectorProps<T extends SharedValue | DerivedValue> = {
+export type AnimatedTextSelectorProps<T extends AnimatedTextValue> = {
   children: T;
   /**
    * A worklet function that selects text from a shared value provided via `children`.
@@ -44,7 +45,7 @@ export type AnimatedTextSelectorProps<T extends SharedValue | DerivedValue> = {
   selector: (sharedValue: T) => string | null | undefined;
 };
 
-export function AnimatedText<T extends SharedValue | DerivedValue>({
+export function AnimatedText<T extends AnimatedTextValue>({
   align,
   children,
   color = 'label',

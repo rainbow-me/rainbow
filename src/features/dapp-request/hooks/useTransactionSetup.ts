@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { analytics } from '@/analytics';
 import type useGas from '@/features/gas/hooks/useGas';
@@ -44,7 +43,7 @@ export const useTransactionSetup = ({
   );
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       if (chainId) {
         if (!isMessageRequest) {
           startPollingGasFees(chainId);

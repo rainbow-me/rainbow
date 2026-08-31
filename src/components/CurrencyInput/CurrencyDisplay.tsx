@@ -1,23 +1,23 @@
 import React, { memo } from 'react';
-import { type StyleProp, type TextStyle } from 'react-native';
 
 import { type SharedValue } from 'react-native-reanimated';
 
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
+import { type AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
 
 import { CurrencyInputCaret } from './CurrencyInputCaret';
 
 type CurrencyDisplayProps = {
   formattedValue: SharedValue<string>;
   currencySymbol?: string;
-  textColorStyle: StyleProp<TextStyle>;
+  textColorStyle: AnimatedTextProps['style'];
   isFocused: SharedValue<boolean>;
   caretColor?: string;
   disabled: boolean;
   testID?: string;
   onPress: () => void;
-  textStyle: StyleProp<TextStyle>;
+  textStyle: AnimatedTextProps['style'];
 };
 
 export const CurrencyDisplay = memo(function CurrencyDisplay({

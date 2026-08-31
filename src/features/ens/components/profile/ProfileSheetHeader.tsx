@@ -1,5 +1,4 @@
 import React, { useContext, useMemo } from 'react';
-import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -9,7 +8,6 @@ import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -39,7 +37,6 @@ export default function ProfileSheetHeader({
 }) {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET>>();
   const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
-  const { layout } = useContext(ModalContext) || {};
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
 
@@ -86,7 +83,7 @@ export default function ProfileSheetHeader({
   const emoji = useMemo(() => (profileAddress ? addressHashedEmoji(profileAddress) : ''), [profileAddress]);
 
   return (
-    <Box background="body (Deprecated)" {...(Platform.OS === 'ios' && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
+    <Box background="body (Deprecated)">
       <Stack space={{ custom: 18 }}>
         <ProfileCover
           coverUrl={cover?.imageUrl}

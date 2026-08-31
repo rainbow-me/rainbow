@@ -52,7 +52,7 @@ export type Migration = {
   migrate?(): Promise<void>;
 
   /**
-   * Runs lazily using `InteractionManager.runAfterInteractions`. Intended for
+   * Runs lazily using `requestIdleCallback`. Intended for
    * long-running migrations, or those that don't need to happen immediately.
    * Not intended for migrations that are required for app startup.
    *

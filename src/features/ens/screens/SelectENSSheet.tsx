@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { View, type ListRenderItem } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { FlatList } from 'react-native-gesture-handler';
+import { LegacyFlatList as FlatList } from 'react-native-gesture-handler';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import chroma from 'chroma-js';
 import Animated, {
@@ -18,7 +18,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, Column, Columns, Cover, globalColors, Stack, useColorMode, useForegroundColor } from '@/design-system';
-import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { type AnimatedTextProps, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { type DepositContextType } from '@/systems/funding/types';
 
 import { useSwapContext } from '../providers/swap-provider';
@@ -50,7 +50,7 @@ function SwapButton({
   borderRadius?: number;
   disableShadow?: boolean;
   icon?: string | SharedOrDerivedValueText;
-  iconStyle?: StyleProp<TextStyle>;
+  iconStyle?: AnimatedTextProps['style'];
   label: string | SharedOrDerivedValueText;
   outline?: boolean;
   rightIcon?: string;
@@ -65,6 +65,7 @@ function SwapButton({
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const resolvedBorderRadius = borderRadius ?? 24;
 
   const textStyles = useAnimatedStyle(() => {
     return {
@@ -89,7 +90,7 @@ function SwapButton({
     return {
       backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
-      borderRadius: borderRadius ?? 24,
+      borderRadius: resolvedBorderRadius,
       height: small ? 36 : 48,
       shadowColor:
         disableShadow || outline
@@ -147,7 +148,7 @@ function SwapButton({
             position: 'relative',
             overflow: 'hidden',
             height: '100%',
-            borderRadius: buttonWrapperStyles.borderRadius,
+            borderRadius: resolvedBorderRadius,
           },
         ]}
       >
@@ -307,7 +308,7 @@ export const SwapActionButton = ({
   holdProgress?: SharedValue<number>;
   hugContent?: boolean;
   icon?: string | SharedOrDerivedValueText;
-  iconStyle?: StyleProp<TextStyle>;
+  iconStyle?: AnimatedTextProps['style'];
   label: string | SharedOrDerivedValueText;
   longPressDuration?: GestureHandlerButtonProps['longPressDuration'];
   onLongPressEndWorklet?: GestureHandlerButtonProps['onLongPressEndWorklet'];

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { InteractionManager, StyleSheet, type Insets } from 'react-native';
+import { StyleSheet, type Insets } from 'react-native';
 
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
@@ -82,7 +82,7 @@ const TokenToSellListComponent = () => {
 
       const inputSearchQuery = userAssetsStore.getState().inputSearchQuery.trim();
       setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
+        requestIdleCallback(() => {
           // track what search query the user had prior to selecting an asset
           if (inputSearchQuery.length) {
             analytics.track(analytics.event.swapsSearchedForToken, {

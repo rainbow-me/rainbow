@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Image, Platform, StyleSheet, View, type GestureResponderEvent } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import { Blur, Canvas, LinearGradient, RoundedRect } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
@@ -7,6 +7,7 @@ import { BlurView } from 'react-native-blur-view';
 import { ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type ButtonPressEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { RNBW_MEMBERSHIP } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
@@ -82,10 +83,8 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
 function DismissButton() {
   const { dismiss } = useRnbwFeatureCard();
 
-  const onDismiss = (e?: GestureResponderEvent) => {
-    if (e && 'stopPropagation' in e) {
-      e.stopPropagation();
-    }
+  const onDismiss = (e?: ButtonPressEvent) => {
+    e?.stopPropagation();
     dismiss();
   };
 
@@ -132,7 +131,7 @@ function GradientFill() {
   const canvasHeight = height + blurPadding * 2;
 
   return (
-    <View style={{ ...StyleSheet.absoluteFillObject, top: -blurPadding + topOffset, alignItems: 'center' }}>
+    <View style={{ ...StyleSheet.absoluteFill, top: -blurPadding + topOffset, alignItems: 'center' }}>
       <Canvas
         style={{
           width: canvasWidth,
@@ -260,7 +259,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   backgroundCoinLayerClipped: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: BORDER_RADIUS,
     overflow: 'hidden',
   },

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, noop } from 'lodash';
@@ -271,7 +271,7 @@ const GasSpeedButton = ({
     (selectedSpeed: string) => {
       if (selectedSpeed === CUSTOM) {
         if (Platform.OS === 'ios') {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             setShouldOpenCustomGasSheet({
               focusTo: null,
               shouldOpen: true,

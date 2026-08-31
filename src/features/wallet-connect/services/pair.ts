@@ -1,4 +1,4 @@
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { parseUri } from '@walletconnect/utils';
 import Minimizer from 'react-native-minimizer';
@@ -33,7 +33,7 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
  */
 export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: number } = {}) {
   if (hasDeeplinkPendingRedirect) {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       setTimeout(() => {
         setHasPendingDeeplinkPendingRedirect(false);
 

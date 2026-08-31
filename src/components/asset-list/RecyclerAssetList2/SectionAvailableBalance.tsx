@@ -38,7 +38,7 @@ export const SectionAvailableBalance = memo(function SectionAvailableBalance({
         >
           <LinearGradient
             colors={[backgroundColor, 'transparent']}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             start={{ x: 0.2, y: 0 }}
             end={{ x: 1, y: 0 }}
           />

@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
-
 import { AnimatedText, Bleed, Box } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import { type CustomColor } from '@/design-system/color/useForegroundColor';
@@ -9,6 +7,8 @@ import {
   type AnimatedTextChildProps,
   type AnimatedTextProps,
   type AnimatedTextSelectorProps,
+  type AnimatedTextValue,
+  type SharedOrDerivedValueText,
 } from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
@@ -26,10 +26,10 @@ type AnimatedTextIconFrameProps = {
   width?: number;
 };
 
-export type AnimatedTextIconProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = AnimatedTextIconFrameProps &
+export type AnimatedTextIconProps<T extends AnimatedTextValue = SharedOrDerivedValueText> = AnimatedTextIconFrameProps &
   (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
 
-export function AnimatedTextIcon<T extends SharedValue | DerivedValue = SharedValue | DerivedValue>({
+export function AnimatedTextIcon<T extends AnimatedTextValue = SharedOrDerivedValueText>({
   align = 'center',
   children,
   color,

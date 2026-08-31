@@ -1,0 +1,139 @@
+# PATCH CONTEXT
+# Why:
+# - Gradle 9.4.1 exposes Kotlin 2.3 metadata, which Kotlin 2.1 cannot read.
+#   RN 0.87 owns Kotlin 2.2.0, so Expo's included plugin must use the same
+#   compatible compiler instead of suppressing metadata validation.
+# - Expo 3.0.24 fills a dependency-local codegen path for pure-C++ modules.
+#   RN 0.87 owns their generated spec in the app build and requires a null path,
+#   matching both RN CLI 20.2 and Expo's maintained resolver.
+# Remove when: Expo autolinking includes both fixes.
+
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts
+@@ -2 +2 @@
+-  kotlin("jvm") version "2.1.20" apply false
++  kotlin("jvm") version "2.2.0" apply false
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/build.gradle.kts b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/build.gradle.kts
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/build.gradle.kts
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/build.gradle.kts
+@@ -1 +1,2 @@
++import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -24,3 +25,3 @@
+-tasks.withType<KotlinCompile> {
+-  kotlinOptions {
+-    jvmTarget = JavaVersion.VERSION_11.toString()
++tasks.withType<KotlinCompile>().configureEach {
++  compilerOptions {
++    jvmTarget.set(JvmTarget.JVM_11)
+diff --git a/node_modules/expo-modules-autolinking/build/reactNativeConfig/androidResolver.js b/node_modules/expo-modules-autolinking/build/reactNativeConfig/androidResolver.js
+--- a/node_modules/expo-modules-autolinking/build/reactNativeConfig/androidResolver.js
++++ b/node_modules/expo-modules-autolinking/build/reactNativeConfig/androidResolver.js
+@@ -62,3 +62,5 @@
+     let cmakeListsPath = reactNativeConfig?.cmakeListsPath
+         ? path_1.default.join(androidDir, reactNativeConfig?.cmakeListsPath)
+-        : path_1.default.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
++        : isPureCxxDependency
++            ? null
++            : path_1.default.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
+diff --git a/node_modules/expo-modules-autolinking/src/reactNativeConfig/androidResolver.ts b/node_modules/expo-modules-autolinking/src/reactNativeConfig/androidResolver.ts
+--- a/node_modules/expo-modules-autolinking/src/reactNativeConfig/androidResolver.ts
++++ b/node_modules/expo-modules-autolinking/src/reactNativeConfig/androidResolver.ts
+@@ -72,3 +72,5 @@
+   let cmakeListsPath = reactNativeConfig?.cmakeListsPath
+     ? path.join(androidDir, reactNativeConfig?.cmakeListsPath)
+-    : path.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
++    : isPureCxxDependency
++      ? null
++      : path.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/GeneratePackagesListTask.kt b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/GeneratePackagesListTask.kt
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/GeneratePackagesListTask.kt
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/GeneratePackagesListTask.kt
+@@ -3 +3 @@
+-import org.gradle.api.file.RegularFileProperty
++import org.gradle.api.file.DirectoryProperty
+@@ -7 +7 @@
+-import org.gradle.api.tasks.OutputFile
++import org.gradle.api.tasks.OutputDirectory
+@@ -37 +37 @@
+-   * The output file where the package list should be written.
++   * The output directory where the package list should be written.
+@@ -39,2 +39,2 @@
+-  @get:OutputFile
+-  abstract val outputFile: RegularFileProperty
++  @get:OutputDirectory
++  abstract val outputDirectory: DirectoryProperty
+@@ -43,2 +43,6 @@
+     val autolinkingOptions = AutolinkingOptions.fromJson(options.get())
++    val target = outputDirectory.get().asFile
++      .resolve(namespace.get().replace('.', '/'))
++      .resolve(generatedPackageListFilename)
++    target.parentFile.mkdirs()
+     commandLine(
+@@ -48 +52 @@
+-        .option("target", outputFile.get().asFile.absolutePath)
++        .option("target", target.absolutePath)
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin/src/main/kotlin/expo/modules/plugin/ExpoAutolinkingPlugin.kt
+@@ -12 +11,0 @@
+-import org.gradle.api.file.RegularFile
+@@ -16 +14,0 @@
+-import java.nio.file.Paths
+@@ -64,7 +62,6 @@
+-    // Adds the generated file to the source set.
+-    project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+-      ext
+-        .sourceSets
+-        .getByName("main")
+-        .java
+-        .srcDir(getPackageListDir(project))
++    // Adds the generated file to each variant's Java sources and carries the task dependency.
++    project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
++      variant.sources.java?.addGeneratedSourceDirectory(
++        generatePackagesList,
++        GeneratePackagesListTask::outputDirectory
++      )
+@@ -78,9 +74,0 @@
+-  fun getPackageListFile(project: Project): Provider<RegularFile> {
+-    val packageListRelativePath = Paths.get(
+-      generatedFilesSrcDir,
+-      generatedPackageListNamespace.replace('.', '/'),
+-      generatedPackageListFilename
+-    ).toString()
+-    return project.layout.buildDirectory.file(packageListRelativePath)
+-  }
+-
+@@ -91 +79 @@
+-      it.outputFile.set(getPackageListFile(project))
++      it.outputDirectory.set(getPackageListDir(project))
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-plugin-shared/build.gradle.kts
+@@ -2 +2,2 @@
++import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -6 +7 @@
+-  kotlin("plugin.serialization") version "1.9.24"
++  kotlin("plugin.serialization") version "2.2.0"
+@@ -25,3 +26,3 @@
+-tasks.withType<KotlinCompile> {
+-  kotlinOptions {
+-    jvmTarget = JavaVersion.VERSION_11.toString()
++tasks.withType<KotlinCompile>().configureEach {
++  compilerOptions {
++    jvmTarget.set(JvmTarget.JVM_11)
+diff --git a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/build.gradle.kts b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/build.gradle.kts
+--- a/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/build.gradle.kts
++++ b/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/expo-autolinking-settings-plugin/build.gradle.kts
+@@ -2 +2,2 @@
++import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -29,3 +30,3 @@
+-tasks.withType<KotlinCompile> {
+-  kotlinOptions {
+-    jvmTarget = JavaVersion.VERSION_11.toString()
++tasks.withType<KotlinCompile>().configureEach {
++  compilerOptions {
++    jvmTarget.set(JvmTarget.JVM_11)

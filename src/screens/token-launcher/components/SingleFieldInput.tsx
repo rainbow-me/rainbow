@@ -301,7 +301,7 @@ const LabelContent = ({
   subtitle: string | undefined;
   textAlign: TextInputProps['textAlign'];
   title: string | undefined;
-  titleContainerStyle: AnimatedStyle;
+  titleContainerStyle: AnimatedStyle<ViewStyle>;
 }) => (
   <Animated.View style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textAlign === 'right' ? 20 : 0 }}>
     <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
@@ -333,7 +333,7 @@ const PasteButton = ({
   pasteButtonText,
 }: {
   handlePaste: () => void;
-  pasteButtonStyle: AnimatedStyle;
+  pasteButtonStyle: AnimatedStyle<ViewStyle>;
   pasteButtonText: string;
 }) => (
   <Animated.View style={pasteButtonStyle}>

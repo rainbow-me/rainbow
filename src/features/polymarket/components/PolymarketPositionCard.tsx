@@ -1,11 +1,12 @@
 import { memo, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, type GestureResponderEvent } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type ButtonPressEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
@@ -73,10 +74,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   }, [actionButtonType]);
 
   const onPressActionButton = useCallback(
-    (e?: GestureResponderEvent) => {
-      if (e && 'stopPropagation' in e) {
-        e.stopPropagation();
-      }
+    (e?: ButtonPressEvent) => {
+      e?.stopPropagation();
       if (position.redeemable) {
         Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
       } else {

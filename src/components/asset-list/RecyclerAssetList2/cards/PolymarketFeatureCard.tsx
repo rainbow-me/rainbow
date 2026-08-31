@@ -1,10 +1,11 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, type GestureResponderEvent } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { type ButtonPressEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { AccentColorProvider, Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { usePolymarketFeatureCard } from '@/features/polymarket/hooks/usePolymarketFeatureCard';
@@ -35,10 +36,8 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
   }, [accentColor]);
 
   const { dismiss: dismissPolymarketFeatureCard } = usePolymarketFeatureCard();
-  const onDismiss = (e?: GestureResponderEvent) => {
-    if (e && 'stopPropagation' in e) {
-      e.stopPropagation();
-    }
+  const onDismiss = (e?: ButtonPressEvent) => {
+    e?.stopPropagation();
     dismissPolymarketFeatureCard();
   };
 
@@ -83,7 +82,7 @@ export const PolymarketFeatureCard = memo(function PolymarketFeatureCard({
                 >
                   <LinearGradient
                     colors={[accentColors.opacity0, accentColor]}
-                    style={[StyleSheet.absoluteFillObject, { opacity: 0.12 }]}
+                    style={[StyleSheet.absoluteFill, { opacity: 0.12 }]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                   />

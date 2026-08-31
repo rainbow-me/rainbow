@@ -11,7 +11,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import type ViewShot from 'react-native-view-shot';
+import type { ViewShotRef } from 'react-native-view-shot';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import Routes from '@/navigation/routesNames';
@@ -105,7 +105,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const tabViewVisible = useSharedValue(false);
   const triggerScreenshot = useSharedValue(false);
 
-  const screenshotCaptureRef = useRef<ViewShot | null>(null);
+  const screenshotCaptureRef = useRef<ViewShotRef | null>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   const goToPage = useBrowserStore(state => state.goToPage);

@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import { useEvent } from 'react-native-reanimated';
-import { type WorkletFunction } from 'react-native-reanimated/lib/typescript/commonTypes';
+import { type WorkletFunction } from 'react-native-worklets';
 
 interface Layout {
   x: number;

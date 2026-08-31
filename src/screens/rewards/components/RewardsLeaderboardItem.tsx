@@ -42,7 +42,7 @@ const MaskedGradientText: React.FC<{
           end={{ x: 1, y: 1 }}
           pointerEvents="none"
           start={{ x: 0, y: 1 }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
         />
       </MaskedView>
     </Box>

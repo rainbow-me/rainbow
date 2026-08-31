@@ -305,7 +305,7 @@ export const signTransactionSheetConfig = {
 };
 
 export const walletDiagnosticsSheetConfig = {
-  options: ({ route }: { route: { params: any } }) => {
+  options: ({ route }: { route: RouteProp<RootStackParamList, typeof Routes.DIAGNOSTICS_SHEET> }) => {
     return buildCoolModalConfig({
       ...route.params,
       scrollEnabled: true,

@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, type ComponentProps } from 'react';
 
 import RadialGradient, { type RadialGradientProps } from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 
 const AnimatedRadialGradient = Animated.createAnimatedComponent(RadialGradient);
 
-export type RadialGradientBackgroundProps = RadialGradientProps & {
+export type RadialGradientBackgroundProps = Omit<RadialGradientProps, 'style'> & {
   width: number;
   height: number;
+  style?: ComponentProps<typeof AnimatedRadialGradient>['style'];
 };
 
 const RadialGradientBackground = ({ height, width, style, ...props }: RadialGradientBackgroundProps) => {

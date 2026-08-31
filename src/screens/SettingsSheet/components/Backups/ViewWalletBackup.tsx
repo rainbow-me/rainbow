@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -177,7 +177,7 @@ const ViewWalletBackup = () => {
         type: 'new',
       });
 
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         setTimeout(() => {
           navigate(Routes.MODAL_SCREEN, {
             actionType: 'Create',

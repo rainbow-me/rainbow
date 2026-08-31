@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, InteractionManager, PixelRatio, Platform, ScrollView } from 'react-native';
+import { Image, PixelRatio, Platform, ScrollView } from 'react-native';
 
 import { isAddress } from '@ethersproject/address';
 import { type Transaction } from '@ethersproject/transactions';
@@ -422,7 +422,7 @@ export const SignTransactionSheet = () => {
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
-      InteractionManager.runAfterInteractions(async () => {
+      requestIdleCallback(async () => {
         if (!txSavedInCurrentWallet && !!txDetails) {
           if (txDetails?.from) {
             await switchWallet(txDetails?.from);

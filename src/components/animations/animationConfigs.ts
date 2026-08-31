@@ -38,7 +38,8 @@ export const easing = deepFreeze({
 type SpringConfigs = Record<string, WithSpringConfig>;
 
 const springAnimations = deepFreeze({
-  browserTabTransition: { dampingRatio: 0.82, duration: 800 },
+  // Reanimated 4's actual spring duration is 1.5× its configured perceptual duration.
+  browserTabTransition: { dampingRatio: 0.82, duration: 800 / 1.5 },
   keyboardConfig: { damping: 500, mass: 3, stiffness: 1000 },
   priceChangeConfig: { mass: 0.8, stiffness: 300, damping: 30 },
   sliderConfig: { damping: 40, mass: 1.25, stiffness: 450 },

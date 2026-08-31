@@ -1,7 +1,7 @@
 import { memo, useMemo, type ComponentProps, type ComponentType, type ReactElement, type RefObject } from 'react';
 import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
-import { type FlatList } from 'react-native-gesture-handler';
+import { type LegacyFlatList as FlatList } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

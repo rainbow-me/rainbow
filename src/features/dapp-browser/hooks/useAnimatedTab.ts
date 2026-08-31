@@ -54,6 +54,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     tabViewGestureProgress,
     tabViewGestureState,
     tabViewProgress,
+    tabViewVisible,
   } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
@@ -91,7 +92,11 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
             // Handle tab removal after tab close animation completion
             if (isFinished && currentlyBeingClosedTabIds.value.includes(tabId) && activeTabCloseGestures.value[tabId]) {
               // Zero out scale to ensure the tab is hidden while unmounting
-              activeTabCloseGestures.modify(gestures => ({ ...gestures, [tabId]: { ...gestures[tabId], gestureScale: 0 } }));
+              activeTabCloseGestures.modify(gestures => {
+                const gesture = gestures[tabId];
+                if (!gesture) return gestures;
+                return { ...gestures, [tabId]: { ...gesture, gestureScale: 0 } };
+              });
               // Finalize tab close
               closeTabWorklet({ tabId, tabIndex: activeTabCloseGestures.value[tabId].tabIndex });
               currentlyBeingClosedTabIds.modify(closingTabs => {
@@ -200,9 +205,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     );
 
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
-    const pointerEvents = isTabBeingClosed
-      ? 'none'
-      : animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
+    const pointerEvents =
+      !isTabBeingClosed && !tabViewVisible.value && animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
         ? 'auto'
         : 'none';
 
@@ -272,10 +276,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
         'clamp'
       );
 
-    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
-    const zIndex = Math.round(
-      scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0)
-    );
+    const isTabBeingClosed = currentlyBeingClosedTabIds.value.includes(tabId);
+    const zIndex = Math.round(scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (isTabBeingClosed ? 9999 : 0));
 
     return { zIndex };
   });

@@ -1,0 +1,8 @@
+diff --git a/node_modules/react-native-vision-camera/android/build.gradle b/node_modules/react-native-vision-camera/android/build.gradle
+index b1d9973..e88eb77 100644
+--- a/node_modules/react-native-vision-camera/android/build.gradle
++++ b/node_modules/react-native-vision-camera/android/build.gradle
+@@ -112,2 +112,3 @@ android {
+   buildFeatures {
++    buildConfig true
+     prefab true

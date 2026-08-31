@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderCurve: 'continuous',
     borderRadius: CARD_LAYOUT.borderRadius,
     overflow: 'hidden',

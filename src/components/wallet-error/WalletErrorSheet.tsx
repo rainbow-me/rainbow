@@ -1,5 +1,5 @@
 import React from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -62,7 +62,7 @@ export default function WalletErrorSheet() {
                 style={{ padding: 21 }}
                 onPress={() => {
                   navigation.goBack();
-                  InteractionManager.runAfterInteractions(() => {
+                  requestIdleCallback(() => {
                     navigation.navigate(Routes.ADD_WALLET_NAVIGATOR, {
                       flowContext: 'in_app',
                       isFirstWallet: true,

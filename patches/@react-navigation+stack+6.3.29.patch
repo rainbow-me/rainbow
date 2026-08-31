@@ -1,8 +1,102 @@
+diff --git a/node_modules/@react-navigation/stack/lib/commonjs/views/Stack/Card.js b/node_modules/@react-navigation/stack/lib/commonjs/views/Stack/Card.js
+index 80c49c8dd4..9faaa3790c 100644
+--- a/node_modules/@react-navigation/stack/lib/commonjs/views/Stack/Card.js
++++ b/node_modules/@react-navigation/stack/lib/commonjs/views/Stack/Card.js
+@@ -94 +93,0 @@ class Card extends React.Component {
+-    this.handleEndInteraction();
+@@ -125 +123,0 @@ class Card extends React.Component {
+-    this.handleStartInteraction();
+@@ -141 +138,0 @@ class Card extends React.Component {
+-      this.handleEndInteraction();
+@@ -172,11 +168,0 @@ class Card extends React.Component {
+-  handleStartInteraction = () => {
+-    if (this.interactionHandle === undefined) {
+-      this.interactionHandle = _reactNative.InteractionManager.createInteractionHandle();
+-    }
+-  };
+-  handleEndInteraction = () => {
+-    if (this.interactionHandle !== undefined) {
+-      _reactNative.InteractionManager.clearInteractionHandle(this.interactionHandle);
+-      this.interactionHandle = undefined;
+-    }
+-  };
+@@ -199 +184,0 @@ class Card extends React.Component {
+-        this.handleStartInteraction();
+@@ -205 +189,0 @@ class Card extends React.Component {
+-          this.handleEndInteraction();
+diff --git a/node_modules/@react-navigation/stack/lib/module/views/Stack/Card.js b/node_modules/@react-navigation/stack/lib/module/views/Stack/Card.js
+index 2ea2ef104e..87b1cfd66e 100644
+--- a/node_modules/@react-navigation/stack/lib/module/views/Stack/Card.js
++++ b/node_modules/@react-navigation/stack/lib/module/views/Stack/Card.js
+@@ -4 +4 @@ import * as React from 'react';
+-import { Animated, InteractionManager, Platform, StyleSheet, View } from 'react-native';
++import { Animated, Platform, StyleSheet, View } from 'react-native';
+@@ -85 +84,0 @@ export default class Card extends React.Component {
+-    this.handleEndInteraction();
+@@ -116 +114,0 @@ export default class Card extends React.Component {
+-    this.handleStartInteraction();
+@@ -132 +129,0 @@ export default class Card extends React.Component {
+-      this.handleEndInteraction();
+@@ -163,11 +159,0 @@ export default class Card extends React.Component {
+-  handleStartInteraction = () => {
+-    if (this.interactionHandle === undefined) {
+-      this.interactionHandle = InteractionManager.createInteractionHandle();
+-    }
+-  };
+-  handleEndInteraction = () => {
+-    if (this.interactionHandle !== undefined) {
+-      InteractionManager.clearInteractionHandle(this.interactionHandle);
+-      this.interactionHandle = undefined;
+-    }
+-  };
+@@ -190 +175,0 @@ export default class Card extends React.Component {
+-        this.handleStartInteraction();
+@@ -196 +180,0 @@ export default class Card extends React.Component {
+-          this.handleEndInteraction();
+diff --git a/node_modules/@react-navigation/stack/lib/typescript/src/views/Stack/Card.d.ts b/node_modules/@react-navigation/stack/lib/typescript/src/views/Stack/Card.d.ts
+index 005f2ff272..48191b2f8d 100644
+--- a/node_modules/@react-navigation/stack/lib/typescript/src/views/Stack/Card.d.ts
++++ b/node_modules/@react-navigation/stack/lib/typescript/src/views/Stack/Card.d.ts
+@@ -59 +58,0 @@ export default class Card extends React.Component<Props> {
+-    private interactionHandle;
+@@ -65,2 +63,0 @@ export default class Card extends React.Component<Props> {
+-    private handleStartInteraction;
+-    private handleEndInteraction;
 diff --git a/node_modules/@react-navigation/stack/src/views/Stack/Card.tsx b/node_modules/@react-navigation/stack/src/views/Stack/Card.tsx
-index af9cbbd..4a05c42 100755
+index af9cbbddf0..67d2ce57f4 100755
 --- a/node_modules/@react-navigation/stack/src/views/Stack/Card.tsx
 +++ b/node_modules/@react-navigation/stack/src/views/Stack/Card.tsx
-@@ -336,6 +336,11 @@ export default class Card extends React.Component<Props> {
+@@ -5 +4,0 @@ import {
+-  InteractionManager,
+@@ -146 +144,0 @@ export default class Card extends React.Component<Props> {
+-    this.handleEndInteraction();
+@@ -164,2 +161,0 @@ export default class Card extends React.Component<Props> {
+-  private interactionHandle: number | undefined;
+-
+@@ -195 +190,0 @@ export default class Card extends React.Component<Props> {
+-    this.handleStartInteraction();
+@@ -207,2 +201,0 @@ export default class Card extends React.Component<Props> {
+-      this.handleEndInteraction();
+-
+@@ -248,13 +240,0 @@ export default class Card extends React.Component<Props> {
+-  private handleStartInteraction = () => {
+-    if (this.interactionHandle === undefined) {
+-      this.interactionHandle = InteractionManager.createInteractionHandle();
+-    }
+-  };
+-
+-  private handleEndInteraction = () => {
+-    if (this.interactionHandle !== undefined) {
+-      InteractionManager.clearInteractionHandle(this.interactionHandle);
+-      this.interactionHandle = undefined;
+-    }
+-  };
+-
+@@ -277 +256,0 @@ export default class Card extends React.Component<Props> {
+-        this.handleStartInteraction();
+@@ -282 +260,0 @@ export default class Card extends React.Component<Props> {
+-        this.handleEndInteraction();
+@@ -336,5 +314,10 @@ export default class Card extends React.Component<Props> {
          onGestureEnd?.();
          break;
        }
@@ -13,4 +107,3 @@ index af9cbbd..4a05c42 100755
 +      }
      }
    };
- 

@@ -1,12 +1,10 @@
 import type React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager, Platform, TextInput } from 'react-native';
+import { Platform, TextInput } from 'react-native';
 
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { setListener } from '@/navigation/nativeStackHelpers';
-
-import useInteraction from './useInteraction';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
@@ -77,14 +75,11 @@ export default function useMagicAutofocus(
     }
   }, [customTriggerFocusCallback, defaultAutofocusInputRef]);
 
-  const [createRefocusInteraction] = useInteraction();
   const fallbackRefocusLastInput = useCallback(() => {
-    createRefocusInteraction(() => {
-      if (isScreenFocused) {
-        triggerFocus();
-      }
-    });
-  }, [createRefocusInteraction, isScreenFocused, triggerFocus]);
+    if (isScreenFocused) {
+      triggerFocus();
+    }
+  }, [isScreenFocused, triggerFocus]);
 
   // ✨️ Make the magic happen
   useFocusEffect(
@@ -95,7 +90,7 @@ export default function useMagicAutofocus(
 
       setListener(triggerFocus);
       if (delay) {
-        InteractionManager.runAfterInteractions(() => {
+        requestIdleCallback(() => {
           if (timeout !== null) {
             clearTimeout(timeout);
             timeout = null;
@@ -108,10 +103,10 @@ export default function useMagicAutofocus(
       } else if (Platform.OS === 'android') {
         // We need to do this in order to assure that the input gets focused
         // when using fallback stacks.
-        InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
+        requestIdleCallback(fallbackRefocusLastInput);
       } else {
         if (showAfterInteractions) {
-          InteractionManager.runAfterInteractions(triggerFocus);
+          requestIdleCallback(triggerFocus);
         } else {
           triggerFocus();
         }

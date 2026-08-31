@@ -64,7 +64,7 @@ const InnerGlow = memo(function InnerGlow() {
         const { width, height } = event.nativeEvent.layout;
         setDimensions({ width: width + 1, height: height + 1 });
       }}
-      style={[StyleSheet.absoluteFillObject, { borderRadius, overflow: 'hidden', pointerEvents: 'none' }]}
+      style={[StyleSheet.absoluteFill, { borderRadius, overflow: 'hidden', pointerEvents: 'none' }]}
     >
       {Boolean(width && height) && (
         <Canvas style={{ width, height }}>

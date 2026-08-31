@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import Animated, { useAnimatedStyle, type AnimatedStyle } from 'react-native-reanimated';
 
@@ -65,7 +65,7 @@ export const WebViewShadows = ({
 }: {
   children: React.ReactNode;
   tabId: string;
-  zIndexAnimatedStyle: AnimatedStyle;
+  zIndexAnimatedStyle: AnimatedStyle<ViewStyle>;
 }) => {
   const {
     animatedActiveTabIndex,

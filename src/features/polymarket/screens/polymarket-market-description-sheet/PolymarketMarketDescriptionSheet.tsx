@@ -140,11 +140,11 @@ function interpolateColor(colorA: string, colorB: string, t: number): string {
 
 const styles = StyleSheet.create({
   backgroundBlack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: globalColors.grey100,
   },
   backgroundGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   bottomFade: {
     bottom: 0,

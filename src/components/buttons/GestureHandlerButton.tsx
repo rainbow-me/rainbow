@@ -1,8 +1,14 @@
-import React, { useMemo, type RefObject } from 'react';
-import { type Insets, type LayoutChangeEvent, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+import React, { useMemo, type ComponentProps, type RefObject } from 'react';
+import { type Insets, type LayoutChangeEvent, type ViewProps } from 'react-native';
 
-import { Gesture, GestureDetector, type GestureType, type LongPressGesture, type TapGesture } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming, type AnimatedStyle } from 'react-native-reanimated';
+import {
+  Gesture,
+  GestureDetector,
+  type GestureType,
+  type LegacyLongPressGesture as LongPressGesture,
+  type LegacyTapGesture as TapGesture,
+} from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics, type HapticType } from 'react-native-turbo-haptics';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -30,7 +36,7 @@ export type GestureHandlerButtonProps = {
   requireExternalGestureToFail?: RefObject<GestureType>;
   scaleTo?: number;
   simultaneousWithExternalGesture?: RefObject<GestureType>;
-  style?: StyleProp<ViewStyle> | AnimatedStyle;
+  style?: ComponentProps<typeof Animated.View>['style'];
   tapRef?: RefObject<TapGesture>;
   testID?: string;
 };

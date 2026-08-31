@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, type ComponentProps } from 'react';
 import { Dimensions, Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -198,15 +198,27 @@ function getTokenLauncherStyles({
   screenHeight,
   screenWidth,
 }: {
-  animatedBorderStyle: StyleProp<ViewStyle>;
+  animatedBorderStyle: ReturnType<typeof useAnimatedStyle<ViewStyle>>;
   contentContainerHeight: number;
-  infoStepAnimatedStyle: StyleProp<ViewStyle>;
-  reviewStepAnimatedStyle: StyleProp<ViewStyle>;
+  infoStepAnimatedStyle: ReturnType<typeof useAnimatedStyle<ViewStyle>>;
+  reviewStepAnimatedStyle: ReturnType<typeof useAnimatedStyle<ViewStyle>>;
   safeAreaBottom: number;
   safeAreaTop: number;
   screenHeight: number;
   screenWidth: number;
-}): Record<string, StyleProp<ViewStyle>> {
+}): {
+  backgroundBlurStyle: StyleProp<ViewStyle>;
+  borderEffectsStyle: StyleProp<ViewStyle>;
+  borderStyle: ComponentProps<typeof Animated.View>['style'];
+  containerStyle: StyleProp<ViewStyle>;
+  contentContainerStyle: StyleProp<ViewStyle>;
+  creatingStepStyle: StyleProp<ViewStyle>;
+  infoStepStyle: ComponentProps<typeof Animated.View>['style'];
+  keyboardAvoidingViewStyle: StyleProp<ViewStyle>;
+  reviewStepStyle: ComponentProps<typeof Animated.View>['style'];
+  stepBlurredBackgroundStyle: StyleProp<ViewStyle>;
+  successStepStyle: StyleProp<ViewStyle>;
+} {
   return {
     backgroundBlurStyle: [StyleSheet.absoluteFill, { left: -screenWidth / 2 }],
     borderEffectsStyle: [StyleSheet.absoluteFill, { pointerEvents: 'none', zIndex: 3 }],

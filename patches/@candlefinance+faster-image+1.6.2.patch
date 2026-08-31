@@ -1,3 +1,16 @@
+diff --git a/node_modules/@candlefinance/faster-image/android/build.gradle b/node_modules/@candlefinance/faster-image/android/build.gradle
+index 82741d7..a9b8175 100644
+--- a/node_modules/@candlefinance/faster-image/android/build.gradle
++++ b/node_modules/@candlefinance/faster-image/android/build.gradle
+@@ -45,3 +45,7 @@ android {
+   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+-
++
++  buildFeatures {
++    buildConfig true
++  }
++
+   defaultConfig {
 diff --git a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
 index a8dee30..26b1d32 100644
 --- a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift

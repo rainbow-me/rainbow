@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     paddingVertical: PILL_LAYOUT.paddingVertical,
   },
   pillGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderCurve: 'continuous',
     borderRadius: PILL_LAYOUT.borderRadius,
   },

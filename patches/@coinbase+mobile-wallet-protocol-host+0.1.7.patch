@@ -1,3 +1,16 @@
+diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/build.gradle b/node_modules/@coinbase/mobile-wallet-protocol-host/android/build.gradle
+index 4a70f9c..c0a5238 100644
+--- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/build.gradle
++++ b/node_modules/@coinbase/mobile-wallet-protocol-host/android/build.gradle
+@@ -40,3 +40,7 @@ android {
+   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+-
++
++  buildFeatures {
++    buildConfig true
++  }
++
+   defaultConfig {
 diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
 index 79505d4..f17558b 100644
 --- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt

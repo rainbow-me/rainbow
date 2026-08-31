@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { FlatList } from 'react-native-gesture-handler';
+import { LegacyFlatList as FlatList } from 'react-native-gesture-handler';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';

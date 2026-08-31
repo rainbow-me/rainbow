@@ -1,3 +1,16 @@
+diff --git a/node_modules/react-native-change-icon/android/build.gradle b/node_modules/react-native-change-icon/android/build.gradle
+index a078aaa..4210364 100644
+--- a/node_modules/react-native-change-icon/android/build.gradle
++++ b/node_modules/react-native-change-icon/android/build.gradle
+@@ -57,3 +57,7 @@ android {
+   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+-
++
++  buildFeatures {
++    buildConfig true
++  }
++
+   defaultConfig {
 diff --git a/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java b/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java
 index b303063..292802f 100644
 --- a/node_modules/react-native-change-icon/android/src/main/java/com/reactnativechangeicon/ChangeIconModule.java

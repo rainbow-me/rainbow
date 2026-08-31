@@ -94,7 +94,6 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
   }, [chartId, drawChart, store]);
 
   useCleanup(() => {
-    initialPicture.dispose();
     runOnUI(() => {
       renderer.value?.dispose?.();
       renderer.value = undefined;

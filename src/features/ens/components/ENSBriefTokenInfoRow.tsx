@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { format, formatDistanceStrict } from 'date-fns';
 
@@ -44,7 +43,7 @@ export default function ENSBriefTokenInfoRow({
   }, []);
 
   const handlePressEditExpiryDate = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
       startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {

@@ -354,7 +354,7 @@ export const AmbientCoins = memo(function AmbientCoins() {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     overflow: 'visible',
   },
   coinContainer: {

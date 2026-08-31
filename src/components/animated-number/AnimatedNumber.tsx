@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, type ComponentProps } from 'react';
 import { StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -24,7 +24,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
-import { AnimatedText, useTextStyle, type TextProps } from '@/design-system';
+import { AnimatedText, useTextStyle, type AnimatedTextProps, type TextProps } from '@/design-system';
 import { useIsFirstRender } from '@/hooks/useIsFirstRender';
 import usePrevious from '@/hooks/usePrevious';
 import { measureTextSync } from '@/utils/measureText';
@@ -358,11 +358,12 @@ const emptyLayoutTransition = {
   animations: {},
 };
 
-type AnimatedNumberProps = Omit<TextProps, 'children' | 'ref'> & {
+type AnimatedNumberProps = Omit<TextProps, 'children' | 'ref' | 'style'> & {
   value: string | SharedValue<string> | DerivedValue<string>;
   timingConfig?: TimingAnimationConfig;
   easingMaskColor?: string;
   disabled?: SharedValue<boolean> | boolean;
+  style?: AnimatedTextProps['style'];
 };
 
 export const AnimatedNumber = React.memo(function AnimatedNumber({
@@ -623,7 +624,11 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
-      <View style={styles.outerContainer}>
+      <View
+        style={styles.outerContainer}
+        // Very important or LayoutAnimationConfig does nothing when child is collapsed.
+        collapsable={false}
+      >
         <Animated.View style={[styles.digitContainer, animatedStyles.visibleWhenDisabled]}>
           <AnimatedText
             // eslint-disable-next-line react/jsx-props-no-spreading
@@ -707,8 +712,8 @@ const AnimatedEdgeGradients = React.memo(function AnimatedEdgeGradients({
   edgeSizes,
   color,
 }: {
-  maskElementAnimatedStyle: StyleProp<ViewStyle>;
-  horizontalEasingMaskAnimatedStyle: StyleProp<ViewStyle>;
+  maskElementAnimatedStyle: ComponentProps<typeof Animated.View>['style'];
+  horizontalEasingMaskAnimatedStyle: ComponentProps<typeof Animated.View>['style'];
   edgeSizes: {
     horizontal: number;
     vertical: number;

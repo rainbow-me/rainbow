@@ -1,0 +1,50 @@
+diff --git a/node_modules/@shopify/react-native-skia/android/build.gradle b/node_modules/@shopify/react-native-skia/android/build.gradle
+--- a/node_modules/@shopify/react-native-skia/android/build.gradle
++++ b/node_modules/@shopify/react-native-skia/android/build.gradle
+@@ -207,5 +207,9 @@ android {
+         ndkVersion rootProject.ext.ndkVersion
+     }
+-
++
++    buildFeatures {
++        buildConfig true
++    }
++
+     defaultConfig {
+         minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
+diff --git a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
+--- a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
++++ b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
+@@ -29,22 +29,20 @@ MetalWindowContext::MetalWindowContext(GrDirectContext *directContext,
+   _layer.contentsGravity = kCAGravityBottomLeft;
+   _layer.drawableSize = CGSizeMake(width, height);
+   BOOL supportsWideColor = NO;
+-  if (useP3ColorSpace) {
+ #if !TARGET_OS_OSX
+-    if (@available(iOS 10.0, *)) {
+-      supportsWideColor = [UIScreen mainScreen].traitCollection.displayGamut ==
+-                          UIDisplayGamutP3;
+-    }
++  if (@available(iOS 10.0, *)) {
++    supportsWideColor = [UIScreen mainScreen].traitCollection.displayGamut ==
++                        UIDisplayGamutP3;
++  }
+ #else
+-    if (@available(macOS 10.12, *)) {
+-      NSScreen *screen = [NSScreen mainScreen];
+-      NSColorSpace *displayP3 = [NSColorSpace displayP3ColorSpace];
+-      if (screen.colorSpace && displayP3) {
+-        supportsWideColor = [screen.colorSpace isEqual:displayP3];
+-      }
++  if (@available(macOS 10.12, *)) {
++    NSScreen *screen = [NSScreen mainScreen];
++    NSColorSpace *displayP3 = [NSColorSpace displayP3ColorSpace];
++    if (screen.colorSpace && displayP3) {
++      supportsWideColor = [screen.colorSpace isEqual:displayP3];
+     }
+-#endif // !TARGET_OS_OSX
+   }
++#endif // !TARGET_OS_OSX
+   if (supportsWideColor) {
+     _useP3ColorSpace = true;
+   }

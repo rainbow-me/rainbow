@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert } from 'react-native';
 
 import { Logger } from '@ethersproject/logger';
 import { type StoreActions } from '@storesjs/stores';
@@ -171,7 +171,7 @@ function dismissDepositFlow(depositRoute: Route): void {
   })();
 
   setTimeout(() => {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       if (Navigation.getActiveRouteName() === depositRoute) Navigation.goBack();
     });
   }, time.ms(150));

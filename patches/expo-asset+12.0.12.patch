@@ -1,0 +1,141 @@
+# PATCH CONTEXT
+# Why: React Native 0.87 removes the standalone asset-registry package and
+#   exports its canonical AssetRegistry and PackagerAsset from react-native.
+#   Keep Expo Asset on the registry populated by Metro instead of adding a
+#   second compatibility registry.
+# Upstream Issue: none filed yet.
+# Remove when: expo-asset consumes React Native's public asset registry API.
+
+diff --git a/node_modules/expo-asset/build/Asset.js b/node_modules/expo-asset/build/Asset.js
+--- a/node_modules/expo-asset/build/Asset.js
++++ b/node_modules/expo-asset/build/Asset.js
+@@ -1,4 +1,4 @@
+-import { getAssetByID } from '@react-native/assets-registry/registry';
++import { AssetRegistry } from 'react-native';
+ import { Platform } from 'expo-modules-core';
+ import { selectAssetSource } from './AssetSources';
+ import * as AssetUris from './AssetUris';
+@@ -132,7 +132,7 @@
+                 height: virtualAssetModule.height,
+             });
+         }
+-        const meta = getAssetByID(virtualAssetModule);
++        const meta = AssetRegistry.getAssetByID(virtualAssetModule);
+         if (!meta) {
+             throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
+         }
+@@ -260,4 +260,4 @@
+         return this;
+     }
+ }
+-//# sourceMappingURL=Asset.js.map
+\ No newline at end of file
++//# sourceMappingURL=Asset.js.map
+diff --git a/node_modules/expo-asset/build/resolveAssetSource.js b/node_modules/expo-asset/build/resolveAssetSource.js
+--- a/node_modules/expo-asset/build/resolveAssetSource.js
++++ b/node_modules/expo-asset/build/resolveAssetSource.js
+@@ -1,4 +1,4 @@
+-import { getAssetByID } from '@react-native/assets-registry/registry';
++import { AssetRegistry } from 'react-native';
+ import AssetSourceResolver from './AssetSourceResolver';
+ let _customSourceTransformer;
+ export function setCustomSourceTransformer(transformer) {
+@@ -12,7 +12,7 @@
+     if (typeof source === 'object') {
+         return source;
+     }
+-    const asset = getAssetByID(source);
++    const asset = AssetRegistry.getAssetByID(source);
+     if (!asset) {
+         return null;
+     }
+@@ -31,4 +31,4 @@
+ });
+ export default resolveAssetSource;
+ export const { pickScale } = AssetSourceResolver;
+-//# sourceMappingURL=resolveAssetSource.js.map
+\ No newline at end of file
++//# sourceMappingURL=resolveAssetSource.js.map
+diff --git a/node_modules/expo-asset/src/Asset.ts b/node_modules/expo-asset/src/Asset.ts
+--- a/node_modules/expo-asset/src/Asset.ts
++++ b/node_modules/expo-asset/src/Asset.ts
+@@ -1,4 +1,4 @@
+-import { getAssetByID } from '@react-native/assets-registry/registry';
++import { AssetRegistry } from 'react-native';
+ import { Platform } from 'expo-modules-core';
+ 
+ import { AssetMetadata, selectAssetSource } from './AssetSources';
+@@ -166,7 +166,7 @@
+       });
+     }
+ 
+-    const meta = getAssetByID(virtualAssetModule);
++    const meta = AssetRegistry.getAssetByID(virtualAssetModule);
+     if (!meta) {
+       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
+     }
+diff --git a/node_modules/expo-asset/src/AssetSourceResolver.ts b/node_modules/expo-asset/src/AssetSourceResolver.ts
+--- a/node_modules/expo-asset/src/AssetSourceResolver.ts
++++ b/node_modules/expo-asset/src/AssetSourceResolver.ts
+@@ -1,4 +1,4 @@
+-import type { PackagerAsset } from '@react-native/assets-registry/registry';
++import type { PackagerAsset } from 'react-native';
+ import { Platform } from 'expo-modules-core';
+ import { PixelRatio } from 'react-native';
+ 
+diff --git a/node_modules/expo-asset/src/AssetSources.ts b/node_modules/expo-asset/src/AssetSources.ts
+--- a/node_modules/expo-asset/src/AssetSources.ts
++++ b/node_modules/expo-asset/src/AssetSources.ts
+@@ -1,4 +1,4 @@
+-import type { PackagerAsset } from '@react-native/assets-registry/registry';
++import type { PackagerAsset } from 'react-native';
+ import { Platform } from 'expo-modules-core';
+ import { PixelRatio, NativeModules } from 'react-native';
+ 
+diff --git a/node_modules/expo-asset/src/resolveAssetSource.ts b/node_modules/expo-asset/src/resolveAssetSource.ts
+--- a/node_modules/expo-asset/src/resolveAssetSource.ts
++++ b/node_modules/expo-asset/src/resolveAssetSource.ts
+@@ -1,4 +1,4 @@
+-import { getAssetByID } from '@react-native/assets-registry/registry';
++import { AssetRegistry } from 'react-native';
+ 
+ import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
+ 
+@@ -26,7 +26,7 @@
+     return source;
+   }
+ 
+-  const asset = getAssetByID(source);
++  const asset = AssetRegistry.getAssetByID(source);
+   if (!asset) {
+     return null;
+   }
+diff --git a/node_modules/expo-asset/src/ts-declarations/react-native-assets.d.ts b/node_modules/expo-asset/src/ts-declarations/react-native-assets.d.ts
+--- a/node_modules/expo-asset/src/ts-declarations/react-native-assets.d.ts
++++ b/node_modules/expo-asset/src/ts-declarations/react-native-assets.d.ts
+@@ -1,5 +1,5 @@
+ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
+-  import { PackagerAsset } from '@react-native/assets/registry';
++  import type { PackagerAsset } from 'react-native';
+ 
+   export type ResolvedAssetSource = {
+     __packager_asset: boolean;
+@@ -40,18 +40,4 @@
+   export function setCustomSourceTransformer(
+     transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource
+   ): void;
+-}
+-
+-declare module '@react-native/assets-registry/registry' {
+-  import type { PackagerAsset } from '@react-native/assets/registry';
+-  export * from '@react-native/assets/registry';
+-
+-  // NOTE(@kitten): Custom override supported in Expo only
+-  interface VirtualAssetModule {
+-    uri: string;
+-    width: number;
+-    height: number;
+-  }
+-
+-  export function getAssetByID(input: number | VirtualAssetModule): PackagerAsset | undefined;
+ }

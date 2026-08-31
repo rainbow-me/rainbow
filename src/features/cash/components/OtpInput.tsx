@@ -62,7 +62,7 @@ export const OtpInput = memo(function OtpInput({ value, onChange, length, error 
 
 const styles = StyleSheet.create({
   hiddenInput: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     opacity: 0,
   },
 });

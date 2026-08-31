@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, type GestureResponderEvent } from 'react-native';
+import { Platform } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
+import { type ButtonPressEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { getUniqueId } from '@/entities/assetId';
@@ -59,10 +60,8 @@ export const EthCard = () => {
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
-    (e?: GestureResponderEvent) => {
-      if (e && 'stopPropagation' in e) {
-        e.stopPropagation();
-      }
+    (e?: ButtonPressEvent) => {
+      e?.stopPropagation();
 
       if (getIsDamagedWallet()) {
         navigate(Routes.WALLET_ERROR_SHEET);

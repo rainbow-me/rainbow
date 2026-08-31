@@ -114,7 +114,7 @@ export function SwapNavbar() {
       top={{ custom: 0 }}
       width="full"
     >
-      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFill]} /> : null}
       <Box
         borderRadius={5}
         height={{ custom: 5 }}

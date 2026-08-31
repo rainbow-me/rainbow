@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { type PanGesture } from 'react-native-gesture-handler';
+import { type LegacyPanGesture as PanGesture } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 

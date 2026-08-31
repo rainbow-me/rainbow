@@ -26,7 +26,7 @@ export type ApplyShadowProps = {
   shadows?: Shadows;
 };
 
-function splitPositionStyles(style: ViewStyle) {
+function splitPositionStyles(style: ViewStyle): [ViewStyle, ViewStyle] {
   const {
     bottom,
     direction,
@@ -85,6 +85,10 @@ function splitPositionStyles(style: ViewStyle) {
   ];
 }
 
+function fillDimension(dimension: ViewStyle['width']): ViewStyle['width'] {
+  return dimension === undefined || dimension === 'auto' ? undefined : '100%';
+}
+
 export const ApplyShadow = ({ backgroundColor, children: child, shadows }: ApplyShadowProps) => {
   if (!shadows) return child;
 
@@ -93,6 +97,10 @@ export const ApplyShadow = ({ backgroundColor, children: child, shadows }: Apply
   const androidChildStyles = {
     elevation: (shadows.android.elevation || 0) + 1,
     shadowColor: 'transparent',
+  };
+  const childSizeStyles = {
+    height: fillDimension(parentStyles.height),
+    width: fillDimension(parentStyles.width),
   };
 
   return (
@@ -105,7 +113,7 @@ export const ApplyShadow = ({ backgroundColor, children: child, shadows }: Apply
       )}
 
       {React.cloneElement(child, {
-        style: [{ flex: 1 }, childStyles, Platform.OS === 'android' ? androidChildStyles : undefined],
+        style: [childSizeStyles, childStyles, Platform.OS === 'android' ? androidChildStyles : undefined],
       })}
     </View>
   );
