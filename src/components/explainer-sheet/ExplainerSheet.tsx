@@ -8,8 +8,9 @@ import { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, useShare
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { SheetHandle } from '@/components/sheet';
-import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { downscalePagerIndex, SmoothPager, upscalePagerIndex, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Separator } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';

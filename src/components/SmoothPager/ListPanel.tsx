@@ -1,14 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  type ScrollViewProps,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { Platform, ScrollView, StyleSheet, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
 
 import Animated, { useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
@@ -31,22 +22,12 @@ import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useNavigation } from '@/navigation/Navigation';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-
-export const TapToDismiss = memo(function TapToDismiss() {
-  const { goBack } = useNavigation();
-  return (
-    <TouchableWithoutFeedback onPress={goBack}>
-      <View style={controlPanelStyles.cover} />
-    </TouchableWithoutFeedback>
-  );
-});
 
 const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
@@ -368,15 +349,6 @@ export const Panel = ({
 };
 
 export const controlPanelStyles = StyleSheet.create({
-  cover: {
-    bottom: 0,
-    height: DEVICE_HEIGHT,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: DEVICE_WIDTH,
-  },
   fillAndCenterContents: {
     alignItems: 'center',
     height: '100%',

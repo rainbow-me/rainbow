@@ -35,6 +35,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import {
   AnimatedText,
   Box,
@@ -48,7 +49,6 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
