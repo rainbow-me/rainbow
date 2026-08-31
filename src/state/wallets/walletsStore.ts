@@ -133,25 +133,26 @@ export const useWalletsStore = createBaseStore<WalletsState>(
     },
 
     addAccountToWallet: (walletId, account) => {
-      const { wallets } = get();
-      const wallet = wallets[walletId];
-      if (!wallet) throw new Error(`[walletsStore]: Wallet ${walletId} not found`);
+      set(state => {
+        const wallet = state.wallets[walletId];
+        if (!wallet) throw new Error(`[walletsStore]: Wallet ${walletId} not found`);
 
-      const updatedWallet = {
-        ...wallet,
-        addresses: [...wallet.addresses, account],
-      };
+        const updatedWallet = {
+          ...wallet,
+          addresses: [...wallet.addresses, account],
+        };
 
-      set({
-        accountAddress: ensureValidHex(account.address),
-        selected: updatedWallet,
-        wallets: {
-          ...wallets,
-          [walletId]: updatedWallet,
-        },
+        return {
+          accountAddress: ensureValidHex(account.address),
+          selected: updatedWallet,
+          wallets: {
+            ...state.wallets,
+            [walletId]: updatedWallet,
+          },
+        };
       });
 
-      return updatedWallet;
+      return get().wallets[walletId];
     },
 
     updateAccountInfo: ({ address, avatar, color, emoji, image, label, walletId }) => {
