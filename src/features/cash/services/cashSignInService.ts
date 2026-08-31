@@ -8,7 +8,7 @@ import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'recovery';
+export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'recovery' | 'resume';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 

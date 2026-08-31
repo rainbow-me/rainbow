@@ -61,7 +61,7 @@ const setLinkedCard = jest.mocked(useCashPaymentMethodStore.getState().setLinked
 const TOKEN = 'bst_1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
 const CREDENTIAL_JSON = '{"id":"cred-1"}';
-const RECOVERED_CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
+const LINKED_CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
 
 const flow = () => useAddPasskeyFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState();
@@ -79,6 +79,12 @@ const verifyRecoverySession = () => {
   session().setDateOfBirth({ year: 1815, month: 12, day: 10 });
   session().setSsnLast4('1234');
   session().setPhoneVerified(recoveryChallenge, { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
+};
+const verifyResumeSession = () => {
+  session().reset();
+  const resumeChallenge = { kind: 'resume', resumeId: 'resume-1' } as const;
+  session().setPhoneSubmitted({ challenge: resumeChallenge, phoneNationalNumber: '4155550100', resendAfter: 0 });
+  session().setPhoneVerified(resumeChallenge, { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
 };
 
 beforeEach(() => {
@@ -106,6 +112,7 @@ describe('useAddPasskeyFlowStore.submit', () => {
       passkeyName: 'iPhone 15 Pro',
     });
     expect(setUserId).toHaveBeenCalledWith('user-1');
+    expect(mockListCards).not.toHaveBeenCalled();
     expect(track).toHaveBeenNthCalledWith(1, 'cash.passkey_submitted');
     expect(track).toHaveBeenNthCalledWith(2, 'cash.passkey_added');
 
@@ -165,14 +172,32 @@ describe('useAddPasskeyFlowStore.submit', () => {
 
   it('restores the recovered account card after passkey enrollment', async () => {
     verifyRecoverySession();
-    mockListCards.mockResolvedValue([RECOVERED_CARD]);
+    mockListCards.mockResolvedValue([LINKED_CARD]);
 
     await expect(flow().submit()).resolves.toBe('recovered');
 
     expect(mockListCards).toHaveBeenCalledWith({ trigger: 'recovery' });
-    expect(setLinkedCard).toHaveBeenCalledWith(RECOVERED_CARD);
+    expect(setLinkedCard).toHaveBeenCalledWith(LINKED_CARD);
     expect(setUserId).toHaveBeenCalledWith('user-1');
     expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores the resumed account card after passkey enrollment', async () => {
+    verifyResumeSession();
+    mockListCards.mockResolvedValue([LINKED_CARD]);
+
+    await expect(flow().submit()).resolves.toBe('completed');
+
+    expect(mockListCards).toHaveBeenCalledWith({ trigger: 'resume' });
+    expect(setLinkedCard).toHaveBeenCalledWith(LINKED_CARD);
+
+    const [finishOrder] = mockFinishAddPasskey.mock.invocationCallOrder;
+    const [setUserIdOrder] = setUserId.mock.invocationCallOrder;
+    const [listCardsOrder] = mockListCards.mock.invocationCallOrder;
+    const [setLinkedCardOrder] = setLinkedCard.mock.invocationCallOrder;
+    expect(finishOrder).toBeLessThan(setUserIdOrder);
+    expect(setUserIdOrder).toBeLessThan(listCardsOrder);
+    expect(listCardsOrder).toBeLessThan(setLinkedCardOrder);
   });
 
   it('completes recovery when card restoration fails after passkey enrollment', async () => {

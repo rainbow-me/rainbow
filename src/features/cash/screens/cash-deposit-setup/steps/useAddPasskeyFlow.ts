@@ -43,13 +43,13 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
       useCashAccountStore.getState().setUserId(userId);
       analytics.track(analytics.event.cashPasskeyAdded);
 
-      if (recovering) {
+      if (session.source !== 'signup') {
         try {
-          const [card] = await listCards({ trigger: 'recovery' });
+          const [card] = await listCards({ trigger: session.source });
           if (card) useCashPaymentMethodStore.getState().setLinkedCard(card);
         } catch (error) {
           if (!isPasskeyCancellation(error)) {
-            logger.error(new RainbowError('[useAddPasskeyFlow]: Failed to restore recovered account', error));
+            logger.error(new RainbowError('[useAddPasskeyFlow]: Failed to restore linked card', error));
           }
         }
       }
