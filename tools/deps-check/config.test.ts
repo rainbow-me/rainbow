@@ -147,5 +147,47 @@ describe('.dependency-cruiser.cjs', () => {
         expect('src/features/wallet/core/walletLibrary.ts').not.toMatch(to);
       });
     });
+    describe('layer-ui-runtime-only-in-ui', () => {
+      const { from, to } = rule('source', 'layer-ui-runtime-only-in-ui');
+
+      it('applies to core/ and data/ of layered modules', () => {
+        expect('src/features/token/core/services/erc20Calldata.ts').toMatch(from);
+        expect('src/features/wallet/data/stores/walletStore.ts').toMatch(from);
+        expect('src/framework/data/http/x.ts').toMatch(from);
+      });
+
+      it('does not apply to ui/ or to legacy directories', () => {
+        expect('src/features/token/ui/x.tsx').not.toMatch(from);
+        expect('src/components/x/core/y.ts').not.toMatch(from);
+      });
+
+      it('forbids the UI runtime packages', () => {
+        expect('node_modules/react/index.js').toMatch(to);
+        expect('node_modules/react-native/index.js').toMatch(to);
+        expect('node_modules/react-native-reanimated/src/index.ts').toMatch(to);
+      });
+
+      it('leaves unrelated packages alone, including react-prefixed ones', () => {
+        expect('node_modules/react-native-mmkv/lib/index.js').not.toMatch(to);
+        expect('node_modules/viem/index.ts').not.toMatch(to);
+      });
+    });
+
+    describe('layer-core-has-no-state', () => {
+      const { from, to } = rule('source', 'layer-core-has-no-state');
+
+      it('applies to core/ of layered modules only', () => {
+        expect('src/features/token/core/services/erc20Calldata.ts').toMatch(from);
+        expect('src/framework/core/safeMath.ts').toMatch(from);
+        expect('src/features/token/data/api/erc20Read.ts').not.toMatch(from);
+      });
+
+      it('forbids store creators and the legacy state and query layers', () => {
+        expect('node_modules/@storesjs/stores/dist/index.js').toMatch(to);
+        expect('src/state/wallets/walletsStore.ts').toMatch(to);
+        expect('src/react-query/queryClient.ts').toMatch(to);
+        expect('src/redux/store.ts').toMatch(to);
+      });
+    });
   });
 });
