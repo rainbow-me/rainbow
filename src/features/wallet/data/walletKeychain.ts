@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 import { HDNode } from '@ethersproject/hdnode';
 import { Wallet } from '@ethersproject/wallet';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -20,6 +18,7 @@ import * as keychain from '@/features/local-auth/legacyKeychain';
 import { isHardwareWalletKey, type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { identifyWalletType, type EthereumPrivateKey, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
+import { CHECKS_WALLET_KEY_EXISTENCE } from '@/features/wallet/data/walletKeychainIntegrity';
 import {
   EncryptionType,
   type AllRainbowWallets,
@@ -361,7 +360,7 @@ export async function checkWalletsDamagedState(wallets: AllRainbowWallets): Prom
     return updatedWalletDamagedStates;
   }
 
-  if (Platform.OS !== 'ios') return updatedWalletDamagedStates;
+  if (!CHECKS_WALLET_KEY_EXISTENCE) return updatedWalletDamagedStates;
 
   keychainWallets.filter(wallet => wallet.damaged).forEach(wallet => updatedWalletDamagedStates.set(wallet.id, false));
 
