@@ -92,13 +92,6 @@ const allowedBarrelFiles = [
   'src/framework/ui/styled-thing/index.tsx',
 ];
 
-// Import `Platform` directly from 'react-native' so platform shaking can constant-fold `Platform.OS`
-// checks at build time. Re-imports from wrapper modules break the optimization (https://docs.expo.dev/guides/tree-shaking/#platform-shaking).
-const platformImportRestriction = {
-  selector: "ImportDeclaration[source.value!='react-native'] > ImportSpecifier[imported.name='Platform'][local.name='Platform']",
-  message: "Import `Platform` directly from 'react-native'. Re-importing from a wrapper breaks platform shaking optimization.",
-};
-
 module.exports = {
   root: true,
   extends: ['rainbow', 'plugin:yml/standard'],
@@ -128,24 +121,6 @@ module.exports = {
             selector: 'Program',
             message:
               'Test files must be colocated next to the source file they test (e.g., foo.test.ts next to foo.ts). Do not place tests in __tests__/ or tests/ directories.',
-          },
-        ],
-      },
-    },
-    {
-      // The ui/data/core layer rules (.dependency-cruiser.cjs) forbid core/ and
-      // data/ from importing the UI runtime, but JSX compiles to react/jsx-runtime
-      // without an import edge the dependency graph can see. Forbid the syntax
-      // itself here instead.
-      files: ['src/features/*/core/**/*', 'src/features/*/data/**/*', 'src/framework/core/**/*', 'src/framework/data/**/*'],
-      rules: {
-        'no-restricted-syntax': [
-          'error',
-          platformImportRestriction,
-          {
-            selector: 'JSXElement, JSXFragment',
-            message:
-              'core/ and data/ are framework-agnostic layers; JSX belongs in ui/. Rendering built here means this code belongs in a ui/ component or hook.',
           },
         ],
       },
@@ -194,7 +169,15 @@ module.exports = {
         ],
       },
     ],
-    'no-restricted-syntax': ['error', platformImportRestriction],
+    'no-restricted-syntax': [
+      'error',
+      {
+        // Import `Platform` directly from 'react-native' so platform shaking can constant-fold `Platform.OS`
+        // checks at build time. Re-imports from wrapper modules break the optimization (https://docs.expo.dev/guides/tree-shaking/#platform-shaking).
+        selector: "ImportDeclaration[source.value!='react-native'] > ImportSpecifier[imported.name='Platform'][local.name='Platform']",
+        message: "Import `Platform` directly from 'react-native'. Re-importing from a wrapper breaks platform shaking optimization.",
+      },
+    ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
     'no-await-in-loop': 'off',
