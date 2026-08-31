@@ -23,6 +23,7 @@ export enum MigrationName {
   migrateNotificationSettingsToVersion3 = 'migration_migrateNotificationSettingsToVersion3',
   healEip55KeychainAddresses = 'migration_healEip55KeychainAddresses',
   migrateExperimentalFlags = 'migration_migrateExperimentalFlags',
+  repairBrowserTabUrls = 'migration_repairBrowserTabUrls',
 }
 
 export type Migration = {

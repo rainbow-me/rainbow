@@ -30,6 +30,10 @@ const lazyPersist = debounce(
   { leading: false, trailing: true, maxWait: PERSIST_RATE_LIMIT_MS }
 );
 
+export function flushBrowserStorePersistence(): void {
+  lazyPersist.flush();
+}
+
 function partialize(state: BrowserState | PersistedState): PersistedState {
   return {
     activeTabIndex: state.activeTabIndex,
@@ -75,9 +79,10 @@ function deserializePersistedState(serializedState: string): { state: PersistedS
 
   const originalTabIds = state.tabIds;
   const activeTabId = originalTabIds[Math.abs(state.activeTabIndex)];
+  const persistedTabUrls = state.persistedTabUrls;
 
   // Filter out inactive homepage tabs
-  const tabIds = originalTabIds.filter(tabId => tabsData.get(tabId)?.url !== RAINBOW_HOME || tabId === activeTabId);
+  const tabIds = originalTabIds.filter(tabId => persistedTabUrls[tabId] !== RAINBOW_HOME || tabId === activeTabId);
 
   // Remove entries from tabsData that don't have a corresponding tabId in tabIds
   const tabIdsSet = new Set(tabIds);
@@ -91,7 +96,6 @@ function deserializePersistedState(serializedState: string): { state: PersistedS
   }
 
   // Restore persisted tab URLs and prune URL entries for non-existent tabs
-  const persistedTabUrls = state.persistedTabUrls;
   for (const [tabId, persistedUrl] of Object.entries(persistedTabUrls)) {
     if (tabIdsSet.has(tabId)) {
       const tabData = tabsData.get(tabId);
@@ -187,15 +191,16 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
           set(state => {
             const tabIdToUse = tabId || state.getActiveTabId();
             const existingTabData = state.getTabData(tabIdToUse);
+            const urlToSet = normalizeUrlWorklet(url);
+            if (!urlToSet) return state;
 
-            const isGoingHome = existingTabData?.url && url === RAINBOW_HOME;
+            const isGoingHome = existingTabData?.url && urlToSet === RAINBOW_HOME;
             const canGoBack = isGoingHome ? false : existingTabData?.canGoBack || false;
             const canGoForward = isGoingHome ? false : existingTabData?.canGoForward || false;
             const newTabsData = new Map(state.tabsData);
 
             const existingUrl = existingTabData?.url || '';
             const persistedUrl = state.persistedTabUrls[tabIdToUse] || '';
-            const urlToSet = normalizeUrlWorklet(url);
             const shouldForceUrlUpdate = !isGoingHome && existingUrl === urlToSet && persistedUrl !== existingUrl;
 
             /**
