@@ -6,6 +6,8 @@ import { IMGIX_DOMAIN as domain, IMGIX_TOKEN as secureURLToken } from 'react-nat
 import { type Source } from 'react-native-fast-image';
 import parse from 'url-parse';
 
+import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { RAINBOW_IMAGE_CDN_HOST } from '@/handlers/imageCdn';
 import { logger, RainbowError } from '@/logger';
 
 export const shouldCreateImgixClient = (): ImgixClient | null => {
@@ -23,6 +25,22 @@ export const shouldCreateImgixClient = (): ImgixClient | null => {
 };
 
 const staticImgixClient = shouldCreateImgixClient();
+
+const IMGIX_PREFIX = `https://${domain}/`;
+
+/**
+ * Swaps imgix for our own CDN on an already-signed URL. The signature covers
+ * only the path and query, so it stays valid across the swap.
+ *
+ * Applied after the signature cache rather than before it, so the cache holds
+ * host-independent URLs and flipping the feature flag does not invalidate it.
+ */
+export function withImageHost(signedUri: string): string;
+export function withImageHost(signedUri: string | undefined): string | undefined;
+export function withImageHost(signedUri: string | undefined): string | undefined {
+  if (!signedUri?.startsWith(IMGIX_PREFIX) || !getRemoteConfig().image_cdn_enabled) return signedUri;
+  return `https://${RAINBOW_IMAGE_CDN_HOST}/${signedUri.slice(IMGIX_PREFIX.length)}`;
+}
 
 // Below, we use a static buffer to prevent multiple successive signing attempts
 // for components which may have been unmounted/remounted. This is done to
@@ -108,10 +126,10 @@ export const maybeSignUri = (externalImageUri: string | undefined, options?: Img
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
   if (typeof externalImageUri === 'string' && staticSignatureLRU.has(signature as string) && !skipCaching) {
-    return staticSignatureLRU.get(signature);
+    return withImageHost(staticSignatureLRU.get(signature));
   }
   if (typeof externalImageUri === 'string' && !!externalImageUri.length && isPossibleToSignUri(externalImageUri)) {
-    return shouldSignUri(externalImageUri, options);
+    return withImageHost(shouldSignUri(externalImageUri, options));
   }
   return externalImageUri;
 };
