@@ -171,11 +171,16 @@ describe('submitBuyOrder', () => {
     expect(phase()).toBe('error');
   });
 
-  // An ambiguous failure (transport error, 5xx) leaves it unknown whether the order was created, so
+  // An ambiguous failure (transport error, 408, 429, 5xx) leaves it unknown whether the order was created, so
   // a retry with the same inputs must replay the same id — the backend then returns the existing
   // order instead of creating a second one.
-  it('replays the same order id when retrying after an ambiguous failure', async () => {
-    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce(CREATED_PENDING_ORDER);
+  it.each([
+    { label: 'a transport error', failure: new Error('network down') },
+    { label: 'a 408', failure: fetchError(408) },
+    { label: 'a 429', failure: fetchError(429) },
+    { label: 'a 500', failure: fetchError(500) },
+  ])('replays the same order id when retrying after $label', async ({ failure }) => {
+    createBuyOrder.mockRejectedValueOnce(failure).mockResolvedValueOnce(CREATED_PENDING_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
     await getState().submitBuyOrder(SUBMIT_INPUT);

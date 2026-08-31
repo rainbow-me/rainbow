@@ -106,8 +106,13 @@ describe('cardRemovalFlowStore', () => {
     expect(mockListCards).not.toHaveBeenCalled();
   });
 
-  it('clears the card when reconciliation confirms an ambiguous delete succeeded', async () => {
-    mockDeleteCard.mockRejectedValue(new Error('connection lost'));
+  it.each([
+    { label: 'a transport error', failure: new Error('connection lost') },
+    { label: 'a 408', failure: fetchError(408) },
+    { label: 'a 429', failure: fetchError(429) },
+    { label: 'a 500', failure: fetchError(500) },
+  ])('clears the card when reconciliation confirms $label was an ambiguous delete that succeeded', async ({ failure }) => {
+    mockDeleteCard.mockRejectedValue(failure);
     mockListCards.mockResolvedValue([]);
 
     expect(await flow().remove(CARD)).toBe('removed');
