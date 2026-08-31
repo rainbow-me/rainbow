@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type RefObject, type SetStateAction } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { Platform } from 'react-native';
 
 import {
@@ -16,7 +16,6 @@ import { type TextAlign } from '@/components/text/types';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { IS_DEV } from '@/env';
 import { useCleanup } from '@/hooks/useCleanup';
-import { useLazyRef } from '@/hooks/useLazyRef';
 
 interface FontManager {
   fontManager: SkFontMgr | SkTypefaceFontProvider;
@@ -53,31 +52,31 @@ const FONT_LOADERS: Record<TextWeight, () => DataModule> = {
 export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additionalWeights?: TextWeight | TextWeight[]): FontManager {
   const [manager, setManager] = useState<FontManager>(() => getInitialFontManager(align));
 
-  const fontInfoRef = useLazyRef<FontInfo>(() => ({
+  const [fontInfo] = useState<FontInfo>(() => ({
     prevWeights: Platform.OS === 'ios' ? new Set(Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : [weight]) : new Set(),
     textAlign: align,
   }));
 
   // ============ [iOS] Handle align prop changes ============================== //
   useEffect(() => {
-    if (Platform.OS !== 'ios' || align === fontInfoRef.current.textAlign) return;
+    if (Platform.OS !== 'ios' || align === fontInfo.textAlign) return;
     setManager(prev => ({ fontManager: prev.fontManager, paragraphBuilder: getParagraphBuilder(align) }));
-    releaseParagraphBuilder(fontInfoRef);
-    fontInfoRef.current.textAlign = align;
-  }, [align, fontInfoRef]);
+    releaseParagraphBuilder(fontInfo);
+    fontInfo.textAlign = align;
+  }, [align, fontInfo]);
 
   // ============ [Android] Handle align and weight prop changes =============== //
   useEffect(
     () => {
       if (Platform.OS === 'ios' || !isAndroidFontManager(manager)) return;
-      handleAndroidFontChanges({ additionalWeights, align, fontInfoRef, manager, setManager, weight });
+      handleAndroidFontChanges({ additionalWeights, align, fontInfo, manager, setManager, weight });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     additionalWeights ? [align, weight, ...additionalWeights] : [align, weight]
   );
 
   useCleanup(() => {
-    releaseParagraphBuilder(fontInfoRef);
+    releaseParagraphBuilder(fontInfo);
     releaseFontManager();
   });
 
@@ -106,28 +105,25 @@ function isAndroidFontManager(
 function handleAndroidFontChanges({
   additionalWeights,
   align,
-  fontInfoRef,
+  fontInfo,
   manager,
   setManager,
   weight,
 }: {
   additionalWeights: TextWeight | TextWeight[] | undefined;
   align: TextAlign;
-  fontInfoRef: RefObject<{
-    prevWeights: Set<TextWeight>;
-    textAlign: TextAlign;
-  }>;
+  fontInfo: FontInfo;
   manager: AndroidFontManager;
   setManager: Dispatch<SetStateAction<FontManager>>;
   weight: TextWeight;
 }) {
-  const prevWeights = fontInfoRef.current.prevWeights;
+  const prevWeights = fontInfo.prevWeights;
   const nextWeights = new Set(
     Array.isArray(additionalWeights) ? [weight, ...additionalWeights] : additionalWeights ? [weight, additionalWeights] : [weight]
   );
   const addedWeights = new Set([...nextWeights].filter(w => !prevWeights.has(w)));
 
-  fontInfoRef.current.prevWeights = nextWeights;
+  fontInfo.prevWeights = nextWeights;
 
   // Load any newly required weights
   Promise.all(Array.from(addedWeights).map(w => getTypeface(manager.fontManager, w))).then(() => {
@@ -274,16 +270,16 @@ function getParagraphBuilder(textAlign: TextAlign): SkParagraphBuilder {
  * [iOS only]
  * Decrements the refCount for the paragraph builder matching the given alignment.
  * If the count drops to zero, the builder is disposed and removed from the cache.
- * @param fontInfoRef - The font info ref to release the paragraph builder for
+ * @param fontInfo - The font info to release the paragraph builder for
  */
-function releaseParagraphBuilder(fontInfoRef: RefObject<FontInfo>): void {
+function releaseParagraphBuilder(fontInfo: FontInfo): void {
   if (Platform.OS !== 'ios') return;
-  const existing = getParagraphBuilders().get(fontInfoRef.current.textAlign);
+  const existing = getParagraphBuilders().get(fontInfo.textAlign);
   if (existing) {
     existing.refCount -= 1;
     if (existing.refCount <= 0) {
       existing.builder?.dispose?.();
-      getParagraphBuilders().delete(fontInfoRef.current.textAlign);
+      getParagraphBuilders().delete(fontInfo.textAlign);
     }
   }
 }
