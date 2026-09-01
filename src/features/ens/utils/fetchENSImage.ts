@@ -1,5 +1,6 @@
 import { ImgixImage } from '@/components/images';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import svgToPngIfNeeded from '@/handlers/svgs';
 import { getProvider } from '@/handlers/web3';
 import { AvatarResolver } from '@/vendor/ens-avatar';
 
@@ -12,6 +13,7 @@ export async function fetchENSImage(imageType: 'avatar' | 'header', ensName: str
     const avatarResolver = new AvatarResolver(provider);
     imageUrl = await avatarResolver.getImage(ensName, {
       allowNonOwnerNFTs: true,
+      transformImageUri: uri => svgToPngIfNeeded(uri, false),
       type: imageType,
     });
     ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])], 100);
