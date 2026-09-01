@@ -2,10 +2,10 @@ import { memo, useEffect, useMemo } from 'react';
 
 import { formatUnits } from 'viem';
 
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
@@ -35,7 +35,7 @@ function _PriceAndGasSync() {
   const chainNativeAssetRequiredForTransactionGas = useMemo(() => {
     if (!gasSettings) return '0';
 
-    const gasFeeWei = calculateGasFeeWorklet(gasSettings, TOKEN_LAUNCH_GAS_LIMIT);
+    const gasFeeWei = calculateMaxGasFeeWorklet(gasSettings, TOKEN_LAUNCH_GAS_LIMIT);
 
     return formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
   }, [chainNativeAsset, gasSettings]);

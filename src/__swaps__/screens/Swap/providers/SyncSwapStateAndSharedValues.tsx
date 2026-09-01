@@ -8,8 +8,8 @@ import { create } from 'zustand';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { getUniqueId } from '@/entities/assetId';
-import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import {
@@ -92,25 +92,6 @@ const SyncQuoteSharedValuesToState = () => {
 
   return null;
 };
-
-const isFeeNaNWorklet = (value: string | undefined) => {
-  'worklet';
-
-  return isNaN(Number(value)) || typeof value === 'undefined';
-};
-
-export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: string) {
-  'worklet';
-
-  if (gasSettings.isEIP1559) {
-    const maxBaseFee = isFeeNaNWorklet(gasSettings.maxBaseFee) ? '0' : gasSettings.maxBaseFee;
-    const maxPriorityFee = isFeeNaNWorklet(gasSettings.maxPriorityFee) ? '0' : gasSettings.maxPriorityFee;
-    return mulWorklet(gasLimit, sumWorklet(maxBaseFee, maxPriorityFee));
-  }
-
-  const gasPrice = isFeeNaNWorklet(gasSettings.gasPrice) ? '0' : gasSettings.gasPrice;
-  return mulWorklet(gasLimit, gasPrice);
-}
 
 export function formatUnitsWorklet(value: string, decimals: number) {
   'worklet';
@@ -265,7 +246,7 @@ function SyncGasStateToSharedValues() {
     )
       return undefined;
 
-    const gasFee = calculateGasFeeWorklet(gasSettings, estimatedGasLimit);
+    const gasFee = calculateMaxGasFeeWorklet(gasSettings, estimatedGasLimit);
     return isNaN(Number(gasFee)) ? undefined : gasFee;
   }, [estimatedGasLimit, gasSettings]);
 
