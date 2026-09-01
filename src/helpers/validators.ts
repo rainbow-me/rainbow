@@ -1,11 +1,9 @@
 import { isValidAddress } from 'ethereumjs-util';
 
+import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
-
-// Currently supported Top Level Domains from Unstoppable Domains
-const supportedUnstoppableDomains = ['888', 'bitcoin', 'blockchain', 'coin', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];
 
 /**
  * @desc validate email
@@ -16,36 +14,6 @@ export const isValidEmail = (email: any) =>
   !!email.match(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
-
-export const isENSAddressFormat = (address: string | undefined) => {
-  'worklet';
-  const parts = !!address && address.split('.');
-
-  if (
-    !parts ||
-    parts.length === 1 ||
-    !parts[parts.length - 1] ||
-    parts[parts.length - 1].toLowerCase() !== 'eth' ||
-    supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
-  ) {
-    return false;
-  }
-  return true;
-};
-
-export const isUnstoppableAddressFormat = (address: string) => {
-  'worklet';
-  const parts = !!address && address.split('.');
-  if (
-    !parts ||
-    parts.length === 1 ||
-    !parts[parts.length - 1] ||
-    !supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
-  ) {
-    return false;
-  }
-  return true;
-};
 
 /**
  * @desc validate ethereum address, ENS, or Unstoppable name formatting
@@ -84,15 +52,6 @@ export const checkIsValidAddressOrDomain = async (address: any) => {
   return isValidAddress(address);
 };
 
-/**
- * @desc validate ENS or Unstoppable format
- * @param  {String} ENS, or Unstoppable
- * @return {Boolean}
- */
-export const isValidDomainFormat = (domain: string) => {
-  'worklet';
-  return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
-};
 /**
  * @desc validate seed phrase mnemonic
  * @param  {String} seed phrase mnemonic

@@ -20,7 +20,7 @@ import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdro
 import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
-import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
+import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/components/SpinnableCoin';
 import { time } from '@/framework/core/utils/time';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import { opacity } from '@/framework/ui/utils/opacity';

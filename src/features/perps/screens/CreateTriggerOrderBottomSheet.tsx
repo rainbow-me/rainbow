@@ -10,9 +10,9 @@ import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Panel } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
-import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

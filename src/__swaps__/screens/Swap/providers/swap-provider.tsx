@@ -67,8 +67,6 @@ import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@ra
 
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
-import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
-import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -957,9 +955,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }}
     >
       {children}
-      <SyncQuoteSharedValuesToState />
-      <SyncSwapRewardsEstimate />
-      <SyncGasStateToSharedValues />
     </SwapContext.Provider>
   );
 };
@@ -1041,5 +1036,3 @@ export const useSwapContext = () => {
   }
   return context;
 };
-
-export { NavigationSteps };

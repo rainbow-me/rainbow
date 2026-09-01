@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
 import type { SignClientTypes } from '@walletconnect/types';
 
 import { analytics } from '@/analytics';
@@ -19,7 +19,7 @@ import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { showErrorSheet } from '../components/showErrorSheet';
 import { getWalletKitClient } from '../services/client';
 import { maybeGoBackAndClearHasPendingRedirect, setHasPendingDeeplinkPendingRedirect } from '../services/pair';
-import { addNewWalletConnectRequest, removeWalletConnectRequest } from '../stores/walletConnectRequestsStore';
+import { addNewWalletConnectRequest } from '../stores/walletConnectRequestsStore';
 import { RPCMethod, type WalletconnectRequestData, type WalletconnectResultType } from '../types';
 import { isSupportedMethod, isSupportedSigningMethod, parseRPCParams } from '../utils/rpcParams';
 
@@ -235,39 +235,4 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       onClose: maybeGoBackAndClearHasPendingRedirect,
     });
   }
-}
-
-/**
- * Handles the result created on our confirmation screen and sends it along to the dapp via WC
- */
-export async function handleSessionRequestResponse(
-  {
-    sessionRequestEvent,
-  }: {
-    sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
-  },
-  { result, error }: { result: string | null; error: any }
-) {
-  logger.debug(`[walletConnect]: handleSessionRequestResponse`, {
-    success: Boolean(result),
-  });
-
-  const client = await getWalletKitClient();
-  const { topic, id } = sessionRequestEvent;
-  if (result) {
-    const payload = {
-      topic,
-      response: formatJsonRpcResult(id, result),
-    };
-    logger.debug(`[walletConnect]: handleSessionRequestResponse success`, {}, logger.DebugContext.walletconnect);
-    await client.respondSessionRequest(payload);
-  } else {
-    const payload = {
-      topic,
-      response: formatJsonRpcError(id, error),
-    };
-    logger.debug(`[walletConnect]: handleSessionRequestResponse reject`, {}, logger.DebugContext.walletconnect);
-    await client.respondSessionRequest(payload);
-  }
-  removeWalletConnectRequest({ walletConnectRequestId: sessionRequestEvent.id });
 }

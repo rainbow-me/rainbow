@@ -1,8 +1,8 @@
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
-import { isENSAddressFormat } from '@/helpers/validators';
 import { fetchHiddenTokens, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { fetchShowcaseTokens, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { queryClient } from '@/react-query';

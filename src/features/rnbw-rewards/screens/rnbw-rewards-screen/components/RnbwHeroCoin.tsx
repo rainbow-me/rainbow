@@ -18,7 +18,7 @@ import { Box, globalColors, Text } from '@/design-system';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { transitionEasing } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.png';
-import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/SpinnableCoin';
+import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/components/SpinnableCoin';
 import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useRnbwRewardsFlowContext } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/context/RnbwRewardsFlowContext';
 import { useRewardsFlowStore } from '@/features/rnbw-rewards/stores/rewardsFlowStore';

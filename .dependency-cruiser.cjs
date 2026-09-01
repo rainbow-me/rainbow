@@ -98,7 +98,28 @@ const runtimeRules = [
 // name out of scope.
 const LAYERED_MODULE = '(src/features/[^/]+|src/framework)';
 
+// The packages that make a file UI-runtime code. Matched as whole package
+// directories so react-prefixed packages that are not the runtime (mmkv, svg,
+// ...) are not caught.
+const UI_RUNTIME_PACKAGES = '^node_modules/(react|react-native|react-native-reanimated)/';
+
 const sourceRules = [
+  {
+    name: 'nothing-imports-app',
+    severity: 'error',
+    comment:
+      'src/app/ is the composition root: it wires features, providers and navigation together for the entry point, and only the entry point (src/App.tsx) may import it. Anything else importing from app/ inverts the top of the dependency graph and couples a feature or shared module to cross-domain orchestration.',
+    from: { pathNot: '^src/(app/|App\\.tsx$)' },
+    to: { path: '^src/app/' },
+  },
+  {
+    name: 'screens-are-feature-internal',
+    severity: 'error',
+    comment:
+      "A feature's screens/ directory holds that feature's private screen internals; another feature importing from it couples itself to a screen's internal file layout. Code shared across features belongs on the owning feature's public surface (components/, utils/, types/, ...), moved there before the import. Non-feature code (navigation route tables, legacy screens) is outside this rule.",
+    from: { path: '^src/features/([^/]+)/' },
+    to: { path: '^src/features/[^/]+/screens/', pathNot: '^src/features/$1/screens/' },
+  },
   {
     name: 'layer-core-is-a-leaf',
     severity: 'error',
@@ -114,6 +135,22 @@ const sourceRules = [
       'data/ holds stores, API clients and transforms and imports nothing from any ui/ layer. Rendering depends on state and IO, never the other way round; a store that needs something from a component is a store holding UI runtime concerns that belong in a ui/ hook.',
     from: { path: `^${LAYERED_MODULE}/data/` },
     to: { path: `^${LAYERED_MODULE}/ui/` },
+  },
+  {
+    name: 'layer-ui-runtime-only-in-ui',
+    severity: 'error',
+    comment:
+      'Only ui/ may import the UI runtime (React, React Native, Reanimated). core/ and data/ are framework-agnostic by definition: stores work as hooks and imperatively via getState(), and domain logic runs in tests without a renderer. A React import outside ui/ is code that belongs in a ui/ hook or component.',
+    from: { path: `^${LAYERED_MODULE}/(core|data)/` },
+    to: { path: UI_RUNTIME_PACKAGES },
+  },
+  {
+    name: 'layer-core-has-no-state',
+    severity: 'error',
+    comment:
+      'core/ knows domain models and pure rules only; it never creates or reads stores, whether via the store library or the legacy state, query and redux layers. Reading state from core/ makes the pure layer depend on IO and load order; the read belongs in data/ (a derived store) or at the call site.',
+    from: { path: `^${LAYERED_MODULE}/core/` },
+    to: { path: '^(node_modules/@storesjs/stores/|src/(state|react-query|redux)/)' },
   },
 ];
 

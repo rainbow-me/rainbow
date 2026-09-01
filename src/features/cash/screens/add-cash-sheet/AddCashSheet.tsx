@@ -481,6 +481,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       layoutAnimation={PANEL_LAYOUT}
       panelStyle={isKeypad ? styles.fullScreenPanel : undefined}
       showHandle={!isKeypad}
+      showTapToDismiss={!isProcessing}
     >
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
         {view === 'pending' ? (

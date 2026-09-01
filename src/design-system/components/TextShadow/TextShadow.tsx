@@ -3,7 +3,6 @@ import { Platform, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 
-import { IS_TEST } from '@/env';
 import { opacity } from '@/framework/ui/utils/opacity';
 
 import { useColorMode } from '../../color/ColorMode';
@@ -60,7 +59,7 @@ export const TextShadow = ({
       }),
     [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]
   );
-  if (IS_TEST || (Platform.OS === 'android' && !enableOnAndroid)) {
+  if (Platform.OS === 'android' && !enableOnAndroid) {
     // Make sure to apply containerStyle if we have one.
     return (
       <ConditionalWrap condition={!!containerStyle} wrap={children => <View style={containerStyle}>{children}</View>}>
@@ -79,6 +78,7 @@ export const TextShadow = ({
         color={{ custom: 'transparent' }}
         size={children.props.size}
         style={[internalShadowStyle, children.props.style, internalPositionStyle]}
+        testID={children.props.testID}
         weight={children.props.weight}
       >
         {children}

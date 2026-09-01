@@ -25,12 +25,12 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import * as ethereumUtils from '@/utils/ethereumUtils';
 import { delegation, useDelegationDisabled, useDelegations, type DelegationWithChainId } from '@rainbow-me/sdk';
 
+import { RevokeReason } from '../types/revokeReason';
 import {
   hasActiveDelegation,
   isRainbowDelegated as hasRainbowDelegation,
   isThirdPartyDelegated as hasThirdPartyDelegation,
 } from '../utils/status';
-import { RevokeReason } from './RevokeDelegationPanel';
 
 type ViewWalletDelegationsParams = {
   ViewWalletDelegations: { walletId: string; address: Address; title: string };

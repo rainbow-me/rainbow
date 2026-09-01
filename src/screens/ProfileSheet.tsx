@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
+import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
 import ProfileSheetHeader from '@/features/ens/components/profile/ProfileSheetHeader';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { useENSAddress } from '@/features/ens/resources/addressQuery';
@@ -22,12 +23,6 @@ import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import Skeleton from '../components/skeleton/Skeleton';
-
-export const ProfileSheetConfigContext = createContext<{
-  enableZoomableImages: boolean;
-}>({
-  enableZoomableImages: false,
-});
 
 export default function ProfileSheet() {
   const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
