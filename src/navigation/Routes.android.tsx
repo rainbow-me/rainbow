@@ -9,6 +9,7 @@ import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import { AppIconUnlockSheet } from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { CashBalanceHalfSheet } from '@/features/cash-balance/screens/CashBalanceHalfSheet';
+import { CashBalanceWithdrawComingSoonSheet } from '@/features/cash-balance/screens/CashBalanceWithdrawComingSoonSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
@@ -298,6 +299,7 @@ function BSNavigator() {
       <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
       <BSStack.Screen component={CashBalanceHalfSheet} name={Routes.CASH_BALANCE_HALF_SHEET} />
+      <BSStack.Screen component={CashBalanceWithdrawComingSoonSheet} name={Routes.CASH_BALANCE_WITHDRAW_COMING_SOON_SHEET} />
       <BSStack.Screen component={PaymentMethodsSheet} name={Routes.CASH_PAYMENT_METHODS_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />
       <BSStack.Screen component={PolymarketEventScreen} name={Routes.POLYMARKET_EVENT_SCREEN} />
