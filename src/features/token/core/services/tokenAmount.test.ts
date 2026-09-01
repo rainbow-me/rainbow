@@ -1,4 +1,4 @@
-import { parsePositiveRawAmount } from './units';
+import { parsePositiveRawAmount } from './tokenAmount';
 
 describe('parsePositiveRawAmount', () => {
   it('parses exact positive decimal amounts as base units', () => {

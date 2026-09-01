@@ -9,7 +9,7 @@ import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/c
 import { supportsDelegatedExecution } from '@/features/delegation/utils/willDelegate';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { parsePositiveRawAmount } from '@/framework/core/utils/units';
+import { parsePositiveRawAmount } from '@/features/token/core/services/tokenAmount';
 import { ensureError, logger } from '@/logger';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
