@@ -4,8 +4,8 @@ import { AppState, Linking } from 'react-native';
 import pWaitFor from 'p-wait-for';
 
 import { Box } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { margin, padding, position } from '@/styles';
 import { delay } from '@/utils/delay';

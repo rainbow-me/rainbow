@@ -1,8 +1,8 @@
 import React from 'react';
 
+import { opacity } from '@/design-system/utils/opacity';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { position } from '@/styles';
 
 import OpacityToggler from '../animations/OpacityToggler';

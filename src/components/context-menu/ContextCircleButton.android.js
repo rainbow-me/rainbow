@@ -3,8 +3,8 @@ import React, { useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import { borders, position } from '@/styles';
 

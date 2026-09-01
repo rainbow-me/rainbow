@@ -1,5 +1,5 @@
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { fonts, fontWithWidth } from '@/styles';
 
 import { Text } from '../text';

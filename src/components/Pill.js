@@ -2,8 +2,8 @@ import React from 'react';
 
 import RadialGradient from 'react-native-radial-gradient';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { padding } from '@/styles';
 
 import { useTheme } from '../theme/ThemeContext';
