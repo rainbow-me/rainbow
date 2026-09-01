@@ -56,7 +56,7 @@ export function buildCashPurchaseTransaction({
     description: `${fiatSymbol}${order.fiatAmount.amount}`,
     direction: TransactionDirection.IN,
     from: null,
-    hash: order.transactionHash,
+    hash: order.transactionHash.toLowerCase(),
     network,
     nonce: null,
     status,
