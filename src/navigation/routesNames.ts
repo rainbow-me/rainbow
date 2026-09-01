@@ -78,6 +78,7 @@ const Routes = {
   CASH_ADD_WALLET_SHEET: 'CashAddWalletSheet',
   CASH_PAYMENT_METHODS_SHEET: 'CashPaymentMethodsSheet',
   CASH_BALANCE_HALF_SHEET: 'CashBalanceHalfSheet',
+  CASH_BALANCE_WITHDRAW_COMING_SOON_SHEET: 'CashBalanceWithdrawComingSoonSheet',
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   CHOOSE_BACKUP_SHEET: 'ChooseBackupSheet',
