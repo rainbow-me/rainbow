@@ -121,6 +121,14 @@ const sourceRules = [
     to: { path: '^src/features/[^/]+/screens/', pathNot: '^src/features/$1/screens/' },
   },
   {
+    name: 'vendor-imports-nothing-first-party',
+    severity: 'error',
+    comment:
+      'A vendored library imports only npm packages and itself: never app code, and never another vendored library. Vendored code is a fork we intend to keep diffable against upstream; a first-party import couples the fork to our internals and makes the next upstream sync a merge instead of a diff. Anything a vendored library needs from the app comes in through its public options.',
+    from: { path: '^src/vendor/([^/]+)/' },
+    to: { path: '^src/', pathNot: '^src/vendor/$1/' },
+  },
+  {
     name: 'layer-core-is-a-leaf',
     severity: 'error',
     comment:
