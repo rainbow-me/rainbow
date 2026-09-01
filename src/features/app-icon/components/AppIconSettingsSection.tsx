@@ -22,7 +22,7 @@ import {
 } from '../models/appIcons';
 import { unlockableAppIconStorage } from '../utils/unlockableAppIconCheck';
 
-const AppIconSettingsSection = () => {
+export const AppIconSettingsSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
 
@@ -91,5 +91,3 @@ const AppIconSettingsSection = () => {
     </MenuContainer>
   );
 };
-
-export default AppIconSettingsSection;

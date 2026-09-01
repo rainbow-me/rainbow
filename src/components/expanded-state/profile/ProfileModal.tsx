@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Platform, View } from 'react-native';
 
 import Divider from '@/components/Divider';
-import BiometricButtonContent from '@/features/local-auth/components/BiometricButtonContent';
+import { BiometricButtonContent } from '@/features/local-auth/components/BiometricButtonContent';
 import styled from '@/framework/ui/styled-thing';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';

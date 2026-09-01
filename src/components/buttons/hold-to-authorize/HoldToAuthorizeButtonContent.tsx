@@ -10,7 +10,7 @@ import {
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import BiometricButtonContent from '@/features/local-auth/components/BiometricButtonContent';
+import { BiometricButtonContent } from '@/features/local-auth/components/BiometricButtonContent';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';

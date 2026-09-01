@@ -1,4 +1,4 @@
-export default {
+export const BiometryTypes = {
   Face: 'Face', // Android
   FaceID: 'FaceID',
   Fingerprint: 'Fingerprint', // Android

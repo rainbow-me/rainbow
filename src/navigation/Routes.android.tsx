@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
-import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
+import { AppIconUnlockSheet } from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
@@ -30,7 +30,7 @@ import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
 import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
-import PinAuthenticationScreen from '@/features/local-auth/screens/PinAuthenticationScreen';
+import { PinAuthenticationScreen } from '@/features/local-auth/screens/PinAuthenticationScreen';
 import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';

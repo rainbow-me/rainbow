@@ -8,11 +8,11 @@ import useIsMounted from '@/hooks/useIsMounted';
 import usePrevious from '@/hooks/usePrevious';
 
 import * as keychain from '../keychain';
-import BiometryTypes from '../types/biometryTypes';
+import { BiometryTypes } from '../types/biometryTypes';
 
 type BiometryType = keyof typeof BiometryTypes;
 
-export default function useBiometryType(): BiometryType | null {
+export function useBiometryType(): BiometryType | null {
   const { justBecameActive } = useAppState();
   const isMounted = useIsMounted();
   const [biometryType, setBiometryType] = useState<BiometryType | null>(null);

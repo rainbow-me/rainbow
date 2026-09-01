@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
-import AppIconUnlockSheet from '@/features/app-icon/screens/AppIconUnlockSheet';
+import { AppIconUnlockSheet } from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';

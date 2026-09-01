@@ -1,7 +1,7 @@
 import React from 'react';
 
-import useBiometryType from '@/features/local-auth/hooks/useBiometryType';
-import BiometryTypes from '@/features/local-auth/types/biometryTypes';
+import { useBiometryType } from '@/features/local-auth/hooks/useBiometryType';
+import { BiometryTypes } from '@/features/local-auth/types/biometryTypes';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';

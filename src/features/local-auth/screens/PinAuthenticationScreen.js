@@ -228,4 +228,5 @@ const PinAuthenticationScreen = () => {
   );
 };
 
-export default React.memo(PinAuthenticationScreen);
+const MemoizedPinAuthenticationScreen = React.memo(PinAuthenticationScreen);
+export { MemoizedPinAuthenticationScreen as PinAuthenticationScreen };

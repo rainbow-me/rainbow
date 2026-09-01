@@ -22,7 +22,7 @@ import { unlockableAppIcons } from '../models/appIcons';
 
 const APP_ICON_SIZE = 64;
 
-export default function AppIconUnlockSheet() {
+export function AppIconUnlockSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
   const { colors } = useTheme();
