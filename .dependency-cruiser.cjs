@@ -105,6 +105,22 @@ const UI_RUNTIME_PACKAGES = '^node_modules/(react|react-native|react-native-rean
 
 const sourceRules = [
   {
+    name: 'nothing-imports-app',
+    severity: 'error',
+    comment:
+      'src/app/ is the composition root: it wires features, providers and navigation together for the entry point, and only the entry point (src/App.tsx) may import it. Anything else importing from app/ inverts the top of the dependency graph and couples a feature or shared module to cross-domain orchestration.',
+    from: { pathNot: '^src/(app/|App\\.tsx$)' },
+    to: { path: '^src/app/' },
+  },
+  {
+    name: 'screens-are-feature-internal',
+    severity: 'error',
+    comment:
+      "A feature's screens/ directory holds that feature's private screen internals; another feature importing from it couples itself to a screen's internal file layout. Code shared across features belongs on the owning feature's public surface (components/, utils/, types/, ...), moved there before the import. Non-feature code (navigation route tables, legacy screens) is outside this rule.",
+    from: { path: '^src/features/([^/]+)/' },
+    to: { path: '^src/features/[^/]+/screens/', pathNot: '^src/features/$1/screens/' },
+  },
+  {
     name: 'layer-core-is-a-leaf',
     severity: 'error',
     comment:
