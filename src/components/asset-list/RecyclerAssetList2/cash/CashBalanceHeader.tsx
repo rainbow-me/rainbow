@@ -1,13 +1,10 @@
-import React, { memo, useCallback } from 'react';
-import { type GestureResponderEvent } from 'react-native';
-
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { memo } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { CashBalanceHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/core/ViewDimensions';
 import { Box, Inline, Stack, Text } from '@/design-system';
+import { CashBalanceGradientButton } from '@/features/cash-balance/components/CashBalanceGradientButton';
 import { CashBalanceIcon } from '@/features/cash-balance/components/CashBalanceIcon';
-import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useCashBalanceAddPress } from '@/features/cash-balance/hooks/useCashBalanceAddPress';
 import * as i18n from '@/languages';
@@ -18,21 +15,8 @@ const ADD_BUTTON_HEIGHT = 36;
 
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
   const { balanceDisplay } = useCashBalance();
-  const handleAddCashPress = useCashBalanceAddPress('cash balance widget');
+  const handleAddPress = useCashBalanceAddPress('cash balance widget');
   const handleRowPress = () => Navigation.handleAction(Routes.CASH_BALANCE_HALF_SHEET);
-
-  // The Add button sits inside the row's own ButtonPressAnimation, so its press must stop
-  // propagating or it also fires the row's onPress (see RnbwFeatureCard's DismissButton for the
-  // same nested-button hazard).
-  const handleAddPress = useCallback(
-    (e?: GestureResponderEvent) => {
-      if (e && 'stopPropagation' in e) {
-        e.stopPropagation();
-      }
-      handleAddCashPress();
-    },
-    [handleAddCashPress]
-  );
 
   return (
     <Box paddingHorizontal="12px" justifyContent="center" height={{ custom: CashBalanceHeaderHeight }}>
@@ -60,28 +44,27 @@ export const CashBalanceHeader = memo(function CashBalanceHeader() {
               </Text>
             </Stack>
           </Inline>
-
-          <ButtonPressAnimation onPress={handleAddPress} scaleTo={0.94} testID="cash-balance-header-add-button">
-            <Box
-              as={LinearGradient}
-              colors={CASH_BALANCE_COLORS.addButtonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0.75, y: 1 }}
-              alignItems="center"
-              justifyContent="center"
-              paddingHorizontal="12px"
-              height={{ custom: ADD_BUTTON_HEIGHT }}
-              borderRadius={ADD_BUTTON_HEIGHT / 2}
-              background="green"
-              shadow="12px green"
-            >
-              <Text color="white" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.button.add)}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
         </Box>
       </ButtonPressAnimation>
+
+      {/* A true sibling of the row's ButtonPressAnimation, not a descendant — nesting one native
+          button inside another leaves the outer one owning all touches within its bounds on
+          Android, silently swallowing the inner button's presses (see RnbwFeatureCard's
+          DismissButton for the same fix: an absolutely-positioned sibling, not a nested button). */}
+      {/* right accounts for both this row's own 12px horizontal padding and the pill's 16px
+          paddingRight, since an absolutely positioned child ignores its parent's padding. */}
+      <Box position="absolute" right={{ custom: 12 + 16 }} top={{ custom: (CashBalanceHeaderHeight - ADD_BUTTON_HEIGHT) / 2 }}>
+        <CashBalanceGradientButton
+          height={ADD_BUTTON_HEIGHT}
+          onPress={handleAddPress}
+          paddingHorizontal="12px"
+          testID="cash-balance-header-add-button"
+        >
+          <Text color="white" size="17pt" weight="heavy">
+            {i18n.t(i18n.l.button.add)}
+          </Text>
+        </CashBalanceGradientButton>
+      </Box>
     </Box>
   );
 });

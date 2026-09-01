@@ -1,14 +1,11 @@
 import React, { memo, useCallback, useMemo } from 'react';
 
-import { LinearGradient } from 'expo-linear-gradient';
-
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
+import { CashBalanceGradientButton } from '@/features/cash-balance/components/CashBalanceGradientButton';
 import { CashBalanceIcon } from '@/features/cash-balance/components/CashBalanceIcon';
-import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useCashBalanceAddPress } from '@/features/cash-balance/hooks/useCashBalanceAddPress';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -92,38 +89,6 @@ function CashBalanceSubLabel({ asset }: { asset: ParsedSearchAsset | undefined }
   );
 }
 
-function CashBalanceActionButton({
-  children,
-  circular,
-  onPress,
-  testID,
-}: {
-  children: React.ReactNode;
-  circular?: boolean;
-  onPress: () => void;
-  testID: string;
-}) {
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.94} testID={testID}>
-      <Box
-        as={LinearGradient}
-        alignItems="center"
-        background="green"
-        borderRadius={BUTTON_HEIGHT / 2}
-        colors={CASH_BALANCE_COLORS.addButtonGradient}
-        end={{ x: 0.75, y: 1 }}
-        height={{ custom: BUTTON_HEIGHT }}
-        justifyContent="center"
-        shadow="12px green"
-        start={{ x: 0, y: 0 }}
-        width={circular ? { custom: BUTTON_HEIGHT } : 'full'}
-      >
-        {children}
-      </Box>
-    </ButtonPressAnimation>
-  );
-}
-
 export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
   const { asset, balanceDisplay, hasBalance } = useCashBalance();
   const { navigate } = useNavigation();
@@ -155,25 +120,40 @@ export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
 
         <Box paddingTop={{ custom: hasBalance ? 20 : 16 }}>
           <Columns space="8px">
-            <CashBalanceActionButton onPress={handleAddPress} testID="cash-balance-half-sheet-add-button">
+            <CashBalanceGradientButton
+              height={BUTTON_HEIGHT}
+              onPress={handleAddPress}
+              testID="cash-balance-half-sheet-add-button"
+              width="full"
+            >
               <Text color="white" size="20pt" weight="heavy">
                 {i18n.t(i18n.l.button.add)}
               </Text>
-            </CashBalanceActionButton>
+            </CashBalanceGradientButton>
             {hasBalance && (
-              <CashBalanceActionButton onPress={handleWithdrawPress} testID="cash-balance-half-sheet-withdraw-button">
+              <CashBalanceGradientButton
+                height={BUTTON_HEIGHT}
+                onPress={handleWithdrawPress}
+                testID="cash-balance-half-sheet-withdraw-button"
+                width="full"
+              >
                 <Text color="white" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.button.withdraw)}
                 </Text>
-              </CashBalanceActionButton>
+              </CashBalanceGradientButton>
             )}
             {hasBalance && asset && (
               <Column width="content">
-                <CashBalanceActionButton circular onPress={handleSendPress} testID="cash-balance-half-sheet-send-button">
+                <CashBalanceGradientButton
+                  height={BUTTON_HEIGHT}
+                  onPress={handleSendPress}
+                  testID="cash-balance-half-sheet-send-button"
+                  width={{ custom: BUTTON_HEIGHT }}
+                >
                   <Text color="white" size="icon 20px" weight="heavy">
                     {SEND_ICON}
                   </Text>
-                </CashBalanceActionButton>
+                </CashBalanceGradientButton>
               </Column>
             )}
           </Columns>
