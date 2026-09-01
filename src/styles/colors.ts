@@ -3,7 +3,7 @@ import { type LinearGradientProps } from 'expo-linear-gradient';
 import PropTypes from 'prop-types';
 
 import { globalColors } from '@/design-system/color/palettes';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';

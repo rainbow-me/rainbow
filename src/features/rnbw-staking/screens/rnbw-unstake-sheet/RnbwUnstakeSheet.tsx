@@ -10,6 +10,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { createPreparedCallsStore, type PreparedCallsStore } from '@/features/delegation/stores/preparedCallsStore';
@@ -21,7 +22,6 @@ import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';

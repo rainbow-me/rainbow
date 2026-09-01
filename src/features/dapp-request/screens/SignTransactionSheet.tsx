@@ -24,6 +24,7 @@ import {
 } from '@/components/Transactions/constants';
 import { VerifiedBadge } from '@/components/Transactions/TransactionIcons';
 import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
@@ -32,7 +33,6 @@ import useGas from '@/features/gas/hooks/useGas';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getProvider } from '@/handlers/web3';

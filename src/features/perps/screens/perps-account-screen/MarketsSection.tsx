@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -9,7 +10,6 @@ import { useMarketSortOrderLabels } from '@/features/perps/hooks/useMarketSortOr
 import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import { useHyperliquidMarketsStore, useSortedHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

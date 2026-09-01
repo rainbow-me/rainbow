@@ -16,7 +16,7 @@ import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons';
 import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 import { Slider, SLIDER_DEFAULT_WIDTH, type SliderProps, type SliderVisualState } from './Slider';
 

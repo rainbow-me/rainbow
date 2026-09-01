@@ -12,6 +12,7 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
@@ -26,7 +27,6 @@ import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/
 import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';

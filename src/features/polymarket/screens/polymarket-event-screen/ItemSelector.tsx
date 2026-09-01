@@ -15,7 +15,7 @@ import { easing, SPRING_CONFIGS } from '@/components/animations/animationConfigs
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 // ============ Constants ====================================================== //
 

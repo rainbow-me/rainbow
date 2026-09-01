@@ -27,6 +27,7 @@ import {
   type Space,
   type TextProps,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -40,7 +41,6 @@ import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import useBooleanState from '@/hooks/useBooleanState';

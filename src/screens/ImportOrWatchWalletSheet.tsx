@@ -9,7 +9,7 @@ import { Input } from '@/components/inputs';
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import * as i18n from '@/languages';

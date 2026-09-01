@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { Box, Text, TextIcon } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { ActionStatusScene } from '@/features/rnbw-rewards/components/ActionStatusScene';
 import { getCoinBottomPosition } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/RnbwHeroCoin';
@@ -12,7 +13,6 @@ import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-reward
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions, useRewardsFlowStore, type AsyncActionState } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
 const LONGER_THAN_USUAL_TIME = time.seconds(10);

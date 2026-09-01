@@ -5,12 +5,12 @@ import Animated from 'react-native-reanimated';
 
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
 import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { formatTimestampParts, toUnixTime } from '@/worklets/dates';

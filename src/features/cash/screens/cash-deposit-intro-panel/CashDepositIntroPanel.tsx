@@ -8,7 +8,7 @@ import { analytics } from '@/analytics';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

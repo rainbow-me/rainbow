@@ -1,6 +1,6 @@
 import type { LinearGradientProps } from 'expo-linear-gradient';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 type Themed<T> = { light: T; dark: T };
 

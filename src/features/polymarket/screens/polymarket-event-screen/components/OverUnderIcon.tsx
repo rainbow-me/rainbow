@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Text, TextShadow } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 const SIZE = 32;
 const BORDER_RADIUS = 10;

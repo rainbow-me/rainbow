@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { globalColors, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 

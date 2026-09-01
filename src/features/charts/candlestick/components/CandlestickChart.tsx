@@ -43,6 +43,7 @@ import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
 import { globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText, type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_DEV } from '@/env';
 import { areCandlesEqual, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
@@ -60,7 +61,6 @@ import {
 } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';

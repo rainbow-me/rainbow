@@ -6,8 +6,8 @@ import { Column, ColumnWithMargins } from '@/components/layout';
 import { SheetActionButton } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { Bleed, Separator } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

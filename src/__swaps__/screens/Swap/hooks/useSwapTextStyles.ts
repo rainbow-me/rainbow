@@ -15,8 +15,8 @@ import { type InputMethods, type InputValues } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { equalWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 export function useSwapTextStyles({
   inputMethod,

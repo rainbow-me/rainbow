@@ -14,8 +14,8 @@ import {
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 const UP_ARROW = Platform.OS === 'android' ? '' : '↑';

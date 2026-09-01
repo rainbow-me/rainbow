@@ -18,8 +18,8 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { colors } from '@/styles';

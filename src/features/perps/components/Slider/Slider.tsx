@@ -19,7 +19,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SCRUBBER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const MAX_PERCENTAGE = 0.995;

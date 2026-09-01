@@ -8,7 +8,7 @@ import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { TapToDismiss } from '@/components/TapToDismiss';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

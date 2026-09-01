@@ -24,10 +24,10 @@ import {
   type TextProps,
 } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { opacity } from '@/design-system/utils/opacity';
 import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

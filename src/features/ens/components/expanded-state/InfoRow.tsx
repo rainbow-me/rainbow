@@ -10,7 +10,7 @@ import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';

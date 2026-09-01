@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

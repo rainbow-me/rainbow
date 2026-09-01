@@ -24,8 +24,8 @@ import { clamp, getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons';
 import { AnimatedText, Bleed, Box, Column, Columns, globalColors, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

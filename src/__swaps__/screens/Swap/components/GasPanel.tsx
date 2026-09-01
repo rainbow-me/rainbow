@@ -10,6 +10,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getSelectedGas, getSelectedSpeedSuggestion, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -25,7 +26,6 @@ import {
 } from '@/features/gas/utils/meteorology';
 import { gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { add, formatNumber, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';

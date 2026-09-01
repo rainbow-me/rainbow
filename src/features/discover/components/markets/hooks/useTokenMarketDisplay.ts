@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { getUniqueId } from '@/entities/assetId';
 import { buildTokenLineChartId, useTokenLineChartsStore } from '@/features/charts/stores/tokenLineChartsStore';
 import { type NativeCurrencyKey } from '@/features/currency/types';
@@ -9,7 +10,6 @@ import { type MarketPillWidthInput } from '@/features/discover/components/market
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useColorForAsset from '@/hooks/useColorForAsset';
 
 const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { type MarketPillWidthInput } from '@/features/discover/components/markets/cards/MarketPill';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
@@ -10,7 +11,6 @@ import { convertStoredPerpPriceChangeToPercent, getHyperliquidTokenId } from '@/
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
 import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);
 const MARKET_CHART_PRICE_CHANGE_COLORS = {

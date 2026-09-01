@@ -2,6 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
@@ -12,7 +13,6 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { type PerpsPosition } from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { abs } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';

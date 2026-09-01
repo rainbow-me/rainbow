@@ -7,12 +7,12 @@ import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { CATEGORIES, DEFAULT_CATEGORY_KEY, type CategoryKey } from '@/features/polymarket/constants';
 import { useCategorySelector } from '@/features/polymarket/hooks/useCategorySelector';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

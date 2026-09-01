@@ -31,12 +31,12 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/utils/willDelegate';
 import { useEstimatedGasTime } from '@/features/gas/hooks/useEstimatedGasTime';
 import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
