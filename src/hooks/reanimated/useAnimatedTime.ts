@@ -138,9 +138,15 @@ export function useAnimatedTime({
   }, [start, stop]);
 
   useEffect(() => {
+    let isCurrentEffect = true;
     isDisposed.value = false;
-    if (autoStart) runOnUI(start)();
+    if (autoStart) {
+      queueMicrotask(() => {
+        if (isCurrentEffect) runOnUI(start)();
+      });
+    }
     return () => {
+      isCurrentEffect = false;
       isDisposed.value = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

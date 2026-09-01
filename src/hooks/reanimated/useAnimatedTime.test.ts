@@ -9,6 +9,7 @@ type MockAnimationState = { active: boolean };
 
 const mockEffects: Effect[] = [];
 const mockTimingCallbacks: AnimationCallback[] = [];
+const mockUIWorkQueue: Array<() => void> = [];
 let mockAnimationStates = new WeakMap<object, MockAnimationState>();
 
 jest.mock('react', () => ({
@@ -18,7 +19,7 @@ jest.mock('react', () => ({
 
 jest.mock('react-native-reanimated', () => ({
   Easing: { linear: 'linear' },
-  runOnUI: (worklet: () => void) => worklet,
+  runOnUI: (worklet: () => void) => () => mockUIWorkQueue.push(worklet),
   useSharedValue: (initialValue: unknown) => {
     let currentValue = initialValue;
     const animationState: MockAnimationState = { active: false };
@@ -32,6 +33,7 @@ jest.mock('react-native-reanimated', () => ({
       },
     };
 
+    // Reanimated's useSharedValue owns cancellation of its current animation on unmount.
     mockEffects.push(() => () => {
       animationState.active = false;
     });
@@ -52,6 +54,7 @@ describe('useAnimatedTime lifecycle', () => {
     mockAnimationStates = new WeakMap();
     mockEffects.length = 0;
     mockTimingCallbacks.length = 0;
+    mockUIWorkQueue.length = 0;
   });
 
   it('preserves start, stop, restart, and completion behavior while mounted', () => {
@@ -78,7 +81,7 @@ describe('useAnimatedTime lifecycle', () => {
     runCleanups(cleanups);
   });
 
-  it('makes retained controls and completion callbacks inert after unmount', () => {
+  it("does not revive Reanimated's canceled timer after unmount", () => {
     const onEndWorklet = jest.fn();
     const onStartWorklet = jest.fn();
     const timer = useAnimatedTime({ onEndWorklet, onStartWorklet });
@@ -100,20 +103,20 @@ describe('useAnimatedTime lifecycle', () => {
     expect(onEndWorklet).not.toHaveBeenCalled();
   });
 
-  it('restores a live auto-start timer during React Strict Mode effect replay', () => {
+  it('starts once after React Strict Mode effect replay', async () => {
     const onStartWorklet = jest.fn();
     const timer = useAnimatedTime({ autoStart: true, onStartWorklet });
     const timerClock = timer.timeInSeconds;
 
     const firstCleanups = setupEffects();
-    expect(getAnimationState(timerClock).active).toBe(true);
-
     runCleanups(firstCleanups);
-    expect(getAnimationState(timerClock).active).toBe(false);
-
     const replayCleanups = setupEffects();
+
+    await flushMicrotasks();
+    flushUIWork();
+
     expect(getAnimationState(timerClock).active).toBe(true);
-    expect(onStartWorklet).toHaveBeenCalledTimes(2);
+    expect(onStartWorklet).toHaveBeenCalledTimes(1);
 
     runCleanups(replayCleanups);
     timer.restart();
@@ -125,6 +128,14 @@ function getAnimationState(sharedValue: object): MockAnimationState {
   const animationState = mockAnimationStates.get(sharedValue);
   if (!animationState) throw new Error('Expected a mocked shared value');
   return animationState;
+}
+
+function flushUIWork(): void {
+  while (mockUIWorkQueue.length) mockUIWorkQueue.shift()?.();
+}
+
+async function flushMicrotasks(): Promise<void> {
+  await Promise.resolve();
 }
 
 function mockIsAnimation(value: unknown): boolean {

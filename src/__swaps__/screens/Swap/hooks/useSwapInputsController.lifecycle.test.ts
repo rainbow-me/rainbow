@@ -298,7 +298,7 @@ describe('useSwapInputsController quote-owner lifecycle', () => {
     expect(mockSwapState.quote).toBeNull();
   });
 
-  it('blocks queued publication and timer resurrection after cleanup', async () => {
+  it('blocks queued publication and leaves polling stopped after cleanup', async () => {
     const pendingQuote = createDeferred<TestQuote>();
     const obsoleteQuote = createQuote();
     const currentQuote = createQuote();
@@ -316,6 +316,7 @@ describe('useSwapInputsController quote-owner lifecycle', () => {
     flushUIWork();
 
     expect(mockSwapState.quote).toBe(currentQuote);
+    // The quote work was already ahead of cleanup in the UI queue; Reanimated's later cleanup must leave its timer inactive.
     expect(getTimerClock().animationActive).toBe(false);
   });
 });
