@@ -21,6 +21,58 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.43](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.43)
+
+### Added
+
+- Switch to the production platform (https://github.com/rainbow-me/rainbow/pull/7723)
+- Remove credit card (https://github.com/rainbow-me/rainbow/pull/7729)
+- Add tests for updated transaction watching behavior (https://github.com/rainbow-me/rainbow/pull/7724)
+- Run the send journeys on iOS (https://github.com/rainbow-me/rainbow/pull/7720)
+- Add setup progress indicator (https://github.com/rainbow-me/rainbow/pull/7739)
+- Use buy/sell buttons for owned tokens in expanded sheet (https://github.com/rainbow-me/rainbow/pull/7747)
+- Cover URL signing and image format detection in imgix tests (https://github.com/rainbow-me/rainbow/pull/7764)
+- Add feature flag gating Cash Balance wallet display (https://github.com/rainbow-me/rainbow/pull/7776)
+- Add account recovery flow (https://github.com/rainbow-me/rainbow/pull/7740)
+- Add recovery flow tests (https://github.com/rainbow-me/rainbow/pull/7741)
+
+### Changed
+
+- Update Bivo Credit Card SDK (https://github.com/rainbow-me/rainbow/pull/7707)
+- Bump iOS and Android to v2.0.43 (https://github.com/rainbow-me/rainbow/pull/7727)
+- Bump Bivo SDK to 0.0.6 (https://github.com/rainbow-me/rainbow/pull/7728)
+- Fix .gitignore for .claude dir (https://github.com/rainbow-me/rainbow/pull/7734)
+- Remove dead lang.t-era translation tooling (https://github.com/rainbow-me/rainbow/pull/7735)
+- Fix tsconfig skipLibCheck to true to align CI and local type checking (https://github.com/rainbow-me/rainbow/pull/7746)
+- Refactor SmoothPager to support more complex navigation structures (https://github.com/rainbow-me/rainbow/pull/7731)
+- Polish input focus handling (https://github.com/rainbow-me/rainbow/pull/7743)
+- Reduce circular dependencies from 606 to 159 (https://github.com/rainbow-me/rainbow/pull/7757)
+- Reduce circular dependencies from 159 to 121 (https://github.com/rainbow-me/rainbow/pull/7758)
+- Reduce circular dependencies from 121 to 47 (https://github.com/rainbow-me/rainbow/pull/7760)
+- Polish setup controls and keyboard management (https://github.com/rainbow-me/rainbow/pull/7745)
+- Update Bivo SDK to 0.0.7 (https://github.com/rainbow-me/rainbow/pull/7766)
+- Consolidate remote config mocking across test suites (https://github.com/rainbow-me/rainbow/pull/7765)
+- Delete the fingerprint override that never runs in Sentry (https://github.com/rainbow-me/rainbow/pull/7773)
+- Add type-aware source graph with the first layer rules to deps-check (https://github.com/rainbow-me/rainbow/pull/7782)
+
+### Fixed
+
+- Fix e2e resume cash setup (https://github.com/rainbow-me/rainbow/pull/7726)
+- Fix missing transaction when purchase is immediately completed (https://github.com/rainbow-me/rainbow/pull/7730)
+- Fix window.addEventListener is undefined (https://github.com/rainbow-me/rainbow/pull/7715)
+- Improve client side telemetry redaction around seeds (https://github.com/rainbow-me/rainbow/pull/7736)
+- Fix broken e2e - email step (https://github.com/rainbow-me/rainbow/pull/7737)
+- Preserve caught errors as causes in telemetry (https://github.com/rainbow-me/rainbow/pull/7738)
+- Add money-path failure telemetry (https://github.com/rainbow-me/rainbow/pull/7751)
+- Stop leaking amounts, orderId and server text into analytics (https://github.com/rainbow-me/rainbow/pull/7753)
+- Fix broken e2e after updating bivo SDK (https://github.com/rainbow-me/rainbow/pull/7769)
+- Stop reporting handled NFT image failures as issues in Sentry (https://github.com/rainbow-me/rainbow/pull/7771)
+- Allow to go to OTP screen again while resend is blocked (https://github.com/rainbow-me/rainbow/pull/7768)
+- Fix original error lost when logger.error gets a non-RainbowError (https://github.com/rainbow-me/rainbow/pull/7774)
+- Fix Android builds failing on retired Fabric maven repo (https://github.com/rainbow-me/rainbow/pull/7780)
+- Fix dapps fetch Sentry noise (https://github.com/rainbow-me/rainbow/pull/7772)
+- Correct handling of blob:, data:, file: URLs in browser (https://github.com/rainbow-me/rainbow/pull/7783)
+
 ## [2.0.42](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.42)
 
 ### Added
