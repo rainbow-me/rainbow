@@ -5,7 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { AbsolutePortal, AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
@@ -127,34 +126,32 @@ function CashBalanceActionButton({
 }
 
 // Popped up over the half sheet when Withdraw is pressed, matching the Figma mini sheet — no
-// action button, dismissed by tapping anywhere on it.
+// action button, dismissed by tapping anywhere on it. Rendered as a sibling of the half sheet's
+// own PanelSheet (not a child of it) so it isn't clipped by that panel's rounded bounds; a shared
+// AbsolutePortal would also work but double-renders here since this screen is its own modal layer
+// and the app-level AbsolutePortalRoot underneath it stays mounted too.
 const WITHDRAW_SHEET_ENTERING_ANIMATION = SlideInDown.springify().damping(70).mass(0.8).stiffness(500);
 const WITHDRAW_SHEET_EXITING_ANIMATION = SlideOutDown.springify().damping(70).mass(0.8).stiffness(500);
 
-// Memoized so the live-ticking balance re-rendering CashBalanceHalfSheet doesn't recreate this
-// element on every tick — AbsolutePortal re-adds its children whenever that reference changes,
-// which otherwise thrashes the portaled node before it ever gets a chance to paint.
 const CashBalanceWithdrawComingSoonSheet = memo(function CashBalanceWithdrawComingSoonSheet({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <AbsolutePortal>
-      <TouchableWithoutFeedback onPress={onDismiss}>
-        <View accessibilityViewIsModal style={styles.overlay} testID="cash-balance-withdraw-coming-soon-overlay">
-          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.backdrop} />
-          <Animated.View entering={WITHDRAW_SHEET_ENTERING_ANIMATION} exiting={WITHDRAW_SHEET_EXITING_ANIMATION} style={styles.panelHost}>
-            <PanelSheet showTapToDismiss={false}>
-              <Box paddingBottom="32px" paddingHorizontal="32px" paddingTop="52px">
-                <CashBalanceIcon size={52} />
-                <Box paddingTop="16px">
-                  <Text color="label" size="26pt" weight="heavy">
-                    {i18n.t(i18n.l.cash_balance.half_sheet.withdraw_coming_soon)}
-                  </Text>
-                </Box>
+    <TouchableWithoutFeedback onPress={onDismiss}>
+      <View accessibilityViewIsModal style={styles.overlay} testID="cash-balance-withdraw-coming-soon-overlay">
+        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.backdrop} />
+        <Animated.View entering={WITHDRAW_SHEET_ENTERING_ANIMATION} exiting={WITHDRAW_SHEET_EXITING_ANIMATION} style={styles.panelHost}>
+          <PanelSheet showTapToDismiss={false}>
+            <Box paddingBottom="32px" paddingHorizontal="32px" paddingTop="52px">
+              <CashBalanceIcon size={52} />
+              <Box paddingTop="16px">
+                <Text color="label" size="26pt" weight="heavy">
+                  {i18n.t(i18n.l.cash_balance.half_sheet.withdraw_coming_soon)}
+                </Text>
               </Box>
-            </PanelSheet>
-          </Animated.View>
-        </View>
-      </TouchableWithoutFeedback>
-    </AbsolutePortal>
+            </Box>
+          </PanelSheet>
+        </Animated.View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 });
 
@@ -183,54 +180,51 @@ export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
   }, [asset, navigate]);
 
   return (
-    <PanelSheet>
-      <Box paddingBottom="20px" paddingHorizontal="20px" paddingTop="20px">
-        <CashBalanceHalfSheetHeader />
+    <>
+      <PanelSheet>
+        <Box paddingBottom="20px" paddingHorizontal="20px" paddingTop="20px">
+          <CashBalanceHalfSheetHeader />
 
-        <Box paddingTop={{ custom: 64 }}>
-          <Text align="center" color="label" size="44pt" weight="heavy">
-            {balanceDisplay}
-          </Text>
-        </Box>
+          <Box paddingTop={{ custom: 64 }}>
+            <Text align="center" color="label" size="44pt" weight="heavy">
+              {balanceDisplay}
+            </Text>
+          </Box>
 
-        <Box alignItems={hasBalance ? 'center' : undefined} paddingTop={{ custom: hasBalance ? 52 : 64 }}>
-          {hasBalance ? <CashBalanceBadge asset={asset} /> : <CashBalanceSubLabel asset={asset} />}
-        </Box>
+          <Box alignItems={hasBalance ? 'center' : undefined} paddingTop={{ custom: hasBalance ? 52 : 64 }}>
+            {hasBalance ? <CashBalanceBadge asset={asset} /> : <CashBalanceSubLabel asset={asset} />}
+          </Box>
 
-        <Box paddingTop={{ custom: hasBalance ? 20 : 16 }}>
-          <Columns space="8px">
-            <CashBalanceActionButton onPress={handleAddPress} testID="cash-balance-half-sheet-add-button">
-              <Text color="white" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.button.add)}
-              </Text>
-            </CashBalanceActionButton>
-            {hasBalance && (
-              <CashBalanceActionButton onPress={handleWithdrawPress} testID="cash-balance-half-sheet-withdraw-button">
+          <Box paddingTop={{ custom: hasBalance ? 20 : 16 }}>
+            <Columns space="8px">
+              <CashBalanceActionButton onPress={handleAddPress} testID="cash-balance-half-sheet-add-button">
                 <Text color="white" size="20pt" weight="heavy">
-                  {i18n.t(i18n.l.button.withdraw)}
+                  {i18n.t(i18n.l.button.add)}
                 </Text>
               </CashBalanceActionButton>
-            )}
-            {hasBalance && asset && (
-              <Column width="content">
-                <CashBalanceActionButton circular onPress={handleSendPress} testID="cash-balance-half-sheet-send-button">
-                  <Text color="white" size="icon 20px" weight="heavy">
-                    {SEND_ICON}
+              {hasBalance && (
+                <CashBalanceActionButton onPress={handleWithdrawPress} testID="cash-balance-half-sheet-withdraw-button">
+                  <Text color="white" size="20pt" weight="heavy">
+                    {i18n.t(i18n.l.button.withdraw)}
                   </Text>
                 </CashBalanceActionButton>
-              </Column>
-            )}
-          </Columns>
+              )}
+              {hasBalance && asset && (
+                <Column width="content">
+                  <CashBalanceActionButton circular onPress={handleSendPress} testID="cash-balance-half-sheet-send-button">
+                    <Text color="white" size="icon 20px" weight="heavy">
+                      {SEND_ICON}
+                    </Text>
+                  </CashBalanceActionButton>
+                </Column>
+              )}
+            </Columns>
+          </Box>
         </Box>
-      </Box>
+      </PanelSheet>
 
       {showWithdrawComingSoon && <CashBalanceWithdrawComingSoonSheet onDismiss={handleDismissWithdrawComingSoon} />}
-
-      {/* This screen is presented as its own native modal layer, so the app-level
-          AbsolutePortalRoot (rendered underneath it) can't paint the sheet above — mount a
-          scoped one here too, matching PaymentMethodsSheet/CashDepositSetupScreen/Swap. */}
-      <AbsolutePortalRoot style={styles.portal} />
-    </PanelSheet>
+    </>
   );
 });
 
@@ -241,11 +235,10 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+    // Above the half sheet's own PanelSheet (zIndex 30000).
+    zIndex: 30001,
   },
   panelHost: {
     ...StyleSheet.absoluteFillObject,
-  },
-  portal: {
-    zIndex: 30001,
   },
 });
