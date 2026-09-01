@@ -6,7 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { delegation } from '@rainbow-me/sdk';
 
-import { RevokeReason } from '../screens/RevokeDelegationPanel';
+import { RevokeReason } from '../types/revokeReason';
 import { useIsDelegationEnabled } from '../utils/featureFlags';
 
 export function useShouldRevokeDelegation() {

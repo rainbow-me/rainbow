@@ -386,6 +386,7 @@ export function useSwapInputsController({
       (isSwappingMaxBalance && internalSelectedInputAsset.value?.maxSwappableAmount) || inputValues.value.inputAmount;
 
     const currentAddress = getAccountAddress();
+    const { slippage, source } = swapsStore.getState();
 
     const params = buildQuoteParams({
       currentAddress,
@@ -394,6 +395,8 @@ export function useSwapInputsController({
       lastTypedInput: lastTypedInputParam,
       outputAmount,
       outputAsset: internalSelectedOutputAsset.value,
+      slippage,
+      source,
     });
 
     const isCrosschainSwap = internalSelectedInputAsset.value?.chainId !== internalSelectedOutputAsset.value?.chainId;

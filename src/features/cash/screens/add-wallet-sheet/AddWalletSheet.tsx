@@ -102,7 +102,7 @@ export const AddWalletSheet = memo(function AddWalletSheet() {
   const isError = state === 'error';
 
   return (
-    <PanelSheet>
+    <PanelSheet showTapToDismiss={state !== 'linking' && state !== 'linked'}>
       <Box paddingBottom="20px" paddingHorizontal="20px" paddingTop="52px">
         <Stack space="32px">
           <Box paddingHorizontal="12px">

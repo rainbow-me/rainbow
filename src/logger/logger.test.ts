@@ -60,7 +60,7 @@ describe('general functionality', () => {
 
     const mockTransport = jest.fn();
 
-    const remove = logger.addTransport(mockTransport);
+    logger.addTransport(mockTransport);
 
     // @ts-expect-error testing the JS case
     logger.warn('a', null);
@@ -73,15 +73,6 @@ describe('general functionality', () => {
     // @ts-expect-error testing the JS case
     logger.warn('c', 0);
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'c', {});
-
-    remove();
-
-    logger.addTransport((level, message, metadata) => {
-      expect(typeof metadata).toEqual('object');
-    });
-
-    // @ts-expect-error testing the JS case
-    logger.warn('message', null);
   });
 
   test('logger.error keeps a non-RainbowError as the cause', () => {
@@ -96,6 +87,19 @@ describe('general functionality', () => {
     expect(reported).toBeInstanceOf(RainbowError);
     expect(reported.message).toBe('logger.error was not provided a RainbowError');
     expect(reported.cause).toBe(original);
+  });
+
+  test('a throwing transport does not stop the others or escape to the caller', () => {
+    const logger = new Logger();
+    const throwing = jest.fn(() => {
+      throw new Error('transport exploded');
+    });
+    const next = jest.fn();
+    logger.addTransport(throwing);
+    logger.addTransport(next);
+
+    expect(() => logger.error(new RainbowError('x'))).not.toThrow();
+    expect(next).toHaveBeenCalledTimes(1);
   });
 
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {

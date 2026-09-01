@@ -135,10 +135,10 @@ export function isNotFoundError(error: unknown): boolean {
   return error instanceof RainbowFetchError && error.response?.status === 404;
 }
 
-/** The backend answered and refused, so the request definitively took no effect. Transport failures and 5xx stay ambiguous. */
+/** The backend answered and refused, so the request definitively took no effect. Timeouts, rate limits, transport failures, and 5xx stay ambiguous. */
 export function isDefinitiveRejection(error: unknown): boolean {
   const status = error instanceof RainbowFetchError ? error.response?.status : undefined;
-  return status !== undefined && status >= 400 && status < 500;
+  return status !== undefined && status >= 400 && status < 500 && status !== 408 && status !== 429;
 }
 
 // The user JWT replaces the shared app key on these calls. On 401 the cached

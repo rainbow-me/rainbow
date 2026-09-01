@@ -3,6 +3,7 @@ import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
@@ -21,7 +22,7 @@ import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 

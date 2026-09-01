@@ -1,27 +1,17 @@
-import React, { memo, useMemo, type ComponentProps } from 'react';
-import { Platform, StyleSheet, TouchableWithoutFeedback, View, type StyleProp, type ViewStyle } from 'react-native';
+import React, { useMemo, type ComponentProps } from 'react';
+import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 
 import { SheetHandleFixedToTop } from '@/components/sheet';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { useNavigation } from '@/navigation/Navigation';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-
-export const TapToDismiss = memo(function TapToDismiss() {
-  const { goBack } = useNavigation();
-
-  return (
-    <TouchableWithoutFeedback onPress={goBack}>
-      <View style={panelSheetStyles.cover} />
-    </TouchableWithoutFeedback>
-  );
-});
 
 export const PANEL_BACKGROUND_DARK = '#191A1C';
 export const PANEL_BACKGROUND_LIGHT = globalColors.white100;
@@ -160,15 +150,6 @@ export const PanelSheet = ({
 };
 
 const panelSheetStyles = StyleSheet.create({
-  cover: {
-    bottom: 0,
-    height: DEVICE_HEIGHT,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: DEVICE_WIDTH,
-  },
   panelContainer: {
     alignItems: 'center',
     bottom: 91,

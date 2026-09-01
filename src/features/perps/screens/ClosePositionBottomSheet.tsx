@@ -10,9 +10,9 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
-import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';

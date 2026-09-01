@@ -46,12 +46,14 @@ const GradientText = memo(function GradientText({
   const invisibleChild = useMemo(() => {
     return React.cloneElement(children, {
       style: [textStyle, children.props.style, { opacity: 0 }],
+      testID: undefined,
     });
   }, [children, textStyle]);
 
   const visibleChild = useMemo(() => {
     return React.cloneElement(children, {
       style: [textStyle, children.props.style],
+      testID: undefined,
     });
   }, [children, textStyle]);
 
@@ -60,11 +62,14 @@ const GradientText = memo(function GradientText({
     return React.cloneElement(children, {
       color: { custom: 'transparent' },
       style: [textStyle, children.props.style, shadow],
+      testID: undefined,
     });
   }, [children, shadow, textStyle]);
 
   const maskedView = (
-    <MaskedView style={shadow ? undefined : { marginTop, marginBottom }} maskElement={visibleChild}>
+    // The child is cloned into mask, gradient, and shadow layers; the id lives on this
+    // root alone so the rendered element keeps the caller's identity exactly once.
+    <MaskedView style={shadow ? undefined : { marginTop, marginBottom }} testID={children.props.testID} maskElement={visibleChild}>
       <LinearGradient
         start={start}
         end={end}

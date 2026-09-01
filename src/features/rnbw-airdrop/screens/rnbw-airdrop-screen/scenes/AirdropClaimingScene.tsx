@@ -9,7 +9,7 @@ import { getCoinBottomPosition } from '@/features/rnbw-airdrop/screens/rnbw-aird
 import { RnbwAirdropScenes } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { airdropFlowActions, useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
 import { defaultEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
-import { ActionStatusScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/scenes/ActionStatusScene';
+import { ActionStatusScene } from '@/features/rnbw-rewards/components/ActionStatusScene';
 import { time } from '@/framework/core/utils/time';
 import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';

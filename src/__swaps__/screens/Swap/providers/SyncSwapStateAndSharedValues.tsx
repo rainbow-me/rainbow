@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import BigNumber from 'bignumber.js';
 import { debounce } from 'lodash';
@@ -37,6 +37,7 @@ import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/s
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { useSwapContext } from './swap-provider';
+import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
 
 const BUFFER_RATIO = 0.5;
 
@@ -57,7 +58,7 @@ const setInternalSyncedSwapStore = debounce((state: InternalSyncedSwapState) => 
   trailing: true,
 });
 
-export const SyncQuoteSharedValuesToState = () => {
+const SyncQuoteSharedValuesToState = () => {
   const { internalSelectedInputAsset: assetToSell, quote } = useSwapContext();
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
@@ -165,7 +166,7 @@ const getHasEnoughFundsForGasWorklet = ({
   return hasEnoughFundsForGas;
 };
 
-export function SyncGasStateToSharedValues() {
+function SyncGasStateToSharedValues() {
   const {
     SwapInputController: { updateMaxSwappableAmount },
     hasEnoughFundsForGas,
@@ -319,4 +320,14 @@ export function SyncGasStateToSharedValues() {
   }, [gasFee, gasFeeRange, hasEnoughFundsForGas, isLoadingNativeNetworkAsset, isSponsoredSwap, safeQuoteValue, userNativeNetworkAsset]);
 
   return null;
+}
+
+export function SyncSwapStateAndSharedValues(): ReactNode {
+  return (
+    <>
+      <SyncQuoteSharedValuesToState />
+      <SyncSwapRewardsEstimate />
+      <SyncGasStateToSharedValues />
+    </>
+  );
 }

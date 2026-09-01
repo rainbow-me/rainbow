@@ -1,7 +1,8 @@
-import { getSizedImageUrl, maybeSignSource, maybeSignUri, staticSignatureLRU } from './imgix';
+import { withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 
-// The LRU keys off the options as passed, before the pixel ratio is applied.
-const cacheKey = (uri: string, w?: number, fm?: string) => `${uri}-${w}-${fm}`;
+import { getSizedImageUrl, maybeSignSource, maybeSignUri, staticSignatureLRU, withImageHost } from './imgix';
+
+jest.mock('@/features/config/stores/remoteConfig');
 
 jest.mock('react-native-dotenv', () => ({
   IMGIX_DOMAIN: 'rainbow.imgix.net',
@@ -27,6 +28,9 @@ jest.mock('@/logger', () => ({
 beforeEach(() => {
   staticSignatureLRU.clear();
 });
+
+// The LRU keys off the options as passed, before the pixel ratio is applied.
+const cacheKey = (uri: string, w?: number, fm?: string) => `${uri}-${w}-${fm}`;
 
 describe('maybeSignUri', () => {
   it('encodes the source URL into the path and signs it', () => {
@@ -120,5 +124,43 @@ describe('maybeSignSource', () => {
       headers: { a: 'b' },
       uri: 'https://rainbow.imgix.net/https%3A%2F%2Fexample.com%2Fsource.png?w=120&s=5e0397bc0858d369116917aa7c173977',
     });
+  });
+});
+
+describe('withImageHost', () => {
+  const signed = 'https://rainbow.imgix.net/https%3A%2F%2Fexample.com%2Fa.png?w=120&s=abc123';
+
+  it('leaves the URL on imgix while the flag is off', () => {
+    withRemoteConfig({ image_cdn_enabled: false }, () => {
+      expect(withImageHost(signed)).toBe(signed);
+    });
+  });
+
+  it('swaps only the host when the flag is on, leaving path, query and signature intact', () => {
+    withRemoteConfig({ image_cdn_enabled: true }, () => {
+      expect(withImageHost(signed)).toBe('https://img.p.rainbow.me/https%3A%2F%2Fexample.com%2Fa.png?w=120&s=abc123');
+    });
+  });
+
+  it('ignores URLs it did not mint', () => {
+    withRemoteConfig({ image_cdn_enabled: true }, () => {
+      expect(withImageHost('https://example.com/a.png')).toBe('https://example.com/a.png');
+      expect(withImageHost(undefined)).toBeUndefined();
+    });
+  });
+
+  it('rewrites on the way out of the cache, so a flip needs no cache invalidation', () => {
+    const source = 'https://example.com/flip.png';
+    const beforeFlip = maybeSignUri(source, { w: 40 });
+    expect(beforeFlip).toContain('https://rainbow.imgix.net/');
+
+    withRemoteConfig({ image_cdn_enabled: true }, () => {
+      expect(maybeSignUri(source, { w: 40 })).toBe(beforeFlip?.replace('https://rainbow.imgix.net/', 'https://img.p.rainbow.me/'));
+    });
+  });
+
+  it('restores the previous value after the block, without an afterEach', () => {
+    withRemoteConfig({ image_cdn_enabled: true }, () => undefined);
+    expect(withImageHost(signed)).toBe(signed);
   });
 });

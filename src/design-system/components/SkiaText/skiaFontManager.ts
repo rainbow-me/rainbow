@@ -15,7 +15,6 @@ import { Platform as SkiaPlatform } from '@shopify/react-native-skia/src/Platfor
 import { type TextAlign } from '@/components/text/types';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { IS_DEV } from '@/env';
-import { useCleanup } from '@/hooks/useCleanup';
 
 interface FontManager {
   fontManager: SkFontMgr | SkTypefaceFontProvider;
@@ -75,10 +74,12 @@ export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additio
     additionalWeights ? [align, weight, ...additionalWeights] : [align, weight]
   );
 
-  useCleanup(() => {
-    releaseParagraphBuilder(fontInfo);
-    releaseFontManager();
-  });
+  useEffect(() => {
+    return () => {
+      releaseParagraphBuilder(fontInfo);
+      releaseFontManager();
+    };
+  }, [fontInfo]);
 
   return manager;
 }

@@ -7,7 +7,6 @@ import RadialGradient from 'react-native-radial-gradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text, TextIcon } from '@/design-system';
-import { IS_TEST } from '@/env';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { opacity } from '@/framework/ui/utils/opacity';
 import { isNativeAsset } from '@/handlers/assets';
@@ -16,8 +15,6 @@ import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import ButtonPressAnimation from '../../../animations/ButtonPressAnimation';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
-
-const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;
@@ -33,7 +30,7 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
   const { isDarkMode, colors } = theme;
   return (
     <ButtonPressAnimation onPress={() => toggleFavorite()}>
-      <SafeRadialGradient
+      <RadialGradient
         center={[0, 15]}
         colors={
           favorite
@@ -45,7 +42,7 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
         <TextIcon color={{ custom: favorite ? colors.yellowFavorite : opacity(colors.blueGreyDark, 0.2) }} size="icon 13px" weight="bold">
           {'􀋃'}
         </TextIcon>
-      </SafeRadialGradient>
+      </RadialGradient>
     </ButtonPressAnimation>
   );
 }
@@ -61,11 +58,11 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
   return (
     <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
-        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.actionIconContainer, sx.infoIcon]}>
+        <RadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.actionIconContainer, sx.infoIcon]}>
           <TextIcon color={{ custom: opacity(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold">
             {'􀅳'}
           </TextIcon>
-        </SafeRadialGradient>
+        </RadialGradient>
       </ButtonPressAnimation>
     </ContextMenuButton>
   );
