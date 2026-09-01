@@ -1,5 +1,4 @@
-import React, { memo, useCallback } from 'react';
-import { Platform } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -8,17 +7,17 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 import { CashBalanceIcon } from '@/features/cash-balance/components/CashBalanceIcon';
 import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useCashBalanceAddPress } from '@/features/cash-balance/hooks/useCashBalanceAddPress';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
+import { useNavigateToSend } from '@/features/transfer/hooks/useNavigateToSend';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { USDC_ADDRESS } from '@/references/constants';
+import { parsedSearchAssetToParsedAddressAsset } from '@/state/assets/utils';
 import getUrlForTrustIconFallback from '@/utils/getUrlForTrustIconFallback';
 
 // Matches the arrow used by the send button elsewhere (wallet screen / expanded asset sheet)
@@ -128,7 +127,6 @@ function CashBalanceActionButton({
 export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
   const { asset, balanceDisplay, hasBalance } = useCashBalance();
   const { navigate } = useNavigation();
-  const navigateForNonReadOnlyWallet = useNavigationForNonReadOnlyWallets();
   const handleAddPress = useCashBalanceAddPress('cash balance half sheet');
 
   // A real route stacked on top, not an inline overlay, so it gets its own independent native
@@ -137,15 +135,8 @@ export const CashBalanceHalfSheet = memo(function CashBalanceHalfSheet() {
     navigate(Routes.CASH_BALANCE_WITHDRAW_COMING_SOON_SHEET);
   }, [navigate]);
 
-  const handleSendPress = useCallback(() => {
-    if (!asset) return;
-    const sendAsset = asset as unknown as ParsedAddressAsset;
-    if (Platform.OS === 'ios') {
-      navigateForNonReadOnlyWallet(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset: sendAsset } });
-    } else {
-      navigateForNonReadOnlyWallet(Routes.SEND_FLOW, { asset: sendAsset });
-    }
-  }, [asset, navigateForNonReadOnlyWallet]);
+  const sendAsset = useMemo(() => (asset ? parsedSearchAssetToParsedAddressAsset(asset) : undefined), [asset]);
+  const handleSendPress = useNavigateToSend(sendAsset);
 
   return (
     <PanelSheet>

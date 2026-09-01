@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
+import { type GestureResponderEvent } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -17,8 +18,21 @@ const ADD_BUTTON_HEIGHT = 36;
 
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
   const { balanceDisplay } = useCashBalance();
-  const handleAddPress = useCashBalanceAddPress('cash balance widget');
+  const handleAddCashPress = useCashBalanceAddPress('cash balance widget');
   const handleRowPress = () => Navigation.handleAction(Routes.CASH_BALANCE_HALF_SHEET);
+
+  // The Add button sits inside the row's own ButtonPressAnimation, so its press must stop
+  // propagating or it also fires the row's onPress (see RnbwFeatureCard's DismissButton for the
+  // same nested-button hazard).
+  const handleAddPress = useCallback(
+    (e?: GestureResponderEvent) => {
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+      }
+      handleAddCashPress();
+    },
+    [handleAddCashPress]
+  );
 
   return (
     <Box paddingHorizontal="12px" justifyContent="center" height={{ custom: CashBalanceHeaderHeight }}>
