@@ -21,6 +21,37 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.44](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.44)
+
+### Added
+
+- Route signed image URLs through our own CDN behind a flag (https://github.com/rainbow-me/rainbow/pull/7792)
+
+### Changed
+
+- Reduce circular dependencies from 47 to 30 (https://github.com/rainbow-me/rainbow/pull/7761)
+- Remove dead test-mode gradient override from Box (https://github.com/rainbow-me/rainbow/pull/7794)
+- Remove test-mode gradient swap from FastCurrencySelectionRow (https://github.com/rainbow-me/rainbow/pull/7795)
+- Remove test-mode rendering fork from GradientText (https://github.com/rainbow-me/rainbow/pull/7793)
+- Remove IS_TEST rendering fork in TextShadow (https://github.com/rainbow-me/rainbow/pull/7791)
+- Add dep cruiser checks for UI runtime and store libs (https://github.com/rainbow-me/rainbow/pull/7784)
+- Move cross-feature shared code out of screens/ internals (https://github.com/rainbow-me/rainbow/pull/7801)
+- Deduplicate TapToDismiss into one shared component (https://github.com/rainbow-me/rainbow/pull/7797)
+- Add boundary rules for the app root and feature screens in deps-check (https://github.com/rainbow-me/rainbow/pull/7802)
+- Inline Skia font manager unmount cleanup in design-system (https://github.com/rainbow-me/rainbow/pull/7790)
+- Move token amount parsing out of framework into token domain (https://github.com/rainbow-me/rainbow/pull/7788)
+- Move getDeterministicIndex out of framework (https://github.com/rainbow-me/rainbow/pull/7714)
+- Decouple vendored ens-avatar from app code (https://github.com/rainbow-me/rainbow/pull/7786)
+- Bump iOS and Android to v2.0.44 (https://github.com/rainbow-me/rainbow/pull/7807)
+
+### Fixed
+
+- Prevent backdrop dismissal during money flows in CASH (https://github.com/rainbow-me/rainbow/pull/7800)
+- Treat 408 and 429 as ambiguous in CASH (https://github.com/rainbow-me/rainbow/pull/7799)
+- Fix logger throwing transport silencing transports after it (https://github.com/rainbow-me/rainbow/pull/7775)
+- Normalize purchase transaction hashes in CASH (https://github.com/rainbow-me/rainbow/pull/7798)
+- Ensure swap polling and quote updates stop after unmount (https://github.com/rainbow-me/rainbow/pull/7808)
+
 ## [2.0.43](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.43)
 
 ### Added
