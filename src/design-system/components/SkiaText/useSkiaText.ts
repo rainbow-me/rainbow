@@ -11,7 +11,7 @@ import {
   type SkTextShadow,
   type SkTextStyle,
 } from '@shopify/react-native-skia';
-import { useDerivedValue } from 'react-native-reanimated';
+import { useDerivedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
 import { type TextAlign } from '@/components/text/types';
 import { useColorMode } from '@/design-system/color/ColorMode';
@@ -21,9 +21,10 @@ import { type SharedOrDerivedValueText } from '@/design-system/components/Text/A
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { typeHierarchy, type TextSize } from '@/design-system/typography/typeHierarchy';
 import { opacity } from '@/framework/ui/utils/opacity';
-import { type SharedOrDerivedValue } from '@/types/reanimated';
 
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
+
+type SharedOrDerivedValue<T> = SharedValue<T> | DerivedValue<T>;
 
 export type TextSegment = {
   backgroundPaint?: SkPaint;
