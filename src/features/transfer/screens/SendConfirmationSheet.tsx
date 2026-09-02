@@ -23,6 +23,7 @@ import { SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '@/component
 import { Text as OldText } from '@/components/text';
 import TouchableBackdrop from '@/components/TouchableBackdrop';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { AssetType } from '@/entities/assetTypes';
 import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core/domainFormat';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -42,7 +43,6 @@ import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';

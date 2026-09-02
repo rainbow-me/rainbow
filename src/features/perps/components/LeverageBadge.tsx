@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 type LeverageBadgeProps = {
   leverage: number;

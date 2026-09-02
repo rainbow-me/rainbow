@@ -17,6 +17,7 @@ import { clamp } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
 import { Box, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { USD_CURRENCY, USD_DECIMALS } from '@/features/currency/constants';
 import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
 import {
@@ -39,7 +40,6 @@ import {
 } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useLazyRef } from '@/hooks/useLazyRef';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';

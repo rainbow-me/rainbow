@@ -5,7 +5,7 @@ import { BlurView } from 'react-native-blur-view';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { Box, globalColors, Text } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import neverRerender from '@/utils/neverRerender';
 
 import { useTheme } from '../../theme/ThemeContext';

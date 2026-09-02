@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';

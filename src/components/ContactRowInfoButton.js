@@ -6,10 +6,10 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';

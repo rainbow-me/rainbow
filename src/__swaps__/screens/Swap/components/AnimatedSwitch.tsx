@@ -7,7 +7,7 @@ import Animated, { useAnimatedStyle, useDerivedValue, withSpring, withTiming, ty
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Bleed, Box, globalColors, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 type AnimatedSwitchProps = {
   onToggle: () => void;

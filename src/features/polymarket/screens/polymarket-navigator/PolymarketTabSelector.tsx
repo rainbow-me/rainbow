@@ -17,11 +17,11 @@ import Animated, {
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';

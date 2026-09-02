@@ -38,12 +38,12 @@ import {
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { opacity } from '@/design-system/utils/opacity';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';

@@ -20,8 +20,8 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { typeHierarchy, type TextSize } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/framework/ui/utils/opacity';
 
+import { opacity } from '../../utils/opacity';
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 type SharedOrDerivedValue<T> = SharedValue<T> | DerivedValue<T>;

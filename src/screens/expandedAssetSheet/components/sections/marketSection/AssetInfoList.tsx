@@ -8,7 +8,7 @@ import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText, Box, Text, TextIcon, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';

@@ -9,7 +9,7 @@ import { Column } from '@/components/layout';
 import { SheetActionButton } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Stack, Text } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 

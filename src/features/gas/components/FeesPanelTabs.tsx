@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

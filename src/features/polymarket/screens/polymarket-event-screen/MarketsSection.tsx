@@ -4,6 +4,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';
 import { ResolvedMarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsSection';
@@ -11,7 +12,6 @@ import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymar
 import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';

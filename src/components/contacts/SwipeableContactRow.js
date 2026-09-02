@@ -4,7 +4,7 @@ import { Animated, Platform } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { ImgixImage } from '@/components/images';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { margin, position } from '@/styles';
 

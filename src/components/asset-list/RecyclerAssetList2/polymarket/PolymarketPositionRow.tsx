@@ -9,6 +9,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
@@ -19,7 +20,6 @@ import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketCol
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {

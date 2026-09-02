@@ -18,7 +18,7 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';

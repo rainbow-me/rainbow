@@ -4,10 +4,10 @@ import { View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
 import { Box, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 import { mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

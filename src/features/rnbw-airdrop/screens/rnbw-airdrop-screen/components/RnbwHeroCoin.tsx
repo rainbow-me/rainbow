@@ -15,6 +15,7 @@ import Animated, {
 
 import rnbwCoinImage from '@/assets/rnbw.png';
 import { Box, globalColors, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { useAirdropFlowStore } from '@/features/rnbw-airdrop/stores/airdropFlowStore';
@@ -23,7 +24,6 @@ import concentricCircleImage from '@/features/rnbw-rewards/assets/radial-circle.
 import { SpinnableCoin, type SpinnableCoinHandle } from '@/features/rnbw-rewards/components/SpinnableCoin';
 import { time } from '@/framework/core/utils/time';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';

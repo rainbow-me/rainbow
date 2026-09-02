@@ -9,13 +9,13 @@ import { Skeleton } from '@/components/Skeleton';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
+import { opacity } from '@/design-system/utils/opacity';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 

@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { borders, position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

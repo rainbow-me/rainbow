@@ -7,6 +7,7 @@ import RNShare from 'react-native-share';
 import { analytics } from '@/analytics';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { PnlShareGraphic, type PnlShareImageHandle } from '@/features/perps/screens/perps-trade-details-sheet/PnlShareGraphic';
@@ -16,7 +17,6 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { type HlTrade } from '@/features/perps/types';
 import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTradePnlPercentage';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import type Routes from '@/navigation/routesNames';

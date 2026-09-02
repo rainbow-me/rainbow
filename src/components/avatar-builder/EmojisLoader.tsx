@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { avatarBuilderStyles } from './avatarBuilderStyles';

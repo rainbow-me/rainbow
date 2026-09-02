@@ -49,7 +49,7 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';

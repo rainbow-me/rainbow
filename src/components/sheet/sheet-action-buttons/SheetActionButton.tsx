@@ -3,8 +3,8 @@ import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { containsEmoji } from '@/helpers/strings';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';

@@ -6,13 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { RainbowShimmerFill } from '@/features/rnbw-membership/components/RainbowShimmerFill';
 import { ShadowLayers } from '@/features/rnbw-membership/components/ShadowLayers';
 import { MEMBERSHIP_CARD_BACKGROUND_COLOR } from '@/features/rnbw-membership/membershipCardTheme';
 import { getTierPrimaryButtonTheme, getTierSecondaryButtonTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier } from '@/features/rnbw-membership/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const GRADIENT_START = { x: 0, y: 0 };

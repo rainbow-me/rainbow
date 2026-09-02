@@ -3,6 +3,7 @@ import { Keyboard } from 'react-native';
 
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { Box, Separator, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
 import { FOOTER_HEIGHT, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
@@ -13,7 +14,6 @@ import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/navig
 import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type PerpMarket } from '@/features/perps/types';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';

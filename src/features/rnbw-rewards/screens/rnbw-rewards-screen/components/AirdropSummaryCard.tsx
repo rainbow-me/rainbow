@@ -9,12 +9,12 @@ import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/
 import rnbwCoinImage from '@/assets/rnbw.png';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { RnbwRewardsScenes } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { useAirdropBalanceStore } from '@/features/rnbw-rewards/stores/airdropBalanceStore';
 import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';

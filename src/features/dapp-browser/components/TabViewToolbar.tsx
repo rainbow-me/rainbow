@@ -11,7 +11,7 @@ import { Bleed, Box, globalColors, Text, useColorMode, useForegroundColor, type 
 import { type TextColor } from '@/design-system/color/palettes';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { position } from '@/styles';

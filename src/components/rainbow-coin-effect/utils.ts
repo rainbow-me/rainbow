@@ -5,7 +5,7 @@ import { Easing, withRepeat, withSequence, withSpring, withTiming, type SharedVa
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { generateRainbowGradient } from '@/worklets/gradients';
 import { getCirclePath } from '@/worklets/skia';

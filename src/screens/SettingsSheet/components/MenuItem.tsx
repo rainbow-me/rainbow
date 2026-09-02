@@ -8,7 +8,7 @@ import Caret from '@/assets/family-dropdown-arrow.png';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type Width } from '@/design-system/layout/size';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';

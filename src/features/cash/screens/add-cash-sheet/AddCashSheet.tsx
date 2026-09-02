@@ -12,6 +12,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { NumberPad } from '@/components/number-pad/NumberPad';
 import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { ORDER_FAST_POLL_DURATION_MS, ORDER_FAST_POLL_INTERVAL_MS, ORDER_SLOW_POLL_INTERVAL_MS } from '@/features/cash/constants';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
@@ -22,7 +23,6 @@ import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useTimestampReached } from '@/framework/ui/hooks/useTimestampReached';
 import { useWatcher } from '@/framework/ui/hooks/useWatcher';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';

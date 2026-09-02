@@ -8,6 +8,7 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { type CardPressHandler, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
@@ -20,7 +21,6 @@ import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sports
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import { getDiscoverSportsEventTeamLabels } from '@/features/polymarket/utils/sportsEventTeamLabels';
 import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

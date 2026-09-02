@@ -1,8 +1,8 @@
 import React from 'react';
 import { Platform, View, type ViewProps } from 'react-native';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type Colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

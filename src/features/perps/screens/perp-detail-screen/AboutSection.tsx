@@ -1,12 +1,12 @@
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { type PerpMarket } from '@/features/perps/types';
 import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';

@@ -6,7 +6,7 @@ import { infoForEventType, motiTimingConfig } from '@/components/Transactions/co
 import { type DetailInfo, type EventInfo, type EventType } from '@/components/Transactions/types';
 import { Bleed, Box, globalColors, Text, useForegroundColor } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 export const EventIcon = ({ eventType }: { eventType: EventType }) => {

@@ -11,6 +11,7 @@ import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 
 import Divider from '@/components/Divider';
+import { opacity } from '@/design-system/utils/opacity';
 import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
 import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
@@ -21,7 +22,6 @@ import gasUtils from '@/features/gas/utils/gas';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';

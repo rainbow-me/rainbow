@@ -1,7 +1,7 @@
 import { globalColors } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';
 import type { TierId } from '@/features/rnbw-membership/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 // ============ Types ========================================================== //
 

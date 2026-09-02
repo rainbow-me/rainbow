@@ -7,11 +7,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { SkiaGradientShadow } from '@/features/rnbw-membership/components/SkiaGradientShadow';
 import { getTierProgressBarTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier } from '@/features/rnbw-membership/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const PROGRESS_BAR_HORIZONTAL_PADDING = 12;
 const PROGRESS_HIGHLIGHT_INSET = 5;

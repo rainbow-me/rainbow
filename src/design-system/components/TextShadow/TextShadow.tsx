@@ -3,10 +3,9 @@ import { Platform, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
 
-import { opacity } from '@/framework/ui/utils/opacity';
-
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
+import { opacity } from '../../utils/opacity';
 import { AnimatedText, type AnimatedTextProps } from '../Text/AnimatedText';
 import { Text, type TextProps } from '../Text/Text';
 

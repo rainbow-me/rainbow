@@ -8,12 +8,12 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
 import { RnbwButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwButton';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
