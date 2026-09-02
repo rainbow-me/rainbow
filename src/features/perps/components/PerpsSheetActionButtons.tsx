@@ -3,8 +3,8 @@ import { View } from 'react-native';
 
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
 type PerpsSheetActionButtonsProps = {

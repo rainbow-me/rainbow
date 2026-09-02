@@ -3,7 +3,7 @@ import { View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 're
 
 import { Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';

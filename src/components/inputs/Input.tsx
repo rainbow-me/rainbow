@@ -2,8 +2,8 @@ import React, { type ForwardedRef } from 'react';
 import { Platform, TextInput as TextInputPrimitive, type StyleProp, type TextInputProps, type TextStyle } from 'react-native';
 
 import { useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { buildTextStyles } from '@/styles';
 
 interface InputProps extends TextInputProps {

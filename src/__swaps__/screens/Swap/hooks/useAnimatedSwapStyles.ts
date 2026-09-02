@@ -31,7 +31,7 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

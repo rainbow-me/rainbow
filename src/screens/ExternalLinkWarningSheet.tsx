@@ -5,7 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';

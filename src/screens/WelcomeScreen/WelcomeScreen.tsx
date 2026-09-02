@@ -20,9 +20,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { Box } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import * as i18n from '@/languages';

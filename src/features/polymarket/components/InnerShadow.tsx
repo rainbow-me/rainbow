@@ -2,15 +2,13 @@ import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, type LayoutChangeEvent } from 'react-native';
 
 import { Canvas, rect, RoundedRect, rrect, Shadow } from '@shopify/react-native-skia';
-import Animated, { useSharedValue } from 'react-native-reanimated';
-
-import { type SharedOrDerivedValue } from '@/types/reanimated';
+import Animated, { useSharedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
 const ZERO_RECT = Object.freeze(rrect(rect(0, 0, 0, 0), 0, 0));
 
 type InnerShadowProps = {
   borderRadius?: number;
-  color: string | SharedOrDerivedValue<string>;
+  color: string | SharedValue<string> | DerivedValue<string>;
   blur: number;
   dx: number;
   dy: number;

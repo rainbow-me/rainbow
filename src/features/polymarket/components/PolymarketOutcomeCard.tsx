@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import ImgixImage from '@/components/images/ImgixImage';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 type OutcomeCardProps = {
   accentColor: string;

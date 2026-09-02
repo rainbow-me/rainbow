@@ -8,10 +8,10 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { AnimatedText, Border, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
+import { opacity } from '@/design-system/utils/opacity';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';

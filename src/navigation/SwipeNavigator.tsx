@@ -44,6 +44,7 @@ import {
 } from '@/components/tab-bar/dimensions';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
@@ -57,7 +58,6 @@ import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowK
 import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';

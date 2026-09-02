@@ -13,10 +13,10 @@ import Animated, {
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Text, TextShadow, useColorMode, type AnimatedTextProps, type BoxProps, type TextProps } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
 import { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';

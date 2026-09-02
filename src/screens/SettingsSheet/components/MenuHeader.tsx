@@ -5,7 +5,7 @@ import { type Source } from 'react-native-fast-image';
 
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, type Space } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 interface ImageIconProps {

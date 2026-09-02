@@ -9,11 +9,11 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket-event';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';

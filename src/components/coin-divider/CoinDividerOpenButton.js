@@ -3,8 +3,8 @@ import React from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
 import { ImgixImage } from '@/components/images';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';

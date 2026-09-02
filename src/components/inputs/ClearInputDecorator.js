@@ -2,8 +2,8 @@ import React, { useLayoutEffect, useState } from 'react';
 
 import Animated, { Easing, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { position } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 

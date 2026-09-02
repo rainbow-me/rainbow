@@ -24,8 +24,8 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';

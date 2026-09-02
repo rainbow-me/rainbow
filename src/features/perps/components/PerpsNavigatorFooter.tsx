@@ -13,6 +13,7 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/design-system/utils/opacity';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -23,7 +24,6 @@ import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/feature
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';

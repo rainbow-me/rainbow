@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { SheetActionButton } from '@/components/sheet';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

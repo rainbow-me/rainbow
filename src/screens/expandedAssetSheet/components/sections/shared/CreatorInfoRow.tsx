@@ -18,7 +18,7 @@ import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants'
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useStableValue } from '@/hooks/useStableValue';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { Row } from '@/screens/expandedAssetSheet/components/shared/Row';

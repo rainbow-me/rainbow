@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import ContextMenu from '@/components/native-context-menu/contextMenu';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';

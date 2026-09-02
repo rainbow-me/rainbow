@@ -2,7 +2,7 @@ import React from 'react';
 import { RefreshControl, type RefreshControlProps } from 'react-native';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import { useTheme } from '@/theme/ThemeContext';
 

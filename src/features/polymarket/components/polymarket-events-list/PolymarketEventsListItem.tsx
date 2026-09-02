@@ -10,6 +10,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 // import {
 //   polymarketRecommendationsActions,
@@ -18,7 +19,6 @@ import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds } from '@/features/polymarket/utils/sportsEventBetData';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

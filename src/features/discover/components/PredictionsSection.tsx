@@ -3,6 +3,7 @@ import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-nati
 
 import { Skeleton } from '@/components/Skeleton';
 import { globalColors, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import {
   PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
@@ -48,7 +49,6 @@ import { getSportsEventRowTokenIds } from '@/features/polymarket/hooks/useSports
 import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';

@@ -2,9 +2,9 @@ import React, { Fragment } from 'react';
 import { Platform } from 'react-native';
 
 import { Column } from '@/components/layout';
+import { opacity } from '@/design-system/utils/opacity';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme/ThemeContext';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';

@@ -10,6 +10,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -22,7 +23,6 @@ import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDe
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { formatNumber } from '@/helpers/strings';
 import { greaterThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';

@@ -5,6 +5,7 @@ import Animated, { runOnJS } from 'react-native-reanimated';
 
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { AirdropSummaryCard } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/components/AirdropSummaryCard';
@@ -18,7 +19,6 @@ import { rewardsFlowActions } from '@/features/rnbw-rewards/stores/rewardsFlowSt
 import { prepareRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';

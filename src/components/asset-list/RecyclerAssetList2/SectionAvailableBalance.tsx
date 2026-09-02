@@ -7,9 +7,9 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { ImgixImage } from '@/components/images';
 import { Box, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 
 type SectionAvailableBalanceProps = {

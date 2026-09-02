@@ -13,8 +13,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 const timingConfig = {

@@ -10,13 +10,13 @@ import { Icon } from '@/components/icons';
 import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_STORE_INSTALL } from '@/env';
 import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import {
   isRainbowDelegated as hasRainbowDelegation,
   isThirdPartyDelegated as hasThirdPartyDelegation,
 } from '@/features/delegation/utils/status';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';

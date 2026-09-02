@@ -13,7 +13,7 @@ import {
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, useForegroundColor, type TextProps } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 

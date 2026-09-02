@@ -4,7 +4,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

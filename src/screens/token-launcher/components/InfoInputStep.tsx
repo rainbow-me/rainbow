@@ -7,7 +7,7 @@ import Animated from 'react-native-reanimated';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, Separator, Text } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { PrebuySection } from '@/screens/token-launcher/components/PrebuySection';
 

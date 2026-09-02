@@ -6,10 +6,10 @@ import { type SharedValue } from 'react-native-reanimated';
 
 import { FastTransactionCoinRow } from '@/components/coin-row';
 import { Skeleton } from '@/components/Skeleton';
+import { opacity } from '@/design-system/utils/opacity';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';

@@ -22,10 +22,10 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { DEGEN_MODE } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

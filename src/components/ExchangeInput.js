@@ -4,8 +4,8 @@ import { InteractionManager, Platform } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 
 import { Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { buildTextStyles } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 

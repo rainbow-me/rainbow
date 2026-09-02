@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { type LinearGradientProps } from 'expo-linear-gradient';
 
 import { useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 export const HYPERLIQUID_GREEN = '#3ECFAD';
 export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';

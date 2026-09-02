@@ -3,7 +3,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { useBackgroundColor } from '@/design-system/components/BackgroundProvider/BackgroundProvider';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 const LIVE_INDICATOR_SIZE = 28;
 const LIVE_INDICATOR_CUTOUT_SIZE = 16;

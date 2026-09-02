@@ -5,10 +5,10 @@ import { type KeyboardAwareScrollViewRef } from 'react-native-keyboard-controlle
 import { type SharedValue } from 'react-native-reanimated';
 
 import { useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type BackendNetwork } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';

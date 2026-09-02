@@ -7,8 +7,8 @@ import RadialGradient from 'react-native-radial-gradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text, TextIcon } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 

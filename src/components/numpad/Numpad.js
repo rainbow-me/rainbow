@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme/ThemeContext';
 
