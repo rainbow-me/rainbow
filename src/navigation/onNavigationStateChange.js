@@ -3,7 +3,6 @@ import { NativeModules, Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 import { analytics } from '@/analytics';
-import { isSplashScreenHidden } from '@/app/splashScreenState';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import currentColors from '@/theme/currentColors';
@@ -14,11 +13,16 @@ import Routes from './routesNames';
 let memState;
 let memRouteName;
 let memPrevRouteName;
+let splashScreenHidden = false;
+
+export function markSplashScreenHidden() {
+  splashScreenHidden = true;
+}
 
 export function onHandleStatusBar(currentState, prevState) {
   // Skip updating the system bars while the splash screen is visible
   // this will be called again once splash screen is hidden.
-  if (!isSplashScreenHidden()) return;
+  if (!splashScreenHidden) return;
 
   const routeName = Navigation.getActiveRouteName();
   if (currentColors.theme === 'dark') {

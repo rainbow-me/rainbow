@@ -3,10 +3,9 @@ import { InteractionManager, NativeModules, Platform } from 'react-native';
 
 import { SystemBars } from 'react-native-edge-to-edge';
 
-import { markSplashScreenHidden } from '@/app/splashScreenState';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { logger, RainbowError } from '@/logger';
-import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+import { markSplashScreenHidden, onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
 
