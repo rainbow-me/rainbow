@@ -1,4 +1,4 @@
-import AppIconSettingsSection from '@/features/app-icon/components/AppIconSettingsSection';
+import { AppIconSettingsSection } from '@/features/app-icon/components/AppIconSettingsSection';
 import { DevSection } from '@/features/debug/screens/DevSection';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
