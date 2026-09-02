@@ -8,12 +8,10 @@ import {
   OrderFailureReason,
   OrderStatus,
   createBuyOrder as rampCreateBuyOrder,
-  RampCryptoAsset,
   getOrder as rampGetOrder,
   RampNetwork,
   type BuyOrder,
   type BuyOrderSpec,
-  type CreatedBuyOrder,
   type TerminalBuyOrder,
 } from '../services/rampClient';
 import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
@@ -24,9 +22,9 @@ jest.mock('@/analytics', () => ({
   analytics: {
     track: jest.fn(),
     event: {
-      cashBuyOrderSubmitted: 'cash.buy_submitted',
       cashBuyOrderCompleted: 'cash.buy_completed',
       cashBuyOrderFailed: 'cash.buy_failed',
+      cashBuyOrderSubmitted: 'cash.buy_submitted',
     },
   },
 }));
@@ -35,7 +33,11 @@ jest.mock('@/features/local-auth/legacyKeychain', () => ({}));
 
 jest.mock('@/logger', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
-  RainbowError: class RainbowError extends Error {},
+  RainbowError: class RainbowError extends Error {
+    constructor(message: string, cause?: unknown) {
+      super(message, { cause });
+    }
+  },
 }));
 
 jest.mock('../services/rampClient', () => ({
@@ -77,30 +79,21 @@ const RAMP_WALLET_ADDRESS = WALLET_ADDRESS.toLowerCase();
 
 const SPEC: BuyOrderSpec = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: WALLET_ADDRESS };
 const SUBMITTED_AT = 1750789885000;
-const CREATED_PENDING_ORDER: CreatedBuyOrder = {
-  id: SPEC.id,
-  status: OrderStatus.Pending,
-  createdTime: '2026-06-24T18:31:25.000Z',
-};
-const CREATED_COMPLETED_ORDER: CreatedBuyOrder = { ...CREATED_PENDING_ORDER, status: OrderStatus.Completed };
 
-const ORDER_COMMON = {
+const PENDING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { id: 'order-1', status: OrderStatus.Pending };
+const PROCESSING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { id: 'order-1', status: OrderStatus.Processing };
+const COMPLETED_ORDER = {
   id: 'order-1',
-  cryptoAmount: { amount: '50', asset: { asset: RampCryptoAsset.USDC, network: RampNetwork.Base } },
-  fiatAmount: { amount: '50', currency: 'USD' },
-  createdTime: '2026-06-24T18:31:25.000Z',
-  walletAddress: RAMP_WALLET_ADDRESS,
-};
-const PENDING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { ...ORDER_COMMON, status: OrderStatus.Pending };
-const PROCESSING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { ...ORDER_COMMON, status: OrderStatus.Processing };
-const COMPLETED_ORDER: Extract<BuyOrder, { status: OrderStatus.Completed }> = {
-  ...ORDER_COMMON,
   status: OrderStatus.Completed,
+  cryptoAmount: { amount: '50', asset: { network: RampNetwork.Base } },
+  fiatAmount: { amount: '50', currency: 'USD' },
+  createdTime: new Date('2026-06-24T18:31:25.000Z').getTime(),
+  walletAddress: RAMP_WALLET_ADDRESS,
   transactionHash: '0xtx',
-  completedTime: '2026-06-24T18:31:31.000Z',
-};
+  completedTime: new Date('2026-06-24T18:31:31.000Z').getTime(),
+} satisfies Extract<BuyOrder, { status: OrderStatus.Completed }>;
 const FAILED_PAYMENT_ORDER: Extract<BuyOrder, { status: OrderStatus.Failed }> = {
-  ...ORDER_COMMON,
+  id: 'order-1',
   status: OrderStatus.Failed,
   failureReason: OrderFailureReason.PaymentRejected,
 };
@@ -128,7 +121,7 @@ beforeEach(() => {
 
 describe('submitBuyOrder', () => {
   it('rounds the amount before tracking a submitted order', async () => {
-    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
+    createBuyOrder.mockResolvedValue(undefined);
 
     await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '123.456789' });
 
@@ -136,7 +129,7 @@ describe('submitBuyOrder', () => {
   });
 
   it('builds a spec, creates the order, and surfaces the created order id as pending', async () => {
-    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
+    createBuyOrder.mockResolvedValue(undefined);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
 
@@ -145,8 +138,8 @@ describe('submitBuyOrder', () => {
     expect(phase()).toBe('pending');
   });
 
-  it('fetches full details before applying a terminal status returned by an idempotent create replay', async () => {
-    createBuyOrder.mockResolvedValue(CREATED_COMPLETED_ORDER);
+  it('fetches full details before applying a terminal order', async () => {
+    createBuyOrder.mockResolvedValue(undefined);
     getOrder.mockResolvedValue(COMPLETED_ORDER);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
@@ -156,7 +149,7 @@ describe('submitBuyOrder', () => {
 
     await getState().syncActiveOrder();
 
-    expect(getOrder).toHaveBeenCalledWith(CREATED_COMPLETED_ORDER.id, expect.any(AbortController));
+    expect(getOrder).toHaveBeenCalledWith(SPEC.id, expect.any(AbortController));
     expect(addPendingTransaction).toHaveBeenCalled();
     expect(phase()).toBe('success');
   });
@@ -180,7 +173,7 @@ describe('submitBuyOrder', () => {
     { label: 'a 429', failure: fetchError(429) },
     { label: 'a 500', failure: fetchError(500) },
   ])('replays the same order id when retrying after $label', async ({ failure }) => {
-    createBuyOrder.mockRejectedValueOnce(failure).mockResolvedValueOnce(CREATED_PENDING_ORDER);
+    createBuyOrder.mockRejectedValueOnce(failure).mockResolvedValueOnce(undefined);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
     await getState().submitBuyOrder(SUBMIT_INPUT);
@@ -191,7 +184,7 @@ describe('submitBuyOrder', () => {
   });
 
   it('generates a fresh order id when retrying after a definitive backend rejection', async () => {
-    createBuyOrder.mockRejectedValueOnce(fetchError(422)).mockResolvedValueOnce({ ...CREATED_PENDING_ORDER, id: 'order-2' });
+    createBuyOrder.mockRejectedValueOnce(fetchError(422)).mockResolvedValueOnce(undefined);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
     expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null, spec: undefined });
@@ -201,7 +194,7 @@ describe('submitBuyOrder', () => {
   });
 
   it('generates a fresh order id when the retried inputs differ from the retained spec', async () => {
-    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ ...CREATED_PENDING_ORDER, id: 'order-2' });
+    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce(undefined);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
     await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '100' });
@@ -229,7 +222,7 @@ describe('submitBuyOrder', () => {
 
   it('keeps the linked-wallet cache when the order is created', async () => {
     useCashWalletStore.setState({ linkedWallets: [LINKED_WALLET] });
-    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
+    createBuyOrder.mockResolvedValue(undefined);
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
 
@@ -237,9 +230,9 @@ describe('submitBuyOrder', () => {
   });
 
   it('ignores a second submission while one is already in flight', async () => {
-    let resolveOrder: (order: CreatedBuyOrder) => void = () => undefined;
+    let resolveOrder: () => void = () => undefined;
     createBuyOrder.mockReturnValue(
-      new Promise<CreatedBuyOrder>(resolve => {
+      new Promise<void>(resolve => {
         resolveOrder = resolve;
       })
     );
@@ -249,7 +242,7 @@ describe('submitBuyOrder', () => {
 
     expect(createBuyOrder).toHaveBeenCalledTimes(1);
 
-    resolveOrder(CREATED_PENDING_ORDER);
+    resolveOrder();
     await inFlight;
   });
 });
@@ -332,6 +325,51 @@ describe('syncActiveOrder', () => {
     });
     expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
     expect(phase()).toBe('success');
+    expect(track).toHaveBeenCalledWith('cash.buy_completed', {
+      fiatAmount: 50,
+      fiatCurrency: 'USD',
+      cryptoAmount: 50,
+      network: RampNetwork.Base,
+      timeToUsdcMs: 6_000,
+    });
+  });
+
+  it('surfaces success without an Activity entry when its required payload is malformed', async () => {
+    startPolling(PROCESSING_ORDER);
+    const orderWithoutWalletAddress = { ...COMPLETED_ORDER, walletAddress: undefined };
+    getOrder.mockResolvedValue(orderWithoutWalletAddress);
+
+    await getState().syncActiveOrder();
+
+    expect(addPendingTransaction).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalled();
+    expect(getState().status).toEqual({ step: 'success', order: orderWithoutWalletAddress });
+  });
+
+  it('preserves an Activity error as the logged cause', async () => {
+    startPolling(PROCESSING_ORDER);
+    const cause = new Error('failed to build Activity entry');
+    buildPurchaseTransaction.mockImplementationOnce(() => {
+      throw cause;
+    });
+    getOrder.mockResolvedValue(COMPLETED_ORDER);
+
+    await getState().syncActiveOrder();
+
+    const [loggedError] = (logger.error as jest.Mock).mock.calls[0];
+    expect(loggedError.cause).toBe(cause);
+  });
+
+  it('skips completion analytics without blocking the Activity entry or success', async () => {
+    startPolling(PROCESSING_ORDER);
+    const order = { ...COMPLETED_ORDER, completedTime: undefined };
+    getOrder.mockResolvedValue(order);
+
+    await getState().syncActiveOrder();
+
+    expect(track).not.toHaveBeenCalledWith('cash.buy_completed', expect.anything());
+    expect(addPendingTransaction).toHaveBeenCalled();
+    expect(getState().status).toEqual({ step: 'success', order });
   });
 
   it('rounds the fiat and crypto amounts before tracking a completed order', async () => {
@@ -377,13 +415,13 @@ describe('syncActiveOrder', () => {
     expect(phase()).toBe('error');
   });
 
-  it('keeps the current order and logs when polling throws', async () => {
+  it('keeps the current order and rethrows so the watcher can back off', async () => {
     startPolling(PENDING_ORDER);
-    getOrder.mockRejectedValue(new Error('timeout'));
+    const error = new Error('timeout');
+    getOrder.mockRejectedValue(error);
 
-    await getState().syncActiveOrder();
+    await expect(getState().syncActiveOrder()).rejects.toBe(error);
 
-    expect(logger.error).toHaveBeenCalled();
     expect(getState().status).toMatchObject({ step: 'polling', order: PENDING_ORDER });
     expect(phase()).toBe('pending');
   });
@@ -414,13 +452,13 @@ describe('resumePendingSubmission', () => {
   it('replays a rehydrated spec to (idempotently) recreate the order', async () => {
     // Mimics state restored from disk after a crash mid-submission: spec present, no order yet.
     store.setState({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
-    createBuyOrder.mockResolvedValue(CREATED_PENDING_ORDER);
+    createBuyOrder.mockResolvedValue(undefined);
 
     await getState().resumePendingSubmission();
 
     // same id ⇒ the backend replays, never re-creates
     expect(createBuyOrder).toHaveBeenCalledWith({ ...SPEC, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
-    expect(getState().status).toEqual({ step: 'polling', orderId: CREATED_PENDING_ORDER.id, order: null, submittedAt: SUBMITTED_AT });
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: SUBMITTED_AT });
     expect(phase()).toBe('pending');
   });
 
@@ -442,7 +480,7 @@ describe('concurrent submissions of the same spec', () => {
           rejectOriginal = reject;
         })
       )
-      .mockResolvedValueOnce(CREATED_PENDING_ORDER);
+      .mockResolvedValueOnce(undefined);
 
     const original = getState().submitBuyOrder(SUBMIT_INPUT); // hangs in flight
     await getState().resumePendingSubmission(); // reopen replays the same spec and resolves first
@@ -457,21 +495,21 @@ describe('concurrent submissions of the same spec', () => {
   });
 
   it('drops a late success once polling has already advanced past submission', async () => {
-    let resolveOriginal: (created: CreatedBuyOrder) => void = () => undefined;
+    let resolveOriginal: () => void = () => undefined;
     createBuyOrder
       .mockReturnValueOnce(
-        new Promise<CreatedBuyOrder>(resolve => {
+        new Promise<void>(resolve => {
           resolveOriginal = resolve;
         })
       )
-      .mockResolvedValueOnce(CREATED_PENDING_ORDER);
+      .mockResolvedValueOnce(undefined);
 
     const original = getState().submitBuyOrder(SUBMIT_INPUT);
     await getState().resumePendingSubmission();
     getOrder.mockResolvedValue(PENDING_ORDER);
     await getState().syncActiveOrder();
 
-    resolveOriginal(CREATED_PENDING_ORDER);
+    resolveOriginal();
     await original;
 
     // The late success must not rewind `order` to null.

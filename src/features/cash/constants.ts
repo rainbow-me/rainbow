@@ -8,7 +8,9 @@ export const USDC_NAME = 'USD Coin';
 export const USDC_SYMBOL = 'USDC';
 export const USDC_DECIMALS = 6;
 
-export const ORDER_POLL_INTERVAL_MS = time.seconds(2);
+export const ORDER_FAST_POLL_INTERVAL_MS = time.seconds(2);
+export const ORDER_FAST_POLL_DURATION_MS = time.minutes(5);
+export const ORDER_SLOW_POLL_INTERVAL_MS = time.seconds(15);
 
 /** Each platform admits exactly one destination: production `usdc/base`, staging `usdc/arbitrum_testnet`. */
 export const CASH_BUY_DESTINATION_ASSET: RampAsset = {
@@ -23,7 +25,7 @@ export const CASH_BUY_DESTINATION_ASSET: RampAsset = {
  * (POLYGON_USDC_ADDRESS) own theirs. Chain ids are pinned here rather than resolved
  * through the backend networks store, which never returns testnets.
  */
-export const CASH_USDC_BY_NETWORK: Partial<Record<RampNetwork, { chainId: ChainId; chainName: ChainName; address: string }>> = {
+export const CASH_USDC_BY_NETWORK: Record<RampAsset['network'], { chainId: ChainId; chainName: ChainName; address: string }> = {
   [RampNetwork.ArbitrumTestnet]: {
     chainId: ChainId.arbitrumSepolia,
     chainName: ChainName.arbitrumSepolia,
