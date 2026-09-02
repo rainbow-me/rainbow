@@ -19,7 +19,7 @@ import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
@@ -110,7 +110,7 @@ type DiscoverSearchInputProps = {
   currentChainId?: ChainId;
 };
 
-const DiscoverSearchInput = ({
+export const DiscoverSearchInput = ({
   isDiscover,
   onFocus,
   onBlur,
@@ -225,5 +225,3 @@ const DiscoverSearchInput = ({
     </Container>
   );
 };
-
-export default DiscoverSearchInput;

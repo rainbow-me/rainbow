@@ -5,12 +5,10 @@ import { useCallback, useState } from 'react';
  * on class components.
  * @returns `() => void` forceUpdate
  */
-const useForceUpdate = () => {
+export const useForceUpdate = () => {
   const [, setState] = useState(false);
   const forceUpdate = useCallback(() => {
     setState(state => !state);
   }, []);
   return forceUpdate;
 };
-
-export default useForceUpdate;

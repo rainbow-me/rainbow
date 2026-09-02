@@ -19,7 +19,7 @@ interface GradientTextProps extends LinearGradientProps {
   shadow?: TextShadowConfig;
 }
 
-const GradientText = memo(function GradientText({
+export const GradientText = memo(function GradientText({
   children,
   bleed = 0,
   shadow,
@@ -99,5 +99,3 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
-export default GradientText;

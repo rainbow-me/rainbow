@@ -6,7 +6,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import useRefreshAccountData from '@/hooks/useRefreshAccountData';
 import { useTheme } from '@/theme/ThemeContext';
 
-export default function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
+export function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { colors } = useTheme();
 

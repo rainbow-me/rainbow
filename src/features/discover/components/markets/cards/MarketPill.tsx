@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, globalColors, Text, useColorMode } from '@/design-system';

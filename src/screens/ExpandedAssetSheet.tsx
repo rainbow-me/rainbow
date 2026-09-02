@@ -33,7 +33,7 @@ const Container = styled(Centered).attrs({
   ...position.coverAsObject,
 }));
 
-export default function ExpandedAssetSheet(props: any) {
+export function ExpandedAssetSheet(props: any) {
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET>>();

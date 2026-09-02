@@ -28,9 +28,9 @@ import {
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { fonts } from '@/styles';
-import colors from '@/theme/currentColors';
+import { currentColors as colors } from '@/theme/currentColors';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import type Routes from './routesNames';

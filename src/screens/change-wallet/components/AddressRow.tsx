@@ -4,7 +4,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Address } from 'viem';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
 import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';

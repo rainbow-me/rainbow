@@ -13,13 +13,13 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
 
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
-import SecretWarning from './components/Backups/SecretWarning';
-import ShowSecretView from './components/Backups/ShowSecretView';
-import ViewCloudBackups from './components/Backups/ViewCloudBackups';
-import WiewWalletBackup from './components/Backups/ViewWalletBackup';
-import SettingsSection from './components/SettingsSection';
+import { SecretWarningPage as SecretWarning } from './components/Backups/SecretWarning';
+import { ShowSecretView } from './components/Backups/ShowSecretView';
+import { ViewCloudBackups } from './components/Backups/ViewCloudBackups';
+import { ViewWalletBackup as WiewWalletBackup } from './components/Backups/ViewWalletBackup';
+import { SettingsSection } from './components/SettingsSection';
 import { SupportCategoryPickerView } from './components/support/SupportCategoryPickerView';
-import WalletNotificationsSettings from './components/WalletNotificationsSettings';
+import { WalletNotificationsSettings } from './components/WalletNotificationsSettings';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
 import { SettingsPages } from './SettingsPages';
 

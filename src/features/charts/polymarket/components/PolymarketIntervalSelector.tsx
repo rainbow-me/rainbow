@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Text, useColorMode } from '@/design-system';
 
 import { usePolymarketStore } from '../stores/polymarketStore';

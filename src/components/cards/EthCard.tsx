@@ -24,9 +24,9 @@ import { useExternalToken, type FormattedExternalAsset } from '@/resources/asset
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import Spinner from '../Spinner';
 import { GenericCard } from './GenericCard';

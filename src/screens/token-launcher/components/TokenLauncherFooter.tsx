@@ -7,7 +7,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 
 import { analytics } from '@/analytics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, Inline, Text } from '@/design-system';

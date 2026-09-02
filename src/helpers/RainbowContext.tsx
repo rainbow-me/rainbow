@@ -4,7 +4,7 @@ import { useSharedValue } from 'react-native-reanimated';
 
 import { IS_DEV, IS_TEST } from '@/env';
 import { DevButton } from '@/features/debug/components/DevButton';
-import Emoji from '@/framework/ui/components/Emoji';
+import { Emoji } from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import { getFavorites } from '@/resources/favorites';
@@ -24,7 +24,7 @@ export const RainbowContext = createContext<RainbowContextType>({
   },
 });
 
-export default function RainbowContextWrapper({ children }: PropsWithChildren) {
+export function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);

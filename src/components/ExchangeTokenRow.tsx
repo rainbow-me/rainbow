@@ -3,7 +3,7 @@ import { Platform, View } from 'react-native';
 
 import isEqual from 'react-fast-compare';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { FavStar, Info } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { FloatingEmojis } from '@/components/floating-emojis';

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Stack, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { useSendFeedback } from '@/hooks/useSendFeedback';
@@ -11,9 +11,9 @@ import { useTheme } from '@/theme/ThemeContext';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { SettingsExternalURLs } from '../../constants';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuItem from '../MenuItem';
+import { Menu } from '../Menu';
+import { MenuContainer } from '../MenuContainer';
+import { MenuItem } from '../MenuItem';
 
 export const SupportSection = () => {
   return (

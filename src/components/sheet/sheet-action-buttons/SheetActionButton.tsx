@@ -10,7 +10,7 @@ import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';

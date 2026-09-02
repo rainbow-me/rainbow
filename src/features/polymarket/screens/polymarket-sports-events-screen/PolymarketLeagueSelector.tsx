@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Border, globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';

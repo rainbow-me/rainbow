@@ -1,6 +1,6 @@
 import { PixelRatio } from 'react-native';
 
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import isSVGImage from '@/utils/isSVG';
 
 const SVG2PNG_ENDPOINT = 'https://images.rainbow.me/svg2png';

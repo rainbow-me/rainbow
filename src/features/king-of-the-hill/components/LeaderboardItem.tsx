@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';

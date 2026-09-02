@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';

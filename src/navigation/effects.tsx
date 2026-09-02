@@ -10,8 +10,8 @@ import AvatarCircle from '@/components/profile/AvatarCircle';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
-import colors from '@/theme/currentColors';
-import deviceUtils from '@/utils/deviceUtils';
+import { currentColors as colors } from '@/theme/currentColors';
+import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { type BottomSheetNavigationOptions } from './bottom-sheet/types';

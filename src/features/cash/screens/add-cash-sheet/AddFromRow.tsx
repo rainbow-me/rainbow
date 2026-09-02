@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, useForegroundColor } from '@/design-system';
 import { VisaBadge } from '@/features/cash/components/VisaBadge';
 import type { LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';

@@ -11,15 +11,15 @@ import { isL2Chain } from '@/handlers/web3';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { settingsUpdateNetwork } from '@/redux/settings';
 
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
 }
 
-const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
+export const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { chainId, testnetsEnabled } = useAccountSettings();
   const dispatch = useDispatch();
 
@@ -59,5 +59,3 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
     </MenuContainer>
   );
 };
-
-export default NetworkSection;

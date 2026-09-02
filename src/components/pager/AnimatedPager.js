@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import AnimatedPagerItem from './AnimatedPagerItem';
 

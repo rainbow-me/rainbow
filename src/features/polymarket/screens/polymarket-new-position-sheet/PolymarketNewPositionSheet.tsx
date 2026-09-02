@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';

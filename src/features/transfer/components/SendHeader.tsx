@@ -4,7 +4,7 @@ import { ActivityIndicator, Keyboard, Platform, type TextInput } from 'react-nat
 import { isHexString } from '@ethersproject/bytes';
 import isEmpty from 'lodash/isEmpty';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PasteAddressButton } from '@/components/buttons';
 import showDeleteContactActionSheet from '@/components/contacts/showDeleteContactActionSheet';
 import Divider from '@/components/Divider';

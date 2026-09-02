@@ -6,7 +6,7 @@ import { analytics } from '@/analytics';
 import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
-import currentColors from '@/theme/currentColors';
+import { currentColors } from '@/theme/currentColors';
 
 import Navigation from './Navigation';
 import Routes from './routesNames';

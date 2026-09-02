@@ -6,7 +6,7 @@ import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-nativ
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, TextIcon, useColorMode } from '@/design-system';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { RAINBOW_HOME } from '../constants/constants';
 import { TAB_VIEW_COLUMN_WIDTH, X_BUTTON_PADDING, X_BUTTON_SIZE } from '../constants/Dimensions';

@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 
 import { Switch } from 'react-native-gesture-handler';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { Icon } from '@/components/icons';
 import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
@@ -52,7 +52,7 @@ export function InfoRowSkeleton() {
 
 type InfoRowExplainSheetType = 'ens_manager' | 'ens_owner' | 'ens_resolver' | 'ens_configuration' | 'ens_primary_name';
 
-export default function InfoRow({
+export function InfoRow({
   ensName,
   explainSheetType,
   icon = undefined,

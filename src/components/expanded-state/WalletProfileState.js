@@ -13,7 +13,7 @@ import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import profileUtils from '@/utils/profileUtils';
 
-import ProfileModal from './profile/ProfileModal';
+import { ProfileModal } from './profile/ProfileModal';
 
 export default function WalletProfileState({
   actionType,

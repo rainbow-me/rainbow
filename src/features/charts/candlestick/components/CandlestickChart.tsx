@@ -36,7 +36,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';

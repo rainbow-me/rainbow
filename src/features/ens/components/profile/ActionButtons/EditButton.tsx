@@ -6,9 +6,9 @@ import Routes from '@/navigation/routesNames';
 
 import useENSRegistration from '../../../hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '../../../utils/helpers';
-import ActionButton from './ActionButton';
+import { ActionButton } from './ActionButton';
 
-export default function WatchButton({ ensName }: { ensName?: string }) {
+export function WatchButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
 

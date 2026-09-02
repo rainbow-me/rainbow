@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
@@ -26,7 +26,7 @@ const getRecordType = (recordKey: string) => {
       return 'record';
   }
 };
-export default function RecordTags({
+export function RecordTags({
   firstTransactionTimestamp,
   records,
   show,

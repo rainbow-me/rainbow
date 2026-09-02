@@ -4,7 +4,7 @@ import { LayoutAnimation, Platform, type LayoutAnimationConfig } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
 
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
 import { ListFooter } from '../../../list';

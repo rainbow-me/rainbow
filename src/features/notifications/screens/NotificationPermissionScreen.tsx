@@ -12,7 +12,7 @@ import { event } from '@/analytics/event';
 import mockNotificationsAndroid from '@/assets/mockNotificationsAndroid.png';
 import mockNotificationsIOS from '@/assets/mockNotificationsIOS.png';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
 import * as i18n from '@/languages';

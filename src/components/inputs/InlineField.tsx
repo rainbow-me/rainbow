@@ -6,7 +6,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import useDimensions from '@/hooks/useDimensions';
 
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import Input from './Input';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
@@ -35,7 +35,7 @@ export type InlineFieldProps = {
   key?: string;
 };
 
-export default function InlineField({
+export function InlineField({
   autoFocus,
   defaultValue,
   errorMessage,

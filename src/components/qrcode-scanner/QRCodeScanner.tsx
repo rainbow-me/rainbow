@@ -7,7 +7,7 @@ import { Camera, useCameraDevice, type CodeScanner } from 'react-native-vision-c
 
 import { Box, Cover, Row, Rows } from '@/design-system';
 import * as i18n from '@/languages';
-import deviceUtils, { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { deviceUtils, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { ErrorText } from '../text';

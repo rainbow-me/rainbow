@@ -8,7 +8,7 @@ import { subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWallets } from '@/state/wallets/walletsStore';
 
-import useWalletBalances from './useWalletBalances';
+import { useWalletBalances } from './useWalletBalances';
 
 export default function useWalletsWithBalancesAndNames() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);

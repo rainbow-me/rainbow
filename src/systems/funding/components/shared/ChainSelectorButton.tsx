@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { ChainImage } from '@/features/network/components/ChainImage';

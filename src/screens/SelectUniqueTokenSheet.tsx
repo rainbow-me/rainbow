@@ -14,7 +14,7 @@ import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 
-export default function SelectUniqueTokenSheet() {
+export function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();
   const { goBack } = useNavigation();
   const { layout } = useContext(ModalContext) || {};

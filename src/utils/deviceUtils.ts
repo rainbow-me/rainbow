@@ -7,7 +7,7 @@ const { height, width } = Dimensions.get('window');
 
 export const NAVIGATION_BAR_HEIGHT = Platform.OS === 'android' ? NativeModules.NavbarHeight.getNavigationBarHeight() / scale : 0;
 
-const deviceUtils = (function () {
+export const deviceUtils = (function () {
   const iPhone15ProHeight = 852,
     iPhone6Height = 667,
     iphoneSEHeight = 568,
@@ -47,4 +47,3 @@ export function isUsingButtonNavigation() {
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
 export const PIXEL_RATIO = PixelRatio.get();
-export default deviceUtils;

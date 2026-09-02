@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';

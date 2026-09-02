@@ -8,7 +8,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import type { Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -61,7 +61,7 @@ const RowTypes = {
   EMPTY: 2,
 };
 
-export default function ChangeWalletSheet() {
+export function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
   const { onChangeWallet, watchOnly = false, hideReadOnlyWallets = false } = params;

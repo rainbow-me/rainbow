@@ -39,10 +39,10 @@ import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
 import { isWalletBackedUpForCurrentAccount } from '../../utils';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuHeader from '../MenuHeader';
-import MenuItem from '../MenuItem';
+import { Menu } from '../Menu';
+import { MenuContainer } from '../MenuContainer';
+import { MenuHeader } from '../MenuHeader';
+import { MenuItem } from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
 
 type ViewWalletBackupParams = {
@@ -114,7 +114,7 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
   );
 };
 
-const ViewWalletBackup = () => {
+export const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
 
   const createBackup = useCreateBackup();
@@ -502,5 +502,3 @@ const ViewWalletBackup = () => {
     </MenuContainer>
   );
 };
-
-export default ViewWalletBackup;

@@ -5,7 +5,7 @@ import { type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import DiscoverSearch from '@/components/Discover/DiscoverSearch';
+import { DiscoverSearch } from '@/components/Discover/DiscoverSearch';
 import { Box } from '@/design-system';
 import { DiscoverSectionsPager } from '@/features/discover/components/DiscoverSectionsPager';
 

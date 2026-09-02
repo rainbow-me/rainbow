@@ -29,14 +29,14 @@ import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/scre
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import profileUtils from '@/utils/profileUtils';
 
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 type WalletRowProps = {
   ens: string;
@@ -155,7 +155,7 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
   );
 };
 
-const NotificationsSection = () => {
+export const NotificationsSection = () => {
   const { justBecameActive } = useAppState();
   const { navigate } = useNavigation();
   const { chainId } = useAccountSettings();
@@ -408,5 +408,3 @@ const NotificationsSection = () => {
     </Box>
   );
 };
-
-export default NotificationsSection;

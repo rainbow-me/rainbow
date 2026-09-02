@@ -5,7 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { PANEL_WIDTH, PanelSheet } from '@/components/PanelSheet/PanelSheet';

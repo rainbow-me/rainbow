@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -21,7 +21,7 @@ const ProfileScreenPage = styled(Page)({
   flex: 1,
 });
 
-export default function ProfileScreen() {
+export function ProfileScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   return (

@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 
 interface Props {
   backgroundColor?: string;
   onPressColor: () => void;
 }
 
-const ColorCircle = ({ backgroundColor = 'blue', onPressColor }: Props) => {
+export const ColorCircle = ({ backgroundColor = 'blue', onPressColor }: Props) => {
   const { colors } = useTheme();
 
   return (
@@ -44,5 +44,3 @@ const sx = StyleSheet.create({
     width: 40,
   },
 });
-
-export default ColorCircle;

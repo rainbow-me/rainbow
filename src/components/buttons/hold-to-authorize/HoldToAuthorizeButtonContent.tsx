@@ -20,7 +20,7 @@ import { padding, position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
-import ShimmerAnimation from '../../animations/ShimmerAnimation';
+import { ShimmerAnimation } from '../../animations/ShimmerAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import Spinner from '../../Spinner';
 import {
@@ -31,7 +31,7 @@ import {
   TINY_BUTTON_HEIGHT,
 } from './constants';
 import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyleValues';
-import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
+import { HoldToAuthorizeButtonIcon } from './HoldToAuthorizeButtonIcon';
 import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
@@ -80,7 +80,7 @@ const calculateReverseDuration = (longPressProgress: number) => (longPressProgre
 
 type Props = PropsWithChildren<HoldToAuthorizeBaseProps>;
 
-function HoldToAuthorizeButtonContent2({
+export function HoldToAuthorizeButtonContent2({
   backgroundColor,
   colors,
   children,
@@ -258,5 +258,3 @@ function HoldToAuthorizeButtonContent2({
     </TapGestureHandler>
   );
 }
-
-export default HoldToAuthorizeButtonContent2;

@@ -5,7 +5,7 @@ export { default as ColumnWithMargins } from './ColumnWithMargins';
 export { default as Flex } from './Flex';
 export { default as FlexItem } from './FlexItem';
 export { default as InnerBorder } from './InnerBorder';
-export { default as KeyboardFixedOpenLayout } from './KeyboardFixedOpenLayout';
+export { KeyboardFixedOpenLayout } from './KeyboardFixedOpenLayout';
 export { default as LayoutWithDividers } from './LayoutWithDividers';
 export { default as LayoutWithMargins } from './LayoutWithMargins';
 export { default as Page } from './Page';

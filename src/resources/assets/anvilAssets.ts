@@ -10,7 +10,7 @@ import balanceCheckerContractAbi from '@/references/balances-checker-abi.json';
 import type chainAssets from '@/references/chain-assets.json';
 import { ETH_ADDRESS } from '@/references/constants';
 import erc20ABI from '@/references/erc20-abi.json';
-import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
+import { chainAssets as chainAssetsByChainId } from '@/references/testnet-assets-by-chain';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const fetchAnvilBalancesWithBalanceChecker = async (

@@ -10,7 +10,7 @@ import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import useLatestCallback from '../../hooks/useLatestCallback';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 
 export const TokenFamilyHeaderAnimationDuration = 200;

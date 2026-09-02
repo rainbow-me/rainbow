@@ -6,7 +6,7 @@ import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 import { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SheetHandle } from '@/components/sheet';
 import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { downscalePagerIndex, SmoothPager, upscalePagerIndex, usePagerHistory } from '@/components/SmoothPager/SmoothPager';

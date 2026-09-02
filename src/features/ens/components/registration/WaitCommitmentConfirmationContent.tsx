@@ -1,13 +1,13 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import HourglassAnimation from '@/components/animations/HourglassAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { HourglassAnimation } from '@/components/animations/HourglassAnimation';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 
-const WaitCommitmentConfirmationContent = ({
+export const WaitCommitmentConfirmationContent = ({
   accentColor,
   action,
   secondsSinceCommitConfirmed,
@@ -53,5 +53,3 @@ const WaitCommitmentConfirmationContent = ({
     </>
   );
 };
-
-export default WaitCommitmentConfirmationContent;

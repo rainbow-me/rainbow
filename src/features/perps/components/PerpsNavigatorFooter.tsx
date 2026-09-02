@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';

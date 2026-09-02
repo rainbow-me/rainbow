@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { GenericCard } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { useSharedValue } from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
 import {
   CARD_BORDER_WIDTH,

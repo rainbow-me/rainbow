@@ -38,9 +38,9 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -55,7 +55,7 @@ interface SettingsSectionProps {
   onPressSupport: () => void;
 }
 
-const SettingsSection = ({
+export const SettingsSection = ({
   onCloseModal,
   onPressAppIcon,
   onPressBackup,
@@ -321,5 +321,3 @@ const SettingsSection = ({
     </MenuContainer>
   );
 };
-
-export default SettingsSection;

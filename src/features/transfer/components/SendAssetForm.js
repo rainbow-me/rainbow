@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Column } from '@/components/layout';
 import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';

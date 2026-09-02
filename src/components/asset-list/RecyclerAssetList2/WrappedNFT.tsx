@@ -66,5 +66,3 @@ export const WrappedNFT = React.memo(function WrappedNFT({
     </Box>
   );
 });
-
-export default WrappedNFT;

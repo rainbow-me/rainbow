@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText, Box, Text, TextIcon, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';

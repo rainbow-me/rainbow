@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

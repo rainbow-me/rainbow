@@ -11,7 +11,7 @@ import { type Width } from '@/design-system/layout/size';
 import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../../components/animations/ButtonPressAnimation';
 import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircledIcon';
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
 
@@ -171,7 +171,7 @@ interface MenuItemProps {
   testID?: string;
 }
 
-const MenuItem = ({
+export const MenuItem = ({
   hasRightArrow,
   onPress,
   leftComponent,
@@ -262,5 +262,3 @@ MenuItem.Selection = Selection;
 MenuItem.StatusIcon = StatusIcon;
 MenuItem.TextIcon = TextIcon;
 MenuItem.Title = Title;
-
-export default MenuItem;

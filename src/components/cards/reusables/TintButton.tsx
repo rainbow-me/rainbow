@@ -6,7 +6,7 @@ import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 
 interface TintButtonProps {
   children: string;

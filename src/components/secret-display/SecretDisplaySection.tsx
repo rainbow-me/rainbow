@@ -24,12 +24,12 @@ import { type RootStackParamList } from '@/navigation/types';
 import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ActivityIndicator from '../ActivityIndicator';
+import { ActivityIndicator } from '../ActivityIndicator';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
 import Spinner from '../Spinner';
-import SecretDisplayCard from './SecretDisplayCard';
+import { SecretDisplayCard } from './SecretDisplayCard';
 
 const MIN_HEIGHT = 740;
 

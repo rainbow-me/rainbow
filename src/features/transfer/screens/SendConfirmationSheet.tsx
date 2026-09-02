@@ -6,16 +6,16 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import Callout from '@/components/callout/Callout';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
+import { Callout } from '@/components/callout/Callout';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import ContactRowInfoButton from '@/components/ContactRowInfoButton';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Divider from '@/components/Divider';
-import CheckboxField from '@/components/fields/CheckboxField';
+import { CheckboxField } from '@/components/fields/CheckboxField';
 import L2Disclaimer from '@/components/L2Disclaimer';
 import { Centered, Column, Row } from '@/components/layout';
 import Pill from '@/components/Pill';
@@ -29,7 +29,7 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import ENSCircleIcon from '@/features/ens/components/ENSCircleIcon';
+import { ENSCircleIcon } from '@/features/ens/components/ENSCircleIcon';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import {
@@ -38,7 +38,7 @@ import {
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/features/ens/utils/handlers';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';

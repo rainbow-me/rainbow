@@ -3,7 +3,7 @@ import React from 'react';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';

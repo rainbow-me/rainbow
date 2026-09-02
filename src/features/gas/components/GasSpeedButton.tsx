@@ -8,7 +8,7 @@ import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -159,7 +159,7 @@ type GasSpeedButtonProps = {
   loading?: boolean;
 };
 
-const GasSpeedButton = ({
+export const GasSpeedButton = ({
   asset,
   chainId,
   horizontalPadding = 19,
@@ -560,5 +560,3 @@ const GasSpeedButton = ({
     </Container>
   );
 };
-
-export default GasSpeedButton;

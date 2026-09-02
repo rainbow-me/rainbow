@@ -27,7 +27,7 @@ import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackg
 import { opacity } from '@/design-system/utils/opacity';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
 import useGas from '@/features/gas/hooks/useGas';
 import { ChainImage } from '@/features/network/components/ChainImage';
@@ -51,7 +51,7 @@ import { executeFn, TimeToSignOperation } from '@/state/performance/performance'
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { RequestDetailsCard } from '../components/RequestDetailsCard';

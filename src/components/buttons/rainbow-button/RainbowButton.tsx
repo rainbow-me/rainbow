@@ -12,11 +12,11 @@ import { ShadowView } from '@/vendor/react-native-shadow-stack';
 
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
-import RainbowButtonTypes from './RainbowButtonTypes';
+import { RainbowButtonTypes } from './RainbowButtonTypes';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -105,7 +105,7 @@ type RainbowButtonProps = {
   testID?: string;
 };
 
-const RainbowButton = ({
+export const RainbowButton = ({
   disabled = false,
   height = 56,
   label = 'Press me',
@@ -153,5 +153,3 @@ const RainbowButton = ({
     </ButtonPressAnimation>
   );
 };
-
-export default RainbowButton;

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import useAppState from './useAppState';
 

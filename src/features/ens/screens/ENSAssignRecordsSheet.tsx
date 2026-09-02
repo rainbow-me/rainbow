@@ -9,8 +9,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilState } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import TintButton from '@/components/buttons/TintButton';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { TintButton } from '@/components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
@@ -29,8 +29,8 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import RegistrationAvatar from '../components/registration/RegistrationAvatar';
 import RegistrationCover from '../components/registration/RegistrationCover';
-import SelectableButton from '../components/registration/SelectableButton';
-import TextRecordsForm from '../components/registration/TextRecordsForm';
+import { SelectableButton } from '../components/registration/SelectableButton';
+import { TextRecordsForm } from '../components/registration/TextRecordsForm';
 import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
 import useENSRecords from '../hooks/useENSRecords';
 import useENSRegistration from '../hooks/useENSRegistration';
@@ -47,7 +47,7 @@ const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
 const BottomActionHeightSmall = 215;
 const ExtraBottomPadding = 55;
 
-export default function ENSAssignRecordsSheet() {
+export function ENSAssignRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();

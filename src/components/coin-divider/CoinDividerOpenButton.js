@@ -11,7 +11,7 @@ import magicMemo from '@/utils/magicMemo';
 
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 

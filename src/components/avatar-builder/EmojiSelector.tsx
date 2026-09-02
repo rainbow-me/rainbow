@@ -13,13 +13,13 @@ import { type ScrollEvent } from 'recyclerlistview/dist/reactnative/core/scrollc
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { Categories } from './Categories';
-import EmojiContent from './EmojiContent';
+import { EmojiContent } from './EmojiContent';
 import EmojisListHeader from './EmojisListHeader';
 import EmojisLoader from './EmojisLoader';
-import EmojisStickyListItem from './EmojisStickyListItem';
+import { EmojisStickyListItem } from './EmojisStickyListItem';
 import getEmojiCellsProperties from './helpers/getEmojiCellProperties';
 import getFormattedAllEmojiList, {
   type AllEmojiContentEntry,

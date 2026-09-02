@@ -1,7 +1,7 @@
 import { memo, useMemo, useState } from 'react';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

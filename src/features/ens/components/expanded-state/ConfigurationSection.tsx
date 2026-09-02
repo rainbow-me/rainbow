@@ -9,9 +9,9 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import useENSRegistration from '../../hooks/useENSRegistration';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../../utils/helpers';
-import InfoRow, { InfoRowSkeleton } from './InfoRow';
+import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
-export default function ConfigurationSection({
+export function ConfigurationSection({
   isLoading,
   owner,
   registrant,
