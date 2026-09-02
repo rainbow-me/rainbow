@@ -16,15 +16,12 @@ export function buildCashPurchaseTransaction({
   order: CompletedBuyOrder;
   walletAddress: string;
 }): RainbowTransaction {
+  const { cryptoAmount, fiatAmount, transactionHash } = order;
+  if (!cryptoAmount || !transactionHash) throw new RampError('Completed order carries no usable purchase details');
+
   const status = TransactionStatus.pending;
-
-  const { network: rampNetwork } = order.cryptoAmount.asset;
-  const usdc = CASH_USDC_BY_NETWORK[rampNetwork];
-  if (!usdc) throw new RampError(`Unsupported ramp network: ${rampNetwork}`);
-
-  const { address, chainId, chainName: network } = usdc;
-  const fiatSymbol = supportedCurrencies[order.fiatAmount.currency as keyof typeof supportedCurrencies]?.symbol ?? '';
-  const rawCryptoAmount = convertAmountToRawAmount(order.cryptoAmount.amount, USDC_DECIMALS);
+  const { address, chainId, chainName: network } = CASH_USDC_BY_NETWORK[cryptoAmount.asset.network];
+  const rawCryptoAmount = convertAmountToRawAmount(cryptoAmount.amount, USDC_DECIMALS);
   const asset = {
     address,
     balance: convertRawAmountToBalance(rawCryptoAmount, { decimals: USDC_DECIMALS, symbol: USDC_SYMBOL }),
@@ -41,7 +38,7 @@ export function buildCashPurchaseTransaction({
   };
 
   return {
-    amount: order.cryptoAmount.amount,
+    amount: cryptoAmount.amount,
     asset,
     chainId,
     changes: [
@@ -53,10 +50,12 @@ export function buildCashPurchaseTransaction({
         value: rawCryptoAmount,
       },
     ],
-    description: `${fiatSymbol}${order.fiatAmount.amount}`,
+    description: fiatAmount
+      ? `${supportedCurrencies[fiatAmount.currency as keyof typeof supportedCurrencies]?.symbol ?? ''}${fiatAmount.amount}`
+      : undefined,
     direction: TransactionDirection.IN,
     from: null,
-    hash: order.transactionHash,
+    hash: transactionHash.toLowerCase(),
     network,
     nonce: null,
     status,

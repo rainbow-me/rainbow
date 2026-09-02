@@ -1,6 +1,10 @@
 import { IS_TESTING } from 'react-native-dotenv';
+import { z } from 'zod';
 
+import { parseResponse } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { greaterThan } from '@/helpers/utilities';
+import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import type { LinkedCard } from '../stores/cashPaymentMethodStore';
@@ -48,9 +52,12 @@ export enum WalletSignatureMethod {
 
 // ---- Request / response shapes ---------------------------------------------
 
-export type RampAsset = { asset: RampCryptoAsset; network: RampNetwork };
-export type CryptoAmount = { amount: string; asset: RampAsset };
-export type FiatAmount = { amount: string; currency: string };
+const cashRampNetworkSchema = z.union([z.literal(RampNetwork.ArbitrumTestnet), z.literal(RampNetwork.Base)]);
+
+export type RampAsset = {
+  asset: RampCryptoAsset.USDC;
+  network: z.infer<typeof cashRampNetworkSchema>;
+};
 
 export type BuyOrderSpec = {
   cardId: string;
@@ -65,26 +72,74 @@ export type CreateBuyOrderParams = BuyOrderSpec & {
   cryptoAsset: RampAsset;
 };
 
-export type CreatedBuyOrder = {
-  id: string;
-  status: OrderStatus;
-  createdTime: string;
-};
+/** The wire carries ISO 8601; nothing displays these, so they land as epoch ms for the one reader that differences them. */
+const epochMsSchema = z
+  .string()
+  .transform(value => new Date(value).getTime())
+  .refine(Number.isFinite);
 
-type BuyOrderCommon = {
-  id: string;
-  cryptoAmount: CryptoAmount;
-  fiatAmount: FiatAmount;
-  /** ISO 8601 timestamp of when the order was created. */
-  createdTime: string;
-  walletAddress: string;
-};
+type RampContractIssue = { code: string; path: string };
 
-export type BuyOrder =
-  | (BuyOrderCommon & { status: OrderStatus.Pending })
-  | (BuyOrderCommon & { status: OrderStatus.Processing })
-  | (BuyOrderCommon & { status: OrderStatus.Completed; transactionHash: string; completedTime: string })
-  | (BuyOrderCommon & { status: OrderStatus.Failed; failureReason: OrderFailureReason });
+function toRampContractIssues(issues: z.ZodIssue[], prefix: (string | number)[] = []): RampContractIssue[] {
+  return issues.map(issue => ({ code: issue.code, path: [...prefix, ...issue.path].join('.') || '<root>' }));
+}
+
+function reportRampContractViolation(source: string, issues: RampContractIssue[], metadata?: Record<string, unknown>): void {
+  logger.warn(`[rampClient] normalized malformed response from ${source}`, { issues, ...metadata });
+}
+
+/** A value the client cannot use degrades to `undefined`, so a readable status is never lost to a field the order can do without. */
+const lenient = <S extends z.ZodTypeAny>(source: string, schema: S) =>
+  schema.optional().catch(ctx => {
+    reportRampContractViolation(source, toRampContractIssues(ctx.error.issues));
+    return undefined;
+  });
+
+const validRowsSchema = <S extends z.ZodTypeAny>(source: string, schema: S) =>
+  z
+    .array(z.unknown())
+    .default([])
+    .transform(rows => {
+      const valid: z.infer<S>[] = [];
+      const issues: RampContractIssue[] = [];
+
+      for (const [index, row] of rows.entries()) {
+        const result = schema.safeParse(row);
+        if (result.success) valid.push(result.data);
+        else issues.push(...toRampContractIssues(result.error.issues, [index]));
+      }
+
+      if (issues.length) reportRampContractViolation(source, issues, { totalRows: rows.length });
+      return valid;
+    });
+
+const buyOrderSchema = z.discriminatedUnion('status', [
+  z.object({ status: z.literal(OrderStatus.Pending) }),
+  z.object({ status: z.literal(OrderStatus.Processing) }),
+  z.object({
+    status: z.literal(OrderStatus.Completed),
+    completedTime: lenient('getOrder', epochMsSchema),
+    createdTime: lenient('getOrder', epochMsSchema),
+    cryptoAmount: lenient(
+      'getOrder',
+      z.object({
+        amount: z.string().refine(value => greaterThan(value, 0)),
+        asset: z
+          .object({ asset: z.literal(RampCryptoAsset.USDC), network: cashRampNetworkSchema })
+          .transform(({ network }) => ({ network })),
+      })
+    ),
+    fiatAmount: lenient('getOrder', z.object({ amount: z.string(), currency: z.string() })),
+    transactionHash: lenient('getOrder', z.string()),
+    walletAddress: lenient('getOrder', z.string()),
+  }),
+  z.object({
+    status: z.literal(OrderStatus.Failed),
+    failureReason: z.nativeEnum(OrderFailureReason).catch(OrderFailureReason.Unspecified),
+  }),
+]);
+
+export type BuyOrder = z.infer<typeof buyOrderSchema> & { id: string };
 
 export type TerminalBuyOrder = Extract<BuyOrder, { status: OrderStatus.Completed | OrderStatus.Failed }>;
 
@@ -101,19 +156,22 @@ export class RampError extends Error {
 
 // ---- Card link session -----------------------------------------------------
 
-type StartCardLinkSessionResponse = { linkUrl: string; token: string; tokenExpiresTime: string };
+const startCardLinkSessionResponseSchema = z.object({ linkUrl: z.string().min(1), token: z.string().min(1) });
+type StartCardLinkSessionResponse = z.infer<typeof startCardLinkSessionResponseSchema>;
 
-type RampCard = {
-  brand: CardBrand;
-  id: string;
-  lastFourDigits: string;
-  createdTime: string;
-};
+const rampCardSchema = z.object({
+  brand: z.nativeEnum(CardBrand).catch(CardBrand.Unspecified),
+  id: z.string().min(1),
+  lastFourDigits: z.string(),
+});
+type RampCard = z.infer<typeof rampCardSchema>;
 
 type CompleteCardLinkSessionRequest = { providerCardId: string; brand: CardBrand };
-type CompleteCardLinkSessionResponse = { card: RampCard };
 
-type ListCardsResponse = { cards?: RampCard[] };
+const completeCardLinkSessionResponseSchema = z.object({ card: rampCardSchema });
+
+// protojson drops empty repeated fields, so an account with no cards responds `{}`.
+const listCardsResponseSchema = z.object({ cards: validRowsSchema('listCards', rampCardSchema) });
 
 const CARD_BRAND_LABELS: Record<CardBrand, string> = {
   [CardBrand.Unspecified]: 'Card',
@@ -158,9 +216,9 @@ async function authorizedRequest<T>(trigger: CashSignInTrigger, send: (headers: 
 
 export async function startCardLinkSession(abortController?: AbortController | null): Promise<StartCardLinkSessionResponse> {
   const { data } = await authorizedRequest('cardLink', headers =>
-    getCashPlatformClient().post<StartCardLinkSessionResponse>('/ramp/payment-methods/link-card-session', {}, { abortController, headers })
+    getCashPlatformClient().post('/ramp/payment-methods/link-card-session', {}, { abortController, headers })
   );
-  return data;
+  return parseResponse(startCardLinkSessionResponseSchema, data, 'startCardLinkSession');
 }
 
 export async function completeCardLinkSession(
@@ -168,16 +226,13 @@ export async function completeCardLinkSession(
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
   const { data } = await authorizedRequest('cardLink', headers =>
-    getCashPlatformClient().post<CompleteCardLinkSessionResponse>(
+    getCashPlatformClient().post(
       '/ramp/payment-methods/link-card-session/complete',
-      {
-        brand,
-        providerCardId,
-      },
+      { brand, providerCardId },
       { abortController, headers }
     )
   );
-  return toLinkedCard(data.card);
+  return toLinkedCard(parseResponse(completeCardLinkSessionResponseSchema, data, 'completeCardLinkSession').card);
 }
 
 export async function listCards({
@@ -190,10 +245,9 @@ export async function listCards({
   if (IS_TESTING === 'true') return [];
 
   const { data } = await authorizedRequest(trigger, headers =>
-    getCashPlatformClient().get<ListCardsResponse>('/ramp/payment-methods/cards', { abortController, headers })
+    getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers })
   );
-  // protojson drops empty repeated fields, so an account with no cards responds `{}`.
-  return (data.cards ?? []).map(toLinkedCard);
+  return parseResponse(listCardsResponseSchema, data, 'listCards').cards.map(toLinkedCard);
 }
 
 export async function deleteCard(cardId: string, abortController?: AbortController | null): Promise<void> {
@@ -204,7 +258,11 @@ export async function deleteCard(cardId: string, abortController?: AbortControll
 
 // ---- Wallet link -----------------------------------------------------------
 
-export type RampWallet = { id: string; address: string };
+const rampWalletSchema = z.object({ id: z.string().min(1), address: z.string().min(1) });
+export type RampWallet = z.infer<typeof rampWalletSchema>;
+
+const listWalletsResponseSchema = z.object({ wallets: validRowsSchema('listWallets', rampWalletSchema) });
+const linkWalletResponseSchema = z.object({ wallet: rampWalletSchema.pick({ id: true }) });
 
 export type WalletSignature = {
   /** EIP-191 signature of the link message, 0x-prefixed. */
@@ -214,16 +272,11 @@ export type WalletSignature = {
   timestamp: string;
 };
 
-type ListWalletsResponse = { wallets?: RampWallet[] };
-
-type LinkWalletResponse = { wallet: RampWallet };
-
 export async function listWallets(abortController?: AbortController | null): Promise<RampWallet[]> {
   const { data } = await authorizedRequest('addCash', headers =>
-    getCashPlatformClient().get<ListWalletsResponse>('/ramp/wallets', { abortController, headers })
+    getCashPlatformClient().get('/ramp/wallets', { abortController, headers })
   );
-  // protojson drops empty repeated fields, so an account with no wallets responds `{}`.
-  return data.wallets ?? [];
+  return parseResponse(listWalletsResponseSchema, data, 'listWallets').wallets;
 }
 
 export async function linkWallet(
@@ -231,37 +284,37 @@ export async function linkWallet(
   abortController?: AbortController | null
 ): Promise<RampWallet> {
   const { data } = await authorizedRequest('addCash', headers =>
-    getCashPlatformClient().post<LinkWalletResponse>('/ramp/wallets/link', { address, signature }, { abortController, headers })
+    getCashPlatformClient().post('/ramp/wallets/link', { address, signature }, { abortController, headers })
   );
-  return data.wallet;
+  return { ...parseResponse(linkWalletResponseSchema, data, 'linkWallet').wallet, address };
 }
 
 // ---- Buy orders ------------------------------------------------------------
 
-type GetOrderResponse = { order: BuyOrder };
+const getOrderResponseSchema = z.object({ order: buyOrderSchema });
 
-export async function createBuyOrder(params: CreateBuyOrderParams): Promise<CreatedBuyOrder> {
+export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void> {
   if (IS_TESTING === 'true') return e2eCreateBuyOrder(params);
 
-  const { data } = await authorizedRequest('addCash', headers =>
-    getCashPlatformClient().post<CreatedBuyOrder>('/ramp/orders/buy', params, { headers })
-  );
-  return data;
+  await authorizedRequest('addCash', headers => getCashPlatformClient().post('/ramp/orders/buy', params, { headers }));
 }
 
 export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
-  if (IS_TESTING === 'true') return e2eGetOrder(orderId);
-
-  const { data } = await authorizedRequest('addCash', headers =>
-    getCashPlatformClient().get<GetOrderResponse>(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
-  );
-  return data.order;
+  const data =
+    IS_TESTING === 'true'
+      ? e2eGetOrderResponse(orderId)
+      : (
+          await authorizedRequest('addCash', headers =>
+            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+          )
+        ).data;
+  return { ...parseResponse(getOrderResponseSchema, data, 'getOrder').order, id: orderId };
 }
 
 // ---- E2E buy orders ----------------------------------------------------------
 // In-memory stand-in for the two order endpoints: `getOrder` advances one scripted
-// step per call, and a `createBuyOrder` replay with a known id returns the existing
-// order without re-creating — mirroring the backend's idempotency contract.
+// step per call, and a `createBuyOrder` replay with a known id leaves the existing
+// order untouched — mirroring the backend's idempotency contract.
 
 const E2E_ORDER_PATH = [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Processing, OrderStatus.Completed] as const;
 
@@ -276,42 +329,43 @@ type E2EOrderRecord = {
 
 const e2eOrders = new Map<string, E2EOrderRecord>();
 
-function e2eCreateBuyOrder(params: CreateBuyOrderParams): CreatedBuyOrder {
-  let record = e2eOrders.get(params.id);
-  if (!record) {
-    record = {
-      createdTime: new Date().toISOString(),
-      cryptoAsset: params.cryptoAsset,
-      depositAmount: params.depositAmount,
-      step: 0,
-      walletAddress: params.walletAddress,
-    };
-    e2eOrders.set(params.id, record);
-  }
-  return { id: params.id, status: E2E_ORDER_PATH[record.step], createdTime: record.createdTime };
+function e2eCreateBuyOrder(params: CreateBuyOrderParams): void {
+  if (e2eOrders.has(params.id)) return;
+
+  e2eOrders.set(params.id, {
+    createdTime: new Date().toISOString(),
+    cryptoAsset: params.cryptoAsset,
+    depositAmount: params.depositAmount,
+    step: 0,
+    walletAddress: params.walletAddress,
+  });
 }
 
-function e2eGetOrder(orderId: string): BuyOrder {
+function e2eGetOrderResponse(orderId: string) {
   const record = e2eOrders.get(orderId);
   if (!record) throw new RampError(`Unknown order ${orderId}`);
   if (record.step < E2E_ORDER_PATH.length - 1) record.step += 1;
 
-  const common = {
-    id: orderId,
-    // E2E treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
-    cryptoAmount: { amount: record.depositAmount, asset: record.cryptoAsset },
-    fiatAmount: { amount: record.depositAmount, currency: 'USD' },
-    createdTime: record.createdTime,
-    walletAddress: record.walletAddress,
-  };
   const status = E2E_ORDER_PATH[record.step];
   switch (status) {
     case OrderStatus.Completed:
       record.completedTime ??= new Date().toISOString();
-      return { ...common, status, transactionHash: `mock-tx-${orderId}`, completedTime: record.completedTime };
+      return {
+        order: {
+          id: orderId,
+          status,
+          // E2E treats USDC as 1:1 with USD; the real backend returns the quoted crypto amount.
+          cryptoAmount: { amount: record.depositAmount, asset: record.cryptoAsset },
+          fiatAmount: { amount: record.depositAmount, currency: 'USD' },
+          createdTime: record.createdTime,
+          walletAddress: record.walletAddress,
+          transactionHash: `mock-tx-${orderId}`,
+          completedTime: record.completedTime,
+        },
+      };
     case OrderStatus.Processing:
-      return { ...common, status };
+      return { order: { id: orderId, status } };
     default:
-      return { ...common, status: OrderStatus.Pending };
+      return { order: { id: orderId, status: OrderStatus.Pending } };
   }
 }

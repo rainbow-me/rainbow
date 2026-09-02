@@ -102,6 +102,34 @@ describe('.dependency-cruiser.cjs', () => {
       expect(configs.source.options.enhancedResolveOptions?.extensions).toContain('.d.ts');
     });
 
+    describe('vendor-imports-nothing-first-party', () => {
+      const { from, to, toPathNot } = rule('source', 'vendor-imports-nothing-first-party');
+
+      it('applies to files inside a vendored library', () => {
+        expect('src/vendor/ens-avatar/src/specs/erc721.ts').toMatch(from);
+      });
+
+      it('does not apply to first-party code', () => {
+        expect('src/features/ens/utils/fetchENSImage.ts').not.toMatch(from);
+      });
+
+      it('forbids importing app code', () => {
+        const appFile = 'src/components/images/index.ts';
+        expect(appFile).toMatch(to);
+        expect(appFile).not.toMatch(toPathNot('src/vendor/ens-avatar/src/specs/erc721.ts'));
+      });
+
+      it('forbids importing another vendored library', () => {
+        const otherLib = 'src/vendor/react-native-shadow-stack/index.js';
+        expect(otherLib).toMatch(to);
+        expect(otherLib).not.toMatch(toPathNot('src/vendor/ens-avatar/src/specs/erc721.ts'));
+      });
+
+      it('allows a library to import itself', () => {
+        expect('src/vendor/ens-avatar/src/index.ts').toMatch(toPathNot('src/vendor/ens-avatar/src/specs/erc721.ts'));
+      });
+    });
+
     describe('layer-core-is-a-leaf', () => {
       const { from, to } = rule('source', 'layer-core-is-a-leaf');
 
