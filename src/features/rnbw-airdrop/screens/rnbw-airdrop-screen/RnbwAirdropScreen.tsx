@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
+import { SheetHandleFixedToTop } from '@/components/sheet/SheetHandleFixedToTop';
 import { ColorModeProvider } from '@/design-system';
 import { AmbientCoins } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/AmbientCoins';
 import { BottomGradientGlow } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/components/BottomGradientGlow';

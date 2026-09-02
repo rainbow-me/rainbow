@@ -17,7 +17,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import More from '../MoreButton';
+import { MoreButton as More } from '../MoreButton';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -28,7 +28,7 @@ const ACTIONS = {
   SHARE: 'share',
 };
 
-export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
+export function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
   const selectedWallet = useSelectedWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();

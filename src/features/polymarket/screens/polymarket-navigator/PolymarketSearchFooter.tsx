@@ -6,7 +6,7 @@ import { BlurView } from 'react-native-blur-view';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { opacity } from '@/design-system/utils/opacity';

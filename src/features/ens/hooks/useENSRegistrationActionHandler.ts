@@ -96,7 +96,11 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
   };
 };
 
-const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
+export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({
+  step,
+  sendReverseRecord = false,
+  yearsDuration = 1,
+}) => {
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
@@ -406,5 +410,3 @@ async function uploadRecordImages(
     header,
   };
 }
-
-export default useENSRegistrationActionHandler;

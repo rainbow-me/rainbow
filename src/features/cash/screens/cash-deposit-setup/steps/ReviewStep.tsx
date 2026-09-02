@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { shallowEqual } from '@storesjs/stores';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
 import * as i18n from '@/languages';

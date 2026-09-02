@@ -13,7 +13,7 @@ interface MenuContainerProps {
   space?: Space;
 }
 
-const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px' }: MenuContainerProps) => {
+export const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px' }: MenuContainerProps) => {
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
@@ -41,5 +41,3 @@ const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px'
     </Inset>
   );
 };
-
-export default MenuContainer;

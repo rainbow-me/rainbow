@@ -4,7 +4,7 @@ import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date
 import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getNumberFormatter } from '@/helpers/intl';

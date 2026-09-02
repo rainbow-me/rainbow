@@ -8,7 +8,7 @@ import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Draggable } from '@/components/drag-and-drop/components/Draggable';
 import { DndProvider } from '@/components/drag-and-drop/DndProvider';
 import { DraggableGrid, type DraggableGridProps } from '@/components/drag-and-drop/features/sort/components/DraggableGrid';

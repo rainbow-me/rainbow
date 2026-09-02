@@ -4,7 +4,7 @@ import { InteractionManager, Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import restoreWalletIcon from '@/assets/restoreWalletIcon.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { useBiometryType } from '@/features/local-auth/hooks/useBiometryType';
@@ -17,7 +17,7 @@ export function getWalletErrorSheetHeight() {
   return 370 + safeAreaInsetValues.bottom;
 }
 
-export default function WalletErrorSheet() {
+export function WalletErrorSheet() {
   const navigation = useNavigation();
   const biometryType = useBiometryType();
   const { cause, resolution } = (() => {

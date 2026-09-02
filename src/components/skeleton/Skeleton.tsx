@@ -6,10 +6,10 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
 import { position } from '@/styles';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { withThemeContext, type ThemeContextProps } from '../../theme/ThemeContext';
-import ShimmerAnimation from '../animations/ShimmerAnimation';
+import { ShimmerAnimation } from '../animations/ShimmerAnimation';
 import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
 

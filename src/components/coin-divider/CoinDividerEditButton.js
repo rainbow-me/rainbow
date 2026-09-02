@@ -7,7 +7,7 @@ import { padding, shadow } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import OpacityToggler from '../animations/OpacityToggler';
 import { Row } from '../layout';
 import { Text } from '../text';

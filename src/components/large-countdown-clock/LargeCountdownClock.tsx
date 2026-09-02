@@ -24,7 +24,7 @@ const PROGRESS_STROKE_WIDTH = 8;
 const PROGRESS_CENTER_COORDINATE = PROGRESS_RADIUS + PROGRESS_STROKE_WIDTH / 2;
 const PROGRESS_STROKE_FULL_LENGTH = Math.round(2 * Math.PI * PROGRESS_RADIUS);
 
-export default function LargeCountdownClock({ minutes, seconds, initialSeconds, initialMinutes, onFinished }: LargeCountdownClockProps) {
+export function LargeCountdownClock({ minutes, seconds, initialSeconds, initialMinutes, onFinished }: LargeCountdownClockProps) {
   const [completed, setCompleted] = useState(false);
   const countdown = useCountdown({
     format: 'm:ss',

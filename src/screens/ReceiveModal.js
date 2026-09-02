@@ -12,7 +12,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { padding, shadow } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Column, ColumnWithMargins } from '../components/layout';

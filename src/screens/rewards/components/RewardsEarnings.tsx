@@ -5,7 +5,7 @@ import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } fr
 import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { type RewardsAmount } from '@/graphql/__generated__/metadata';

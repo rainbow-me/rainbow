@@ -12,7 +12,7 @@ import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
 
 const extraPadding = { paddingBottom: 100 + safeAreaInsetValues.bottom };
-const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }>(
+export const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }>(
   function ExternalScrollView(props: ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }, ref) {
     const y = useRecyclerAssetListPosition()!;
     const insets = useSafeAreaInsets();
@@ -54,4 +54,3 @@ const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDef
     );
   }
 );
-export default ExternalScrollViewWithRef;

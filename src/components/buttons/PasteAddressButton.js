@@ -5,9 +5,9 @@ import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import useClipboard from '@/hooks/useClipboard';
 import useInvalidPaste from '@/hooks/useInvalidPaste';
 import * as i18n from '@/languages';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Text } from '../text';
 
 export default function PasteAddressButton({ onPress }) {

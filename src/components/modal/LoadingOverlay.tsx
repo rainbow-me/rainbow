@@ -9,7 +9,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import neverRerender from '@/utils/neverRerender';
 
 import { useTheme } from '../../theme/ThemeContext';
-import ActivityIndicator from '../ActivityIndicator';
+import { ActivityIndicator } from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
 

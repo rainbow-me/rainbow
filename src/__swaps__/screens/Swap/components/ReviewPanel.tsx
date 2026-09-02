@@ -15,7 +15,7 @@ import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/Animated
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import {
   AnimatedText,

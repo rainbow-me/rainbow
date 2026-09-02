@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { PixelRatio, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, Text } from '@/design-system';
 import { MembershipTierButton } from '@/features/rnbw-membership/components/MembershipTierButton/MembershipTierButton';

@@ -7,7 +7,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import crownImage from '@/assets/crown.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Box, Separator, Text } from '@/design-system';

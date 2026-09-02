@@ -9,7 +9,7 @@ import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import styled from 'styled-components';
 import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;

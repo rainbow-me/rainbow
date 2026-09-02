@@ -6,7 +6,7 @@ import { BlurView } from 'react-native-blur-view';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import type { Address } from 'viem';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
 import { Draggable } from '@/components/drag-and-drop/components/Draggable';
 import { DraggableGrid, type DraggableGridProps } from '@/components/drag-and-drop/features/sort/components/DraggableGrid';

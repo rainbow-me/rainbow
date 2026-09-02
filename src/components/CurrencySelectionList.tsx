@@ -2,7 +2,7 @@ import React, { forwardRef, type ForwardRefRenderFunction } from 'react';
 import { type SectionList } from 'react-native';
 
 import type { SearchAsset } from '@/__swaps__/types/search';
-import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
+import { EmptyAssetList } from '@/components/asset-list/EmptyAssetList';
 import ExchangeAssetList, { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';

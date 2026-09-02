@@ -1,6 +1,6 @@
 import { Fragment, memo, useState } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';

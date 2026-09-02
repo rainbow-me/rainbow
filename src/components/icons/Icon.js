@@ -5,7 +5,7 @@ import { Asterisk } from './svg/Asterisk';
 import BackspaceIcon from './svg/BackspaceIcon';
 import BTCIcon from './svg/BTCIcon';
 import CameraIcon from './svg/CameraIcon';
-import CaretDownIcon from './svg/CaretDownIcon';
+import { CaretDownIcon } from './svg/CaretDownIcon';
 import CaretIcon from './svg/CaretIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
 import CheckmarkIcon from './svg/CheckmarkIcon';

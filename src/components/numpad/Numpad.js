@@ -5,7 +5,7 @@ import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';

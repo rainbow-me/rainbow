@@ -26,7 +26,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
@@ -72,9 +72,9 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
-import ProfileScreen from '../screens/ProfileScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { type Route } from './routesNames';
 

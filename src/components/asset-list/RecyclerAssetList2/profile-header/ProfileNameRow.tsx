@@ -4,7 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useRecoilState } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';

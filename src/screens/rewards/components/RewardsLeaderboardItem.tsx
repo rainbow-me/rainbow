@@ -5,7 +5,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient, type LinearGradientProps } from 'expo-linear-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';

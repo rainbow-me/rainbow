@@ -9,8 +9,8 @@ import styled from '@/framework/ui/styled-thing';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import ShimmerAnimation from '../animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '../animations/ShimmerAnimation';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';

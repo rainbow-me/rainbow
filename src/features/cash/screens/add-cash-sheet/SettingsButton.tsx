@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
 
 export function SettingsButton({ onPress }: { onPress: () => void }) {

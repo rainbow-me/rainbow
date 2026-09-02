@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, type LayoutChangeEvent, type NativeScroll
 
 import { analytics } from '@/analytics';
 import { event as analyticsEvent } from '@/analytics/event';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Skeleton } from '@/components/Skeleton';

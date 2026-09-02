@@ -7,7 +7,7 @@ import { sortBy } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
 import { useDeepCompareMemo } from 'use-deep-compare';
 
-import FlyInAnimation from '@/components/animations/FlyInAnimation';
+import { FlyInAnimation } from '@/components/animations/FlyInAnimation';
 import { ContactRow, SwipeableContactRow } from '@/components/contacts';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';

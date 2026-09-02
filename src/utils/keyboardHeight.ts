@@ -1,4 +1,4 @@
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 const FALLBACK_KEYBOARD_HEIGHT = Math.floor(deviceUtils.dimensions.height / 3);
 

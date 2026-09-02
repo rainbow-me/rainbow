@@ -10,7 +10,7 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
@@ -27,16 +27,16 @@ import { colors } from '@/styles';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
-import CommitContent from '../components/registration/CommitContent';
-import EditContent from '../components/registration/EditContent';
-import RegisterContent from '../components/registration/RegisterContent';
+import { CommitContent } from '../components/registration/CommitContent';
+import { EditContent } from '../components/registration/EditContent';
+import { RegisterContent } from '../components/registration/RegisterContent';
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import RenewContent from '../components/registration/RenewContent';
-import WaitCommitmentConfirmationContent from '../components/registration/WaitCommitmentConfirmationContent';
-import WaitENSConfirmationContent from '../components/registration/WaitENSConfirmationContent';
+import { RenewContent } from '../components/registration/RenewContent';
+import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
+import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
 import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
 import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationActionHandler, { type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
+import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
@@ -93,7 +93,7 @@ function TransactionActionRow({
   );
 }
 
-export default function ENSConfirmRegisterSheet() {
+export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
   const { name: ensName, mode } = useENSRegistration();
   const {

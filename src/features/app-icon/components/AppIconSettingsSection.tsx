@@ -7,9 +7,9 @@ import { ImgixImage } from '@/components/images';
 import { Box } from '@/design-system';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { logger } from '@/logger';
-import Menu from '@/screens/SettingsSheet/components/Menu';
-import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
-import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
+import { Menu } from '@/screens/SettingsSheet/components/Menu';
+import { MenuContainer } from '@/screens/SettingsSheet/components/MenuContainer';
+import { MenuItem } from '@/screens/SettingsSheet/components/MenuItem';
 import { useTheme } from '@/theme/ThemeContext';
 
 import {

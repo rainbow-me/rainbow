@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, globalColors, Text, TextShadow } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

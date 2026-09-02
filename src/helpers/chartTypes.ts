@@ -1,4 +1,4 @@
-const chartTypes = {
+export const chartTypes = {
   hour: 'hour',
   day: 'day',
   week: 'week',
@@ -6,5 +6,4 @@ const chartTypes = {
   year: 'year',
 } as const;
 
-export default chartTypes;
 export type ChartType = (typeof chartTypes)[keyof typeof chartTypes];

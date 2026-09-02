@@ -26,8 +26,8 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import saveToCameraRoll from './saveToCameraRoll';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
+import { saveToCameraRoll } from './saveToCameraRoll';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

@@ -15,7 +15,7 @@ type Props = {
   testID?: string;
 };
 
-const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expirationDate, testID }: Props) => {
+export const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expirationDate, testID }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   let text: string | undefined, gradient: LinearGradientProps['colors'];
@@ -68,5 +68,3 @@ const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expi
     </Box>
   );
 };
-
-export default SearchResultGradientIndicator;

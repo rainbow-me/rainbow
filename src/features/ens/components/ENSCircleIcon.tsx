@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import Svg, { Circle, Defs, LinearGradient, Path, Stop, type SvgProps } from 'react-native-svg';
 
-const ENSCircleIcon = (props: SvgProps) => (
+export const ENSCircleIcon = (props: SvgProps) => (
   <Svg height={317} viewBox="0 0 317 317" width={317} {...props}>
     <Circle cx={158.5} cy={158.5} fill="url(#gradient)" r={158.5} />
     <Path
@@ -21,5 +21,3 @@ const ENSCircleIcon = (props: SvgProps) => (
     </Defs>
   </Svg>
 );
-
-export default ENSCircleIcon;

@@ -5,7 +5,7 @@ import chroma from 'chroma-js';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { backupsStore } from '@/features/backup/stores/backupsStore';

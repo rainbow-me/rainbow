@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useState } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { formatUrl } from '@/features/dapp-browser/utils/browserUtils';

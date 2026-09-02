@@ -3,12 +3,12 @@ import { DevSection } from '@/features/debug/screens/DevSection';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 
-import WalletsAndBackup from './components/Backups/WalletsAndBackup';
-import CurrencySection from './components/CurrencySection';
-import LanguageSection from './components/LanguageSection';
-import NetworkSection from './components/NetworkSection';
-import NotificationsSection from './components/NotificationsSection';
-import PrivacySection from './components/PrivacySection';
+import { WalletsAndBackup } from './components/Backups/WalletsAndBackup';
+import { CurrencySection } from './components/CurrencySection';
+import { LanguageSection } from './components/LanguageSection';
+import { NetworkSection } from './components/NetworkSection';
+import { NotificationsSection } from './components/NotificationsSection';
+import { PrivacySection } from './components/PrivacySection';
 import { SupportSection } from './components/support/SupportSection';
 
 export const SettingsPages = {

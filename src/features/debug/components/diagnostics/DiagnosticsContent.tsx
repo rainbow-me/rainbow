@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 
 import { type UserCredentials } from 'react-native-keychain';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Column } from '@/components/layout';
 import { SheetActionButton } from '@/components/sheet';
 import Spinner from '@/components/Spinner';

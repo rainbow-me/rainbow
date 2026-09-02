@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';

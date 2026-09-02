@@ -14,7 +14,7 @@ import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 

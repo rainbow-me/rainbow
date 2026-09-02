@@ -10,7 +10,7 @@ import magicMemo from '@/utils/magicMemo';
 
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { Categories } from './Categories';
-import TabBar from './TabBar';
+import { TabBar } from './TabBar';
 import { type EmojiCategory } from './types';
 
 const categoryKeys = Object.keys(Categories);

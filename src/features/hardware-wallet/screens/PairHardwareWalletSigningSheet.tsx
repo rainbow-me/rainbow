@@ -5,7 +5,7 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useRecoilValue } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import useImportingWallet from '@/hooks/useImportingWallet';

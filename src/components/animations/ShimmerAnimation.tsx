@@ -32,7 +32,7 @@ type ShimmerAnimationProps = {
   width?: number;
 };
 
-export default function ShimmerAnimation({
+export function ShimmerAnimation({
   color,
   animationDuration = timingConfig.duration,
   enabled = true,

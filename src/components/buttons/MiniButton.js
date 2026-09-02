@@ -7,7 +7,7 @@ import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 

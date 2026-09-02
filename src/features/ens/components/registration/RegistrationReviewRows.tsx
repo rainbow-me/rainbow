@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
 import useInterval from '@/hooks/useInterval';
@@ -52,7 +52,7 @@ function LoadingPlaceholder() {
   );
 }
 
-export default function RegistrationReviewRows({
+export function RegistrationReviewRows({
   duration,
   onChangeDuration,
   maxDuration,

@@ -28,7 +28,7 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
+export const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
   const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
@@ -72,5 +72,3 @@ const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResu
     balances,
   };
 };
-
-export default useWalletBalances;

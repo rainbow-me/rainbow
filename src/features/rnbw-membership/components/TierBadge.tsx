@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import GradientText from '@/components/text/GradientText';
+import { GradientText } from '@/components/text/GradientText';
 import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';

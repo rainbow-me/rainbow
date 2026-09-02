@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { ResolvedMarketsList } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedMarketsList';

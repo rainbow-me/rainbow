@@ -23,7 +23,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList, { type ViewableItemsChangedCallback } from './core/RawRecyclerList';
+import { RawMemoRecyclerAssetList, type ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';

@@ -5,7 +5,7 @@ import { Easing } from 'react-native-reanimated';
 import { buildTestSafeConfig } from '@/components/animations/animationConfigs';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import deviceUtils, { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, deviceUtils, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 import { getDefaultKeyboardHeight } from '@/utils/keyboardHeight';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

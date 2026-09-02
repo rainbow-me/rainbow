@@ -40,7 +40,7 @@ type BackupSheetSectionProps = {
   type: string;
 };
 
-export default function BackupSheetSection({
+export function BackupSheetSection({
   headerIcon,
   onPrimaryAction,
   onSecondaryAction,

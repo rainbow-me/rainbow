@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Bleed, Box, Inset, type Space } from '@/design-system';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 
 type NavbarItemProps = {
   children: React.ReactElement;

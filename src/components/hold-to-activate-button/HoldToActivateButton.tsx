@@ -15,8 +15,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
-import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
+import { HoldToAuthorizeButtonIcon } from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
 import { Box, Text, useColorMode, type BoxProps, type TextProps } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';

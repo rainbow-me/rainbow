@@ -4,7 +4,7 @@ import { difference } from 'lodash';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 

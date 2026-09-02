@@ -117,5 +117,3 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
     </Centered>
   );
 });
-
-export default UniqueTokenImage;

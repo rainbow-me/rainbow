@@ -32,7 +32,7 @@ import { type Chain } from 'viem/chains';
 import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { TapToDismiss } from '@/components/TapToDismiss';
@@ -55,7 +55,7 @@ import Navigation, { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
-import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ChainImage } from '../components/ChainImage';

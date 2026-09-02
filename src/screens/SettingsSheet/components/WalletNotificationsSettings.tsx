@@ -21,9 +21,9 @@ import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/scre
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {
@@ -77,7 +77,7 @@ const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   },
 ];
 
-const WalletNotificationsSettings = () => {
+export const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
   const topicRowsData = useMemo(() => makeTopicRowsData(colors), [colors]);
   const route = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_NOTIFICATIONS_SETTINGS>>();
@@ -249,5 +249,3 @@ const WalletNotificationsSettings = () => {
     </MenuContainer>
   );
 };
-
-export default WalletNotificationsSettings;
