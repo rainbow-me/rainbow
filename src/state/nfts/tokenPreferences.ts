@@ -1,6 +1,7 @@
 import { time } from '@/framework/core/utils/time';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
+import { logger, RainbowError } from '@/logger';
 import { getPreference } from '@/model/preferences';
 import { queryClient } from '@/react-query';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
@@ -23,17 +24,22 @@ async function migratePreferenceTokenIds(address: string, category: 'hidden' | '
   const isReadOnlyWallet = getWalletWithAccount(address)?.type === EthereumWalletType.readOnly;
   if (isReadOnlyWallet) return EMPTY_TOKEN_IDS;
 
-  const migratedTokenIds = await migrateTokens(address, tokenIds);
-  if (!migratedTokenIds) return tokenIds;
+  try {
+    const migratedTokenIds = await migrateTokens(address, tokenIds);
+    if (!migratedTokenIds) return tokenIds;
 
-  if (category === 'hidden') {
-    await updateWebHidden(address, migratedTokenIds);
-  } else {
-    await updateWebShowcase(address, migratedTokenIds);
-    useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', true);
+    if (category === 'hidden') {
+      await updateWebHidden(address, migratedTokenIds);
+    } else {
+      await updateWebShowcase(address, migratedTokenIds);
+      useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', true);
+    }
+
+    return migratedTokenIds;
+  } catch (error) {
+    logger.error(new RainbowError('Failed to migrate NFT token preferences', error), { category });
+    return tokenIds;
   }
-
-  return migratedTokenIds;
 }
 
 export async function getHiddenTokenIds(address: string): Promise<string[]> {

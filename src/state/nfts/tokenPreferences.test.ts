@@ -1,4 +1,5 @@
 import { EthereumWalletType } from '@/helpers/walletTypes';
+import { logger } from '@/logger';
 
 import { getHiddenTokenIds, getShowcaseTokenIds } from './tokenPreferences';
 
@@ -19,6 +20,11 @@ jest.mock('@/model/preferences', () => ({
   getPreference: (...args: unknown[]) => mockGetPreference(...args),
 }));
 
+jest.mock('@/logger', () => ({
+  logger: { error: jest.fn() },
+  RainbowError: class RainbowError extends Error {},
+}));
+
 jest.mock('@/react-query', () => ({
   queryClient: { fetchQuery: jest.fn() },
 }));
@@ -37,6 +43,8 @@ jest.mock('./utils', () => ({
   isDataComplete: (...args: unknown[]) => mockIsDataComplete(...args),
   migrateTokens: (...args: unknown[]) => mockMigrateTokens(...args),
 }));
+
+const mockLoggerError = jest.mocked(logger.error);
 
 describe('token preferences', () => {
   beforeEach(() => {
@@ -70,6 +78,18 @@ describe('token preferences', () => {
 
     await expect(getHiddenTokenIds('0x123')).resolves.toEqual(['missing.eth']);
     expect(mockUpdateWebHidden).not.toHaveBeenCalled();
+  });
+
+  it('preserves incomplete IDs when migration fails', async () => {
+    mockGetPreference.mockResolvedValue({ hidden: { ids: ['rainbow.eth'] } });
+    mockIsDataComplete.mockReturnValue(false);
+    mockMigrateTokens.mockRejectedValue(new Error('Migration failed'));
+
+    await expect(getHiddenTokenIds('0x123')).resolves.toEqual(['rainbow.eth']);
+    expect(mockUpdateWebHidden).not.toHaveBeenCalled();
+    expect(mockLoggerError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Failed to migrate NFT token preferences' }), {
+      category: 'hidden',
+    });
   });
 
   it('does not migrate preferences for read-only wallets', async () => {
