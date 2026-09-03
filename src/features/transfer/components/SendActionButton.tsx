@@ -1,13 +1,11 @@
-import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
+import React from 'react';
 
 import SheetActionButton, { type SheetActionButtonProps } from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Text, TextIcon } from '@/design-system';
 import type { ParsedAddressAsset, RainbowToken } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
+import { useNavigateToSend } from '@/features/transfer/hooks/useNavigateToSend';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 
 type SendActionButtonProps = Omit<SheetActionButtonProps, 'icon'> & {
@@ -18,15 +16,7 @@ type SendActionButtonProps = Omit<SheetActionButtonProps, 'icon'> & {
 
 function SendActionButtonComponent({ asset, color: givenColor, icon, size, textColor, ...props }: SendActionButtonProps) {
   const color = givenColor || colors.paleBlue;
-  const navigate = useNavigationForNonReadOnlyWallets();
-
-  const handlePress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset } });
-    } else {
-      navigate(Routes.SEND_FLOW, { asset });
-    }
-  }, [asset, navigate]);
+  const handlePress = useNavigateToSend(asset);
 
   return (
     <SheetActionButton

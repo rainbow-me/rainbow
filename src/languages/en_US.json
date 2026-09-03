@@ -312,6 +312,7 @@
       "unhide": "Unhide",
       "unpin": "Unpin",
       "view": "View",
+      "withdraw": "Withdraw",
       "hidden": "Hidden",
       "claim": "Claim"
     },
@@ -1687,6 +1688,13 @@
           "continue": "Continue Setup",
           "confirm": "Cancel Setup"
         }
+      }
+    },
+    "cash_balance": {
+      "half_sheet": {
+        "title": "Cash Balance",
+        "subtitle": "Cash is your USDC on Base",
+        "withdraw_coming_soon": "Cash withdrawals\nare coming soon"
       }
     },
     "points": {
