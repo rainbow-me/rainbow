@@ -2,7 +2,7 @@ import { useAnimatedReaction, useSharedValue, type SharedValue } from 'react-nat
 
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
-import { getPriceChangeColor, type PriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
+import { getPriceChangeColor, type PriceChangeColors } from '@/features/market/ui/utils/priceChangeColors';
 
 export function useLiveChartColorSharedValue(item: MarketDisplayItem, priceChangeColors: PriceChangeColors): SharedValue<string> {
   const livePriceChange = useLiveTokenSharedValue({
