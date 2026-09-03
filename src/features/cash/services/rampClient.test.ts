@@ -12,7 +12,7 @@ import {
   CardBrand,
   completeCardLinkSession,
   createBuyOrder,
-  getOrder,
+  getOrderWithCachedAuth,
   linkWallet,
   listCards,
   listCardsWithCachedAuth,
@@ -103,6 +103,12 @@ function fetchError(status: number, message: string, code?: number) {
   });
 }
 
+async function fetchOrder(orderId: string, abortController?: AbortController): Promise<BuyOrder> {
+  const result = await getOrderWithCachedAuth(orderId, abortController);
+  if (result.kind !== 'success') throw new Error('Expected an order');
+  return result.data;
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   (getCashPlatformClient as Mock).mockReturnValue({ get, post });
@@ -111,27 +117,6 @@ beforeEach(() => {
   useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-1', expiresAt: Date.now() + 60_000 });
   post.mockResolvedValue({ data: SESSION });
   useCashAccessRefusalStore.getState().dismiss();
-});
-
-describe('access refusal', () => {
-  it('shows the unavailable notice when Ramp forbids an inactive account', async () => {
-    post.mockRejectedValue(fetchError(403, 'forbidden', 403));
-
-    await expect(startCardLinkSession()).rejects.toMatchObject({ name: 'CashAccessRefusedError', reason: 'unavailable' });
-    expect(useCashAccessRefusalStore.getState().reason).toBe('unavailable');
-  });
-
-  it.each([
-    { status: 403, code: 600 },
-    { status: 403, code: undefined },
-    { status: 400, code: 403 },
-  ])('propagates HTTP $status with code $code unchanged', async ({ status, code }) => {
-    const error = fetchError(status, 'refused', code);
-    post.mockRejectedValue(error);
-
-    await expect(startCardLinkSession()).rejects.toBe(error);
-    expect(useCashAccessRefusalStore.getState().reason).toBeNull();
-  });
 });
 
 describe('startCardLinkSession', () => {
@@ -239,7 +224,7 @@ describe('buy orders', () => {
   it('creates a buy order with the authenticated ramp endpoint', async () => {
     post.mockResolvedValue({ data: { id: CREATE_BUY_ORDER_PARAMS.id, status: 'ORDER_STATUS_NEW', createdTime: CREATED_TIME } });
 
-    await expect(createBuyOrder(CREATE_BUY_ORDER_PARAMS)).resolves.toBeUndefined();
+    await expect(createBuyOrder('interactive', CREATE_BUY_ORDER_PARAMS)).resolves.toEqual({ kind: 'success', data: undefined });
 
     expect(mockEnsureAccessToken).toHaveBeenCalledWith('addCash');
     expect(post).toHaveBeenCalledWith('/ramp/orders/buy', CREATE_BUY_ORDER_PARAMS, {
@@ -247,17 +232,49 @@ describe('buy orders', () => {
     });
   });
 
-  it('fetches and unwraps an order by id', async () => {
+  it('replays a buy order on the cached token without starting a ceremony', async () => {
+    post.mockResolvedValue({ data: { id: CREATE_BUY_ORDER_PARAMS.id, status: 'ORDER_STATUS_NEW', createdTime: CREATED_TIME } });
+
+    await expect(createBuyOrder('cachedOnly', CREATE_BUY_ORDER_PARAMS)).resolves.toEqual({ kind: 'success', data: undefined });
+
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+    expect(post).toHaveBeenCalledWith('/ramp/orders/buy', CREATE_BUY_ORDER_PARAMS, {
+      headers: { Authorization: 'Bearer jwt-1' },
+    });
+  });
+
+  it('returns authRequired without replaying when no token is cached', async () => {
+    mockGetCachedAccessToken.mockReturnValue(null);
+
+    await expect(createBuyOrder('cachedOnly', CREATE_BUY_ORDER_PARAMS)).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(post).not.toHaveBeenCalled();
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('fetches and unwraps an order by id on the cached token, never starting a ceremony', async () => {
     const abortController = new AbortController();
     get.mockResolvedValue({ data: { order: { ...PENDING_BUY_ORDER, id: 'different-response-id' } } });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id, abortController)).resolves.toEqual(PENDING_BUY_ORDER);
+    await expect(getOrderWithCachedAuth(CREATE_BUY_ORDER_PARAMS.id, abortController)).resolves.toEqual({
+      kind: 'success',
+      data: PENDING_BUY_ORDER,
+    });
 
-    expect(mockEnsureAccessToken).toHaveBeenCalledWith('addCash');
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
     expect(get).toHaveBeenCalledWith(`/ramp/orders/${CREATE_BUY_ORDER_PARAMS.id}`, {
       abortController,
       headers: { Authorization: 'Bearer jwt-1' },
     });
+  });
+
+  it('returns authRequired for an order read without sending a request when no token is cached', async () => {
+    mockGetCachedAccessToken.mockReturnValue(null);
+
+    await expect(getOrderWithCachedAuth(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(get).not.toHaveBeenCalled();
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
   });
 });
 
@@ -265,7 +282,7 @@ describe('response validation', () => {
   it('accepts a create response with no readable fields', async () => {
     post.mockResolvedValue({ data: {} });
 
-    await expect(createBuyOrder(CREATE_BUY_ORDER_PARAMS)).resolves.toBeUndefined();
+    await expect(createBuyOrder('interactive', CREATE_BUY_ORDER_PARAMS)).resolves.toEqual({ kind: 'success', data: undefined });
   });
 
   const readableOrders: { label: string; body: unknown; order: BuyOrder }[] = [
@@ -280,7 +297,7 @@ describe('response validation', () => {
   it.each(readableOrders)('accepts a $label order', async ({ body, order }) => {
     get.mockResolvedValue({ data: { order: body } });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual(order);
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual(order);
   });
 
   it.each([
@@ -294,7 +311,7 @@ describe('response validation', () => {
   ])('drops completed-order fields from a $label order', async ({ body, order }) => {
     get.mockResolvedValue({ data: { order: body } });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual(order);
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual(order);
   });
 
   const withCryptoAmount = (amount: unknown) => ({
@@ -323,7 +340,7 @@ describe('response validation', () => {
   it.each(unreadableOrderBodies)('rejects $label', async ({ body }) => {
     get.mockResolvedValue({ data: body });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).rejects.toThrow(ResponseParseError);
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).rejects.toThrow(ResponseParseError);
   });
 
   const readableCompletedOrderBodies: { label: string; body: unknown }[] = [
@@ -336,7 +353,7 @@ describe('response validation', () => {
   it.each(readableCompletedOrderBodies)('accepts a completed order with $label', async ({ body }) => {
     get.mockResolvedValue({ data: body });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({
       id: CREATE_BUY_ORDER_PARAMS.id,
       status: OrderStatus.Completed,
     });
@@ -356,7 +373,7 @@ describe('response validation', () => {
   it.each(unusableCryptoAmounts)('drops a crypto amount with $label', async ({ body }) => {
     get.mockResolvedValue({ data: body });
 
-    const order = await getOrder(CREATE_BUY_ORDER_PARAMS.id);
+    const order = await fetchOrder(CREATE_BUY_ORDER_PARAMS.id);
 
     expect(order.status).toBe(OrderStatus.Completed);
     if (order.status !== OrderStatus.Completed) throw new Error('Expected a completed order');
@@ -371,7 +388,7 @@ describe('response validation', () => {
   it('falls back to unspecified for a failure reason the client does not model', async () => {
     get.mockResolvedValue({ data: { order: { ...FAILED_BUY_ORDER, failureReason: 'ORDER_FAILURE_REASON_FRAUD' } } });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({
       status: OrderStatus.Failed,
       failureReason: OrderFailureReason.Unspecified,
     });
@@ -380,7 +397,7 @@ describe('response validation', () => {
   it('falls back to unspecified when a failed order carries no reason', async () => {
     get.mockResolvedValue({ data: { order: { id: CREATE_BUY_ORDER_PARAMS.id, status: OrderStatus.Failed } } });
 
-    await expect(getOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({ failureReason: OrderFailureReason.Unspecified });
+    await expect(fetchOrder(CREATE_BUY_ORDER_PARAMS.id)).resolves.toMatchObject({ failureReason: OrderFailureReason.Unspecified });
   });
 
   it('accepts a card brand the client does not model', async () => {
@@ -457,5 +474,26 @@ describe('response validation', () => {
     get.mockResolvedValue({ data: {} });
 
     await expect(listWallets()).resolves.toEqual([]);
+  });
+});
+
+describe('access refusal', () => {
+  it('shows the unavailable notice when Ramp forbids an inactive account', async () => {
+    post.mockRejectedValue(fetchError(403, 'forbidden', 403));
+
+    await expect(startCardLinkSession()).rejects.toMatchObject({ name: 'CashAccessRefusedError', reason: 'unavailable' });
+    expect(useCashAccessRefusalStore.getState().reason).toBe('unavailable');
+  });
+
+  it.each([
+    { status: 403, code: 600 },
+    { status: 403, code: undefined },
+    { status: 400, code: 403 },
+  ])('propagates HTTP $status with code $code unchanged', async ({ status, code }) => {
+    const error = fetchError(status, 'refused', code);
+    post.mockRejectedValue(error);
+
+    await expect(startCardLinkSession()).rejects.toBe(error);
+    expect(useCashAccessRefusalStore.getState().reason).toBeNull();
   });
 });
