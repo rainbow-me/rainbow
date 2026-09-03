@@ -16,7 +16,7 @@ import magicMemo from '@/utils/magicMemo';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';

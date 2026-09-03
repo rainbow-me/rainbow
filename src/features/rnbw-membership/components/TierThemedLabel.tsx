@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import GradientText from '@/components/text/GradientText';
+import { GradientText } from '@/components/text/GradientText';
 import { useColorMode, type TextProps } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { getTierLabelTheme } from '@/features/rnbw-membership/tierVisuals';

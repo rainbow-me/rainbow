@@ -4,7 +4,7 @@ import { Platform, TextInput } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Row } from '@/components/layout';
 import { Text } from '@/components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';

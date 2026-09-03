@@ -16,7 +16,7 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import { SheetHandleFixedToTopHeight } from '../sheet';
-import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
+import { AvatarCoverPhotoMaskSvg } from '../svg/AvatarCoverPhotoMaskSvg';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -108,7 +108,7 @@ type ImagePreviewOverlayProps = {
   yPosition?: SharedValue<number>;
 };
 
-export default function ImagePreviewOverlay({
+export function ImagePreviewOverlay({
   backgroundOverlay,
   children,
   enableZoom = true,

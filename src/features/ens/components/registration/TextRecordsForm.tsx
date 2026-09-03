@@ -4,14 +4,14 @@ import { type LayoutChangeEvent, type TextInputProps, type ViewProps } from 'rea
 import { useFocusEffect } from '@react-navigation/native';
 import { debounce, isEmpty } from 'lodash';
 
-import InlineField, { type InlineFieldProps } from '@/components/inputs/InlineField';
+import { InlineField, type InlineFieldProps } from '@/components/inputs/InlineField';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
 
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { ENS_RECORDS } from '../../utils/helpers';
 
-export default function TextRecordsForm({
+export function TextRecordsForm({
   autoFocusKey,
   onAutoFocusLayout,
   onFocus,

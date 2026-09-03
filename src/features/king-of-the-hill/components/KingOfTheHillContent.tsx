@@ -8,7 +8,7 @@ import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, type
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import hillImage from '@/assets/hill.png';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { RainbowImage } from '@/components/RainbowImage';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';

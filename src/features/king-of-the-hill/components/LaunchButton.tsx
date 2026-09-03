@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Canvas, Group, LinearGradient, Paint, RoundedRect, Shadow, vec } from '@shopify/react-native-skia';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientText } from '@/components/text';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

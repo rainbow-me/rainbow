@@ -3,7 +3,7 @@ import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import Reanimated from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
 import { RowWithMargins } from '@/components/layout';
 import { Emoji, Text } from '@/components/text';

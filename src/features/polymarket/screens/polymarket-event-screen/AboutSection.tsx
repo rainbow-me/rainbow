@@ -4,7 +4,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { format } from 'date-fns';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { CATEGORIES } from '@/features/polymarket/constants';

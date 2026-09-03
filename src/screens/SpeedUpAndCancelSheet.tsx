@@ -14,7 +14,7 @@ import Divider from '@/components/Divider';
 import { opacity } from '@/design-system/utils/opacity';
 import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { updateGasFeeForSpeed } from '@/features/gas/redux/gas';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/features/gas/types/gas';
@@ -127,7 +127,7 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
   return Number(newWeiValue);
 };
 
-export default function SpeedUpAndCancelSheet() {
+export function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
   const { chainId } = useAccountSettings();
   const accountAddress = useAccountAddress();

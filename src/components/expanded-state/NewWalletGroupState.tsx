@@ -4,14 +4,14 @@ import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 
-import ProfileModal from './profile/ProfileModal';
+import { ProfileModal } from './profile/ProfileModal';
 
 type NewWalletGroupStateProps = {
   onCloseModal: ({ name }: { name: string }) => void;
   numWalletGroups: number;
 };
 
-export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: NewWalletGroupStateProps) {
+export function NewWalletGroupState({ onCloseModal, numWalletGroups }: NewWalletGroupStateProps) {
   const { goBack } = useNavigation();
 
   const [value, setValue] = useState('');

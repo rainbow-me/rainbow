@@ -4,7 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';

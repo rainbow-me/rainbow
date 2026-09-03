@@ -25,7 +25,7 @@ const abcSort = (list: any[], key?: string) => {
   });
 };
 
-const useSearchCurrencyList = () => {
+export const useSearchCurrencyList = () => {
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
@@ -157,5 +157,3 @@ const useSearchCurrencyList = () => {
     swapCurrencyListLoading: loading,
   };
 };
-
-export default useSearchCurrencyList;

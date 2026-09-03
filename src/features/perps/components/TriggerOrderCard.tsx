@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';

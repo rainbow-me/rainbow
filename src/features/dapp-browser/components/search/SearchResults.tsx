@@ -13,14 +13,14 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { useDappsStore, type Dapp } from '@/features/dapp/stores/dappsStore';
 import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../../constants/constants';
 import { SEARCH_BAR_HEIGHT } from '../../constants/Dimensions';

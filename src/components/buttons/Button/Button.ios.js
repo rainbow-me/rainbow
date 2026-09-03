@@ -7,7 +7,7 @@ import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 
 import { useTheme } from '../../../theme/ThemeContext';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 

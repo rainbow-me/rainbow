@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 import { isEmpty } from 'lodash';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { colors } from '@/styles';
@@ -76,7 +76,7 @@ const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: Tab
   );
 };
 
-export default function FeesPanelTabs({ colorForAsset, speeds = GasSpeedOrder }: FeesPanelTabsProps) {
+export function FeesPanelTabs({ colorForAsset, speeds = GasSpeedOrder }: FeesPanelTabsProps) {
   const { updateGasFeeOption, selectedGasFeeOption, gasFeeParamsBySpeed, updateToCustomGasFee } = useGas();
 
   const handleOnPressTabPill = (speed: string) => {

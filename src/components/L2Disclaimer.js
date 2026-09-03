@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 import { Column, Row } from './layout';
 import { Text } from './text';
 

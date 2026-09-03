@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';

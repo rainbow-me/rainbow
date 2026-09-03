@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text, TextIcon } from '@/design-system';
 import { TierProgressBar } from '@/features/rnbw-membership/components/TierProgressBar';
 import { TierThemedLabel } from '@/features/rnbw-membership/components/TierThemedLabel';

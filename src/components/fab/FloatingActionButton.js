@@ -10,7 +10,7 @@ import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 
 export const FloatingActionButtonSize = 56;

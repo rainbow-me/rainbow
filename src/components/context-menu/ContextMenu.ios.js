@@ -5,7 +5,7 @@ import ActionSheet from 'react-native-actionsheet';
 import { omitFlatten, pickShallow } from '@/helpers/utilities';
 import { padding } from '@/styles';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 

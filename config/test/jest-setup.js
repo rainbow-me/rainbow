@@ -56,7 +56,7 @@ jest.mock('react-native-permissions', () => ({
 
 jest.mock('@/utils/deviceUtils', () => ({
   __esModule: true,
-  default: {
+  deviceUtils: {
     dimensions: {
       height: 874,
       width: 402,

@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { FiatProviderName } from '@/entities/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as i18n from '@/languages';

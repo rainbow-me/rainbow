@@ -20,7 +20,7 @@ export interface EmptyAssetListProps extends ViewProps {
   children?: React.ReactNode;
 }
 
-const EmptyAssetList = ({ descendingOpacity, skeletonCount = 5, ...props }: EmptyAssetListProps) => (
+export const EmptyAssetList = ({ descendingOpacity, skeletonCount = 5, ...props }: EmptyAssetListProps) => (
   <Container {...props}>
     <Centered flex={1}>
       <Column cover>
@@ -31,5 +31,3 @@ const EmptyAssetList = ({ descendingOpacity, skeletonCount = 5, ...props }: Empt
     </Centered>
   </Container>
 );
-
-export default EmptyAssetList;

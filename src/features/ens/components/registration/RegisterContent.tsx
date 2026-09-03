@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 import { Switch } from 'react-native-gesture-handler';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import StepIndicator from '@/components/step-indicator/StepIndicator';
 import { Box, Inline, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 
-const RegisterContent = ({
+export const RegisterContent = ({
   accentColor,
   sendReverseRecord,
   setSendReverseRecord,
@@ -75,5 +75,3 @@ const RegisterContent = ({
     </>
   );
 };
-
-export default RegisterContent;

@@ -4,7 +4,7 @@ import { Box } from '@/design-system';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 
-import TransactionMasthead from './TransactionMasthead';
+import { TransactionMasthead } from './TransactionMasthead';
 
 type Props = {
   transaction: RainbowTransaction;

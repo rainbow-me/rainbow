@@ -9,7 +9,7 @@ import * as i18n from '@/languages';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import CopyTooltip from '../../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../../layout';
 import { AvatarCircle } from '../../profile';
@@ -75,7 +75,7 @@ type ProfileModalProps = {
   disableChangeAvatar?: boolean;
 };
 
-const ProfileModal = ({
+export const ProfileModal = ({
   address,
   imageAvatar,
   emojiAvatar,
@@ -160,5 +160,3 @@ const ProfileModal = ({
     </Container>
   );
 };
-
-export default ProfileModal;

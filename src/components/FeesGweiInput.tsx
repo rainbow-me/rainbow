@@ -3,7 +3,7 @@ import { Platform, type TextInput } from 'react-native';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import GweiInputPill from '@/components/GweiInputPill';
 import { Box, Text } from '@/design-system';
 import { delay } from '@/helpers/utilities';
@@ -61,7 +61,7 @@ const GweiStepButton = ({ buttonColor, onLongPress, onLongPressEnded, onPress, t
   );
 };
 
-export default function FeesGweiInput({
+export function FeesGweiInput({
   buttonColor,
   editable = true,
   inputRef,

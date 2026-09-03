@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
-import SheetHandleFixedToTop from '@/components/sheet/SheetHandleFixedToTop';
+import { SheetHandleFixedToTop } from '@/components/sheet/SheetHandleFixedToTop';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';

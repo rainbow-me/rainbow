@@ -11,7 +11,7 @@ import { position } from '@/styles';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';

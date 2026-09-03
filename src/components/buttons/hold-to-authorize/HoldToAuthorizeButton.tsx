@@ -6,7 +6,7 @@ import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
-import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
+import { HoldToAuthorizeButtonContent2 as HoldToAuthorizeButtonContent } from './HoldToAuthorizeButtonContent';
 import { type HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {

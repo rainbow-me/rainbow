@@ -15,7 +15,7 @@ interface MenuProps {
   testId?: string;
 }
 
-const Menu = ({
+export const Menu = ({
   background = 'card (Deprecated)',
   borderRadius = 18,
   children,
@@ -59,5 +59,3 @@ const Description = ({ content, position }: { content: DescriptionContent; posit
     )}
   </Box>
 );
-
-export default Menu;

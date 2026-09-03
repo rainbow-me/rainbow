@@ -15,7 +15,7 @@ import Animated, {
 
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
 import { type AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
 

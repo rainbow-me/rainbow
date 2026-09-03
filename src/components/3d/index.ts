@@ -1,1 +1,1 @@
-export { default as SimpleModelView } from './SimpleModelView';
+export { ModelViewer as SimpleModelView } from './SimpleModelView';

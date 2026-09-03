@@ -7,7 +7,7 @@ import { NFTS_ENABLED } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 export const TokenFamilyHeaderHeight = 50;
 
@@ -48,7 +48,7 @@ const NFTItem = () => {
   );
 };
 
-const NFTLoadingSkeleton = React.memo(function NFTLoadingSkeleton({ items = 5 }: { items?: number }) {
+export const NFTLoadingSkeleton = React.memo(function NFTLoadingSkeleton({ items = 5 }: { items?: number }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
@@ -92,5 +92,3 @@ const sx = StyleSheet.create({
     width: '100%',
   },
 });
-
-export default NFTLoadingSkeleton;

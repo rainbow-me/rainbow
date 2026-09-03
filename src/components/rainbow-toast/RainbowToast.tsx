@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
   TOAST_CONTENT_PADDING_LEFT,

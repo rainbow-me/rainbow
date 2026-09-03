@@ -3,5 +3,3 @@ export const enum RainbowButtonTypes {
   addCash = 'addCash',
   small = 'small',
 }
-
-export default RainbowButtonTypes;

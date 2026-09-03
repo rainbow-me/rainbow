@@ -10,7 +10,7 @@ import magicMemo from '@/utils/magicMemo';
 
 import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
-import UniqueTokenCard from './UniqueTokenCard';
+import { UniqueTokenCard } from './UniqueTokenCard';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

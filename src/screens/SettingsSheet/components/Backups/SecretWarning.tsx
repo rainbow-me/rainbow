@@ -17,7 +17,7 @@ import { useWallets } from '@/state/wallets/walletsStore';
 
 const MIN_HEIGHT = 740;
 
-const SecretWarningPage = () => {
+export const SecretWarningPage = () => {
   const { height: deviceHeight } = useDimensions();
   const wallets = useWallets();
   const { navigate } = useNavigation();
@@ -139,5 +139,3 @@ const SecretWarningPage = () => {
     </Box>
   );
 };
-
-export default SecretWarningPage;

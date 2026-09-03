@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
 import styled from '@/framework/ui/styled-thing';
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';

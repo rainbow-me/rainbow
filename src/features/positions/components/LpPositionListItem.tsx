@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';

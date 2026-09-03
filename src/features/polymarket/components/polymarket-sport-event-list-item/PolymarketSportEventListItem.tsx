@@ -3,8 +3,8 @@ import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'reac
 
 import ConditionalWrap from 'conditional-wrap';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

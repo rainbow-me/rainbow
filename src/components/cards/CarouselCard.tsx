@@ -4,8 +4,8 @@ import { Platform, ScrollView, View } from 'react-native';
 
 import { FlashList, type ListRenderItem } from '@shopify/flash-list';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text } from '@/design-system';
 import { MarqueeList } from '@/framework/ui/components/MarqueeList';
@@ -38,7 +38,7 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
   return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
-export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
+export function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
   const { navigate } = useNavigation();
 
   const { data, isLoading } = useEnsMarquee();

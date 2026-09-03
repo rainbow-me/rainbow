@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LinearTransition } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { RnbwCoinIcon } from '@/components/RnbwCoinIcon';
 import { Box, globalColors, Separator, Stack, Text, useForegroundColor } from '@/design-system';

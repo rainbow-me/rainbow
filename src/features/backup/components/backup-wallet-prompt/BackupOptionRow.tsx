@@ -3,7 +3,7 @@ import React from 'react';
 import { type Source } from 'react-native-fast-image';
 
 import Caret from '@/assets/family-dropdown-arrow.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';

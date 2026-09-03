@@ -4,7 +4,7 @@ import { Platform, RefreshControl, ScrollView, StyleSheet, View, type ScrollView
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';

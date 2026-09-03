@@ -11,7 +11,7 @@ import magicMemo from '@/utils/magicMemo';
 
 import { darkModeThemeColors } from '../../../styles/colors';
 import { useTheme } from '../../../theme/ThemeContext';
-import RainbowButtonTypes from './RainbowButtonTypes';
+import { RainbowButtonTypes } from './RainbowButtonTypes';
 
 const RainbowGradientColorsFactory = (darkMode: boolean, disabled: boolean) => ({
   inner: {

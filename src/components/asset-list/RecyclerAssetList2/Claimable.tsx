@@ -3,14 +3,14 @@ import React, { memo, useMemo } from 'react';
 import { FasterImageView } from '@candlefinance/faster-image';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { getClaimableName } from '@/resources/addys/claimables/utils';
-import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 const avgCharWidth = 7;
 const estimatedHorizontalPadding = 250;

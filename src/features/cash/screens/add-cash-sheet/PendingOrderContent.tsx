@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';

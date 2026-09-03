@@ -5,7 +5,7 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
-import currentColors from '@/theme/currentColors';
+import { currentColors } from '@/theme/currentColors';
 
 import Navigation from './Navigation';
 import Routes from './routesNames';

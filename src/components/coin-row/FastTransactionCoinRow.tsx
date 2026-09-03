@@ -18,7 +18,7 @@ import { type ThemeContextProps } from '@/theme/ThemeContext';
 import { address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';

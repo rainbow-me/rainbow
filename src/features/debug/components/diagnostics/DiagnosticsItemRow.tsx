@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Divider from '@/components/Divider';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 import { Bold, Text } from '@/components/text';

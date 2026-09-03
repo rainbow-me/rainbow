@@ -21,14 +21,14 @@ import useENSRecords from '../../hooks/useENSRecords';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
 import { useENSAddress } from '../../resources/addressQuery';
 import { ENS_RECORDS } from '../../utils/helpers';
-import ActionButtons from './ActionButtons/ActionButtons';
-import ProfileAvatar from './ProfileAvatar';
-import ProfileCover from './ProfileCover';
-import ProfileDescription from './ProfileDescription';
+import { ActionButtons } from './ActionButtons/ActionButtons';
+import { ProfileAvatar } from './ProfileAvatar';
+import { ProfileCover } from './ProfileCover';
+import { ProfileDescription } from './ProfileDescription';
 import { ProfileSheetConfigContext } from './ProfileSheetConfigContext';
-import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags';
+import { RecordTags, Placeholder as RecordTagsPlaceholder } from './RecordTags';
 
-export default function ProfileSheetHeader({
+export function ProfileSheetHeader({
   ensName: defaultEnsName,
   isLoading,
   isPreview,

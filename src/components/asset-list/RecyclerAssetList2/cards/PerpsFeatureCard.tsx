@@ -5,7 +5,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import infinityIcon from '@/assets/infinity.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { AccentColorProvider, Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

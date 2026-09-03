@@ -4,7 +4,7 @@ import { Text as NativeText, Platform, Animated as RNAnimated } from 'react-nati
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { navbarHeight } from '@/components/navbar/Navbar';

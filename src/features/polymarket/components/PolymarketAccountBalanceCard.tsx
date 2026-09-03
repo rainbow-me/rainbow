@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

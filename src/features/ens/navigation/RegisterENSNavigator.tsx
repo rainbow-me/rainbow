@@ -12,14 +12,14 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import useENSRegistration from '../hooks/useENSRegistration';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
-import ENSIntroSheet from '../screens/ENSIntroSheet';
-import ENSSearchSheet from '../screens/ENSSearchSheet';
+import { ENSAssignRecordsBottomActions, ENSAssignRecordsSheet } from '../screens/ENSAssignRecordsSheet';
+import { ENSIntroSheet } from '../screens/ENSIntroSheet';
+import { ENSSearchSheet } from '../screens/ENSSearchSheet';
 import { accentColorAtom, REGISTRATION_MODES } from '../utils/helpers';
 
 const Swipe = createMaterialTopTabNavigator();
@@ -48,7 +48,7 @@ export const defaultScreenOptions = {
 
 export type ENSRoutes = keyof typeof defaultScreenOptions;
 
-export default function RegisterENSNavigator() {
+export function RegisterENSNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
 
   const sheetRef = useRef<any>(undefined);

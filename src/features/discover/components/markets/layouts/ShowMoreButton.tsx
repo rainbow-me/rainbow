@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { easing } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';

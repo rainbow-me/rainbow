@@ -50,7 +50,7 @@ export function normalizeTransformOrigin(transformOrigin: TransformOrigin | stri
   }
 }
 
-const NativeButton = React.forwardRef(
+export const NativeButton = React.forwardRef(
   (
     {
       duration = 160,
@@ -105,5 +105,3 @@ const NativeButton = React.forwardRef(
 );
 
 NativeButton.displayName = 'NativeButton';
-
-export default NativeButton;

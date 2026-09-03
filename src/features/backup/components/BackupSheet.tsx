@@ -11,12 +11,12 @@ import { type RootStackParamList } from '@/navigation/types';
 
 import { backupsStore } from '../stores/backupsStore';
 import { BackupWalletPrompt } from './backup-wallet-prompt/BackupWalletPrompt';
-import BackupCloudStep from './BackupCloudStep';
-import CloudBackupPrompt from './CloudBackupPrompt';
-import ManualBackupPrompt from './ManualBackupPrompt';
-import RestoreCloudStep from './RestoreCloudStep';
+import { BackupCloudStep } from './BackupCloudStep';
+import { CloudBackupPrompt } from './CloudBackupPrompt';
+import { ManualBackupPrompt } from './ManualBackupPrompt';
+import { RestoreCloudStep } from './RestoreCloudStep';
 
-export default function BackupSheet() {
+export function BackupSheet() {
   const { params: { step = WalletBackupStepTypes.backup_prompt } = {} } =
     useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
 

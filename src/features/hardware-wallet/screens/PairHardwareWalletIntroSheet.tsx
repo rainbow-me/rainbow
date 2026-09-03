@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Inset, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';

@@ -12,7 +12,7 @@ type FloatingPanelProps = {
   testID: string;
 };
 
-const FloatingPanel = ({ borderRadius = 18, overflow = 'hidden', paddingBottom, style, testID, ...props }: FloatingPanelProps) => {
+export const FloatingPanel = ({ borderRadius = 18, overflow = 'hidden', paddingBottom, style, testID, ...props }: FloatingPanelProps) => {
   return (
     <Box
       background="body (Deprecated)"
@@ -24,5 +24,3 @@ const FloatingPanel = ({ borderRadius = 18, overflow = 'hidden', paddingBottom, 
     />
   );
 };
-
-export default FloatingPanel;

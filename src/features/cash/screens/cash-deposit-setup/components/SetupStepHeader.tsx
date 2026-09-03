@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';

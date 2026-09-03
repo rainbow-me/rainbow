@@ -8,7 +8,7 @@ import RainbowLight from '../../assets/rainbows/light.png';
 import RainbowLiquid from '../../assets/rainbows/liquid.png';
 import RainbowNeon from '../../assets/rainbows/neon.png';
 import RainbowPixel from '../../assets/rainbows/pixel.png';
-import SingleRainbow from './SingleRainbow';
+import { SingleRainbow } from './SingleRainbow';
 
 const { height: deviceHeight } = Dimensions.get('screen');
 
