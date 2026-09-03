@@ -46,3 +46,11 @@ Key non-obvious directories:
 - **No barrel exports** -- import directly from source files, not `index.ts`. Barrels defeat tree-shaking, hide circular deps, and trigger cascading module loading. ESLint-enforced with a limited allowlist.
 - **Type-only imports** -- use the `type` annotation for type-only imports (ESLint-enforced).
 - **TypeScript over JavaScript** -- write all new files in `.ts`/`.tsx`. Remaining JS files are checked against an error baseline (`yarn lint:js-types`) -- don't regress it.
+
+## PR scope
+
+PRs are deliberately narrow. Refactor and migration PRs are behavior-preserving: moves, extractions, and rewires only. Pre-existing flaws in code a PR touches or moves are fixed in separate PRs, never bundled, and behavior changes never ride in a migration PR.
+
+## Reviewing
+
+Hold PRs to the scope contract above, not to the state of the code they touch: flag only what a PR introduces, makes worse, or newly exposes. A severe pre-existing issue may be surfaced, clearly marked as pre-existing and out of scope, without counting against the PR. Don't ask a PR to widen its scope.
