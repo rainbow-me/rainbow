@@ -18,7 +18,13 @@ import { openCashAuthGate } from '@/features/cash/services/cashAuthGateService';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { useCashAuthGateStore } from '@/features/cash/stores/cashAuthGateStore';
-import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
+import {
+  cashBuyOrderActions,
+  selectCashBuyPhase,
+  useCashBuyOrderStore,
+  useCashBuyPhase,
+  type CashBuyErrorCode,
+} from '@/features/cash/stores/cashBuyOrderStore';
 import { useCashFundingState, type CashFundingState } from '@/features/cash/stores/cashPaymentMethodStore';
 import { getTelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -42,7 +48,8 @@ import { AccountAvatar } from './AccountAvatar';
 import { AddCardHint } from './AddCardHint';
 import { AddFromRow } from './AddFromRow';
 import { AmountDisplay } from './AmountDisplay';
-import { PendingOrderContent } from './PendingOrderContent';
+import { PausedOrderContent } from './PausedOrderContent';
+import { PendingOrderContent, type PendingOrderVariant } from './PendingOrderContent';
 import { ReauthenticateContent } from './ReauthenticateContent';
 import { SettingsButton } from './SettingsButton';
 import { useAddCashAmount } from './useAddCashAmount';
@@ -50,6 +57,15 @@ import { useAddCashAmount } from './useAddCashAmount';
 type AddCashMode = 'presets' | 'keypad';
 type AmountPreset = { amount: number; label: string };
 type AddCashAmount = ReturnType<typeof useAddCashAmount>;
+type BuyOrderAlert = CashBuyErrorCode | 'NOT_PLACED';
+
+const l = i18n.l.cash.add_cash_screen;
+
+const ALERT_BY_ERROR: Record<BuyOrderAlert, { title: string; message: string }> = {
+  GENERIC: { title: l.buy_error_title, message: l.buy_error_generic },
+  PAYMENT_REJECTED: { title: l.buy_error_title, message: l.payment_rejected },
+  NOT_PLACED: { title: l.not_placed_title, message: l.not_placed_description },
+};
 
 const AMOUNT_PRESETS: AmountPreset[] = [
   { amount: 10, label: '$10' },
@@ -341,15 +357,18 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const accountAddress = useAccountAddress();
   const phase = useCashBuyPhase();
   const previousPhase = usePrevious(phase);
-  const errorCode = useCashBuyOrderStore(state => (state.status.step === 'error' ? state.status.errorCode : null));
-  const isPolling = useCashBuyOrderStore(state => state.status.step === 'polling');
-  const submittedAt = useCashBuyOrderStore(state =>
-    state.status.step === 'submitting' || state.status.step === 'polling' ? state.status.submittedAt : null
+  const step = useCashBuyOrderStore(state => state.status.step);
+  const alertKey = useCashBuyOrderStore<BuyOrderAlert | null>(state =>
+    state.status.step === 'error' ? state.status.errorCode : state.status.step === 'notPlaced' ? 'NOT_PLACED' : null
   );
+  const submittedAt = useCashBuyOrderStore(state => ('submittedAt' in state.status ? state.status.submittedAt : null));
+  // Opened onto an order already in flight: the user is back to learn how it went, not watching it happen.
+  const [isResumed] = useState(() => selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending');
   const { cash_pending_view_delay_ms: pendingViewDelayMs } = useRemoteConfig('cash_pending_view_delay_ms');
   const [isCheckingWallet, setIsCheckingWallet] = useState(false);
   const walletCheckRef = useRef<AbortController | null>(null);
   const isPending = phase === 'pending';
+  const isPolling = step === 'polling';
   const isProcessing = isCheckingWallet || isPending;
 
   // The pending view takes over only once the order has been in flight longer than the configured
@@ -363,16 +382,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
-  // On open, replay a submit interrupted before an order id came back; otherwise clear the settled
-  // previous run so the sheet starts fresh.
-  useEffect(() => {
-    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending') {
-      cashBuyOrderActions.resumePendingSubmission();
-    } else {
-      cashBuyOrderActions.reset();
-    }
-  }, []);
-
   // A fresh order is most likely to settle inside the fast window; polling backs off past it.
   const slowPollAt = submittedAt !== null ? submittedAt + ORDER_FAST_POLL_DURATION_MS : null;
   const isSlowPolling = useTimestampReached(slowPollAt);
@@ -381,29 +390,29 @@ export const AddCashSheet = memo(function AddCashSheet() {
   // subscription attaches, and the store's snapshot cache swallows the missed update — the sheet
   // then sits on the loading row forever. The unmount clear keeps a stale gate from flashing on reopen.
   useEffect(() => {
+    // A settled previous run starts fresh; one still in flight is picked up by the gate's entry intent.
+    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) !== 'pending') cashBuyOrderActions.reset();
     void openCashAuthGate();
     return () => useCashAuthGateStore.getState().clear();
   }, []);
 
   useWatcher({
-    enabled: isPolling,
+    enabled: isPolling && openGate === null,
     interval: isSlowPolling ? ORDER_SLOW_POLL_INTERVAL_MS : ORDER_FAST_POLL_INTERVAL_MS,
     watchFunction: cashBuyOrderActions.syncActiveOrder,
   });
 
   useEffect(() => {
     if (previousPhase === undefined || previousPhase === phase) return;
-    if (phase === 'error') {
+    if (alertKey !== null) {
       // TODO(cash): replace this Alert with an in-place error state once the design is ready.
-      Alert.alert(
-        i18n.t(i18n.l.cash.add_cash_screen.buy_error_title),
-        errorCode === 'PAYMENT_REJECTED'
-          ? i18n.t(i18n.l.cash.add_cash_screen.payment_rejected)
-          : i18n.t(i18n.l.cash.add_cash_screen.buy_error_generic)
-      );
+      const alert = ALERT_BY_ERROR[alertKey];
+      Alert.alert(i18n.t(alert.title), i18n.t(alert.message));
+      // The resume path skips the card list; the amount screen this returns to needs it.
+      if (funding.kind === 'loading') void openCashAuthGate();
     }
     if (phase === 'success') navigation.goBack();
-  }, [phase, errorCode, navigation, previousPhase]);
+  }, [alertKey, funding.kind, navigation, phase, previousPhase]);
 
   // Sample the amount whenever the user taps a preset chip.
   const handleSelectPreset = useCallback(
@@ -469,13 +478,18 @@ export const AddCashSheet = memo(function AddCashSheet() {
     // TODO(cash): open cash settings once they land.
   }, []);
 
+  const handleCheckAgain = useCallback(() => {
+    void openCashAuthGate();
+  }, []);
+
   const handleMore = useCallback(() => {
     resetKeypadAmount();
     setMode('keypad');
   }, [resetKeypadAmount]);
 
-  const view = showPendingView ? 'pending' : openGate ? 'reauth' : mode;
+  const view = openGate ? 'reauth' : step === 'paused' ? 'paused' : showPendingView ? 'pending' : mode;
   const isKeypad = view === 'keypad';
+  const pendingVariant: PendingOrderVariant = step === 'probing' ? 'probing' : isResumed ? 'placed' : 'pending';
 
   return (
     <PanelSheet
@@ -487,10 +501,12 @@ export const AddCashSheet = memo(function AddCashSheet() {
       showTapToDismiss={!isProcessing}
     >
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
-        {view === 'pending' ? (
-          <PendingOrderContent onSettings={handleSettings} />
-        ) : openGate ? (
+        {openGate ? (
           <ReauthenticateContent status={openGate} />
+        ) : view === 'paused' ? (
+          <PausedOrderContent onCheckAgain={handleCheckAgain} onSettings={handleSettings} />
+        ) : view === 'pending' ? (
+          <PendingOrderContent onSettings={handleSettings} variant={pendingVariant} />
         ) : view === 'keypad' ? (
           <KeypadAmountContent
             amount={amount}

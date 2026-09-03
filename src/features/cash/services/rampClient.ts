@@ -346,16 +346,16 @@ export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void
   );
 }
 
-export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
-  const data =
+export async function getOrderWithCachedAuth(orderId: string, abortController?: AbortController | null): Promise<CashAuthResult<BuyOrder>> {
+  const result: CashAuthResult<unknown> =
     IS_TESTING === 'true'
-      ? e2eGetOrderResponse(orderId)
-      : (
-          await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
-            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
-          )
-        ).data;
-  return { ...parseResponse(getOrderResponseSchema, data, 'getOrder').order, id: orderId };
+      ? { kind: 'success', data: e2eGetOrderResponse(orderId) }
+      : await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
+          const response = await getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers });
+          return response.data;
+        });
+  if (result.kind === 'authRequired') return result;
+  return { kind: 'success', data: { ...parseResponse(getOrderResponseSchema, result.data, 'getOrder').order, id: orderId } };
 }
 
 // ---- E2E buy orders ----------------------------------------------------------

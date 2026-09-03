@@ -21,6 +21,10 @@ const PROMPT_BY_INTENT: Record<CashAuthIntent['kind'], Record<OpenCashAuthGateSt
     authRequired: { action: l.reauth_continue, description: l.reauth_description, title: l.reauth_title },
     error: { action: l.reauth_try_again, description: l.reauth_error_description, title: l.reauth_error_title },
   },
+  resumeOrder: {
+    authRequired: { action: l.reauth_continue, description: l.reauth_order_description, title: l.reauth_order_title },
+    error: { action: l.reauth_try_again, description: l.reauth_order_error_description, title: l.reauth_error_title },
+  },
 };
 
 const TEST_ID_BY_STEP: Record<OpenCashAuthGateStatus['step'], string> = {

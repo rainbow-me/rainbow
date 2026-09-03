@@ -1566,7 +1566,17 @@
         "reauth_continue": "Continue",
         "reauth_error_title": "Something went wrong",
         "reauth_error_description": "We couldn’t load your cards. Please try again.",
-        "reauth_try_again": "Try Again"
+        "reauth_try_again": "Try Again",
+        "reauth_order_title": "Your session expired",
+        "reauth_order_description": "Sign in with your passkey to check on the deposit you were adding.",
+        "reauth_order_error_description": "We couldn’t check on your deposit. Please try again.",
+        "placed_title": "Your deposit went through",
+        "placed_description": "We’re finishing up.\nThis may take up to a few minutes.",
+        "paused_title": "We can’t confirm your deposit yet",
+        "paused_description": "Deposits are paused until we can confirm your last one. Check again in a moment or contact support.",
+        "check_again": "Check Again",
+        "not_placed_title": "Deposit Didn’t Go Through",
+        "not_placed_description": "Nothing was charged. Try again"
       },
       "payment_methods": {
         "title": "Add From",

@@ -6,11 +6,13 @@ import { toAnalyticsAmount } from '@/analytics/utils';
 import { requireAddress } from '@/features/address/core/requireAddress';
 import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
+import { delay } from '@/utils/delay';
 
-import { CASH_BUY_DESTINATION_ASSET } from '../constants';
+import { CASH_BUY_DESTINATION_ASSET, ORDER_SUBMISSION_MAX_REPLAYS, ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS } from '../constants';
+import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import {
   createBuyOrder,
-  getOrder,
+  getOrderWithCachedAuth,
   isDefinitiveRejection,
   isNotFoundError,
   isTerminalBuyOrder,
@@ -21,20 +23,28 @@ import {
   type TerminalBuyOrder,
 } from '../services/rampClient';
 import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransaction';
+import { useCashAuthGateStore } from './cashAuthGateStore';
 import { useCashWalletStore } from './cashWalletStore';
 
 export type CashBuyPhase = 'idle' | 'pending' | 'error' | 'success';
 export type CashBuyErrorCode = 'PAYMENT_REJECTED' | 'GENERIC';
 
+type CashBuyResumeResult = 'completed' | 'authRequired';
+
+type UnresolvedSubmission = {
+  spec: BuyOrderSpec;
+  /** Epoch ms of the submit, anchoring "how long has this order been pending". */
+  submittedAt: number;
+};
+
 export type CashBuyStatus =
   | { step: 'idle' }
-  | {
-      /** A submit is in flight: the spec has not (knowably) reached the backend yet. */
-      step: 'submitting';
-      spec: BuyOrderSpec;
-      /** Epoch ms of the submit, anchoring "how long has this order been pending". */
-      submittedAt: number;
-    }
+  /** A submit is in flight: the spec has not (knowably) reached the backend yet. */
+  | ({ step: 'submitting' } & UnresolvedSubmission)
+  /** Whether the submit landed is unknown, so the order is read back under its id rather than written again. */
+  | ({ step: 'probing' } & UnresolvedSubmission)
+  /** The read could not answer either; deposits stay paused until a definitive one does. */
+  | ({ step: 'paused' } & UnresolvedSubmission)
   | {
       /** The order exists on the backend; `order` stays null until the first successful details fetch. */
       step: 'polling';
@@ -43,32 +53,30 @@ export type CashBuyStatus =
       submittedAt: number;
     }
   | { step: 'success'; order: Extract<BuyOrder, { status: OrderStatus.Completed }> }
-  | {
-      step: 'error';
-      errorCode: CashBuyErrorCode;
-      order: Extract<BuyOrder, { status: OrderStatus.Failed }> | null;
-      /**
-       * Retained when the submit failed ambiguously (the order may still exist under this id), so a
-       * retry with the same inputs replays the same id instead of risking a second order. Absent when
-       * the backend definitively rejected the create or the order itself reached a terminal failure.
-       */
-      spec?: BuyOrderSpec;
-    };
+  /**
+   * The backend has no order under this id, so nothing was charged. The spec is kept so a retry
+   * with the same inputs still replays the same id instead of risking a second order.
+   */
+  | { step: 'notPlaced'; spec: BuyOrderSpec }
+  | { step: 'error'; errorCode: CashBuyErrorCode; order: Extract<BuyOrder, { status: OrderStatus.Failed }> | null };
 
 type CashBuyOrderState = {
   status: CashBuyStatus;
 
   submitBuyOrder: (input: Omit<BuyOrderSpec, 'id'>) => Promise<void>;
   syncActiveOrder: (abortController?: AbortController) => Promise<void>;
-  resumePendingSubmission: () => Promise<void>;
+  resumeOrder: () => Promise<CashBuyResumeResult>;
   reset: () => void;
 };
 
 const PHASE_BY_STEP: Record<CashBuyStatus['step'], CashBuyPhase> = {
   idle: 'idle',
   submitting: 'pending',
+  probing: 'pending',
+  paused: 'pending',
   polling: 'pending',
   success: 'success',
+  notPlaced: 'error',
   error: 'error',
 };
 
@@ -78,6 +86,12 @@ const PHASE_BY_STEP: Record<CashBuyStatus['step'], CashBuyPhase> = {
  */
 export function selectCashBuyPhase(state: Pick<CashBuyOrderState, 'status'>): CashBuyPhase {
   return PHASE_BY_STEP[state.status.step];
+}
+
+// Automatic requests never run the sign-in ceremony: auth loss parks the sheet's gate, and the
+// user's Re-authenticate tap resumes the order from wherever it stopped.
+function parkForReauth(): void {
+  useCashAuthGateStore.getState().park({ kind: 'resumeOrder' });
 }
 
 export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
@@ -114,30 +128,76 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       }
     }
 
-    // The same spec can be in flight more than once (a reopen replays it while the original POST
-    // still runs), so a result only lands while the store is still submitting that spec — whichever
-    // settles first wins, the straggler is dropped.
-    function isCurrentSubmission(spec: BuyOrderSpec): boolean {
+    // The same spec can be in flight more than once (a reopen probes it while the original POST
+    // still runs), so a result only lands while the store is still on the step that issued it —
+    // whichever settles first wins, the straggler is dropped.
+    function isCurrent({ step, spec }: Extract<CashBuyStatus, UnresolvedSubmission>): boolean {
       const current = get().status;
-      return current.step === 'submitting' && current.spec.id === spec.id;
+      return current.step === step && 'spec' in current && current.spec.id === spec.id;
     }
 
-    async function submitBuyOrderSpec({ spec, submittedAt }: { spec: BuyOrderSpec; submittedAt: number }): Promise<void> {
+    async function probeOrder(probing: Extract<CashBuyStatus, { step: 'probing' }>): Promise<CashBuyResumeResult> {
+      const { spec, submittedAt } = probing;
+      set({ status: probing });
       try {
-        await createBuyOrder({ ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
-        if (!isCurrentSubmission(spec)) return;
-        set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
+        const result = await getOrderWithCachedAuth(spec.id);
+        if (!isCurrent(probing)) return 'completed';
+        if (result.kind === 'authRequired') return 'authRequired';
+        if (isTerminalBuyOrder(result.data)) applyTerminalOrder(result.data);
+        else set({ status: { step: 'polling', orderId: spec.id, order: result.data, submittedAt } });
       } catch (error) {
-        if (!isCurrentSubmission(spec)) return;
-        logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
-        analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
-        set({ status: { step: 'error', errorCode: 'GENERIC', order: null, spec: isDefinitiveRejection(error) ? undefined : spec } });
-        // A 404 says the backend did not recognise something this order named, and the linked wallet
-        // is the part of that we cache — persisted, so a stale entry would fail every retry. Dropping
-        // it costs the next attempt one GET and lets that attempt gate on the truth; absence only
-        // ever means "ask the server".
-        if (isNotFoundError(error)) useCashWalletStore.getState().clear();
+        if (!isCurrent(probing)) return 'completed';
+        if (isNotFoundError(error)) {
+          set({ status: { step: 'notPlaced', spec } });
+        } else {
+          logger.error(new RainbowError('[cashBuyOrderStore] buy order left unconfirmed', error), { orderId: spec.id });
+          set({ status: { step: 'paused', spec, submittedAt } });
+        }
       }
+      return 'completed';
+    }
+
+    async function submitBuyOrderSpec(submitting: Extract<CashBuyStatus, { step: 'submitting' }>): Promise<void> {
+      const { spec, submittedAt } = submitting;
+      for (let replay = 0; replay <= ORDER_SUBMISSION_MAX_REPLAYS; replay++) {
+        if (replay > 0) {
+          await delay(ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS * replay);
+          if (!isCurrent(submitting)) return;
+        }
+        try {
+          await createBuyOrder({ ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET });
+          if (!isCurrent(submitting)) return;
+          set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
+          return;
+        } catch (error) {
+          if (!isCurrent(submitting)) return;
+          if (isPasskeyCancellation(error)) {
+            // Cancelling the first attempt fails before anything is sent; cancelling a replay leaves
+            // the earlier attempt unresolved.
+            if (replay === 0) {
+              set({ status: { step: 'idle' } });
+            } else {
+              set({ status: { step: 'probing', spec, submittedAt } });
+              parkForReauth();
+            }
+            return;
+          }
+          if (isDefinitiveRejection(error)) {
+            logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
+            analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
+            set({ status: { step: 'error', errorCode: 'GENERIC', order: null } });
+            // A 404 says the backend did not recognise something this order named, and the linked wallet
+            // is the part of that we cache — persisted, so a stale entry would fail every retry. Dropping
+            // it costs the next attempt one GET and lets that attempt gate on the truth; absence only
+            // ever means "ask the server".
+            if (isNotFoundError(error)) useCashWalletStore.getState().clear();
+            return;
+          }
+          logger.warn('[cashBuyOrderStore] createBuyOrder failed ambiguously', { orderId: spec.id, replay });
+        }
+      }
+      // Repeated ambiguous writes say the write path is unhealthy: stop writing, start reading.
+      if ((await probeOrder({ step: 'probing', spec, submittedAt })) === 'authRequired') parkForReauth();
     }
 
     return {
@@ -149,11 +209,9 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
 
         analytics.track(analytics.event.cashBuyOrderSubmitted, { amount: toAnalyticsAmount(depositAmount) });
 
-        // decides whether the new submission should reuse the order id
-        // from a previous failed attempt with not definitive rejection
         const retained =
-          status.step === 'error' &&
-          status.spec?.cardId === cardId &&
+          status.step === 'notPlaced' &&
+          status.spec.cardId === cardId &&
           status.spec.depositAmount === depositAmount &&
           status.spec.walletAddress === walletAddress
             ? status.spec
@@ -179,14 +237,16 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         const propagateAbort = () => requestController.abort();
         abortController?.signal.addEventListener('abort', propagateAbort);
         try {
-          const next = await getOrder(orderId, requestController);
+          const result = await getOrderWithCachedAuth(orderId, requestController);
           if (abortController?.signal.aborted) return;
           const current = get().status;
           if (current.step !== 'polling' || current.orderId !== orderId) return;
-          if (isTerminalBuyOrder(next)) {
-            applyTerminalOrder(next);
+          if (result.kind === 'authRequired') {
+            parkForReauth();
+          } else if (isTerminalBuyOrder(result.data)) {
+            applyTerminalOrder(result.data);
           } else {
-            set({ status: { ...current, order: next } });
+            set({ status: { ...current, order: result.data } });
           }
         } catch (error) {
           if (abortController?.signal.aborted) return;
@@ -196,9 +256,10 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         }
       },
 
-      resumePendingSubmission: async () => {
+      resumeOrder: async () => {
         const { status } = get();
-        if (status.step === 'submitting') await submitBuyOrderSpec(status);
+        if (status.step !== 'submitting' && status.step !== 'probing' && status.step !== 'paused') return 'completed';
+        return probeOrder({ step: 'probing', spec: status.spec, submittedAt: status.submittedAt });
       },
 
       reset: () => set({ status: { step: 'idle' } }),
@@ -210,14 +271,14 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     // Flush the submit intent on the next tick rather than the default 3-5s debounce, so a kill shortly
     // after submit can still be recovered. (Not a hard guarantee: a same-frame crash can still beat it.)
     persistThrottleMs: 0,
-    // Persist only the in-flight steps — the ones worth recovering after a kill:
-    // - 'submitting' is replayed (idempotently) via `resumePendingSubmission` on the next Add Cash open,
-    //   since we don't know whether the spec reached the backend.
+    // Persist only the steps still waiting on the backend — the ones worth recovering after a kill:
+    // - a spec whose outcome is unknown ('submitting', 'probing', 'paused') is probed, never replayed,
+    //   on the next Add Cash open — a user who left may have deposited elsewhere.
     // - 'polling' resumes on the next Add Cash open, so the success status carrying a `transactionHash`
     //   is not lost.
     // Terminal states collapse to idle: the sheet resets them on open anyway.
     partialize: state => ({
-      status: state.status.step === 'submitting' || state.status.step === 'polling' ? state.status : { step: 'idle' as const },
+      status: selectCashBuyPhase(state) === 'pending' ? state.status : { step: 'idle' as const },
     }),
   }
 );
