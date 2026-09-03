@@ -9,7 +9,9 @@ import styled from '@/framework/ui/styled-thing';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useAccountAddress, useAccountProfileInfo, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { padding, shadow } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
 import deviceUtils from '@/utils/deviceUtils';
@@ -54,13 +56,21 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
 export default function ReceiveModal() {
   const accountAddress = useAccountAddress();
   const { accountName } = useAccountProfileInfo();
+  const isDamagedWallet = useIsDamagedWallet();
 
   const [copiedText, setCopiedText] = useState(undefined);
   const [copyCount, setCopyCount] = useState(0);
-  const handleCopiedText = useCallback(text => {
-    setCopiedText(abbreviations.formatAddressForDisplay(text));
-    setCopyCount(count => count + 1);
-  }, []);
+  const handleCopiedText = useCallback(
+    text => {
+      if (isDamagedWallet) {
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+        return;
+      }
+      setCopiedText(abbreviations.formatAddressForDisplay(text));
+      setCopyCount(count => count + 1);
+    },
+    [isDamagedWallet]
+  );
 
   const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress.toLowerCase()), [accountAddress]);
   const { height: deviceHeight } = useDimensions();
@@ -78,7 +88,7 @@ export default function ReceiveModal() {
         <QRWrapper>
           <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
-        <CopyFloatingEmojis onPress={handleCopiedText} textToCopy={checksummedAddress}>
+        <CopyFloatingEmojis disabled={isDamagedWallet} onPress={handleCopiedText} textToCopy={checksummedAddress}>
           <ColumnWithMargins margin={2}>
             <NameText>{accountName}</NameText>
             <AddressText address={checksummedAddress} />
