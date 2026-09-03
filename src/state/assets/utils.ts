@@ -8,6 +8,7 @@ import { supportedCurrencies as supportedNativeCurrencies } from '@/features/cur
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
+import { fetchSolanaUserAssets } from '@/features/solana/data/fetchSolanaUserAssets';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan, multiply } from '@/helpers/utilities';
@@ -16,6 +17,7 @@ import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
 
+import { fetchCaipUserAssets, isPreMergedBalancesEnabled } from './fetchCaipUserAssets';
 import {
   type Asset,
   type GetAssetsResponse,
@@ -60,7 +62,22 @@ export async function fetchUserAssets(
     return fetchTestnetUserAssets(params);
   }
 
+  // One pre-merged request for every account the wallet holds, which is the boundary
+  // placement the recommendation takes. Everything below this line is the arrangement
+  // it replaces: a per-family request each, and a merge the app owns.
+  if (isPreMergedBalancesEnabled()) {
+    return fetchCaipUserAssets({ abortController, address, currency });
+  }
+
+  // Started before the EVM request is awaited so it costs no extra wall-clock, and
+  // resolved after it because a Solana failure must not cost the EVM rows: this
+  // function returning null keeps the previous asset map, and returning Solana rows
+  // alone would replace the EVM ones with nothing. It never rejects.
+  const solanaUserAssets = fetchSolanaUserAssets({ abortController, currency });
+
   try {
+    // Solana is deliberately absent from this list. It has no numeric chain id on
+    // any Rainbow contract, and this endpoint refuses the one the app uses locally.
     const chainIds = useBackendNetworksStore.getState().getSupportedChainIds();
     const res = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
       abortController,
@@ -86,7 +103,7 @@ export async function fetchUserAssets(
 
     return {
       chainIdsWithErrors: null,
-      userAssets,
+      userAssets: userAssets.concat(await solanaUserAssets),
     };
   } catch (e) {
     console.log(e);

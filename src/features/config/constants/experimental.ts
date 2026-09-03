@@ -36,6 +36,8 @@ export const RNBW_REWARDS = 'RNBW Rewards';
 export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
 export const GO_RELAY_BACKEND = 'Go Relay Backend';
+export const SOLANA_BALANCES = 'Solana Balances';
+export const PRE_MERGED_BALANCES = 'Pre-merged Balances';
 
 export type ExperimentalValue = {
   settings: boolean;
@@ -76,6 +78,18 @@ const config = {
   [RNBW_MEMBERSHIP]: { settings: true, value: false },
   [DELEGATION]: { settings: true, value: false },
   [GO_RELAY_BACKEND]: { needsRestart: true, settings: true, value: true },
+  // Gates every Solana surface dark. `needsRestart` because the flag decides what
+  // the backend-networks record selectors describe and what the asset fetcher asks
+  // for, and both are memoized for the life of the process.
+  [SOLANA_BALANCES]: { needsRestart: true, settings: true, value: false },
+  // Moves the whole asset fetch onto the pre-merged, chain-agnostic balances contract,
+  // replacing the v1 request plus the app-side Solana merge. `needsRestart` for the same
+  // reason the flag above needs it: the asset fetcher reads this once per process.
+  //
+  // No client-facing route serves that contract, so with this on the fetch reaches a
+  // path that does not exist and the previous asset map is kept. It is off by default
+  // and exists to be measured, not to be turned on.
+  [PRE_MERGED_BALANCES]: { needsRestart: true, settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

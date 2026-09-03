@@ -42,15 +42,31 @@ export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string,
   };
 };
 
-export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromSeed> => {
-  let seed;
+/**
+ * Turns a BIP-39 mnemonic into its seed bytes.
+ *
+ * This step is chain-family-agnostic: the seed it produces is the input to any curve's
+ * derivation, and only what happens next is EVM-shaped. It is extracted so that a
+ * second chain family reuses it rather than restating the platform split, which is the
+ * part that would rot: iOS goes through `bip39`, Android through a native module, and
+ * the two must agree byte for byte for the same mnemonic.
+ *
+ * The Android branch hands back a `Buffer`. `Buffer` extends `Uint8Array`, so returning
+ * it under this signature is sound and no conversion is needed; what matters is that
+ * the declared type is `Uint8Array`, so no `Buffer` propagates into a caller that
+ * should not know about one.
+ */
+export const mnemonicToSeedBytes = async (mnemonic: string): Promise<Uint8Array> => {
   if (Platform.OS === 'ios') {
-    seed = await mnemonicToSeed(mnemonic);
-  } else {
-    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
-    seed = new Buffer(res, 'base64');
+    return mnemonicToSeed(mnemonic);
   }
-  const hdWallet = hdkey.fromMasterSeed(seed);
+  const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
+  return new Buffer(res, 'base64');
+};
+
+export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromSeed> => {
+  const seed = await mnemonicToSeedBytes(mnemonic);
+  const hdWallet = hdkey.fromMasterSeed(Buffer.from(seed));
   const root = hdWallet.derivePath(DEFAULT_HD_PATH);
   const child = root.deriveChild(index);
   const wallet = child.getWallet();
