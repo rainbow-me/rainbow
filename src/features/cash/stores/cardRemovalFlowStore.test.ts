@@ -3,7 +3,7 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import { deleteCard, listCards } from '../services/rampClient';
 import { useCardRemovalFlowStore } from './cardRemovalFlowStore';
-import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
+import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
 jest.mock('@/logger', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
@@ -28,7 +28,7 @@ const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const REPLACEMENT_CARD: LinkedCard = { id: 'card_2', brand: 'Visa Debit', last4: '1234' };
 
 const flow = () => useCardRemovalFlowStore.getState();
-const linkedCard = () => useCashPaymentMethodStore.getState().linkedCard;
+const linkedCard = () => selectCashLinkedCard(useCashPaymentMethodStore.getState());
 
 function fetchError(status: number): RainbowFetchError {
   return new RainbowFetchError({ message: 'request failed', response: { status } as Response });
@@ -49,7 +49,8 @@ function deferDelete() {
 beforeEach(() => {
   jest.clearAllMocks();
   useCardRemovalFlowStore.setState({ state: 'idle' });
-  useCashPaymentMethodStore.getState().setLinkedCard(CARD);
+  useCashPaymentMethodStore.getState().clear();
+  useCashPaymentMethodStore.getState().addLinkedCard(CARD);
   mockDeleteCard.mockResolvedValue(undefined);
   mockListCards.mockResolvedValue([CARD]);
   mockIsPasskeyCancellation.mockReturnValue(false);
@@ -140,7 +141,7 @@ describe('cardRemovalFlowStore', () => {
     const settle = deferDelete();
 
     const removal = flow().remove(CARD);
-    useCashPaymentMethodStore.getState().setLinkedCard(REPLACEMENT_CARD);
+    useCashPaymentMethodStore.getState().addLinkedCard(REPLACEMENT_CARD);
     settle();
     await removal;
 

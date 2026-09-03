@@ -35,7 +35,7 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
     try {
       const card = await linkCardWithVault(bivoStore, cardBrand, controller);
       if (controller.signal.aborted) return 'cancelled';
-      useCashPaymentMethodStore.getState().setLinkedCard(card);
+      useCashPaymentMethodStore.getState().addLinkedCard(card);
       analytics.track(analytics.event.cashCardLinked, { brand: card.brand });
       set({ state: 'success' });
       return 'completed';

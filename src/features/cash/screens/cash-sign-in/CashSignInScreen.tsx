@@ -11,8 +11,6 @@ import Routes from '@/navigation/routesNames';
 
 import { isPasskeyCancellation } from '../../services/cashPasskeyService';
 import { signInWithPhone } from '../../services/cashSignInService';
-import { listCards } from '../../services/rampClient';
-import { useCashPaymentMethodStore } from '../../stores/cashPaymentMethodStore';
 import { extractNationalDigits, formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../utils/phoneNumber';
 
 const l = i18n.l.cash.sign_in;
@@ -45,15 +43,6 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
       logger.error(new RainbowError('[CashSignInScreen]: Failed to sign in', e));
       setState('error');
       return;
-    }
-
-    // Best effort: signed in either way, and the Add Cash sheet offers card linking when no card is stored.
-    try {
-      // An account can hold only one card today; picking among several lands with multi-card support.
-      const [card] = await listCards({ trigger: 'signInScreen' });
-      if (card) useCashPaymentMethodStore.getState().setLinkedCard(card);
-    } catch (e) {
-      logger.error(new RainbowError('[CashSignInScreen]: Failed to fetch cards', e));
     }
 
     replace(Routes.ADD_CASH_SHEET);

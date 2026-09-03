@@ -492,7 +492,6 @@
       "reset_experimental_config": "Reset Experimental Config",
       "cash_set_user_id_from_clipboard": "Set cash user id from clipboard",
       "cash_clear_account": "Clear cash account",
-      "cash_clear_linked_card": "Clear linked card",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -1561,7 +1560,13 @@
         "buy_error_generic": "Something went wrong. Try again",
         "payment_rejected": "Your card declined this payment",
         "wallet_check_error_title": "Couldn’t Continue",
-        "wallet_check_error_generic": "We couldn’t check your wallet. Try again"
+        "wallet_check_error_generic": "We couldn’t check your wallet. Try again",
+        "reauth_title": "Sign in to continue",
+        "reauth_description": "Sign in with your passkey so you can finish adding cash to your balance.",
+        "reauth_continue": "Continue",
+        "reauth_error_title": "Something went wrong",
+        "reauth_error_description": "We couldn’t load your cards. Please try again.",
+        "reauth_try_again": "Try Again"
       },
       "payment_methods": {
         "title": "Add From",

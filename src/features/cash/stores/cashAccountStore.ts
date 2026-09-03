@@ -16,7 +16,7 @@ type CashAccountStore = {
 function clearAccountScopedState(): void {
   useCashAuthTokenStore.getState().clearToken();
   useCashWalletStore.getState().clear();
-  useCashPaymentMethodStore.getState().clearLinkedCard();
+  useCashPaymentMethodStore.getState().clear();
 }
 
 export const useCashAccountStore = createBaseStore<CashAccountStore>(

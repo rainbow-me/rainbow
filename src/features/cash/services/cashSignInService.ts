@@ -8,13 +8,13 @@ import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'recovery';
+export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 
 let pendingSignIn: Promise<string> | null = null;
 
-function getCachedAccessToken(): string | null {
+export function getCachedAccessToken(): string | null {
   const token = useCashAuthTokenStore.getState().token;
   if (!token) return null;
   const remaining = token.expiresAt - Date.now();
