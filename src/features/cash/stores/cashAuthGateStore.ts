@@ -1,6 +1,6 @@
 import { createBaseStore } from '@storesjs/stores';
 
-export type CashAuthIntent = { kind: 'loadCards' };
+export type CashAuthIntent = { kind: 'loadCards' } | { kind: 'resumeOrder' };
 
 export type CashAuthGateStatus =
   | { step: 'closed' }
