@@ -13,7 +13,7 @@ import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { REFERRER } from '@/references/constants';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import type { Call } from '@rainbow-me/sdk';

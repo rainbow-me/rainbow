@@ -11,7 +11,7 @@ import { backendNetworksActions } from '@/features/network/stores/backendNetwork
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
 import { toTransactionAsset, type TransactionAssetSource } from '@/raps/transactionAsset';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import {

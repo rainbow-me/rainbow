@@ -32,7 +32,7 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
 
   userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
 
-  setupPositionsAssetsSync();
+  setupPositionsAssetsSync(newStore);
 
   return newStore;
 }

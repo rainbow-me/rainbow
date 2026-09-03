@@ -34,7 +34,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import ethUnits from '@/references/ethereum-units.json';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';

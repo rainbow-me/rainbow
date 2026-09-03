@@ -74,8 +74,8 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       getFilteredUserAssetIds: () => {
-        const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
-        return getFilteredUserAssetIds({ filter, rawSearchQuery, selectUserAssetIds, setSearchCache });
+        const { filter, inputSearchQuery: rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache } = get();
+        return getFilteredUserAssetIds({ filter, rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache });
       },
 
       getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), options),

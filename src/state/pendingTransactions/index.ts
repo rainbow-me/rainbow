@@ -1,16 +1,7 @@
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { rainbowToastsActions } from '@/components/rainbow-toast/useRainbowToastsStore';
-import {
-  hasConfirmedOnchainHash,
-  isPendingTransaction,
-  type NewTransaction,
-  type PendingTransaction,
-  type RainbowTransaction,
-} from '@/entities/transactions';
-import { type ChainId } from '@/features/network/types/backendNetworks';
-import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { nonceActions } from '@/state/nonces';
+import { hasConfirmedOnchainHash, isPendingTransaction, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export type PendingTransactionsState = {
@@ -118,40 +109,6 @@ export const usePendingTransactionsStore = createBaseStore<PendingTransactionsSt
 );
 
 export const pendingTransactionsActions = createStoreActions(usePendingTransactionsStore);
-
-/**
- * Create or replace a pending transaction.
- *
- * Handles both wallet transactions and managed relay executions,
- * and skips nonce advancement if a `relayExecutionId` exists in
- * the provided `transaction`.
- */
-export function addNewTransaction({
-  address,
-  chainId,
-  transaction,
-}: {
-  address: string;
-  chainId: ChainId;
-  transaction: NewTransaction;
-}): void {
-  const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
-  pendingTransactionsActions.addPendingTransaction({ address, pendingTransaction: parsedTransaction });
-
-  const requiresNonceHandling = !transaction.relayExecutionId;
-  if (!requiresNonceHandling) return;
-
-  const localNonceData = nonceActions.getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce || -1;
-
-  if (transaction.nonce > localNonce) {
-    nonceActions.setNonce({
-      address,
-      chainId,
-      currentNonce: transaction.nonce,
-    });
-  }
-}
 
 function findTransactionIndex(transactions: RainbowTransaction[], nextTransaction: RainbowTransaction): number {
   if (nextTransaction.relayExecutionId) {

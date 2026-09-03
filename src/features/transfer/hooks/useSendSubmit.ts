@@ -38,10 +38,10 @@ import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
@@ -363,7 +363,7 @@ export function useSendSubmit({
         if (assetIsUniqueAsset(selected)) {
           const collectionId = `${selected.network}_${selected.contractAddress}`;
           useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
-          useNftsStore.getState(accountAddress).fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
+          useNftsStore.getState(accountAddress).fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
         }
         executeFn(goBackAndNavigate, {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,

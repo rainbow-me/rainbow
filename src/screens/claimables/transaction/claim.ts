@@ -9,7 +9,7 @@ import { sendTransaction } from '@/model/wallet';
 import { type RapActionResult } from '@/raps/references';
 import { toTransactionAsset } from '@/raps/transactionAsset';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 
 import { type TransactionClaimableTxPayload } from './types';
 

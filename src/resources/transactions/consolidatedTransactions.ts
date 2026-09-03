@@ -10,7 +10,7 @@ import { parseTransaction } from '@/parsers/transactions';
 import { createQueryKey, queryClient, type InfiniteQueryConfig, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 import { getPlatformClient } from '@/resources/platform/client';
 
-import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
+import { anvilChain, anvilConfirmedTransactions } from './anvil';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_LIMIT = 30;
@@ -105,7 +105,7 @@ export async function consolidatedTransactionsQueryFunction({
 
   let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
-    const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
+    const userAnvilTransactions = anvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();
       const toMatch = tx.to && tx.to.toLowerCase() === address.toLowerCase();
       return fromMatch || toMatch;

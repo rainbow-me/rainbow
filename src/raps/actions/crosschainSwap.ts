@@ -10,7 +10,7 @@ import { add } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { REFERRER, type ReferrerType } from '@/references/constants';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { type Call } from '@rainbow-me/sdk';

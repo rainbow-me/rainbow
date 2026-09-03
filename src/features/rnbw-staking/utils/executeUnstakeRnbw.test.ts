@@ -59,7 +59,7 @@ jest.mock('@/features/delegation/utils/waitForManagedExecution', () => ({
   waitForManagedExecutionConfirmation: (executionId: string) => mockWaitForManagedExecutionConfirmation(executionId),
 }));
 
-jest.mock('@/state/pendingTransactions', () => ({
+jest.mock('@/state/pendingTransactions/addNewTransaction', () => ({
   addNewTransaction: (params: unknown) => mockAddNewTransaction(params),
 }));
 
