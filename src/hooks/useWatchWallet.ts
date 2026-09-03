@@ -2,10 +2,11 @@ import { useCallback, useMemo } from 'react';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import { cleanUpWalletKeys } from '@/features/wallet/data/walletKeychain';
+import { type RainbowWallet } from '@/features/wallet/types';
 import useDeleteWallet from '@/hooks/useDeleteWallet';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import { logger, RainbowError } from '@/logger';
-import { cleanUpWalletKeys, type RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';

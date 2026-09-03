@@ -3,13 +3,13 @@ import { useCallback, useEffect, useRef } from 'react';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 
-import { LedgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '../navigation/HardwareWalletTxNavigator';
+import { ledgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '../state/hardwareWalletTxState';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '../utils/ledger';
 
 /**
- * React hook used for checking ledger connections and handling connnection error states
+ * Polls a Ledger connection and reconnects after a disconnect until the device is ready.
  */
 export function useLedgerConnect({
   readyForPolling = true,
@@ -21,16 +21,13 @@ export function useLedgerConnect({
   deviceId: string;
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
-}) {
+}): void {
   const transport = useRef<TransportBLE | undefined>(undefined);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const isReady = useRecoilValue(LedgerIsReadyAtom);
+  const isReady = useRecoilValue(ledgerIsReadyAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
 
-  /**
-   * Handles local error handling for useLedgerStatusCheck
-   */
   const handleLedgerError = useCallback(
     async (errorType: LEDGER_ERROR_CODES) => {
       if (isReady) return;
@@ -41,9 +38,9 @@ export function useLedgerConnect({
         try {
           transport.current = await TransportBLE.open(deviceId);
           setReadyForPolling(true);
-        } catch (e) {
+        } catch (error) {
           logger.error(new RainbowError('[useLedgerConnect]: Reconnect Error'), {
-            error: (e as Error).message,
+            error: ensureError(error).message,
           });
           // temp removing this to see if it fixes an issue
           // errorCallback?.(errorType);
@@ -55,19 +52,13 @@ export function useLedgerConnect({
     [deviceId, errorCallback, isReady, setReadyForPolling]
   );
 
-  /**
-   * Handles successful ledger connection
-   */
   const handleLedgerSuccess = useCallback(() => {
     if (!readyForPolling) return;
     successCallback?.(deviceId);
     pollerCleanup(timer.current);
   }, [deviceId, readyForPolling, successCallback]);
 
-  /**
-   * Cleans up ledger connection polling
-   */
-  const pollerCleanup = (poller: ReturnType<typeof setTimeout> | undefined) => {
+  const pollerCleanup = (poller: ReturnType<typeof setTimeout> | undefined): void => {
     try {
       if (poller) {
         logger.debug('[useLedgerConnect]: polling tear down', {});

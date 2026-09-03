@@ -16,10 +16,11 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
-import { setHardwareTXError } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -33,7 +34,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan, lessThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { loadWallet, sendTransaction } from '@/model/wallet';
+import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
@@ -293,7 +294,7 @@ export function useSendSubmit({
         });
 
         if (!(wallet instanceof Wallet)) {
-          setHardwareTXError(true);
+          setHardwareWalletTxError(true);
         }
         return false;
       }

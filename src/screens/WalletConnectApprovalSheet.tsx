@@ -23,6 +23,7 @@ import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type WalletconnectMeta } from '@/features/wallet-connect/types';
+import { type RainbowWallet } from '@/features/wallet/types';
 import styled from '@/framework/ui/styled-thing';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
@@ -30,7 +31,6 @@ import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalS
 import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
-import { type RainbowWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';

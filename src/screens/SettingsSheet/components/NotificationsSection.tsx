@@ -6,13 +6,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 
 import { Box } from '@/design-system';
+import { type RainbowAccount } from '@/features/wallet/types';
 import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAppState from '@/hooks/useAppState';
 import * as i18n from '@/languages';
-import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';

@@ -1,7 +1,7 @@
 import { type Address } from 'viem';
 
+import { type RainbowWallet } from '@/features/wallet/types';
 import WalletTypes from '@/helpers/walletTypes';
-import { type RainbowWallet } from '@/model/wallet';
 import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { delegation, useWillDelegate } from '@rainbow-me/sdk';
 

@@ -10,13 +10,14 @@ import { SecretDisplayStates, type SecretDisplayStatesType } from '@/components/
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { identifyWalletType } from '@/features/wallet/core/walletDerivation';
+import { loadPrivateKey } from '@/features/wallet/data/walletKeychain';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { type EthereumWalletType } from '@/helpers/walletTypes';
 import useDimensions from '@/hooks/useDimensions';
 import useWalletManualBackup from '@/hooks/useWalletManualBackup';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
-import { createdWithBiometricError, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -101,11 +102,10 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       }
       onSecretLoaded?.(!!seedPhrase);
     } catch (error) {
-      const message = (error as Error)?.message;
       logger.error(new RainbowError('[SecretDisplaySection]: Error while trying to reveal secret'), {
-        error: message,
+        error: ensureError(error).message,
       });
-      setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
+      setSectionState(SecretDisplayStates.noSeed);
       onSecretLoaded?.(false);
     }
   }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId]);
@@ -166,8 +166,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       );
     case SecretDisplayStates.noSeed:
       return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.no_seed_phrase)} />;
-    case SecretDisplayStates.securedWithBiometrics:
-      return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.biometrically_secured)} />;
     case SecretDisplayStates.revealed:
       return (
         <Box style={{ height: contentHeight }}>

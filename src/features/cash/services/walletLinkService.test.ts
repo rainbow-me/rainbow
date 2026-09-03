@@ -1,6 +1,7 @@
 import { type Address } from 'viem';
 
-import { loadWallet, signPersonalMessage } from '@/model/wallet';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
+import { signPersonalMessage } from '@/model/wallet';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashWalletStore } from '../stores/cashWalletStore';
@@ -20,8 +21,11 @@ jest.mock('./cashSignInService', () => ({
   ensureAccessToken: jest.fn(),
 }));
 
-jest.mock('@/model/wallet', () => ({
+jest.mock('@/features/wallet/data/loadWallet', () => ({
   loadWallet: jest.fn(),
+}));
+
+jest.mock('@/model/wallet', () => ({
   signPersonalMessage: jest.fn(),
 }));
 

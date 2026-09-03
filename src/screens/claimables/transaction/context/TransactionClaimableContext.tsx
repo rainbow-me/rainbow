@@ -16,6 +16,7 @@ import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
@@ -26,7 +27,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';

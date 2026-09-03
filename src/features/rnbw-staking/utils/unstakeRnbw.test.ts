@@ -29,7 +29,7 @@ jest.mock('@/handlers/web3', () => ({
   getProvider: () => mockGetProvider(),
 }));
 
-jest.mock('@/model/wallet', () => ({
+jest.mock('@/features/wallet/data/loadWallet', () => ({
   loadWallet: (params: unknown) => mockLoadWallet(params),
 }));
 

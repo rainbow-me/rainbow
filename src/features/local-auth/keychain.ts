@@ -16,6 +16,7 @@
 import { Platform } from 'react-native';
 
 import DeviceInfo from 'react-native-device-info';
+import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -39,11 +40,12 @@ import { createMMKV } from 'react-native-mmkv';
 
 import { IS_DEV } from '@/env';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { delay } from '@/utils/delay';
 
 import * as keychainConstants from './keychainConstants';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, shouldAuthenticateWithPIN } from './pinAuthentication';
 
 export const encryptor = new AesEncryptor();
 
@@ -81,6 +83,91 @@ const cache = createMMKV({
 export const publicAccessControlOptions: SetOptions = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
+
+// Wait for the current screen to close before resolving a PIN prompt.
+function waitForNavigation(callback: () => void): void {
+  setTimeout(callback, 500);
+}
+
+export async function getExistingPIN(): Promise<string | undefined> {
+  try {
+    const { value: encryptedPin } = await get(keychainConstants.pinKey);
+    if (!encryptedPin) return undefined;
+
+    const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
+    return typeof userPIN === 'string' ? userPIN : undefined;
+  } catch (error) {
+    logger.error(new RainbowError('[getExistingPIN]: Error while trying to get existing PIN code.'), {
+      message: ensureError(error).message,
+    });
+    return undefined;
+  }
+}
+
+export async function decryptPIN(encryptedPin: string): Promise<string | undefined> {
+  try {
+    const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
+    return typeof userPIN === 'string' ? userPIN : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function savePIN(pin: string | undefined): Promise<void> {
+  try {
+    const encryptedPin = await encryptor.encrypt(RAINBOW_MASTER_KEY, pin);
+    if (encryptedPin) await set(keychainConstants.pinKey, encryptedPin);
+  } catch (error) {
+    logger.error(new RainbowError('[savePIN]: Failed to save PIN.'), {
+      message: ensureError(error).message,
+    });
+  }
+}
+
+export async function authenticateWithPINAndCreateIfNeeded(): Promise<string | undefined> {
+  const validPin = await getExistingPIN();
+
+  return new Promise((resolve, reject) => {
+    Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: () => waitForNavigation(reject),
+      onSuccess: (pin: string | undefined) => {
+        waitForNavigation(async () => {
+          if (!validPin) await savePIN(pin);
+          resolve(pin);
+        });
+      },
+      validPin,
+    });
+  });
+}
+
+export async function authenticateWithPIN(): Promise<string | undefined> {
+  const validPin = await getExistingPIN();
+  if (!validPin) return undefined;
+
+  return new Promise((resolve, reject) => {
+    Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
+      onCancel: () => waitForNavigation(reject),
+      onSuccess: (pin: string | undefined) => waitForNavigation(() => resolve(pin)),
+      validPin,
+    });
+  });
+}
+
+export async function shouldAuthenticateWithPIN(): Promise<boolean> {
+  if (Platform.OS !== 'android') return false;
+  return !(await isPasscodeAuthAvailable());
+}
+
+export async function maybeAuthenticateWithPIN(): Promise<string | undefined> {
+  if (!(await shouldAuthenticateWithPIN())) return undefined;
+  return authenticateWithPIN();
+}
+
+export async function maybeAuthenticateWithPINAndCreateIfNeeded(userPin?: string): Promise<string | undefined> {
+  if (!(await shouldAuthenticateWithPIN())) return undefined;
+  return userPin ?? authenticateWithPINAndCreateIfNeeded();
+}
 
 /**
  * Retrieve a value from the keychain. If we're on Android and the value is

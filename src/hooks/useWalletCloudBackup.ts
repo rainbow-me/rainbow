@@ -1,12 +1,11 @@
 import { useCallback } from 'react';
 import { Platform } from 'react-native';
 
-import { values } from 'lodash';
-
 import { analytics } from '@/analytics';
 import { addWalletToCloudBackup, backupWalletToCloud } from '@/features/backup/backup';
+import { getBackupErrorMessage } from '@/features/backup/getBackupErrorMessage';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
-import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
+import { maybeAuthenticateWithPIN } from '@/features/local-auth/keychain';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -16,30 +15,6 @@ import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { cloudPlatform } from '../utils/platform';
-
-export function getUserError(e: Error) {
-  switch (e.message) {
-    case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
-      return i18n.t(i18n.l.back_up.errors.keychain_access);
-    case CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA:
-      return i18n.t(i18n.l.back_up.errors.decrypting_data);
-    case CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND:
-    case CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND:
-      return i18n.t(i18n.l.back_up.errors.no_backups_found);
-    case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
-      return i18n.t(i18n.l.back_up.errors.cant_get_encrypted_data);
-    case CLOUD_BACKUP_ERRORS.MISSING_PIN:
-      return i18n.t(i18n.l.back_up.errors.missing_pin);
-    case CLOUD_BACKUP_ERRORS.WRONG_PIN:
-      return i18n.t(i18n.l.back_up.wrong_pin);
-    case CLOUD_BACKUP_ERRORS.MALFORMED_BACKUP_DATA:
-      return i18n.t(i18n.l.back_up.errors.malformed_backup_data);
-    default:
-      return i18n.t(i18n.l.back_up.errors.generic, {
-        errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),
-      });
-  }
-}
 
 export default function useWalletCloudBackup() {
   const wallets = useWallets();
@@ -150,7 +125,7 @@ export default function useWalletCloudBackup() {
           });
         }
       } catch (e: any) {
-        const userError = getUserError(e);
+        const userError = getBackupErrorMessage(e);
         !!onError && onError(userError);
         logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}`, e));
         analytics.track(
@@ -172,7 +147,7 @@ export default function useWalletCloudBackup() {
         return true;
       } catch (e) {
         logger.error(new RainbowError('[useWalletCloudBackup]: error while trying to save wallet backup state', e));
-        const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
+        const userError = getBackupErrorMessage(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
         analytics.track(analytics.event.errorUpdatingBackupStatus, {
           category: 'backup',

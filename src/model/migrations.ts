@@ -29,6 +29,8 @@ import {
   signingWalletAddress,
 } from '@/features/local-auth/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from '@/features/local-auth/legacyKeychain';
+import { getAllWallets, loadAddress, saveAddress } from '@/features/wallet/data/walletKeychain';
+import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
@@ -53,15 +55,6 @@ import store from '../redux/store';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import { removeLegacyAsyncStorageValue } from '../storage/legacyAsyncStorage';
 import colors, { getRandomColor } from '../styles/colors';
-import {
-  DEFAULT_WALLET_NAME,
-  EncryptionType,
-  getAllWallets,
-  loadAddress,
-  saveAddress,
-  type RainbowAccount,
-  type RainbowWallet,
-} from './wallet';
 
 export default async function runMigrations() {
   // get current version

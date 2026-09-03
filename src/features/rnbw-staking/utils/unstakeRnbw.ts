@@ -4,11 +4,11 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';

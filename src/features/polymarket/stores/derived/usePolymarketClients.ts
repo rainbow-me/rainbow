@@ -8,9 +8,9 @@ import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL
 import { usePolymarketWalletStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
 import { getPolymarketRelayChain } from '@/features/polymarket/utils/polymarketRelayChain';
 import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@rainbow-me/swaps';
 

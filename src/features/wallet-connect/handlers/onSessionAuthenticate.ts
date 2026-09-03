@@ -4,11 +4,11 @@ import type { WalletKitTypes } from '@reown/walletkit';
 
 import { fetchDappMetadata } from '@/features/dapp/resources/dapp';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import * as portal from '@/screens/Portal';

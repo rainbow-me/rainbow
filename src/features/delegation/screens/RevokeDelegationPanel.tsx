@@ -15,10 +15,10 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import useGas from '@/features/gas/hooks/useGas';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
