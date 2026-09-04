@@ -86,13 +86,8 @@ export const estimateCrosschainSwapGasLimit = async ({
   try {
     if (requiresApprove) {
       if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
-        try {
-          const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(chainId, provider, quote);
-          return gasLimitWithFakeApproval;
-        } catch (e) {
-          const routeGasLimit = getCrosschainSwapDefaultGasLimit(quote);
-          if (routeGasLimit) return routeGasLimit;
-        }
+        const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(provider, quote);
+        return gasLimitWithFakeApproval || getDefaultGasLimitForTrade(quote, chainId);
       }
 
       return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);

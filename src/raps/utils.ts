@@ -161,10 +161,9 @@ export function getDefaultGasLimitForTrade(quote: Quote, chainId: Chain['id']): 
 }
 
 export const estimateSwapGasLimitWithFakeApproval = async (
-  chainId: number,
   provider: StaticJsonRpcProvider,
   quote: Quote | CrosschainQuote
-): Promise<string> => {
+): Promise<string | undefined> => {
   let stateDiff: unknown;
 
   try {
@@ -199,7 +198,7 @@ export const estimateSwapGasLimitWithFakeApproval = async (
   } catch (e) {
     //
   }
-  return getDefaultGasLimitForTrade(quote, chainId);
+  return undefined;
 };
 
 export const populateSwap = async ({

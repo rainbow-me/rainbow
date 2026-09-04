@@ -1,7 +1,13 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 import { getProvider } from '@/handlers/web3';
-import { estimateTransactionsGasLimit, getDefaultGasLimitForTrade, getFallbackGasLimitForTrade, populateSwap } from '@/raps/utils';
+import {
+  estimateSwapGasLimitWithFakeApproval,
+  estimateTransactionsGasLimit,
+  getDefaultGasLimitForTrade,
+  getFallbackGasLimitForTrade,
+  populateSwap,
+} from '@/raps/utils';
 import { SwapType, type Quote } from '@rainbow-me/swaps';
 
 import { estimateUnlockAndSwapGasLimits } from './swap';
@@ -98,6 +104,16 @@ describe('estimateUnlockAndSwapGasLimits', () => {
     jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
+      transactionGasLimit: '2055000',
+      feeEstimateGasLimit: '580000',
+    });
+  });
+
+  it('uses the configured fee fallback when fake-approval estimation fails', async () => {
+    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue(undefined);
+
+    await expect(estimateUnlockAndSwapGasLimits({ chainId: 1, quote: { ...quote, chainId: 1 } })).resolves.toEqual({
       transactionGasLimit: '2055000',
       feeEstimateGasLimit: '580000',
     });

@@ -199,12 +199,8 @@ const estimateSwapGasLimits = async ({ chainId, requiresApprove, quote }: Estima
     // Swap
   } else if (requiresApprove) {
     if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
-      try {
-        const gasLimit = await estimateSwapGasLimitWithFakeApproval(chainId, provider, quote);
-        return createGasLimitEstimate(gasLimit);
-      } catch (e) {
-        // Fall through to the configured fallback estimate.
-      }
+      const gasLimit = await estimateSwapGasLimitWithFakeApproval(provider, quote);
+      if (gasLimit) return createGasLimitEstimate(gasLimit);
     }
 
     return getFallbackGasLimitEstimate(quote, chainId);
