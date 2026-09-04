@@ -1,9 +1,9 @@
 import { type GasSettings } from '@/features/gas/types/gas';
-import { lessThanWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
+import { isNumberStringWorklet, lessThanWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 
 function safeFeeWorklet(value: string | undefined): string {
   'worklet';
-  return typeof value === 'undefined' || isNaN(Number(value)) ? '0' : value;
+  return typeof value === 'string' && isNumberStringWorklet(value) ? value : '0';
 }
 
 function calculateEIP1559GasFeeWorklet(gasLimit: string, baseFee: string, priorityFee: string): string {
@@ -22,7 +22,7 @@ export function calculateMaxGasFeeWorklet(gasSettings: GasSettings, gasLimit: st
 
 export function calculateEstimatedGasFeeWorklet(gasSettings: GasSettings, gasLimit: string, currentBaseFee: string | undefined): string {
   'worklet';
-  if (!gasSettings.isEIP1559 || typeof currentBaseFee === 'undefined' || isNaN(Number(currentBaseFee))) {
+  if (!gasSettings.isEIP1559 || !currentBaseFee || !isNumberStringWorklet(currentBaseFee)) {
     return calculateMaxGasFeeWorklet(gasSettings, gasLimit);
   }
 

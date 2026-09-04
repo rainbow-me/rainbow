@@ -23,6 +23,14 @@ describe('gas fee calculations', () => {
     expect(calculateEstimatedGasFeeWorklet(eip1559GasSettings, '100', undefined)).toBe('1200');
   });
 
+  it.each(['', ' ', 'Infinity'])('falls back to the fee cap when the current base fee is %p', currentBaseFee => {
+    expect(calculateEstimatedGasFeeWorklet(eip1559GasSettings, '100', currentBaseFee)).toBe('1200');
+  });
+
+  it.each(['', ' ', 'Infinity'])('treats an invalid selected fee value %p as zero', maxBaseFee => {
+    expect(calculateMaxGasFeeWorklet({ ...eip1559GasSettings, maxBaseFee }, '100')).toBe('200');
+  });
+
   it('uses the selected gas price for legacy transactions', () => {
     expect(calculateEstimatedGasFeeWorklet({ isEIP1559: false, gasPrice: '5' }, '100', '4')).toBe('500');
   });

@@ -87,6 +87,7 @@ describe('estimateUnlockAndSwapGasLimits', () => {
     jest.mocked(getDefaultGasLimitForTrade).mockReturnValue('2000000');
     jest.mocked(getFallbackGasLimitForTrade).mockReturnValue('525000');
     jest.mocked(estimateApprove).mockResolvedValue('55000');
+    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue(undefined);
   });
 
   it('uses a complete simulation estimate for both execution and fee display', async () => {
@@ -100,6 +101,15 @@ describe('estimateUnlockAndSwapGasLimits', () => {
     expect(estimateApprove).not.toHaveBeenCalled();
   });
 
+  it.each([' ', 'Infinity'])('uses fallback estimates when simulation returns %p', async gasLimit => {
+    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(gasLimit);
+
+    await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
+      transactionGasLimit: '2055000',
+      feeEstimateGasLimit: '580000',
+    });
+  });
+
   it('keeps the quote gas cap for execution while displaying the configured fallback estimate', async () => {
     jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
 
@@ -109,13 +119,32 @@ describe('estimateUnlockAndSwapGasLimits', () => {
     });
   });
 
-  it('uses the configured fee fallback when fake-approval estimation fails', async () => {
+  it('uses a fake-approval estimate when available', async () => {
     jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
-    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue(undefined);
+    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue('410000');
+
+    await expect(estimateUnlockAndSwapGasLimits({ chainId: 1, quote: { ...quote, chainId: 1 } })).resolves.toEqual({
+      transactionGasLimit: '465000',
+      feeEstimateGasLimit: '465000',
+    });
+  });
+
+  it('uses the configured fee fallback when no fake-approval estimate is available', async () => {
+    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 1, quote: { ...quote, chainId: 1 } })).resolves.toEqual({
       transactionGasLimit: '2055000',
       feeEstimateGasLimit: '580000',
+    });
+  });
+
+  it('uses fallback estimates when approval estimation returns a non-finite value', async () => {
+    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    jest.mocked(estimateApprove).mockResolvedValue('Infinity');
+
+    await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
+      transactionGasLimit: '2000000',
+      feeEstimateGasLimit: '525000',
     });
   });
 

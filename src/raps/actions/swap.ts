@@ -9,6 +9,7 @@ import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/fe
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { isNumberStringWorklet } from '@/framework/core/safeMath';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add, greaterThan } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -127,7 +128,7 @@ export const estimateUnlockAndSwapGasLimits = async ({
           },
         ],
       });
-      if (gasLimitFromSimulation) {
+      if (gasLimitFromSimulation && isNumberStringWorklet(gasLimitFromSimulation)) {
         return createGasLimitEstimate(gasLimitFromSimulation);
       }
     }
@@ -146,14 +147,17 @@ export const estimateUnlockAndSwapGasLimits = async ({
     quote,
   });
 
-  if (isNaN(Number(swapGasLimitEstimate.transactionGasLimit)) || isNaN(Number(swapGasLimitEstimate.feeEstimateGasLimit))) {
+  if (
+    !isNumberStringWorklet(swapGasLimitEstimate.transactionGasLimit) ||
+    !isNumberStringWorklet(swapGasLimitEstimate.feeEstimateGasLimit)
+  ) {
     return getFallbackGasLimitEstimate(quote, chainId);
   }
 
   const transactionGasLimit = add(unlockGasLimit, swapGasLimitEstimate.transactionGasLimit);
   const feeEstimateGasLimit = add(unlockGasLimit, swapGasLimitEstimate.feeEstimateGasLimit);
 
-  if (isNaN(Number(transactionGasLimit)) || isNaN(Number(feeEstimateGasLimit))) {
+  if (!isNumberStringWorklet(transactionGasLimit) || !isNumberStringWorklet(feeEstimateGasLimit)) {
     return getFallbackGasLimitEstimate(quote, chainId);
   }
 
@@ -188,7 +192,7 @@ const estimateSwapGasLimits = async ({ chainId, requiresApprove, quote }: Estima
         WRAP_GAS_PADDING
       );
 
-      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+      if (!gasLimit || !isNumberStringWorklet(gasLimit)) {
         return createGasLimitEstimate(quote.defaultGasLimit || defaultGasLimit, defaultGasLimit);
       }
 
@@ -210,7 +214,7 @@ const estimateSwapGasLimits = async ({ chainId, requiresApprove, quote }: Estima
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
 
-      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+      if (!gasLimit || !isNumberStringWorklet(gasLimit)) {
         return getFallbackGasLimitEstimate(quote, chainId);
       }
 
