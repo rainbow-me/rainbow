@@ -2,7 +2,6 @@ import { type Signer } from '@ethersproject/abstract-signer';
 
 import { TransactionDirection, TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/features/gas/types/gasSpeed';
-import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
@@ -80,19 +79,11 @@ export const estimateCrosschainSwapGasLimit = async ({
   quote: CrosschainQuote;
 }): Promise<string> => {
   const provider = getProvider({ chainId });
-  if (!provider || !quote) {
-    return gasUnits.basic_swap[chainId];
-  }
   try {
     if (requiresApprove) {
       if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
-        try {
-          const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(chainId, provider, quote);
-          return gasLimitWithFakeApproval;
-        } catch (e) {
-          const routeGasLimit = getCrosschainSwapDefaultGasLimit(quote);
-          if (routeGasLimit) return routeGasLimit;
-        }
+        const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(provider, quote);
+        return gasLimitWithFakeApproval || getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
       }
 
       return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);

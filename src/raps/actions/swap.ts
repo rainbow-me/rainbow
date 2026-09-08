@@ -9,8 +9,9 @@ import { type TransactionGasParams, type TransactionLegacyGasParams } from '@/fe
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { isNumberStringWorklet } from '@/framework/core/safeMath';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
-import { add } from '@/helpers/utilities';
+import { add, greaterThan } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { REFERRER } from '@/references/constants';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
@@ -38,6 +39,7 @@ import {
   estimateSwapGasLimitWithFakeApproval,
   estimateTransactionsGasLimit,
   getDefaultGasLimitForTrade,
+  getFallbackGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
   populateSwap,
   SWAP_GAS_PADDING,
@@ -50,16 +52,38 @@ const WRAPPED_NATIVE_ASSET_INTERFACE = new Interface(['function deposit() payabl
 
 type SwapExecutionResult = ReplayableExecution;
 
-export const estimateUnlockAndSwap = async ({
+type GasLimitEstimate = {
+  transactionGasLimit: string;
+  feeEstimateGasLimit: string;
+};
+
+type EstimateSwapGasLimitParameters = {
+  chainId: ChainId;
+  requiresApprove?: boolean;
+  quote: Quote;
+};
+
+function getFallbackGasLimitEstimate(quote: Quote, chainId: ChainId): GasLimitEstimate {
+  return createGasLimitEstimate(getDefaultGasLimitForTrade(quote, chainId), getFallbackGasLimitForTrade(chainId));
+}
+
+function createGasLimitEstimate(transactionGasLimit: string, feeEstimateGasLimit = transactionGasLimit): GasLimitEstimate {
+  return {
+    transactionGasLimit,
+    feeEstimateGasLimit: greaterThan(feeEstimateGasLimit, transactionGasLimit) ? transactionGasLimit : feeEstimateGasLimit,
+  };
+}
+
+export const estimateUnlockAndSwapGasLimits = async ({
   quote,
   chainId,
   requiresApprove: requiresApproveInput,
-}: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>) => {
+}: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>): Promise<GasLimitEstimate> => {
   const { from: accountAddress, sellTokenAddress, allowanceNeeded } = quote;
   const requiresApprove = requiresApproveInput ?? allowanceNeeded;
   const allowanceTargetAddress = requiresApprove ? getQuoteAllowanceTargetAddress(quote) : null;
 
-  let gasLimits: (string | number)[] = [];
+  let unlockGasLimit = '0';
 
   if (requiresApprove && allowanceTargetAddress) {
     // Try simulation-based estimation first
@@ -104,50 +128,50 @@ export const estimateUnlockAndSwap = async ({
           },
         ],
       });
-      if (gasLimitFromSimulation) {
-        return gasLimitFromSimulation;
+      if (gasLimitFromSimulation && isNumberStringWorklet(gasLimitFromSimulation)) {
+        return createGasLimitEstimate(gasLimitFromSimulation);
       }
     }
 
-    const unlockGasLimit = await estimateApprove({
+    unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
       spender: allowanceTargetAddress,
       chainId,
     });
-    gasLimits = gasLimits.concat(unlockGasLimit);
   }
 
-  const swapGasLimit = await estimateSwapGasLimit({
+  const swapGasLimitEstimate = await estimateSwapGasLimits({
     chainId,
     requiresApprove,
     quote,
   });
 
-  if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
-    return getDefaultGasLimitForTrade(quote, chainId);
+  if (
+    !isNumberStringWorklet(swapGasLimitEstimate.transactionGasLimit) ||
+    !isNumberStringWorklet(swapGasLimitEstimate.feeEstimateGasLimit)
+  ) {
+    return getFallbackGasLimitEstimate(quote, chainId);
   }
 
-  const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
-  if (isNaN(Number(gasLimit))) {
-    return getDefaultGasLimitForTrade(quote, chainId);
+  const transactionGasLimit = add(unlockGasLimit, swapGasLimitEstimate.transactionGasLimit);
+  const feeEstimateGasLimit = add(unlockGasLimit, swapGasLimitEstimate.feeEstimateGasLimit);
+
+  if (!isNumberStringWorklet(transactionGasLimit) || !isNumberStringWorklet(feeEstimateGasLimit)) {
+    return getFallbackGasLimitEstimate(quote, chainId);
   }
 
-  return gasLimit.toString();
+  return createGasLimitEstimate(transactionGasLimit.toString(), feeEstimateGasLimit.toString());
 };
 
-export const estimateSwapGasLimit = async ({
-  chainId,
-  requiresApprove,
-  quote,
-}: {
-  chainId: ChainId;
-  requiresApprove?: boolean;
-  quote: Quote;
-}): Promise<string> => {
+export const estimateUnlockAndSwap = async (
+  parameters: Pick<RapSwapActionParameters<'swap'>, 'quote' | 'chainId' | 'requiresApprove'>
+): Promise<string> => (await estimateUnlockAndSwapGasLimits(parameters)).transactionGasLimit;
+
+const estimateSwapGasLimits = async ({ chainId, requiresApprove, quote }: EstimateSwapGasLimitParameters): Promise<GasLimitEstimate> => {
   const provider = getProvider({ chainId });
   if (!provider || !quote) {
-    return gasUnits.basic_swap[chainId];
+    return getFallbackGasLimitEstimate(quote, chainId);
   }
 
   const isWrapNativeAsset = quote.swapType === SwapType.wrap;
@@ -155,7 +179,7 @@ export const estimateSwapGasLimit = async ({
 
   // Wrap / Unwrap Eth
   if (isWrapNativeAsset || isUnwrapNativeAsset) {
-    const default_estimate = isWrapNativeAsset ? gasUnits.weth_wrap : gasUnits.weth_unwrap;
+    const defaultGasLimit = isWrapNativeAsset ? gasUnits.weth_wrap : gasUnits.weth_unwrap;
     try {
       const gasLimit = await estimateGasWithPadding(
         {
@@ -168,44 +192,41 @@ export const estimateSwapGasLimit = async ({
         WRAP_GAS_PADDING
       );
 
-      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
-        return quote?.defaultGasLimit || default_estimate;
+      if (!gasLimit || !isNumberStringWorklet(gasLimit)) {
+        return createGasLimitEstimate(quote.defaultGasLimit || defaultGasLimit, defaultGasLimit);
       }
 
-      return gasLimit;
+      return createGasLimitEstimate(gasLimit);
     } catch (e) {
-      return quote?.defaultGasLimit || default_estimate;
+      return createGasLimitEstimate(quote.defaultGasLimit || defaultGasLimit, defaultGasLimit);
     }
     // Swap
+  } else if (requiresApprove) {
+    if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
+      const gasLimit = await estimateSwapGasLimitWithFakeApproval(provider, quote);
+      if (gasLimit) return createGasLimitEstimate(gasLimit);
+    }
+
+    return getFallbackGasLimitEstimate(quote, chainId);
   } else {
     try {
       const { params, method, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider);
 
-      if (requiresApprove) {
-        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
-          try {
-            const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(chainId, provider, quote);
-            return gasLimitWithFakeApproval;
-          } catch (e) {
-            //
-          }
-        }
-
-        return getDefaultGasLimitForTrade(quote, chainId);
-      }
-
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
 
-      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
-        return getDefaultGasLimitForTrade(quote, chainId);
+      if (!gasLimit || !isNumberStringWorklet(gasLimit)) {
+        return getFallbackGasLimitEstimate(quote, chainId);
       }
 
-      return gasLimit;
+      return createGasLimitEstimate(gasLimit);
     } catch (error) {
-      return getDefaultGasLimitForTrade(quote, chainId);
+      return getFallbackGasLimitEstimate(quote, chainId);
     }
   }
 };
+
+export const estimateSwapGasLimit = async (parameters: EstimateSwapGasLimitParameters): Promise<string> =>
+  (await estimateSwapGasLimits(parameters)).transactionGasLimit;
 
 export const executeSwap = async ({
   gasLimit,

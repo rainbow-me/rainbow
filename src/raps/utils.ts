@@ -14,6 +14,7 @@ import type {
 } from '@/features/gas/types/gas';
 import gasUtils from '@/features/gas/utils/gas';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import type { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
@@ -150,15 +151,19 @@ const getClosestGasEstimate = async (estimationFn: (gasEstimate: number) => Prom
   return '-1';
 };
 
-export const getDefaultGasLimitForTrade = (quote: Quote, chainId: Chain['id']): string => {
-  return quote?.defaultGasLimit || multiply(gasUnits.basic_swap[chainId], EXTRA_GAS_PADDING);
-};
+export function getFallbackGasLimitForTrade(chainId: Chain['id']): string {
+  const basicSwapGasLimit = useBackendNetworksStore.getState().getChainGasUnits(chainId).basic.swap;
+  return multiply(basicSwapGasLimit, EXTRA_GAS_PADDING);
+}
+
+export function getDefaultGasLimitForTrade(quote: Quote, chainId: Chain['id']): string {
+  return quote.defaultGasLimit || getFallbackGasLimitForTrade(chainId);
+}
 
 export const estimateSwapGasLimitWithFakeApproval = async (
-  chainId: number,
   provider: StaticJsonRpcProvider,
   quote: Quote | CrosschainQuote
-): Promise<string> => {
+): Promise<string | undefined> => {
   let stateDiff: unknown;
 
   try {
@@ -193,7 +198,7 @@ export const estimateSwapGasLimitWithFakeApproval = async (
   } catch (e) {
     //
   }
-  return getDefaultGasLimitForTrade(quote, chainId);
+  return undefined;
 };
 
 export const populateSwap = async ({

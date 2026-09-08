@@ -1,7 +1,6 @@
 import { createDerivedStore, createQueryStore, type InferStoreState } from '@storesjs/stores';
 import { formatUnits, type Address } from 'viem';
 
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { type NativeCurrencyKey } from '@/features/currency/types';
@@ -9,6 +8,7 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
@@ -443,7 +443,7 @@ function calculateGasFee(
 ): string | undefined {
   if (!nativeNetworkAsset?.price) return;
 
-  const gasFee = calculateGasFeeWorklet(gasSettings, gasLimit);
+  const gasFee = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
   if (isNaN(Number(gasFee))) return;
 
   const nativeAssetPrice = nativeNetworkAsset.price.value?.toString();
