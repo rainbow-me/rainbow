@@ -23,6 +23,7 @@ import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardS
 import deviceUtils from '@/utils/deviceUtils';
 
 export const SectionHeaderHeight = 48;
+export const CashBalanceHeaderHeight = 72;
 
 type Dim = {
   width?: number;
@@ -85,6 +86,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 60,
     width: deviceUtils.dimensions.width,
   },
+  [CellType.CASH_BALANCE_HEADER]: { height: CashBalanceHeaderHeight },
   [CellType.PERPS_HEADER]: { height: SectionHeaderHeight },
   [CellType.PERPS_BALANCE]: {
     height: 48,
