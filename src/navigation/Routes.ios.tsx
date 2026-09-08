@@ -8,6 +8,8 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import WalletErrorSheet from '@/components/wallet-error/WalletErrorSheet';
 import { AppIconUnlockSheet } from '@/features/app-icon/screens/AppIconUnlockSheet';
 import BackupSheet from '@/features/backup/components/BackupSheet';
+import { CashBalanceHalfSheet } from '@/features/cash-balance/screens/CashBalanceHalfSheet';
+import { CashBalanceWithdrawComingSoonSheet } from '@/features/cash-balance/screens/CashBalanceWithdrawComingSoonSheet';
 import { AddCashSheet } from '@/features/cash/screens/add-cash-sheet/AddCashSheet';
 import { AddWalletSheet } from '@/features/cash/screens/add-wallet-sheet/AddWalletSheet';
 import { CashDepositIntroPanel } from '@/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel';
@@ -322,6 +324,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} {...panelConfig} />
       <NativeStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PaymentMethodsSheet} name={Routes.CASH_PAYMENT_METHODS_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={CashBalanceHalfSheet} name={Routes.CASH_BALANCE_HALF_SHEET} {...panelConfig} />
+      <NativeStack.Screen
+        component={CashBalanceWithdrawComingSoonSheet}
+        name={Routes.CASH_BALANCE_WITHDRAW_COMING_SOON_SHEET}
+        {...panelConfig}
+      />
       <NativeStack.Screen
         component={PerpsTradeDetailsSheet}
         name={Routes.PERPS_TRADE_DETAILS_SHEET}
