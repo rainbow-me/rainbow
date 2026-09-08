@@ -2,10 +2,8 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
 import { createPasskeyCredential } from '../../../services/cashPasskeyService';
-import { listCards } from '../../../services/rampClient';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
-import { useCashPaymentMethodStore } from '../../../stores/cashPaymentMethodStore';
 import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useAddPasskeyFlowStore } from './useAddPasskeyFlow';
 
@@ -30,10 +28,6 @@ jest.mock('../../../services/userClient', () => ({
   finishAddPasskey: jest.fn(),
 }));
 
-jest.mock('../../../services/rampClient', () => ({
-  listCards: jest.fn(),
-}));
-
 jest.mock('../../../services/cashPasskeyService', () => ({
   createPasskeyCredential: jest.fn(),
   getPasskeyName: jest.fn(() => 'iPhone 15 Pro'),
@@ -45,23 +39,15 @@ jest.mock('../../../stores/cashAccountStore', () => {
   return { useCashAccountStore: { getState: jest.fn(() => state) } };
 });
 
-jest.mock('../../../stores/cashPaymentMethodStore', () => {
-  const state = { linkedCard: null, setLinkedCard: jest.fn(), clearLinkedCard: jest.fn() };
-  return { useCashPaymentMethodStore: { getState: jest.fn(() => state) } };
-});
-
 const mockAddPasskey = jest.mocked(addPasskey);
 const mockFinishAddPasskey = jest.mocked(finishAddPasskey);
 const mockCreatePasskeyCredential = jest.mocked(createPasskeyCredential);
-const mockListCards = jest.mocked(listCards);
 const track = jest.mocked(analytics.track);
 const setUserId = jest.mocked(useCashAccountStore.getState().setUserId);
-const setLinkedCard = jest.mocked(useCashPaymentMethodStore.getState().setLinkedCard);
 
 const TOKEN = 'bst_1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
 const CREDENTIAL_JSON = '{"id":"cred-1"}';
-const RECOVERED_CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
 
 const flow = () => useAddPasskeyFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState();
@@ -90,7 +76,6 @@ beforeEach(() => {
   mockAddPasskey.mockResolvedValue({ passkeyId: 'pk-1', publicKeyOptionsJson: OPTIONS_JSON, userId: 'user-1' });
   mockCreatePasskeyCredential.mockResolvedValue(CREDENTIAL_JSON);
   mockFinishAddPasskey.mockResolvedValue(undefined);
-  mockListCards.mockResolvedValue([]);
 });
 
 describe('useAddPasskeyFlowStore.submit', () => {
@@ -163,29 +148,13 @@ describe('useAddPasskeyFlowStore.submit', () => {
     expect(setUserId).toHaveBeenCalledWith('user-1');
   });
 
-  it('restores the recovered account card after passkey enrollment', async () => {
+  it('resolves recovered when enrolling from a recovery session', async () => {
     verifyRecoverySession();
-    mockListCards.mockResolvedValue([RECOVERED_CARD]);
-
-    await expect(flow().submit()).resolves.toBe('recovered');
-
-    expect(mockListCards).toHaveBeenCalledWith({ trigger: 'recovery' });
-    expect(setLinkedCard).toHaveBeenCalledWith(RECOVERED_CARD);
-    expect(setUserId).toHaveBeenCalledWith('user-1');
-    expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
-  });
-
-  it('completes recovery when card restoration fails after passkey enrollment', async () => {
-    verifyRecoverySession();
-    mockListCards.mockRejectedValue(new Error('network down'));
 
     await expect(flow().submit()).resolves.toBe('recovered');
 
     expect(setUserId).toHaveBeenCalledWith('user-1');
-    expect(mockAddPasskey).toHaveBeenCalledTimes(1);
     expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
-    expect(track).not.toHaveBeenCalledWith('cash.passkey_failed', expect.anything());
-    expect(logger.error).toHaveBeenCalled();
   });
 
   it('skips a second submit while one is in flight', async () => {

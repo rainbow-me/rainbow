@@ -11,7 +11,6 @@ import Restart from 'react-native-restart';
 import { ImgixImage } from '@/components/images';
 import { IS_STORE_INSTALL } from '@/env';
 import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
-import { useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/types/revokeReason';
@@ -487,11 +486,6 @@ export const DevSection = () => {
               onPress={() => useCashAccountStore.getState().clearUserId()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
-            />
-            <MenuItem
-              onPress={() => useCashPaymentMethodStore.getState().clearLinkedCard()}
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_linked_card)} />}
             />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>

@@ -85,9 +85,10 @@ tags:
     timeout: 10000
 - assertNotVisible:
     id: cash-setup-kyc-success-overlay
-# Recovery completes setup after passkey enrollment; an account with no saved card returns to Add Cash.
+# Recovery completes setup after passkey enrollment; an account with no saved card reauthenticates before Add Cash.
 - tapOn:
     id: cash-setup-next
+- runFlow: ../../utils/ReauthenticateCash.yaml
 - extendedWaitUntil:
     visible:
       id: cash-deposit-add-cash-add-card

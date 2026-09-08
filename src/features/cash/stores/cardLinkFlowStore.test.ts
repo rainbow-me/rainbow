@@ -6,7 +6,7 @@ import { linkCardWithVault } from '../services/cardLinkService';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
-import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
+import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
 jest.mock('@/analytics', () => ({
   analytics: {
@@ -40,7 +40,7 @@ const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const BIVO_STORE = {} as BivoSecureStore;
 
 const flow = () => useCardLinkFlowStore.getState();
-const linkedCard = () => useCashPaymentMethodStore.getState().linkedCard;
+const linkedCard = () => selectCashLinkedCard(useCashPaymentMethodStore.getState());
 
 function deferLink() {
   let settle!: (result: { card?: LinkedCard; error?: unknown }) => void;
@@ -58,7 +58,7 @@ function deferLink() {
 beforeEach(() => {
   jest.clearAllMocks();
   flow().reset();
-  useCashPaymentMethodStore.getState().clearLinkedCard();
+  useCashPaymentMethodStore.getState().clear();
   mockLinkCardWithVault.mockResolvedValue(CARD);
   mockIsPasskeyCancellation.mockReturnValue(false);
 });

@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+---
+- assertVisible:
+    id: cash-reauth-continue
+- assertNotVisible:
+    id: cash-deposit-add-cash-amount-50
+- tapOn:
+    id: cash-reauth-continue
+- extendedWaitUntil:
+    visible:
+      id: cash-deposit-add-cash-amount-50
+    timeout: 10000

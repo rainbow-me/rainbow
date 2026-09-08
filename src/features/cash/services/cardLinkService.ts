@@ -6,6 +6,7 @@ import { delay } from '@/utils/delay';
 import { withTimeout } from '@/utils/promise';
 
 import { MOCK_LINKED_CARD, type LinkedCard } from '../stores/cashPaymentMethodStore';
+import { ensureAccessToken } from './cashSignInService';
 import { completeCardLinkSession, startCardLinkSession, type CardBrand } from './rampClient';
 
 const BIVO_SUBMIT_TIMEOUT = time.seconds(30);
@@ -30,7 +31,7 @@ export async function linkCardWithVault(
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
   if (IS_TESTING === 'true') {
-    await delay(time.seconds(3));
+    await Promise.all([ensureAccessToken('cardLink'), delay(time.seconds(3))]);
     return MOCK_LINKED_CARD;
   }
 

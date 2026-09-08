@@ -7,9 +7,9 @@ import { greaterThan } from '@/helpers/utilities';
 import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
-import type { LinkedCard } from '../stores/cashPaymentMethodStore';
+import { selectCashLinkedCards, useCashPaymentMethodStore, type LinkedCard } from '../stores/cashPaymentMethodStore';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
-import { ensureAccessToken, type CashSignInTrigger } from './cashSignInService';
+import { ensureAccessToken, getCachedAccessToken, type CashSignInTrigger } from './cashSignInService';
 
 // ---- Wire enums (values mirror the platform `/v1/ramp` OpenAPI spec) --------
 
@@ -199,23 +199,49 @@ export function isDefinitiveRejection(error: unknown): boolean {
   return status !== undefined && status >= 400 && status < 500 && status !== 408 && status !== 429;
 }
 
-// The user JWT replaces the shared app key on these calls. On 401 the cached
-// token is assumed stale: drop it, run one fresh sign-in ceremony, retry once.
-// Tokens are acquired outside the try so a 401 from the ceremony's own RPCs
-// propagates instead of triggering a second ceremony.
-async function authorizedRequest<T>(trigger: CashSignInTrigger, send: (headers: { Authorization: string }) => Promise<T>): Promise<T> {
-  const headers = buildAuthenticatedHeader(await ensureAccessToken(trigger));
+export type CashAuthResult<T> = { kind: 'success'; data: T } | { kind: 'authRequired' };
+
+type CashAuthMode = { kind: 'cachedOnly' } | { kind: 'interactive'; trigger: CashSignInTrigger };
+
+async function authorizedRequest<T>(
+  mode: Extract<CashAuthMode, { kind: 'cachedOnly' }>,
+  send: (headers: { Authorization: string }) => Promise<T>
+): Promise<CashAuthResult<T>>;
+async function authorizedRequest<T>(
+  mode: Extract<CashAuthMode, { kind: 'interactive' }>,
+  send: (headers: { Authorization: string }) => Promise<T>
+): Promise<T>;
+async function authorizedRequest<T>(
+  mode: CashAuthMode,
+  send: (headers: { Authorization: string }) => Promise<T>
+): Promise<T | CashAuthResult<T>> {
+  if (mode.kind === 'cachedOnly') {
+    const accessToken = getCachedAccessToken();
+    if (!accessToken) return { kind: 'authRequired' };
+
+    try {
+      return { kind: 'success', data: await send(buildAuthenticatedHeader(accessToken)) };
+    } catch (error) {
+      if (!isUnauthorized(error)) throw error;
+      // A sign-in may have replaced the token while this request was in flight; only the rejected one is dead.
+      const { token, clearToken } = useCashAuthTokenStore.getState();
+      if (token?.accessToken === accessToken) clearToken();
+      return { kind: 'authRequired' };
+    }
+  }
+
+  const headers = buildAuthenticatedHeader(await ensureAccessToken(mode.trigger));
   try {
     return await send(headers);
   } catch (error) {
     if (!isUnauthorized(error)) throw error;
     useCashAuthTokenStore.getState().clearToken();
-    return send(buildAuthenticatedHeader(await ensureAccessToken(trigger)));
+    return send(buildAuthenticatedHeader(await ensureAccessToken(mode.trigger)));
   }
 }
 
 export async function startCardLinkSession(abortController?: AbortController | null): Promise<StartCardLinkSessionResponse> {
-  const { data } = await authorizedRequest('cardLink', headers =>
+  const { data } = await authorizedRequest({ kind: 'interactive', trigger: 'cardLink' }, headers =>
     getCashPlatformClient().post('/ramp/payment-methods/link-card-session', {}, { abortController, headers })
   );
   return parseResponse(startCardLinkSessionResponseSchema, data, 'startCardLinkSession');
@@ -225,7 +251,7 @@ export async function completeCardLinkSession(
   { providerCardId, brand }: CompleteCardLinkSessionRequest,
   abortController?: AbortController | null
 ): Promise<LinkedCard> {
-  const { data } = await authorizedRequest('cardLink', headers =>
+  const { data } = await authorizedRequest({ kind: 'interactive', trigger: 'cardLink' }, headers =>
     getCashPlatformClient().post(
       '/ramp/payment-methods/link-card-session/complete',
       { brand, providerCardId },
@@ -242,16 +268,35 @@ export async function listCards({
   abortController?: AbortController | null;
   trigger: CashSignInTrigger;
 }): Promise<LinkedCard[]> {
-  if (IS_TESTING === 'true') return [];
+  if (IS_TESTING === 'true') return selectCashLinkedCards(useCashPaymentMethodStore.getState());
 
-  const { data } = await authorizedRequest(trigger, headers =>
-    getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers })
-  );
+  const data = await authorizedRequest({ kind: 'interactive', trigger }, async headers => {
+    const response = await getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers });
+    return response.data;
+  });
+  return parseLinkedCards(data);
+}
+
+export async function listCardsWithCachedAuth(abortController?: AbortController | null): Promise<CashAuthResult<LinkedCard[]>> {
+  if (IS_TESTING === 'true') {
+    if (!getCachedAccessToken()) return { kind: 'authRequired' };
+    return { kind: 'success', data: selectCashLinkedCards(useCashPaymentMethodStore.getState()) };
+  }
+
+  const result = await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
+    const response = await getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers });
+    return response.data;
+  });
+  if (result.kind === 'authRequired') return result;
+  return { kind: 'success', data: parseLinkedCards(result.data) };
+}
+
+function parseLinkedCards(data: unknown): LinkedCard[] {
   return parseResponse(listCardsResponseSchema, data, 'listCards').cards.map(toLinkedCard);
 }
 
 export async function deleteCard(cardId: string, abortController?: AbortController | null): Promise<void> {
-  await authorizedRequest('addCash', headers =>
+  await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
     getCashPlatformClient().delete(`/ramp/payment-methods/${encodeURIComponent(cardId)}`, { abortController, headers })
   );
 }
@@ -273,7 +318,7 @@ export type WalletSignature = {
 };
 
 export async function listWallets(abortController?: AbortController | null): Promise<RampWallet[]> {
-  const { data } = await authorizedRequest('addCash', headers =>
+  const { data } = await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
     getCashPlatformClient().get('/ramp/wallets', { abortController, headers })
   );
   return parseResponse(listWalletsResponseSchema, data, 'listWallets').wallets;
@@ -283,7 +328,7 @@ export async function linkWallet(
   { address, signature }: { address: string; signature: WalletSignature },
   abortController?: AbortController | null
 ): Promise<RampWallet> {
-  const { data } = await authorizedRequest('addCash', headers =>
+  const { data } = await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
     getCashPlatformClient().post('/ramp/wallets/link', { address, signature }, { abortController, headers })
   );
   return { ...parseResponse(linkWalletResponseSchema, data, 'linkWallet').wallet, address };
@@ -296,7 +341,9 @@ const getOrderResponseSchema = z.object({ order: buyOrderSchema });
 export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void> {
   if (IS_TESTING === 'true') return e2eCreateBuyOrder(params);
 
-  await authorizedRequest('addCash', headers => getCashPlatformClient().post('/ramp/orders/buy', params, { headers }));
+  await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
+    getCashPlatformClient().post('/ramp/orders/buy', params, { headers })
+  );
 }
 
 export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
@@ -304,7 +351,7 @@ export async function getOrder(orderId: string, abortController?: AbortControlle
     IS_TESTING === 'true'
       ? e2eGetOrderResponse(orderId)
       : (
-          await authorizedRequest('addCash', headers =>
+          await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
             getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
           )
         ).data;

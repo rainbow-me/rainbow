@@ -51,9 +51,9 @@ export function TestDeeplinkHandler() {
           break;
         case 'setCashLinkedCard':
           if (query.value === 'true') {
-            useCashPaymentMethodStore.getState().setLinkedCard(MOCK_LINKED_CARD);
+            useCashPaymentMethodStore.getState().addLinkedCard(MOCK_LINKED_CARD);
           } else {
-            useCashPaymentMethodStore.getState().clearLinkedCard();
+            useCashPaymentMethodStore.getState().setCards([]);
           }
           break;
         case 'sandbox-test':

@@ -14,10 +14,12 @@ import { DEFAULT_HANDLE_COLOR_DARK, DEFAULT_HANDLE_COLOR_LIGHT, PanelSheet } fro
 import { Box, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { ORDER_FAST_POLL_DURATION_MS, ORDER_FAST_POLL_INTERVAL_MS, ORDER_SLOW_POLL_INTERVAL_MS } from '@/features/cash/constants';
+import { openCashAuthGate } from '@/features/cash/services/cashAuthGateService';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
+import { useCashAuthGateStore } from '@/features/cash/stores/cashAuthGateStore';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
-import { useCashLinkedCard, type LinkedCard } from '@/features/cash/stores/cashPaymentMethodStore';
+import { useCashFundingState, type CashFundingState } from '@/features/cash/stores/cashPaymentMethodStore';
 import { getTelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -41,6 +43,7 @@ import { AddCardHint } from './AddCardHint';
 import { AddFromRow } from './AddFromRow';
 import { AmountDisplay } from './AmountDisplay';
 import { PendingOrderContent } from './PendingOrderContent';
+import { ReauthenticateContent } from './ReauthenticateContent';
 import { SettingsButton } from './SettingsButton';
 import { useAddCashAmount } from './useAddCashAmount';
 
@@ -182,14 +185,14 @@ function getActionButtonLabel(canSubmitAmount: boolean): string {
 
 function AddCashActionButton({
   canSubmitAmount,
-  hasLinkedCard,
+  funding,
   isKeypad,
   isProcessing,
   onAddCard,
   onHoldToAdd,
 }: {
   canSubmitAmount: boolean;
-  hasLinkedCard: boolean;
+  funding: CashFundingState;
   isKeypad: boolean;
   isProcessing: boolean;
   onAddCard: () => void;
@@ -204,11 +207,11 @@ function AddCashActionButton({
       paddingTop={isKeypad ? undefined : '24px'}
       style={{ paddingBottom: isKeypad ? safeAreaInsetValues.bottom + 16 : 32 }}
     >
-      {hasLinkedCard ? (
+      {funding.kind !== 'none' ? (
         <HoldToActivateButton
           backgroundColor="accent"
           color={canSubmitAmount ? 'label' : 'labelTertiary'}
-          disabled={!canSubmitAmount || isProcessing}
+          disabled={!canSubmitAmount || isProcessing || funding.kind === 'loading'}
           disabledBackgroundColor={isDarkMode ? opacity(accent, 0.1) : 'fillTertiary'}
           height={48}
           isProcessing={isProcessing}
@@ -236,8 +239,8 @@ function AddCashActionButton({
 function PresetAmountContent({
   amount,
   canSubmitAmount,
+  funding,
   isProcessing,
-  linkedCard,
   onAddCard,
   onAddFrom,
   onHoldToAdd,
@@ -247,8 +250,8 @@ function PresetAmountContent({
 }: {
   amount: AddCashAmount;
   canSubmitAmount: boolean;
+  funding: CashFundingState;
   isProcessing: boolean;
-  linkedCard: LinkedCard | null;
   onAddCard: () => void;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
@@ -260,10 +263,10 @@ function PresetAmountContent({
     <>
       <AddCashHeader onSettings={onSettings} topPadding="28px" />
       <AmountPresetGrid onMore={onMore} onSelectPreset={onSelectPreset} selectedAmount={amount.selectedPresetAmount} />
-      {linkedCard ? <AddFromRow card={linkedCard} onPress={onAddFrom} /> : <AddCardHint />}
+      {funding.kind === 'none' ? <AddCardHint /> : <AddFromRow funding={funding} onPress={onAddFrom} />}
       <AddCashActionButton
         canSubmitAmount={canSubmitAmount}
-        hasLinkedCard={linkedCard != null}
+        funding={funding}
         isKeypad={false}
         isProcessing={isProcessing}
         onAddCard={onAddCard}
@@ -276,8 +279,8 @@ function PresetAmountContent({
 function KeypadAmountContent({
   amount,
   canSubmitAmount,
+  funding,
   isProcessing,
-  linkedCard,
   onAddCard,
   onAddFrom,
   onHoldToAdd,
@@ -285,8 +288,8 @@ function KeypadAmountContent({
 }: {
   amount: AddCashAmount;
   canSubmitAmount: boolean;
+  funding: CashFundingState;
   isProcessing: boolean;
-  linkedCard: LinkedCard | null;
   onAddCard: () => void;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
@@ -299,13 +302,13 @@ function KeypadAmountContent({
       <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)} style={styles.amountArea}>
         <AmountDisplay displayedAmount={amount.displayedAmount} />
       </Box>
-      {linkedCard ? (
+      {funding.kind === 'none' ? (
+        <AddCardHint />
+      ) : (
         <>
           <KeypadFundingCaption />
-          <AddFromRow card={linkedCard} onPress={onAddFrom} />
+          <AddFromRow funding={funding} onPress={onAddFrom} />
         </>
-      ) : (
-        <AddCardHint />
       )}
       <Box as={Animated.View} entering={FadeIn.duration(160)} paddingBottom="8px" paddingTop="24px">
         <NumberPad
@@ -317,7 +320,7 @@ function KeypadAmountContent({
       </Box>
       <AddCashActionButton
         canSubmitAmount={canSubmitAmount}
-        hasLinkedCard={linkedCard != null}
+        funding={funding}
         isKeypad
         isProcessing={isProcessing}
         onAddCard={onAddCard}
@@ -328,7 +331,8 @@ function KeypadAmountContent({
 }
 
 export const AddCashSheet = memo(function AddCashSheet() {
-  const linkedCard = useCashLinkedCard();
+  const funding = useCashFundingState();
+  const openGate = useCashAuthGateStore(state => (state.status.step === 'closed' ? null : state.status));
   const [mode, setMode] = useState<AddCashMode>('presets');
   const amount = useAddCashAmount(DEFAULT_SELECTED_AMOUNT);
   const { resetKeypadAmount } = amount;
@@ -373,6 +377,14 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const slowPollAt = submittedAt !== null ? submittedAt + ORDER_FAST_POLL_DURATION_MS : null;
   const isSlowPolling = useTimestampReached(slowPollAt);
 
+  // Post-paint on purpose: parking the gate in a layout effect fires before this component's store
+  // subscription attaches, and the store's snapshot cache swallows the missed update — the sheet
+  // then sits on the loading row forever. The unmount clear keeps a stale gate from flashing on reopen.
+  useEffect(() => {
+    void openCashAuthGate();
+    return () => useCashAuthGateStore.getState().clear();
+  }, []);
+
   useWatcher({
     enabled: isPolling,
     interval: isSlowPolling ? ORDER_SLOW_POLL_INTERVAL_MS : ORDER_FAST_POLL_INTERVAL_MS,
@@ -411,7 +423,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
   // A deposit can only credit a wallet the Cash account has linked, so resolve that first: the token
   // it mints also authorizes the order that follows.
   const handleHoldToAdd = useCallback(async () => {
-    if (!linkedCard || walletCheckRef.current) return;
+    if (funding.kind !== 'card' || walletCheckRef.current) return;
 
     const controller = new AbortController();
     walletCheckRef.current = controller;
@@ -422,12 +434,12 @@ export const AddCashSheet = memo(function AddCashSheet() {
       if (status === 'needsLink') {
         navigation.navigate(Routes.CASH_ADD_WALLET_SHEET, {
           walletAddress: accountAddress,
-          cardId: linkedCard.id,
+          cardId: funding.card.id,
           depositAmount: amount.amount,
         });
         return;
       }
-      cashBuyOrderActions.submitBuyOrder({ cardId: linkedCard.id, depositAmount: amount.amount, walletAddress: accountAddress });
+      cashBuyOrderActions.submitBuyOrder({ cardId: funding.card.id, depositAmount: amount.amount, walletAddress: accountAddress });
     } catch (error) {
       if (controller.signal.aborted || isPasskeyCancellation(error)) return;
       logger.error(new RainbowError('[AddCashSheet]: Failed to resolve the deposit wallet', error));
@@ -442,7 +454,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       }
       setIsCheckingWallet(false);
     }
-  }, [accountAddress, amount.amount, linkedCard, navigation]);
+  }, [accountAddress, amount.amount, funding, navigation]);
 
   const handleAddCard = useCallback(() => {
     navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);
@@ -462,7 +474,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
     setMode('keypad');
   }, [resetKeypadAmount]);
 
-  const view = showPendingView ? 'pending' : mode;
+  const view = showPendingView ? 'pending' : openGate ? 'reauth' : mode;
   const isKeypad = view === 'keypad';
 
   return (
@@ -477,12 +489,14 @@ export const AddCashSheet = memo(function AddCashSheet() {
       <Box background="surfaceSecondary" style={isKeypad ? styles.fullScreenContent : undefined}>
         {view === 'pending' ? (
           <PendingOrderContent onSettings={handleSettings} />
+        ) : openGate ? (
+          <ReauthenticateContent status={openGate} />
         ) : view === 'keypad' ? (
           <KeypadAmountContent
             amount={amount}
             canSubmitAmount={amount.canSubmit}
+            funding={funding}
             isProcessing={isProcessing}
-            linkedCard={linkedCard}
             onAddCard={handleAddCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
@@ -492,8 +506,8 @@ export const AddCashSheet = memo(function AddCashSheet() {
           <PresetAmountContent
             amount={amount}
             canSubmitAmount={amount.canSubmit}
+            funding={funding}
             isProcessing={isProcessing}
-            linkedCard={linkedCard}
             onAddCard={handleAddCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
