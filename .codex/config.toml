@@ -1,0 +1,21 @@
+# Worktree setup, mirroring the hooks in .claude/settings.json so both agents
+# prepare a worktree the same way. Codex requires you to review and trust a
+# project-local hook definition once, interactively, before it will run; until
+# then these do not fire, and `codex exec` blocks waiting for the prompt.
+# Changing a definition below requires re-approval.
+
+[[hooks.SessionStart]]
+matcher = "startup|resume"
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = 'bash "$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh"'
+statusMessage = "Preparing worktree"
+
+[[hooks.SubagentStart]]
+matcher = ".*"
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = 'bash "$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh"'
+statusMessage = "Preparing worktree"
