@@ -1539,7 +1539,7 @@
         "introducing": "Introducing",
         "title": "Cash Deposits",
         "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
+        "visa_feature": "Available for US-based customers except New York, Utah, Hawaii, using a Visa card.",
         "set_up_account": "Set Up Account",
         "other_deposit_methods": "Other Deposit Methods",
         "sign_in": "Sign In"
