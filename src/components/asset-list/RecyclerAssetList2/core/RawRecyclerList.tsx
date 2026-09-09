@@ -22,14 +22,14 @@ import usePrevious from '@/hooks/usePrevious';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type AssetListType } from '..';
 import { useWalletsStore } from '../../../../state/wallets/walletsStore';
 import { useRecyclerAssetListPosition } from './Contexts';
-import ExternalScrollViewWithRef from './ExternalScrollView';
-import getLayoutProvider from './getLayoutProvider';
-import RefreshControl from './RefreshControl';
+import { ExternalScrollViewWithRef } from './ExternalScrollView';
+import { getLayoutProvider } from './getLayoutProvider';
+import { RefreshControlWrapped as RefreshControl } from './RefreshControl';
 import rowRenderer from './RowRenderer';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
@@ -67,7 +67,7 @@ export type ViewableItemsChangedCallback = ({
   viewableItemsRemoved: BaseCellType[];
 }) => void;
 
-const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
+export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
   disablePullDownToRefresh,
   scrollIndicatorInsets,
@@ -234,5 +234,3 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     />
   );
 });
-
-export default RawMemoRecyclerAssetList;

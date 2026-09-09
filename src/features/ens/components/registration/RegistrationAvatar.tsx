@@ -4,10 +4,10 @@ import ConditionalWrap from 'conditional-wrap';
 import { type ImagePickerAsset } from 'expo-image-picker';
 import { atom, useSetRecoilState } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
-import AvatarCoverPhotoMaskSvg from '@/components/svg/AvatarCoverPhotoMaskSvg';
+import { AvatarCoverPhotoMaskSvg } from '@/components/svg/AvatarCoverPhotoMaskSvg';
 import { AccentColorProvider, BackgroundProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_TEST } from '@/env';

@@ -5,7 +5,7 @@ import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { GasSpeedMenu } from '@/features/gas/components/GasSpeedMenu';

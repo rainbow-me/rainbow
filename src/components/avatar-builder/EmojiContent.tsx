@@ -16,7 +16,7 @@ type Props = AllEmojiContentEntry & {
   fontSize: number;
 };
 
-const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Props) => {
+export const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Props) => {
   const { colors } = useTheme();
 
   const categoryEmojis = useMemo(() => {
@@ -97,5 +97,3 @@ const cx = StyleSheet.create({
     marginHorizontal: EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
   },
 });
-
-export default EmojiContent;

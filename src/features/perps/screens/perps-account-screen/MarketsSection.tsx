@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { MarketSortOrderDropdown } from '@/features/perps/components/MarketSortOrderDropdown';

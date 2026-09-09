@@ -15,7 +15,7 @@ import { toHex } from 'viem';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ImgixImage } from '@/components/images';
 import { SmoothPager, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
@@ -58,7 +58,7 @@ import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { address } from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';

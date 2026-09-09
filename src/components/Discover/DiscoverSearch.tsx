@@ -13,15 +13,15 @@ import { IS_TEST } from '@/env';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
 import { Network } from '@/features/network/types/backendNetworks';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
-import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
+import { useSearchCurrencyList } from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-export default function DiscoverSearch() {
+export function DiscoverSearch() {
   const safeAreaInsets = useSafeAreaInsets();
 
   const { cancelSearch, sectionListRef } = useDiscoverScreenContext();

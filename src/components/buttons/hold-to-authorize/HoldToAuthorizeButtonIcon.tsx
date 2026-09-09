@@ -26,7 +26,7 @@ interface Props {
   progressColor?: string;
 }
 
-export default function HoldToAuthorizeButtonIcon({ sharedValue, progressColor }: Props) {
+export function HoldToAuthorizeButtonIcon({ sharedValue, progressColor }: Props) {
   const circleFillProgressOverride = useSharedValue<number | null>(null);
 
   const circleFillProgress = useDerivedValue(() => {

@@ -1,7 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Text, useForegroundColor } from '@/design-system';
 
 type SelectableButtonProps = {
@@ -11,7 +11,7 @@ type SelectableButtonProps = {
   testID?: string;
 };
 
-export default function SelectableButton({ children, onSelect, isSelected, testID }: SelectableButtonProps) {
+export function SelectableButton({ children, onSelect, isSelected, testID }: SelectableButtonProps) {
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
   const secondary30 = useForegroundColor('secondary30 (Deprecated)');
   const accent = useForegroundColor('accent');

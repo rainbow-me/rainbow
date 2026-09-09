@@ -10,7 +10,7 @@ import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Column } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
-import SheetHandle from './SheetHandle';
+import { SheetHandle } from './SheetHandle';
 
 const Sheet = ({ borderRadius = 39, children, hideHandle = false, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {
   const { width } = useDimensions();

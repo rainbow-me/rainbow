@@ -20,7 +20,7 @@ import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;
 

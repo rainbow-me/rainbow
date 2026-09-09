@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import type { RainbowToast } from '@/components/rainbow-toast/types';

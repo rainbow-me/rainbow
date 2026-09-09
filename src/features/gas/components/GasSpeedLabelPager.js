@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 import { upperFirst } from 'lodash';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Row } from '@/components/layout';
 import { Text } from '@/components/text';
 import { opacity } from '@/design-system/utils/opacity';

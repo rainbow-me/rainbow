@@ -11,7 +11,7 @@ import { margin, padding, position } from '@/styles';
 import { delay } from '@/utils/delay';
 
 import { darkModeThemeColors } from '../../styles/colors';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { Text } from '../text';
 

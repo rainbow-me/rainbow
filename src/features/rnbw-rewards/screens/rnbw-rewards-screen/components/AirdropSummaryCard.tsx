@@ -7,7 +7,7 @@ import { runOnJS } from 'react-native-reanimated';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import rnbwCoinImage from '@/assets/rnbw.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';

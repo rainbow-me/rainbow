@@ -17,7 +17,7 @@ interface Props {
   items: [string, string];
 }
 
-const SheetSubtitleCycler = ({ sharedValue, errorIndex, items, isPaymentComplete, interval = 3000 }: Props) => {
+export const SheetSubtitleCycler = ({ sharedValue, errorIndex, items, isPaymentComplete, interval = 3000 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const fadeOutAnimation = useSharedValue(isPaymentComplete ? 0 : 1);
 
@@ -79,5 +79,3 @@ const SheetSubtitleCycler = ({ sharedValue, errorIndex, items, isPaymentComplete
     </Animated.View>
   );
 };
-
-export default SheetSubtitleCycler;

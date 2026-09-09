@@ -16,7 +16,7 @@ import { fonts, fontWithWidth, padding } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';

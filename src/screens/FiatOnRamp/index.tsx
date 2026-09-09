@@ -17,7 +17,7 @@ import Navigation from '@/navigation/Navigation';
 import { getProviders, getWidgetURL } from '@/resources/f2c';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { borders } from '@/styles';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { ProviderListItem } from './ProviderListItem';
 

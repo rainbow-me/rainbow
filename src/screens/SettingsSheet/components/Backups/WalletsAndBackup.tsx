@@ -40,10 +40,10 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 
 import { useVisibleWallets, type WalletCountPerType } from '../../useVisibleWallets';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuHeader, { type StatusType } from '../MenuHeader';
-import MenuItem from '../MenuItem';
+import { Menu } from '../Menu';
+import { MenuContainer } from '../MenuContainer';
+import { MenuHeader, type StatusType } from '../MenuHeader';
+import { MenuItem } from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
 
 type WalletPillProps = {
@@ -737,5 +737,3 @@ export const WalletsAndBackup = () => {
     </MenuContainer>
   );
 };
-
-export default WalletsAndBackup;

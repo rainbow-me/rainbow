@@ -31,7 +31,7 @@ interface DashedWrapperProps {
   colors: LinearGradientProps['colors'];
 }
 
-export default function DashedWrapper(props: DashedWrapperProps) {
+export function DashedWrapper(props: DashedWrapperProps) {
   const { children, size, childXPosition, colors } = props;
 
   return (

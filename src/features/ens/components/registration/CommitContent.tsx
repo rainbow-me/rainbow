@@ -9,9 +9,9 @@ import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 
 import { REGISTRATION_MODES } from '../../utils/helpers';
-import RegistrationReviewRows from './RegistrationReviewRows';
+import { RegistrationReviewRows } from './RegistrationReviewRows';
 
-const CommitContent = ({
+export const CommitContent = ({
   duration,
   registrationCostsData,
   setDuration,
@@ -49,5 +49,3 @@ const CommitContent = ({
     </Inset>
   );
 };
-
-export default CommitContent;

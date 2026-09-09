@@ -309,7 +309,7 @@ const DoubleChevron = () => (
   </Cover>
 );
 
-export default function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
+export function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
   const isPendingSwap = checkForPendingSwap(transaction);

@@ -7,9 +7,9 @@ import { ContextMenuButton, type MenuConfig } from 'react-native-ios-context-men
 import useWatchWallet from '@/hooks/useWatchWallet';
 import * as i18n from '@/languages';
 
-import ActionButton from './ActionButton';
+import { ActionButton } from './ActionButton';
 
-export default function WatchButton({ address, ensName, avatarUrl }: { address?: string; ensName?: string; avatarUrl?: string | null }) {
+export function WatchButton({ address, ensName, avatarUrl }: { address?: string; ensName?: string; avatarUrl?: string | null }) {
   const { isImporting, isWatching, watchWallet } = useWatchWallet({
     address,
     avatarUrl,

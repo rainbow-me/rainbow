@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

@@ -7,7 +7,7 @@ import startCase from 'lodash/startCase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ColumnWithDividers } from '../layout';
-import FloatingPanel from './FloatingPanel';
+import { FloatingPanel } from './FloatingPanel';
 
 export default function AssetPanel({ children, dividerRenderer, ...props }) {
   return (

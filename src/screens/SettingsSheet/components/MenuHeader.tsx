@@ -163,7 +163,7 @@ interface MenuHeaderProps {
   testID?: string;
 }
 
-const MenuHeader = ({
+export const MenuHeader = ({
   iconComponent,
   titleComponent,
   statusComponent,
@@ -199,5 +199,3 @@ MenuHeader.Selection = Selection;
 MenuHeader.StatusIcon = StatusIcon;
 MenuHeader.TextIcon = TextIcon;
 MenuHeader.Title = Title;
-
-export default MenuHeader;

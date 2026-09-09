@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { globalColors } from '@/design-system/color/palettes';
 import { opacity } from '@/design-system/utils/opacity';
 
-import currentColors from '../theme/currentColors';
+import { currentColors } from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;

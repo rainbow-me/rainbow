@@ -2,12 +2,12 @@ import React, { useCallback, useMemo, useRef } from 'react';
 
 import { NavigationHelpersContext, StackActions, type StackNavigationState } from '@react-navigation/native';
 
-import useForceUpdate from '@/hooks/useForceUpdate';
+import { useForceUpdate } from '@/hooks/useForceUpdate';
 import { onDidPop } from '@/navigation/Navigation';
 import { type RootStackParamList } from '@/navigation/types';
 
 import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
-import BottomSheetRoute from './BottomSheetRoute';
+import { BottomSheetRoute } from './BottomSheetRoute';
 
 type Props = BottomSheetNavigationConfig & {
   state: StackNavigationState<RootStackParamList>;
@@ -15,7 +15,7 @@ type Props = BottomSheetNavigationConfig & {
   descriptors: BottomSheetDescriptorMap;
 };
 
-const BottomSheetNavigatorView = ({ descriptors, state, navigation }: Props) => {
+export const BottomSheetNavigatorView = ({ descriptors, state, navigation }: Props) => {
   // #region hooks
   const forceUpdate = useForceUpdate();
   // #endregion
@@ -86,5 +86,3 @@ const BottomSheetNavigatorView = ({ descriptors, state, navigation }: Props) => 
     </NavigationHelpersContext.Provider>
   );
 };
-
-export default BottomSheetNavigatorView;

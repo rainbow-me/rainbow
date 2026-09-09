@@ -6,7 +6,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { SheetActionButton } from '@/components/sheet';
@@ -20,7 +20,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
-import IntroMarquee from '../components/registration/IntroMarquee';
+import { IntroMarquee } from '../components/registration/IntroMarquee';
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar from '../hooks/useENSAvatar';
 import useENSRecords from '../hooks/useENSRecords';
@@ -114,7 +114,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
   );
 };
 
-export default function ENSIntroSheet() {
+export function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();

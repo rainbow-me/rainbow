@@ -5,9 +5,7 @@ interface CurrentColors {
   themedColors: Colors | null;
 }
 
-const currentColors: CurrentColors = {
+export const currentColors: CurrentColors = {
   theme: 'light',
   themedColors: null,
 };
-
-export default currentColors;

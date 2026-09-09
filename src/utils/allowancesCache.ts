@@ -1,7 +1,5 @@
 const cache: Record<string, string> = {};
 
-const AllowancesCache = {
+export const AllowancesCache = {
   cache,
 };
-
-export default AllowancesCache;

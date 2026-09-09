@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';

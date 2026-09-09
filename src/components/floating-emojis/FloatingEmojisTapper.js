@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import FloatingEmojis from './FloatingEmojis';
 import FloatingEmojisTapHandler from './FloatingEmojisTapHandler';
 

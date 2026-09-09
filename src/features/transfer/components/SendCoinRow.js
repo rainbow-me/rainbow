@@ -3,7 +3,7 @@ import { Platform, TouchableWithoutFeedback } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import CoinName from '@/components/coin-row/CoinName';
 import CoinRow from '@/components/coin-row/CoinRow';
@@ -14,7 +14,7 @@ import { isL2Chain } from '@/handlers/web3';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;

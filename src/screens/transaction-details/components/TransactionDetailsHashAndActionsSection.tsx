@@ -4,7 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Columns, Stack } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

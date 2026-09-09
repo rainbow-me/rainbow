@@ -36,7 +36,7 @@ interface SheetActionButtonRowProps {
   paddingHorizontal?: number | null;
 }
 
-export default function SheetActionButtonRow({
+export function SheetActionButtonRow({
   children,
   ignorePaddingBottom = false,
   ignorePaddingTop = false,

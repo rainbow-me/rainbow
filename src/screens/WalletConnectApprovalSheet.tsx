@@ -7,7 +7,7 @@ import { noop } from 'lodash';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -507,5 +507,3 @@ export function WalletConnectApprovalSheet() {
     </Sheet>
   );
 }
-
-export default WalletConnectApprovalSheet;

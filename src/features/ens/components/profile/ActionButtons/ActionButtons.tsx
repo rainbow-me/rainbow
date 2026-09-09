@@ -3,12 +3,12 @@ import React, { useMemo } from 'react';
 import { Inline } from '@/design-system';
 import { useIsReadOnlyWallet, useWallets } from '@/state/wallets/walletsStore';
 
-import EditButton from './EditButton';
-import MoreButton from './MoreButton';
-import SendButton from './SendButton';
-import WatchButton from './WatchButton';
+import { WatchButton as EditButton } from './EditButton';
+import { MoreButton } from './MoreButton';
+import { SendButton } from './SendButton';
+import { WatchButton } from './WatchButton';
 
-export default function ActionButtons({
+export function ActionButtons({
   address: primaryAddress,
   ensName,
   avatarUrl,

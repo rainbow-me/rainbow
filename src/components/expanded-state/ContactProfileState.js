@@ -13,7 +13,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
-import ProfileModal from './profile/ProfileModal';
+import { ProfileModal } from './profile/ProfileModal';
 
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);

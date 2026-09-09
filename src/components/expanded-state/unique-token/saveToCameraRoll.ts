@@ -72,7 +72,7 @@ async function downloadImageIOS(url: string): Promise<void> {
   }
 }
 
-const saveToCameraRoll = async (url: string): Promise<void> => {
+export const saveToCameraRoll = async (url: string): Promise<void> => {
   const staticImgixClient = shouldCreateImgixClient();
   if (!staticImgixClient) {
     alertError();
@@ -86,5 +86,3 @@ const saveToCameraRoll = async (url: string): Promise<void> => {
     await downloadImageIOS(url2Download);
   }
 };
-
-export default saveToCameraRoll;

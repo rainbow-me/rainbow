@@ -7,7 +7,7 @@ import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/Dropd
 import { Box, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

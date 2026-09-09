@@ -16,7 +16,7 @@ interface Props {
   onDismiss: (key: string, removed: boolean) => void;
 }
 
-const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation }, onDismiss, removing = false }: Props) => {
+export const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation }, onDismiss, removing = false }: Props) => {
   const {
     enableContentPanningGesture,
     enableHandlePanningGesture,
@@ -160,5 +160,3 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
     </BottomSheetNavigatorContext.Provider>
   );
 };
-
-export default BottomSheetRoute;

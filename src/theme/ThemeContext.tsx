@@ -10,7 +10,7 @@ import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
 import { darkModeThemeColors, lightModeThemeColors, type Colors } from '../styles/colors';
-import currentColors from './currentColors';
+import { currentColors } from './currentColors';
 import { Themes, type ThemesType } from './themes';
 
 export interface ThemeContextProps {

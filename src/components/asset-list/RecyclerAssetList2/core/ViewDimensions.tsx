@@ -20,7 +20,7 @@ import { CoinDividerContainerHeight } from '@/components/coin-divider';
 import { CoinRowHeight } from '@/components/coin-row';
 import { TokenFamilyHeaderHeight } from '@/components/token-family';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 export const SectionHeaderHeight = 48;
 
@@ -28,7 +28,7 @@ type Dim = {
   width?: number;
   height: number;
 };
-const ViewDimensions: Record<CellType, Dim> = {
+export const ViewDimensions: Record<CellType, Dim> = {
   [CellType.EMPTY_ROW]: { height: 0 },
   [CellType.DISCOVER_MORE_BUTTON]: { height: DISCOVER_MORE_BUTTON_HEIGHT },
   [CellType.RECEIVE_CARD]: { height: RECEIVE_CARD_HEIGHT },
@@ -108,5 +108,3 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.TOKENS_HEADER]: { height: SectionHeaderHeight },
   [CellType.SPACER]: { height: 0 }, // Height is set from data
 };
-
-export default ViewDimensions;

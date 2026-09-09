@@ -8,9 +8,9 @@ import { SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import SelectableButton from '../components/registration/SelectableButton';
+import { SelectableButton } from '../components/registration/SelectableButton';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import { accentColorAtom, textRecordFields } from '../utils/helpers';
 
@@ -24,7 +24,7 @@ export const getENSAdditionalRecordsSheetHeight = () => {
   return ENSAdditionalRecordsSheetHeight + 2 * recordLineHeight;
 };
 
-export default function ENSAdditionalRecordsSheet() {
+export function ENSAdditionalRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
   const [accentColor] = useRecoilState(accentColorAtom);
   const { selectedFields, onAddField, onRemoveField } = useENSRegistrationForm();

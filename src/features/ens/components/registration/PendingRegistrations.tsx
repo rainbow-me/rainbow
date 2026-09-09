@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Alert } from '@/components/alerts';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Column, Columns, Inset, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -82,7 +82,7 @@ const PendingRegistration = ({
   );
 };
 
-const PendingRegistrations = () => {
+export const PendingRegistrations = () => {
   const { pendingRegistrations, removeRegistrationByName, registrationImages, removeExpiredRegistrations } = useENSPendingRegistrations();
 
   useEffect(removeExpiredRegistrations, [removeExpiredRegistrations]);
@@ -130,5 +130,3 @@ const PendingRegistrations = () => {
     </Box>
   ) : null;
 };
-
-export default PendingRegistrations;

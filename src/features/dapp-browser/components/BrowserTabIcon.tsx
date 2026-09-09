@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { TAB_BAR_PILL_HEIGHT } from '@/components/tab-bar/dimensions';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, TextIcon, useColorMode } from '@/design-system';

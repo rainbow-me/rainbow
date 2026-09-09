@@ -71,7 +71,7 @@ const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
 </html>
 `.trim();
 
-export default function ModelViewer({ loading, setLoading, style, uri, alt, fallbackUri }: ModelViewerProps): JSX.Element {
+export function ModelViewer({ loading, setLoading, style, uri, alt, fallbackUri }: ModelViewerProps): JSX.Element {
   const opacity = useMemo(() => new Animated.Value(1), []);
   const [visibility, setVisibility] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);

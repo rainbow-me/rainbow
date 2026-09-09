@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { StyleSheet, View, type NativeSyntheticEvent, type TextLayoutEventData } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, TextIcon } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';

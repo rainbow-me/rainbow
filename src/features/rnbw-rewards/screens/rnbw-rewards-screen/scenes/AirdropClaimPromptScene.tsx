@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 import { createScaleInFadeInSlideEnterAnimation, defaultExitAnimation } from '@/features/rnbw-rewards/animations/sceneTransitions';

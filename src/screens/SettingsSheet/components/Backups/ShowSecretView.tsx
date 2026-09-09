@@ -5,7 +5,7 @@ import { Centered } from '@/components/layout';
 import { ModalHeaderHeight } from '@/components/modal';
 import { SecretDisplaySection } from '@/components/secret-display/SecretDisplaySection';
 
-export default function ShowSecretView() {
+export function ShowSecretView() {
   useEffect(() => {
     analytics.track(analytics.event.showSecretView, {
       category: 'settings backup',

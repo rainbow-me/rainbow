@@ -13,7 +13,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 const imagePreviewOverlayTopOffset = Platform.OS === 'ios' ? 68 + sharedCoolModalTopOffset : 107;
 
-export default function ProfileCover({
+export function ProfileCover({
   coverUrl,
   enableZoomOnPress,
   handleOnPress,

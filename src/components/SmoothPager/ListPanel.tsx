@@ -3,7 +3,7 @@ import { Platform, ScrollView, StyleSheet, type ScrollViewProps, type StyleProp,
 
 import Animated, { useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import {
   AnimatedText,

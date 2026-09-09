@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { BubbleField } from '@/components/fields';
 import { Row, RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';

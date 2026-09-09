@@ -7,7 +7,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Column } from '../layout';
@@ -25,7 +25,7 @@ type ActivityListEmptyStateProps = {
   label?: string;
 };
 
-const ActivityListEmptyState = ({
+export const ActivityListEmptyState = ({
   children,
   emoji = '🏝',
   label = i18n.t(i18n.l.activity_list.empty_state.default_label),
@@ -58,5 +58,3 @@ const ActivityListEmptyState = ({
     </View>
   );
 };
-
-export default ActivityListEmptyState;

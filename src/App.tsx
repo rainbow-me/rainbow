@@ -28,7 +28,7 @@ import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
 import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
-import RainbowContextWrapper from '@/helpers/RainbowContext';
+import { RainbowContextWrapper } from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
 import { migrate } from '@/migrations';

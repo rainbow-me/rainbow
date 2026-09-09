@@ -12,7 +12,7 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 
-import ButtonPressAnimation from '../../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../../animations/ButtonPressAnimation';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 

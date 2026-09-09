@@ -46,7 +46,7 @@ const ScannerHeader = styled(Header).attrs({
   top: 48,
 });
 
-export default function QRScannerScreen() {
+export function QRScannerScreen() {
   const { width: deviceWidth } = useDimensions();
   const { result: isEmulator } = useIsEmulator();
   const { navigate } = useNavigation();

@@ -5,7 +5,7 @@ import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';

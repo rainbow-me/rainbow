@@ -4,7 +4,7 @@ import { Keyboard, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Input } from '@/components/inputs';
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';

@@ -5,7 +5,7 @@ import Animated, { useDerivedValue } from 'react-native-reanimated';
 
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';

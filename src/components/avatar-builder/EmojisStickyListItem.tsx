@@ -19,7 +19,7 @@ interface Props {
   headerData: AllEmojiHeaderEntry;
 }
 
-const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
+export const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
   const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -78,5 +78,3 @@ const sx = StyleSheet.create({
     marginLeft: 12,
   },
 });
-
-export default EmojisStickyListItem;

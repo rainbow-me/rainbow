@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { type RouteProp } from '@react-navigation/native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Inline, Text, type TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
