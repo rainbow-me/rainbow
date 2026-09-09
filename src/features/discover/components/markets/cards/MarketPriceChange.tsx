@@ -6,8 +6,8 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
-import { DOWN_ARROW, formatNormalizedPercentChange, UP_ARROW } from '@/framework/ui/price/formatPriceChange';
-import { getPriceChangeColor, type PriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
+import { DOWN_ARROW, formatNormalizedPercentChange, UP_ARROW } from '@/features/market/ui/utils/formatPriceChange';
+import { getPriceChangeColor, type PriceChangeColors } from '@/features/market/ui/utils/priceChangeColors';
 import { type TokenData } from '@/state/liveTokens/types';
 
 type MarketPriceChangeProps = {

@@ -8,8 +8,8 @@ import { type NativeCurrencyKey } from '@/features/currency/types';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
 import { type MarketPillWidthInput } from '@/features/discover/components/markets/cards/MarketPill';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
+import { getPriceChangeColor, getPriceChangeColors } from '@/features/market/ui/utils/priceChangeColors';
 import { type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
-import { getPriceChangeColor, getPriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
 import useColorForAsset from '@/hooks/useColorForAsset';
 
 const MARKET_NEUTRAL_CHART_COLOR = opacity(globalColors.white100, 0.5);

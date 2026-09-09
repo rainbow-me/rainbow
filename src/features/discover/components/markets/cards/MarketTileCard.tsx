@@ -15,7 +15,7 @@ import { MarketIcon } from '@/features/discover/components/markets/cards/MarketI
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
 import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
-import { usePriceChangeColors } from '@/framework/ui/price/usePriceChangeColors';
+import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
