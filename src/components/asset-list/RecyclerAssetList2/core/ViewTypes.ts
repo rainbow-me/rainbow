@@ -46,6 +46,8 @@ export enum CellType {
   CLAIMABLE = 'CLAIMABLE',
   CLAIMABLES_SPACE_AFTER = 'CLAIMABLES_SPACE_AFTER',
 
+  CASH_BALANCE_HEADER = 'CASH_BALANCE_HEADER',
+
   PERPS_HEADER = 'PERPS_HEADER',
   PERPS_BALANCE = 'PERPS_BALANCE',
   PERPS_POSITION = 'PERPS_POSITION',
@@ -125,6 +127,9 @@ export type ClaimablesHeaderExtraData = {
   total: string;
 };
 
+export type CashBalanceHeaderExtraData = {
+  type: CellType.CASH_BALANCE_HEADER;
+};
 export type PerpsBalanceExtraData = {
   type: CellType.PERPS_BALANCE;
   balance: string;
@@ -201,6 +206,7 @@ export type CellExtraData =
   | PositionHeaderExtraData
   | ClaimableExtraData
   | ClaimablesHeaderExtraData
+  | CashBalanceHeaderExtraData
   | PerpsBalanceExtraData
   | PerpsPositionExtraData
   | PerpsHeaderExtraData

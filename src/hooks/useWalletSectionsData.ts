@@ -4,6 +4,7 @@ import { analytics } from '@/analytics';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { IS_TEST } from '@/env';
+import { useIsCashBalanceEnabled } from '@/features/cash-balance/hooks/useIsCashBalanceEnabled';
 import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -62,6 +63,7 @@ export default function useWalletSectionsData({
   const perpsEnabled = remoteConfig.perps_enabled && !IS_TEST;
   const polymarketEnabled = remoteConfig.polymarket_enabled && !IS_TEST;
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
+  const cashBalanceEnabled = useIsCashBalanceEnabled() && !IS_TEST;
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
@@ -150,6 +152,7 @@ export default function useWalletSectionsData({
       perpsData,
       polymarketData,
       rnbwRewardsEnabled,
+      cashBalanceEnabled,
       hasMoreCollections,
       isShowcaseDataMigrated,
       isHiddenDataMigrated,
@@ -191,6 +194,7 @@ export default function useWalletSectionsData({
     perpsData,
     polymarketData,
     rnbwRewardsEnabled,
+    cashBalanceEnabled,
     hasMoreCollections,
     isShowcaseDataMigrated,
     isHiddenDataMigrated,
