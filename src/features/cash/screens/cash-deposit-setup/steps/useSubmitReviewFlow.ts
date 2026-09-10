@@ -191,9 +191,6 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       return 'approved';
     }
 
-    // Today the provider only tells us the state wasn't supported (NY); it never
-    // rejects for any other reason, so unspecified/other reasons still map to
-    // the generic rejected outcome.
     if (kycRejectionReason === KycRejectionReason.StateNotSupported) {
       analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
       set({ state: 'unsupportedState' });
