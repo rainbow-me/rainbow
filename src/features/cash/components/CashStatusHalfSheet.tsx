@@ -4,9 +4,8 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
-import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Separator, Text } from '@/design-system';
+import { Box, Text } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -23,8 +22,6 @@ type CommonProps = {
   description: string;
   testID: string;
   title: string;
-  // A footer link below a divider, e.g. an alternative when the main action doesn't apply.
-  footerAction?: HalfSheetAction;
 };
 
 type CashStatusPanelContent = CommonProps &
@@ -103,17 +100,6 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
         </Box>
-
-        {props.footerAction && (
-          <Box gap={24} paddingBottom="24px">
-            <Separator color="separatorTertiary" />
-            <ButtonPressAnimation onPress={props.footerAction.onPress} scaleTo={0.96} testID={props.footerAction.testID}>
-              <Text align="center" color="label" size="17pt" weight="heavy">
-                {props.footerAction.label}
-              </Text>
-            </ButtonPressAnimation>
-          </Box>
-        )}
       </Animated.View>
     </PanelSheet>
   );

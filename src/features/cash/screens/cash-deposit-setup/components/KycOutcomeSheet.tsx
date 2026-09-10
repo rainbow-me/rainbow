@@ -60,13 +60,12 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
     case 'unsupportedState':
       return (
         <CashStatusHalfSheet
-          action={{ label: i18n.t(i18n.l.button.dismiss), onPress: goBack, testID: 'cash-setup-kyc-state-not-supported-dismiss' }}
-          description={i18n.t(l.state_not_supported_description)}
-          footerAction={{
+          action={{
             label: i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods),
             onPress: otherDepositMethods,
             testID: 'cash-setup-kyc-state-not-supported-other-methods',
           }}
+          description={i18n.t(l.state_not_supported_description)}
           status="info"
           testID="cash-setup-kyc-state-not-supported"
           title={i18n.t(l.state_not_supported_title)}
