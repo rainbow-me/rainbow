@@ -1653,7 +1653,10 @@
           "rejected_title": "There was an issue verifying your details",
           "rejected_description": "We weren’t able to verify your identity. Contact support if you think this is a mistake.",
           "contact_support": "Contact Support",
-          "close": "Close"
+          "close": "Close",
+          "state_not_supported_title": "New York support coming soon",
+          "state_not_supported_description": "Sorry, instant cash deposits are not available in NY yet.\n\nWe are adding NY soon. You will receive a push notification when instant deposits are available in NY.",
+          "dismiss": "Dismiss"
         },
         "passkey": {
           "title": "Add a Passkey",

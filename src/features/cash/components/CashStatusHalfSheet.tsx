@@ -4,8 +4,9 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text } from '@/design-system';
+import { Box, Separator, Text } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -22,12 +23,15 @@ type CommonProps = {
   description: string;
   testID: string;
   title: string;
+  // A footer link below a divider, e.g. an alternative when the main action doesn't apply.
+  footerAction?: HalfSheetAction;
 };
 
 type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
     | { status: 'reviewing'; action: HalfSheetAction }
+    | { status: 'info'; action: HalfSheetAction; icon: string }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -43,6 +47,7 @@ const STATUS_ICONS = {
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
+  info: 'labelQuaternary',
   reviewing: 'blue',
   success: 'green',
   warning: 'red',
@@ -53,7 +58,7 @@ const PANEL_EXITING_ANIMATION = SlideOutDown.springify().damping(70).mass(0.8).s
 const PANEL_RESIZE_ANIMATION = LinearTransition.duration(200).easing(Easing.inOut(Easing.ease));
 
 export function CashStatusPanel({ content: props }: { content: CashStatusPanelContent }) {
-  const icon = props.status === 'success' ? props.successIcon : STATUS_ICONS[props.status];
+  const icon = props.status === 'success' ? props.successIcon : props.status === 'info' ? props.icon : STATUS_ICONS[props.status];
   const iconColor = STATUS_ICON_COLORS[props.status];
   const isAlert = props.status === 'error' || props.status === 'warning';
 
@@ -82,7 +87,7 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
 
-          {props.status === 'reviewing' && (
+          {(props.status === 'reviewing' || props.status === 'info') && (
             <Box paddingTop="32px">
               <CashActionButton {...props.action} variant="tinted" />
             </Box>
@@ -97,6 +102,17 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
         </Box>
+
+        {props.footerAction && (
+          <Box gap={24} paddingBottom="24px">
+            <Separator color="separatorTertiary" />
+            <ButtonPressAnimation onPress={props.footerAction.onPress} scaleTo={0.96} testID={props.footerAction.testID}>
+              <Text align="center" color="label" size="17pt" weight="heavy">
+                {props.footerAction.label}
+              </Text>
+            </ButtonPressAnimation>
+          </Box>
+        )}
       </Animated.View>
     </PanelSheet>
   );

@@ -10,6 +10,7 @@ import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
 import {
   finishRecovery,
   getUserStatus,
+  KycRejectionReason,
   KycStatus,
   startRecovery,
   startSignupResume,
@@ -27,6 +28,7 @@ export type SubmitReviewState = 'entry' | 'submitting' | 'identityMismatch' | 'e
 type SubmitReviewResult =
   | 'approved'
   | 'rejected'
+  | 'unsupportedState'
   | 'awaitingDecision'
   | 'recovered'
   | 'phoneCodeRequired'
@@ -147,8 +149,14 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
     };
 
     let kycStatus: KycStatus;
+    let kycRejectionReason: KycRejectionReason;
     try {
-      ({ kycStatus } = await submitOnboarding({ bootstrapToken, countryCode: US_COUNTRY_CODE, identity, governmentId }));
+      ({ kycStatus, kycRejectionReason } = await submitOnboarding({
+        bootstrapToken,
+        countryCode: US_COUNTRY_CODE,
+        identity,
+        governmentId,
+      }));
     } catch (error) {
       if (isStale()) return 'cancelled';
       logger.error(new RainbowError('[useSubmitReviewFlow]: Failed to submit KYC', error));
@@ -165,7 +173,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       await delay(KYC_POLL_INTERVAL_MS);
       if (isStale()) return 'cancelled';
       try {
-        ({ kycStatus } = await getUserStatus({ bootstrapToken }));
+        ({ kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken }));
       } catch (error) {
         if (isStale()) return 'cancelled';
         // The identity data is already with the provider, so a status we cannot
@@ -181,6 +189,15 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       analytics.track(analytics.event.cashKycApproved);
       set({ state: 'approved' });
       return 'approved';
+    }
+
+    // Today the provider only tells us the state wasn't supported (NY); it never
+    // rejects for any other reason, so unspecified/other reasons still map to
+    // the generic rejected outcome.
+    if (kycRejectionReason === KycRejectionReason.StateNotSupported) {
+      analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
+      set({ state: 'unsupportedState' });
+      return 'unsupportedState';
     }
 
     analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
