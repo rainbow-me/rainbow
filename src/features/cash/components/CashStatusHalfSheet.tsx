@@ -7,6 +7,7 @@ import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text } from '@/design-system';
+import { type TextColor } from '@/design-system/color/palettes';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -30,8 +31,8 @@ type CommonProps = {
 type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
-    | { status: 'reviewing'; action: HalfSheetAction }
-    | { status: 'info'; action: HalfSheetAction; icon: string }
+    // icon/iconColor override the default reviewing appearance, e.g. for an info-style sheet.
+    | { status: 'reviewing'; action: HalfSheetAction; icon?: string; iconColor?: TextColor }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -47,7 +48,6 @@ const STATUS_ICONS = {
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
-  info: 'labelQuaternary',
   reviewing: 'blue',
   success: 'green',
   warning: 'red',
@@ -58,8 +58,13 @@ const PANEL_EXITING_ANIMATION = SlideOutDown.springify().damping(70).mass(0.8).s
 const PANEL_RESIZE_ANIMATION = LinearTransition.duration(200).easing(Easing.inOut(Easing.ease));
 
 export function CashStatusPanel({ content: props }: { content: CashStatusPanelContent }) {
-  const icon = props.status === 'success' ? props.successIcon : props.status === 'info' ? props.icon : STATUS_ICONS[props.status];
-  const iconColor = STATUS_ICON_COLORS[props.status];
+  const icon =
+    props.status === 'success'
+      ? props.successIcon
+      : props.status === 'reviewing'
+        ? (props.icon ?? STATUS_ICONS.reviewing)
+        : STATUS_ICONS[props.status];
+  const iconColor = props.status === 'reviewing' ? (props.iconColor ?? STATUS_ICON_COLORS.reviewing) : STATUS_ICON_COLORS[props.status];
   const isAlert = props.status === 'error' || props.status === 'warning';
 
   return (
@@ -87,7 +92,7 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
 
-          {(props.status === 'reviewing' || props.status === 'info') && (
+          {props.status === 'reviewing' && (
             <Box paddingTop="32px">
               <CashActionButton {...props.action} variant="tinted" />
             </Box>

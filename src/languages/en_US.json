@@ -1655,8 +1655,7 @@
           "contact_support": "Contact Support",
           "close": "Close",
           "state_not_supported_title": "New York support coming soon",
-          "state_not_supported_description": "Sorry, instant cash deposits are not available in NY yet.\n\nWe are adding NY soon. You will receive a push notification when instant deposits are available in NY.",
-          "dismiss": "Dismiss"
+          "state_not_supported_description": "Sorry, instant cash deposits are not available in NY yet.\n\nWe are adding NY soon. You will receive a push notification when instant deposits are available in NY."
         },
         "passkey": {
           "title": "Add a Passkey",
