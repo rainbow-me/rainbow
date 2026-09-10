@@ -11,7 +11,6 @@ import { type KycOutcome } from '../../../services/userClient';
 
 const l = i18n.l.cash.deposit_setup.kyc;
 const IDENTITY_VERIFIED_ICON = '􀯧';
-const STATE_NOT_SUPPORTED_ICON = '􀆪';
 
 function contactSupport() {
   openInBrowser(RAINBOW_SUPPORT_URL);
@@ -68,7 +67,6 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
             onPress: otherDepositMethods,
             testID: 'cash-setup-kyc-state-not-supported-other-methods',
           }}
-          icon={STATE_NOT_SUPPORTED_ICON}
           status="info"
           testID="cash-setup-kyc-state-not-supported"
           title={i18n.t(l.state_not_supported_title)}

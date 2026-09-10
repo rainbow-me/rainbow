@@ -31,7 +31,7 @@ type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
     | { status: 'reviewing'; action: HalfSheetAction }
-    | { status: 'info'; action: HalfSheetAction; icon: string }
+    | { status: 'info'; action: HalfSheetAction }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -40,6 +40,7 @@ type CashStatusPanelContent = CommonProps &
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  info: '􀆪',
   reviewing: '􀐫',
   warning: '􀇾',
 } as const;
@@ -58,7 +59,7 @@ const PANEL_EXITING_ANIMATION = SlideOutDown.springify().damping(70).mass(0.8).s
 const PANEL_RESIZE_ANIMATION = LinearTransition.duration(200).easing(Easing.inOut(Easing.ease));
 
 export function CashStatusPanel({ content: props }: { content: CashStatusPanelContent }) {
-  const icon = props.status === 'success' ? props.successIcon : props.status === 'info' ? props.icon : STATUS_ICONS[props.status];
+  const icon = props.status === 'success' ? props.successIcon : STATUS_ICONS[props.status];
   const iconColor = STATUS_ICON_COLORS[props.status];
   const isAlert = props.status === 'error' || props.status === 'warning';
 
