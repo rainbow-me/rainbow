@@ -69,8 +69,7 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
             testID: 'cash-setup-kyc-state-not-supported-other-methods',
           }}
           icon={STATE_NOT_SUPPORTED_ICON}
-          iconColor="labelQuaternary"
-          status="reviewing"
+          status="info"
           testID="cash-setup-kyc-state-not-supported"
           title={i18n.t(l.state_not_supported_title)}
         />
