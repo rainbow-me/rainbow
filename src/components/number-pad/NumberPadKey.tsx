@@ -16,6 +16,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { HitSlop, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -44,7 +45,8 @@ export const NumberPadKey = <K extends string>({
 }: {
   char: NumberPadCharacter;
   longPressTimer?: SharedValue<number>;
-  onPressWorklet: (number?: number) => void;
+  /** Handles a key on the UI runtime. Return true if accepted; false suppresses the selection haptic. */
+  onPressWorklet: (key: NumberPadCharacter) => boolean;
   small?: boolean;
   transparent?: boolean;
   fields: SharedValue<Record<K, NumberPadField>>;
@@ -84,12 +86,9 @@ export const NumberPadKey = <K extends string>({
         const fieldId = activeFieldId.value;
         const field = fields.value[fieldId];
 
-        if (field && field.value !== 0 && field.value !== '0') {
+        if (field && field.value !== 0 && field.value !== '0' && onPressWorklet(char)) {
           triggerHaptics('selection');
-          onPressWorklet();
         }
-      } else if (longPressTimer !== undefined) {
-        longPressTimer.value === 0;
       }
     },
     []
@@ -99,7 +98,7 @@ export const NumberPadKey = <K extends string>({
     const fill = isDarkMode ? separatorSecondary : 'rgba(255, 255, 255, 0.72)';
     const pressedFill = isDarkMode ? separator : 'rgba(255, 255, 255, 1)';
 
-    const backgroundColor = transparent ? 'transparent' : fill;
+    const backgroundColor = transparent ? opacity(fill, 0) : fill;
     const pressedColor = transparent ? fill : pressedFill;
 
     return {
@@ -117,6 +116,7 @@ export const NumberPadKey = <K extends string>({
   return (
     <HitSlop space="3px">
       <GestureHandlerButton
+        disableHaptics
         disableScale
         longPressDuration={0}
         onLongPressEndWorklet={() => {
@@ -129,11 +129,7 @@ export const NumberPadKey = <K extends string>({
         onLongPressWorklet={() => {
           'worklet';
           pressProgress.value = 1;
-          if (typeof char === 'number') {
-            onPressWorklet(char);
-          } else {
-            onPressWorklet();
-          }
+          if (onPressWorklet(char)) triggerHaptics('selection');
 
           if (longPressTimer !== undefined && char === 'backspace') {
             longPressTimer.value = 0;
