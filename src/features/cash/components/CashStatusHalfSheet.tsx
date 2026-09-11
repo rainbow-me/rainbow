@@ -28,6 +28,7 @@ type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
     | { status: 'reviewing'; action: HalfSheetAction }
+    | { status: 'info'; action: HalfSheetAction }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -36,6 +37,7 @@ type CashStatusPanelContent = CommonProps &
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  info: '􀆪',
   reviewing: '􀐫',
   warning: '􀇾',
 } as const;
@@ -43,6 +45,7 @@ const STATUS_ICONS = {
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
+  info: 'labelQuaternary',
   reviewing: 'blue',
   success: 'green',
   warning: 'red',
@@ -82,7 +85,7 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
 
-          {props.status === 'reviewing' && (
+          {(props.status === 'reviewing' || props.status === 'info') && (
             <Box paddingTop="32px">
               <CashActionButton {...props.action} variant="tinted" />
             </Box>

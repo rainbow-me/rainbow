@@ -1,18 +1,31 @@
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from './cashSetupIdentityService';
-import { createUserWithPhone, finishRecovery, finishSignupResume, startRecovery, startSignupResume, verifyPhone } from './userClient';
+import {
+  createUserWithPhone,
+  finishRecovery,
+  finishSignupResume,
+  getUserStatus,
+  KycRejectionReason,
+  KycStatus,
+  startRecovery,
+  startSignupResume,
+  submitOnboarding,
+  verifyPhone,
+} from './userClient';
 
 jest.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
 
 const mockPost = jest.fn();
+const mockGet = jest.fn();
 
 jest.mock('./cashPlatformClient', () => ({
-  getCashPlatformClient: () => ({ post: mockPost }),
+  getCashPlatformClient: () => ({ post: mockPost, get: mockGet }),
   buildAuthenticatedHeader: (token: string) => ({ Authorization: `Bearer ${token}` }),
 }));
 
 const post = mockPost;
+const get = mockGet;
 
 const PARAMS = { userId: 'user-1', code: '123456' };
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1815, month: 12, day: 10 } };
@@ -25,6 +38,7 @@ function governmentId() {
 
 beforeEach(() => {
   post.mockReset();
+  get.mockReset();
 });
 
 afterEach(() => {
@@ -199,4 +213,60 @@ describe('account recovery', () => {
 
     await expect(finishRecovery(finishParams)).rejects.toBe(error);
   });
+});
+
+describe('submitOnboarding', () => {
+  const submit = () =>
+    submitOnboarding({ bootstrapToken: 'bst_test', countryCode: 'US', identity: IDENTITY, governmentId: governmentId() });
+
+  it('omits the rejection reason when the provider approves', async () => {
+    post.mockResolvedValue({ data: { kycStatus: KycStatus.Approved } });
+
+    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Approved, kycRejectionReason: undefined });
+  });
+
+  it('surfaces a state-not-supported rejection', async () => {
+    post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected, kycRejectionReason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED' } });
+
+    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
+  });
+
+  it.each([undefined, 'KYC_REJECTION_REASON_UNSPECIFIED', 'some-future-reason'])(
+    'normalizes a plain rejection whose reason is %p to undefined',
+    async kycRejectionReason => {
+      post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected, kycRejectionReason } });
+
+      await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+    }
+  );
+});
+
+describe('getUserStatus', () => {
+  const params = { bootstrapToken: 'bst_test' };
+
+  it('omits the rejection reason when the provider approves', async () => {
+    get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Approved } } } });
+
+    await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Approved, kycRejectionReason: undefined });
+  });
+
+  it('surfaces a state-not-supported rejection', async () => {
+    get.mockResolvedValue({
+      data: { status: { kyc: { status: KycStatus.Rejected, reason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED' } } },
+    });
+
+    await expect(getUserStatus(params)).resolves.toEqual({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: KycRejectionReason.StateNotSupported,
+    });
+  });
+
+  it.each([undefined, 'KYC_REJECTION_REASON_UNSPECIFIED', 'some-future-reason'])(
+    'normalizes a plain rejection whose reason is %p to undefined',
+    async reason => {
+      get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Rejected, reason } } } });
+
+      await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+    }
+  );
 });

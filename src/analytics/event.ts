@@ -585,7 +585,7 @@ export type EventProperties = {
     source: 'submit' | 'resume';
   };
   [event.cashKycFailed]: {
-    reason: TelemetryErrorReason | 'rejected';
+    reason: TelemetryErrorReason | 'rejected' | 'state_not_supported';
   };
   [event.cashPasskeySubmitted]: undefined;
   [event.cashPasskeyAdded]: undefined;

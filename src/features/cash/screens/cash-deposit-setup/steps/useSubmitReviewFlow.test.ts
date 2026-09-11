@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
-import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
+import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding, type KycStatusResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
@@ -41,6 +41,10 @@ jest.mock('../../../services/userClient', () => ({
     Approved: 'KYC_STATUS_APPROVED',
     Rejected: 'KYC_STATUS_REJECTED',
     Review: 'KYC_STATUS_REVIEW',
+  },
+  KycRejectionReason: {
+    Unspecified: 'KYC_REJECTION_REASON_UNSPECIFIED',
+    StateNotSupported: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
   },
   getUserStatus: jest.fn(),
   submitOnboarding: jest.fn(),
@@ -172,6 +176,16 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(flow().state).toBe('rejected');
   });
 
+  it('reports unsupportedState when rejected for an unsupported state', async () => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
+
+    await expect(flow().submit()).resolves.toBe('unsupportedState');
+
+    expect(mockGetUserStatus).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'state_not_supported' });
+    expect(flow().state).toBe('unsupportedState');
+  });
+
   it.each([KycStatus.Unspecified, KycStatus.Review])('keeps polling on %s instead of failing', async kycStatus => {
     mockSubmitOnboarding.mockResolvedValue({ kycStatus });
     mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
@@ -195,7 +209,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
-    const poll = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const poll = Promise.withResolvers<KycStatusResult>();
     const pollStarted = Promise.withResolvers<void>();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockImplementationOnce(() => {
@@ -226,7 +240,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('skips a second submit while one is in flight', async () => {
-    const submit = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const submit = Promise.withResolvers<KycStatusResult>();
     mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();

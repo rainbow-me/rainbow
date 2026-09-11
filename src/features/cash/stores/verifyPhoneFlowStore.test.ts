@@ -5,6 +5,7 @@ import { delay } from '@/utils/delay';
 import {
   finishSignupResume,
   getUserStatus,
+  KycRejectionReason,
   KycStatus,
   resendPhoneCode,
   startRecovery,
@@ -45,6 +46,10 @@ jest.mock('../services/userClient', () => ({
     Approved: 'KYC_STATUS_APPROVED',
     Rejected: 'KYC_STATUS_REJECTED',
     Review: 'KYC_STATUS_REVIEW',
+  },
+  KycRejectionReason: {
+    Unspecified: 'KYC_REJECTION_REASON_UNSPECIFIED',
+    StateNotSupported: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
   },
   finishSignupResume: jest.fn(),
   getUserStatus: jest.fn(),
@@ -126,13 +131,14 @@ describe('useVerifyPhoneFlowStore.submit', () => {
   });
 
   it.each([
-    { kycStatus: KycStatus.Approved, expected: 'approved' },
-    { kycStatus: KycStatus.Pending, expected: 'reviewing' },
-    { kycStatus: KycStatus.Review, expected: 'reviewing' },
-    { kycStatus: KycStatus.Rejected, expected: 'rejected' },
-  ])('surfaces $expected for a resumed account whose KYC is $kycStatus', async ({ kycStatus, expected }) => {
+    { kycStatus: KycStatus.Approved, kycRejectionReason: undefined, expected: 'approved' },
+    { kycStatus: KycStatus.Pending, kycRejectionReason: undefined, expected: 'reviewing' },
+    { kycStatus: KycStatus.Review, kycRejectionReason: undefined, expected: 'reviewing' },
+    { kycStatus: KycStatus.Rejected, kycRejectionReason: undefined, expected: 'rejected' },
+    { kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported, expected: 'unsupportedState' },
+  ])('surfaces $expected for a resumed account whose KYC is $kycStatus', async ({ kycStatus, kycRejectionReason, expected }) => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
-    mockGetUserStatus.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
     flow().setCode(CODE);
 
     await expect(flow().submit()).resolves.toBe('verifiedKycOutcome');
@@ -145,12 +151,28 @@ describe('useVerifyPhoneFlowStore.submit', () => {
   });
 
   it.each([
-    { kycStatus: KycStatus.Approved, event: 'cash.kyc_approved', payload: undefined },
-    { kycStatus: KycStatus.Pending, event: 'cash.kyc_awaiting_decision', payload: { source: 'resume' } },
-    { kycStatus: KycStatus.Rejected, event: 'cash.kyc_failed', payload: { reason: 'rejected' } },
-  ])('tracks $event when a resumed account reports $kycStatus', async ({ event, kycStatus, payload }) => {
+    { kycStatus: KycStatus.Approved, kycRejectionReason: undefined, event: 'cash.kyc_approved', payload: undefined },
+    {
+      kycStatus: KycStatus.Pending,
+      kycRejectionReason: undefined,
+      event: 'cash.kyc_awaiting_decision',
+      payload: { source: 'resume' },
+    },
+    {
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: undefined,
+      event: 'cash.kyc_failed',
+      payload: { reason: 'rejected' },
+    },
+    {
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      event: 'cash.kyc_failed',
+      payload: { reason: 'state_not_supported' },
+    },
+  ])('tracks $event when a resumed account reports $kycStatus', async ({ event, kycStatus, kycRejectionReason, payload }) => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
-    mockGetUserStatus.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
     flow().setCode(CODE);
 
     await flow().submit();

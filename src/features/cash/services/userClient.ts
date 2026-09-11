@@ -83,8 +83,26 @@ export enum KycStatus {
   Review = 'KYC_STATUS_REVIEW',
 }
 
+// Set only when kycStatus is Rejected. The provider gives no reason for a
+// plain reject, so today this only ever flags an unsupported state.
+export enum KycRejectionReason {
+  Unspecified = 'KYC_REJECTION_REASON_UNSPECIFIED',
+  StateNotSupported = 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
+}
+
+export type KycStatusResult = {
+  kycStatus: KycStatus;
+  kycRejectionReason?: KycRejectionReason;
+};
+
+// The wire field is only ever sent when kycStatus is Rejected; anything else
+// (absent, or a reason we don't recognize) has no bearing on today's outcomes.
+function parseKycRejectionReason(reason: unknown): KycRejectionReason | undefined {
+  return reason === KycRejectionReason.StateNotSupported ? KycRejectionReason.StateNotSupported : undefined;
+}
+
 // Pending and Review are one state to the app: the provider has not decided yet.
-export type KycOutcome = 'reviewing' | 'approved' | 'rejected';
+export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
 
 export type CreateUserWithPhoneResult =
   | { outcome: 'created'; userId: string; resendAfter: number }
@@ -116,6 +134,7 @@ type SubmitOnboardingRequest = {
 
 type SubmitOnboardingResponse = {
   kycStatus: KycStatus;
+  kycRejectionReason: unknown;
 };
 
 type GetUserStatusParams = {
@@ -171,6 +190,7 @@ type GetUserStatusResponse = {
   status: {
     kyc: {
       status: KycStatus;
+      reason: unknown;
     };
   };
 };
@@ -235,7 +255,7 @@ export async function submitOnboarding({
   countryCode,
   identity,
   governmentId,
-}: SubmitOnboardingParams): Promise<SubmitOnboardingResponse> {
+}: SubmitOnboardingParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: KycStatus.Approved };
@@ -250,7 +270,7 @@ export async function submitOnboarding({
   const { data } = await getCashPlatformClient().post<SubmitOnboardingResponse>('/onboarding/SubmitOnboarding', request, {
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
-  return data;
+  return { kycStatus: data.kycStatus, kycRejectionReason: parseKycRejectionReason(data.kycRejectionReason) };
 }
 
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
@@ -328,7 +348,7 @@ export async function finalizeAuth({
   return parseAccessCredential(data);
 }
 
-export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
+export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
@@ -337,7 +357,7 @@ export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Pr
   const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
-  return { kycStatus: data.status.kyc.status };
+  return { kycStatus: data.status.kyc.status, kycRejectionReason: parseKycRejectionReason(data.status.kyc.reason) };
 }
 
 export async function startSignupResume({
