@@ -1022,6 +1022,8 @@ const AnimatedNumberWrapper = memo(function AnimatedNumberWrapper({
 
 function getHeightForTextSize(size: StandardTextSize): number {
   switch (size) {
+    case '76pt':
+      return 54;
     case '64pt':
       return 45;
     case '54pt':

@@ -6,7 +6,7 @@ import { createStoreActions } from '@storesjs/stores';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
 import { VisaBadge } from '@/features/cash/components/VisaBadge';
 import { useCardRemovalFlowStore } from '@/features/cash/stores/cardRemovalFlowStore';
@@ -51,9 +51,9 @@ function CardRow({ card, onRemove }: { card: LinkedCard; onRemove: (card: Linked
         onPressMenuItem={handlePressMenuItem}
         testID={`cash-payment-methods-card-menu-${card.id}`}
       >
-        <Text color="blue" size="17pt" weight="heavy">
+        <TextIcon color="blue" containerSize={36} size="icon 17px" weight="heavy">
           {'􀍠'}
-        </Text>
+        </TextIcon>
       </DropdownMenu>
     </Box>
   );
@@ -101,6 +101,7 @@ export const PaymentMethodsSheet = memo(function PaymentMethodsSheet() {
           {linkedCard && <CardRow card={linkedCard} onRemove={setCardPendingRemoval} />}
         </Box>
       </PanelSheet>
+
       {cardPendingRemoval && (
         <CashStatusHalfSheet
           description={i18n.t(l.remove_description, { card: cardPendingRemoval.brand })}
@@ -123,6 +124,7 @@ export const PaymentMethodsSheet = memo(function PaymentMethodsSheet() {
           title={i18n.t(l.remove_title)}
         />
       )}
+
       <AbsolutePortalRoot style={styles.portal} />
     </>
   );
