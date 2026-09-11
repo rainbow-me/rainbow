@@ -28,7 +28,7 @@ export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | '
 // Null means the wizard proceeds to the KYC steps: either nothing was ever
 // submitted, or the status could not be read and a redundant pass is the safe
 // guess — showing "we're reviewing" to someone who never submitted strands them.
-function toKycOutcome(status: KycStatus, reason: KycRejectionReason): KycOutcome | null {
+function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
   switch (status) {
     case KycStatus.Approved:
       return 'approved';

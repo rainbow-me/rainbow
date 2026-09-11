@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
-import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
+import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding, type KycStatusResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
@@ -85,8 +85,8 @@ beforeEach(() => {
   session().setLastName(IDENTITY.lastName);
   session().setDateOfBirth(IDENTITY.dateOfBirth);
   session().setSsnLast4(GOVERNMENT_ID.value);
-  mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
-  mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+  mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Approved });
+  mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
 });
 
 afterEach(() => {
@@ -116,10 +116,8 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('polls while pending, then approves', async () => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
-    mockGetUserStatus
-      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified })
-      .mockResolvedValueOnce({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    mockGetUserStatus.mockResolvedValueOnce({ kycStatus: KycStatus.Pending }).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
 
     await expect(flow().submit()).resolves.toBe('approved');
 
@@ -130,17 +128,17 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
   it('switches to reviewing once the delay elapses, and keeps polling until the verdict lands', async () => {
     const clock = fakeClock();
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     const statesWhilePolling: SubmitReviewState[] = [];
     mockGetUserStatus
       .mockImplementationOnce(() => {
         statesWhilePolling.push(flow().state);
         clock.advance(REVIEW_DELAY_MS);
-        return Promise.resolve({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
+        return Promise.resolve({ kycStatus: KycStatus.Pending });
       })
       .mockImplementationOnce(() => {
         statesWhilePolling.push(flow().state);
-        return Promise.resolve({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+        return Promise.resolve({ kycStatus: KycStatus.Approved });
       });
 
     await expect(flow().submit()).resolves.toBe('approved');
@@ -153,15 +151,15 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
   it('tracks the awaiting-decision event only once however long the wait runs', async () => {
     const clock = fakeClock();
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockDelay.mockImplementationOnce(() => {
       clock.advance(REVIEW_DELAY_MS);
       return Promise.resolve();
     });
     mockGetUserStatus
-      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified })
-      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified })
-      .mockResolvedValueOnce({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending })
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Pending })
+      .mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
 
     await flow().submit();
 
@@ -169,7 +167,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('reports a rejection without offering a retry', async () => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected });
 
     await expect(flow().submit()).resolves.toBe('rejected');
 
@@ -189,8 +187,8 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it.each([KycStatus.Unspecified, KycStatus.Review])('keeps polling on %s instead of failing', async kycStatus => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus, kycRejectionReason: KycRejectionReason.Unspecified });
-    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
 
     await expect(flow().submit()).resolves.toBe('approved');
 
@@ -199,7 +197,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('falls back to reviewing when a status poll fails, never to the retryable error', async () => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockRejectedValue(new Error('token expired'));
 
     await expect(flow().submit()).resolves.toBe('awaitingDecision');
@@ -211,9 +209,9 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
-    const poll = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason: KycRejectionReason }>();
+    const poll = Promise.withResolvers<KycStatusResult>();
     const pollStarted = Promise.withResolvers<void>();
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending, kycRejectionReason: KycRejectionReason.Unspecified });
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockImplementationOnce(() => {
       pollStarted.resolve();
       return poll.promise;
@@ -222,7 +220,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     const submission = flow().submit();
     await pollStarted.promise;
     flow().reset();
-    poll.resolve({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+    poll.resolve({ kycStatus: KycStatus.Approved });
 
     await expect(submission).resolves.toBe('cancelled');
 
@@ -242,14 +240,14 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('skips a second submit while one is in flight', async () => {
-    const submit = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason: KycRejectionReason }>();
+    const submit = Promise.withResolvers<KycStatusResult>();
     mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();
     await expect(flow().submit()).resolves.toBe('skipped');
 
     expect(mockSubmitOnboarding).toHaveBeenCalledTimes(1);
-    submit.resolve({ kycStatus: KycStatus.Approved, kycRejectionReason: KycRejectionReason.Unspecified });
+    submit.resolve({ kycStatus: KycStatus.Approved });
     await expect(first).resolves.toBe('approved');
   });
 

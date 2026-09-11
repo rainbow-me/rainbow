@@ -149,7 +149,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
     };
 
     let kycStatus: KycStatus;
-    let kycRejectionReason: KycRejectionReason;
+    let kycRejectionReason: KycRejectionReason | undefined;
     try {
       ({ kycStatus, kycRejectionReason } = await submitOnboarding({
         bootstrapToken,
