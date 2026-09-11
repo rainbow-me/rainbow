@@ -6,20 +6,19 @@ import {
   TileMode,
   type SkPaint,
   type SkPath,
-  type SkPicture,
   type SkPictureRecorder,
   type SkShader,
 } from '@shopify/react-native-skia';
-import { convertToRGBA, type SharedValue } from 'react-native-reanimated';
+import { convertToRGBA } from 'react-native-reanimated';
 
 import { type CompactLineChartData } from '@/features/charts/line/compact/types';
 import { buildSmoothedPath, LineSmoothing } from '@/features/charts/line/LineSmoothingAlgorithms';
+import { setSkiaPicture, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
 
 // ============ Types ========================================================== //
 
 type CompactLineChartRendererConfig = {
-  blankPicture: SkPicture;
-  chartPicture: SharedValue<SkPicture>;
+  output: SkiaPictureOutput;
   /** Desired line width from the leftmost point to the rightmost. */
   contentWidth: number;
   height: number;
@@ -134,8 +133,7 @@ export function getCompactLineChartEndPoint(
 export class CompactLineChartRenderer {
   private readonly __workletClass = true;
 
-  private readonly blankPicture: SkPicture;
-  private readonly chartPicture: SharedValue<SkPicture>;
+  private readonly output: SkiaPictureOutput;
   private readonly contentWidth: number;
   private readonly fillPaint: SkPaint;
   private readonly fillPath: SkPath;
@@ -148,9 +146,8 @@ export class CompactLineChartRenderer {
   private currentColor: string | null = null;
   private currentShader: SkShader | null = null;
 
-  constructor({ blankPicture, chartPicture, contentWidth, height }: CompactLineChartRendererConfig) {
-    this.blankPicture = blankPicture;
-    this.chartPicture = chartPicture;
+  constructor({ output, contentWidth, height }: CompactLineChartRendererConfig) {
+    this.output = output;
     this.contentWidth = contentWidth;
     this.height = height;
     this.pictureRecorder = Skia.PictureRecorder();
@@ -176,7 +173,7 @@ export class CompactLineChartRenderer {
   public setData(data: CompactLineChartData | undefined, lineColor: string): void {
     const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
     if (!data || pointCount < 2) {
-      this.setBlankPicture();
+      this.clearPicture();
       return;
     }
 
@@ -192,8 +189,7 @@ export class CompactLineChartRenderer {
     if (lineColor === this.currentColor) return;
     this.setColor(lineColor);
 
-    // No built geometry to re-record (blank/first render) — the new color is retained for the next setData.
-    if (this.chartPicture.value === this.blankPicture) return;
+    if (!this.output.picture) return;
     this.buildPicture();
   }
 
@@ -207,10 +203,7 @@ export class CompactLineChartRenderer {
     this.fillPaint.dispose();
     this.pictureRecorder.dispose();
 
-    const currentPicture = this.chartPicture.value;
-    if (currentPicture !== this.blankPicture) {
-      currentPicture.dispose();
-    }
+    this.output.picture?.dispose();
   }
 
   private setColor(color: string): void {
@@ -252,19 +245,16 @@ export class CompactLineChartRenderer {
     canvas.drawPath(this.fillPath, this.fillPaint);
     canvas.drawPath(this.strokePath, this.strokePaint);
 
-    const oldPicture = this.chartPicture.value;
-    this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
+    const oldPicture = this.output.picture;
+    setSkiaPicture(this.output, this.pictureRecorder.finishRecordingAsPicture());
+    oldPicture?.dispose();
   }
 
-  private setBlankPicture(): void {
-    const oldPicture = this.chartPicture.value;
-    this.chartPicture.value = this.blankPicture;
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
+  private clearPicture(): void {
+    const oldPicture = this.output.picture;
+    if (!oldPicture) return;
+    setSkiaPicture(this.output, undefined);
+    oldPicture.dispose();
   }
 
   private buildSmoothedPaths(data: CompactLineChartData, count: number): void {
@@ -289,7 +279,7 @@ export class CompactLineChartRenderer {
     buildSmoothedPath(this.strokePath, points, count, LineSmoothing.Makima, 1);
 
     this.fillPath.reset();
-    buildSmoothedPath(this.fillPath, points, count, LineSmoothing.Makima, 1);
+    this.fillPath.addPath(this.strokePath);
     this.fillPath.lineTo(points[(count - 1) * 2], this.height);
     this.fillPath.lineTo(points[0], this.height);
     this.fillPath.close();
