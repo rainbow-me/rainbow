@@ -1,5 +1,10 @@
+# PATCH CONTEXT
+# Use Display P3 on supported Apple displays by default.
+# Synchronize iOS drawRect presentation with Core Animation to address
+# frozen frames after navigation. Keep animation-driven frames asynchronous.
+
 diff --git a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
-index 9da1458..7ee5ed9 100644
+index 9da1458..d5acef6 100644
 --- a/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
 +++ b/node_modules/@shopify/react-native-skia/apple/MetalWindowContext.mm
 @@ -25,22 +25,20 @@
@@ -35,3 +40,33 @@ index 9da1458..7ee5ed9 100644
    if (supportsWideColor) {
      CGColorSpaceRef colorSpace =
          CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+@@ -84,4 +82,10 @@
+   id<MTLCommandBuffer> commandBuffer([_commandQueue commandBuffer]);
+-  [commandBuffer presentDrawable:_currentDrawable];
+-  [commandBuffer commit];
++  if (_layer.presentsWithTransaction) {
++    [commandBuffer commit];
++    [commandBuffer waitUntilScheduled];
++    [_currentDrawable present];
++  } else {
++    [commandBuffer presentDrawable:_currentDrawable];
++    [commandBuffer commit];
++  }
+   _skSurface = nullptr;
+diff --git a/node_modules/@shopify/react-native-skia/apple/SkiaUIView.mm b/node_modules/@shopify/react-native-skia/apple/SkiaUIView.mm
+index 9bd64bd..37ff162 100644
+--- a/node_modules/@shopify/react-native-skia/apple/SkiaUIView.mm
++++ b/node_modules/@shopify/react-native-skia/apple/SkiaUIView.mm
+@@ -132,5 +132,12 @@
+   // underlying OS view needs to render:
+   if (_impl != nullptr) {
++#if !TARGET_OS_OSX && !defined(SK_GRAPHITE)
++    CAMetalLayer *layer = (CAMetalLayer *)_impl->getLayer();
++    layer.presentsWithTransaction = YES;
++#endif
+     _impl->getDrawView()->redraw();
++#if !TARGET_OS_OSX && !defined(SK_GRAPHITE)
++    layer.presentsWithTransaction = NO;
++#endif
+   }
+ }
