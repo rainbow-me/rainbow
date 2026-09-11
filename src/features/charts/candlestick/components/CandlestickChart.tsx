@@ -363,7 +363,7 @@ class CandlestickChartManager {
   private chartMaxY: SharedValue<number>;
   private chartMinY: SharedValue<number>;
   private chartPicture: SharedValue<SkPicture>;
-  private chartScale: SharedValue<number>;
+  private chartScale: SharedValue<number> | undefined;
   private crosshairPicture: SharedValue<SkPicture>;
   private indicatorPicture: SharedValue<SkPicture>;
   private isChartGestureActive: SharedValue<boolean>;
@@ -1350,6 +1350,9 @@ class CandlestickChartManager {
     this.buildParagraph = buildParagraph;
     this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
     this.buildBaseCandlesPicture();
+    if (this.isChartGestureActive.value) {
+      this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
+    }
   }
 
   public setCandles(
@@ -1397,9 +1400,8 @@ class CandlestickChartManager {
       this.rebuildChart(shouldAnimate, true);
     }
 
-    if (!shouldRegisterOffsetAdjustment && this.isChartGestureActive.value) {
+    if (!shouldRegisterOffsetAdjustment && this.isChartGestureActive.value)
       this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
-    }
   }
 
   public snapToCurrentCandle(): void {
@@ -1474,13 +1476,18 @@ class CandlestickChartManager {
   }
 
   public dispose(): void {
+    this.animator.dispose();
+    if (this.chartScale) this.chartScale.value = 1;
+    this.chartScale = undefined;
+    this.isDecelerating.value = false;
+    this.isChartGestureActive.value = false;
+    this.activeCandle.value = undefined;
     this.candles = [];
     this.crosshairPicture.value.dispose();
     this.chartPicture.value.dispose();
     this.indicatorPicture.value.dispose();
     this.pictureRecorder.dispose();
 
-    this.animator.dispose();
     this.indicatorBuilder.dispose();
     this.perpsIndicatorBuilder?.dispose();
 
@@ -1534,10 +1541,12 @@ class CandlestickChartManager {
 
     if (this.config.animation.enableCrosshairPulse) {
       requestAnimationFrame(() => {
-        this.chartScale.value = withTiming(0.9925, TIMING_CONFIGS.buttonPressConfig, isFinished => {
+        const chartScale = this.chartScale;
+        if (!chartScale) return;
+        chartScale.value = withTiming(0.9925, TIMING_CONFIGS.buttonPressConfig, isFinished => {
           if (!isFinished) return;
           triggerHaptics('soft');
-          this.chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+          chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
         });
       });
     }
