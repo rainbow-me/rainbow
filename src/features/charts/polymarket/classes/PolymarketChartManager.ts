@@ -5,13 +5,12 @@ import {
   PaintStyle,
   Skia,
   StrokeCap,
-  StrokeJoin,
   TileMode,
   type SkCanvas,
   type SkColor,
   type SkPaint,
   type SkParagraph,
-  type SkPicture,
+  type SkShader,
 } from '@shopify/react-native-skia';
 import { State as GestureState } from 'react-native-gesture-handler';
 import { type SharedValue } from 'react-native-reanimated';
@@ -20,10 +19,10 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type TextSegment } from '@/design-system/components/SkiaText/useSkiaText';
 import { type InteractionConfig, type LineEffectsConfig } from '@/features/charts/line/LineSeries';
+import { setSkiaPicture, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
 import { type ResponseByTheme } from '@/theme/types';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { normalizeSpringConfig } from '@/worklets/animations';
-import { createBlankPicture } from '@/worklets/skia';
 
 import { Animator } from '../../candlestick/classes/Animator';
 import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
@@ -120,14 +119,16 @@ export class PolymarketChartManager {
   private readonly availableWidth: number;
   private readonly config: PolymarketChartConfig;
 
-  private backgroundColor: SkColor;
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
   private isDarkMode: boolean;
   private readonly smoothingMode: LineSmoothing | undefined;
   private series: OutcomeSeries[] = [];
   private timeDomain: { endTs: number; startTs: number } | null = null;
   private readonly fallbackTimeDomain = { endTs: 1, startTs: 0 };
-  private yAxisWidth = 0;
+  private readonly yAxisWidth: number;
+
+  private chartMinY = 0;
+  private chartMaxY = 1;
 
   private hasPlayedEntranceAnimation = false;
   private isAnimating = false;
@@ -145,15 +146,11 @@ export class PolymarketChartManager {
   private readonly interactionProgress: SharedValue<number>;
 
   private readonly animationProgress: SharedValue<number>;
-  private readonly chartMaxY: SharedValue<number>;
-  private readonly chartMinY: SharedValue<number>;
-  private readonly chartPicture: SharedValue<SkPicture>;
-  private readonly crosshairPicture: SharedValue<SkPicture>;
   private readonly isChartGestureActive: SharedValue<boolean>;
 
   private readonly animator: Animator;
-  private readonly blankPicture: SkPicture;
   private readonly lineSeriesBuilder: LineSeriesBuilder;
+  private readonly output: SkiaPictureOutput;
   private readonly pictureRecorder = Skia.PictureRecorder();
   private readonly timeFormatter = new TimeFormatter();
 
@@ -162,23 +159,17 @@ export class PolymarketChartManager {
     crosshairLine: SkColor;
     labelQuinary: SkColor;
     labelQuinaryString: string;
-    labelSecondary: SkColor;
     white: SkColor;
   };
 
   private readonly paints: {
-    bottomShadow: SkPaint;
-    bubbleFill: SkPaint;
-    bubbleStroke: SkPaint;
     crosshairLine: SkPaint;
     endCircle: SkPaint | null;
     endCircleShadow: SkPaint | null;
     grid: SkPaint;
     greyCircle: SkPaint;
-    greyLine: SkPaint;
     lineShadow: SkPaint | null;
     text: SkPaint;
-    topShadow: SkPaint;
   };
 
   private lineEffectsConfig: LineEffectsConfig | undefined;
@@ -189,51 +180,39 @@ export class PolymarketChartManager {
     animationProgress,
     buildParagraph,
     chartHeight,
-    chartMaxY,
-    chartMinY,
-    chartPicture,
     chartWidth,
     config,
-    crosshairPicture,
     interactionProgress,
     isChartGestureActive,
     isDarkMode,
+    output,
     smoothingMode,
   }: {
     activeInteraction: SharedValue<ActiveInteractionData | undefined> | undefined;
     animationProgress: SharedValue<number>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
     chartHeight: number;
-    chartMaxY: SharedValue<number>;
-    chartMinY: SharedValue<number>;
-    chartPicture: SharedValue<SkPicture>;
     chartWidth: number;
     config: PolymarketChartConfig;
-    crosshairPicture: SharedValue<SkPicture>;
     interactionProgress: SharedValue<number>;
     isChartGestureActive: SharedValue<boolean>;
     isDarkMode: boolean;
+    output: SkiaPictureOutput;
     smoothingMode?: LineSmoothing;
   }) {
     if (activeInteraction) this.activeInteraction = activeInteraction;
     this.animationProgress = animationProgress;
-    this.backgroundColor = Skia.Color(config.chart.backgroundColor);
     this.buildParagraph = buildParagraph;
     this.chartHeight = chartHeight;
-    this.chartMaxY = chartMaxY;
-    this.chartMinY = chartMinY;
-    this.chartPicture = chartPicture;
     this.chartWidth = chartWidth;
     this.config = config;
-    this.crosshairPicture = crosshairPicture;
     this.interactionProgress = interactionProgress;
     this.isChartGestureActive = isChartGestureActive;
     this.isDarkMode = isDarkMode;
+    this.output = output;
     this.smoothingMode = smoothingMode;
 
     this.animator = new Animator(() => this.rebuildChart());
-    const fullHeight = chartHeight + config.chart.xAxisHeight + config.chart.xAxisGap * 2;
-    this.blankPicture = createBlankPicture(chartWidth, fullHeight);
     this.lineSeriesBuilder = new LineSeriesBuilder(config.line.strokeWidth);
 
     this.yAxisWidth = this.calculateYAxisWidth(6);
@@ -242,30 +221,23 @@ export class PolymarketChartManager {
     const colorMode = isDarkMode ? 'dark' : 'light';
     const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
     const labelQuinary = Skia.Color(labelQuinaryString);
-    const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
 
     this.colors = {
       black: Skia.Color('#000000'),
       crosshairLine: isDarkMode ? Skia.Color(config.crosshair.lineColor) : labelQuinary,
       labelQuinary,
       labelQuinaryString,
-      labelSecondary,
       white: Skia.Color('#FFFFFF'),
     };
 
     this.paints = {
-      bottomShadow: this.createBottomShadowPaint(),
-      bubbleFill: this.createBubbleFillPaint(),
-      bubbleStroke: this.createBubbleStrokePaint(),
       crosshairLine: this.createCrosshairLinePaint(),
       endCircle: null,
       endCircleShadow: null,
       grid: this.createGridPaint(),
       greyCircle: this.createGreyCirclePaint(),
-      greyLine: this.createGreyLinePaint(),
       lineShadow: null,
       text: this.createTextPaint(),
-      topShadow: this.createTopShadowPaint(),
     };
 
     this.initializeLineEffects();
@@ -337,33 +309,6 @@ export class PolymarketChartManager {
     this.lineEffectsConfig = config;
   }
 
-  private createBubbleFillPaint(): SkPaint {
-    const paint = Skia.Paint();
-    paint.setAntiAlias(true);
-    paint.setBlendMode(BlendMode.Src);
-    return paint;
-  }
-
-  private createBubbleStrokePaint(): SkPaint {
-    const paint = Skia.Paint();
-    paint.setAntiAlias(true);
-    paint.setStyle(PaintStyle.Stroke);
-    paint.setStrokeWidth(this.config.tooltip.strokeWidth);
-    return paint;
-  }
-
-  private createGreyLinePaint(): SkPaint {
-    const paint = Skia.Paint();
-    paint.setAntiAlias(true);
-    paint.setBlendMode(BlendMode.Src);
-    paint.setColor(this.colors.labelQuinary);
-    paint.setStrokeCap(StrokeCap.Round);
-    paint.setStrokeJoin(StrokeJoin.Round);
-    paint.setStrokeWidth(this.config.line.strokeWidth);
-    paint.setStyle(PaintStyle.Stroke);
-    return paint;
-  }
-
   private createGreyCirclePaint(): SkPaint {
     const paint = Skia.Paint();
     paint.setAntiAlias(true);
@@ -388,23 +333,19 @@ export class PolymarketChartManager {
     paint.setColor(Skia.Color(this.config.grid.color));
     paint.setStrokeCap(StrokeCap.Round);
     paint.setStrokeWidth(this.config.grid.strokeWidth);
+    paint.setShader(this.createGridShader());
     return paint;
   }
 
-  private createBottomShadowPaint(): SkPaint {
-    const paint = Skia.Paint();
-    paint.setColor(this.backgroundColor);
-    paint.setAlphaf(0.48);
-    paint.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
-    return paint;
-  }
+  private createGridShader(): SkShader {
+    const lineEndX = this.chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft - 8;
+    const endAlpha = this.isDarkMode ? 0.05 : 0.0435;
+    const startAlpha = this.isDarkMode ? 0.02 : 0.0175;
+    const gridColor = this.isDarkMode ? this.colors.white : this.colors.labelQuinary;
+    const startColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], startAlpha]);
+    const endColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], endAlpha]);
 
-  private createTopShadowPaint(): SkPaint {
-    const paint = Skia.Paint();
-    paint.setColor(this.backgroundColor);
-    paint.setAlphaf(0.48);
-    paint.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
-    return paint;
+    return Skia.Shader.MakeLinearGradient({ x: 0, y: 0 }, { x: lineEndX, y: 0 }, [startColor, endColor], null, TileMode.Clamp);
   }
 
   private createTextPaint(): SkPaint {
@@ -601,8 +542,8 @@ export class PolymarketChartManager {
           this.isAnimating = false;
           this.previousBounds = null;
           this.targetBounds = null;
-          this.chartMinY.value = newBounds.min;
-          this.chartMaxY.value = newBounds.max;
+          this.chartMinY = newBounds.min;
+          this.chartMaxY = newBounds.max;
           this.rebuildChart();
         }
       );
@@ -611,8 +552,8 @@ export class PolymarketChartManager {
       this.isAnimating = false;
       this.previousBounds = null;
       this.targetBounds = null;
-      this.chartMinY.value = newBounds.min;
-      this.chartMaxY.value = newBounds.max;
+      this.chartMinY = newBounds.min;
+      this.chartMaxY = newBounds.max;
 
       const { entranceAnimation, entranceAnimationConfig, springConfig } = this.config.animation;
       const shouldPlayEntranceAnimation =
@@ -656,22 +597,20 @@ export class PolymarketChartManager {
       minPrice = this.previousBounds.min + (this.targetBounds.min - this.previousBounds.min) * progress;
       maxPrice = this.previousBounds.max + (this.targetBounds.max - this.previousBounds.max) * progress;
     } else {
-      minPrice = this.chartMinY.value;
-      maxPrice = this.chartMaxY.value;
+      minPrice = this.chartMinY;
+      maxPrice = this.chartMaxY;
     }
-
-    const bounds = this.getPriceBounds();
 
     return {
       availableWidth: this.availableWidth,
       chartRegionHeight: this.chartHeight,
       domainEndTs: domain.endTs,
       domainStartTs: domain.startTs,
-      endIndex: bounds.endIndex,
+      endIndex: Math.max(0, length - 1),
       maxPrice,
       minPrice,
       offsetX: this.getOffsetX(),
-      startIndex: bounds.startIndex,
+      startIndex: 0,
       stride: this.getStride(length),
     };
   }
@@ -713,9 +652,9 @@ export class PolymarketChartManager {
     this.interactionTimestamps = new Uint32Array(0);
     this.interactionX = null;
 
-    const oldPicture = this.chartPicture.value;
-    this.chartPicture.value = this.blankPicture;
-    if (oldPicture !== this.blankPicture) {
+    const oldPicture = this.output.picture;
+    if (oldPicture) {
+      setSkiaPicture(this.output, undefined);
       oldPicture.dispose();
     }
   }
@@ -753,15 +692,14 @@ export class PolymarketChartManager {
   public rebuildChart(): void {
     const length = this.getDataLength();
     if (!length) {
-      if (this.chartPicture.value !== this.blankPicture) {
-        const oldPicture = this.chartPicture.value;
-        this.chartPicture.value = this.blankPicture;
+      const oldPicture = this.output.picture;
+      if (oldPicture) {
+        setSkiaPicture(this.output, undefined);
         oldPicture.dispose();
       }
       return;
     }
 
-    const bounds = this.getPriceBounds();
     const progress = this.animationProgress.value / MAX_PROGRESS;
 
     let minPrice: number;
@@ -770,8 +708,8 @@ export class PolymarketChartManager {
       minPrice = this.previousBounds.min + (this.targetBounds.min - this.previousBounds.min) * progress;
       maxPrice = this.previousBounds.max + (this.targetBounds.max - this.previousBounds.max) * progress;
     } else {
-      minPrice = this.chartMinY.value;
-      maxPrice = this.chartMaxY.value;
+      minPrice = this.chartMinY;
+      maxPrice = this.chartMaxY;
     }
 
     const chartRegionHeight = this.chartHeight;
@@ -784,11 +722,11 @@ export class PolymarketChartManager {
       chartRegionHeight,
       domainEndTs: domain.endTs,
       domainStartTs: domain.startTs,
-      endIndex: bounds.endIndex,
+      endIndex: length - 1,
       maxPrice,
       minPrice,
       offsetX,
-      startIndex: bounds.startIndex,
+      startIndex: 0,
       stride,
     };
 
@@ -800,7 +738,7 @@ export class PolymarketChartManager {
       y: 0,
     });
 
-    this.drawXAxisLabels(canvas, bounds.endIndex, bounds.startIndex);
+    this.drawXAxisLabels(canvas);
     canvas.clipRect({ height: this.chartHeight, width: this.chartWidth, x: 0, y: 0 }, ClipOp.Intersect, true);
     this.drawHorizontalGridLines(canvas, 4, maxPrice, minPrice);
 
@@ -846,9 +784,7 @@ export class PolymarketChartManager {
 
       const interactionConfig: InteractionConfig = {
         greyCirclePaint: this.paints.greyCircle,
-        greyColor: this.colors.labelQuinary,
         greyColorString: this.colors.labelQuinaryString,
-        greyLinePaint: this.paints.greyLine,
         normalizedSplitPoint: interactionX,
         progress: interactionProgress,
       };
@@ -858,11 +794,9 @@ export class PolymarketChartManager {
       this.lineSeriesBuilder.drawAll(canvas, params, effectsConfig, progress, drawProgress, entranceYOffset);
     }
 
-    const oldPicture = this.chartPicture.value;
-    this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    if (oldPicture !== this.blankPicture) {
-      oldPicture.dispose();
-    }
+    const oldPicture = this.output.picture;
+    setSkiaPicture(this.output, this.pictureRecorder.finishRecordingAsPicture());
+    oldPicture?.dispose();
   }
 
   private drawHorizontalGridLines(canvas: SkCanvas, lineCount: number, maxPrice: number, minPrice: number): void {
@@ -879,15 +813,6 @@ export class PolymarketChartManager {
     const labelHeight = measureParagraph?.getLineMetrics()[0]?.height ?? 0;
     const halfLabel = labelHeight / 2;
     this.gridTopY = halfLabel || halfStroke;
-
-    const endAlpha = this.isDarkMode ? 0.05 : 0.0435;
-    const startAlpha = this.isDarkMode ? 0.02 : 0.0175;
-    const gridColor = this.isDarkMode ? this.colors.white : this.colors.labelQuinary;
-    const startColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], startAlpha]);
-    const endColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], endAlpha]);
-
-    const gridShader = Skia.Shader.MakeLinearGradient({ x: 0, y: 0 }, { x: lineEndX, y: 0 }, [startColor, endColor], null, TileMode.Clamp);
-    this.paints.grid.setShader(gridShader);
 
     for (let i = 0; i < lineCount; i++) {
       const y = i === 0 ? halfLabel : this.chartHeight * (i / lineCount);
@@ -908,12 +833,9 @@ export class PolymarketChartManager {
         paragraph.paint(canvas, labelX, y - halfLabel);
       }
     }
-
-    this.paints.grid.setShader(null);
-    gridShader.dispose();
   }
 
-  private drawXAxisLabels(canvas: SkCanvas, _endIndex: number, _startIndex: number): void {
+  private drawXAxisLabels(canvas: SkCanvas): void {
     const domain = this.timeDomain;
     if (!domain) return;
 
@@ -979,15 +901,12 @@ export class PolymarketChartManager {
     };
   }
 
-  private buildCrosshairPicture(x: number, active: boolean): void {
+  private updateCrosshair(x: number, active: boolean): void {
     if (!active || !this.getDataLength()) {
       this.isChartGestureActive.value = false;
       this.interactionIndex = null;
       this.interactionTimestamp = null;
       this.interactionX = null;
-      if (this.crosshairPicture.value !== this.blankPicture) {
-        this.crosshairPicture.value = this.blankPicture;
-      }
       return;
     }
 
@@ -999,9 +918,6 @@ export class PolymarketChartManager {
       this.interactionIndex = null;
       this.interactionTimestamp = null;
       this.interactionX = null;
-      if (this.crosshairPicture.value !== this.blankPicture) {
-        this.crosshairPicture.value = this.blankPicture;
-      }
       return;
     }
 
@@ -1017,10 +933,6 @@ export class PolymarketChartManager {
 
     this.updateActiveInteraction(cursorTimestamp, nearestTimestamp);
     this.rebuildChart();
-
-    if (this.crosshairPicture.value !== this.blankPicture) {
-      this.crosshairPicture.value = this.blankPicture;
-    }
   }
 
   private drawVerticalLine(canvas: SkCanvas, x: number): void {
@@ -1036,7 +948,7 @@ export class PolymarketChartManager {
     triggerHaptics('soft');
 
     this.interactionProgress.value = 0;
-    this.buildCrosshairPicture(x, true);
+    this.updateCrosshair(x, true);
 
     this.animator.spring(this.interactionProgress, 1, normalizeSpringConfig(0, 1, this.config.animation.springConfig));
   }
@@ -1045,7 +957,7 @@ export class PolymarketChartManager {
     if (!this.isChartGestureActive.value) return;
 
     const isActive = state === GestureState.ACTIVE;
-    this.buildCrosshairPicture(x, isActive);
+    this.updateCrosshair(x, isActive);
   }
 
   public onLongPressEnd(state: GestureState): void {
@@ -1054,10 +966,6 @@ export class PolymarketChartManager {
     }
 
     this.isChartGestureActive.value = false;
-
-    if (this.crosshairPicture.value !== this.blankPicture) {
-      this.crosshairPicture.value = this.blankPicture;
-    }
 
     this.animator.spring(
       this.interactionProgress,
@@ -1085,26 +993,15 @@ export class PolymarketChartManager {
     this.rebuildChart();
   }
 
-  public setColorMode(isDarkMode: boolean, backgroundColor: string): void {
+  public setColorMode(isDarkMode: boolean): void {
     this.isDarkMode = isDarkMode;
-    this.backgroundColor = Skia.Color(backgroundColor);
 
     const colorMode = isDarkMode ? 'dark' : 'light';
     const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);
     const labelQuinary = Skia.Color(labelQuinaryString);
-    const labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
     this.colors.labelQuinary = labelQuinary;
     this.colors.labelQuinaryString = labelQuinaryString;
-    this.colors.labelSecondary = labelSecondary;
     this.colors.crosshairLine = isDarkMode ? Skia.Color(this.config.crosshair.lineColor) : labelQuinary;
-
-    this.paints.bottomShadow.setColor(this.backgroundColor);
-    this.paints.bottomShadow.setAlphaf(0.48);
-    this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
-
-    this.paints.topShadow.setColor(this.backgroundColor);
-    this.paints.topShadow.setAlphaf(0.48);
-    this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
 
     const lightModeAlphaMultiplier = isDarkMode ? 1 : 0.5;
     if (this.paints.endCircleShadow && this.config.endCircle) {
@@ -1112,8 +1009,8 @@ export class PolymarketChartManager {
       this.paints.endCircleShadow.setColorFilter(isDarkMode ? Skia.ColorFilter.MakeBlend(this.colors.black, BlendMode.SrcIn) : null);
     }
 
+    this.paints.grid.setShader(this.createGridShader());
     this.paints.greyCircle.setColor(labelQuinary);
-    this.paints.greyLine.setColor(labelQuinary);
     this.paints.crosshairLine.setColor(this.colors.crosshairLine);
     this.paints.crosshairLine.setAlphaf(0.25);
 
@@ -1126,7 +1023,7 @@ export class PolymarketChartManager {
     this.isChartGestureActive.value = false;
     this.interactionProgress.value = 0;
     if (this.activeInteraction) this.activeInteraction.value = undefined;
-    this.blankPicture.dispose();
+    this.output.picture?.dispose();
     this.lineSeriesBuilder.dispose();
     this.pictureRecorder.dispose();
 
