@@ -1,25 +1,30 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text, TextIcon, useColorMode, type Space } from '@/design-system';
 import * as i18n from '@/languages';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICKER_BORDER_WIDTH } from '@/styles/constants';
 
-export function AddCardHint() {
-  const shadowFar = useForegroundColor('shadowFar');
+export function AddCardHint({ paddingBottom, paddingTop }: { paddingBottom?: Space; paddingTop?: Space }) {
+  const { isDarkMode } = useColorMode();
 
   return (
-    <Box alignItems="center" paddingTop="28px">
+    <Box alignItems="center" paddingBottom={paddingBottom} paddingTop={paddingTop}>
       <Box
         alignItems="center"
-        background="surfaceSecondaryElevated"
+        borderRadius={20}
+        borderColor={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }}
+        borderWidth={THICKER_BORDER_WIDTH}
         flexDirection="row"
-        gap={8}
-        style={[styles.pill, { shadowColor: shadowFar }]}
+        gap={3}
+        height={36}
+        justifyContent="center"
+        style={styles.pill}
       >
-        <Text color="labelQuaternary" size="icon 12px" weight="heavy">
+        <TextIcon color="labelQuinary" height={10} size="icon 12px" weight="heavy" width={24}>
           {'􀍰'}
-        </Text>
-        <Text color="labelTertiary" size="15pt" weight="bold">
+        </TextIcon>
+        <Text align="center" color="labelQuaternary" size="15pt" weight="bold">
           {i18n.t(i18n.l.cash.add_cash_screen.add_a_card_to_continue)}
         </Text>
       </Box>
@@ -30,12 +35,7 @@ export function AddCardHint() {
 const styles = StyleSheet.create({
   pill: {
     borderCurve: 'continuous',
-    borderRadius: 20,
     paddingLeft: 10,
     paddingRight: 14,
-    paddingVertical: 12,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 18,
   },
 });

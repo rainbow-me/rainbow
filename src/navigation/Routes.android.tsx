@@ -294,7 +294,7 @@ function BSNavigator() {
       <BSStack.Screen component={CashDepositSetupScreen} name={Routes.CASH_DEPOSIT_SETUP_SCREEN} options={cashDepositSetupSheetPreset} />
       <BSStack.Screen component={SetupCancelSheet} name={Routes.CASH_SETUP_CANCEL_SHEET} />
       <BSStack.Screen component={CashSignInScreen} name={Routes.CASH_SIGN_IN_SCREEN} options={cashDepositSetupSheetPreset} />
-      <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
+      <BSStack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={{ ...swapSheetPreset, backdropOpacity: 0.7 }} />
       <BSStack.Screen component={AddWalletSheet} name={Routes.CASH_ADD_WALLET_SHEET} />
       <BSStack.Screen component={PaymentMethodsSheet} name={Routes.CASH_PAYMENT_METHODS_SHEET} />
       <BSStack.Screen component={PerpsTradeDetailsSheet} name={Routes.PERPS_TRADE_DETAILS_SHEET} />

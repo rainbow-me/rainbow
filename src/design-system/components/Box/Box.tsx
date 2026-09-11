@@ -91,12 +91,12 @@ export type BoxProps = {
       }
     | {
         background: BackgroundColor | 'accent';
-        shadow: Shadow;
+        shadow?: Shadow;
       }
     | {
         background?: never;
         backgroundColor: string;
-        shadow: Shadow;
+        shadow?: Shadow;
       }
     | {
         background?: never;

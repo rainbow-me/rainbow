@@ -15,14 +15,18 @@ import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 export const PANEL_BACKGROUND_DARK = '#191A1C';
 export const PANEL_BACKGROUND_LIGHT = globalColors.white100;
-export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
+export const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom, Platform.OS === 'ios' ? 8 : 30);
 export const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 
 const PANEL_BORDER_RADIUS = 42;
 
 type PanelProps = {
+  borderBottomRadius?: number;
+  borderRadius?: number;
+  borderTopRadius?: number;
   height?: number;
+  horizontalPanelInset?: number;
   innerBorderColor?: string;
   innerBorderWidth?: number;
   layoutAnimation?: ComponentProps<typeof Animated.View>['layout'];
@@ -32,8 +36,12 @@ type PanelProps = {
 };
 
 const Panel = ({
+  borderBottomRadius,
+  borderRadius = PANEL_BORDER_RADIUS,
+  borderTopRadius,
   children,
   height,
+  horizontalPanelInset,
   innerBorderColor,
   innerBorderWidth,
   layoutAnimation,
@@ -50,14 +58,28 @@ const Panel = ({
         <Box
           style={[
             panelSheetStyles.panelBorderContainer,
-            { borderColor: outerBorderColor || opacity(globalColors.grey100, 0.4) },
+            {
+              borderColor: outerBorderColor || opacity(globalColors.grey100, 0.4),
+              borderRadius,
+              borderTopLeftRadius: borderTopRadius ?? borderRadius,
+              borderTopRightRadius: borderTopRadius ?? borderRadius,
+              borderBottomLeftRadius: borderBottomRadius ?? borderRadius,
+              borderBottomRightRadius: borderBottomRadius ?? borderRadius,
+            },
             outerBorderWidth !== undefined ? { borderWidth: outerBorderWidth } : undefined,
           ]}
         >
           <Box
             style={[
               panelSheetStyles.panelBorder,
-              { borderColor: innerBorderColor || separatorSecondary },
+              {
+                borderColor: innerBorderColor || separatorSecondary,
+                borderRadius: borderRadius - 2 / 3,
+                borderTopLeftRadius: (borderTopRadius ?? borderRadius) - 2 / 3,
+                borderTopRightRadius: (borderTopRadius ?? borderRadius) - 2 / 3,
+                borderBottomLeftRadius: (borderBottomRadius ?? borderRadius) - 2 / 3,
+                borderBottomRightRadius: (borderBottomRadius ?? borderRadius) - 2 / 3,
+              },
               innerBorderWidth !== undefined ? { borderWidth: innerBorderWidth } : undefined,
             ]}
           />
@@ -67,10 +89,30 @@ const Panel = ({
       panelContainerStyle: [
         panelSheetStyles.panel,
         isDarkMode ? panelSheetStyles.panelBackgroundDark : panelSheetStyles.panelBackgroundLight,
-        { height },
+        {
+          borderRadius,
+          borderTopLeftRadius: borderTopRadius ?? borderRadius,
+          borderTopRightRadius: borderTopRadius ?? borderRadius,
+          borderBottomLeftRadius: borderBottomRadius ?? borderRadius,
+          borderBottomRightRadius: borderBottomRadius ?? borderRadius,
+          height,
+          width: horizontalPanelInset ? DEVICE_WIDTH - horizontalPanelInset * 2 : PANEL_WIDTH,
+        },
       ],
     };
-  }, [height, innerBorderColor, innerBorderWidth, isDarkMode, outerBorderColor, outerBorderWidth, separatorSecondary]);
+  }, [
+    borderBottomRadius,
+    borderRadius,
+    borderTopRadius,
+    height,
+    horizontalPanelInset,
+    innerBorderColor,
+    innerBorderWidth,
+    isDarkMode,
+    outerBorderColor,
+    outerBorderWidth,
+    separatorSecondary,
+  ]);
 
   return (
     <Animated.View layout={layoutAnimation} style={[panelContainerStyle, panelStyle]}>
@@ -92,17 +134,22 @@ type PanelSheetProps = PanelProps & {
   keyboardAvoidanceOffset?: { closed?: number; opened?: number };
 };
 
-const DEFAULT_HANDLE_TOP = 14;
-const DEFAULT_HANDLE_SHOW_BLUR = true;
 export const DEFAULT_HANDLE_COLOR_DARK = 'rgba(245, 248, 255, 0.3)';
 export const DEFAULT_HANDLE_COLOR_LIGHT = 'rgba(59, 66, 83, 0.3)';
 
+const DEFAULT_HANDLE_SHOW_BLUR = true;
+const DEFAULT_HANDLE_TOP = 14;
+
 export const PanelSheet = ({
+  borderBottomRadius,
+  borderRadius,
+  borderTopRadius,
   bottomOffset = PANEL_BOTTOM_OFFSET,
   children,
   containerStyle,
   handleProps,
   height,
+  horizontalPanelInset,
   innerBorderColor,
   innerBorderWidth,
   layoutAnimation,
@@ -131,7 +178,11 @@ export const PanelSheet = ({
               />
             )}
             <Panel
+              borderBottomRadius={borderBottomRadius}
+              borderRadius={borderRadius}
+              borderTopRadius={borderTopRadius}
               height={height}
+              horizontalPanelInset={horizontalPanelInset}
               innerBorderColor={innerBorderColor}
               innerBorderWidth={innerBorderWidth}
               layoutAnimation={layoutAnimation}
@@ -161,7 +212,6 @@ const panelSheetStyles = StyleSheet.create({
   panelBorder: {
     backgroundColor: 'transparent',
     borderCurve: 'continuous',
-    borderRadius: PANEL_BORDER_RADIUS - 2 / 3,
     borderWidth: THICK_BORDER_WIDTH,
     height: '100%',
     overflow: 'hidden',
@@ -172,7 +222,6 @@ const panelSheetStyles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderCurve: 'continuous',
     borderWidth: 2 / 3,
-    borderRadius: PANEL_BORDER_RADIUS,
     height: '100%',
     overflow: 'hidden',
     pointerEvents: 'none',
@@ -181,9 +230,7 @@ const panelSheetStyles = StyleSheet.create({
   },
   panel: {
     borderCurve: 'continuous',
-    borderRadius: PANEL_BORDER_RADIUS,
     overflow: 'hidden',
-    width: PANEL_WIDTH,
   },
   panelBackgroundDark: {
     backgroundColor: PANEL_BACKGROUND_DARK,
