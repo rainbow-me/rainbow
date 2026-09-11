@@ -28,7 +28,7 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
     case 'approved':
       return (
         <CashStatusHalfSheet
-          action={{ label: i18n.t(i18n.l.button.continue), onPress: onContinue, testID: 'cash-setup-kyc-success-continue' }}
+          primaryAction={{ label: i18n.t(i18n.l.button.continue), onPress: onContinue, testID: 'cash-setup-kyc-success-continue' }}
           description={i18n.t(l.verified_description)}
           status="success"
           successIcon={IDENTITY_VERIFIED_ICON}
@@ -39,7 +39,7 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
     case 'reviewing':
       return (
         <CashStatusHalfSheet
-          action={{ label: i18n.t(l.reviewing_action), onPress: goBack, testID: 'cash-setup-kyc-reviewing-got-it' }}
+          primaryAction={{ label: i18n.t(l.reviewing_action), onPress: goBack, testID: 'cash-setup-kyc-reviewing-got-it' }}
           description={i18n.t(l.reviewing_description)}
           status="reviewing"
           testID="cash-setup-kyc-reviewing"

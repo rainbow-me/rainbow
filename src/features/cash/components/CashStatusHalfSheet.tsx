@@ -27,10 +27,10 @@ type CommonProps = {
 
 type CashStatusPanelContent = CommonProps &
   (
-    | { status: 'inProgress' }
-    | { status: 'reviewing'; action: HalfSheetAction }
+    | { status: 'inProgress'; primaryAction?: never; secondaryAction?: never }
+    | { status: 'reviewing'; primaryAction: HalfSheetAction; secondaryAction?: never }
     | { status: 'info'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
-    | { status: 'success'; action: HalfSheetAction; successIcon: string }
+    | { status: 'success'; primaryAction: HalfSheetAction; secondaryAction?: never; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
   );
@@ -82,22 +82,48 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
 
           {props.status === 'success' && (
             <Box paddingTop="32px">
-              <CashActionButton {...props.action} shadow />
+              <CashActionButton
+                label={props.primaryAction.label}
+                onPress={props.primaryAction.onPress}
+                testID={props.testID}
+                textSize={props.primaryAction.textSize}
+                shadow
+              />
             </Box>
           )}
 
           {props.status === 'reviewing' && (
             <Box paddingTop="32px">
-              <CashActionButton {...props.action} variant="tinted" />
+              <CashActionButton
+                label={props.primaryAction.label}
+                onPress={props.primaryAction.onPress}
+                textSize={props.primaryAction.textSize}
+                testID={props.testID}
+                variant="tinted"
+              />
             </Box>
           )}
 
           {(isAlert || props.status === 'info') && (
             <Box gap={16} paddingTop="32px">
-              <CashActionButton {...props.primaryAction} variant="tinted" />
-              {props.secondaryAction && (
-                <CashActionButton {...props.secondaryAction} color={props.status === 'warning' ? 'red' : 'blue'} variant="plain" />
-              )}
+              <CashActionButton
+                label={props.primaryAction.label}
+                onPress={props.primaryAction.onPress}
+                textSize={props.primaryAction.textSize}
+                testID={props.testID}
+                variant="tinted"
+              />
+
+              {props.secondaryAction ? (
+                <CashActionButton
+                  label={props.secondaryAction.label}
+                  onPress={props.secondaryAction.onPress}
+                  textSize={props.secondaryAction.textSize}
+                  testID={props.testID}
+                  color={props.status === 'warning' ? 'red' : 'blue'}
+                  variant="plain"
+                />
+              ) : null}
             </Box>
           )}
         </Box>
