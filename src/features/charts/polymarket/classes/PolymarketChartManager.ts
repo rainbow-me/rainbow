@@ -1077,6 +1077,7 @@ export class PolymarketChartManager {
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
     this.buildParagraph = buildParagraph;
+    this.rebuildChart();
   }
 
   public setHighlightedSeries(key: string | null): void {
@@ -1122,6 +1123,9 @@ export class PolymarketChartManager {
 
   public dispose(): void {
     this.animator.dispose();
+    this.isChartGestureActive.value = false;
+    this.interactionProgress.value = 0;
+    if (this.activeInteraction) this.activeInteraction.value = undefined;
     this.blankPicture.dispose();
     this.lineSeriesBuilder.dispose();
     this.pictureRecorder.dispose();
