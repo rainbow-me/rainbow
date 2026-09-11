@@ -114,8 +114,8 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
           </Stack>
         </Box>
 
-        <Box gap={24} paddingBottom="32px" paddingTop="44px">
-          <Box gap={16} paddingHorizontal="20px">
+        <Box gap={24} paddingBottom="32px" paddingHorizontal="20px" paddingTop="44px">
+          <Box gap={16}>
             <ButtonPressAnimation onPress={handleSetUpAccount} scaleTo={0.96} testID="cash-deposit-intro-set-up-account">
               <Box
                 alignItems="center"
@@ -133,14 +133,14 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
               {i18n.t(i18n.l.cash.deposit_intro.availability_disclaimer)}
             </Text>
           </Box>
-          <Separator color="separator" thickness={1} />
-          <Box paddingHorizontal="20px">
-            <ButtonPressAnimation onPress={handleOtherDepositMethods} scaleTo={0.96} testID="cash-deposit-intro-other-deposit-methods">
-              <Text align="center" color="blue" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods)}
-              </Text>
-            </ButtonPressAnimation>
+          <Box marginHorizontal="-20px">
+            <Separator color="separator" thickness={1} />
           </Box>
+          <ButtonPressAnimation onPress={handleOtherDepositMethods} scaleTo={0.96} testID="cash-deposit-intro-other-deposit-methods">
+            <Text align="center" color="blue" size="17pt" weight="heavy">
+              {i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods)}
+            </Text>
+          </ButtonPressAnimation>
         </Box>
       </Box>
     </PanelSheet>
