@@ -1,7 +1,10 @@
 import {
+  cancelAnimation,
   Easing,
   makeMutable,
+  ReduceMotion,
   withDecay,
+  withRepeat,
   withSpring,
   withTiming,
   type SharedValue,
@@ -10,16 +13,31 @@ import {
   type WithTimingConfig,
 } from 'react-native-reanimated';
 
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { time } from '@/framework/core/utils/time';
+
+type AnimatorSettings = {
+  /**
+   * Uses zero-duration `withTiming` for `direct()` updates.
+   * When disabled, assigns shared values directly.
+   * @default true
+   */
+  animateDirectSets?: boolean;
+};
+
 type AnimationCallback = {
   onFinish?: (finished?: boolean) => void;
   remaining: number;
+  values: SharedValue<number>[];
 };
 
 type CompletionCallback = AnimationCallback['onFinish'];
 
-const ZERO_DURATION: WithTimingConfig = { duration: 0, easing: Easing.linear };
+const ZERO_DURATION = TIMING_CONFIGS.zero;
+const ONE_MINUTE_DURATION = { duration: time.minutes(1), easing: Easing.linear };
 
 const displayLinkPrimer = makeMutable(0);
+const primerOwners = { __workletContextObject: true, animators: new Set<Animator>() };
 
 /**
  * #### `🪄 Animator 🪄`
@@ -59,16 +77,26 @@ const displayLinkPrimer = makeMutable(0);
 export class Animator {
   private __workletClass = true;
 
-  private onFrame: () => void;
+  private animateDirectSets: boolean;
+  private onFrame: (() => void) | undefined;
+
   private frameId: number | null = null;
   private completionCallbacks = new Set<(wasRunning: boolean) => void>();
   private pendingCallbacks = new Set<AnimationCallback>();
 
-  constructor(onFrame: () => void) {
+  constructor(onFrame: () => void, settings?: AnimatorSettings) {
+    this.animateDirectSets = settings?.animateDirectSets ?? true;
     this.onFrame = onFrame;
   }
 
   // ============ Internal Methods ============================================= //
+
+  private animationFrame = (): void => {
+    if (!this.onFrame) return;
+    this.onFrame();
+    if (this.pendingCallbacks.size) this.requestFrame(this.animationFrame);
+    else this.stopAnimationLoop();
+  };
 
   private incrementFrameId(): void {
     if (this.frameId === null) this.frameId = 0;
@@ -81,29 +109,14 @@ export class Animator {
   }
 
   private startAnimationLoop(): void {
-    if (this.frameId == null) {
-      const loop = (): void => {
-        this.onFrame();
-        if (this.pendingCallbacks.size) this.requestFrame(loop);
-        else this.stopAnimationLoop();
-      };
-      this.requestFrame(loop);
-    }
-  }
-
-  private stopAnimationLoop(): void {
-    this.frameId = null;
-    if (!this.completionCallbacks.size) return;
-    this.completionCallbacks.forEach(cb => cb(true));
-    this.completionCallbacks.clear();
+    if (this.frameId === null) this.requestFrame(this.animationFrame);
   }
 
   private primeDisplayLink(): void {
-    if (this.frameId !== null) return;
-
-    displayLinkPrimer.value = withTiming(displayLinkPrimer.value + 1, { duration: 100, easing: Easing.linear }, finished => {
-      if (finished) displayLinkPrimer.value = 0;
-    });
+    const wasIdle = primerOwners.animators.size === 0;
+    primerOwners.animators.add(this);
+    if (!wasIdle) return;
+    displayLinkPrimer.value = withRepeat(withTiming(1, ONE_MINUTE_DURATION), -1, false, undefined, ReduceMotion.Never);
   }
 
   private runAnimations(
@@ -113,7 +126,7 @@ export class Animator {
   ): void {
     this.primeDisplayLink();
 
-    const callback: AnimationCallback = { remaining: values.length, onFinish };
+    const callback: AnimationCallback = { remaining: values.length, onFinish, values };
     this.pendingCallbacks.add(callback);
 
     const onComplete = (finished?: boolean) => {
@@ -124,13 +137,29 @@ export class Animator {
       }
     };
 
-    for (let i = 0; i < values.length; i++) {
-      initiator(values[i], i, onComplete);
-    }
+    for (let i = 0; i < values.length; i++) initiator(values[i], i, onComplete);
     this.startAnimationLoop();
   }
 
-  // ============ Public Animation Methods ==================================== //
+  // ============ Public Utility Methods ======================================= //
+
+  public stopAnimationLoop(): void {
+    this.frameId = null;
+    const releasedPrimer = primerOwners.animators.delete(this);
+
+    if (this.completionCallbacks.size) {
+      for (const cb of this.completionCallbacks) cb(true);
+      this.completionCallbacks.clear();
+    }
+
+    if (!releasedPrimer || primerOwners.animators.size) return;
+
+    requestAnimationFrame(() => {
+      if (!primerOwners.animators.size) displayLinkPrimer.value = 0;
+    });
+  }
+
+  // ============ Public Animation Methods ===================================== //
 
   /**
    * Runs a decay animation on one or multiple Shared Values.
@@ -170,13 +199,23 @@ export class Animator {
    * animator.direct([sv1, sv2], [0, 1]);
    * ```
    */
-  public direct(value: SharedValue<number>, target: number): void;
-  public direct(values: SharedValue<number>[], targets: number[]): void;
-  public direct(valuesOrValue: SharedValue<number> | SharedValue<number>[], targetsOrTarget: number | number[]): void {
+  public direct(value: SharedValue<number>, target: number, onFinish?: CompletionCallback): void;
+  public direct(values: SharedValue<number>[], targets: number[], onFinish?: CompletionCallback): void;
+  public direct(
+    valuesOrValue: SharedValue<number> | SharedValue<number>[],
+    targetsOrTarget: number | number[],
+    onFinish?: CompletionCallback
+  ): void {
     const values = Array.isArray(valuesOrValue) ? valuesOrValue : [valuesOrValue];
     const targets = Array.isArray(targetsOrTarget) ? targetsOrTarget : [targetsOrTarget];
-    this.runAnimations(values, undefined, (sv, i, onComplete) => {
-      sv.value = withTiming(targets[i], ZERO_DURATION, onComplete);
+    const shouldAnimate = this.animateDirectSets;
+
+    this.runAnimations(values, onFinish, (sv, i, onComplete) => {
+      if (shouldAnimate) sv.value = withTiming(targets[i], ZERO_DURATION, onComplete);
+      else {
+        sv.value = targets[i];
+        onComplete(true);
+      }
     });
   }
 
@@ -207,6 +246,7 @@ export class Animator {
   ): void {
     const values = Array.isArray(valuesOrValue) ? valuesOrValue : [valuesOrValue];
     const targets = Array.isArray(targetsOrTarget) ? targetsOrTarget : [targetsOrTarget];
+
     this.runAnimations(values, onFinish, (sv, i, onComplete) => {
       sv.value = withSpring(targets[i], config, onComplete);
     });
@@ -239,6 +279,7 @@ export class Animator {
   ): void {
     const values = Array.isArray(valuesOrValue) ? valuesOrValue : [valuesOrValue];
     const targets = Array.isArray(targetsOrTarget) ? targetsOrTarget : [targetsOrTarget];
+
     this.runAnimations(values, onFinish, (sv, i, onComplete) => {
       sv.value = withTiming(targets[i], config, onComplete);
     });
@@ -273,15 +314,17 @@ export class Animator {
    *
    * Clears and stops all pending animations and callbacks.
    */
-  public dispose(resetOnFrame = true): void {
+  public dispose(): void {
+    this.onFrame = undefined;
     this.frameId = null;
-    this.pendingCallbacks.clear();
-    this.stopAnimationLoop();
-    displayLinkPrimer.value = 0;
-    if (!resetOnFrame) return;
+    this.completionCallbacks.clear();
 
-    this.onFrame = () => {
-      return;
-    };
+    for (const callback of this.pendingCallbacks) {
+      callback.onFinish = undefined;
+      for (const value of callback.values) cancelAnimation(value);
+    }
+
+    this.pendingCallbacks.clear();
+    if (primerOwners.animators.delete(this) && !primerOwners.animators.size) displayLinkPrimer.value = 0;
   }
 }
