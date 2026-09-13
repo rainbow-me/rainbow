@@ -9,9 +9,7 @@ import SkiaPictureViewNativeComponent from '@shopify/react-native-skia/src/specs
 import { SkiaViewApi } from '@shopify/react-native-skia/src/views/api';
 import { SkiaViewNativeId } from '@shopify/react-native-skia/src/views/SkiaViewNativeId';
 import { useStableValue } from '@storesjs/stores';
-import { executeOnUIRuntimeSync, runOnUI } from 'react-native-reanimated';
-
-type Disposable = { dispose(): void };
+import Animated, { executeOnUIRuntimeSync, runOnUI, type AnimatedStyle } from 'react-native-reanimated';
 
 export type SkiaPictureOutput = {
   nativeId: number | undefined;
@@ -24,13 +22,17 @@ export type SkiaRenderer<T extends Disposable> = SkiaPictureOutput & {
   manager: T | undefined;
 };
 
+type Disposable = { dispose(): void };
+
 type Initializer<T extends Disposable> = (output: SkiaPictureOutput) => T;
 
-type SkiaPictureViewProps<T extends Disposable> = {
+type SkiaPictureViewProps<T extends Disposable, Style> = {
   onUpdate?: (manager: T) => void;
   renderer: SkiaRenderer<T>;
-  style: StyleProp<ViewStyle>;
+  style: StyleProp<Style>;
 } & ({ initialize: Initializer<T>; prepare?: never } | { initialize?: never; prepare: () => Initializer<T> });
+
+const AnimatedSkiaPictureViewNativeComponent = Animated.createAnimatedComponent(SkiaPictureViewNativeComponent);
 
 /** Creates the UI-runtime state for one picture view. Construction and updates can be deferred. */
 export function useSkiaRenderer<T extends Disposable>(options?: { deferred?: boolean }): SkiaRenderer<T> {
@@ -48,18 +50,14 @@ export function setSkiaPicture(output: SkiaPictureOutput, picture: SkPicture | u
   'worklet';
   output.picture = picture;
   if (output.nativeId === undefined) return;
+
   SkiaViewApi.setJsiProperty(output.nativeId, 'picture', picture);
 }
 
-/**
- * Owns a manager on the UI runtime and displays its pictures on one native surface.
- * Provide an initializer worklet directly, or return one from prepare after JS setup at mount.
- * Memoized onUpdate worklets update the existing manager.
- */
-export class SkiaPictureView<T extends Disposable> extends React.PureComponent<SkiaPictureViewProps<T>> {
-  private readonly nativeId: number;
+abstract class SkiaPictureViewBase<T extends Disposable, Style> extends React.PureComponent<SkiaPictureViewProps<T, Style>> {
+  protected readonly nativeId: number;
 
-  constructor(props: SkiaPictureViewProps<T>) {
+  constructor(props: SkiaPictureViewProps<T, Style>) {
     super(props);
     this.nativeId = SkiaViewNativeId.current;
     SkiaViewNativeId.current += 1;
@@ -85,7 +83,7 @@ export class SkiaPictureView<T extends Disposable> extends React.PureComponent<S
     if (renderer.deferred) runOnUI(initializeOnUI)();
   }
 
-  componentDidUpdate(previous: SkiaPictureViewProps<T>): void {
+  componentDidUpdate(previous: SkiaPictureViewProps<T, Style>): void {
     const { onUpdate, renderer } = this.props;
     if (!onUpdate || onUpdate === previous.onUpdate) return;
 
@@ -111,8 +109,33 @@ export class SkiaPictureView<T extends Disposable> extends React.PureComponent<S
       renderer.picture = undefined;
     })();
   }
+}
 
+/**
+ * Owns a manager on the UI runtime and displays its pictures on one native surface. Provide
+ * an `initializer` worklet directly, or return one from `prepare` after JS setup at mount.
+ *
+ * Memoized `onUpdate` worklets update the existing manager.
+ */
+export class SkiaPictureView<T extends Disposable> extends SkiaPictureViewBase<T, ViewStyle> {
   render(): React.JSX.Element {
     return <SkiaPictureViewNativeComponent collapsable={false} colorSpace="p3" nativeID={String(this.nativeId)} style={this.props.style} />;
+  }
+}
+
+/**
+ * Animated version of `SkiaPictureView` that retains the same manager lifecycle but allows
+ * animated view styles.
+ */
+export class AnimatedSkiaPictureView<T extends Disposable> extends SkiaPictureViewBase<T, AnimatedStyle<ViewStyle>> {
+  render(): React.JSX.Element {
+    return (
+      <AnimatedSkiaPictureViewNativeComponent
+        collapsable={false}
+        colorSpace="p3"
+        nativeID={String(this.nativeId)}
+        style={this.props.style}
+      />
+    );
   }
 }
