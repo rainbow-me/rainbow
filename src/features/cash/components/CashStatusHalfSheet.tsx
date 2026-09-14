@@ -76,38 +76,26 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Text>
           </Box>
 
-          {props.status === 'success' && (
-            <Box paddingTop="32px">
-              <CashActionButton label={props.primaryAction.label} onPress={props.primaryAction.onPress} testID={props.testID} shadow />
-            </Box>
-          )}
-
-          {props.status === 'reviewing' && (
-            <Box paddingTop="32px">
-              <CashActionButton
-                label={props.primaryAction.label}
-                onPress={props.primaryAction.onPress}
-                testID={props.testID}
-                variant="tinted"
-              />
-            </Box>
-          )}
-
-          {isAlert && (
+          {props.primaryAction && (
             <Box gap={16} paddingTop="32px">
               <CashActionButton
+                disabled={props.primaryAction.disabled}
                 label={props.primaryAction.label}
+                loading={props.primaryAction.loading}
                 onPress={props.primaryAction.onPress}
-                testID={props.testID}
-                variant="tinted"
+                shadow={props.status === 'success'}
+                testID={props.primaryAction.testID}
+                variant={props.status === 'success' ? 'solid' : 'tinted'}
               />
 
               {props.secondaryAction ? (
                 <CashActionButton
-                  label={props.secondaryAction.label}
-                  onPress={props.secondaryAction.onPress}
-                  testID={props.testID}
                   color={props.status === 'warning' ? 'red' : 'blue'}
+                  disabled={props.secondaryAction.disabled}
+                  label={props.secondaryAction.label}
+                  loading={props.secondaryAction.loading}
+                  onPress={props.secondaryAction.onPress}
+                  testID={props.secondaryAction.testID}
                   variant="plain"
                 />
               ) : null}
