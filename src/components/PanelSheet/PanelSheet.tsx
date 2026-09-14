@@ -53,6 +53,10 @@ const Panel = ({
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const { borders, panelContainerStyle } = useMemo(() => {
+    const innerRadius = Math.max(0, borderRadius - 2 / 3);
+    const innerTopRadius = Math.max(0, (borderTopRadius ?? borderRadius) - 2 / 3);
+    const innerBottomRadius = Math.max(0, (borderBottomRadius ?? borderRadius) - 2 / 3);
+
     return {
       borders: isDarkMode ? (
         <Box
@@ -74,11 +78,11 @@ const Panel = ({
               panelSheetStyles.panelBorder,
               {
                 borderColor: innerBorderColor || separatorSecondary,
-                borderRadius: borderRadius - 2 / 3,
-                borderTopLeftRadius: (borderTopRadius ?? borderRadius) - 2 / 3,
-                borderTopRightRadius: (borderTopRadius ?? borderRadius) - 2 / 3,
-                borderBottomLeftRadius: (borderBottomRadius ?? borderRadius) - 2 / 3,
-                borderBottomRightRadius: (borderBottomRadius ?? borderRadius) - 2 / 3,
+                borderRadius: innerRadius,
+                borderTopLeftRadius: innerTopRadius,
+                borderTopRightRadius: innerTopRadius,
+                borderBottomLeftRadius: innerBottomRadius,
+                borderBottomRightRadius: innerBottomRadius,
               },
               innerBorderWidth !== undefined ? { borderWidth: innerBorderWidth } : undefined,
             ]}
@@ -96,7 +100,7 @@ const Panel = ({
           borderBottomLeftRadius: borderBottomRadius ?? borderRadius,
           borderBottomRightRadius: borderBottomRadius ?? borderRadius,
           height,
-          width: horizontalPanelInset ? DEVICE_WIDTH - horizontalPanelInset * 2 : PANEL_WIDTH,
+          width: DEVICE_WIDTH - (horizontalPanelInset ?? PANEL_INSET) * 2,
         },
       ],
     };
