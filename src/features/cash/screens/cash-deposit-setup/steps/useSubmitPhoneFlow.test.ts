@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
+import { signInWithPhone } from '../../../services/cashSignInService';
 import { createUserWithPhone, startRecovery, startSignupResume, type CreateUserWithPhoneResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
@@ -13,6 +14,7 @@ jest.mock('@/analytics', () => ({
       cashPhoneSubmitted: 'cash.phone_submitted',
       cashPhoneSubmitFailed: 'cash.phone_submit_failed',
       cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+      cashExistingAccountRecoverySelected: 'cash.existing_account_recovery_selected',
     },
   },
 }));
@@ -31,9 +33,18 @@ jest.mock('../../../services/userClient', () => ({
   verifyPhone: jest.fn(),
 }));
 
+jest.mock('../../../services/cashSignInService', () => ({
+  signInWithPhone: jest.fn(),
+}));
+
+jest.mock('../../../services/cashPasskeyService', () => ({
+  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+}));
+
 const mockCreateUserWithPhone = jest.mocked(createUserWithPhone);
 const mockStartRecovery = jest.mocked(startRecovery);
 const mockStartSignupResume = jest.mocked(startSignupResume);
+const mockSignInWithPhone = jest.mocked(signInWithPhone);
 const track = jest.mocked(analytics.track);
 
 const DIGITS = '4155550100';
@@ -131,23 +142,18 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
-  it('starts account recovery for a phone registered with a passkey', async () => {
+  it('shows the existing-account prompt for a phone registered with a passkey, without starting recovery', async () => {
     mockCreateUserWithPhone.mockResolvedValue({ outcome: 'registeredWithPasskey' });
-    mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-1', resendAfter: 1_750_000_060_000 });
     flow().setDigits(DIGITS);
 
-    await expect(flow().submit()).resolves.toBe(true);
+    await expect(flow().submit()).resolves.toBe(false);
 
-    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: DIGITS });
-    expect(session()).toEqual({
-      status: 'recovery',
-      challenge: { kind: 'recovery', recoveryId: 'recovery-1' },
-      phoneNationalNumber: DIGITS,
-      resendAfter: 1_750_000_060_000,
-      identity: { firstName: '', lastName: '', dateOfBirth: null },
-      ssnLast4: '',
-    });
-    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'recovery' });
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+    expect(session().status).toBe('empty');
+    expect(track).toHaveBeenCalledWith('cash.phone_already_registered', { outcome: 'registeredWithPasskey' });
+    expect(flow().state).toBe('existingAccount');
+
+    flow().setDigits('415');
     expect(flow().state).toBe('entry');
   });
 
@@ -261,5 +267,88 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(mockCreateUserWithPhone).toHaveBeenCalledTimes(1);
     resolveCreate(RESPONSE);
     await expect(first).resolves.toBe(true);
+  });
+});
+
+describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
+  beforeEach(() => {
+    useSubmitPhoneFlowStore.setState({ state: 'existingAccount', digits: DIGITS });
+  });
+
+  it('does nothing outside the existing-account prompt', async () => {
+    useSubmitPhoneFlowStore.setState({ state: 'entry' });
+
+    await expect(flow().signInWithExistingPasskey()).resolves.toBe('failed');
+    expect(mockSignInWithPhone).not.toHaveBeenCalled();
+  });
+
+  it('signs in with the submitted phone number, tagging the trigger', async () => {
+    mockSignInWithPhone.mockResolvedValue(undefined);
+
+    await expect(flow().signInWithExistingPasskey()).resolves.toBe('signedIn');
+
+    expect(mockSignInWithPhone).toHaveBeenCalledWith(DIGITS, 'existingAccountPrompt');
+  });
+
+  it('returns to the prompt without starting recovery when the passkey ceremony is cancelled', async () => {
+    mockSignInWithPhone.mockRejectedValue(new Error('UserCancelled'));
+
+    await expect(flow().signInWithExistingPasskey()).resolves.toBe('cancelled');
+
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+    expect(flow().state).toBe('existingAccount');
+  });
+
+  it('returns to the prompt without starting recovery when the passkey ceremony fails', async () => {
+    mockSignInWithPhone.mockRejectedValue(new Error('network down'));
+
+    await expect(flow().signInWithExistingPasskey()).resolves.toBe('failed');
+
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+    expect(flow().state).toBe('existingAccount');
+    expect(logger.error).toHaveBeenCalled();
+  });
+});
+
+describe('useSubmitPhoneFlowStore.chooseRecovery', () => {
+  beforeEach(() => {
+    useSubmitPhoneFlowStore.setState({ state: 'existingAccount', digits: DIGITS });
+  });
+
+  it('does nothing outside the existing-account prompt', async () => {
+    useSubmitPhoneFlowStore.setState({ state: 'entry' });
+
+    await expect(flow().chooseRecovery()).resolves.toBe(false);
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+  });
+
+  it('starts account recovery, tracks the explicit selection, and stores the recovery session', async () => {
+    mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-1', resendAfter: 1_750_000_060_000 });
+
+    await expect(flow().chooseRecovery()).resolves.toBe(true);
+
+    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: DIGITS });
+    expect(session()).toEqual({
+      status: 'recovery',
+      challenge: { kind: 'recovery', recoveryId: 'recovery-1' },
+      phoneNationalNumber: DIGITS,
+      resendAfter: 1_750_000_060_000,
+      identity: { firstName: '', lastName: '', dateOfBirth: null },
+      ssnLast4: '',
+    });
+    expect(track).toHaveBeenCalledWith('cash.existing_account_recovery_selected');
+    expect(track).toHaveBeenCalledWith('cash.phone_submitted', { mode: 'recovery' });
+    expect(flow().state).toBe('entry');
+  });
+
+  it('reports a generic failure when starting recovery throws', async () => {
+    mockStartRecovery.mockRejectedValue(new Error('network down'));
+
+    await expect(flow().chooseRecovery()).resolves.toBe(false);
+
+    expect(flow().state).toBe('error');
+    expect(session().status).toBe('empty');
+    expect(track).toHaveBeenCalledWith('cash.phone_submit_failed', { reason: 'unknown' });
+    expect(logger.error).toHaveBeenCalled();
   });
 });
