@@ -44,7 +44,6 @@ export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularToke
     enabled: false,
     fetcher: popularTokensQueryFunction,
     cacheTime: time.days(1),
-    keepPreviousData: true,
     params: { chainId: $ => $(useSwapsStore).selectedOutputChainId },
     staleTime: time.minutes(15),
   },
