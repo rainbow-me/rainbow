@@ -29,7 +29,6 @@ import type { TextSize, TextWeight } from '@/design-system/components/Text/Text'
 import {
   AnimatedSkiaPictureView,
   setSkiaPicture,
-  SkiaPictureView,
   useSkiaRenderer,
   type SkiaPictureOutput,
 } from '@/framework/ui/components/SkiaPictureView';
@@ -62,6 +61,16 @@ type SkiaAnimatedNumberProps = {
   testID?: string;
   weight?: TextWeight;
 } & ({ springConfig?: undefined; timingConfig?: WithTimingConfig } | { springConfig?: WithSpringConfig; timingConfig?: undefined });
+
+type LayoutProps = {
+  align: 'center' | 'left' | 'right';
+  buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+  fitToWidth: boolean;
+  height: number;
+  paddingHorizontal: number;
+  textProps: { size: StandardTextSize; tabularNumbers: boolean; weight: TextWeight };
+  width: number | 'auto';
+};
 
 export enum ExitMode {
   /** Characters exit in place, detaching from the text. */
@@ -211,12 +220,14 @@ class AnimatedNumberManager {
   private height: number;
   private paddingHorizontal: number;
   private rollMode: RollMode;
+  private textProps: LayoutProps['textProps'];
+  private width: number | 'auto';
 
   // -- Shared Values
   private animationsDisabled: SharedOrDerivedValue<boolean>;
   private canvasWidth: SharedValue<number>;
   private progress: SharedValue<number>;
-  private textWidth: SharedValue<number> | undefined;
+  private textWidth: SharedValue<number>;
 
   // -- Text State
   private animationState: AnimationState | null = null;
@@ -245,25 +256,20 @@ class AnimatedNumberManager {
     springConfig,
     timingConfig,
     textColor,
+    textProps,
     textWidth,
     value,
     width,
-  }: {
-    align: 'center' | 'left' | 'right';
+  }: LayoutProps & {
     animationsDisabled: SharedOrDerivedValue<boolean>;
-    buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
     canvasWidth: SharedValue<number>;
     exitMode: ExitMode;
-    fitToWidth: boolean;
-    height: number;
     output: SkiaPictureOutput;
-    paddingHorizontal: number;
     progress: SharedValue<number>;
     rollMode: RollMode;
     textColor: string;
     textWidth: SharedValue<number>;
     value: string;
-    width: number | 'auto';
   } & ({ springConfig: WithSpringConfig; timingConfig?: undefined } | { springConfig?: undefined; timingConfig: WithTimingConfig })) {
     this.align = align;
     this.animationsDisabled = animationsDisabled;
@@ -271,7 +277,7 @@ class AnimatedNumberManager {
     this.buildParagraph = buildParagraph;
     this.canvasWidth = canvasWidth;
     this.exitMode = exitMode;
-    this.fitToWidth = fitToWidth && typeof width === 'number';
+    this.fitToWidth = fitToWidth && width !== 'auto';
     this.height = height;
     this.lastValue = value;
     this.output = output;
@@ -280,7 +286,9 @@ class AnimatedNumberManager {
     this.rollMode = rollMode;
     this.lastColor = textColor;
     this.textColor = Skia.Color(textColor);
-    this.textWidth = width === 'auto' ? textWidth : undefined;
+    this.textProps = textProps;
+    this.textWidth = textWidth;
+    this.width = width;
 
     // -- Initial Build
     this.measureTextHeight();
@@ -372,7 +380,7 @@ class AnimatedNumberManager {
     return { characters: visualStateMap, fitWidth: this.getFitWidth(progress, totalWidth, availableWidth), totalWidth };
   }
 
-  private updateCurrentLayout(): number {
+  private updateCurrentLayout(preserveRollTargets = false): number {
     const value = this.lastValue;
     const paragraph = value ? this.buildParagraph({ text: value, color: this.textColor }) : null;
     let removedIntegerCount = 0;
@@ -386,13 +394,14 @@ class AnimatedNumberManager {
       return removedIntegerCount;
     }
 
-    if (this.fitToWidth || this.textWidth) {
+    if (this.fitToWidth || this.width === 'auto') {
       paragraph.layout(0);
       paragraph.layout(Math.ceil(paragraph.getMaxIntrinsicWidth()));
     } else paragraph.layout(Math.max(0, this.canvasWidth.value - this.paddingHorizontal * 2));
 
     this.currentLayout.totalWidth = paragraph.getLongestLine();
-    if (this.textWidth) this.canvasWidth.value = Math.max(this.canvasWidth.value, paragraph.getMaxWidth() + this.paddingHorizontal * 2);
+    if (this.width === 'auto')
+      this.canvasWidth.value = Math.max(this.canvasWidth.value, paragraph.getMaxWidth() + this.paddingHorizontal * 2);
     const parts = getParts(value, this.rollMode === RollMode.None);
 
     // -- Add new characters and update existing ones in place
@@ -409,7 +418,7 @@ class AnimatedNumberManager {
         existingChar.scale = 1;
         existingChar.width = rect.width;
         existingChar.x = rect.x;
-        existingChar.yOffset = yOffset;
+        if (!preserveRollTargets) existingChar.yOffset = yOffset;
       } else {
         this.currentLayout.characters.set(part.key, {
           opacity: 1,
@@ -501,18 +510,19 @@ class AnimatedNumberManager {
   private rebuildPicture(): void {
     const width = this.canvasWidth.value;
     const padding = this.paddingHorizontal;
-    const canvas = this.textWidth
-      ? this.pictureRecorder.beginRecording()
-      : this.pictureRecorder.beginRecording({ height: this.height, width, x: 0, y: 0 });
+    const canvas =
+      this.width === 'auto'
+        ? this.pictureRecorder.beginRecording()
+        : this.pictureRecorder.beginRecording({ height: this.height, width, x: 0, y: 0 });
 
     let drawingWidth = width;
     const y = (this.height - this.digitHeight) / 2;
     const progress = this.animationState ? this.progress.value / ANIMATION_PROGRESS_MAX : 0;
 
-    if (this.fitToWidth || this.textWidth) {
+    if (this.fitToWidth || this.width === 'auto') {
       const contentWidth = this.getContentWidth(progress);
 
-      if (this.textWidth) {
+      if (this.width === 'auto') {
         this.textWidth.value = contentWidth + padding * 2;
         drawingWidth = Math.max(drawingWidth, contentWidth + padding * 2);
       } else {
@@ -546,7 +556,7 @@ class AnimatedNumberManager {
       const width = from.width + (to.width - from.width) * progress;
       const blurAmount = (1 - opacity) * 7;
 
-      if (this.textWidth) {
+      if (this.width === 'auto') {
         // Skia's blur kernel extends three sigma beyond the scaled character.
         const blurOutset = Math.ceil(3 * Math.max(0, blurAmount) * Math.abs(scale));
         drawingWidth = Math.max(drawingWidth, x + (width * (1 + Math.abs(scale))) / 2 + blurOutset + padding * 2);
@@ -579,7 +589,7 @@ class AnimatedNumberManager {
       canvas.restore();
     }
 
-    if (this.textWidth) this.canvasWidth.value = Math.ceil(drawingWidth);
+    if (this.width === 'auto') this.canvasWidth.value = Math.ceil(drawingWidth);
 
     const previousPicture = this.output.picture;
     setSkiaPicture(this.output, this.pictureRecorder.finishRecordingAsPicture());
@@ -611,11 +621,47 @@ class AnimatedNumberManager {
 
   // ============ Public Methods =============================================== //
 
-  public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
-    this.buildParagraph = buildParagraph;
-    this.clearParagraphCache();
-    this.measureTextHeight();
-    this.rebuildLayout();
+  public updateLayout({ align, buildParagraph, fitToWidth, height, paddingHorizontal, textProps, width }: LayoutProps): void {
+    const shouldFit = fitToWidth && width !== 'auto';
+    const boundsEqual = width === this.width && paddingHorizontal === this.paddingHorizontal && shouldFit === this.fitToWidth;
+    const builderEqual = buildParagraph === this.buildParagraph;
+
+    if (this.animationState && !boundsEqual) {
+      const availableWidth = width === 'auto' ? 0 : Math.max(0, width - paddingHorizontal * 2);
+      this.animationState.fromFitWidth = Math.max(availableWidth, this.animationState.fromWidth);
+    }
+
+    this.fitToWidth = shouldFit;
+    this.height = height;
+    this.paddingHorizontal = paddingHorizontal;
+    this.width = width;
+    this.canvasWidth.value = width === 'auto' ? 0 : width;
+
+    if (!builderEqual) {
+      const alignmentEqual = align === this.align;
+      const typographyEqual =
+        textProps.size === this.textProps.size &&
+        textProps.weight === this.textProps.weight &&
+        textProps.tabularNumbers === this.textProps.tabularNumbers;
+
+      this.align = align;
+      this.buildParagraph = buildParagraph;
+      this.textProps = textProps;
+      this.clearParagraphCache();
+
+      if (alignmentEqual || !typographyEqual || !this.digitHeight) {
+        this.measureTextHeight();
+        this.rebuildLayout();
+        return;
+      }
+    }
+
+    if (!builderEqual || !boundsEqual) {
+      this.updateCurrentLayout(true);
+      if (this.animationState) this.animationState.targetWidth = this.currentLayout.totalWidth;
+    }
+
+    this.rebuildPicture();
   }
 
   public setValue(value: string, animate = true): void {
@@ -814,28 +860,28 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
 
   const renderer = useSkiaRenderer<AnimatedNumberManager>();
   const config = useStableValue(() => ({
-    align,
     animationsDisabled,
     canvasWidth,
     exitMode,
-    fitToWidth,
-    height,
-    paddingHorizontal,
     progress,
     rollMode,
     ...(timingConfig ? { timingConfig } : { springConfig: springConfig ?? SPRING_CONFIGS.softerSpringConfig }),
     textWidth,
-    width,
   }));
 
-  const widthStyle = useAnimatedStyle(() => ({ width: textWidth.value + horizontalBleed * 2 }));
+  const layout = useMemo<LayoutProps>(
+    () => ({ align, buildParagraph, fitToWidth, height, paddingHorizontal, textProps: { size, tabularNumbers, weight }, width }),
+    [align, buildParagraph, fitToWidth, height, paddingHorizontal, size, tabularNumbers, weight, width]
+  );
 
-  const updateParagraphBuilder = useCallback(
+  const widthStyle = useAnimatedStyle(() => ({ width: width === 'auto' ? textWidth.value + horizontalBleed * 2 : width }));
+
+  const updateLayout = useCallback(
     (manager: AnimatedNumberManager) => {
       'worklet';
-      manager.setBuildParagraph(buildParagraph);
+      manager.updateLayout(layout);
     },
-    [buildParagraph]
+    [layout]
   );
 
   useAnimatedReaction(
@@ -859,20 +905,18 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
   const skiaPictureView = useMemo(() => {
     const initialize = (output: SkiaPictureOutput): AnimatedNumberManager => {
       'worklet';
-      return new AnimatedNumberManager({ ...config, buildParagraph, output, textColor: currentColor.value, value: currentValue.value });
+      return new AnimatedNumberManager({ ...config, ...layout, output, textColor: currentColor.value, value: currentValue.value });
     };
 
-    return width === 'auto' ? (
+    return (
       <AnimatedSkiaPictureView
         initialize={initialize}
-        onUpdate={updateParagraphBuilder}
+        onUpdate={updateLayout}
         renderer={renderer}
-        style={{ alignSelf: 'flex-start', height, width: canvasWidth }}
+        style={{ alignSelf: width === 'auto' ? 'flex-start' : undefined, height, width: canvasWidth }}
       />
-    ) : (
-      <SkiaPictureView initialize={initialize} onUpdate={updateParagraphBuilder} renderer={renderer} style={{ height, width }} />
     );
-  }, [buildParagraph, canvasWidth, config, currentColor, currentValue, height, renderer, updateParagraphBuilder, width]);
+  }, [canvasWidth, config, currentColor, currentValue, height, layout, renderer, updateLayout, width]);
 
   return (
     <AnimatedNumberWrapper
@@ -885,8 +929,7 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
       size={size}
       testID={testID}
       verticalBleed={verticalBleed}
-      width={width}
-      widthStyle={width === 'auto' ? widthStyle : undefined}
+      widthStyle={widthStyle}
     >
       {skiaPictureView}
     </AnimatedNumberWrapper>
@@ -932,8 +975,7 @@ type AnimatedNumberWrapperProps = {
   size: StandardTextSize;
   testID?: string;
   verticalBleed: number;
-  width: number | 'auto';
-  widthStyle?: AnimatedStyle;
+  widthStyle: AnimatedStyle;
 };
 
 const AnimatedNumberWrapper = ({
@@ -947,7 +989,6 @@ const AnimatedNumberWrapper = ({
   size,
   testID,
   verticalBleed,
-  width,
   widthStyle,
 }: AnimatedNumberWrapperProps) => {
   const accessibilityProps = useAnimatedProps<ViewProps>(() => ({ accessibilityLabel: currentValue.value }));
@@ -964,7 +1005,6 @@ const AnimatedNumberWrapper = ({
             height,
             overflow: 'visible',
             position,
-            width: width === 'auto' ? undefined : width,
             ...getContainerStyles({ align, horizontalBleed, position, verticalBleed }),
           },
           widthStyle,
