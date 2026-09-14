@@ -17,6 +17,7 @@ import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
   Easing,
   runOnJS,
   runOnUI,
@@ -358,7 +359,7 @@ class CandlestickChartManager {
   private activeCandle: SharedValue<Bar | undefined>;
   private chartMaxY: SharedValue<number>;
   private chartMinY: SharedValue<number>;
-  private chartScale: SharedValue<number> | undefined;
+  private chartScale: SharedValue<number>;
   private isChartGestureActive: SharedValue<boolean>;
   private isDecelerating: SharedValue<boolean>;
   private isLoadingHistoricalCandles: SharedValue<boolean>;
@@ -1436,11 +1437,8 @@ class CandlestickChartManager {
 
   public dispose(): void {
     this.animator.dispose();
-    if (this.chartScale) this.chartScale.value = 1;
-    this.chartScale = undefined;
-    this.isDecelerating.value = false;
+    cancelAnimation(this.chartScale);
     this.isChartGestureActive.value = false;
-    this.activeCandle.value = undefined;
     this.candles = [];
     this.compositePicture?.dispose();
     this.crosshairPicture?.dispose();
@@ -1500,16 +1498,14 @@ class CandlestickChartManager {
     triggerHaptics('soft');
 
     if (this.config.animation.enableCrosshairPulse) {
-      requestAnimationFrame(() => {
-        const chartScale = this.chartScale;
-        if (!chartScale) return;
-        chartScale.value = withTiming(0.9925, TIMING_CONFIGS.buttonPressConfig, isFinished => {
-          if (!isFinished) return;
-          triggerHaptics('soft');
-          chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
-        });
+      const chartScale = this.chartScale;
+      chartScale.value = withTiming(0.9925, TIMING_CONFIGS.buttonPressConfig, isFinished => {
+        if (!isFinished) return;
+        triggerHaptics('soft');
+        chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
       });
     }
+
     this.buildCrosshairPicture(x, y, true);
     this.publishPicture();
     this.lastCrosshairPosition.x = x;

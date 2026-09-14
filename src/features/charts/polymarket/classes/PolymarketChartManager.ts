@@ -1021,7 +1021,6 @@ export class PolymarketChartManager {
   public dispose(): void {
     this.animator.dispose();
     this.isChartGestureActive.value = false;
-    this.interactionProgress.value = 0;
     if (this.activeInteraction) this.activeInteraction.value = undefined;
     this.output.picture?.dispose();
     this.lineSeriesBuilder.dispose();
