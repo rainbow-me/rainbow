@@ -299,7 +299,7 @@ class AnimatedNumberManager {
     });
   }
 
-  // ============ Private Helpers ============================================== //
+  // ========== Private Methods ==========
 
   private rebuildLayout(): void {
     this.progress.value = 0;
@@ -400,8 +400,11 @@ class AnimatedNumberManager {
     } else paragraph.layout(Math.max(0, this.canvasWidth.value - this.paddingHorizontal * 2));
 
     this.currentLayout.totalWidth = paragraph.getLongestLine();
-    if (this.width === 'auto')
+
+    if (this.width === 'auto') {
       this.canvasWidth.value = Math.max(this.canvasWidth.value, paragraph.getMaxWidth() + this.paddingHorizontal * 2);
+    }
+
     const parts = getParts(value, this.rollMode === RollMode.None);
 
     // -- Add new characters and update existing ones in place
@@ -619,7 +622,7 @@ class AnimatedNumberManager {
     canvas.restore();
   }
 
-  // ============ Public Methods =============================================== //
+  // ========== Public Methods ==========
 
   public updateLayout({ align, buildParagraph, fitToWidth, height, paddingHorizontal, textProps, width }: LayoutProps): void {
     const shouldFit = fitToWidth && width !== 'auto';
@@ -810,7 +813,7 @@ class AnimatedNumberManager {
   }
 }
 
-// ============ SkiaAnimatedNumber Component =================================== //
+// ============ Components ===================================================== //
 
 export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
   align = 'left',
@@ -976,7 +979,7 @@ type AnimatedNumberWrapperProps = {
   widthStyle: AnimatedStyle;
 };
 
-const AnimatedNumberWrapper = ({
+const AnimatedNumberWrapper = memo(function AnimatedNumberWrapper({
   align,
   backgroundColor,
   children,
@@ -988,7 +991,7 @@ const AnimatedNumberWrapper = ({
   testID,
   verticalBleed,
   widthStyle,
-}: AnimatedNumberWrapperProps) => {
+}: AnimatedNumberWrapperProps) {
   const accessibilityProps = useAnimatedProps<ViewProps>(() => ({ accessibilityLabel: currentValue.value }));
 
   return (
@@ -1013,7 +1016,9 @@ const AnimatedNumberWrapper = ({
       </Animated.View>
     </Bleed>
   );
-};
+});
+
+// ============ Utilities ====================================================== //
 
 function getHeightForTextSize(size: StandardTextSize): number {
   switch (size) {
