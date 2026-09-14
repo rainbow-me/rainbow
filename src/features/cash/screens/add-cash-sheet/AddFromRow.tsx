@@ -50,7 +50,7 @@ export function AddFromRow({
 
               <Inline alignVertical="center" space="2px">
                 <Text color="label" size="15pt" weight="bold">
-                  {funding.card.brand.split(' ')[0]}
+                  Visa
                 </Text>
                 <Text align="right" color="labelQuaternary" size="15pt" weight="semibold">
                   {`*${funding.card.last4}`}
