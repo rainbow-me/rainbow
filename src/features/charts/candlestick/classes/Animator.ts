@@ -141,9 +141,7 @@ export class Animator {
     this.startAnimationLoop();
   }
 
-  // ============ Public Utility Methods ======================================= //
-
-  public stopAnimationLoop(): void {
+  private stopAnimationLoop(): void {
     this.frameId = null;
     const releasedPrimer = primerOwners.animators.delete(this);
 

@@ -113,7 +113,7 @@ abstract class SkiaPictureViewBase<T extends Disposable, Style> extends React.Pu
 
 /**
  * Owns a manager on the UI runtime and displays its pictures on one native surface. Provide
- * an `initializer` worklet directly, or return one from `prepare` after JS setup at mount.
+ * an `initialize` worklet directly, or return one from `prepare` after JS setup at mount.
  *
  * Memoized `onUpdate` worklets update the existing manager.
  */
