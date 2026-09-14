@@ -803,9 +803,7 @@ class AnimatedNumberManager {
   public dispose(): void {
     this.progress.removeListener(0);
     cancelAnimation(this.progress);
-    const picture = this.output.picture;
-    setSkiaPicture(this.output, undefined);
-    picture?.dispose();
+    this.output.picture?.dispose();
     this.paint.dispose();
     this.pictureRecorder.dispose();
     this.clearParagraphCache();
