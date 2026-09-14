@@ -89,7 +89,7 @@ export class Animator {
     this.onFrame = onFrame;
   }
 
-  // ============ Internal Methods ============================================= //
+  // ========== Private Methods ==========
 
   private animationFrame = (): void => {
     if (!this.onFrame) return;
@@ -157,7 +157,7 @@ export class Animator {
     });
   }
 
-  // ============ Public Animation Methods ===================================== //
+  // ========== Public Animation Methods ==========
 
   /**
    * Runs a decay animation on one or multiple Shared Values.
@@ -283,7 +283,7 @@ export class Animator {
     });
   }
 
-  // ============ Public Utility Methods ======================================= //
+  // ========== Public Utility Methods ==========
 
   /**
    * @returns `true` if the animation loop is currently running.
