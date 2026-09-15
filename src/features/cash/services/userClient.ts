@@ -94,12 +94,6 @@ export type KycStatusResult = {
   kycRejectionReason?: KycRejectionReason;
 };
 
-// The wire field is only ever sent when kycStatus is Rejected; anything else
-// (absent, or a reason we don't recognize) has no bearing on today's outcomes.
-function parseKycRejectionReason(reason: unknown): KycRejectionReason | undefined {
-  return reason === KycRejectionReason.StateNotSupported ? KycRejectionReason.StateNotSupported : undefined;
-}
-
 // Pending and Review are one state to the app: the provider has not decided yet.
 export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
 
@@ -133,7 +127,7 @@ type SubmitOnboardingRequest = {
 
 type SubmitOnboardingResponse = {
   kycStatus: KycStatus;
-  kycRejectionReason: unknown;
+  kycRejectionReason?: KycRejectionReason;
 };
 
 type GetUserStatusParams = {
@@ -189,7 +183,7 @@ type GetUserStatusResponse = {
   status: {
     kyc: {
       status: KycStatus;
-      reason: unknown;
+      reason?: KycRejectionReason;
     };
   };
 };
@@ -269,7 +263,7 @@ export async function submitOnboarding({
   const { data } = await getCashPlatformClient().post<SubmitOnboardingResponse>('/onboarding/SubmitOnboarding', request, {
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
-  return { kycStatus: data.kycStatus, kycRejectionReason: parseKycRejectionReason(data.kycRejectionReason) };
+  return { kycStatus: data.kycStatus, kycRejectionReason: data.kycRejectionReason };
 }
 
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
@@ -356,7 +350,7 @@ export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Pr
   const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
-  return { kycStatus: data.status.kyc.status, kycRejectionReason: parseKycRejectionReason(data.status.kyc.reason) };
+  return { kycStatus: data.status.kyc.status, kycRejectionReason: data.status.kyc.reason };
 }
 
 export async function startSignupResume({

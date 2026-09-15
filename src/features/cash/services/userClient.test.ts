@@ -231,14 +231,11 @@ describe('submitOnboarding', () => {
     await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
   });
 
-  it.each([undefined, 'KYC_REJECTION_REASON_UNSPECIFIED', 'some-future-reason'])(
-    'normalizes a plain rejection whose reason is %p to undefined',
-    async kycRejectionReason => {
-      post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected, kycRejectionReason } });
+  it('omits the rejection reason for a plain rejection', async () => {
+    post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected } });
 
-      await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
-    }
-  );
+    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+  });
 });
 
 describe('getUserStatus', () => {
@@ -261,12 +258,9 @@ describe('getUserStatus', () => {
     });
   });
 
-  it.each([undefined, 'KYC_REJECTION_REASON_UNSPECIFIED', 'some-future-reason'])(
-    'normalizes a plain rejection whose reason is %p to undefined',
-    async reason => {
-      get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Rejected, reason } } } });
+  it('omits the rejection reason for a plain rejection', async () => {
+    get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Rejected } } } });
 
-      await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
-    }
-  );
+    await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+  });
 });
