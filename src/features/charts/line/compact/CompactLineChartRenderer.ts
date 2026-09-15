@@ -15,15 +15,6 @@ import { type CompactLineChartData } from '@/features/charts/line/compact/types'
 import { buildSmoothedPath, LineSmoothing } from '@/features/charts/line/LineSmoothingAlgorithms';
 import { setSkiaPicture, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
 
-// ============ Types ========================================================== //
-
-type CompactLineChartRendererConfig = {
-  output: SkiaPictureOutput;
-  /** Desired line width from the leftmost point to the rightmost. */
-  contentWidth: number;
-  height: number;
-};
-
 // ============ Constants ====================================================== //
 
 const LINE_WIDTH = 2.25;
@@ -134,24 +125,20 @@ export class CompactLineChartRenderer {
   private readonly __workletClass = true;
 
   private readonly output: SkiaPictureOutput;
-  private readonly contentWidth: number;
   private readonly fillPaint: SkPaint;
   private readonly fillPath: SkPath;
-  private readonly height: number;
   private readonly pictureRecorder: SkPictureRecorder;
-  private readonly surfaceWidth: number;
   private readonly strokePaint: SkPaint;
   private readonly strokePath: SkPath;
 
+  private contentWidth = 0;
+  private height = 0;
   private currentColor: string | null = null;
   private currentShader: SkShader | null = null;
 
-  constructor({ output, contentWidth, height }: CompactLineChartRendererConfig) {
+  constructor(output: SkiaPictureOutput) {
     this.output = output;
-    this.contentWidth = contentWidth;
-    this.height = height;
     this.pictureRecorder = Skia.PictureRecorder();
-    this.surfaceWidth = contentWidth + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
 
     this.strokePath = Skia.Path.Make();
     this.fillPath = Skia.Path.Make();
@@ -170,14 +157,16 @@ export class CompactLineChartRenderer {
     this.fillPaint.setStyle(PaintStyle.Fill);
   }
 
-  public setData(data: CompactLineChartData | undefined, lineColor: string): void {
+  public setData(data: CompactLineChartData | undefined, lineColor: string, contentWidth: number, height: number): void {
     const pointCount = data ? Math.min(data.prices.length, data.timestamps.length) : 0;
     if (!data || pointCount < 2) {
       this.clearPicture();
       return;
     }
 
-    if (lineColor !== this.currentColor) {
+    this.contentWidth = contentWidth;
+    if (lineColor !== this.currentColor || height !== this.height) {
+      this.height = height;
       this.setColor(lineColor);
     }
 
@@ -186,10 +175,8 @@ export class CompactLineChartRenderer {
   }
 
   public recolor(lineColor: string): void {
-    if (lineColor === this.currentColor) return;
+    if (!this.output.picture || lineColor === this.currentColor) return;
     this.setColor(lineColor);
-
-    if (!this.output.picture) return;
     this.buildPicture();
   }
 
@@ -236,7 +223,7 @@ export class CompactLineChartRenderer {
   private buildPicture(): void {
     const canvas = this.pictureRecorder.beginRecording({
       height: this.height,
-      width: this.surfaceWidth,
+      width: this.contentWidth + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2,
       x: 0,
       y: 0,
     });

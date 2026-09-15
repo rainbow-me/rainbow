@@ -49,14 +49,14 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
-        renderer.manager?.setData(data, resolvedLineColor);
+        renderer.manager?.setData(data, resolvedLineColor, width, height);
         hasRenderedData.value = hasData;
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
       })(nextData);
     },
-    [color, entranceProgress, hasRenderedData, isColorString, renderer]
+    [color, entranceProgress, hasRenderedData, height, isColorString, renderer, width]
   );
 
   useAnimatedReaction(
@@ -95,7 +95,7 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
         <SkiaPictureView
           initialize={output => {
             'worklet';
-            return new CompactLineChartRenderer({ contentWidth: width, height, output });
+            return new CompactLineChartRenderer(output);
           }}
           renderer={renderer}
           style={[styles.canvas, { height, width: renderWidth }]}
