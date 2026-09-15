@@ -92,8 +92,6 @@ export enum KycRejectionReason {
 // Pending and Review are one state to the app: the provider has not decided yet.
 export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
 
-// Null only for Unspecified, which callers reinterpret per their own context
-// (e.g. "no outcome yet" vs. "not submitted").
 export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
   switch (status) {
     case KycStatus.Approved:
@@ -104,6 +102,8 @@ export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | und
     case KycStatus.Review:
       return 'reviewing';
     case KycStatus.Unspecified:
+      return null;
+    default:
       return null;
   }
 }
