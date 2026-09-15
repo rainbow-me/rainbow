@@ -83,8 +83,7 @@ export enum KycStatus {
   Review = 'KYC_STATUS_REVIEW',
 }
 
-// Set only when kycStatus is Rejected. The provider gives no reason for a
-// plain reject, so today this only ever flags an unsupported state.
+// Set only when kycStatus is Rejected.
 export enum KycRejectionReason {
   Unspecified = 'KYC_REJECTION_REASON_UNSPECIFIED',
   StateNotSupported = 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
