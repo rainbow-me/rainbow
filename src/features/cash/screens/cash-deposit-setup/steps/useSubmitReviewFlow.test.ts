@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
-import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding, type KycStatusResult } from '../../../services/userClient';
+import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
@@ -209,7 +209,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
-    const poll = Promise.withResolvers<KycStatusResult>();
+    const poll = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
     const pollStarted = Promise.withResolvers<void>();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockImplementationOnce(() => {
@@ -240,7 +240,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('skips a second submit while one is in flight', async () => {
-    const submit = Promise.withResolvers<KycStatusResult>();
+    const submit = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
     mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();
