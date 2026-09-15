@@ -28,6 +28,14 @@ import {
   type WalletSignature,
 } from './rampClient';
 
+let mockIsTesting: 'true' | 'false' = 'false';
+
+vi.mock('react-native-dotenv', () => ({
+  get IS_TESTING() {
+    return mockIsTesting;
+  },
+}));
+
 vi.mock('./cashPlatformClient', () => ({
   getCashPlatformClient: vi.fn(),
   buildAuthenticatedHeader: (token: string) => ({ Authorization: `Bearer ${token}` }),
@@ -111,6 +119,7 @@ async function fetchOrder(orderId: string, abortController?: AbortController): P
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockIsTesting = 'false';
   (getCashPlatformClient as Mock).mockReturnValue({ get, post });
   mockEnsureAccessToken.mockResolvedValue('jwt-1');
   mockGetCachedAccessToken.mockReturnValue('jwt-1');
@@ -269,6 +278,16 @@ describe('buy orders', () => {
   });
 
   it('returns authRequired for an order read without sending a request when no token is cached', async () => {
+    mockGetCachedAccessToken.mockReturnValue(null);
+
+    await expect(getOrderWithCachedAuth(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual({ kind: 'authRequired' });
+
+    expect(get).not.toHaveBeenCalled();
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('requires cached authentication for order reads in E2E mode too', async () => {
+    mockIsTesting = 'true';
     mockGetCachedAccessToken.mockReturnValue(null);
 
     await expect(getOrderWithCachedAuth(CREATE_BUY_ORDER_PARAMS.id)).resolves.toEqual({ kind: 'authRequired' });
