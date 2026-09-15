@@ -8,6 +8,7 @@ import { signInWithPhone } from '../../../services/cashSignInService';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
 import {
   useCashSetupSessionStore,
+  type PhoneChallenge,
   type PhoneVerificationChallenge,
   type RecoveryPhoneChallenge,
 } from '../../../stores/cashSetupSessionStore';
@@ -44,6 +45,28 @@ async function startAccountRecovery(nationalNumber: string): Promise<{ challenge
 function clearPhoneAlreadyRegistered() {
   const sessionStore = useCashSetupSessionStore.getState();
   if (sessionStore.session.status === 'phoneAlreadyRegistered') sessionStore.reset();
+}
+
+// Starts a phone-verification challenge and advances the setup session to it, or falls back to 'error' state on failure.
+async function advanceToChallenge(
+  startChallenge: () => Promise<{ challenge: PhoneChallenge; resendAfter: number }>,
+  digits: string,
+  set: (partial: Partial<SubmitPhoneFlowStore>) => void
+): Promise<boolean> {
+  try {
+    const { challenge, resendAfter } = await startChallenge();
+    useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
+    // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
+    useVerifyPhoneFlowStore.getState().reset();
+    analytics.track(analytics.event.cashPhoneSubmitted, { mode: challenge.kind });
+    set({ state: 'entry' });
+    return true;
+  } catch (e) {
+    logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to start phone verification challenge', e));
+    analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
+    set({ state: 'error' });
+    return false;
+  }
 }
 
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
@@ -88,19 +111,14 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
         return false;
       }
 
-      const { challenge, resendAfter } =
+      const startChallenge =
         result.outcome === 'created'
-          ? {
+          ? async () => ({
               challenge: { kind: 'signup', userId: result.userId } satisfies PhoneVerificationChallenge,
               resendAfter: result.resendAfter,
-            }
-          : await startResume(digits);
-      useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
-      // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
-      useVerifyPhoneFlowStore.getState().reset();
-      analytics.track(analytics.event.cashPhoneSubmitted, { mode: challenge.kind });
-      set({ state: 'entry' });
-      return true;
+            })
+          : () => startResume(digits);
+      return await advanceToChallenge(startChallenge, digits, set);
     } catch (e) {
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
@@ -138,19 +156,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
 
     analytics.track(analytics.event.cashExistingAccountRecoverySelected);
     set({ state: 'submitting' });
-    try {
-      const { challenge, resendAfter } = await startAccountRecovery(digits);
-      useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
-      useVerifyPhoneFlowStore.getState().reset();
-      analytics.track(analytics.event.cashPhoneSubmitted, { mode: challenge.kind });
-      set({ state: 'entry' });
-      return true;
-    } catch (e) {
-      logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to start account recovery', e));
-      analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
-      set({ state: 'error' });
-      return false;
-    }
+    return advanceToChallenge(() => startAccountRecovery(digits), digits, set);
   },
 
   reset: () => {
