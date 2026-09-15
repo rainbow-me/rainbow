@@ -92,16 +92,7 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
 
-          {props.status === 'info' && (
-            <Box gap={16} paddingTop="32px">
-              <CashActionButton {...props.primaryAction} variant="tinted" />
-              {props.secondaryAction && (
-                <CashActionButton {...props.secondaryAction} color="labelSecondary" textSize="17pt" variant="plain" />
-              )}
-            </Box>
-          )}
-
-          {isAlert && (
+          {(isAlert || props.status === 'info') && (
             <Box gap={16} paddingTop="32px">
               <CashActionButton {...props.primaryAction} variant="tinted" />
               {props.secondaryAction && (

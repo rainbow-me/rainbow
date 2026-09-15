@@ -67,7 +67,12 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
             testID: 'cash-setup-kyc-state-not-supported-other-methods',
             textSize: '20pt',
           }}
-          secondaryAction={{ label: i18n.t(l.dismiss), onPress: goBack, testID: 'cash-setup-kyc-state-not-supported-dismiss' }}
+          secondaryAction={{
+            label: i18n.t(l.close),
+            onPress: goBack,
+            testID: 'cash-setup-kyc-state-not-supported-close',
+            textSize: '20pt',
+          }}
           status="info"
           testID="cash-setup-kyc-state-not-supported"
           title={i18n.t(l.state_not_supported_title)}

@@ -1654,7 +1654,6 @@
           "rejected_description": "We weren’t able to verify your identity. Contact support if you think this is a mistake.",
           "contact_support": "Contact Support",
           "close": "Close",
-          "dismiss": "Dismiss",
           "state_not_supported_title": "New York support coming soon",
           "state_not_supported_description": "Sorry, instant cash deposits are not available in NY yet.\n\nWe’ll let you know as soon as your state is supported."
         },
