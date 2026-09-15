@@ -356,7 +356,9 @@ export async function createBuyOrder(authMode: CashAuthMode['kind'], params: Cre
 export async function getOrderWithCachedAuth(orderId: string, abortController?: AbortController | null): Promise<CashAuthResult<BuyOrder>> {
   const result: CashAuthResult<unknown> =
     IS_TESTING === 'true'
-      ? { kind: 'success', data: e2eGetOrderResponse(orderId) }
+      ? getCachedAccessToken()
+        ? { kind: 'success', data: e2eGetOrderResponse(orderId) }
+        : { kind: 'authRequired' }
       : await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
           const response = await getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers });
           return response.data;
