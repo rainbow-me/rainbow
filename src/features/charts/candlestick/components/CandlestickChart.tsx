@@ -9,6 +9,7 @@ import {
   StrokeCap,
   type SkCanvas,
   type SkColor,
+  type SkPaint,
   type SkParagraph,
   type SkPicture,
 } from '@shopify/react-native-skia';
@@ -208,6 +209,20 @@ type CandlestickConfig = {
 
 type YAxisLayout = { width: number; decimals: number };
 
+const Y_AXIS_LABEL_SLOTS = ['yAxis0', 'yAxis1', 'yAxis2', 'yAxis3'] as const;
+
+type LabelSlot = 'startDate' | 'endDate' | 'currentPrice' | (typeof Y_AXIS_LABEL_SLOTS)[number];
+
+type LabelPicture = {
+  color: SkColor;
+  decimals: number;
+  height: number;
+  picture: SkPicture;
+  text: string;
+  value: string | number;
+  width: number;
+};
+
 export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
   activeCandleCard: {
     height: 75,
@@ -345,6 +360,7 @@ class CandlestickChartManager {
   private lastVisibleRange = { startIndex: -1, endIndex: -1 };
   private panStartOffset = 0;
   private pictureRecorder = Skia.PictureRecorder();
+  private labels = new Map<LabelSlot, LabelPicture>();
   private pinchAnchor: { index: number | null; width: number; x: number } | undefined;
 
   private animator = new Animator(() => this.rebuildChart());
@@ -356,7 +372,6 @@ class CandlestickChartManager {
     EMA9: Skia.Color('white'),
     EMA20: Skia.Color('#42A5F5'),
     EMA50: Skia.Color('#AB47BC'),
-    black: Skia.Color('#000000'),
     crosshairDot: Skia.Color('#FFFFFF'),
     crosshairLine: Skia.Color('#FFFFFF'),
     crosshairPriceBubble: Skia.Color(getColorForTheme('fill', 'light')),
@@ -364,7 +379,6 @@ class CandlestickChartManager {
     labelQuinary: Skia.Color(getColorForTheme('labelQuinary', 'light')),
     green: Skia.Color(GREEN_CANDLE_COLOR),
     red: Skia.Color(RED_CANDLE_COLOR),
-    white: Skia.Color('#FFFFFF'),
   };
 
   private paints = {
@@ -373,6 +387,7 @@ class CandlestickChartManager {
     candleWick: Skia.Paint(),
     candleStroke: Skia.Paint(),
     crosshairDot: Skia.Paint(),
+    crosshairHalo: Skia.Paint(),
     crosshairLine: Skia.Paint(),
     grid: Skia.Paint(),
     text: Skia.Paint(),
@@ -503,10 +518,16 @@ class CandlestickChartManager {
     this.paints.crosshairLine.setAlphaf(0.6);
 
     this.paints.crosshairDot.setAntiAlias(true);
+    this.paints.crosshairHalo.setAntiAlias(true);
+    this.setCrosshairPaintColors();
+
     if (!isDarkMode) {
       const color = opacity(this.config.crosshair.dotColor, 0.64);
       const shadowColor = Skia.Color(color);
-      this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
+      const shadow = Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null);
+
+      this.paints.crosshairDot.setImageFilter(shadow);
+      this.paints.crosshairHalo.setImageFilter(shadow);
     }
 
     this.paints.grid.setColor(Skia.Color(this.config.grid.color));
@@ -693,15 +714,6 @@ class CandlestickChartManager {
   // ============ Chart Drawing Methods ======================================== //
 
   private buildBaseCandlesPicture(): void {
-    const heightWithXAxis = this.chartHeight + this.config.chart.xAxisHeight + this.config.chart.xAxisGap * 2;
-    const canvas = this.pictureRecorder.beginRecording({
-      height: heightWithXAxis,
-      width: this.chartWidth,
-      x: 0,
-      y: 0,
-    });
-
-    const buildParagraph = this.buildParagraph;
     const candleWidth = this.candleWidth;
     const chartHeight = this.chartHeight;
     const chartWidth = this.chartWidth;
@@ -709,35 +721,36 @@ class CandlestickChartManager {
     const hasCandles = this.candles.length > 0;
     const { startIndex, endIndex } = this.getVisibleIndices();
 
-    // ========== X-Axis Labels ==========
-    if (hasCandles) {
-      const xAxisWidth = chartWidth - this.config.chart.xAxisInset * 2;
-      const xAxisY = chartHeight + this.config.chart.xAxisGap;
-      const color = this.colors.labelQuinary;
-      const foregroundPaint = this.paints.text;
-      const startCandle = this.candles[startIndex];
-      const startDate = startCandle ? this.timeFormatter.format(startCandle.t) : undefined;
-      const endCandle = this.candles[endIndex];
-      const endDate = endCandle ? this.timeFormatter.format(endCandle.t) : undefined;
+    // Prepare label pictures before starting the chart recording.
+    const xAxisWidth = chartWidth - this.config.chart.xAxisInset * 2;
+    const xAxisY = chartHeight + this.config.chart.xAxisGap;
+    const startCandle = this.candles[startIndex];
+    const endCandle = this.candles[endIndex];
 
-      if (startDate) {
-        const leftParagraph = buildParagraph({ color, foregroundPaint, text: startDate });
-        if (leftParagraph) {
-          leftParagraph.layout(xAxisWidth / 2);
-          leftParagraph.paint(canvas, this.config.chart.xAxisInset, xAxisY);
-        }
-      }
-      if (endDate) {
-        const rightParagraph = buildParagraph({ color, foregroundPaint, text: endDate });
-        if (rightParagraph) {
-          rightParagraph.layout(xAxisWidth / 2);
-          const textWidth = rightParagraph.getLineMetrics()[0].width;
-          rightParagraph.paint(canvas, chartWidth - this.config.chart.xAxisInset - textWidth, xAxisY);
-        }
+    const startLabel = startCandle
+      ? this.getLabelPicture(
+          'startDate',
+          this.timeFormatter.format(startCandle.t),
+          this.colors.labelQuinary,
+          xAxisWidth / 2,
+          this.paints.text
+        )
+      : undefined;
+
+    const endLabel = endCandle
+      ? this.getLabelPicture('endDate', this.timeFormatter.format(endCandle.t), this.colors.labelQuinary, xAxisWidth / 2, this.paints.text)
+      : undefined;
+
+    const priceLabels: (LabelPicture | undefined)[] = [];
+
+    if (hasCandles) {
+      for (let i = 0; i < Y_AXIS_LABEL_SLOTS.length; i++) {
+        const y = chartHeight * (i / 4) + 0.5;
+        priceLabels.push(
+          this.getLabelPicture(Y_AXIS_LABEL_SLOTS[i], this.getPriceAtYPosition(y), this.colors.labelQuinary, chartWidth, this.paints.text)
+        );
       }
     }
-
-    canvas.clipRect({ x: 0, y: 0, width: chartWidth, height: chartHeight }, ClipOp.Intersect, true);
 
     const minPrice = this.chartMinY.value;
     const maxPrice = this.chartMaxY.value;
@@ -757,6 +770,22 @@ class CandlestickChartManager {
 
     let currentPriceY: number | undefined;
     if (isCurrentPriceInRange) currentPriceY = convertPriceToY(lastCandle.c);
+
+    const lastCandleColor = currentPriceY ? (lastCandle.c >= lastCandle.o ? this.colors.green : this.colors.red) : undefined;
+    const currentPriceLabel = lastCandleColor ? this.getLabelPicture('currentPrice', lastCandle.c, lastCandleColor, chartWidth) : undefined;
+
+    const heightWithXAxis = this.chartHeight + this.config.chart.xAxisHeight + this.config.chart.xAxisGap * 2;
+    const canvas = this.pictureRecorder.beginRecording({
+      height: heightWithXAxis,
+      width: this.chartWidth,
+      x: 0,
+      y: 0,
+    });
+
+    if (startLabel) this.drawLabel(canvas, startLabel, this.config.chart.xAxisInset, xAxisY);
+    if (endLabel) this.drawLabel(canvas, endLabel, chartWidth - this.config.chart.xAxisInset - endLabel.width, xAxisY);
+
+    canvas.clipRect({ x: 0, y: 0, width: chartWidth, height: chartHeight }, ClipOp.Intersect, true);
 
     // ========== Grid Lines and Price Labels ==========
     const stride = this.getStride(candleWidth);
@@ -778,16 +807,11 @@ class CandlestickChartManager {
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
       if (!hasCandles) continue;
 
-      const paragraph = buildParagraph({
-        color: this.colors.labelQuinary,
-        foregroundPaint: this.paints.text,
-        text: this.formatPriceLabel(this.getPriceAtYPosition(y)),
-      });
+      const label = priceLabels[i];
 
-      if (paragraph) {
-        paragraph.layout(chartWidth);
-        if (!labelHeight) labelHeight = paragraph.getLineMetrics()[0].height;
-        paragraph.paint(canvas, labelX, y + getYOffsetForPriceLabel(i, labelHeight));
+      if (label) {
+        if (!labelHeight) labelHeight = label.height;
+        this.drawLabel(canvas, label, labelX, y + getYOffsetForPriceLabel(i, labelHeight));
       }
     }
 
@@ -806,9 +830,7 @@ class CandlestickChartManager {
     }
 
     // ========== Current Price Line ==========
-    let lastCandleColor: SkColor | undefined;
-    if (currentPriceY) {
-      lastCandleColor = lastCandle.c >= lastCandle.o ? this.colors.green : this.colors.red;
+    if (currentPriceY && lastCandleColor) {
       this.paints.candleWick.setStrokeWidth(1);
       this.paints.candleWick.setColor(lastCandleColor);
       this.paints.candleWick.setAlphaf(0.4);
@@ -887,15 +909,17 @@ class CandlestickChartManager {
     }
 
     // ========== Current Price Bubble ==========
-    if (isCurrentPriceInRange && currentPriceY && lastCandleColor) {
-      this.drawTextBubble({
+    if (currentPriceLabel && currentPriceY && lastCandleColor) {
+      const bubbleY = this.drawBubbleBackground({
         canvas,
         centerY: currentPriceY,
         color: lastCandleColor,
+        labelWidth: currentPriceLabel.width,
         leftX: labelX,
-        priceOrLabel: lastCandle.c,
         strokeOpacity: 0.15,
       });
+
+      this.drawLabel(canvas, currentPriceLabel, labelX, bubbleY + (this.config.priceBubble.height - currentPriceLabel.height) / 2);
     }
 
     // ========== Perps Indicator Bubbles ==========
@@ -965,13 +989,6 @@ class CandlestickChartManager {
       return true;
     }
 
-    const canvas = this.pictureRecorder.beginRecording({
-      height: this.chartHeight,
-      width: this.chartWidth,
-      x: 0,
-      y: 0,
-    });
-
     const candleWidth = this.candleWidth;
     const config = this.config;
     const currentOffset = this.getOffsetX();
@@ -984,40 +1001,28 @@ class CandlestickChartManager {
     const yWithOffset = cy + config.crosshair.yOffset;
     const verticalInset = config.crosshair.strokeWidth / 2;
 
+    const newActiveCandle = this.candles[nearestCandleIndex];
+
+    const canvas = this.pictureRecorder.beginRecording({
+      height: this.chartHeight,
+      width: this.chartWidth,
+      x: 0,
+      y: 0,
+    });
+
     canvas.drawLine(0, yWithOffset, this.chartWidth, yWithOffset, this.paints.crosshairLine);
     canvas.drawLine(snappedX, 0 + verticalInset, snappedX, this.chartHeight - verticalInset, this.paints.crosshairLine);
-
-    this.paints.crosshairDot.setBlendMode(isDarkMode ? BlendMode.Overlay : BlendMode.SrcOver);
-    this.paints.crosshairDot.setColor(isDarkMode ? this.colors.black : this.colors.crosshairDot);
-    if (!isDarkMode) this.paints.crosshairDot.setAlphaf(0.08);
 
     canvas.drawCircle(
       snappedX,
       yWithOffset,
       config.crosshair.dotSize + config.crosshair.dotStrokeWidth / (isDarkMode ? 1 : 0.2),
-      this.paints.crosshairDot
+      this.paints.crosshairHalo
     );
 
-    if (isDarkMode) this.paints.crosshairDot.setBlendMode(BlendMode.SrcOver);
-    this.paints.crosshairDot.setColor(isDarkMode ? this.colors.crosshairDot : this.colors.white);
     canvas.drawCircle(snappedX, yWithOffset, config.crosshair.dotSize, this.paints.crosshairDot);
 
-    const newActiveCandle = this.candles[nearestCandleIndex];
-    const priceAtYPosition = this.getPriceAtYPosition(yWithOffset);
-
-    if (newActiveCandle && !this.config.priceBubble.hidden) {
-      const labelX = this.chartWidth - this.yAxis.width + this.config.chart.yAxisPaddingLeft;
-      this.drawTextBubble({
-        canvas,
-        centerY: yWithOffset,
-        color: this.colors.crosshairPriceBubble,
-        leftX: labelX,
-        priceOrLabel: priceAtYPosition,
-        stabilizePriceWidth: true,
-        strokeOpacity: 0.12,
-        textColor: this.colors.labelSecondary,
-      });
-    }
+    if (newActiveCandle && !config.priceBubble.hidden) this.drawCrosshairPriceBubble(canvas, yWithOffset);
 
     const previousActiveCandle = activeCandle.value;
     const didCandleChange = previousActiveCandle?.t !== newActiveCandle?.t || previousActiveCandle?.c !== newActiveCandle?.c;
@@ -1075,21 +1080,29 @@ class CandlestickChartManager {
 
     if (animate) {
       if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
-        this.animator.spring(
-          [this.chartMinY, this.chartMaxY],
-          [min, max],
-          normalizeSpringConfig(
-            Math.abs(this.chartMinY.value - min),
-            Math.abs(this.chartMaxY.value - max),
-            this.config.animation.springConfig
-          )
-        );
+        const currentMin = this.chartMinY.value;
+        const currentMax = this.chartMaxY.value;
+
+        if (currentMin === min && currentMax === max) {
+          this.chartMinY.value = min;
+          this.chartMaxY.value = max;
+        } else {
+          this.animator.spring(
+            [this.chartMinY, this.chartMaxY],
+            [min, max],
+            normalizeSpringConfig(Math.abs(currentMin - min), Math.abs(currentMax - max), this.config.animation.springConfig)
+          );
+        }
+
         const maxDisplayedVolume = this.getMaxDisplayedVolume(startIndex, endIndex);
+
         if (forceRebuildBounds || maxDisplayedVolume !== this.maxDisplayedVolume.value) {
-          if (this.maxDisplayedVolume.value === -1) this.maxDisplayedVolume.value = maxDisplayedVolume;
-          else this.animator.spring(this.maxDisplayedVolume, maxDisplayedVolume, this.config.animation.springConfig);
+          if (this.maxDisplayedVolume.value === -1 || this.maxDisplayedVolume.value === maxDisplayedVolume) {
+            this.maxDisplayedVolume.value = maxDisplayedVolume;
+          } else this.animator.spring(this.maxDisplayedVolume, maxDisplayedVolume, this.config.animation.springConfig);
         }
       }
+
       return;
     }
 
@@ -1106,47 +1119,112 @@ class CandlestickChartManager {
 
   // ============ Drawing Helpers ============================================== //
 
-  private drawTextBubble({
+  private getLabelPicture(
+    key: LabelSlot,
+    value: string | number,
+    color: SkColor,
+    layoutWidth: number,
+    foregroundPaint?: SkPaint
+  ): LabelPicture | undefined {
+    const previous = this.labels.get(key);
+    const decimals = typeof value === 'number' ? this.yAxis.decimals : 0;
+
+    if (previous?.value === value && previous.decimals === decimals && previous.color === color) return previous;
+
+    const text = typeof value === 'number' ? this.formatPriceLabel(value) : value;
+
+    if (previous?.text === text && previous.color === color) {
+      previous.value = value;
+      previous.decimals = decimals;
+
+      return previous;
+    }
+
+    const paragraph = this.buildParagraph({ color, foregroundPaint, text });
+    if (!paragraph) return undefined;
+
+    paragraph.layout(layoutWidth);
+    const { width, height } = paragraph.getLineMetrics()[0];
+
+    const canvas = this.pictureRecorder.beginRecording();
+    paragraph.paint(canvas, 0, 0);
+    const picture = this.pictureRecorder.finishRecordingAsPicture();
+    paragraph.dispose();
+
+    const label = { color, decimals, height, picture, text, value, width };
+    this.labels.set(key, label);
+    previous?.picture.dispose();
+
+    return label;
+  }
+
+  private drawLabel(canvas: SkCanvas, label: LabelPicture, x: number, y: number): void {
+    canvas.save();
+    canvas.translate(x, y);
+    canvas.drawPicture(label.picture);
+    canvas.restore();
+  }
+
+  private clearLabels(): void {
+    for (const label of this.labels.values()) label.picture.dispose();
+
+    this.labels.clear();
+  }
+
+  private setCrosshairPaintColors(): void {
+    const isDarkMode = this.isDarkMode;
+
+    this.paints.crosshairHalo.setBlendMode(isDarkMode ? BlendMode.Overlay : BlendMode.SrcOver);
+    this.paints.crosshairHalo.setColor(isDarkMode ? Skia.Color('#000000') : this.colors.crosshairDot);
+    if (!isDarkMode) this.paints.crosshairHalo.setAlphaf(0.08);
+
+    this.paints.crosshairDot.setBlendMode(BlendMode.SrcOver);
+    this.paints.crosshairDot.setColor(isDarkMode ? this.colors.crosshairDot : Skia.Color('#FFFFFF'));
+  }
+
+  private drawCrosshairPriceBubble(canvas: SkCanvas, centerY: number): void {
+    const text = this.formatPriceLabel(this.getPriceAtYPosition(centerY));
+    const paragraph = this.buildParagraph({ color: this.colors.labelSecondary, text });
+    if (!paragraph) return;
+
+    paragraph.layout(this.chartWidth);
+    const { height } = paragraph.getLineMetrics()[0];
+
+    const symbol = supportedNativeCurrencies[this.nativeCurrency.currency].symbol;
+    const numeric = text
+      .replace(symbol, '')
+      .replace(/,/g, '')
+      .replace(/[KMB]$/, '');
+
+    const leftX = this.chartWidth - this.yAxis.width + this.config.chart.yAxisPaddingLeft;
+    const bubbleY = this.drawBubbleBackground({
+      canvas,
+      centerY,
+      color: this.colors.crosshairPriceBubble,
+      labelWidth: getYAxisLabelWidth(numeric.length) - 2,
+      leftX,
+      strokeOpacity: 0.12,
+    });
+
+    paragraph.paint(canvas, leftX, bubbleY + (this.config.priceBubble.height - height) / 2);
+    paragraph.dispose();
+  }
+
+  private drawBubbleBackground({
     canvas,
     centerY,
     color,
+    labelWidth,
     leftX,
-    priceOrLabel,
-    stabilizePriceWidth,
     strokeOpacity,
-    textColor,
   }: {
     canvas: SkCanvas;
     centerY: number;
     color: SkColor;
+    labelWidth: number;
     leftX: number;
-    priceOrLabel: number | string;
-    stabilizePriceWidth?: boolean;
     strokeOpacity: number;
-    textColor?: SkColor;
-  }): void {
-    const didProvideRawPrice = typeof priceOrLabel === 'number';
-    const formattedPrice = didProvideRawPrice ? this.formatPriceLabel(priceOrLabel) : priceOrLabel;
-
-    const paragraph = this.buildParagraph({ color: textColor ?? color, text: formattedPrice });
-    if (!paragraph) return;
-
-    paragraph.layout(this.chartWidth);
-    const lineMetrics = paragraph.getLineMetrics()[0];
-    const labelHeight = lineMetrics.height;
-
-    let labelWidth: number;
-    if (stabilizePriceWidth && didProvideRawPrice) {
-      const symbol = supportedNativeCurrencies[this.nativeCurrency.currency].symbol;
-      const numeric = formattedPrice
-        .replace(symbol, '')
-        .replace(/,/g, '')
-        .replace(/[KMB]$/, '');
-      labelWidth = getYAxisLabelWidth(numeric.length) - 2;
-    } else {
-      labelWidth = lineMetrics.width;
-    }
-
+  }): number {
     const bubbleHeight = this.config.priceBubble.height;
     const bubblePaddingHorizontal = this.config.priceBubble.paddingHorizontal;
     const bubbleY = centerY - bubbleHeight / 2;
@@ -1184,9 +1262,7 @@ class CandlestickChartManager {
     this.paints.candleStroke.setColor(this.candleStrokeColor);
     this.paints.candleStroke.setAlphaf(0.1);
 
-    const textX = leftX;
-    const textY = bubbleY + (bubbleHeight - labelHeight) / 2;
-    paragraph.paint(canvas, textX, textY);
+    return bubbleY;
   }
 
   // ============ Public Methods =============================================== //
@@ -1205,11 +1281,14 @@ class CandlestickChartManager {
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
     this.buildParagraph = buildParagraph;
+    this.clearLabels();
     this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
+
     this.buildBaseCandlesPicture();
     if (this.isChartGestureActive.value) {
       this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
     }
+
     this.publishPicture();
   }
 
@@ -1221,6 +1300,8 @@ class CandlestickChartManager {
       if (!this.chartPicture) this.rebuildChart(false, true);
       return;
     }
+
+    if (!newCandles.length) this.clearLabels();
 
     const oldCandleCount = this.candles.length;
     const wasDataAdded = oldCandleCount > 0 && newCandles.length > oldCandleCount;
@@ -1265,6 +1346,8 @@ class CandlestickChartManager {
   }
 
   public setColorMode(colorMode: 'dark' | 'light', backgroundColor: string, providedConfig: CandlestickChartProps['config']): void {
+    this.clearLabels();
+
     const isDarkMode = colorMode === 'dark';
     this.isDarkMode = isDarkMode;
     this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', colorMode));
@@ -1288,13 +1371,21 @@ class CandlestickChartManager {
       if (!isDarkMode) {
         const color = opacity(providedConfig.crosshair.dotColor, 0.64);
         const shadowColor = Skia.Color(color);
-        this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
+        const shadow = Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null);
+
+        this.paints.crosshairDot.setImageFilter(shadow);
+        this.paints.crosshairHalo.setImageFilter(shadow);
       }
     } else {
       this.colors.crosshairDot = Skia.Color(DEFAULT_CANDLESTICK_CONFIG.crosshair.dotColor);
     }
 
-    if (isDarkMode) this.paints.crosshairDot.setImageFilter(null);
+    this.setCrosshairPaintColors();
+
+    if (isDarkMode) {
+      this.paints.crosshairDot.setImageFilter(null);
+      this.paints.crosshairHalo.setImageFilter(null);
+    }
 
     if (providedConfig?.crosshair?.lineColor) {
       this.colors.crosshairLine = Skia.Color(providedConfig.crosshair.lineColor);
@@ -1330,6 +1421,7 @@ class CandlestickChartManager {
     this.chartPicture?.dispose();
     this.indicatorPicture?.dispose();
     this.pictureRecorder.dispose();
+    this.clearLabels();
 
     this.indicatorBuilder.dispose();
     this.perpsIndicatorBuilder?.dispose();
