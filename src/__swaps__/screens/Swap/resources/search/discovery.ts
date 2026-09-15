@@ -39,9 +39,11 @@ async function popularTokensQueryFunction({ chainId }: PopularTokensParams, abor
 
 export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams>(
   {
+    // Popular in Rainbow is disabled server-side (arc no longer serves this endpoint), so fetching is
+    // disabled here too to avoid calling it needlessly. Left in place in case it's revisited later.
+    enabled: false,
     fetcher: popularTokensQueryFunction,
     cacheTime: time.days(1),
-    keepPreviousData: true,
     params: { chainId: $ => $(useSwapsStore).selectedOutputChainId },
     staleTime: time.minutes(15),
   },
