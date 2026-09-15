@@ -35,17 +35,7 @@ jest.mock('@/utils/delay', () => ({
 }));
 
 jest.mock('../../../services/userClient', () => ({
-  KycStatus: {
-    Unspecified: 'KYC_STATUS_UNSPECIFIED',
-    Pending: 'KYC_STATUS_PENDING',
-    Approved: 'KYC_STATUS_APPROVED',
-    Rejected: 'KYC_STATUS_REJECTED',
-    Review: 'KYC_STATUS_REVIEW',
-  },
-  KycRejectionReason: {
-    Unspecified: 'KYC_REJECTION_REASON_UNSPECIFIED',
-    StateNotSupported: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
-  },
+  ...jest.requireActual('../../../services/userClient'),
   getUserStatus: jest.fn(),
   submitOnboarding: jest.fn(),
 }));

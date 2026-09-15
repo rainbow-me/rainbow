@@ -10,12 +10,13 @@ import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
 import {
   finishRecovery,
   getUserStatus,
-  KycRejectionReason,
   KycStatus,
   startRecovery,
   startSignupResume,
   submitOnboarding,
+  toKycOutcome,
   type KycOutcome,
+  type KycRejectionReason,
 } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { OTP_LENGTH, useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
@@ -185,21 +186,22 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       if (isStale()) return 'cancelled';
     }
 
-    if (kycStatus === KycStatus.Approved) {
-      analytics.track(analytics.event.cashKycApproved);
-      set({ state: 'approved' });
-      return 'approved';
+    // isAwaitingDecision guarantees kycStatus is Approved or Rejected here, so
+    // toKycOutcome only ever yields one of these three cases.
+    switch (toKycOutcome(kycStatus, kycRejectionReason)) {
+      case 'approved':
+        analytics.track(analytics.event.cashKycApproved);
+        set({ state: 'approved' });
+        return 'approved';
+      case 'unsupportedState':
+        analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
+        set({ state: 'unsupportedState' });
+        return 'unsupportedState';
+      default:
+        analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
+        set({ state: 'rejected' });
+        return 'rejected';
     }
-
-    if (kycRejectionReason === KycRejectionReason.StateNotSupported) {
-      analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
-      set({ state: 'unsupportedState' });
-      return 'unsupportedState';
-    }
-
-    analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
-    set({ state: 'rejected' });
-    return 'rejected';
   },
 }));
 

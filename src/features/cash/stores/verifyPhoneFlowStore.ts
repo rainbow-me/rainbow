@@ -8,11 +8,10 @@ import { delay } from '@/utils/delay';
 import {
   finishSignupResume,
   getUserStatus,
-  KycRejectionReason,
-  KycStatus,
   resendPhoneCode,
   startRecovery,
   startSignupResume,
+  toKycOutcome,
   verifyPhone,
   type KycOutcome,
 } from '../services/userClient';
@@ -25,25 +24,11 @@ export type VerifyPhoneState = 'entry' | 'verifying' | 'submitted' | 'error';
 
 export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | 'recoveryCodeAccepted' | 'recoveryStarted';
 
-// Null means the wizard proceeds to the KYC steps: either nothing was ever
-// submitted, or the status could not be read and a redundant pass is the safe
-// guess — showing "we're reviewing" to someone who never submitted strands them.
-function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
-  switch (status) {
-    case KycStatus.Approved:
-      return 'approved';
-    case KycStatus.Rejected:
-      return reason === KycRejectionReason.StateNotSupported ? 'unsupportedState' : 'rejected';
-    case KycStatus.Pending:
-    case KycStatus.Review:
-      return 'reviewing';
-    case KycStatus.Unspecified:
-      return null;
-  }
-}
-
 // Best-effort: failing only costs the user a redundant pass through KYC entry,
-// so a transient status failure gets one delayed retry.
+// so a transient status failure gets one delayed retry. Null means the wizard
+// proceeds to the KYC steps: either nothing was ever submitted, or the status
+// could not be read and a redundant pass is the safe guess — showing "we're
+// reviewing" to someone who never submitted strands them.
 async function getResumeKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
   const check = async () => {
     const { kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken });

@@ -92,6 +92,22 @@ export enum KycRejectionReason {
 // Pending and Review are one state to the app: the provider has not decided yet.
 export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
 
+// Null only for Unspecified, which callers reinterpret per their own context
+// (e.g. "no outcome yet" vs. "not submitted").
+export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
+  switch (status) {
+    case KycStatus.Approved:
+      return 'approved';
+    case KycStatus.Rejected:
+      return reason === KycRejectionReason.StateNotSupported ? 'unsupportedState' : 'rejected';
+    case KycStatus.Pending:
+    case KycStatus.Review:
+      return 'reviewing';
+    case KycStatus.Unspecified:
+      return null;
+  }
+}
+
 export type CreateUserWithPhoneResult =
   | { outcome: 'created'; userId: string; resendAfter: number }
   | { outcome: 'registeredWithoutPasskey' }
