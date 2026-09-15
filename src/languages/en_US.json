@@ -1605,7 +1605,13 @@
           "subtitle": "This will be how you login in the future.",
           "placeholder": "Phone Number",
           "error": "We couldn't send a code to that number. Please try again.",
-          "already_registered": "This number is already connected to an account."
+          "already_registered": "This number is already connected to an account.",
+          "existing_account": {
+            "title": "You already have an account",
+            "description": "This phone number is linked to an existing account. Try signing in with your passkey first — recovery is only for when you no longer have access to it.",
+            "sign_in": "Sign In with Passkey",
+            "recover": "Recover Account"
+          }
         },
         "confirm_phone": {
           "title": "Confirm your phone",

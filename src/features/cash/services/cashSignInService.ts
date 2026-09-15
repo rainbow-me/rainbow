@@ -8,7 +8,7 @@ import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
 import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen';
+export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'existingAccountPrompt';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 
@@ -64,6 +64,6 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
 }
 
 // Signs in a device with no stored account: the phone number identifies the user instead.
-export async function signInWithPhone(nationalNumber: string): Promise<void> {
-  await runLoginCeremony('signInScreen', () => ({ phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber } }));
+export async function signInWithPhone(nationalNumber: string, trigger: CashSignInTrigger = 'signInScreen'): Promise<void> {
+  await runLoginCeremony(trigger, () => ({ phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber } }));
 }
