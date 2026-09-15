@@ -1665,7 +1665,7 @@ function useCandlestickChart({
   providedToken: Token;
 }) {
   const { candles, isFetchingInitialData } = useStableValue(prepareCandlestickData);
-  const config = useMemo(() => buildChartConfig(backgroundColor, providedConfig), [backgroundColor, providedConfig]);
+  const config = useStableValue(() => buildChartConfig(backgroundColor, providedConfig));
   const token = useStableValue(() => providedToken);
 
   const buildParagraph = useSkiaText({
