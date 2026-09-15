@@ -5,7 +5,7 @@ import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, Slide
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text } from '@/design-system';
+import { Box, Text, type TextProps } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -16,6 +16,7 @@ type HalfSheetAction = {
   loading?: boolean;
   onPress: () => void;
   testID: string;
+  textSize?: TextProps['size'];
 };
 
 type CommonProps = {
@@ -28,7 +29,7 @@ type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
     | { status: 'reviewing'; action: HalfSheetAction }
-    | { status: 'info'; action: HalfSheetAction }
+    | { status: 'info'; action: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -86,8 +87,11 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
           )}
 
           {(props.status === 'reviewing' || props.status === 'info') && (
-            <Box paddingTop="32px">
+            <Box gap={16} paddingTop="32px">
               <CashActionButton {...props.action} variant="tinted" />
+              {props.status === 'info' && props.secondaryAction && (
+                <CashActionButton {...props.secondaryAction} color="labelSecondary" textSize="17pt" variant="plain" />
+              )}
             </Box>
           )}
 

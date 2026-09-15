@@ -7,7 +7,7 @@ import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 
 type CashActionButtonProps = {
-  color?: 'blue' | 'red';
+  color?: 'blue' | 'red' | 'labelSecondary';
   disabled?: boolean;
   label: string;
   loading?: boolean;
