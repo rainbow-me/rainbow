@@ -46,8 +46,9 @@ import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
-import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
+import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS, SIDE_DRAWER } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { BrowserTabIcon } from '@/features/dapp-browser/components/BrowserTabIcon';
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/features/dapp-browser/constants/constants';
@@ -76,10 +77,12 @@ import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { MainListProvider, useMainList } from './MainListContext';
+import { MainSideDrawer } from './MainSideDrawer';
 import Routes, { type Route } from './routesNames';
 
 const DOUBLE_PRESS_DELAY = 400;
 const TAB_BAR_BORDER_RADIUS = BASE_TAB_BAR_HEIGHT / 2;
+const SwipeNavigatorContainer = getExperimentalFlag(SIDE_DRAWER) ? MainSideDrawer : React.Fragment;
 
 const TAB_BAR_ICONS = {
   [Routes.WALLET_SCREEN]: 'tabHome',
@@ -560,6 +563,11 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   );
 });
 
+function getDefaultTabBackgroundColor(isDarkMode: boolean): string {
+  'worklet';
+  return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
+}
+
 function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], isDarkMode: boolean): string {
   'worklet';
   switch (route) {
@@ -568,7 +576,7 @@ function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], 
     case Routes.RNBW_REWARDS_SCREEN:
       return isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT;
     default:
-      return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
+      return getDefaultTabBackgroundColor(isDarkMode);
   }
 }
 
@@ -685,6 +693,7 @@ function SwipeNavigatorScreens() {
       key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
+      sceneContainerStyle={styles.sceneContainer}
       screenOptions={getScreenOptions}
       tabBar={TabBarContainer}
       tabBarPosition="bottom"
@@ -724,23 +733,30 @@ function SwipeNavigatorScreens() {
 }
 
 export function SwipeNavigator() {
-  return (
-    <FlexItem backgroundColor={globalColors.white100}>
-      <BrowserTabBarContextProvider>
-        <MainListProvider>
-          <RecyclerListViewScrollToTopProvider>
-            <SwipeNavigatorScreens />
-          </RecyclerListViewScrollToTopProvider>
-        </MainListProvider>
-      </BrowserTabBarContextProvider>
+  const { isDarkMode } = useColorMode();
 
-      <PendingTransactionWatcher />
-      <AssetUpdateTransactionWatcher />
-    </FlexItem>
+  return (
+    <SwipeNavigatorContainer>
+      <FlexItem backgroundColor={getDefaultTabBackgroundColor(isDarkMode)}>
+        <BrowserTabBarContextProvider>
+          <MainListProvider>
+            <RecyclerListViewScrollToTopProvider>
+              <SwipeNavigatorScreens />
+            </RecyclerListViewScrollToTopProvider>
+          </MainListProvider>
+        </BrowserTabBarContextProvider>
+
+        <PendingTransactionWatcher />
+        <AssetUpdateTransactionWatcher />
+      </FlexItem>
+    </SwipeNavigatorContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  sceneContainer: {
+    backgroundColor: 'transparent',
+  },
   tabBarBackgroundFade: {
     bottom: 0,
     height: TAB_BAR_HEIGHT,

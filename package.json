@@ -323,6 +323,7 @@
     "react-native-get-random-values": "1.5.0",
     "react-native-image-colors": "2.5.1",
     "react-native-indicators": "0.17.0",
+    "react-native-interaction-primitives": "0.6.0",
     "react-native-ios-context-menu": "1.15.3",
     "react-native-keyboard-controller": "1.21.7",
     "react-native-keychain": "10.0.0",
