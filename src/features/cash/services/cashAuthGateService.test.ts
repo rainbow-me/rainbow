@@ -12,15 +12,22 @@ jest.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
+jest.mock('@/features/local-auth/legacyKeychain', () => ({}));
+
+jest.mock('uuid', () => ({ v4: jest.fn() }));
+
 jest.mock('./cardListService', () => ({
   loadLinkedCards: jest.fn(),
 }));
 
-jest.mock('../stores/cashBuyOrderStore', () => ({
-  cashBuyOrderActions: { resumeOrder: jest.fn() },
-  selectCashBuyPhase: ({ status }: { status: { step: string } }) => (status.step === 'idle' ? 'idle' : 'pending'),
-  useCashBuyOrderStore: { getState: jest.fn() },
-}));
+jest.mock('../stores/cashBuyOrderStore', () => {
+  const actual = jest.requireActual<typeof import('../stores/cashBuyOrderStore')>('../stores/cashBuyOrderStore');
+  return {
+    ...actual,
+    cashBuyOrderActions: { resumeOrder: jest.fn() },
+    useCashBuyOrderStore: { getState: jest.fn() },
+  };
+});
 
 jest.mock('./cashPasskeyService', () => ({
   isPasskeyCancellation: jest.fn(),
@@ -109,14 +116,22 @@ describe('openCashAuthGate', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
-  // Probing needs only the token; the cards load once the amount screen shows.
-  it('resumes an unresolved order instead of loading the cards', async () => {
-    mockBuyOrderState.mockReturnValue({ status: PROBING } as ReturnType<typeof useCashBuyOrderStore.getState>);
+  it.each([
+    ['idle', 'cards'],
+    ['submitting', 'order'],
+    ['probing', 'order'],
+    ['paused', 'order'],
+    ['polling', 'order'],
+    ['success', 'cards'],
+    ['notPlaced', 'cards'],
+    ['error', 'cards'],
+  ] satisfies [CashBuyStatus['step'], 'cards' | 'order'][])('routes %s through the %s continuation', async (step, intent) => {
+    mockBuyOrderState.mockReturnValue({ status: { step } } as ReturnType<typeof useCashBuyOrderStore.getState>);
 
     await openCashAuthGate();
 
-    expect(mockResumeOrder).toHaveBeenCalledTimes(1);
-    expect(mockLoadLinkedCards).not.toHaveBeenCalled();
+    expect(mockResumeOrder).toHaveBeenCalledTimes(intent === 'order' ? 1 : 0);
+    expect(mockLoadLinkedCards).toHaveBeenCalledTimes(intent === 'cards' ? 1 : 0);
     expect(gate()).toEqual({ step: 'closed' });
   });
 
