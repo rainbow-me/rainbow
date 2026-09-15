@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanim
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { analytics } from '@/analytics';
+import { toAnalyticsAmount } from '@/analytics/utils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -451,6 +452,10 @@ export const AddCashSheet = memo(function AddCashSheet() {
     setIsCheckingWallet(true);
 
     try {
+      analytics.track(analytics.event.cashAmountEntered, {
+        amount: toAnalyticsAmount(depositAmount),
+        entryMode: mode === 'presets' ? 'preset' : 'keypad',
+      });
       const status = await checkWalletLink(accountAddress, controller);
       if (controller.signal.aborted) return;
       if (status === 'needsLink') {
@@ -476,7 +481,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       }
       setIsCheckingWallet(false);
     }
-  }, [accountAddress, amount.useAddCashStore, funding, navigation]);
+  }, [accountAddress, amount.useAddCashStore, funding, mode, navigation]);
 
   const handleAddCard = useCallback(() => {
     navigation.navigate(Routes.CASH_DEPOSIT_SETUP_SCREEN);

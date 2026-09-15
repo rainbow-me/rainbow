@@ -3,8 +3,6 @@ import { useCallback } from 'react';
 import { createBaseStore, useStableValue, type Store } from '@storesjs/stores';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 
-import { analytics } from '@/analytics';
-import { toAnalyticsAmount } from '@/analytics/utils';
 import type { NumberPadProps } from '@/components/number-pad/NumberPad';
 import { useShakeAnimation } from '@/hooks/useShakeAnimation';
 
@@ -41,18 +39,8 @@ export function useAddCashAmount(defaultPresetAmount: number) {
       const nextAmount = String(presetAmount);
       setAmount(nextAmount);
       displayedAmount.value = nextAmount;
-      analytics.track(analytics.event.cashAmountEntered, { amount: toAnalyticsAmount(presetAmount), entryMode: 'preset' });
     },
     [displayedAmount, setAmount]
-  );
-
-  const onKeypadAmountChange = useCallback(
-    (nextAmount: string) => {
-      setAmount(nextAmount);
-      if (!isSubmittableCashAmount(nextAmount)) return;
-      analytics.track(analytics.event.cashAmountEntered, { amount: toAnalyticsAmount(nextAmount), entryMode: 'keypad' });
-    },
-    [setAmount]
   );
 
   const onValueChange = useCallback(
@@ -60,9 +48,9 @@ export function useAddCashAmount(defaultPresetAmount: number) {
       'worklet';
       const nextAmount = String(newValue);
       displayedAmount.value = nextAmount;
-      runOnJS(onKeypadAmountChange)(nextAmount);
+      runOnJS(setAmount)(nextAmount);
     },
-    [displayedAmount, onKeypadAmountChange]
+    [displayedAmount, setAmount]
   );
 
   const onBeforeChange = useCallback<NonNullable<NumberPadProps<CashFieldId>['onBeforeChange']>>(
