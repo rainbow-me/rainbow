@@ -81,7 +81,6 @@ export class Animator {
   private onFrame: (() => void) | undefined;
 
   private frameId: number | null = null;
-  private completionCallbacks = new Set<(wasRunning: boolean) => void>();
   private pendingCallbacks = new Set<AnimationCallback>();
 
   constructor(onFrame: () => void, settings?: AnimatorSettings) {
@@ -144,11 +143,6 @@ export class Animator {
   private stopAnimationLoop(): void {
     this.frameId = null;
     const releasedPrimer = primerOwners.animators.delete(this);
-
-    if (this.completionCallbacks.size) {
-      for (const cb of this.completionCallbacks) cb(true);
-      this.completionCallbacks.clear();
-    }
 
     if (!releasedPrimer || primerOwners.animators.size) return;
 
@@ -286,28 +280,6 @@ export class Animator {
   // ========== Public Utility Methods ==========
 
   /**
-   * @returns `true` if the animation loop is currently running.
-   */
-  public isRunningAnimationLoop(): boolean {
-    return this.frameId !== null && this.pendingCallbacks.size > 0;
-  }
-
-  /**
-   * Register a function to be called as soon as the animation loop is idle.
-   *
-   * Calls the function immediately if no animations are running.
-   *
-   * @param fn - Receives `wasRunning`, indicating whether the loop was running.
-   */
-  public runAfterAnimations(fn: (wasRunning: boolean) => void): void {
-    if (!this.isRunningAnimationLoop()) {
-      fn(false);
-      return;
-    }
-    this.completionCallbacks.add(fn);
-  }
-
-  /**
    * Call when the `Animator` is no longer needed.
    *
    * Clears and stops all pending animations and callbacks.
@@ -315,7 +287,6 @@ export class Animator {
   public dispose(): void {
     this.onFrame = undefined;
     this.frameId = null;
-    this.completionCallbacks.clear();
 
     for (const callback of this.pendingCallbacks) {
       callback.onFinish = undefined;
