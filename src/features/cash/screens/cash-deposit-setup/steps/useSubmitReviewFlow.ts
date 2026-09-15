@@ -186,15 +186,16 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       if (isStale()) return 'cancelled';
     }
 
-    switch (toKycOutcome(kycStatus, kycRejectionReason)) {
+    const kycOutcome = toKycOutcome(kycStatus, kycRejectionReason);
+    switch (kycOutcome) {
       case 'approved':
         analytics.track(analytics.event.cashKycApproved);
-        set({ state: 'approved' });
-        return 'approved';
+        set({ state: kycOutcome });
+        return kycOutcome;
       case 'unsupportedState':
         analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
-        set({ state: 'unsupportedState' });
-        return 'unsupportedState';
+        set({ state: kycOutcome });
+        return kycOutcome;
       default:
         analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
         set({ state: 'rejected' });
