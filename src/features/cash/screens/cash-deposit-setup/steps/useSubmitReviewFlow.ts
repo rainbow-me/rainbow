@@ -186,8 +186,6 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       if (isStale()) return 'cancelled';
     }
 
-    // isAwaitingDecision guarantees kycStatus is Approved or Rejected here, so
-    // toKycOutcome only ever yields one of these three cases.
     switch (toKycOutcome(kycStatus, kycRejectionReason)) {
       case 'approved':
         analytics.track(analytics.event.cashKycApproved);
