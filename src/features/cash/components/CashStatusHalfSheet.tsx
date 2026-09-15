@@ -5,7 +5,7 @@ import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, Slide
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text } from '@/design-system';
+import { Box, Text, type TextProps } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -16,6 +16,7 @@ type HalfSheetAction = {
   loading?: boolean;
   onPress: () => void;
   testID: string;
+  textSize?: TextProps['size'];
 };
 
 type CommonProps = {
@@ -28,6 +29,7 @@ type CashStatusPanelContent = CommonProps &
   (
     | { status: 'inProgress' }
     | { status: 'reviewing'; action: HalfSheetAction }
+    | { status: 'info'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'success'; action: HalfSheetAction; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
@@ -36,6 +38,7 @@ type CashStatusPanelContent = CommonProps &
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  info: '􀆪',
   reviewing: '􀐫',
   warning: '􀇾',
 } as const;
@@ -43,6 +46,7 @@ const STATUS_ICONS = {
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
+  info: 'labelQuaternary',
   reviewing: 'blue',
   success: 'green',
   warning: 'red',
@@ -88,7 +92,7 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Box>
           )}
 
-          {isAlert && (
+          {(isAlert || props.status === 'info') && (
             <Box gap={16} paddingTop="32px">
               <CashActionButton {...props.primaryAction} variant="tinted" />
               {props.secondaryAction && (

@@ -83,8 +83,30 @@ export enum KycStatus {
   Review = 'KYC_STATUS_REVIEW',
 }
 
+// Set only when kycStatus is Rejected.
+export enum KycRejectionReason {
+  Unspecified = 'KYC_REJECTION_REASON_UNSPECIFIED',
+  StateNotSupported = 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
+}
+
 // Pending and Review are one state to the app: the provider has not decided yet.
-export type KycOutcome = 'reviewing' | 'approved' | 'rejected';
+export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
+
+export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
+  switch (status) {
+    case KycStatus.Approved:
+      return 'approved';
+    case KycStatus.Rejected:
+      return reason === KycRejectionReason.StateNotSupported ? 'unsupportedState' : 'rejected';
+    case KycStatus.Pending:
+    case KycStatus.Review:
+      return 'reviewing';
+    case KycStatus.Unspecified:
+      return null;
+    default:
+      return null;
+  }
+}
 
 export type CreateUserWithPhoneResult =
   | { outcome: 'created'; userId: string; resendAfter: number }
@@ -116,6 +138,7 @@ type SubmitOnboardingRequest = {
 
 type SubmitOnboardingResponse = {
   kycStatus: KycStatus;
+  kycRejectionReason?: KycRejectionReason;
 };
 
 type GetUserStatusParams = {
@@ -171,6 +194,7 @@ type GetUserStatusResponse = {
   status: {
     kyc: {
       status: KycStatus;
+      reason?: KycRejectionReason;
     };
   };
 };
@@ -328,7 +352,9 @@ export async function finalizeAuth({
   return parseAccessCredential(data);
 }
 
-export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
+export async function getUserStatus({
+  bootstrapToken,
+}: GetUserStatusParams): Promise<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
@@ -337,7 +363,7 @@ export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Pr
   const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
     headers: buildAuthenticatedHeader(bootstrapToken),
   });
-  return { kycStatus: data.status.kyc.status };
+  return { kycStatus: data.status.kyc.status, kycRejectionReason: data.status.kyc.reason };
 }
 
 export async function startSignupResume({
