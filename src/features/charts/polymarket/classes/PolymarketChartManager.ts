@@ -10,7 +10,6 @@ import {
   type SkColor,
   type SkPaint,
   type SkParagraph,
-  type SkShader,
 } from '@shopify/react-native-skia';
 import { State as GestureState } from 'react-native-gesture-handler';
 import { type SharedValue } from 'react-native-reanimated';
@@ -333,11 +332,11 @@ export class PolymarketChartManager {
     paint.setColor(Skia.Color(this.config.grid.color));
     paint.setStrokeCap(StrokeCap.Round);
     paint.setStrokeWidth(this.config.grid.strokeWidth);
-    paint.setShader(this.createGridShader());
+    this.setGridShader(paint);
     return paint;
   }
 
-  private createGridShader(): SkShader {
+  private setGridShader(paint: SkPaint): void {
     const lineEndX = this.chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft - 8;
     const endAlpha = this.isDarkMode ? 0.05 : 0.0435;
     const startAlpha = this.isDarkMode ? 0.02 : 0.0175;
@@ -345,7 +344,9 @@ export class PolymarketChartManager {
     const startColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], startAlpha]);
     const endColor = Float32Array.from([gridColor[0], gridColor[1], gridColor[2], endAlpha]);
 
-    return Skia.Shader.MakeLinearGradient({ x: 0, y: 0 }, { x: lineEndX, y: 0 }, [startColor, endColor], null, TileMode.Clamp);
+    const shader = Skia.Shader.MakeLinearGradient({ x: 0, y: 0 }, { x: lineEndX, y: 0 }, [startColor, endColor], null, TileMode.Clamp);
+    paint.setShader(shader);
+    shader.dispose();
   }
 
   private createTextPaint(): SkPaint {
@@ -1009,7 +1010,7 @@ export class PolymarketChartManager {
       this.paints.endCircleShadow.setColorFilter(isDarkMode ? Skia.ColorFilter.MakeBlend(this.colors.black, BlendMode.SrcIn) : null);
     }
 
-    this.paints.grid.setShader(this.createGridShader());
+    this.setGridShader(this.paints.grid);
     this.paints.greyCircle.setColor(labelQuinary);
     this.paints.crosshairLine.setColor(this.colors.crosshairLine);
     this.paints.crosshairLine.setAlphaf(0.25);
