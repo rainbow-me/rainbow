@@ -1,6 +1,7 @@
 import { logger, RainbowError } from '@/logger';
 
 import { useCashAuthGateStore, type CashAuthIntent } from '../stores/cashAuthGateStore';
+import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore } from '../stores/cashBuyOrderStore';
 import { loadLinkedCards } from './cardListService';
 import { isPasskeyCancellation } from './cashPasskeyService';
 import { ensureAccessToken } from './cashSignInService';
@@ -9,11 +10,15 @@ type CashAuthGateResumeResult = 'completed' | 'authRequired';
 
 const RESUME_BY_INTENT: Record<CashAuthIntent['kind'], () => Promise<CashAuthGateResumeResult>> = {
   loadCards: loadLinkedCards,
+  resumeOrder: cashBuyOrderActions.resumeOrder,
 };
 
 /** Sheet entry: run what belongs behind the gate; the gate only opens if that needs a fresh sign-in. */
 export function openCashAuthGate(): Promise<void> {
-  return runIntent({ kind: 'loadCards' });
+  // An unresolved order outranks the card list: probing needs only the token, and the cards can load
+  // once the amount screen actually shows.
+  const hasPendingOrder = selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending';
+  return runIntent({ kind: hasPendingOrder ? 'resumeOrder' : 'loadCards' });
 }
 
 /** The user's Re-authenticate tap: one announced ceremony, then the parked intent continues. */

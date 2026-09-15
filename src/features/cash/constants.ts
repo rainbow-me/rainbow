@@ -11,6 +11,8 @@ export const USDC_DECIMALS = 6;
 export const ORDER_FAST_POLL_INTERVAL_MS = time.seconds(2);
 export const ORDER_FAST_POLL_DURATION_MS = time.minutes(5);
 export const ORDER_SLOW_POLL_INTERVAL_MS = time.seconds(15);
+export const ORDER_SUBMISSION_MAX_REPLAYS = 2;
+export const ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS = time.seconds(1);
 
 /** Each platform admits exactly one destination: production `usdc/base`, staging `usdc/arbitrum_testnet`. */
 export const CASH_BUY_DESTINATION_ASSET: RampAsset = {
