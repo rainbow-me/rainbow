@@ -534,9 +534,9 @@ export type EventProperties = {
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
   [event.cashAmountEntered]: {
-    /** The chosen USD amount. */
+    /** The USD amount confirmed with Hold to Add. */
     amount: number | undefined;
-    /** Which amount-entry surface the user used first. */
+    /** The amount-entry surface at confirmation. */
     entryMode: 'preset' | 'keypad';
   };
   [event.cashBuyOrderSubmitted]: {

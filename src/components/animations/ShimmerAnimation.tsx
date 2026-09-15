@@ -41,7 +41,7 @@ export function ShimmerAnimation({
 }: ShimmerAnimationProps) {
   const containerWidth = useSharedValue(width);
   const translateX = useSharedValue(0);
-  const opacityValue = useSharedValue(1);
+  const opacityValue = useSharedValue(enabled ? 1 : 0);
   const isEnabled = useSharedValue(enabled);
 
   const { colors } = useTheme();
