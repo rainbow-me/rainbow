@@ -1608,7 +1608,7 @@
           "existing_account": {
             "title": "You already have an account",
             "description": "This phone number is linked to an existing account. Try signing in with your passkey first — recovery is only for when you no longer have access to it.",
-            "sign_in": "Sign In with Passkey",
+            "sign_in": "Sign in with Passkey",
             "recover": "Recover Account"
           }
         },
