@@ -1,21 +1,11 @@
-import { useMemo } from 'react';
-
 import { type ColorMode } from '@/design-system/color/palettes';
-import { getColorForTheme, useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 export type PriceChangeColors = Readonly<{
   negative: string;
   neutral: string;
   positive: string;
 }>;
-
-export function usePriceChangeColors(): PriceChangeColors {
-  const negative = useForegroundColor('red');
-  const neutral = useForegroundColor('labelTertiary');
-  const positive = useForegroundColor('green');
-
-  return useMemo(() => ({ negative, neutral, positive }), [negative, neutral, positive]);
-}
 
 export function getPriceChangeColors(colorMode: ColorMode): PriceChangeColors {
   return {
