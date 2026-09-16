@@ -10,6 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
+import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { createSetupActionStore } from './setupAction';
 
@@ -54,7 +55,7 @@ export function createSetupContext() {
   }
 
   function focusInput(route: CashDepositSetupRoute): void {
-    if (!selectIsSetupScreenActive(useNavigationStore.getState())) return;
+    if (!selectIsSetupScreenActive(useNavigationStore.getState()) || useKycReturnFlowStore.getState().state !== 'idle') return;
     const input = inputs.get(route);
     if (input) {
       if (!input.isFocused()) input.focus();

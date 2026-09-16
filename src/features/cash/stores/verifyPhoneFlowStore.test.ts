@@ -59,7 +59,7 @@ const mockStartSignupResume = jest.mocked(startSignupResume);
 const track = jest.mocked(analytics.track);
 
 const CODE = '123456';
-const TOKEN = { bootstrapToken: 'bst_1', expiresAt: 1_750_000_000_000 };
+const TOKEN = { bootstrapToken: 'bst_1', expiresAt: Date.now() + 60_000 };
 const RESEND_AFTER = 1_750_000_030_000;
 
 const flow = () => useVerifyPhoneFlowStore.getState();

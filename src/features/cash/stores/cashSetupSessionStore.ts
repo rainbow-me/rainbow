@@ -45,13 +45,17 @@ type PhoneAlreadyRegisteredCashSetupSession = {
   phoneNationalNumber: string;
 };
 
-type VerifiedCashSetupSession = PersonalDetailsDraft & {
+type VerifiedCashSetupCredential = {
   status: 'phoneVerified';
   source: PhoneChallenge['kind'];
   phoneNationalNumber: string;
   bootstrapToken: string;
   bootstrapTokenExpiresAt: number;
 };
+
+type VerifiedCashSetupDraftSession = VerifiedCashSetupCredential & PersonalDetailsDraft & { kycSubmission: 'notSubmitted' };
+
+type VerifiedCashSetupSession = VerifiedCashSetupDraftSession | (VerifiedCashSetupCredential & { kycSubmission: 'submitted' });
 
 type CashSetupSession =
   | EmptyCashSetupSession
@@ -71,6 +75,7 @@ type CashSetupSessionStore = {
   setResendAfter: (challenge: PhoneChallenge, resendAfter: number) => void;
   replaceRecoveryChallenge: (challenge: RecoveryPhoneChallenge, next: RecoveryPhoneChallenge, resendAfter: number) => void;
   setPhoneVerified: (challenge: PhoneChallenge, credential: { bootstrapToken: string; expiresAt: number }) => void;
+  markKycSubmitted: (bootstrapToken: string) => void;
   setDateOfBirth: (dateOfBirth: CashSetupIdentityDraft['dateOfBirth']) => void;
   setFirstName: (firstName: string) => void;
   setLastName: (lastName: string) => void;
@@ -83,6 +88,38 @@ const EMPTY_IDENTITY: CashSetupIdentityDraft = { firstName: '', lastName: '', da
 
 // Intentionally memory-only (PII)
 export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((set, get) => {
+  let expirationTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function clearExpirationTimer() {
+    if (expirationTimer === null) return;
+    clearTimeout(expirationTimer);
+    expirationTimer = null;
+  }
+
+  function setExpirationTimer(expire: () => void, delay: number) {
+    expirationTimer = setTimeout(expire, delay);
+    if (typeof expirationTimer === 'object') expirationTimer.unref();
+  }
+
+  function scheduleExpiration(bootstrapToken: string, expiresAt: number) {
+    clearExpirationTimer();
+    const expire = () => {
+      expirationTimer = null;
+      const { session } = get();
+      if (session.status !== 'phoneVerified' || session.bootstrapToken !== bootstrapToken) return;
+      const remaining = session.bootstrapTokenExpiresAt - Date.now();
+      if (remaining > 0) {
+        setExpirationTimer(expire, remaining);
+        return;
+      }
+      set({ session: EMPTY_SESSION });
+    };
+
+    const remaining = expiresAt - Date.now();
+    if (remaining > 0) setExpirationTimer(expire, remaining);
+    else expire();
+  }
+
   function setIdentityField<Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) {
     set(state => {
       const { session } = state;
@@ -109,7 +146,8 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
       const { session } = get();
       return (session.status === 'phoneSubmitted' || session.status === 'recovery') && session.challenge === challenge;
     },
-    setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) =>
+    setPhoneSubmitted: ({ challenge, phoneNationalNumber, resendAfter }) => {
+      clearExpirationTimer();
       set({
         session:
           challenge.kind === 'recovery'
@@ -122,8 +160,12 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
                 ssnLast4: '',
               }
             : { status: 'phoneSubmitted', challenge, phoneNationalNumber, resendAfter },
-      }),
-    setPhoneAlreadyRegistered: phoneNationalNumber => set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } }),
+      });
+    },
+    setPhoneAlreadyRegistered: phoneNationalNumber => {
+      clearExpirationTimer();
+      set({ session: { status: 'phoneAlreadyRegistered', phoneNationalNumber } });
+    },
     setResendAfter: (challenge, resendAfter) =>
       set(state => {
         const { session } = state;
@@ -141,10 +183,12 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
         if (session.status !== 'recovery' || session.challenge !== challenge) return state;
         return { session: { ...session, challenge: next, resendAfter } };
       }),
-    setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) =>
+    setPhoneVerified: (challenge, { bootstrapToken, expiresAt }) => {
+      let didVerify = false;
       set(state => {
         const { session } = state;
         if ((session.status !== 'phoneSubmitted' && session.status !== 'recovery') || session.challenge !== challenge) return state;
+        didVerify = true;
         return {
           session: {
             status: 'phoneVerified',
@@ -152,8 +196,28 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
             phoneNationalNumber: session.phoneNationalNumber,
             bootstrapToken,
             bootstrapTokenExpiresAt: expiresAt,
+            kycSubmission: 'notSubmitted',
             identity: session.status === 'recovery' ? session.identity : EMPTY_IDENTITY,
             ssnLast4: session.status === 'recovery' ? session.ssnLast4 : '',
+          },
+        };
+      });
+      if (didVerify) scheduleExpiration(bootstrapToken, expiresAt);
+    },
+    markKycSubmitted: bootstrapToken =>
+      set(state => {
+        const { session } = state;
+        if (session.status !== 'phoneVerified' || session.bootstrapToken !== bootstrapToken || session.kycSubmission === 'submitted') {
+          return state;
+        }
+        return {
+          session: {
+            status: 'phoneVerified',
+            source: session.source,
+            phoneNationalNumber: session.phoneNationalNumber,
+            bootstrapToken: session.bootstrapToken,
+            bootstrapTokenExpiresAt: session.bootstrapTokenExpiresAt,
+            kycSubmission: 'submitted',
           },
         };
       }),
@@ -167,7 +231,10 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
         if (!hasIdentityDraft(session) || session.ssnLast4 === ssnLast4) return state;
         return { session: { ...session, ssnLast4 } };
       }),
-    reset: () => set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION })),
+    reset: () => {
+      clearExpirationTimer();
+      set(state => (state.session === EMPTY_SESSION ? state : { session: EMPTY_SESSION }));
+    },
   };
 });
 
@@ -175,10 +242,16 @@ export function selectIsPhoneVerified(state: CashSetupSessionStore): boolean {
   return state.session.status === 'phoneVerified' && state.session.bootstrapTokenExpiresAt > Date.now();
 }
 
+export function selectCanSubmitReview(state: CashSetupSessionStore): boolean {
+  return (
+    state.session.status === 'recovery' || (state.session.status === 'phoneVerified' && state.session.kycSubmission === 'notSubmitted')
+  );
+}
+
 export function selectResendAfter(state: CashSetupSessionStore): number | null {
   return state.session.status === 'phoneSubmitted' || state.session.status === 'recovery' ? state.session.resendAfter : null;
 }
 
-function hasIdentityDraft(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupSession {
-  return session.status === 'recovery' || session.status === 'phoneVerified';
+function hasIdentityDraft(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupDraftSession {
+  return session.status === 'recovery' || (session.status === 'phoneVerified' && session.kycSubmission === 'notSubmitted');
 }
