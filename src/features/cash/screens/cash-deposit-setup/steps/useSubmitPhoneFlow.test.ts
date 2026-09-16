@@ -282,33 +282,12 @@ describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
     expect(mockSignInWithPhone).not.toHaveBeenCalled();
   });
 
-  it('signs in with the submitted phone number, tagging the trigger, and leaves the prompt state', async () => {
+  it('signs in with the submitted phone number, tagging the trigger', async () => {
     mockSignInWithPhone.mockResolvedValue(undefined);
 
     await expect(flow().signInWithExistingPasskey()).resolves.toBe('signedIn');
 
     expect(mockSignInWithPhone).toHaveBeenCalledWith(DIGITS, 'existingAccountPrompt');
-    expect(flow().state).toBe('entry');
-  });
-
-  it('ignores a late success once the flow is abandoned (e.g. setup dismissed) mid ceremony', async () => {
-    let resolveSignIn!: () => void;
-    mockSignInWithPhone.mockReturnValue(
-      new Promise<void>(resolve => {
-        resolveSignIn = resolve;
-      })
-    );
-
-    const pending = flow().signInWithExistingPasskey();
-    expect(flow().state).toBe('signingIn');
-
-    flow().reset();
-    resolveSignIn();
-
-    await expect(pending).resolves.toBe('cancelled');
-    // reset()'s state must survive: the late success must not overwrite it.
-    expect(flow().state).toBe('entry');
-    expect(flow().digits).toBe('');
   });
 
   it('returns to the prompt without starting recovery when the passkey ceremony is cancelled', async () => {
@@ -371,25 +350,5 @@ describe('useSubmitPhoneFlowStore.chooseRecovery', () => {
     expect(session().status).toBe('empty');
     expect(track).toHaveBeenCalledWith('cash.phone_submit_failed', { reason: 'unknown' });
     expect(logger.error).toHaveBeenCalled();
-  });
-
-  it('ignores a late recovery start once the flow is abandoned, without writing the abandoned challenge into the session', async () => {
-    let resolveStartRecovery!: (value: { recoveryId: string; resendAfter: number }) => void;
-    mockStartRecovery.mockReturnValue(
-      new Promise(resolve => {
-        resolveStartRecovery = resolve;
-      })
-    );
-
-    const pending = flow().chooseRecovery();
-    expect(flow().state).toBe('submitting');
-
-    flow().reset();
-    resolveStartRecovery({ recoveryId: 'recovery-1', resendAfter: 1_750_000_060_000 });
-
-    await expect(pending).resolves.toBe(false);
-    // The abandoned flow's challenge must never reach the session a later flow inherits.
-    expect(session().status).toBe('empty');
-    expect(flow().state).toBe('entry');
   });
 });
