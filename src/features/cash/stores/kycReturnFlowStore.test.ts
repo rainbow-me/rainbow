@@ -28,13 +28,7 @@ jest.mock('@/utils/delay', () => ({
 }));
 
 jest.mock('../services/userClient', () => ({
-  KycStatus: {
-    Unspecified: 'KYC_STATUS_UNSPECIFIED',
-    Pending: 'KYC_STATUS_PENDING',
-    Approved: 'KYC_STATUS_APPROVED',
-    Rejected: 'KYC_STATUS_REJECTED',
-    Review: 'KYC_STATUS_REVIEW',
-  },
+  ...jest.requireActual('../services/userClient'),
   getUserStatus: jest.fn(),
 }));
 
@@ -62,6 +56,12 @@ beforeEach(() => {
   mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Unspecified });
 });
 
+afterEach(() => {
+  useCashSetupSessionStore.getState().reset();
+  jest.restoreAllMocks();
+  jest.useRealTimers();
+});
+
 describe('useKycReturnFlowStore.check', () => {
   it.each([
     { kycStatus: KycStatus.Approved, expected: 'approved' },
@@ -76,7 +76,11 @@ describe('useKycReturnFlowStore.check', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledWith({ bootstrapToken: BOOTSTRAP_TOKEN });
     expect(flow().state).toBe(expected);
-    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: BOOTSTRAP_TOKEN });
+    expect(session()).toMatchObject({
+      status: 'phoneVerified',
+      bootstrapToken: BOOTSTRAP_TOKEN,
+      kycSubmission: 'submitted',
+    });
   });
 
   it.each([
@@ -99,6 +103,17 @@ describe('useKycReturnFlowStore.check', () => {
 
     expect(flow().state).toBe('idle');
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: BOOTSTRAP_TOKEN });
+    expect(track).not.toHaveBeenCalled();
+  });
+
+  it('treats an unrecognized provider status as no submitted KYC outcome', async () => {
+    verifyPhone();
+    mockGetUserStatus.mockResolvedValue({ kycStatus: 'KYC_STATUS_FUTURE' as KycStatus });
+
+    await expect(flow().check()).resolves.toBe('notSubmitted');
+
+    expect(flow().state).toBe('idle');
+    expect(session()).toMatchObject({ status: 'phoneVerified', kycSubmission: 'notSubmitted' });
     expect(track).not.toHaveBeenCalled();
   });
 
@@ -171,6 +186,23 @@ describe('useKycReturnFlowStore.check', () => {
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
     expect(session()).toEqual({ status: 'empty' });
+  });
+
+  it('does not publish a status response that lands after the credential expires', async () => {
+    jest.useFakeTimers();
+    const now = Date.now();
+    const status = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    verifyPhone(now + 1_000);
+    mockGetUserStatus.mockReturnValue(status.promise);
+
+    const pending = flow().check();
+    jest.advanceTimersByTime(1_000);
+    expect(session()).toEqual({ status: 'empty' });
+    status.resolve({ kycStatus: KycStatus.Approved });
+
+    await expect(pending).resolves.toBe('expired');
+    expect(flow().state).toBe('idle');
+    expect(track).not.toHaveBeenCalled();
   });
 
   it('never enrols a second account on a device that already recorded one', async () => {

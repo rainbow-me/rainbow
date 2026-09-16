@@ -15,16 +15,17 @@ function continueAfterKyc() {
 export const KycReturnCheck = memo(function KycReturnCheck({ children }: { children: ReactNode }) {
   const [isChecking, setIsChecking] = useState(getShouldCheckKycOnReturn);
   const check = useRef<Promise<KycReturnResult> | null>(null);
+  const active = useRef(false);
   const state = useKycReturnFlowStore(store => store.state);
 
   useLayoutEffect(() => {
     if (!isChecking) return;
-    let active = true;
-    void (check.current ??= checkKycOnReturn()).then(() => {
-      if (active) setIsChecking(false);
+    active.current = true;
+    void (check.current ??= checkKycOnReturn(() => active.current)).then(() => {
+      if (active.current) setIsChecking(false);
     });
     return () => {
-      active = false;
+      active.current = false;
     };
   }, [isChecking]);
 

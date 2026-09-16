@@ -58,9 +58,9 @@ export async function submitReview(): Promise<void> {
   else if (result === 'phoneCodeRequired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
 }
 
-export async function checkKycOnReturn(): Promise<KycReturnResult> {
+export async function checkKycOnReturn(isActive: () => boolean): Promise<KycReturnResult> {
   const result = await useKycReturnFlowStore.getState().check();
-  if (result === 'expired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PHONE);
+  if (result === 'expired' && isActive()) CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PHONE);
   return result;
 }
 

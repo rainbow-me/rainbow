@@ -244,7 +244,8 @@ export function selectIsPhoneVerified(state: CashSetupSessionStore): boolean {
 
 export function selectCanSubmitReview(state: CashSetupSessionStore): boolean {
   return (
-    state.session.status === 'recovery' || (state.session.status === 'phoneVerified' && state.session.kycSubmission === 'notSubmitted')
+    state.session.status === 'recovery' ||
+    (state.session.status === 'phoneVerified' && state.session.kycSubmission === 'notSubmitted' && selectIsPhoneVerified(state))
   );
 }
 

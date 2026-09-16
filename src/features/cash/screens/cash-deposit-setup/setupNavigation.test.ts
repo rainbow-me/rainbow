@@ -61,6 +61,15 @@ describe('endSetupSession', () => {
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: 'bst_1', kycSubmission: 'submitted' });
   });
 
+  it('conservatively keeps an in-flight submission non-submittable after teardown', () => {
+    verifyPhone();
+    useSubmitReviewFlowStore.setState({ state: 'submitting' });
+
+    endSetupSession();
+
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: 'bst_1', kycSubmission: 'submitted' });
+  });
+
   it('drops an expired verification', () => {
     verifyPhone(Date.now() - 1);
 

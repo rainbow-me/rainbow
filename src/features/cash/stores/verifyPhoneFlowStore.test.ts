@@ -116,7 +116,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
 
     expect(mockFinishSignupResume).toHaveBeenCalledWith({ resumeId: 'rcv_1', code: CODE });
     expect(mockVerifyPhone).not.toHaveBeenCalled();
-    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+    expect(session()).toMatchObject({
+      status: 'phoneVerified',
+      bootstrapToken: TOKEN.bootstrapToken,
+      kycSubmission: 'notSubmitted',
+    });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
   });
 
@@ -135,7 +139,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledWith({ bootstrapToken: TOKEN.bootstrapToken });
     expect(flow().kycOutcome).toBe(expected);
-    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+    expect(session()).toMatchObject({
+      status: 'phoneVerified',
+      bootstrapToken: TOKEN.bootstrapToken,
+      kycSubmission: 'submitted',
+    });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
     expect(flow().state).toBe('submitted');
   });
@@ -178,6 +186,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     await expect(flow().submit()).resolves.toBe('verified');
 
     expect(flow().kycOutcome).toBeNull();
+    expect(session()).toMatchObject({ status: 'phoneVerified', kycSubmission: 'notSubmitted' });
   });
 
   it('retries a failed resume status check once after a delay', async () => {
@@ -190,7 +199,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(mockDelay).toHaveBeenCalledWith(2000);
     expect(flow().kycOutcome).toBe('approved');
-    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+    expect(session()).toMatchObject({
+      status: 'phoneVerified',
+      bootstrapToken: TOKEN.bootstrapToken,
+      kycSubmission: 'submitted',
+    });
   });
 
   it('keeps the verification and falls back to the KYC entry flow when the resume status check keeps failing', async () => {
@@ -202,7 +215,11 @@ describe('useVerifyPhoneFlowStore.submit', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(flow().kycOutcome).toBeNull();
-    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+    expect(session()).toMatchObject({
+      status: 'phoneVerified',
+      bootstrapToken: TOKEN.bootstrapToken,
+      kycSubmission: 'notSubmitted',
+    });
     expect(track).toHaveBeenCalledWith('cash.phone_verified', { mode: 'resume' });
     expect(track).not.toHaveBeenCalledWith('cash.phone_verify_failed', expect.anything());
   });

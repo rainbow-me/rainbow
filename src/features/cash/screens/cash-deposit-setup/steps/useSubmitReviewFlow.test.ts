@@ -5,7 +5,7 @@ import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { selectCanSubmitReview, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
 jest.mock('@/analytics', () => ({
@@ -108,6 +108,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
   it('does not resubmit a KYC application that was already accepted', async () => {
     session().markKycSubmitted(TOKEN);
+    expect(selectCanSubmitReview(session())).toBe(false);
 
     await expect(flow().submit()).resolves.toBe('skipped');
 

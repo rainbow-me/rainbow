@@ -69,20 +69,28 @@ describe('checkKycOnReturn', () => {
     CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);
   });
 
-  it('falls back to the Phone step when the retained session expired', async () => {
+  it('falls back to the Phone step when the mounted return check reports expiry', async () => {
     const result = 'expired';
     mockCheck.mockResolvedValue(result);
 
-    await expect(checkKycOnReturn()).resolves.toBe(result);
+    await expect(checkKycOnReturn(() => true)).resolves.toBe(result);
 
     expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_PHONE);
     expect(useCashDepositSetupNavigationStore.getState().history).toEqual([]);
   });
 
+  it('does not navigate when expiry lands after the return-check caller unmounts', async () => {
+    mockCheck.mockResolvedValue('expired');
+
+    await expect(checkKycOnReturn(() => false)).resolves.toBe('expired');
+
+    expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_IDENTITY);
+  });
+
   it.each(['outcome', 'notSubmitted', 'cancelled', 'skipped'] as const)('stays put on %s', async result => {
     mockCheck.mockResolvedValue(result);
 
-    await expect(checkKycOnReturn()).resolves.toBe(result);
+    await expect(checkKycOnReturn(() => true)).resolves.toBe(result);
 
     expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_IDENTITY);
   });

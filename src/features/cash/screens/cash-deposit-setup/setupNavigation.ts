@@ -51,6 +51,9 @@ export function goBackInSetup(): void {
 export function endSetupSession(): void {
   const sessionStore = useCashSetupSessionStore.getState();
   const { session } = sessionStore;
+  if (session.status === 'phoneVerified' && useSubmitReviewFlowStore.getState().state === 'submitting') {
+    sessionStore.markKycSubmitted(session.bootstrapToken);
+  }
   const keep =
     session.status === 'phoneVerified' &&
     session.source !== 'recovery' &&

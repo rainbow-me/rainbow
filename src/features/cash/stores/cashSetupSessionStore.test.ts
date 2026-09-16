@@ -1,4 +1,4 @@
-import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
+import { selectCanSubmitReview, useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 
 const NOW = 1_750_000_000_000;
 const CHALLENGE: PhoneVerificationChallenge = { kind: 'signup', userId: 'user-1' };
@@ -54,4 +54,22 @@ it('removes personal details once KYC is submitted while retaining the credentia
     bootstrapTokenExpiresAt: NOW + 60_000,
     kycSubmission: 'submitted',
   });
+});
+
+it('clears a submitted session when its bootstrap credential expires', () => {
+  verifyPhone();
+  store().markKycSubmitted(BOOTSTRAP_TOKEN);
+
+  jest.advanceTimersByTime(60_000);
+
+  expect(store().session).toEqual({ status: 'empty' });
+});
+
+it('does not allow review submission after the bootstrap credential expires by wall clock', () => {
+  verifyPhone();
+  expect(selectCanSubmitReview(store())).toBe(true);
+
+  jest.setSystemTime(NOW + 60_000);
+
+  expect(selectCanSubmitReview(store())).toBe(false);
 });

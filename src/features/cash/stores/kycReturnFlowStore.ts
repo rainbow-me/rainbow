@@ -39,23 +39,40 @@ export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, g
     set({ run, state: 'checking' });
     const isStale = () => get().run !== run;
 
-    let outcome: KycOutcome | null;
+    let outcome: KycOutcome | null = null;
+    let readError: unknown;
     try {
       outcome = await readKycOutcome(session.bootstrapToken);
     } catch (error) {
-      if (isStale()) return 'cancelled';
-      logger.warn('[kycReturnFlowStore]: KYC status check failed', { error });
-      outcome = session.kycSubmission === 'submitted' ? 'reviewing' : null;
+      readError = error;
     }
     if (isStale()) return 'cancelled';
 
+    const currentSessionStore = useCashSetupSessionStore.getState();
+    const currentSession = currentSessionStore.session;
+    if (currentSession.status !== 'phoneVerified' || currentSession.bootstrapToken !== session.bootstrapToken) {
+      set({ run: null, state: 'idle' });
+      return currentSession.status === 'empty' && Date.now() >= session.bootstrapTokenExpiresAt ? 'expired' : 'cancelled';
+    }
+    if (!selectIsPhoneVerified(currentSessionStore)) {
+      currentSessionStore.reset();
+      set({ run: null, state: 'idle' });
+      return 'expired';
+    }
+
+    if (readError !== undefined) {
+      logger.warn('[kycReturnFlowStore]: KYC status check failed', { error: readError });
+      outcome = currentSession.kycSubmission === 'submitted' ? 'reviewing' : null;
+    }
+
     if (outcome === null) {
-      if (session.kycSubmission === 'notSubmitted') {
+      if (currentSession.kycSubmission === 'notSubmitted') {
         set({ run: null, state: 'idle' });
         return 'notSubmitted';
       }
       outcome = 'reviewing';
     }
+    currentSessionStore.markKycSubmitted(session.bootstrapToken);
     trackKycOutcome(outcome, 'return');
     set({ state: outcome });
     return 'outcome';

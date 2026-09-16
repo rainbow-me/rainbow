@@ -91,7 +91,10 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       // A resumed account may have submitted KYC in an earlier signup attempt. Best-effort:
       // failing only costs the user a redundant pass through KYC entry.
       const kycOutcome = challenge.kind === 'resume' ? await readKycOutcome(result.bootstrapToken).catch(() => null) : null;
-      if (kycOutcome) trackKycOutcome(kycOutcome, 'resume');
+      if (kycOutcome) {
+        sessionStore.markKycSubmitted(result.bootstrapToken);
+        trackKycOutcome(kycOutcome, 'resume');
+      }
       // Keep the retained OTP input disabled without leaving setup controls loading.
       set({ kycOutcome, state: 'submitted' });
       return kycOutcome ? 'verifiedKycOutcome' : 'verified';
