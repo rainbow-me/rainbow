@@ -8,10 +8,10 @@ import { delay } from '@/utils/delay';
 import {
   finishSignupResume,
   getUserStatus,
-  KycStatus,
   resendPhoneCode,
   startRecovery,
   startSignupResume,
+  toKycOutcome,
   verifyPhone,
   type KycOutcome,
 } from '../services/userClient';
@@ -24,27 +24,16 @@ export type VerifyPhoneState = 'entry' | 'verifying' | 'submitted' | 'error';
 
 export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | 'recoveryCodeAccepted' | 'recoveryStarted';
 
-// Null means the wizard proceeds to the KYC steps: either nothing was ever
-// submitted, or the status could not be read and a redundant pass is the safe
-// guess — showing "we're reviewing" to someone who never submitted strands them.
-function toKycOutcome(status: KycStatus): KycOutcome | null {
-  switch (status) {
-    case KycStatus.Approved:
-      return 'approved';
-    case KycStatus.Rejected:
-      return 'rejected';
-    case KycStatus.Pending:
-    case KycStatus.Review:
-      return 'reviewing';
-    case KycStatus.Unspecified:
-      return null;
-  }
-}
-
 // Best-effort: failing only costs the user a redundant pass through KYC entry,
-// so a transient status failure gets one delayed retry.
+// so a transient status failure gets one delayed retry. Null means the wizard
+// proceeds to the KYC steps: either nothing was ever submitted, or the status
+// could not be read and a redundant pass is the safe guess — showing "we're
+// reviewing" to someone who never submitted strands them.
 async function getResumeKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
-  const check = async () => toKycOutcome((await getUserStatus({ bootstrapToken })).kycStatus);
+  const check = async () => {
+    const { kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken });
+    return toKycOutcome(kycStatus, kycRejectionReason);
+  };
   return check()
     .catch(() => delay(time.seconds(2)).then(check))
     .catch(() => null);
@@ -122,6 +111,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       if (kycOutcome === 'approved') analytics.track(analytics.event.cashKycApproved);
       else if (kycOutcome === 'reviewing') analytics.track(analytics.event.cashKycAwaitingDecision, { source: 'resume' });
       else if (kycOutcome === 'rejected') analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
+      else if (kycOutcome === 'unsupportedState') analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
       // Keep the retained OTP input disabled without leaving setup controls loading.
       set({ kycOutcome, state: 'submitted' });
       return kycOutcome ? 'verifiedKycOutcome' : 'verified';
