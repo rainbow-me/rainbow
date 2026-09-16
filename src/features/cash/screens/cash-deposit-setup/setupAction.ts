@@ -40,7 +40,7 @@ export async function signInToExistingAccount(): Promise<void> {
 
 export async function recoverExistingAccount(): Promise<void> {
   if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
-  if (await useSubmitPhoneFlowStore.getState().chooseRecovery()) {
+  if ((await useSubmitPhoneFlowStore.getState().chooseRecovery()) && CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) {
     completeSetupStep();
   }
 }
