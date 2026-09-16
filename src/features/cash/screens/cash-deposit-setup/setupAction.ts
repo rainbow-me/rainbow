@@ -33,7 +33,11 @@ async function submitPhone(): Promise<void> {
 }
 
 export async function signInToExistingAccount(): Promise<void> {
-  if ((await useSubmitPhoneFlowStore.getState().signInWithExistingPasskey()) === 'signedIn') {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if (
+    (await useSubmitPhoneFlowStore.getState().signInWithExistingPasskey()) === 'signedIn' &&
+    CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)
+  ) {
     completeSetup();
   }
 }

@@ -23,6 +23,9 @@ export type SignInWithExistingPasskeyResult = 'signedIn' | 'cancelled' | 'failed
 type SubmitPhoneFlowStore = {
   state: SubmitPhoneState;
   digits: string;
+  // Identifies one in-flight request so an abandoned flow (setup dismissed or reset while
+  // awaiting a network call) cannot write session/state updates into a later flow once it settles.
+  run: object | null;
   setDigits: (text: string) => void;
   submit: () => Promise<boolean>;
   signInWithExistingPasskey: () => Promise<SignInWithExistingPasskeyResult>;
@@ -48,20 +51,26 @@ function clearPhoneAlreadyRegistered() {
 }
 
 // Starts a phone-verification challenge and advances the setup session to it, or falls back to 'error' state on failure.
+// `isStale` reports whether the flow that requested this challenge has since been abandoned
+// (setup dismissed/reset, or a newer request started) so its result is discarded instead of
+// overwriting whatever the store or session now hold.
 async function advanceToChallenge(
   startChallenge: () => Promise<{ challenge: PhoneChallenge; resendAfter: number }>,
   digits: string,
+  isStale: () => boolean,
   set: (partial: Partial<SubmitPhoneFlowStore>) => void
 ): Promise<boolean> {
   try {
     const { challenge, resendAfter } = await startChallenge();
+    if (isStale()) return false;
     useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
     // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
     useVerifyPhoneFlowStore.getState().reset();
     analytics.track(analytics.event.cashPhoneSubmitted, { mode: challenge.kind });
-    set({ state: 'entry' });
+    set({ run: null, state: 'entry' });
     return true;
   } catch (e) {
+    if (isStale()) return false;
     logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to start phone verification challenge', e));
     analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
     set({ state: 'error' });
@@ -72,6 +81,7 @@ async function advanceToChallenge(
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
   state: 'entry',
   digits: '',
+  run: null,
 
   setDigits: text => {
     const { state } = get();
@@ -93,14 +103,17 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     }
 
     clearPhoneAlreadyRegistered();
-    set({ state: 'submitting' });
+    const run = {};
+    set({ run, state: 'submitting' });
+    const isStale = () => get().run !== run;
     try {
       const result = await createUserWithPhone({ nationalNumber: digits });
+      if (isStale()) return false;
 
       if (result.outcome === 'alreadyRegistered') {
         analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: result.outcome });
         useCashSetupSessionStore.getState().setPhoneAlreadyRegistered(digits);
-        set({ state: 'entry' });
+        set({ run: null, state: 'entry' });
         return false;
       }
 
@@ -118,8 +131,9 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
               resendAfter: result.resendAfter,
             })
           : () => startResume(digits);
-      return await advanceToChallenge(startChallenge, digits, set);
+      return await advanceToChallenge(startChallenge, digits, isStale, set);
     } catch (e) {
+      if (isStale()) return false;
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });
@@ -134,11 +148,16 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     const { digits, state } = get();
     if (state !== 'existingAccount') return 'failed';
 
-    set({ state: 'signingIn' });
+    const run = {};
+    set({ run, state: 'signingIn' });
+    const isStale = () => get().run !== run;
     try {
       await signInWithPhone(digits, 'existingAccountPrompt');
+      if (isStale()) return 'cancelled';
+      set({ run: null, state: 'entry' });
       return 'signedIn';
     } catch (e) {
+      if (isStale()) return 'cancelled';
       if (isPasskeyCancellation(e)) {
         set({ state: 'existingAccount' });
         return 'cancelled';
@@ -155,12 +174,18 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     if (state !== 'existingAccount') return false;
 
     analytics.track(analytics.event.cashExistingAccountRecoverySelected);
-    set({ state: 'submitting' });
-    return advanceToChallenge(() => startAccountRecovery(digits), digits, set);
+    const run = {};
+    set({ run, state: 'submitting' });
+    return advanceToChallenge(
+      () => startAccountRecovery(digits),
+      digits,
+      () => get().run !== run,
+      set
+    );
   },
 
   reset: () => {
     clearPhoneAlreadyRegistered();
-    set({ digits: '', state: 'entry' });
+    set({ run: null, digits: '', state: 'entry' });
   },
 }));
