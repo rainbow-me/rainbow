@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
-import { getPasskeyAssertion } from './cashPasskeyService';
+import { cancelPasskeyRequest, getPasskeyAssertion } from './cashPasskeyService';
 import { ensureAccessToken, signInWithPhone } from './cashSignInService';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
@@ -25,6 +25,7 @@ jest.mock('./userClient', () => ({
 }));
 
 jest.mock('./cashPasskeyService', () => ({
+  cancelPasskeyRequest: jest.fn(),
   getPasskeyAssertion: jest.fn(),
   isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
@@ -32,6 +33,7 @@ jest.mock('./cashPasskeyService', () => ({
 const mockStartLogin = startLogin as jest.Mock;
 const mockFinishLogin = finishLogin as jest.Mock;
 const mockFinalizeAuth = finalizeAuth as jest.Mock;
+const mockCancelPasskeyRequest = cancelPasskeyRequest as jest.Mock;
 const mockGetPasskeyAssertion = getPasskeyAssertion as jest.Mock;
 const track = analytics.track as jest.Mock;
 
@@ -46,9 +48,14 @@ beforeEach(() => {
   useCashAccountStore.getState().setUserId(USER_ID);
   tokenStore().clearToken();
   mockStartLogin.mockResolvedValue({ sessionId: 'sess-1', sessionToken: 'tok-1', publicKeyOptionsJson: OPTIONS_JSON });
+  mockCancelPasskeyRequest.mockResolvedValue(undefined);
   mockGetPasskeyAssertion.mockResolvedValue(ASSERTION_JSON);
   mockFinishLogin.mockResolvedValue({ sessionId: 'sess-2', sessionToken: 'tok-2', userId: 'user-2' });
   mockFinalizeAuth.mockResolvedValue({ accessToken: 'jwt-1', expiresAt: Date.now() + 3_600_000 });
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 describe('ensureAccessToken', () => {
@@ -126,6 +133,42 @@ describe('ensureAccessToken', () => {
     mockFinishLogin.mockRejectedValueOnce(new Error('login rejected'));
 
     await expect(ensureAccessToken('cardLink')).rejects.toThrow('login rejected');
+    await expect(ensureAccessToken('cardLink')).resolves.toBe('jwt-1');
+    expect(mockStartLogin).toHaveBeenCalledTimes(2);
+  });
+
+  it('times out a stuck passkey assertion and allows a fresh shared ceremony', async () => {
+    jest.useFakeTimers();
+    let resolveStuckAssertion: (assertion: string) => void;
+    mockGetPasskeyAssertion.mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          resolveStuckAssertion = resolve;
+        })
+    );
+
+    const first = ensureAccessToken('cardLink');
+    const concurrent = ensureAccessToken('cardLink');
+    await Promise.resolve();
+
+    const results = Promise.allSettled([first, concurrent]);
+    await jest.advanceTimersByTimeAsync(120_000);
+    await expect(results).resolves.toEqual([
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+    ]);
+
+    expect(mockStartLogin).toHaveBeenCalledTimes(1);
+    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'cardLink' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
+    ]);
+
+    resolveStuckAssertion!(ASSERTION_JSON);
+    await Promise.resolve();
+    expect(mockFinishLogin).not.toHaveBeenCalled();
+
     await expect(ensureAccessToken('cardLink')).resolves.toBe('jwt-1');
     expect(mockStartLogin).toHaveBeenCalledTimes(2);
   });
