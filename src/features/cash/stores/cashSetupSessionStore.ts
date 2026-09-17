@@ -53,9 +53,10 @@ type VerifiedCashSetupCredential = {
   bootstrapTokenExpiresAt: number;
 };
 
-type VerifiedCashSetupDraftSession = VerifiedCashSetupCredential & PersonalDetailsDraft & { kycSubmission: 'notSubmitted' };
-
-type VerifiedCashSetupSession = VerifiedCashSetupDraftSession | (VerifiedCashSetupCredential & { kycSubmission: 'submitted' });
+type VerifiedCashSetupSession = VerifiedCashSetupCredential &
+  PersonalDetailsDraft & {
+    kycSubmission: 'notSubmitted' | 'submitted';
+  };
 
 type CashSetupSession =
   | EmptyCashSetupSession
@@ -123,7 +124,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
   function setIdentityField<Field extends keyof CashSetupIdentityDraft>(field: Field, value: CashSetupIdentityDraft[Field]) {
     set(state => {
       const { session } = state;
-      if (!hasIdentityDraft(session) || shallowEqual(session.identity[field], value)) return state;
+      if (!hasEditablePersonalDetails(session) || shallowEqual(session.identity[field], value)) return state;
       return { session: { ...session, identity: { ...session.identity, [field]: value } } };
     });
   }
@@ -132,15 +133,15 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
     session: EMPTY_SESSION,
     getGovernmentId: () => {
       const { session } = get();
-      return hasIdentityDraft(session) && isValidUsSsnLast4(session.ssnLast4) ? createUsSsnLast4GovernmentId(session.ssnLast4) : null;
+      return hasPersonalDetails(session) && isValidUsSsnLast4(session.ssnLast4) ? createUsSsnLast4GovernmentId(session.ssnLast4) : null;
     },
     getIdentity: () => {
       const { session } = get();
-      return hasIdentityDraft(session) ? createCashSetupIdentity(session.identity) : null;
+      return hasPersonalDetails(session) ? createCashSetupIdentity(session.identity) : null;
     },
     getPersonalDetailsDraft: field => {
       const { session } = get();
-      return hasIdentityDraft(session) ? session[field] : null;
+      return hasPersonalDetails(session) ? session[field] : null;
     },
     getIsCurrentChallenge: challenge => {
       const { session } = get();
@@ -210,16 +211,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
         if (session.status !== 'phoneVerified' || session.bootstrapToken !== bootstrapToken || session.kycSubmission === 'submitted') {
           return state;
         }
-        return {
-          session: {
-            status: 'phoneVerified',
-            source: session.source,
-            phoneNationalNumber: session.phoneNationalNumber,
-            bootstrapToken: session.bootstrapToken,
-            bootstrapTokenExpiresAt: session.bootstrapTokenExpiresAt,
-            kycSubmission: 'submitted',
-          },
-        };
+        return { session: { ...session, kycSubmission: 'submitted' } };
       }),
     setDateOfBirth: dateOfBirth => setIdentityField('dateOfBirth', dateOfBirth),
     setFirstName: firstName => setIdentityField('firstName', firstName),
@@ -228,7 +220,7 @@ export const useCashSetupSessionStore = createBaseStore<CashSetupSessionStore>((
       set(state => {
         const { session } = state;
         const ssnLast4 = value.replace(/\D/g, '').slice(0, 4);
-        if (!hasIdentityDraft(session) || session.ssnLast4 === ssnLast4) return state;
+        if (!hasEditablePersonalDetails(session) || session.ssnLast4 === ssnLast4) return state;
         return { session: { ...session, ssnLast4 } };
       }),
     reset: () => {
@@ -253,6 +245,10 @@ export function selectResendAfter(state: CashSetupSessionStore): number | null {
   return state.session.status === 'phoneSubmitted' || state.session.status === 'recovery' ? state.session.resendAfter : null;
 }
 
-function hasIdentityDraft(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupDraftSession {
+function hasPersonalDetails(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupSession {
+  return session.status === 'recovery' || session.status === 'phoneVerified';
+}
+
+function hasEditablePersonalDetails(session: CashSetupSession): session is RecoveryCashSetupSession | VerifiedCashSetupSession {
   return session.status === 'recovery' || (session.status === 'phoneVerified' && session.kycSubmission === 'notSubmitted');
 }

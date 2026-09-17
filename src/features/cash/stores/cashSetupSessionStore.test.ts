@@ -40,7 +40,7 @@ it('clears the retained session when its bootstrap credential expires', () => {
   expect(store().session).toEqual({ status: 'empty' });
 });
 
-it('removes personal details once KYC is submitted while retaining the credential', () => {
+it('retains personal details once KYC is submitted', () => {
   verifyPhone();
   setPersonalDetails();
 
@@ -53,7 +53,21 @@ it('removes personal details once KYC is submitted while retaining the credentia
     bootstrapToken: BOOTSTRAP_TOKEN,
     bootstrapTokenExpiresAt: NOW + 60_000,
     kycSubmission: 'submitted',
+    identity: {
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      dateOfBirth: { year: 1990, month: 1, day: 2 },
+    },
+    ssnLast4: '1234',
   });
+  expect(store().getIdentity()).toEqual({
+    firstName: 'Ada',
+    lastName: 'Lovelace',
+    dateOfBirth: { year: 1990, month: 1, day: 2 },
+  });
+  expect(store().getGovernmentId()).toMatchObject({ value: '1234' });
+  expect(store().getPersonalDetailsDraft('identity')).not.toBeNull();
+  expect(store().getPersonalDetailsDraft('ssnLast4')).toBe('1234');
 });
 
 it('clears a submitted session when its bootstrap credential expires', () => {
