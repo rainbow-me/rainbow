@@ -106,7 +106,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
   });
 
-  it('does not resubmit a KYC application that was already accepted', async () => {
+  it('does not resubmit a previously submitted KYC application', async () => {
     session().markKycSubmitted(TOKEN);
 
     await expect(flow().submit()).resolves.toBe('skipped');
