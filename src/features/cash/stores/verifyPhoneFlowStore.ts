@@ -34,6 +34,8 @@ type VerifyPhoneFlowStore = {
   reset: () => void;
 };
 
+let activeKycCheck: object | null = null;
+
 export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((set, get) => ({
   state: 'entry',
   code: '',
@@ -90,7 +92,19 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
       // A resumed account may have submitted KYC in an earlier signup attempt. Best-effort:
       // failing only costs the user a redundant pass through KYC entry.
+      const kycCheck = {};
+      activeKycCheck = kycCheck;
       const kycOutcome = challenge.kind === 'resume' ? await readKycOutcome(result.bootstrapToken).catch(() => null) : null;
+      if (activeKycCheck !== kycCheck) return 'failed';
+      activeKycCheck = null;
+      const currentSession = useCashSetupSessionStore.getState().session;
+      if (
+        get().state !== 'verifying' ||
+        currentSession.status !== 'phoneVerified' ||
+        currentSession.bootstrapToken !== result.bootstrapToken
+      ) {
+        return 'failed';
+      }
       if (kycOutcome) {
         sessionStore.markKycSubmitted(result.bootstrapToken);
         trackKycOutcome(kycOutcome, 'resume');
@@ -153,5 +167,8 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   // Dismiss the outcome without undoing the session's completed phone verification.
   clearKycOutcome: () => set({ kycOutcome: null }),
 
-  reset: () => set({ code: '', kycOutcome: null, resending: null, state: 'entry' }),
+  reset: () => {
+    activeKycCheck = null;
+    set({ code: '', kycOutcome: null, resending: null, state: 'entry' });
+  },
 }));

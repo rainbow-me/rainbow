@@ -206,6 +206,29 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     });
   });
 
+  it('ignores a resume status retry that finishes after the verification flow resets', async () => {
+    const retryDelay = Promise.withResolvers<void>();
+    const retryStarted = Promise.withResolvers<void>();
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
+    mockDelay.mockImplementationOnce(() => {
+      retryStarted.resolve();
+      return retryDelay.promise;
+    });
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    await retryStarted.promise;
+    flow().reset();
+    retryDelay.resolve();
+
+    await expect(pending).resolves.toBe('failed');
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
+    expect(flow()).toMatchObject({ state: 'entry', kycOutcome: null });
+    expect(session()).toMatchObject({ status: 'phoneVerified', kycSubmission: 'notSubmitted' });
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
+  });
+
   it('keeps the verification and falls back to the KYC entry flow when the resume status check keeps failing', async () => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
     mockGetUserStatus.mockRejectedValue(new Error('network down'));

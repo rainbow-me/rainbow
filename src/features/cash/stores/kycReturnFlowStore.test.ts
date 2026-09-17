@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
-import { getUserStatus, KycStatus } from '../services/userClient';
+import { getUserStatus, KycRejectionReason, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 import { useKycReturnFlowStore } from './kycReturnFlowStore';
@@ -64,13 +64,18 @@ afterEach(() => {
 
 describe('useKycReturnFlowStore.check', () => {
   it.each([
-    { kycStatus: KycStatus.Approved, expected: 'approved' },
-    { kycStatus: KycStatus.Pending, expected: 'reviewing' },
-    { kycStatus: KycStatus.Review, expected: 'reviewing' },
-    { kycStatus: KycStatus.Rejected, expected: 'rejected' },
-  ])('surfaces $expected when the retained token reports $kycStatus', async ({ kycStatus, expected }) => {
+    { kycStatus: KycStatus.Approved, kycRejectionReason: undefined, expected: 'approved' },
+    { kycStatus: KycStatus.Pending, kycRejectionReason: undefined, expected: 'reviewing' },
+    { kycStatus: KycStatus.Review, kycRejectionReason: undefined, expected: 'reviewing' },
+    { kycStatus: KycStatus.Rejected, kycRejectionReason: undefined, expected: 'rejected' },
+    {
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      expected: 'unsupportedState',
+    },
+  ])('surfaces $expected when the retained token reports $kycStatus', async ({ kycStatus, kycRejectionReason, expected }) => {
     verifyPhone();
-    mockGetUserStatus.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
 
     await expect(flow().check()).resolves.toBe('outcome');
 
@@ -84,12 +89,28 @@ describe('useKycReturnFlowStore.check', () => {
   });
 
   it.each([
-    { kycStatus: KycStatus.Approved, event: 'cash.kyc_approved', payload: undefined },
-    { kycStatus: KycStatus.Pending, event: 'cash.kyc_awaiting_decision', payload: { source: 'return' } },
-    { kycStatus: KycStatus.Rejected, event: 'cash.kyc_failed', payload: { reason: 'rejected' } },
-  ])('tracks $event when the retained token reports $kycStatus', async ({ event, kycStatus, payload }) => {
+    { kycStatus: KycStatus.Approved, kycRejectionReason: undefined, event: 'cash.kyc_approved', payload: undefined },
+    {
+      kycStatus: KycStatus.Pending,
+      kycRejectionReason: undefined,
+      event: 'cash.kyc_awaiting_decision',
+      payload: { source: 'return' },
+    },
+    {
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: undefined,
+      event: 'cash.kyc_failed',
+      payload: { reason: 'rejected' },
+    },
+    {
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      event: 'cash.kyc_failed',
+      payload: { reason: 'state_not_supported' },
+    },
+  ])('tracks $event when the retained token reports $kycStatus', async ({ event, kycStatus, kycRejectionReason, payload }) => {
     verifyPhone();
-    mockGetUserStatus.mockResolvedValue({ kycStatus });
+    mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
 
     await flow().check();
 

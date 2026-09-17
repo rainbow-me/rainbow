@@ -71,7 +71,11 @@ describe('endSetupSession', () => {
   });
 
   it('drops an expired verification', () => {
-    verifyPhone(Date.now() - 1);
+    verifyPhone();
+    useCashSetupSessionStore.setState(state => {
+      if (state.session.status !== 'phoneVerified') throw new Error('expected a phoneVerified session');
+      return { session: { ...state.session, bootstrapTokenExpiresAt: Date.now() - 1 } };
+    });
 
     endSetupSession();
 
@@ -91,7 +95,10 @@ describe('endSetupSession', () => {
     { path: 'live submission', arrange: () => useSubmitReviewFlowStore.setState({ state: 'rejected' }) },
     { path: 'resume OTP', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'rejected' }) },
     { path: 'return check', arrange: () => useKycReturnFlowStore.setState({ state: 'rejected' }) },
-  ])('drops the session after a rejected verdict from the $path', ({ arrange }) => {
+    { path: 'live submission', arrange: () => useSubmitReviewFlowStore.setState({ state: 'unsupportedState' }) },
+    { path: 'resume OTP', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'unsupportedState' }) },
+    { path: 'return check', arrange: () => useKycReturnFlowStore.setState({ state: 'unsupportedState' }) },
+  ])('drops the session after a terminal verdict from the $path', ({ arrange }) => {
     verifyPhone();
     arrange();
 

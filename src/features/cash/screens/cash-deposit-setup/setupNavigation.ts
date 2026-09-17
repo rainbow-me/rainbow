@@ -59,7 +59,7 @@ export function endSetupSession(): void {
     session.source !== 'recovery' &&
     selectIsPhoneVerified(sessionStore) &&
     useCashAccountStore.getState().userId == null &&
-    !isKycRejected();
+    !hasTerminalKycRejection();
   if (!keep) sessionStore.reset();
 }
 
@@ -67,10 +67,14 @@ export function abandonSetupSession(): void {
   useCashSetupSessionStore.getState().reset();
 }
 
-function isKycRejected(): boolean {
+function hasTerminalKycRejection(): boolean {
   return (
-    useSubmitReviewFlowStore.getState().state === 'rejected' ||
-    useVerifyPhoneFlowStore.getState().kycOutcome === 'rejected' ||
-    useKycReturnFlowStore.getState().state === 'rejected'
+    isTerminalKycRejection(useSubmitReviewFlowStore.getState().state) ||
+    isTerminalKycRejection(useVerifyPhoneFlowStore.getState().kycOutcome) ||
+    isTerminalKycRejection(useKycReturnFlowStore.getState().state)
   );
+}
+
+function isTerminalKycRejection(outcome: string | null): boolean {
+  return outcome === 'rejected' || outcome === 'unsupportedState';
 }
