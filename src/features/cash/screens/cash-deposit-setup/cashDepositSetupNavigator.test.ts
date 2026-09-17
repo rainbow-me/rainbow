@@ -30,11 +30,11 @@ beforeEach(() => {
   CashDepositSetupNavigation.resetNavigationState();
 });
 
-describe('CashDepositSetupNavigator entry route', () => {
-  it('starts at Phone without a verified phone', () => {
-    expect(open()).toBe(Routes.CASH_SETUP_PHONE);
-  });
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
+describe('CashDepositSetupNavigator entry route', () => {
   it('skips phone + OTP into Identity while a bootstrap token is live', () => {
     verifyPhone({ complete: false });
     expect(open()).toBe(Routes.CASH_SETUP_IDENTITY);
@@ -46,7 +46,11 @@ describe('CashDepositSetupNavigator entry route', () => {
   });
 
   it('starts at Phone once the retained token has expired', () => {
-    verifyPhone({ complete: true, expiresAt: Date.now() - 1 });
+    const expiresAt = Date.now() + 60_000;
+    verifyPhone({ complete: true, expiresAt });
+    jest.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
+    expect(useCashSetupSessionStore.getState().session.status).toBe('phoneVerified');
+
     expect(open()).toBe(Routes.CASH_SETUP_PHONE);
   });
 

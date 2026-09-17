@@ -68,12 +68,12 @@ tags:
     id: buy-button
 - extendedWaitUntil:
     visible:
-      text: '.*reviewing your information.*'
+      id: cash-setup-kyc-reviewing
     timeout: 10000
 - assertNotVisible:
     id: cash-deposit-intro-set-up-account
 - assertNotVisible:
-    text: 'Connect your phone number'
+    id: cash-setup-phone-input
 - tapOn:
     id: cash-setup-kyc-reviewing-got-it
 - extendedWaitUntil:

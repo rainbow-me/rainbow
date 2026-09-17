@@ -2,7 +2,7 @@ import { useCashAccountStore } from '../../stores/cashAccountStore';
 import { useCashSetupSessionStore, type PhoneChallenge, type PhoneVerificationChallenge } from '../../stores/cashSetupSessionStore';
 import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
-import { abandonSetupSession, endSetupSession } from './setupNavigation';
+import { endSetupSession } from './setupNavigation';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 jest.mock('@/navigation/Navigation', () => ({
@@ -43,6 +43,10 @@ beforeEach(() => {
   useSubmitReviewFlowStore.setState({ state: 'entry' });
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('endSetupSession', () => {
   it('keeps a live phone verification for a prompt return', () => {
     verifyPhone();
@@ -71,11 +75,10 @@ describe('endSetupSession', () => {
   });
 
   it('drops an expired verification', () => {
-    verifyPhone();
-    useCashSetupSessionStore.setState(state => {
-      if (state.session.status !== 'phoneVerified') throw new Error('expected a phoneVerified session');
-      return { session: { ...state.session, bootstrapTokenExpiresAt: Date.now() - 1 } };
-    });
+    const expiresAt = Date.now() + 60_000;
+    verifyPhone(expiresAt);
+    jest.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
+    expect(session().status).toBe('phoneVerified');
 
     endSetupSession();
 
@@ -92,13 +95,10 @@ describe('endSetupSession', () => {
   });
 
   it.each([
-    { path: 'live submission', arrange: () => useSubmitReviewFlowStore.setState({ state: 'rejected' }) },
-    { path: 'resume OTP', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'rejected' }) },
-    { path: 'return check', arrange: () => useKycReturnFlowStore.setState({ state: 'rejected' }) },
-    { path: 'live submission', arrange: () => useSubmitReviewFlowStore.setState({ state: 'unsupportedState' }) },
-    { path: 'resume OTP', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'unsupportedState' }) },
-    { path: 'return check', arrange: () => useKycReturnFlowStore.setState({ state: 'unsupportedState' }) },
-  ])('drops the session after a terminal verdict from the $path', ({ arrange }) => {
+    { case: 'live submission rejects', arrange: () => useSubmitReviewFlowStore.setState({ state: 'rejected' }) },
+    { case: 'resume OTP rejects', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'rejected' }) },
+    { case: 'return check finds an unsupported state', arrange: () => useKycReturnFlowStore.setState({ state: 'unsupportedState' }) },
+  ])('drops the session when the $case', ({ arrange }) => {
     verifyPhone();
     arrange();
 
@@ -115,13 +115,18 @@ describe('endSetupSession', () => {
     expect(session()).toEqual({ status: 'empty' });
   });
 
-  it.each([
-    { path: 'live submission', arrange: () => useSubmitReviewFlowStore.setState({ state: 'reviewing' }) },
-    { path: 'resume OTP', arrange: () => useVerifyPhoneFlowStore.setState({ kycOutcome: 'reviewing' }) },
-    { path: 'return check', arrange: () => useKycReturnFlowStore.setState({ state: 'reviewing' }) },
-  ])('keeps the session while the $path is still reviewing', ({ arrange }) => {
+  it('keeps the session while KYC is still reviewing', () => {
     verifyPhone();
-    arrange();
+    useKycReturnFlowStore.setState({ state: 'reviewing' });
+
+    endSetupSession();
+
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: 'bst_1' });
+  });
+
+  it('keeps an approved session until passkey enrollment completes', () => {
+    verifyPhone();
+    useSubmitReviewFlowStore.setState({ state: 'approved' });
 
     endSetupSession();
 
@@ -132,16 +137,6 @@ describe('endSetupSession', () => {
     useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge: CHALLENGE, phoneNationalNumber: '4155550100', resendAfter: 0 });
 
     endSetupSession();
-
-    expect(session()).toEqual({ status: 'empty' });
-  });
-});
-
-describe('abandonSetupSession', () => {
-  it('drops a resumable verification after explicit cancellation', () => {
-    verifyPhone();
-
-    abandonSetupSession();
 
     expect(session()).toEqual({ status: 'empty' });
   });

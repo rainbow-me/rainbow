@@ -41,7 +41,7 @@ const track = jest.mocked(analytics.track);
 const CODE = '123456';
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1815, month: 12, day: 10 } };
 const CHALLENGE: RecoveryPhoneChallenge = { kind: 'recovery', recoveryId: 'recovery-1' };
-const TOKEN = { bootstrapToken: 'bst_recovered', expiresAt: Date.now() + 60_000 };
+let token = { bootstrapToken: 'bst_recovered', expiresAt: 0 };
 const RESEND_AFTER = 1_750_000_030_000;
 
 const ssnLast4 = '1234';
@@ -63,7 +63,8 @@ beforeEach(() => {
   sessionStore().setDateOfBirth(IDENTITY.dateOfBirth);
   sessionStore().setSsnLast4(ssnLast4);
   verifyFlow().setCode(CODE);
-  mockFinishRecovery.mockResolvedValue({ outcome: 'recovered', ...TOKEN });
+  token = { bootstrapToken: 'bst_recovered', expiresAt: Date.now() + 60_000 };
+  mockFinishRecovery.mockResolvedValue({ outcome: 'recovered', ...token });
   mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-2', resendAfter: RESEND_AFTER });
   mockStartSignupResume.mockResolvedValue({ resumeId: 'resume-1', resendAfter: RESEND_AFTER });
 });
@@ -82,8 +83,8 @@ describe('useSubmitReviewFlowStore.submit recovery', () => {
       status: 'phoneVerified',
       source: 'recovery',
       phoneNationalNumber: '4155550100',
-      bootstrapToken: TOKEN.bootstrapToken,
-      bootstrapTokenExpiresAt: TOKEN.expiresAt,
+      bootstrapToken: token.bootstrapToken,
+      bootstrapTokenExpiresAt: token.expiresAt,
       kycSubmission: 'notSubmitted',
       identity: IDENTITY,
       ssnLast4,
@@ -175,7 +176,7 @@ describe('useSubmitReviewFlowStore.submit recovery', () => {
         phoneNationalNumber: '4155550101',
         resendAfter: 0,
       });
-      return { outcome: 'recovered', ...TOKEN };
+      return { outcome: 'recovered', ...token };
     });
 
     await expect(flow().submit()).resolves.toBe('cancelled');

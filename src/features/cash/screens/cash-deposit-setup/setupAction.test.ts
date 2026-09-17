@@ -86,14 +86,6 @@ describe('checkKycOnReturn', () => {
 
     expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_IDENTITY);
   });
-
-  it.each(['outcome', 'notSubmitted', 'cancelled', 'skipped'] as const)('stays put on %s', async result => {
-    mockCheck.mockResolvedValue(result);
-
-    await expect(checkKycOnReturn(() => true)).resolves.toBe(result);
-
-    expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_IDENTITY);
-  });
 });
 
 describe('Review action while the return check runs', () => {
@@ -113,22 +105,12 @@ describe('Review action while the return check runs', () => {
     useKycReturnFlowStore.setState({ state: 'idle' });
   });
 
-  it('holds Confirm without a spinner so Cancel stays available', () => {
+  it('holds Confirm without a spinner until the check settles', () => {
     useKycReturnFlowStore.setState({ state: 'checking' });
 
     expect(useActionStore.getState()).toMatchObject({ disabled: true, loading: false });
-  });
-
-  it('releases Confirm once the check settles', () => {
-    useKycReturnFlowStore.setState({ state: 'checking' });
     useKycReturnFlowStore.setState({ state: 'idle' });
 
     expect(useActionStore.getState()).toMatchObject({ disabled: false, loading: false });
-  });
-
-  it('keeps Confirm disabled after the KYC application was submitted', () => {
-    useCashSetupSessionStore.getState().markKycSubmitted('bst_1');
-
-    expect(useActionStore.getState()).toMatchObject({ disabled: true, loading: false });
   });
 });

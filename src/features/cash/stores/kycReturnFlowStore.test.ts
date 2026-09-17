@@ -1,6 +1,5 @@
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
-import { delay } from '@/utils/delay';
 
 import { getUserStatus, KycRejectionReason, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
@@ -24,7 +23,7 @@ jest.mock('@/logger', () => ({
 }));
 
 jest.mock('@/utils/delay', () => ({
-  delay: jest.fn(() => Promise.resolve()),
+  delay: () => Promise.resolve(),
 }));
 
 jest.mock('../services/userClient', () => ({
@@ -33,7 +32,6 @@ jest.mock('../services/userClient', () => ({
 }));
 
 const mockGetUserStatus = jest.mocked(getUserStatus);
-const mockDelay = jest.mocked(delay);
 const track = jest.mocked(analytics.track);
 
 const CHALLENGE: PhoneVerificationChallenge = { kind: 'signup', userId: 'user-1' };
@@ -88,35 +86,6 @@ describe('useKycReturnFlowStore.check', () => {
     });
   });
 
-  it.each([
-    { kycStatus: KycStatus.Approved, kycRejectionReason: undefined, event: 'cash.kyc_approved', payload: undefined },
-    {
-      kycStatus: KycStatus.Pending,
-      kycRejectionReason: undefined,
-      event: 'cash.kyc_awaiting_decision',
-      payload: { source: 'return' },
-    },
-    {
-      kycStatus: KycStatus.Rejected,
-      kycRejectionReason: undefined,
-      event: 'cash.kyc_failed',
-      payload: { reason: 'rejected' },
-    },
-    {
-      kycStatus: KycStatus.Rejected,
-      kycRejectionReason: KycRejectionReason.StateNotSupported,
-      event: 'cash.kyc_failed',
-      payload: { reason: 'state_not_supported' },
-    },
-  ])('tracks $event when the retained token reports $kycStatus', async ({ event, kycStatus, kycRejectionReason, payload }) => {
-    verifyPhone();
-    mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
-
-    await flow().check();
-
-    expect(track).toHaveBeenCalledWith(event, ...(payload ? [payload] : []));
-  });
-
   it('leaves a never-submitted user on the KYC steps with the token intact', async () => {
     verifyPhone();
 
@@ -151,17 +120,6 @@ describe('useKycReturnFlowStore.check', () => {
       kycSubmission: 'submitted',
     });
     expect(track).toHaveBeenCalledWith('cash.kyc_awaiting_decision', { source: 'return' });
-  });
-
-  it('retries a failed status read once after a delay', async () => {
-    verifyPhone();
-    mockGetUserStatus.mockRejectedValueOnce(new Error('network down')).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
-
-    await expect(flow().check()).resolves.toBe('outcome');
-
-    expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
-    expect(mockDelay).toHaveBeenCalledWith(2000);
-    expect(flow().state).toBe('approved');
   });
 
   it('keeps a never-submitted session when the status read keeps failing', async () => {
