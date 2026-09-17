@@ -5,13 +5,21 @@
 #     Explicit delegates keep get(), cancel(), and isSupported() available.
 #   - The iOS module can retain a request after its JS caller times out. Expose
 #     cancellation and identify callbacks so a timed-out request releases the
-#     native slot without settling a newer request.
+#     native slot without settling a newer request. Android implements the shared
+#     bridge method as a no-op because Cash only invokes cancellation on iOS.
 # Upstream Issue: https://github.com/peterferguson/react-native-passkeys/issues/13
 #   (same missing-method symptom; the issue does not establish the root cause).
 # Linear Issue: APP-4117.
 # Remove when: react-native-passkeys exposes cancellation and no longer reads its
 #   own methods off the spread default export.
 
+diff --git a/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt b/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
+index 42f67d0..2601d4b 100644
+--- a/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
++++ b/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
+@@ -50,0 +51,2 @@ class ReactNativePasskeysModule : Module() {
++        AsyncFunction("cancel") {}
++
 diff --git a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js b/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
 index 4e8d2d1..cb784a4 100644
 --- a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js

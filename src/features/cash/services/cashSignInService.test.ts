@@ -173,6 +173,23 @@ describe('ensureAccessToken', () => {
     expect(mockStartLogin).toHaveBeenCalledTimes(2);
   });
 
+  it('reports the original timeout when native cleanup fails', async () => {
+    jest.useFakeTimers();
+    mockGetPasskeyAssertion.mockReturnValue(new Promise(() => undefined));
+    mockCancelPasskeyRequest.mockRejectedValue(new Error('cleanup failed'));
+
+    const result = Promise.allSettled([ensureAccessToken('cardLink')]);
+    await jest.advanceTimersByTimeAsync(120_000);
+    await expect(result).resolves.toEqual([
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+    ]);
+
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'cardLink' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
+    ]);
+  });
+
   it('fails without a stored userId and never starts the ceremony', async () => {
     useCashAccountStore.getState().clearUserId();
 

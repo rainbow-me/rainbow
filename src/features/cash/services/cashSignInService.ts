@@ -62,7 +62,7 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
     return token.accessToken;
   } catch (error) {
     if (error instanceof Error && error.message === PASSKEY_ASSERTION_TIMEOUT_MESSAGE) {
-      await cancelPasskeyRequest();
+      await cancelPasskeyRequest().catch(() => undefined);
     }
     if (isPasskeyCancellation(error)) {
       analytics.track(analytics.event.cashSignInCancelled, { trigger });
