@@ -12,6 +12,13 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesj
 - **Single test:** `yarn jest path/to/test`
 - **Dependency rules + cycles:** `yarn lint:deps` (dependency-cruiser via `tools/deps-check/`: architectural boundaries, plus circular deps checked against a grandfathered per-platform baseline). Net-new cycles fail; removing cycles also fails until you run `yarn lint:deps:baseline:update` and commit the baselines, which keeps them exact. Per-rule policies (grandfathered vs strict) live in `tools/deps-check/policies.ts`.
 
+## Worktrees
+
+Worktree setup is automatic and needs no action: `scripts/worktree-setup.sh` runs once per worktree, via the `SessionStart` hooks in `.claude/settings.json` and `.codex/config.toml`.
+
+- **Worktree missing dependencies:** run `bash scripts/worktree-setup.sh`. It skips worktrees that already have `node_modules`, so use `yarn install` if a tree is present but broken.
+- **Never run the app from a worktree** -- Metro, simulators and pods are single-instance. Use the main checkout.
+
 ## Architecture
 
 ### State management
