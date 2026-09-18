@@ -79,7 +79,10 @@ export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, g
 });
 
 export function getShouldCheckKycOnReturn(): boolean {
-  return useCashAccountStore.getState().userId == null && getCredentialStanding().kind === 'live';
+  if (useCashAccountStore.getState().userId != null) return false;
+  const standing = getCredentialStanding();
+  if (standing.kind === 'expired') useCashSetupSessionStore.getState().reset();
+  return standing.kind === 'live';
 }
 
 // How the retained credential stands right now. After a read, `expected` is the

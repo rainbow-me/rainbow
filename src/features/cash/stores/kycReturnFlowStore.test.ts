@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { getUserStatus, KycRejectionReason, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
-import { useKycReturnFlowStore } from './kycReturnFlowStore';
+import { getShouldCheckKycOnReturn, useKycReturnFlowStore } from './kycReturnFlowStore';
 
 jest.mock('@/analytics', () => ({
   analytics: {
@@ -248,5 +248,16 @@ describe('useKycReturnFlowStore.check', () => {
     expect(first).toBe('outcome');
     expect(second).toBe('skipped');
     expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getShouldCheckKycOnReturn', () => {
+  it('drops an expired session when its suspended timer has not run', () => {
+    const now = Date.now();
+    verifyPhone(now + 1_000);
+    jest.spyOn(Date, 'now').mockReturnValue(now + 1_001);
+
+    expect(getShouldCheckKycOnReturn()).toBe(false);
+    expect(session()).toEqual({ status: 'empty' });
   });
 });
