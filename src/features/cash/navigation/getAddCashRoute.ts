@@ -16,6 +16,9 @@ type AddCashRoute =
  */
 export function getAddCashRoute(isCashEnabled: boolean, setupStatus: CashDepositSetupStatus, isPhoneVerified: boolean): AddCashRoute {
   if (!isCashEnabled) return Routes.FIAT_ON_RAMP_SHEET;
-  if (setupStatus !== 'needsIdentity') return Routes.ADD_CASH_SHEET;
-  return isPhoneVerified ? Routes.CASH_DEPOSIT_SETUP_SCREEN : Routes.CASH_DEPOSIT_INTRO_PANEL;
+  return setupStatus === 'needsIdentity'
+    ? isPhoneVerified
+      ? Routes.CASH_DEPOSIT_SETUP_SCREEN
+      : Routes.CASH_DEPOSIT_INTRO_PANEL
+    : Routes.ADD_CASH_SHEET;
 }
