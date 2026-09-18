@@ -875,7 +875,8 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
     [align, buildParagraph, fitToWidth, height, paddingHorizontal, size, tabularNumbers, weight, width]
   );
 
-  const widthStyle = useAnimatedStyle(() => ({ width: width === 'auto' ? textWidth.value + horizontalBleed * 2 : width }));
+  const canvasStyle = useAnimatedStyle(() => ({ width: canvasWidth.value }));
+  const wrapperStyle = useAnimatedStyle(() => ({ width: width === 'auto' ? textWidth.value + horizontalBleed * 2 : width }));
 
   const updateLayout = useCallback(
     (manager: AnimatedNumberManager) => {
@@ -914,10 +915,10 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
         initialize={initialize}
         onUpdate={updateLayout}
         renderer={renderer}
-        style={{ alignSelf: width === 'auto' ? 'flex-start' : undefined, height, width: canvasWidth }}
+        style={[{ alignSelf: width === 'auto' ? 'flex-start' : undefined, height }, canvasStyle]}
       />
     );
-  }, [canvasWidth, config, currentColor, currentValue, height, layout, renderer, updateLayout, width]);
+  }, [canvasStyle, config, currentColor, currentValue, height, layout, renderer, updateLayout, width]);
 
   return (
     <AnimatedNumberWrapper
@@ -930,7 +931,7 @@ export const SkiaAnimatedNumber = memo(function SkiaAnimatedNumber({
       size={size}
       testID={testID}
       verticalBleed={verticalBleed}
-      widthStyle={widthStyle}
+      widthStyle={wrapperStyle}
     >
       {skiaPictureView}
     </AnimatedNumberWrapper>
