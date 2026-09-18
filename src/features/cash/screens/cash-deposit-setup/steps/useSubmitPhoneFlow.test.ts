@@ -60,7 +60,7 @@ const session = () => useCashSetupSessionStore.getState().session;
 beforeEach(() => {
   jest.clearAllMocks();
   useCashSetupSessionStore.getState().reset();
-  useSubmitPhoneFlowStore.setState({ state: 'entry', digits: '' });
+  flow().reset();
   useVerifyPhoneFlowStore.getState().reset();
   mockCreateUserWithPhone.mockResolvedValue(RESPONSE);
 });
@@ -270,6 +270,64 @@ describe('useSubmitPhoneFlowStore.submit', () => {
   });
 });
 
+it.each([
+  ['submit', 'success'],
+  ['submit', 'failure'],
+  ['resume', 'success'],
+  ['resume', 'failure'],
+  ['recovery', 'success'],
+  ['recovery', 'failure'],
+] as const)('ignores stale %s %s after a new setup submission', async (phase, outcome) => {
+  let resolveRequest!: () => void;
+  let rejectRequest!: (error: Error) => void;
+  const request = new Promise<void>((resolve, reject) => {
+    resolveRequest = resolve;
+    rejectRequest = reject;
+  });
+
+  if (phase === 'submit') {
+    mockCreateUserWithPhone.mockImplementationOnce(async () => {
+      await request;
+      return RESPONSE;
+    });
+  } else if (phase === 'resume') {
+    mockCreateUserWithPhone.mockResolvedValueOnce({ outcome: 'registeredWithoutPasskey' });
+    mockStartSignupResume.mockImplementationOnce(async () => {
+      await request;
+      return { resumeId: 'old-resume', resendAfter: 1_750_000_060_000 };
+    });
+  } else {
+    mockStartRecovery.mockImplementationOnce(async () => {
+      await request;
+      return { recoveryId: 'old-recovery', resendAfter: 1_750_000_060_000 };
+    });
+  }
+  flow().setDigits(DIGITS);
+  if (phase === 'recovery') useSubmitPhoneFlowStore.setState({ state: 'existingAccount' });
+  const pending = phase === 'recovery' ? flow().chooseRecovery() : flow().submit();
+  await Promise.resolve();
+  expect(mockStartSignupResume).toHaveBeenCalledTimes(phase === 'resume' ? 1 : 0);
+  expect(mockStartRecovery).toHaveBeenCalledTimes(phase === 'recovery' ? 1 : 0);
+
+  flow().reset();
+  flow().setDigits(DIGITS);
+  await expect(flow().submit()).resolves.toBe(true);
+  useVerifyPhoneFlowStore.getState().setCode('123456');
+  const currentFlow = flow();
+  const currentSession = session();
+  track.mockClear();
+
+  if (outcome === 'success') resolveRequest();
+  else rejectRequest(new Error('network down'));
+
+  await expect(pending).resolves.toBe(false);
+  expect(flow()).toBe(currentFlow);
+  expect(session()).toBe(currentSession);
+  expect(useVerifyPhoneFlowStore.getState().code).toBe('123456');
+  expect(track).not.toHaveBeenCalled();
+  expect(logger.error).not.toHaveBeenCalled();
+});
+
 describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
   beforeEach(() => {
     useSubmitPhoneFlowStore.setState({ state: 'existingAccount', digits: DIGITS });
@@ -307,6 +365,30 @@ describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
     expect(mockStartRecovery).not.toHaveBeenCalled();
     expect(flow().state).toBe('existingAccount');
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it.each(['success', 'failure'])('ignores late sign-in %s after setup resets and reopens', async outcome => {
+    let resolveSignIn!: () => void;
+    let rejectSignIn!: (error: Error) => void;
+    mockSignInWithPhone.mockReturnValueOnce(
+      new Promise<void>((resolve, reject) => {
+        resolveSignIn = resolve;
+        rejectSignIn = reject;
+      })
+    );
+    const pending = flow().signInWithExistingPasskey();
+
+    flow().reset();
+    useSubmitPhoneFlowStore.setState({ state: 'existingAccount', digits: DIGITS });
+    const reopened = flow();
+
+    if (outcome === 'success') resolveSignIn();
+    else rejectSignIn(new Error('network down'));
+
+    await expect(pending).resolves.toBe('cancelled');
+    expect(flow()).toBe(reopened);
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(mockStartRecovery).not.toHaveBeenCalled();
   });
 });
 

@@ -23,6 +23,7 @@ export type SignInWithExistingPasskeyResult = 'signedIn' | 'cancelled' | 'failed
 type SubmitPhoneFlowStore = {
   state: SubmitPhoneState;
   digits: string;
+  run: object | null;
   setDigits: (text: string) => void;
   submit: () => Promise<boolean>;
   signInWithExistingPasskey: () => Promise<SignInWithExistingPasskeyResult>;
@@ -51,10 +52,12 @@ function clearPhoneAlreadyRegistered() {
 async function advanceToChallenge(
   startChallenge: () => Promise<{ challenge: PhoneChallenge; resendAfter: number }>,
   digits: string,
+  isStale: () => boolean,
   set: (partial: Partial<SubmitPhoneFlowStore>) => void
 ): Promise<boolean> {
   try {
     const { challenge, resendAfter } = await startChallenge();
+    if (isStale()) return false;
     useCashSetupSessionStore.getState().setPhoneSubmitted({ challenge, phoneNationalNumber: digits, resendAfter });
     // A fresh code is on its way; drop any code/error left in the kept-mounted confirm step.
     useVerifyPhoneFlowStore.getState().reset();
@@ -62,6 +65,7 @@ async function advanceToChallenge(
     set({ state: 'entry' });
     return true;
   } catch (e) {
+    if (isStale()) return false;
     logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to start phone verification challenge', e));
     analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
     set({ state: 'error' });
@@ -72,6 +76,7 @@ async function advanceToChallenge(
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
   state: 'entry',
   digits: '',
+  run: null,
 
   setDigits: text => {
     const { state } = get();
@@ -93,9 +98,12 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     }
 
     clearPhoneAlreadyRegistered();
-    set({ state: 'submitting' });
+    const run = {};
+    set({ run, state: 'submitting' });
+    const isStale = () => get().run !== run;
     try {
       const result = await createUserWithPhone({ nationalNumber: digits });
+      if (isStale()) return false;
 
       if (result.outcome === 'alreadyRegistered') {
         analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: result.outcome });
@@ -118,8 +126,9 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
               resendAfter: result.resendAfter,
             })
           : () => startResume(digits);
-      return await advanceToChallenge(startChallenge, digits, set);
+      return await advanceToChallenge(startChallenge, digits, isStale, set);
     } catch (e) {
+      if (isStale()) return false;
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });
@@ -134,11 +143,14 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     const { digits, state } = get();
     if (state !== 'existingAccount') return 'failed';
 
-    set({ state: 'signingIn' });
+    const run = {};
+    set({ run, state: 'signingIn' });
     try {
       await signInWithPhone(digits, 'existingAccountPrompt');
+      if (get().run !== run) return 'cancelled';
       return 'signedIn';
     } catch (e) {
+      if (get().run !== run) return 'cancelled';
       if (isPasskeyCancellation(e)) {
         set({ state: 'existingAccount' });
         return 'cancelled';
@@ -155,12 +167,18 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     if (state !== 'existingAccount') return false;
 
     analytics.track(analytics.event.cashExistingAccountRecoverySelected);
-    set({ state: 'submitting' });
-    return advanceToChallenge(() => startAccountRecovery(digits), digits, set);
+    const run = {};
+    set({ run, state: 'submitting' });
+    return advanceToChallenge(
+      () => startAccountRecovery(digits),
+      digits,
+      () => get().run !== run,
+      set
+    );
   },
 
   reset: () => {
     clearPhoneAlreadyRegistered();
-    set({ digits: '', state: 'entry' });
+    set({ run: null, digits: '', state: 'entry' });
   },
 }));
