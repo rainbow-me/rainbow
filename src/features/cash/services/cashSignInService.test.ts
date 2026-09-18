@@ -141,10 +141,19 @@ describe('ensureAccessToken', () => {
   it('times out a stuck passkey assertion and allows a fresh shared ceremony', async () => {
     jest.useFakeTimers();
     let resolveStuckAssertion: (assertion: string) => void;
+    let releaseNativeCancellation: () => void = () => {
+      throw new Error('Native cancellation did not start');
+    };
     mockGetPasskeyAssertion.mockImplementationOnce(
       () =>
         new Promise(resolve => {
           resolveStuckAssertion = resolve;
+        })
+    );
+    mockCancelPasskeyRequest.mockImplementationOnce(
+      () =>
+        new Promise<void>(resolve => {
+          releaseNativeCancellation = resolve;
         })
     );
 
@@ -152,15 +161,21 @@ describe('ensureAccessToken', () => {
     const concurrent = ensureAccessToken('cardLink');
     await Promise.resolve();
 
-    const results = Promise.allSettled([first, concurrent]);
     await jest.advanceTimersByTimeAsync(120_000);
+    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
+
+    const joinedDuringCancellation = ensureAccessToken('cardLink');
+    await Promise.resolve();
+    expect(mockStartLogin).toHaveBeenCalledTimes(1);
+
+    const results = Promise.allSettled([first, concurrent, joinedDuringCancellation]);
+    releaseNativeCancellation();
     await expect(results).resolves.toEqual([
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
       { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
       { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
     ]);
 
-    expect(mockStartLogin).toHaveBeenCalledTimes(1);
-    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
       ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'timeout' }],
