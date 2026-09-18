@@ -17,6 +17,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { ORDER_FAST_POLL_DURATION_MS, ORDER_FAST_POLL_INTERVAL_MS, ORDER_SLOW_POLL_INTERVAL_MS } from '@/features/cash/constants';
 import { openCashAuthGate } from '@/features/cash/services/cashAuthGateService';
 import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
+import { isCashUserServiceNetworkPolicyError } from '@/features/cash/services/cashUserServiceNetworkPolicy';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { useCashAuthGateStore } from '@/features/cash/stores/cashAuthGateStore';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
@@ -468,7 +469,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       }
       cashBuyOrderActions.submitBuyOrder({ cardId: funding.card.id, depositAmount, walletAddress: accountAddress });
     } catch (error) {
-      if (controller.signal.aborted || isPasskeyCancellation(error)) return;
+      if (controller.signal.aborted || isCashUserServiceNetworkPolicyError(error) || isPasskeyCancellation(error)) return;
       logger.error(new RainbowError('[AddCashSheet]: Failed to resolve the deposit wallet', error));
       analytics.track(analytics.event.cashWalletCheckFailed, { reason: getTelemetryErrorReason(error) });
       Alert.alert(

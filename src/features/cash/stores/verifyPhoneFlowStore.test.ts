@@ -1,7 +1,9 @@
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
+import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import {
   finishSignupResume,
   getUserStatus,
@@ -190,6 +192,29 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(mockDelay).toHaveBeenCalledWith(2000);
     expect(flow().kycOutcome).toBe('approved');
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+  });
+
+  it('keeps a resumed signup credential for a manual status retry after a network policy response', async () => {
+    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockRejectedValueOnce(policyError).mockResolvedValueOnce({ kycStatus: KycStatus.Unspecified });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
+    expect(mockDelay).not.toHaveBeenCalled();
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { kind: 'resume', resumeId: 'rcv_1' } });
+    expect(flow().state).toBe('entry');
+    expect(flow().code).toBe(CODE);
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verify_failed', expect.anything());
+
+    await expect(flow().submit()).resolves.toBe('verified');
+
+    expect(mockFinishSignupResume).toHaveBeenCalledTimes(1);
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
   });
 

@@ -3,6 +3,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
+import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
 import {
   useCashSetupSessionStore,
@@ -90,6 +91,10 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       set({ state: 'entry' });
       return true;
     } catch (e) {
+      if (isCashUserServiceNetworkPolicyError(e)) {
+        set({ state: 'entry' });
+        return false;
+      }
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });

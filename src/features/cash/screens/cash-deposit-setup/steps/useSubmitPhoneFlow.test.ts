@@ -1,6 +1,8 @@
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
+import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume, type CreateUserWithPhoneResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
@@ -188,6 +190,20 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(track).toHaveBeenCalledWith('cash.phone_submit_failed', { reason: 'unknown' });
     expect(track).not.toHaveBeenCalledWith('cash.phone_submitted', expect.anything());
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('keeps the entered phone and suppresses the generic error for a network policy response', async () => {
+    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    mockCreateUserWithPhone.mockRejectedValue(error);
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(false);
+
+    expect(flow().state).toBe('entry');
+    expect(flow().digits).toBe(DIGITS);
+    expect(session().status).toBe('empty');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_submit_failed', expect.anything());
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it('returns to entry when the digits are edited after an error', async () => {

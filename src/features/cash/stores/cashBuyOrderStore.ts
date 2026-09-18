@@ -8,6 +8,7 @@ import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { CASH_BUY_DESTINATION_ASSET } from '../constants';
+import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import {
   createBuyOrder,
   getOrder,
@@ -129,6 +130,10 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
       } catch (error) {
         if (!isCurrentSubmission(spec)) return;
+        if (isCashUserServiceNetworkPolicyError(error)) {
+          set({ status: { step: 'idle' } });
+          return;
+        }
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
         analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
         set({ status: { step: 'error', errorCode: 'GENERIC', order: null, spec: isDefinitiveRejection(error) ? undefined : spec } });

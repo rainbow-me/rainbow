@@ -11,6 +11,7 @@ import Routes from '@/navigation/routesNames';
 
 import { isPasskeyCancellation } from '../../services/cashPasskeyService';
 import { signInWithPhone } from '../../services/cashSignInService';
+import { isCashUserServiceNetworkPolicyError } from '../../services/cashUserServiceNetworkPolicy';
 import { extractNationalDigits, formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../utils/phoneNumber';
 
 const l = i18n.l.cash.sign_in;
@@ -36,7 +37,7 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
     try {
       await signInWithPhone(digits);
     } catch (e) {
-      if (isPasskeyCancellation(e)) {
+      if (isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
         setState('entry');
         return;
       }

@@ -7,6 +7,7 @@ import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
+import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import {
   finishRecovery,
   getUserStatus,
@@ -39,6 +40,7 @@ type SubmitReviewResult =
 
 type SubmitReviewFlowStore = {
   state: SubmitReviewState;
+  kycSubmitted: boolean;
   // Identifies one submission so an abandoned request or poll cannot write
   // into a later one. This module-level store outlives the setup screen.
   run: object | null;
@@ -48,12 +50,13 @@ type SubmitReviewFlowStore = {
 
 export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((set, get) => ({
   state: 'entry',
+  kycSubmitted: false,
   run: null,
 
-  reset: () => set({ run: null, state: 'entry' }),
+  reset: () => set({ kycSubmitted: false, run: null, state: 'entry' }),
 
   submit: async () => {
-    const { state } = get();
+    const { kycSubmitted, state } = get();
     if (state === 'submitting' || state === 'reviewing' || state === 'locked') return 'skipped';
 
     const sessionStore = useCashSetupSessionStore.getState();
@@ -125,6 +128,10 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         return 'phoneCodeRequired';
       } catch (error) {
         if (isStale()) return 'cancelled';
+        if (isCashUserServiceNetworkPolicyError(error)) {
+          set({ run: null, state: 'entry' });
+          return 'failed';
+        }
         logger.error(new RainbowError('[useSubmitReviewFlow]: Failed to recover account', error));
         set({ state: 'error' });
         return 'failed';
@@ -136,8 +143,6 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       return 'skipped';
     }
     const { bootstrapToken } = session;
-
-    analytics.track(analytics.event.cashKycSubmitted);
 
     const isStale = () => get().run !== run;
     let trackedAwaitingDecision = false;
@@ -151,19 +156,41 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
 
     let kycStatus: KycStatus;
     let kycRejectionReason: KycRejectionReason | undefined;
-    try {
-      ({ kycStatus, kycRejectionReason } = await submitOnboarding({
-        bootstrapToken,
-        countryCode: US_COUNTRY_CODE,
-        identity,
-        governmentId,
-      }));
-    } catch (error) {
+    if (kycSubmitted) {
+      try {
+        ({ kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken }));
+      } catch (error) {
+        if (isStale()) return 'cancelled';
+        if (isCashUserServiceNetworkPolicyError(error)) {
+          set({ run: null, state: 'entry' });
+          return 'failed';
+        }
+        logger.warn('[useSubmitReviewFlow]: KYC status poll failed', { error });
+        enterReviewing();
+        return 'awaitingDecision';
+      }
+    } else {
+      analytics.track(analytics.event.cashKycSubmitted);
+      try {
+        ({ kycStatus, kycRejectionReason } = await submitOnboarding({
+          bootstrapToken,
+          countryCode: US_COUNTRY_CODE,
+          identity,
+          governmentId,
+        }));
+      } catch (error) {
+        if (isStale()) return 'cancelled';
+        if (isCashUserServiceNetworkPolicyError(error)) {
+          set({ run: null, state: 'entry' });
+          return 'failed';
+        }
+        logger.error(new RainbowError('[useSubmitReviewFlow]: Failed to submit KYC', error));
+        analytics.track(analytics.event.cashKycFailed, { reason: getTelemetryErrorReason(error) });
+        set({ state: 'error' });
+        return 'failed';
+      }
       if (isStale()) return 'cancelled';
-      logger.error(new RainbowError('[useSubmitReviewFlow]: Failed to submit KYC', error));
-      analytics.track(analytics.event.cashKycFailed, { reason: getTelemetryErrorReason(error) });
-      set({ state: 'error' });
-      return 'failed';
+      set({ kycSubmitted: true });
     }
     if (isStale()) return 'cancelled';
 
@@ -177,6 +204,10 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         ({ kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken }));
       } catch (error) {
         if (isStale()) return 'cancelled';
+        if (isCashUserServiceNetworkPolicyError(error)) {
+          set({ run: null, state: 'entry' });
+          return 'failed';
+        }
         // The identity data is already with the provider, so a status we cannot
         // read is still an undecided one — never the retryable entry error.
         logger.warn('[useSubmitReviewFlow]: KYC status poll failed', { error });

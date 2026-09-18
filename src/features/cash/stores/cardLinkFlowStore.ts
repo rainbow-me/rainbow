@@ -6,6 +6,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { linkCardWithVault } from '../services/cardLinkService';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
+import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import type { CardBrand } from '../services/rampClient';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
@@ -42,7 +43,7 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
     } catch (e) {
       if (controller.signal.aborted) return 'cancelled';
       // Sign-in cancellation is a deliberate dismissal, not a failure: back to the form, silently.
-      if (isPasskeyCancellation(e)) {
+      if (isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
         set({ state: 'entry' });
         return 'cancelled';
       }

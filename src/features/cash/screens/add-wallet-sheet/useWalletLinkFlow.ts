@@ -6,6 +6,7 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
 import { isPasskeyCancellation } from '../../services/cashPasskeyService';
+import { isCashUserServiceNetworkPolicyError } from '../../services/cashUserServiceNetworkPolicy';
 import { linkWalletWithSignature, WalletSignatureError } from '../../services/walletLinkService';
 import { getTelemetryErrorReason } from '../../utils/getTelemetryErrorReason';
 
@@ -39,7 +40,7 @@ export function useWalletLinkFlow({ onLinked, walletAddress }: { onLinked: () =>
       if (controller.signal.aborted) return;
       // A cancelled passkey and the signature stage both already spoke to the user; anything past
       // them is ours to surface.
-      if (e instanceof WalletSignatureError || isPasskeyCancellation(e)) {
+      if (e instanceof WalletSignatureError || isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
         setState('idle');
         return;
       }

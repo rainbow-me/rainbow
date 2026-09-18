@@ -1,9 +1,11 @@
 import { analytics } from '@/analytics';
 import { setRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
+import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
@@ -196,6 +198,23 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(track).toHaveBeenCalledWith('cash.kyc_awaiting_decision', { source: 'submit' });
     expect(track).not.toHaveBeenCalledWith('cash.kyc_failed', expect.anything());
     expect(logger.warn).toHaveBeenCalled();
+  });
+
+  it('manually retries only the status read after a network policy response during polling', async () => {
+    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
+    mockGetUserStatus.mockRejectedValueOnce(policyError).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
+
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(flow().state).toBe('entry');
+    expect(logger.warn).not.toHaveBeenCalled();
+
+    await expect(flow().submit()).resolves.toBe('approved');
+
+    expect(mockSubmitOnboarding).toHaveBeenCalledTimes(1);
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
+    expect(track.mock.calls.filter(([event]) => event === 'cash.kyc_submitted')).toHaveLength(1);
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
