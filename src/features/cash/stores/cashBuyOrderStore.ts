@@ -29,6 +29,7 @@ export type CashBuyErrorCode = 'PAYMENT_REJECTED' | 'GENERIC';
 
 export type CashBuyStatus =
   | { step: 'idle' }
+  | { step: 'networkPolicy'; spec: BuyOrderSpec }
   | {
       /** A submit is in flight: the spec has not (knowably) reached the backend yet. */
       step: 'submitting';
@@ -67,6 +68,7 @@ type CashBuyOrderState = {
 
 const PHASE_BY_STEP: Record<CashBuyStatus['step'], CashBuyPhase> = {
   idle: 'idle',
+  networkPolicy: 'idle',
   submitting: 'pending',
   polling: 'pending',
   success: 'success',
@@ -131,7 +133,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       } catch (error) {
         if (!isCurrentSubmission(spec)) return;
         if (isCashUserServiceNetworkPolicyError(error)) {
-          set({ status: { step: 'idle' } });
+          set({ status: { step: 'networkPolicy', spec } });
           return;
         }
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
@@ -157,7 +159,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         // decides whether the new submission should reuse the order id
         // from a previous failed attempt with not definitive rejection
         const retained =
-          status.step === 'error' &&
+          (status.step === 'error' || status.step === 'networkPolicy') &&
           status.spec?.cardId === cardId &&
           status.spec.depositAmount === depositAmount &&
           status.spec.walletAddress === walletAddress
@@ -215,14 +217,18 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     // Flush the submit intent on the next tick rather than the default 3-5s debounce, so a kill shortly
     // after submit can still be recovered. (Not a hard guarantee: a same-frame crash can still beat it.)
     persistThrottleMs: 0,
-    // Persist only the in-flight steps — the ones worth recovering after a kill:
+    // Persist only the states whose order identity is worth recovering after a kill:
     // - 'submitting' is replayed (idempotently) via `resumePendingSubmission` on the next Add Cash open,
     //   since we don't know whether the spec reached the backend.
     // - 'polling' resumes on the next Add Cash open, so the success status carrying a `transactionHash`
     //   is not lost.
+    // - 'networkPolicy' retains an ambiguous submission's id for the user's manual retry.
     // Terminal states collapse to idle: the sheet resets them on open anyway.
     partialize: state => ({
-      status: state.status.step === 'submitting' || state.status.step === 'polling' ? state.status : { step: 'idle' as const },
+      status:
+        state.status.step === 'submitting' || state.status.step === 'polling' || state.status.step === 'networkPolicy'
+          ? state.status
+          : { step: 'idle' as const },
     }),
   }
 );

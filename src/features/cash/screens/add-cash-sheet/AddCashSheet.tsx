@@ -400,12 +400,13 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
-  // On open, replay a submit interrupted before an order id came back; otherwise clear the settled
-  // previous run so the sheet starts fresh.
+  // On open, replay an interrupted submit and retain any id parked by the network-policy warning;
+  // otherwise clear the settled previous run so the sheet starts fresh.
   useEffect(() => {
-    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending') {
+    const { status } = useCashBuyOrderStore.getState();
+    if (selectCashBuyPhase({ status }) === 'pending') {
       cashBuyOrderActions.resumePendingSubmission();
-    } else {
+    } else if (status.step !== 'networkPolicy') {
       cashBuyOrderActions.reset();
     }
   }, []);

@@ -61,7 +61,7 @@ const mockStartSignupResume = jest.mocked(startSignupResume);
 const track = jest.mocked(analytics.track);
 
 const CODE = '123456';
-const TOKEN = { bootstrapToken: 'bst_1', expiresAt: 1_750_000_000_000 };
+const TOKEN = { bootstrapToken: 'bst_1', expiresAt: 2_000_000_000_000 };
 const RESEND_AFTER = 1_750_000_030_000;
 
 const flow = () => useVerifyPhoneFlowStore.getState();
@@ -216,6 +216,50 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     expect(mockFinishSignupResume).toHaveBeenCalledTimes(1);
     expect(mockGetUserStatus).toHaveBeenCalledTimes(2);
     expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: TOKEN.bootstrapToken });
+  });
+
+  it('refreshes an expired resumed-signup credential before a manual status retry', async () => {
+    const now = 1_750_000_000_000;
+    const dateNow = jest.spyOn(Date, 'now').mockReturnValue(now);
+    const expiringToken = { bootstrapToken: 'bst_expiring', expiresAt: now + 1 };
+    const refreshedToken = { bootstrapToken: 'bst_refreshed', expiresAt: now + 60_000 };
+    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockFinishSignupResume
+      .mockResolvedValueOnce({ outcome: 'verified', ...expiringToken })
+      .mockResolvedValueOnce({ outcome: 'verified', ...refreshedToken });
+    mockGetUserStatus.mockRejectedValueOnce(policyError).mockResolvedValueOnce({ kycStatus: KycStatus.Unspecified });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('failed');
+    dateNow.mockReturnValue(expiringToken.expiresAt);
+    await expect(flow().submit()).resolves.toBe('verified');
+
+    expect(mockFinishSignupResume).toHaveBeenCalledTimes(2);
+    expect(mockGetUserStatus).toHaveBeenNthCalledWith(2, { bootstrapToken: refreshedToken.bootstrapToken });
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: refreshedToken.bootstrapToken });
+  });
+
+  it('discards a resume status read that resolves after the session was replaced', async () => {
+    const status = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const statusStarted = Promise.withResolvers<void>();
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockImplementationOnce(() => {
+      statusStarted.resolve();
+      return status.promise;
+    });
+    flow().setCode(CODE);
+
+    const pending = flow().submit();
+    await statusStarted.promise;
+    submitPhone({ kind: 'resume', resumeId: 'rcv_2' }, '4155550101');
+    status.resolve({ kycStatus: KycStatus.Unspecified });
+
+    await expect(pending).resolves.toBe('failed');
+    expect(session()).toMatchObject({ status: 'phoneSubmitted', challenge: { kind: 'resume', resumeId: 'rcv_2' } });
+    expect(flow().state).toBe('entry');
+    expect(flow().code).toBe('');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_verified', expect.anything());
   });
 
   it('keeps the verification and falls back to the KYC entry flow when the resume status check keeps failing', async () => {

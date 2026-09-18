@@ -42,7 +42,7 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
       return 'completed';
     } catch (e) {
       if (controller.signal.aborted) return 'cancelled';
-      // Sign-in cancellation is a deliberate dismissal, not a failure: back to the form, silently.
+      // Return to the form without showing the generic card-link error.
       if (isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
         set({ state: 'entry' });
         return 'cancelled';

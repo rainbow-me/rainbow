@@ -96,7 +96,9 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
     }
     const { challenge } = session;
     let resumeCredential =
-      challenge.kind === 'resume' && pendingResumeStatus?.challenge === challenge ? pendingResumeStatus.credential : null;
+      challenge.kind === 'resume' && pendingResumeStatus?.challenge === challenge && pendingResumeStatus.credential.expiresAt > Date.now()
+        ? pendingResumeStatus.credential
+        : null;
 
     set({ pendingResumeStatus: resumeCredential ? pendingResumeStatus : null, state: 'verifying' });
     try {
@@ -130,6 +132,10 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       // A resumed account may have submitted KYC in an earlier signup attempt.
       if (challenge.kind === 'resume') resumeCredential = result;
       const kycOutcome = resumeCredential ? await getResumeKycOutcome(resumeCredential.bootstrapToken) : null;
+      if (!sessionStore.getIsCurrentChallenge(challenge)) {
+        set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+        return 'failed';
+      }
       sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
       if (kycOutcome === 'approved') analytics.track(analytics.event.cashKycApproved);

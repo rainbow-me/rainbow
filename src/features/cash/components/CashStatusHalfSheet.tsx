@@ -7,6 +7,7 @@ import { FullWindowOverlay } from 'react-native-screens';
 import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Text, type TextProps } from '@/design-system';
+import { IS_TEST } from '@/env';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -135,7 +136,7 @@ export const CashStatusHalfSheet = memo(function CashStatusHalfSheet(props: Cash
     </View>
   );
 
-  if (props.globalOverlay) return Platform.OS === 'ios' ? <FullWindowOverlay>{content}</FullWindowOverlay> : content;
+  if (props.globalOverlay) return Platform.OS === 'ios' && !IS_TEST ? <FullWindowOverlay>{content}</FullWindowOverlay> : content;
   return <AbsolutePortal>{content}</AbsolutePortal>;
 });
 
