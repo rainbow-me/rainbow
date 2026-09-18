@@ -11,6 +11,8 @@ export const USDC_DECIMALS = 6;
 export const ORDER_FAST_POLL_INTERVAL_MS = time.seconds(2);
 export const ORDER_FAST_POLL_DURATION_MS = time.minutes(5);
 export const ORDER_SLOW_POLL_INTERVAL_MS = time.seconds(15);
+export const ORDER_SUBMISSION_MAX_REPLAYS = 2;
+export const ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS = time.seconds(1);
 
 /** Default rate applied when adding cash (3% flat fee). */
 export const DEFAULT_ADD_CASH_RATE = '0.97';
