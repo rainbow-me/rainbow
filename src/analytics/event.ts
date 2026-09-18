@@ -582,7 +582,7 @@ export type EventProperties = {
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;
   [event.cashKycAwaitingDecision]: {
-    source: 'submit' | 'resume';
+    source: 'submit' | 'resume' | 'return';
   };
   [event.cashKycFailed]: {
     reason: TelemetryErrorReason | 'rejected' | 'state_not_supported';

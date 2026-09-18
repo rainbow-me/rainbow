@@ -2,9 +2,12 @@ import { goBack, navigate } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
 import { useCashAccountStore } from '../../stores/cashAccountStore';
-import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { selectIsPhoneVerified, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
+import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getNextSetupStep, isSetupEditDetour } from './steps';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 export function completeSetupStep(): void {
   const { activeRoute, history } = useCashDepositSetupNavigationStore.getState();
@@ -40,4 +43,38 @@ export function cancelSetup(): void {
 export function goBackInSetup(): void {
   if (useCashDepositSetupNavigationStore.getState().history.length) CashDepositSetupNavigation.goBack();
   else cancelSetup();
+}
+
+// A live signup bootstrap token outlives Setup so a prompt return skips phone + OTP. A recovered
+// account's token only enrols the passkey, an enrolled account no longer needs one, and a rejected
+// verdict is terminal.
+export function endSetupSession(): void {
+  const sessionStore = useCashSetupSessionStore.getState();
+  const { session } = sessionStore;
+  if (session.status === 'phoneVerified' && useSubmitReviewFlowStore.getState().state === 'submitting') {
+    sessionStore.markKycSubmitted(session.bootstrapToken);
+  }
+  const keep =
+    session.status === 'phoneVerified' &&
+    session.source !== 'recovery' &&
+    selectIsPhoneVerified(sessionStore) &&
+    useCashAccountStore.getState().userId == null &&
+    !hasTerminalKycRejection();
+  if (!keep) sessionStore.reset();
+}
+
+export function abandonSetupSession(): void {
+  useCashSetupSessionStore.getState().reset();
+}
+
+function hasTerminalKycRejection(): boolean {
+  return (
+    isTerminalKycRejection(useSubmitReviewFlowStore.getState().state) ||
+    isTerminalKycRejection(useVerifyPhoneFlowStore.getState().kycOutcome) ||
+    isTerminalKycRejection(useKycReturnFlowStore.getState().state)
+  );
+}
+
+function isTerminalKycRejection(outcome: string | null): boolean {
+  return outcome === 'rejected' || outcome === 'unsupportedState';
 }

@@ -62,3 +62,21 @@ tags:
     timeout: 10000
 - assertNotVisible:
     text: '.*reviewing your information.*'
+# The bootstrap token outlives Setup, so a prompt return skips the intro panel and
+# phone + OTP: Add Cash lands straight on the status check.
+- tapOn:
+    id: buy-button
+- extendedWaitUntil:
+    visible:
+      id: cash-setup-kyc-reviewing
+    timeout: 10000
+- assertNotVisible:
+    id: cash-deposit-intro-set-up-account
+- assertNotVisible:
+    id: cash-setup-phone-input
+- tapOn:
+    id: cash-setup-kyc-reviewing-got-it
+- extendedWaitUntil:
+    visible:
+      id: buy-button
+    timeout: 10000
