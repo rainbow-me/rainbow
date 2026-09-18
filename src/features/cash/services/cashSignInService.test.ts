@@ -196,6 +196,7 @@ describe('ensureAccessToken', () => {
 
     const result = Promise.allSettled([ensureAccessToken('cardLink')]);
     await jest.advanceTimersByTimeAsync(120_000);
+    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
     await expect(result).resolves.toEqual([
       { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
     ]);
