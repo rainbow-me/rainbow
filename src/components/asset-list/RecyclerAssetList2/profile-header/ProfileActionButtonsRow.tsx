@@ -131,6 +131,11 @@ function ActionButton({ children, icon, onPress, testID }: { children: string; i
 function BuyButton() {
   const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
   const handlePress = React.useCallback(() => {
+    if (getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet) {
+      watchingAlert();
+      return;
+    }
+
     if (getIsDamagedWallet()) {
       Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
       return;

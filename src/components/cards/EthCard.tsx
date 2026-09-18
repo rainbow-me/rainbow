@@ -5,6 +5,7 @@ import { useRoute } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
+import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { getUniqueId } from '@/entities/assetId';
@@ -12,6 +13,7 @@ import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
+import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -22,7 +24,7 @@ import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-
 import { ETH_ADDRESS } from '@/references/constants';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
@@ -62,6 +64,11 @@ export const EthCard = () => {
     (e?: GestureResponderEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
+      }
+
+      if (getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet) {
+        watchingAlert();
+        return;
       }
 
       if (getIsDamagedWallet()) {
