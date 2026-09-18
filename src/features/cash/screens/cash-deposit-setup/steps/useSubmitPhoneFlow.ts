@@ -59,7 +59,8 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     // Re-submitting would send a second one, which the resend cooldown forbids.
     const { session } = useCashSetupSessionStore.getState();
     if (session.status === 'phoneSubmitted' && session.phoneNationalNumber === digits) {
-      useVerifyPhoneFlowStore.getState().reset();
+      const verifyFlow = useVerifyPhoneFlowStore.getState();
+      if (verifyFlow.pendingResumeStatus?.challenge !== session.challenge) verifyFlow.reset();
       return true;
     }
 

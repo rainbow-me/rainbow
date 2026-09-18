@@ -234,6 +234,31 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(useVerifyPhoneFlowStore.getState().state).toBe('entry');
   });
 
+  it('preserves an accepted resume credential when returning to the same challenge', async () => {
+    const resumeChallenge = { kind: 'resume', resumeId: 'rcv_1' } as const;
+    const credential = { bootstrapToken: 'bst_1', expiresAt: 2_000_000_000_000 };
+    useCashSetupSessionStore.getState().setPhoneSubmitted({
+      challenge: resumeChallenge,
+      phoneNationalNumber: DIGITS,
+      resendAfter: RESPONSE.resendAfter,
+    });
+    useVerifyPhoneFlowStore.setState({
+      code: '123456',
+      pendingResumeStatus: { challenge: resumeChallenge, credential },
+      state: 'entry',
+    });
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockCreateUserWithPhone).not.toHaveBeenCalled();
+    expect(useVerifyPhoneFlowStore.getState()).toMatchObject({
+      code: '123456',
+      pendingResumeStatus: { challenge: resumeChallenge, credential },
+      state: 'entry',
+    });
+  });
+
   it('sends a new code when the number is edited after a submit', async () => {
     const OTHER_DIGITS = '4155550199';
     flow().setDigits(DIGITS);
