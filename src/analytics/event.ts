@@ -612,7 +612,7 @@ export type EventProperties = {
   };
   [event.cashSignInFailed]: {
     trigger: CashSignInTrigger;
-    reason: TelemetryErrorReason;
+    reason: TelemetryErrorReason | 'timeout';
   };
   [event.cashSignInCancelled]: {
     trigger: CashSignInTrigger;

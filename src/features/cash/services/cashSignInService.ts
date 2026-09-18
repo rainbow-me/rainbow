@@ -61,13 +61,17 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
     analytics.track(analytics.event.cashSignInSucceeded, { trigger });
     return token.accessToken;
   } catch (error) {
-    if (error instanceof Error && error.message === PASSKEY_ASSERTION_TIMEOUT_MESSAGE) {
+    const isPasskeyAssertionTimeout = error instanceof Error && error.message === PASSKEY_ASSERTION_TIMEOUT_MESSAGE;
+    if (isPasskeyAssertionTimeout) {
       await cancelPasskeyRequest().catch(() => undefined);
     }
     if (isPasskeyCancellation(error)) {
       analytics.track(analytics.event.cashSignInCancelled, { trigger });
     } else {
-      analytics.track(analytics.event.cashSignInFailed, { trigger, reason: getTelemetryErrorReason(error) });
+      analytics.track(analytics.event.cashSignInFailed, {
+        trigger,
+        reason: isPasskeyAssertionTimeout ? 'timeout' : getTelemetryErrorReason(error),
+      });
     }
     throw error;
   }

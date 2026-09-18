@@ -111,6 +111,7 @@ describe('ensureAccessToken', () => {
 
     await expect(ensureAccessToken('cardLink')).rejects.toThrow('UserCancelled');
     expect(mockFinishLogin).not.toHaveBeenCalled();
+    expect(mockCancelPasskeyRequest).not.toHaveBeenCalled();
     expect(tokenStore().token).toBeNull();
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
@@ -162,7 +163,7 @@ describe('ensureAccessToken', () => {
     expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
-      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'timeout' }],
     ]);
 
     resolveStuckAssertion!(ASSERTION_JSON);
@@ -186,7 +187,7 @@ describe('ensureAccessToken', () => {
 
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
-      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'timeout' }],
     ]);
   });
 
