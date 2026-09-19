@@ -56,7 +56,8 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
 
   useHardwareBackOnFocus(
     () => {
-      if (setup.useActionStore.getState().loading || getIsCashHalfSheetOpen()) return true;
+      if (setup.useActionStore.getState().loading || useSubmitReviewFlowStore.getState().kycSubmitted || getIsCashHalfSheetOpen())
+        return true;
       const { activeRoute, history } = useCashDepositSetupNavigationStore.getState();
       if (history.length) {
         CashDepositSetupNavigation.goBack();

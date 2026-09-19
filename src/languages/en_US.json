@@ -1535,6 +1535,11 @@
     },
     "cash": {
       "add_cash": "Add Cash",
+      "network_policy": {
+        "title": "It seems like you’re using a VPN",
+        "description": "Turn off your VPN or proxy and try again.",
+        "continue": "Continue"
+      },
       "deposit_intro": {
         "introducing": "Introducing",
         "title": "Cash Deposits",
