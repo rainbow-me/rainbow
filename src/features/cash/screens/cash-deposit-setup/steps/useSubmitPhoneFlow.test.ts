@@ -348,6 +348,27 @@ describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
     expect(mockSignInWithPhone).toHaveBeenCalledWith(DIGITS, 'existingAccountPrompt');
   });
 
+  it('blocks phone edits and submission while signing in', async () => {
+    let resolveSignIn!: () => void;
+    mockSignInWithPhone.mockReturnValueOnce(
+      new Promise<void>(resolve => {
+        resolveSignIn = resolve;
+      })
+    );
+    const pending = flow().signInWithExistingPasskey();
+    expect(flow().state).toBe('signingIn');
+
+    await expect(flow().submit()).resolves.toBe(false);
+    expect(mockCreateUserWithPhone).not.toHaveBeenCalled();
+
+    flow().setDigits('4155550199');
+    expect(flow().digits).toBe(DIGITS);
+    expect(flow().state).toBe('signingIn');
+
+    resolveSignIn();
+    await expect(pending).resolves.toBe('signedIn');
+  });
+
   it('returns to the prompt without starting recovery when the passkey ceremony is cancelled', async () => {
     mockSignInWithPhone.mockRejectedValue(new Error('UserCancelled'));
 
