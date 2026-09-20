@@ -82,7 +82,6 @@ import Routes, { type Route } from './routesNames';
 
 const DOUBLE_PRESS_DELAY = 400;
 const TAB_BAR_BORDER_RADIUS = BASE_TAB_BAR_HEIGHT / 2;
-const SwipeNavigatorContainer = getExperimentalFlag(SIDE_DRAWER) ? MainSideDrawer : React.Fragment;
 
 const TAB_BAR_ICONS = {
   [Routes.WALLET_SCREEN]: 'tabHome',
@@ -93,6 +92,8 @@ const TAB_BAR_ICONS = {
   [Routes.RNBW_MEMBERSHIP_SCREEN]: 'tabMembership',
   [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
+
+const SwipeNavigatorContainer = getExperimentalFlag(SIDE_DRAWER) ? MainSideDrawer : React.Fragment;
 
 type TabIconKey = (typeof TAB_BAR_ICONS)[keyof typeof TAB_BAR_ICONS];
 
@@ -323,6 +324,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       showRnbwMembership,
       showRnbwRewardsTab,
       stateRef,
+      tabWidth,
     ]
   );
 
