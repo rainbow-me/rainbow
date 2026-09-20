@@ -56,7 +56,7 @@ export function SettingsSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} scrollEnabled={false} useAdditionalTopPadding>
+        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} contentContainer="view" useAdditionalTopPadding>
           <ThemeProvider value={settingsNavigationTheme}>
             <Stack.Navigator
               screenOptions={{

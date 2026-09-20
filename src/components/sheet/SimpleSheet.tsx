@@ -7,40 +7,55 @@ import useDimensions from '@/hooks/useDimensions';
 
 import SlackSheet from './SlackSheet';
 
-type SimpleSheetProps = {
+type SimpleSheetBaseProps = {
   children: React.ReactNode;
   backgroundColor?: string | ColorValue;
   customHeight?: number;
   onDismiss?: () => void;
-  scrollEnabled?: boolean;
   useAdditionalTopPadding?: boolean;
   testID?: string;
 };
 
+type SimpleSheetProps = SimpleSheetBaseProps &
+  (
+    | {
+        contentContainer?: 'scroll';
+        scrollEnabled?: boolean;
+      }
+    | {
+        contentContainer: 'view';
+        scrollEnabled?: never;
+      }
+  );
+
 export const SimpleSheet = ({
   children,
   backgroundColor,
+  contentContainer = 'scroll',
   customHeight,
   onDismiss,
-  scrollEnabled = true,
+  scrollEnabled,
   testID,
   useAdditionalTopPadding = false,
 }: SimpleSheetProps) => {
   const insets = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - insets.top;
-  const content = scrollEnabled ? (
-    <ScrollView
-      style={{ backgroundColor }}
-      contentContainerStyle={{
-        minHeight: customHeight ?? fullSheetHeight,
-      }}
-    >
-      {children}
-    </ScrollView>
-  ) : (
-    <View style={{ backgroundColor, height: customHeight ?? fullSheetHeight }}>{children}</View>
-  );
+  const sheetScrollEnabled = contentContainer === 'scroll' ? (scrollEnabled ?? true) : false;
+  const content =
+    contentContainer === 'scroll' ? (
+      <ScrollView
+        scrollEnabled={sheetScrollEnabled}
+        style={{ backgroundColor }}
+        contentContainerStyle={{
+          minHeight: customHeight ?? fullSheetHeight,
+        }}
+      >
+        {children}
+      </ScrollView>
+    ) : (
+      <View style={{ backgroundColor, height: customHeight ?? fullSheetHeight }}>{children}</View>
+    );
 
   return (
     <SlackSheet
@@ -48,7 +63,7 @@ export const SimpleSheet = ({
       contentHeight={customHeight ?? fullSheetHeight}
       height="100%"
       removeTopPadding
-      scrollEnabled={scrollEnabled}
+      scrollEnabled={sheetScrollEnabled}
       backgroundColor={backgroundColor}
       onDismiss={onDismiss}
       testID={testID}
