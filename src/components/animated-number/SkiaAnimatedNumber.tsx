@@ -977,7 +977,7 @@ type AnimatedNumberWrapperProps = {
   size: StandardTextSize;
   testID?: string;
   verticalBleed: number;
-  widthStyle: AnimatedStyle;
+  widthStyle: AnimatedStyle<ViewStyle>;
 };
 
 const AnimatedNumberWrapper = memo(function AnimatedNumberWrapper({

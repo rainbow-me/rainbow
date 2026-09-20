@@ -5,10 +5,10 @@ import { triggerHaptics, type HapticType } from 'react-native-turbo-haptics';
 
 const springConfig: WithSpringConfig = {
   damping: 28,
+  // Matches the Reanimated 3 termination point for this spring.
+  energyThreshold: 2e-7,
   mass: 1.1,
   stiffness: 1600,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 0.1,
 };
 
 /**
