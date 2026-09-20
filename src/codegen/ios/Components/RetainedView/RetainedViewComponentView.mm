@@ -54,4 +54,13 @@ using RetainedViewRetainingComponentDescriptor = ConcreteComponentDescriptor<Ret
   return concreteComponentDescriptorProvider<RetainedViewRetainingComponentDescriptor>();
 }
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    _props = RetainedViewShadowNode::defaultSharedProps();
+  }
+
+  return self;
+}
+
 @end
