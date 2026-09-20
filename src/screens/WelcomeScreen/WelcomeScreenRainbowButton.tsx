@@ -7,8 +7,8 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { type ButtonPressAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
 import { RowWithMargins } from '@/components/layout';
 import { Emoji, Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { shadow } from '@/styles';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
