@@ -4631,7 +4631,7 @@ PODS:
   - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.2):
     - React
-  - TurboHaptics (1.0.9):
+  - TurboHaptics (1.2.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -5478,7 +5478,7 @@ SPEC CHECKSUMS:
   TcpSockets: 6f304a519884e6e8b1336c64e362c4ad10acd63d
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   ToolTipMenu: 02818a3d81f91817bbe4f5993997c70909e1bb27
-  TurboHaptics: cfa26d5243da8100a3d83653a221dd5ee54e4f7d
+  TurboHaptics: d339aad3176d2f0cb026e51b797bd8afc5d8c32d
   VisionCamera: b51af005669c6642dd1b4fca434eda4c1778de87
   Yoga: bae35227863013a26b8b43ac24a64c72b7e8baed
 
