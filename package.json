@@ -354,7 +354,7 @@
     "react-native-text-input-mask": "2.0.0",
     "react-native-tooltip": "rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97",
     "react-native-tooltips": "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa",
-    "react-native-turbo-haptics": "1.0.9",
+    "react-native-turbo-haptics": "1.2.0",
     "react-native-udp": "2.7.0",
     "react-native-url-polyfill": "2.0.0",
     "react-native-version-number": "0.3.6",
