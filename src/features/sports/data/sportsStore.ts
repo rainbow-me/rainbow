@@ -52,7 +52,7 @@ export type SportsState = {
   selectDestination: (host: SportsHost, destination: SportsDestination) => void;
   setSearch: (host: SportsHost, query: string | null) => void;
   loadMore: (host: SportsHost) => void;
-  refresh: (host: SportsHost) => void;
+  refresh: (host: SportsHost) => Promise<void>;
   updateWindow: (now?: Date) => void;
   setExactConsumer: (owner: symbol, eventIds: string[], visible: boolean) => void;
   removeExactConsumer: (owner: symbol) => void;
@@ -180,14 +180,14 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
       set({ hosts: { ...state.hosts, [host]: { ...current, request: { ...current.request, cursor } } } });
     },
 
-    refresh: host => {
+    refresh: async host => {
       const state = get();
       if (activeHost(state) !== host) return;
       const current = state.hosts[host];
       if (current.request.cursor) {
         set({ hosts: { ...state.hosts, [host]: { ...current, request: { ...current.request, cursor: undefined } } } });
       }
-      void get().fetch(undefined, { force: true });
+      await get().fetch(undefined, { force: true });
     },
 
     updateWindow: now =>

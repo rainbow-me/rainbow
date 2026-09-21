@@ -4,7 +4,7 @@ import { type SportsHost } from '@/features/sports/core/browse';
 import { sportsActions } from '@/features/sports/data/sportsStore';
 import useAppState from '@/hooks/useAppState';
 
-export function useSportsHost(host: SportsHost, visible: boolean): void {
+export function useSportsHost(host: SportsHost, visible: boolean): boolean {
   const { appState } = useAppState();
   const active = visible && appState === 'active';
 
@@ -23,4 +23,5 @@ export function useSportsHost(host: SportsHost, visible: boolean): void {
     updateDay();
     return () => clearTimeout(timer);
   }, [active]);
+  return active;
 }
