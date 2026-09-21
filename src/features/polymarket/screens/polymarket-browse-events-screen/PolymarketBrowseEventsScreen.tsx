@@ -3,18 +3,26 @@ import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } f
 
 import { useListen } from '@storesjs/stores';
 import { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { useColorMode } from '@/design-system';
 import { PolymarketEventsListBase } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListBase';
-import { CATEGORIES, POLYMARKET_BACKGROUND_DARK, POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
+import {
+  CATEGORIES,
+  NAVIGATOR_FOOTER_HEIGHT,
+  POLYMARKET_BACKGROUND_DARK,
+  POLYMARKET_BACKGROUND_LIGHT,
+} from '@/features/polymarket/constants';
+import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePress';
 import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketEventCategorySelector';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { LEAGUE_SELECTOR_HEIGHT } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketLeagueSelector';
-import { PolymarketSportsEventsScreen } from '@/features/polymarket/screens/polymarket-sports-events-screen/PolymarketSportsEventsScreen';
 import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
+import { SportsBrowse } from '@/features/sports/ui/SportsBrowse';
+import Routes from '@/navigation/routesNames';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (
@@ -27,26 +35,35 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
 
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
-  const { eventsListRef } = usePolymarketContext();
+  const { sportsBrowseRef, scrollBrowseToTop } = usePolymarketContext();
+  const safeAreaInsets = useSafeAreaInsets();
+  const visible = useNavigationStore(state => state.activeRoute === Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
   const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === CATEGORIES.sports.tagId);
+  const onGamePress = useSportsGamePress(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
 
-  useListen(
-    usePolymarketCategoryStore,
-    state => state.tagId,
-    () => {
-      eventsListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }
-  );
+  useListen(usePolymarketCategoryStore, state => state.tagId, scrollBrowseToTop);
 
   const backgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
   return (
     <View style={styles.listContainer}>
-      {isSportsCategory ? <PolymarketSportsEventsScreen onScroll={onScroll} /> : <EventsList onScroll={onScroll} />}
-      <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} topInset={isSportsCategory ? LEAGUE_SELECTOR_HEIGHT + 16 : 0} />
+      {isSportsCategory ? (
+        <SportsBrowse
+          ref={sportsBrowseRef}
+          host="predictions"
+          visible={visible}
+          route={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
+          bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
+          onGamePress={onGamePress}
+          onScroll={onScroll}
+        />
+      ) : (
+        <EventsList onScroll={onScroll} />
+      )}
+      <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} />
     </View>
   );
 };

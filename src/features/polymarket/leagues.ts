@@ -949,10 +949,6 @@ export const SPORT_LEAGUES = {
   },
 } as const;
 
-export const LEAGUE_SELECTOR_ORDER: LeagueId[] = ['fifa', 'nfl', 'nba', 'mlb', 'cfb', 'cbb', 'epl', 'nhl', 'atp', 'ufc', 'cs2', 'crint'];
-
-export const LEAGUE_LIST_ORDER: LeagueId[] = [...LEAGUE_SELECTOR_ORDER, 'dota2', 'val'];
-
 export type LeagueId = keyof typeof SPORT_LEAGUES;
 export type League = (typeof SPORT_LEAGUES)[LeagueId];
 export type SportId = League['sportId'];

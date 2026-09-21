@@ -12,6 +12,8 @@
       "search_empty": "No games found",
       "empty": "No games available",
       "error": "Unable to load games",
+      "event_error": "Unable to load event",
+      "event_unavailable": "Event unavailable",
       "retry": "Try again",
       "load_more": "Load more",
       "show_more": "Show %{count} more",

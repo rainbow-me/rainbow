@@ -45,7 +45,6 @@ import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
 import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
-import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
@@ -304,7 +303,6 @@ function BSNavigator() {
       <BSStack.Screen component={PolymarketAccountScreen} name={Routes.POLYMARKET_ACCOUNT_SCREEN} />
       <BSStack.Screen component={PolymarketNavigator} name={Routes.POLYMARKET_NAVIGATOR} />
       <BSStack.Screen component={PolymarketExplainSheet} name={Routes.POLYMARKET_EXPLAIN_SHEET} />
-      <BSStack.Screen component={PolymarketBrowseEventsScreen} name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN} />
       <BSStack.Screen component={PolymarketSellPositionSheet} name={Routes.POLYMARKET_SELL_POSITION_SHEET} />
       <BSStack.Screen component={RnbwAirdropScreen} name={Routes.RNBW_AIRDROP_SCREEN} />
       <BSStack.Screen component={RnbwRewardsClaimSheet} name={Routes.RNBW_REWARDS_CLAIM_SHEET} />

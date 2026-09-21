@@ -1,16 +1,9 @@
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Skeleton } from '@/components/Skeleton';
 import { globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import {
-  PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
-  PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
-  PREDICTION_MARKET_EVENT_CARD_HEIGHT,
-  PREDICTION_MARKET_EVENT_CARD_WIDTH,
-  PredictionMarketEventCard,
-} from '@/features/discover/components/markets/cards/PredictionMarketEventCard';
 import {
   getTileWidgetTokenIds,
   PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
@@ -18,37 +11,31 @@ import {
   PREDICTION_MARKET_TILE_CARD_WIDTH,
   PredictionMarketTileCard,
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
+import { PredictionEventsSection } from '@/features/discover/components/PredictionEventsSection';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type CardPressHandler,
+  type DiscoverViewport,
   type OrderPressHandler,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import {
-  getSportsSurfaceIntent,
-  selectSportsEventsForIntent,
-  type SportsSurfaceIntent,
-} from '@/features/discover/utils/sportsSurfaceIntent';
 import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
-import { LiveSectionIndicator } from '@/features/polymarket/components/LiveSectionIndicator';
 import {
   getPolymarketEventsListTokenIds,
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { getSportsEventRowTokenIds } from '@/features/polymarket/hooks/useSportsEventContent';
-import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/polymarketSportsEventsStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
@@ -69,24 +56,6 @@ const PREDICTION_WIDGET_SKELETON = {
   height: PREDICTION_MARKET_TILE_CARD_HEIGHT,
   width: PREDICTION_MARKET_TILE_CARD_WIDTH,
 };
-const PREDICTION_EVENT_CARD_SKELETON = {
-  borderRadius: PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
-  height: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
-  width: PREDICTION_MARKET_EVENT_CARD_WIDTH,
-};
-const PREDICTION_EVENT_CAROUSEL_CARD_SKELETON = {
-  borderRadius: PREDICTION_MARKET_EVENT_CARD_BORDER_RADIUS,
-  height: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
-  width: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
-};
-const renderPredictionEventCardList = renderEventCardList(false);
-const renderPredictionEventCardListWithoutLeagueHeader = renderEventCardList(true);
-const renderPredictionEventCardSized = renderEventCardSized(false);
-const renderPredictionEventCardSizedWithoutLeagueHeader = renderEventCardSized(true);
-
-const LIVE_INDICATOR_HEADER_GAP = 10;
-const HEADER_ACCESSORY_GAP = 4;
-
 type PredictionSkeletonConfig = {
   borderRadius: number;
   height: number;
@@ -117,40 +86,36 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
     renderItem: renderPredictionWidget,
     renderSkeleton: () => renderPredictionSkeleton(PREDICTION_WIDGET_SKELETON),
   },
-  'prediction_event_card.carousel': {
-    layout: 'carousel',
-    itemHeight: PREDICTION_MARKET_EVENT_CARD_HEIGHT,
-    itemWidth: PREDICTION_MARKET_EVENT_CARD_CAROUSEL_WIDTH,
-    renderItem: renderPredictionEventCardSized,
-    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_EVENT_CAROUSEL_CARD_SKELETON),
-    singleItemWidth: PREDICTION_MARKET_EVENT_CARD_WIDTH,
-  },
-  'prediction_event_card.list': {
-    layout: 'list',
-    renderItem: renderPredictionEventCardList,
-    renderSkeleton: () => renderPredictionSkeleton(PREDICTION_EVENT_CARD_SKELETON),
-  },
-} satisfies Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>;
+} satisfies Partial<Record<PredictionsDisplay, SectionDescriptor<PredictionPlacementItem>>>;
 
 export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLeafWithDisplay<PredictionsDisplay> {
   return (PREDICTION_DISPLAY_VALUES as readonly string[]).includes(surface.display);
 }
 
-export function PredictionsSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<PredictionsDisplay>; surfaceId: SurfaceId }) {
-  const sportsIntent = useMemo(() => getSportsSurfaceIntent(surface), [surface]);
-
-  if (!hasPlacement(surface)) {
-    if (sportsIntent) return <SportsQuerySection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
-    return unsupportedUnplacedPredictionSurface(surface, surfaceId);
+export function PredictionsSection({
+  surface,
+  surfaceId,
+  viewport,
+  active,
+}: {
+  surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
+  surfaceId: SurfaceId;
+  viewport: DiscoverViewport;
+  active: boolean;
+}) {
+  const enabled = useSportsEnabled();
+  if (!enabled) return null;
+  if (!hasPlacement(surface)) return unsupportedUnplacedPredictionSurface(surface, surfaceId);
+  if (isEventCardDisplay(surface.display))
+    return <PredictionEventsSection surface={surface} surfaceId={surfaceId} viewport={viewport} active={active} />;
+  if (
+    surface.display === 'prediction_tile.carousel' ||
+    surface.display === 'prediction_tile.grid' ||
+    surface.display === 'prediction_tile_widget.carousel'
+  ) {
+    return <PredictionsPlacementSection surface={{ ...surface, display: surface.display }} surfaceId={surfaceId} />;
   }
-
-  // Only route to the sports section when there's a real sports intent — otherwise it would
-  // mount, run its placement hooks/subscriptions, then immediately delegate, double-mounting.
-  if (isEventCardDisplay(surface.display) && sportsIntent) {
-    return <SportsEventPlacementSection sportsIntent={sportsIntent} surface={surface} surfaceId={surfaceId} />;
-  }
-
-  return <PredictionsPlacementSection surface={surface} surfaceId={surfaceId} />;
+  return null;
 }
 
 function useIsPredictionPlacementPending(surface: PlacementBackedPredictionsSurface): boolean {
@@ -162,17 +127,8 @@ function useIsPredictionPlacementPending(surface: PlacementBackedPredictionsSurf
   return isPendingSurfacePlacement || isLoadingPlacementSource;
 }
 
-/**
- * Returns the token-id extractor that matches what the given display actually renders,
- * so the section subscribes the SAME ids the cards show. Each branch points at the selector
- * the renderer exports, never a re-derived copy.
- */
-function getDisplayTokenIdExtractor(display: PredictionsDisplay): (event: PolymarketEvent) => string[] {
+function getDisplayTokenIdExtractor(display: keyof typeof PREDICTIONS_SECTION_DESCRIPTORS): (event: PolymarketEvent) => string[] {
   switch (display) {
-    case 'prediction_event_card.carousel':
-    case 'prediction_event_card.list':
-      // Event card renders the away/home line + moneyline cells from getSportsEventRows.
-      return getSportsEventRowTokenIds;
     case 'prediction_tile_widget.carousel':
       // Tile widget renders outcome pills from getOutcomeRows.
       return getTileWidgetTokenIds;
@@ -188,18 +144,12 @@ function usePredictionTokenSubscription({
   items,
   limit,
 }: {
-  display: PredictionsDisplay;
+  display: keyof typeof PREDICTIONS_SECTION_DESCRIPTORS;
   items: PredictionPlacementItem[];
   limit: number | undefined;
 }) {
-  // List displays render the full unsliced data (expandable via ShowMore), so subscribe all
-  // items. Carousel/grid slice to surface.limit, so subscribe only the capped slice.
   const setSubscribedTokens = useLiveTokenSubscription(Routes.DISCOVER_SCREEN);
-  const isListDisplay = PREDICTIONS_SECTION_DESCRIPTORS[display].layout === 'list';
-  const renderedItems = useMemo(
-    () => (isListDisplay || typeof limit !== 'number' ? items : items.slice(0, limit)),
-    [isListDisplay, items, limit]
-  );
+  const renderedItems = useMemo(() => (typeof limit !== 'number' ? items : items.slice(0, limit)), [items, limit]);
 
   useEffect(() => {
     const extractTokenIds = getDisplayTokenIdExtractor(display);
@@ -208,7 +158,13 @@ function usePredictionTokenSubscription({
   }, [display, renderedItems, setSubscribedTokens]);
 }
 
-function PredictionsPlacementSection({ surface, surfaceId }: { surface: PlacementBackedPredictionsSurface; surfaceId: SurfaceId }) {
+function PredictionsPlacementSection({
+  surface,
+  surfaceId,
+}: {
+  surface: PlacementBackedSurfaceLeafWithDisplay<keyof typeof PREDICTIONS_SECTION_DESCRIPTORS>;
+  surfaceId: SurfaceId;
+}) {
   const result = usePredictionsPlacement(surface.placement);
   const isPlacementPending = useIsPredictionPlacementPending(surface);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
@@ -229,106 +185,6 @@ function PredictionsPlacementSection({ surface, surfaceId }: { surface: Placemen
     section: surface,
     surfaceId,
   });
-}
-
-function SportsEventPlacementSection({
-  sportsIntent,
-  surface,
-  surfaceId,
-}: {
-  sportsIntent: SportsSurfaceIntent;
-  surface: PlacementBackedPredictionsSurface;
-  surfaceId: SurfaceId;
-}) {
-  const isPlacementPending = useIsPredictionPlacementPending(surface);
-  const result = usePredictionsPlacement(surface.placement);
-  const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
-  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
-  const onPressSeeAll = useCallback(() => {
-    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
-  }, [predictionsDestination]);
-
-  usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
-
-  const { headerCaret, leadingAccessory } = getSportsHeaderProps(sportsIntent, surface);
-
-  return renderSectionLayout({
-    data: result.items,
-    descriptor,
-    headerCaret,
-    leadingAccessory,
-    loading: result.isLoading || isPlacementPending,
-    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPress: predictionsDestination && result.placement ? onPressSeeAll : undefined,
-    placement: result.placement,
-    section: surface,
-    surfaceId,
-  });
-}
-
-function SportsQuerySection({
-  sportsIntent,
-  surface,
-  surfaceId,
-}: {
-  sportsIntent: SportsSurfaceIntent;
-  surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
-  surfaceId: SurfaceId;
-}) {
-  const events = usePolymarketSportsEventsStore(state => state.getData());
-  const isLoading = usePolymarketSportsEventsStore(state => state.enabled && (state.getStatus('isLoading') || state.getStatus('isIdle')));
-  const items = useMemo<PredictionPlacementItem[]>(() => {
-    if (!events) return [];
-    const selectedEvents = selectSportsEventsForIntent(events, sportsIntent);
-    if (!selectedEvents.length) return [];
-    return selectedEvents.map(event => ({ id: event.id, event }));
-  }, [events, sportsIntent]);
-  const descriptor = getSportsEventSectionDescriptor(surface, sportsIntent);
-  const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
-  const onPressSeeAll = useCallback(() => {
-    if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
-  }, [predictionsDestination]);
-
-  usePredictionTokenSubscription({ display: surface.display, items, limit: surface.limit });
-
-  const { headerCaret, leadingAccessory } = getSportsHeaderProps(sportsIntent, surface);
-
-  return renderSectionLayout({
-    data: items,
-    descriptor,
-    headerCaret,
-    leadingAccessory,
-    loading: isLoading,
-    // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPress: predictionsDestination ? onPressSeeAll : undefined,
-    section: surface,
-    surfaceId,
-  });
-}
-
-function getSportsHeaderProps(
-  sportsIntent: SportsSurfaceIntent,
-  surface: SurfaceLeaf
-): { headerCaret: boolean | undefined; leadingAccessory: ReactNode } {
-  if ('status' in sportsIntent) {
-    // Live section: always shows live indicator, never shows caret
-    return {
-      headerCaret: false,
-      leadingAccessory: <LiveSectionIndicator style={styles.liveHeaderIndicator} />,
-    };
-  }
-  if ('leagueId' in sportsIntent) {
-    // League section: shows league icon, caret based on destination
-    return {
-      headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
-      leadingAccessory: <LeagueIcon leagueId={sportsIntent.leagueId} size={28} />,
-    };
-  }
-  // Today/other bucket section: no leading accessory, caret based on destination
-  return {
-    headerCaret: hasDestinationRoot(surface.destination, 'predictions'),
-    leadingAccessory: undefined,
-  };
 }
 
 function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<PredictionsDisplay>, surfaceId: SurfaceId) {
@@ -388,60 +244,6 @@ function renderPredictionWidget(item: PredictionPlacementItem, _: number, onPres
   return <PredictionMarketTileCard event={item.event} onPress={onPress} onOrderPress={onOrderPress} />;
 }
 
-function getSportsEventSectionDescriptor(
-  surface: SurfaceLeafWithDisplay<PredictionsDisplay>,
-  intent: SportsSurfaceIntent | null
-): SectionDescriptor<PredictionPlacementItem> {
-  const display = surface.display;
-  const shouldHideLeagueHeader = intent !== null && 'leagueId' in intent;
-
-  if (!shouldHideLeagueHeader) return PREDICTIONS_SECTION_DESCRIPTORS[display];
-
-  switch (display) {
-    case 'prediction_event_card.carousel':
-      return {
-        ...PREDICTIONS_SECTION_DESCRIPTORS[display],
-        renderItem: renderPredictionEventCardSizedWithoutLeagueHeader,
-      };
-    case 'prediction_event_card.list':
-      return {
-        ...PREDICTIONS_SECTION_DESCRIPTORS[display],
-        renderItem: renderPredictionEventCardListWithoutLeagueHeader,
-      };
-    case 'prediction_tile.carousel':
-    case 'prediction_tile.grid':
-    case 'prediction_tile_widget.carousel':
-      return PREDICTIONS_SECTION_DESCRIPTORS[display];
-  }
-}
-
-function renderEventCardList(hideLeagueHeader: boolean) {
-  return function render(item: PredictionPlacementItem, onPress: CardPressHandler, onOrderPress: OrderPressHandler): ReactNode {
-    return (
-      <PredictionMarketEventCard event={item.event} hideLeagueHeader={hideLeagueHeader} onPress={onPress} onOrderPress={onOrderPress} />
-    );
-  };
-}
-
-function renderEventCardSized(hideLeagueHeader: boolean) {
-  return function render(
-    item: PredictionPlacementItem,
-    width: number,
-    onPress: CardPressHandler,
-    onOrderPress: OrderPressHandler
-  ): ReactNode {
-    return (
-      <PredictionMarketEventCard
-        event={item.event}
-        hideLeagueHeader={hideLeagueHeader}
-        onPress={onPress}
-        onOrderPress={onOrderPress}
-        width={width}
-      />
-    );
-  };
-}
-
 const styles = StyleSheet.create({
   predictionTile: {
     height: POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -464,8 +266,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 24,
-  },
-  liveHeaderIndicator: {
-    marginRight: LIVE_INDICATOR_HEADER_GAP - HEADER_ACCESSORY_GAP,
   },
 });
