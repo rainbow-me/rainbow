@@ -66,10 +66,9 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
                   <DirectoryCount scopeId={scope.id} />
                   <TextIcon
                     color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
-                    size="15pt"
+                    size="icon 15px"
                     weight="heavy"
-                    width={13}
-                    height={10}
+                    containerSize={16}
                   >
                     {'􀯻'}
                   </TextIcon>

@@ -23,7 +23,7 @@ export function SportsSearch({ host }: { host: SportsHost }) {
   return (
     <View style={styles.row}>
       <View style={[styles.field, { backgroundColor: fill }]}>
-        <TextIcon color="labelTertiary" size="17pt" weight="bold">
+        <TextIcon color="labelTertiary" size="icon 17px" weight="bold">
           {'􀊫'}
         </TextIcon>
         <Input

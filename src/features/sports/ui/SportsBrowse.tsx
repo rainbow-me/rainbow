@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 
 import { shallowEqual } from '@storesjs/stores';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
@@ -25,7 +27,6 @@ import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
-import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
@@ -156,26 +157,19 @@ export function SportsBrowse({
               scaleTo={0.98}
             >
               <View style={styles.expand}>
-                <SportsSurface
-                  borderRadius={10}
-                  color={isDarkMode ? 'rgba(255,255,255,0.16)' : undefined}
-                  gradient={isDarkMode ? undefined : LIGHT_BADGE_GRADIENT}
-                  borderColor={isDarkMode ? undefined : '#FFFFFF'}
-                  borderWidth={4 / 3}
-                  shadows={isDarkMode ? undefined : LIGHT_BADGE_SHADOWS}
-                  style={styles.expandIcon}
-                >
-                  <TextIcon
-                    color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
-                    size="10pt"
-                    weight="black"
-                    width={16}
-                    height={8}
-                    textStyle={styles.expandChevron}
-                  >
-                    {item.expanded ? '􀆇' : '􀆈'}
-                  </TextIcon>
-                </SportsSurface>
+                <View style={!isDarkMode && [styles.badgeShadow, styles.expandCorners]}>
+                  <View style={[styles.expandIcon, styles.expandCorners, isDarkMode ? styles.darkExpandIcon : styles.tightBadgeShadow]}>
+                    {!isDarkMode && (
+                      <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.expandCorners, styles.clip]}>
+                        <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
+                      </View>
+                    )}
+                    <TextIcon color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="icon 10px" weight="black" containerSize={20}>
+                      {item.expanded ? '􀆇' : '􀆈'}
+                    </TextIcon>
+                    {!isDarkMode && <Border borderRadius={10} borderWidth={4 / 3} borderColor="white" enableInLightMode />}
+                  </View>
+                </View>
                 <Text color="labelTertiary" size="17pt" weight="bold">
                   {i18n.t(item.expanded ? i18n.l.sports.show_less : i18n.l.sports.show_more, { count: item.remaining })}
                 </Text>
@@ -219,7 +213,7 @@ export function SportsBrowse({
         }
         ListFooterComponentStyle={rows.length === 0 && styles.footer}
       />
-      <SportsScopeBar host={host} bottom={bottomInset + 12} />
+      <SportsScopeBar host={host} bottom={bottomInset + 20} />
     </View>
   );
 }
@@ -244,26 +238,30 @@ function SectionHeading({ section, title, host }: { section: SportsSection; titl
         <Text color="label" size="22pt" weight="heavy">
           {title}
         </Text>
-        <SportsSurface
-          borderRadius={8}
-          color={isDarkMode ? 'rgba(255,255,255,0.03)' : undefined}
-          gradient={isDarkMode ? undefined : LIGHT_BADGE_GRADIENT}
-          borderColor={isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF'}
-          borderWidth={4 / 3}
-          shadows={isDarkMode ? undefined : LIGHT_BADGE_SHADOWS}
-          style={styles.count}
-        >
-          <Text color="labelSecondary" size="14pt" weight="heavy">
-            {section.gameIds.length}
-          </Text>
-        </SportsSurface>
+        <View style={!isDarkMode && [styles.badgeShadow, styles.countCorners]}>
+          <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
+            {!isDarkMode && (
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.countCorners, styles.clip]}>
+                <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
+              </View>
+            )}
+            <Text color="labelSecondary" size="14pt" weight="heavy">
+              {section.gameIds.length}
+            </Text>
+            <Border
+              borderRadius={8}
+              borderWidth={4 / 3}
+              borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
+              enableInLightMode
+            />
+          </View>
+        </View>
         {section.scopeId && (
           <TextIcon
             color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
-            size="15pt"
+            size="icon 15px"
             weight="heavy"
-            width={13}
-            height={10}
+            containerSize={16}
           >
             {'􀯻'}
           </TextIcon>
@@ -335,7 +333,7 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
   return (
     <View style={styles.message}>
       {status.error && (
-        <TextIcon color="labelQuaternary" size="34pt" weight="regular" containerSize={40}>
+        <TextIcon color="labelQuaternary" size="icon 34px" weight="regular" containerSize={40}>
           {'􀇿'}
         </TextIcon>
       )}
@@ -355,7 +353,7 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
           <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
             <View style={status.error && [styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
               {status.error && (
-                <TextIcon color="accent" size="15pt" weight="bold" containerSize={20}>
+                <TextIcon color="accent" size="icon 15px" weight="bold" containerSize={20}>
                   {'􀅈'}
                 </TextIcon>
               )}
@@ -412,10 +410,6 @@ const SECTION_LABELS = {
 };
 const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
 const LIGHT_BADGE_GRADIENT = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
-const LIGHT_BADGE_SHADOWS = [
-  { color: 'rgba(0,0,0,0.06)', blur: 8, dx: 0, dy: 2, drawBehind: true },
-  { color: 'rgba(0,0,0,0.02)', blur: 3, dx: 0, dy: 2 },
-];
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -426,6 +420,8 @@ const styles = StyleSheet.create({
   card: { marginHorizontal: 12, marginBottom: 8 },
   heading: { height: 60, flexDirection: 'row', alignItems: 'center', gap: 6, marginHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
   count: { height: 23, paddingHorizontal: 7, justifyContent: 'center', alignItems: 'center' },
+  countCorners: { borderRadius: 8, borderCurve: 'continuous' },
+  darkCount: { backgroundColor: 'rgba(255,255,255,0.03)' },
   liveIndicator: { width: 16, height: 16, marginRight: 10 },
   liveRing: {
     position: 'absolute',
@@ -441,7 +437,11 @@ const styles = StyleSheet.create({
   liveDot: { width: 8, height: 8, borderRadius: 4 },
   expand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 12, paddingBottom: 4 },
   expandIcon: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
-  expandChevron: { letterSpacing: 0.51 },
+  expandCorners: { borderRadius: 10, borderCurve: 'continuous' },
+  clip: { overflow: 'hidden' },
+  darkExpandIcon: { backgroundColor: 'rgba(255,255,255,0.16)' },
+  badgeShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 4 },
+  tightBadgeShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3 },
   message: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', gap: 24, padding: 28 },
   retry: {
     height: 44,

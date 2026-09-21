@@ -1,17 +1,19 @@
 import { memo, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { shallowEqual } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Border } from '@/design-system/components/Border/Border';
+import { getSquirclePath } from '@/design-system/layout/shapes';
 import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameOffer } from '@/features/sports/ui/GameOffer';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
-import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import * as i18n from '@/languages';
 
 export type SportsGamePress = (gameId: string, selection?: Selection) => void;
@@ -91,19 +93,39 @@ function GameCardSurface({
   children: ReactNode;
 }) {
   const { isDarkMode } = useColorMode();
+  const height = threeWay ? 222 : 166;
   return (
-    <SportsSurface
-      borderRadius={24}
-      color={isDarkMode ? '#000000' : undefined}
-      gradient={isDarkMode ? undefined : LIGHT_CARD_FILL}
-      borderColor={isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF'}
-      shadows={isDarkMode ? DARK_CARD_SHADOWS : LIGHT_CARD_SHADOWS}
-      innerShadow={isDarkMode ? { color: 'rgba(255,255,255,0.15)', blur: 30, dx: 0, dy: 8 } : undefined}
-      style={[styles.surface, { width, height: threeWay ? 222 : 166 }]}
-      testID={testID}
-    >
-      {children}
-    </SportsSurface>
+    <View style={[styles.cardShadow, { shadowOffset: { width: 0, height: isDarkMode ? 4 : 2 } }]} testID={testID}>
+      <View
+        style={[styles.surface, { width, height, backgroundColor: isDarkMode ? '#000000' : undefined }, !isDarkMode && styles.tightShadow]}
+      >
+        <View pointerEvents="none" style={styles.cardBackground}>
+          {isDarkMode ? (
+            <CardInnerShadow width={width} height={height} />
+          ) : (
+            <LinearGradient colors={LIGHT_CARD_FILL} style={StyleSheet.absoluteFill} />
+          )}
+        </View>
+        {children}
+        <Border
+          borderRadius={24}
+          borderWidth={2}
+          borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF' }}
+          enableInLightMode
+        />
+      </View>
+    </View>
+  );
+}
+
+function CardInnerShadow({ width, height }: { width: number; height: number }) {
+  const path = useMemo(() => getSquirclePath({ width, height, borderRadius: 24 }), [height, width]);
+  return (
+    <Canvas style={{ width: Math.ceil(width), height }}>
+      <Path path={path}>
+        <Shadow color="rgba(255,255,255,0.15)" blur={30} dx={0} dy={8} inner shadowOnly />
+      </Path>
+    </Canvas>
   );
 }
 
@@ -154,19 +176,24 @@ function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: st
                 </Text>
               )}
               {!!header.period && (
-                <SportsSurface
-                  borderRadius={8}
-                  color={isDarkMode ? 'rgba(255,255,255,0.07)' : undefined}
-                  gradient={isDarkMode ? undefined : LIGHT_BADGE_FILL}
-                  borderColor={isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF'}
-                  borderWidth={4 / 3}
-                  shadows={isDarkMode ? undefined : BADGE_SHADOWS}
-                  style={styles.period}
-                >
-                  <Text color="labelTertiary" size="13pt" weight="bold">
-                    {header.period}
-                  </Text>
-                </SportsSurface>
+                <View style={!isDarkMode && styles.periodShadow}>
+                  <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.tightShadow]}>
+                    {!isDarkMode && (
+                      <View pointerEvents="none" style={styles.periodBackground}>
+                        <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
+                      </View>
+                    )}
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      {header.period}
+                    </Text>
+                    <Border
+                      borderRadius={8}
+                      borderWidth={4 / 3}
+                      borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
+                      enableInLightMode
+                    />
+                  </View>
+                </View>
               )}
               {(header.clock || header.period) && (
                 <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
@@ -346,18 +373,12 @@ const INTERRUPTION_LABELS: Partial<Record<Game_Interruption, string>> = {
 
 const LIGHT_CARD_FILL = ['rgba(255,255,255,0.68)', 'rgba(255,255,255,0.96)'] as const;
 const LIGHT_BADGE_FILL = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
-const DARK_CARD_SHADOWS = [{ color: 'rgba(0,0,0,0.06)', blur: 12, dx: 0, dy: 4, drawBehind: true }];
-const LIGHT_CARD_SHADOWS = [
-  { color: 'rgba(0,0,0,0.06)', blur: 12, dx: 0, dy: 2, drawBehind: true },
-  { color: 'rgba(0,0,0,0.02)', blur: 3, dx: 0, dy: 2 },
-];
-const BADGE_SHADOWS = [
-  { color: 'rgba(0,0,0,0.06)', blur: 8, dx: 0, dy: 2, drawBehind: true },
-  { color: 'rgba(0,0,0,0.02)', blur: 3, dx: 0, dy: 2 },
-];
 
 const styles = StyleSheet.create({
-  surface: { paddingBottom: 6 },
+  surface: { paddingBottom: 6, borderRadius: 24, borderCurve: 'continuous' },
+  cardBackground: { ...StyleSheet.absoluteFillObject, borderRadius: 24, borderCurve: 'continuous', overflow: 'hidden' },
+  cardShadow: { borderRadius: 24, borderCurve: 'continuous', shadowColor: '#000000', shadowOpacity: 0.06, shadowRadius: 12, elevation: 6 },
+  tightShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3 },
   header: {
     height: 48,
     paddingTop: 12,
@@ -371,7 +392,18 @@ const styles = StyleSheet.create({
   competition: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
   competitionName: { flexShrink: 1 },
   gameTime: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  period: { paddingHorizontal: 5, height: 19, justifyContent: 'center' },
+  period: { paddingHorizontal: 5, height: 19, justifyContent: 'center', borderRadius: 8, borderCurve: 'continuous' },
+  periodBackground: { ...StyleSheet.absoluteFillObject, borderRadius: 8, borderCurve: 'continuous', overflow: 'hidden' },
+  darkPeriod: { backgroundColor: 'rgba(255,255,255,0.07)' },
+  periodShadow: {
+    borderRadius: 8,
+    borderCurve: 'continuous',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 4,
+  },
   dot: { opacity: 0.7 },
   row: { height: 54, paddingHorizontal: 12, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
   participantButton: { flex: 1 },

@@ -1,26 +1,32 @@
 import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { type FastImageProps } from 'react-native-fast-image';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import ImgixImage from '@/components/images/ImgixImage';
 import { Text, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/design-system/utils/opacity';
+import { Border } from '@/design-system/components/Border/Border';
 import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
-import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export function SportsImage({ imageUrl, name, size, width = size }: { imageUrl?: string; name: string; size: number; width?: number }) {
-  return (
-    <Artwork
-      key={imageUrl ?? name}
-      source={imageUrl ? { uri: imageUrl } : undefined}
-      name={name}
-      width={width}
-      height={size}
-      borderRadius={size === 24 ? 3 : 8}
-    />
+export function SportsImage({
+  imageUrl,
+  name,
+  size,
+  width = size,
+  borderRadius = size === 24 ? 3 : 8,
+}: {
+  imageUrl?: string;
+  name: string;
+  size: number;
+  width?: number;
+  borderRadius?: number;
+}) {
+  return imageUrl ? (
+    <RemoteImage key={imageUrl} imageUrl={imageUrl} name={name} width={width} height={size} borderRadius={borderRadius} />
+  ) : (
+    <ImageFallback name={name} size={Math.min(width, size)} />
   );
 }
 
@@ -30,106 +36,104 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
   const icon = (size === 44 ? sportsIcons[`${scope.id}-header`] : undefined) ?? sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
   const imageSize = size * (icon?.scale ?? 20 / 28);
-  const background = color
+  const backgroundColor = color
     ? getSolidColorEquivalent({ background: color, foreground: '#000000', opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
     : fallback;
+  const borderRadius = size === 28 ? 10 : size === 40 ? 12 : 14;
+  const corners = { borderRadius, borderCurve: 'continuous' as const };
 
   return (
-    <SportsSurface
-      borderRadius={size === 28 ? 10 : size === 40 ? 12 : 14}
-      color={background}
-      borderColor={isDarkMode ? 'rgba(255,255,255,0.1)' : size === 44 ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.06)'}
-      shadows={
-        isDarkMode && color
-          ? [...BADGE_SHADOWS, { color: opacity(color, 0.2), blur: 12, dx: 0, dy: 0 }]
-          : size === 44 && !isDarkMode
-            ? HEADER_SHADOWS
-            : BADGE_SHADOWS
-      }
-      innerShadow={{ color: 'rgba(255,255,255,0.18)', blur: 2.5, dx: 0, dy: 1, blendMode: 'plus' }}
-      style={[styles.image, { width: size, height: size }]}
-    >
-      <Artwork
-        key={icon ? scope.id : (scope.imageUrl ?? scope.id)}
-        source={icon?.source ?? (scope.imageUrl ? { uri: scope.imageUrl } : undefined)}
-        name={scope.name}
-        width={imageSize}
-        height={imageSize}
-        offset={icon?.offset}
-      />
-    </SportsSurface>
+    <View style={isDarkMode && color ? [styles.glow, corners, { shadowColor: color }] : undefined}>
+      <View
+        style={[
+          styles.image,
+          styles.shadow,
+          corners,
+          { width: size, height: size, backgroundColor },
+          size === 44 && !isDarkMode && styles.headerShadow,
+        ]}
+      >
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip, corners]}>
+          <LinearGradient colors={BADGE_HIGHLIGHT} style={styles.highlight} />
+        </View>
+        {icon ? (
+          <ImgixImage
+            enableFasterImage
+            source={icon.source}
+            resizeMode="contain"
+            fasterImageConfig={IMAGE_CONFIG}
+            style={{
+              width: imageSize,
+              height: imageSize,
+              transform: icon.offset ? [{ translateX: icon.offset[0] }, { translateY: icon.offset[1] }] : undefined,
+            }}
+          />
+        ) : (
+          <SportsImage imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
+        )}
+        <Border
+          borderRadius={borderRadius}
+          borderWidth={2}
+          borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.1)' : size === 44 ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.06)' }}
+          enableInLightMode
+        />
+      </View>
+    </View>
   );
 }
 
-function Artwork({
-  source,
+function RemoteImage({
+  imageUrl,
   name,
   width,
   height,
-  offset,
-  borderRadius = 0,
+  borderRadius,
 }: {
-  source?: FastImageProps['source'];
+  imageUrl: string;
   name: string;
   width: number;
   height: number;
-  offset?: readonly [number, number];
-  borderRadius?: number;
+  borderRadius: number;
 }) {
-  const [image, setImage] = useState<'loading' | 'failed' | { width: number; height: number }>(() =>
-    typeof source === 'number' ? Image.resolveAssetSource(source) : 'loading'
-  );
-  const backgroundColor = useForegroundColor('fillTertiary');
-  const placeholderSize = Math.min(width, height);
-  if (!source || image === 'failed')
-    return (
-      <View style={[styles.image, styles.fallback, { width: placeholderSize, height: placeholderSize, backgroundColor }]}>
-        <Text color="labelSecondary" size="13pt" weight="heavy">
-          {name.slice(0, 2).toUpperCase()}
-        </Text>
-      </View>
-    );
-  const loading = image === 'loading';
-  const scale = loading ? 1 : Math.min(width / image.width, height / image.height);
-  const fittedWidth = loading ? width : image.width * scale;
-  const fittedHeight = loading ? height : image.height * scale;
+  const [aspectRatio, setAspectRatio] = useState<number | null>(width / height);
+  if (aspectRatio === null) return <ImageFallback name={name} size={Math.min(width, height)} />;
+
+  const fittedWidth = Math.min(width, height * aspectRatio);
+  const fittedHeight = fittedWidth / aspectRatio;
   return (
-    <View
-      style={[
-        styles.image,
-        borderRadius ? styles.clip : undefined,
-        {
-          width: fittedWidth,
-          height: fittedHeight,
-          borderRadius,
-          transform: offset ? [{ translateX: offset[0] }, { translateY: offset[1] }] : undefined,
-        },
-      ]}
-    >
-      {loading && <View style={[styles.placeholder, { width: placeholderSize, height: placeholderSize, backgroundColor }]} />}
+    <View style={[styles.clip, { width: fittedWidth, height: fittedHeight, borderRadius }]}>
       <ImgixImage
         enableFasterImage
-        source={source}
+        source={{ uri: imageUrl }}
         resizeMode="contain"
         fasterImageConfig={IMAGE_CONFIG}
-        onLoad={({ nativeEvent: { width, height } }) => setImage({ width, height })}
-        onError={() => setImage('failed')}
-        style={{
-          width: fittedWidth,
-          height: fittedHeight,
-          opacity: loading ? 0 : 1,
-        }}
+        onLoad={({ nativeEvent: { width, height } }) => setAspectRatio(width / height)}
+        onError={() => setAspectRatio(null)}
+        style={StyleSheet.absoluteFill}
       />
     </View>
   );
 }
 
-const HEADER_SHADOWS = [{ color: 'rgba(0,0,0,0.06)', blur: 3, dx: 0, dy: 4 }];
-const BADGE_SHADOWS = [{ color: 'rgba(0,0,0,0.06)', blur: 6, dx: 0, dy: 4 }];
+function ImageFallback({ name, size }: { name: string; size: number }) {
+  const backgroundColor = useForegroundColor('fillTertiary');
+  return (
+    <View style={[styles.image, styles.fallback, { width: size, height: size, backgroundColor }]}>
+      <Text color="labelSecondary" size="13pt" weight="heavy">
+        {name.slice(0, 2).toUpperCase()}
+      </Text>
+    </View>
+  );
+}
+
+const BADGE_HIGHLIGHT = ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)'] as const;
 const IMAGE_CONFIG = { transitionDuration: 0 };
 const styles = StyleSheet.create({
   image: { alignItems: 'center', justifyContent: 'center' },
   clip: { overflow: 'hidden', borderCurve: 'continuous' },
   fallback: { borderRadius: 8, borderCurve: 'continuous', overflow: 'hidden' },
-  placeholder: { position: 'absolute', borderRadius: 8, borderCurve: 'continuous' },
+  highlight: { position: 'absolute', top: 0, left: 0, right: 0, height: 6 },
+  shadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 3 },
+  headerShadow: { shadowRadius: 3 },
+  glow: { shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 12 },
 });

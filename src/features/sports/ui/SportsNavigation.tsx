@@ -1,28 +1,32 @@
-import { memo, useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
+import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { shallowEqual } from '@storesjs/stores';
 import { BlurView } from 'react-native-blur-view';
 import Animated, {
-  interpolate,
   runOnUI,
   scrollTo,
   useAnimatedRef,
   useAnimatedScrollHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { getSquirclePath } from '@/design-system/layout/shapes';
 import { opacity } from '@/design-system/utils/opacity';
 import {
   findScope,
@@ -34,7 +38,6 @@ import {
 } from '@/features/sports/core/browse';
 import { sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
-import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 
@@ -114,7 +117,8 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
   const scrollOffset = useSharedValue(0);
   const contentWidth = useSharedValue(0);
   const positions = useRef(new Map<string, { x: number; width: number }>());
-  const railWidth = width - 94;
+  const showSearch = host === 'main';
+  const railWidth = width - 40 - (showSearch ? 54 : 0);
   const selectedKey = getSportsDestinationKey(getSportsNavigationRoot(catalog, navigationRoot));
   const scopeIds = catalog?.prominentScopeIds ?? [];
   const items: { destination: SportsDestination; label: string }[] = [{ destination: { type: 'live' }, label: i18n.t(i18n.l.sports.live) }];
@@ -195,22 +199,24 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
           </Animated.ScrollView>
         </MaskedView>
       </ScopeSurface>
-      <View
-        accessible
-        accessibilityRole="button"
-        accessibilityLabel={i18n.t(i18n.l.sports.search)}
-        onAccessibilityTap={() => sportsActions.setSearch(host, '')}
-      >
-        <ButtonPressAnimation onPress={() => sportsActions.setSearch(host, '')} scaleTo={0.92}>
-          <ScopeSurface width={46}>
-            <View style={styles.searchButton}>
-              <TextIcon color="label" size="icon 19px" weight="bold" containerSize={24}>
-                {'􀊫'}
-              </TextIcon>
-            </View>
-          </ScopeSurface>
-        </ButtonPressAnimation>
-      </View>
+      {showSearch && (
+        <View
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel={i18n.t(i18n.l.sports.search)}
+          onAccessibilityTap={() => sportsActions.setSearch(host, '')}
+        >
+          <ButtonPressAnimation onPress={() => sportsActions.setSearch(host, '')} scaleTo={0.92}>
+            <ScopeSurface width={46}>
+              <View style={styles.searchButton}>
+                <TextIcon color="label" size="icon 19px" weight="bold" containerSize={24}>
+                  {'􀊫'}
+                </TextIcon>
+              </View>
+            </ScopeSurface>
+          </ButtonPressAnimation>
+        </View>
+      )}
     </View>
   );
 });
@@ -224,11 +230,13 @@ function ScopeFadeMask({
   scrollOffset: SharedValue<number>;
   width: number;
 }) {
+  const showLeft = useDerivedValue(() => scrollOffset.value > 0);
+  const showRight = useDerivedValue(() => scrollOffset.value < Math.max(0, contentWidth.value - width));
   const leftCover = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollOffset.value, [0, DEFAULT_SCROLL_FADE_DISTANCE], [1, 0], 'clamp'),
+    opacity: withTiming(showLeft.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig),
   }));
   const rightCover = useAnimatedStyle(() => ({
-    opacity: interpolate(contentWidth.value - width - scrollOffset.value, [0, DEFAULT_SCROLL_FADE_DISTANCE], [1, 0], 'clamp'),
+    opacity: withTiming(showRight.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig),
   }));
   return (
     <View style={styles.mask}>
@@ -240,7 +248,7 @@ function ScopeFadeMask({
           endOpacity={1}
           startPosition="left"
           endPosition="right"
-          style={[StyleSheet.absoluteFill, { left: FADE_EDGE_INSET }]}
+          style={StyleSheet.absoluteFill}
         />
         <Animated.View style={[styles.maskCover, leftCover]} />
       </View>
@@ -253,7 +261,7 @@ function ScopeFadeMask({
           endOpacity={0}
           startPosition="left"
           endPosition="right"
-          style={[StyleSheet.absoluteFill, { right: FADE_EDGE_INSET }]}
+          style={StyleSheet.absoluteFill}
         />
         <Animated.View style={[styles.maskCover, rightCover]} />
       </View>
@@ -263,36 +271,43 @@ function ScopeFadeMask({
 
 function ScopeSurface({ children, width }: { children: ReactNode; width: number }) {
   const { isDarkMode } = useColorMode();
+  const backgroundColor =
+    Platform.OS === 'android' ? (isDarkMode ? '#070707' : '#FFFFFF') : isDarkMode ? 'rgba(6,6,6,0.811)' : 'rgba(255,255,255,0.8)';
   return (
-    <SportsSurface
-      clipContent
-      borderRadius={32}
-      color={Platform.OS === 'android' ? (isDarkMode ? '#070707' : '#FFFFFF') : isDarkMode ? 'rgba(6,6,6,0.811)' : 'rgba(255,255,255,0.8)'}
-      borderColor={isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF'}
-      borderWidth={isDarkMode ? 5 / 3 : 4 / 3}
-      shadows={isDarkMode ? DARK_SHADOWS : LIGHT_SHADOWS}
-      innerShadow={isDarkMode ? INNER_SHADOW : undefined}
-      backdrop={
-        Platform.OS === 'ios' ? (
-          <BlurView blurStyle={isDarkMode ? 'dark' : 'light'} blurIntensity={isDarkMode ? 9 : 7} style={StyleSheet.absoluteFill} />
-        ) : undefined
-      }
-      style={{ width, height: 46 }}
-    >
-      {children}
-    </SportsSurface>
+    <View style={[styles.scopeShadow, isDarkMode ? styles.darkScopeShadow : styles.lightScopeShadow]}>
+      <View style={[styles.scopeSurface, { width }, !isDarkMode && styles.tightScopeShadow]}>
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.scopeClip]}>
+          {Platform.OS === 'ios' && (
+            <BlurView blurStyle={isDarkMode ? 'dark' : 'light'} blurIntensity={isDarkMode ? 9 : 7} style={StyleSheet.absoluteFill} />
+          )}
+          <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
+          {isDarkMode && <ScopeInnerShadow width={width} />}
+        </View>
+        <View style={[styles.scopeContent, styles.scopeClip]}>{children}</View>
+        <Border
+          borderRadius={32}
+          borderWidth={isDarkMode ? 5 / 3 : 4 / 3}
+          borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF' }}
+          enableInLightMode
+        />
+      </View>
+    </View>
   );
 }
 
-const DARK_SHADOWS = [{ color: 'rgba(0,0,0,0.04)', blur: 20, dx: 0, dy: -4 }];
-const LIGHT_SHADOWS = [
-  { color: 'rgba(0,0,0,0.02)', blur: 3, dx: 0, dy: 2 },
-  { color: 'rgba(0,0,0,0.04)', blur: 6, dx: 0, dy: 4 },
-];
-const INNER_SHADOW = { color: 'rgba(255,255,255,0.15)', blur: 19.5, dx: 0, dy: 0 };
+function ScopeInnerShadow({ width }: { width: number }) {
+  const path = useMemo(() => getSquirclePath({ width, height: 46, borderRadius: 32 }), [width]);
+  return (
+    <Canvas style={{ width: Math.ceil(width), height: 46 }}>
+      <Path path={path}>
+        <Shadow color="rgba(255,255,255,0.15)" blur={19.5} dx={0} dy={0} inner shadowOnly />
+      </Path>
+    </Canvas>
+  );
+}
+
 const RAIL_PADDING = 16;
-const FADE_WIDTH = 67;
-const FADE_EDGE_INSET = 24;
+const FADE_WIDTH = 36;
 
 const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
@@ -303,6 +318,13 @@ const styles = StyleSheet.create({
   liveRing: { width: 28, height: 28, borderRadius: 14, borderWidth: 6, alignItems: 'center', justifyContent: 'center' },
   liveDot: { width: 8, height: 8, borderRadius: 4 },
   bar: { position: 'absolute', left: 20, right: 20, height: 46, flexDirection: 'row', gap: 8 },
+  scopeSurface: { height: 46, borderRadius: 32, borderCurve: 'continuous' },
+  scopeContent: { flex: 1 },
+  scopeClip: { borderRadius: 32, borderCurve: 'continuous', overflow: 'hidden' },
+  scopeShadow: { borderRadius: 32, borderCurve: 'continuous', shadowColor: '#000000', shadowOpacity: 0.04 },
+  darkScopeShadow: { shadowOffset: { width: 0, height: -4 }, shadowRadius: 20, elevation: 10 },
+  lightScopeShadow: { shadowOffset: { width: 0, height: 4 }, shadowRadius: 6, elevation: 3 },
+  tightScopeShadow: { shadowColor: '#000000', shadowOpacity: 0.02, shadowOffset: { width: 0, height: 2 }, shadowRadius: 3 },
   items: { alignItems: 'center', paddingHorizontal: RAIL_PADDING, gap: 16 },
   scopeButton: { height: 46, justifyContent: 'center' },
   scrollMask: { flex: 1 },
