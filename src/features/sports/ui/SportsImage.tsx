@@ -67,7 +67,7 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
             style={{
               width: imageSize,
               height: imageSize,
-              transform: icon.offset ? [{ translateX: icon.offset[0] }, { translateY: icon.offset[1] }] : undefined,
+              transform: [{ translateX: icon.offset?.[0] ?? 0 }, { translateY: icon.offset?.[1] ?? 0 }],
             }}
           />
         ) : (
