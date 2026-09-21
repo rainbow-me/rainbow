@@ -1,8 +1,7 @@
 diff --git a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
-index a8dee30..26b1d32 100644
 --- a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
 +++ b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
-@@ -65,12 +65,17 @@ final class FasterImageView: UIView {
+@@ -65,12 +65,17 @@
          super.init(frame: .zero)
          addSubview(lazyImageView)
          lazyImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -21,17 +20,45 @@ index a8dee30..26b1d32 100644
          lazyImageView.pipeline = .shared
          lazyImageView.priority = .high
          lazyImageView.onCompletion = { [weak self] result in
-@@ -86,6 +91,9 @@ final class FasterImageView: UIView {
+@@ -86,6 +91,9 @@
  
      private lazy var lazyImageView = LazyImageView()
-   
+ 
 +    private var aspectRatioConstraint: NSLayoutConstraint?
 +    private var bottomConstraint: NSLayoutConstraint?
 +
      // MARK: - Callbacks
  
      @objc var onError: RCTDirectEventBlock?
-@@ -233,20 +241,29 @@ final class FasterImageView: UIView {
+@@ -95,9 +103,7 @@
+     @objc var source: NSDictionary? = nil {
+         didSet {
+             guard let source = source else {
+-                onError?([
+-                    "error": "Expected a valid source but got: \("nil")",
+-                ])
++                sendError("Expected a valid source but got: nil")
+                 return
+             }
+             do {
+@@ -141,14 +147,10 @@
+                     
+                     urlRequest = urlRequestFromOptions
+                 } else {
+-                    onError?([
+-                        "error": "Expected a valid url but got: \(options.url)",
+-                    ])
++                    sendError("Expected a valid url but got: \(options.url)")
+                 }
+             } catch {
+-                onError?([
+-                    "error": error.localizedDescription,
+-                ])
++                sendError(error.localizedDescription)
+             }
+         }
+     }
+@@ -233,20 +235,29 @@
          }
      }
  
@@ -44,11 +71,12 @@ index a8dee30..26b1d32 100644
 -            lazyImageView.placeholderView = activity
 -        }
 -    }
-+    var showActivityIndicator = false
- 
+-
 -    var activityColor: UIColor?
++    var showActivityIndicator = false
++
 +    var activityColor: UIColor? = Color.clear
-   
+ 
      var resizeMode = "contain" {
          didSet {
 +            if (resizeMode == "topContain") {
@@ -71,10 +99,20 @@ index a8dee30..26b1d32 100644
              let mode = ResizeMode(rawValue: resizeMode)
              lazyImageView.imageView.contentMode = mode?.contentMode ?? .scaleAspectFit
          }
-@@ -362,11 +379,19 @@ fileprivate extension FasterImageView {
+@@ -359,18 +370,34 @@
+ 
+ fileprivate extension FasterImageView {
+ 
++    func sendError(_ message: String) {
++        DispatchQueue.main.async { [weak self] in
++            self?.onError?(["error": message])
++        }
++    }
++
      func completionHandler(with result: Result<ImageResponse, Error>) {
          switch result {
          case .success(let value):
+-            onSuccess?([
 +            if resizeMode == "topContain" {
 +                aspectRatioConstraint = lazyImageView.imageView.widthAnchor.constraint(
 +                    equalTo: lazyImageView.imageView.heightAnchor,
@@ -82,15 +120,25 @@ index a8dee30..26b1d32 100644
 +                )
 +                aspectRatioConstraint?.isActive = true
 +            }
-             onSuccess?([
++            let event: [String: Any] = [
                  "width": value.image.size.width,
                  "height": value.image.size.height,
                  "source": value.urlResponse?.url?.absoluteString ?? ""
-             ])
+-            ])
++            ]
++            // A cached image can finish before React installs the event callbacks.
++            DispatchQueue.main.async { [weak self] in
++                self?.onSuccess?(event)
++            }
 +
          case .failure(let error):
-             onError?([
-                 "error": error.localizedDescription,
+-            onError?([
+-                "error": error.localizedDescription,
+-            ])
++            sendError(error.localizedDescription)
+         }
+     }
+ 
 diff --git a/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts b/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts
 index 03be2a8..5b191c6 100644
 --- a/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts
