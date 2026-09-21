@@ -3,6 +3,7 @@ import React, { act, type ReactNode } from 'react';
 import { type SharedValue } from 'react-native-reanimated';
 
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import Routes from '@/navigation/routesNames';
 import { useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -42,7 +43,7 @@ const change = (token: TokenData) => token.change.change24hPct;
 const defaults: ValueParams = { tokenId: 'mlb', initialValue: '—', selector: price, autoSubscriptionEnabled: false };
 
 beforeEach(() => {
-  useLiveTokensStore.setState({ tokens: {} });
+  useLiveTokensStore.setState({ tokens: {}, subscriptions: new Map(), status: 'idle' });
   mockSharedWrites.mockClear();
 });
 afterEach(() => {
@@ -96,6 +97,8 @@ describe.each(['shared', 'react'] as const)('live token %s value', kind => {
   it('uses the fallback until a quote arrives and does not borrow another token’s quote', () => {
     render();
     expect(readValue()).toBe('—');
+    render({ initialValue: 'Waiting' });
+    expect(readValue()).toBe('Waiting');
     act(() => useLiveTokensStore.setState({ tokens: { mlb: token('51') } }));
     expect(readValue()).toBe('51');
     render({ tokenId: 'nfl' });
@@ -112,20 +115,43 @@ describe.each(['shared', 'react'] as const)('live token %s value', kind => {
     expect(readValue()).toBe('54');
   });
 
-  it('updates only the consumer whose selected value changes', () => {
+  it('does not format unchanged token data when unrelated store fields change', () => {
+    const selectPrice = jest.fn(price);
     useLiveTokensStore.setState({ tokens: { mlb: token('51'), nfl: token('27') } });
-    render();
+    render({ selector: selectPrice });
+    selectPrice.mockClear();
     renders.mockClear();
     mockSharedWrites.mockClear();
 
     act(() => useLiveTokensStore.setState(state => ({ tokens: { ...state.tokens, nfl: token('28') } })));
+    act(() =>
+      useLiveTokensStore.setState({ subscriptions: new Map([[Symbol('other'), { route: Routes.SPORTS_SCREEN, tokenIds: ['nfl'] }]]) })
+    );
+    act(() => useLiveTokensStore.setState({ status: 'loading' }));
+
+    expect(selectPrice).not.toHaveBeenCalled();
+    expect(renders).not.toHaveBeenCalled();
+    expect(mockSharedWrites).not.toHaveBeenCalled();
+  });
+
+  it('recomputes changed token data but delivers only changed text', () => {
+    const selectPrice = jest.fn(price);
+    useLiveTokensStore.setState({ tokens: { mlb: token('51') } });
+    render({ selector: selectPrice });
+    selectPrice.mockClear();
+    renders.mockClear();
+    mockSharedWrites.mockClear();
+
     act(() => useLiveTokensStore.setState(state => ({ tokens: { ...state.tokens, mlb: token('51', 101) } })));
+    expect(selectPrice).toHaveBeenCalledTimes(1);
     expect(renders).not.toHaveBeenCalled();
     expect(mockSharedWrites).not.toHaveBeenCalled();
 
     act(() => useLiveTokensStore.setState(state => ({ tokens: { ...state.tokens, mlb: token('52', 102) } })));
+    expect(selectPrice).toHaveBeenCalledTimes(2);
     expect(readValue()).toBe('52');
     expect(renders).toHaveBeenCalledTimes(kind === 'react' ? 1 : 0);
+    expect(mockSharedWrites).toHaveBeenCalledTimes(kind === 'shared' ? 1 : 0);
   });
 });
 

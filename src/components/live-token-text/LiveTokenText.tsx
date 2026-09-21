@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 
 import { useListen } from '@storesjs/stores';
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -29,10 +29,7 @@ export function useLiveTokenSharedValue({
 }: LiveTokenValueParams): SharedValue<string> {
   const { name: routeName } = useRoute();
   const setSubscribedTokens = useLiveTokenSubscription(routeName);
-  const selectValue = useCallback(
-    ({ tokens }: { tokens: LiveTokensData }) => getTokenValue(tokens[tokenId], initialValue, initialValueLastUpdated, selector),
-    [initialValue, initialValueLastUpdated, selector, tokenId]
-  );
+  const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
   const initial = useStableValue(() => selectValue(useLiveTokensStore.getState()));
   const liveValue = useSharedValue(initial);
   const updateValue = useCallback(
@@ -64,7 +61,8 @@ export function useLiveTokenValue({
 }: LiveTokenValueParams): string {
   const { name: routeName } = useRoute();
   const setSubscribedTokens = useLiveTokenSubscription(routeName);
-  const liveValue = useLiveTokensStore(state => getTokenValue(state.tokens[tokenId], initialValue, initialValueLastUpdated, selector));
+  const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
+  const liveValue = useLiveTokensStore(selectValue);
 
   useEffect(() => {
     setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
@@ -73,13 +71,25 @@ export function useLiveTokenValue({
   return liveValue;
 }
 
-function getTokenValue(
-  token: TokenData | undefined,
+function useTokenValueSelector(
+  tokenId: string,
   initialValue: string,
   initialValueLastUpdated: number,
   selector: LiveTokenValueParams['selector']
-): string {
-  return token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
+) {
+  return useMemo(() => {
+    let previousToken: TokenData | undefined;
+    let value = initialValue;
+
+    return ({ tokens }: { tokens: LiveTokensData }) => {
+      const token = tokens[tokenId];
+      if (token !== previousToken) {
+        previousToken = token;
+        value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
+      }
+      return value;
+    };
+  }, [initialValue, initialValueLastUpdated, selector, tokenId]);
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
