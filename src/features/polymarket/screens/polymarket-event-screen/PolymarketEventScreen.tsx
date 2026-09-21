@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,36 +9,33 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import ImgixImage from '@/components/images/ImgixImage';
 import SlackSheet from '@/components/sheet/SlackSheet';
-import { Bleed, Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
 import { type ActiveInteractionData } from '@/features/charts/polymarket/classes/PolymarketChartManager';
 import { PolymarketChart } from '@/features/charts/polymarket/components/PolymarketChart';
 import { PolymarketChartHeader } from '@/features/charts/polymarket/components/PolymarketChartHeader';
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { type SeriesPaletteColors } from '@/features/charts/polymarket/types';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
-import { LeagueIcon } from '@/features/polymarket/components/league-icon/LeagueIcon';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { getLeague } from '@/features/polymarket/leagues';
 import { AboutSection } from '@/features/polymarket/screens/polymarket-event-screen/AboutSection';
 import { GameBoxScore } from '@/features/polymarket/screens/polymarket-event-screen/components/GameBoxScore';
-import { MoneylineOddsRatioBar } from '@/features/polymarket/screens/polymarket-event-screen/components/MoneylineOddsRatioBar';
 import { ResolvedEventHeader } from '@/features/polymarket/screens/polymarket-event-screen/components/ResolvedEventHeader';
 import { MarketsSection } from '@/features/polymarket/screens/polymarket-event-screen/MarketsSection';
 import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-event-screen/OpenPositionsSection';
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { SportsImage } from '@/features/sports/ui/SportsImage';
+import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import type Routes from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
-export const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
-  const labelQuaternary = useForegroundColor('labelQuaternary');
-
+const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
   return (
     <Box>
       <Box flexDirection="row" alignItems="flex-start" gap={16}>
@@ -46,19 +43,7 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
           <Text color={'label'} size="30pt" weight="heavy" align="left">
             {event.title}
           </Text>
-          <Box flexDirection="row" alignItems="center" gap={8}>
-            <Text color={'labelQuaternary'} size="15pt" weight="bold">
-              {`${formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.market_data.vol)}`}
-            </Text>
-            {event.startTime && event.gameId && !event.closed && !event.live && (
-              <>
-                <Box height={3} width={3} backgroundColor={labelQuaternary} borderRadius={1.5} />
-                <Text color={'labelQuaternary'} size="15pt" weight="bold">
-                  {formatTimestamp(toUnixTime(event.startTime))}
-                </Text>
-              </>
-            )}
-          </Box>
+          <EventVolume volume={event.volume} />
         </Box>
         <ImgixImage
           enableFasterImage
@@ -72,27 +57,46 @@ export const EventHeaderSection = memo(function EventHeaderSection({ event }: { 
   );
 });
 
-const SportsGameHeaderSection = memo(function SportsGameHeaderSection({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
-  const { isDarkMode } = useColorMode();
-  const league = getLeague(event.slug);
-  const leagueColor = getColorValueForThemeWorklet(league?.color, isDarkMode);
+const SportsGameHeaderSection = memo(function SportsGameHeaderSection({
+  event,
+  gameId,
+}: {
+  event: PolymarketMarketEvent | PolymarketEvent;
+  gameId: string;
+}) {
+  const competition = useSportsStore(state => {
+    const id = state.games[gameId]?.competitionIds[0];
+    return id ? state.catalog?.scopes[id] : undefined;
+  });
+  if (!competition) return <EventHeaderSection event={event} />;
+
   return (
-    <Box>
-      {league ? (
-        <Box flexDirection="row" alignItems="center" gap={8}>
-          <LeagueIcon eventSlug={event.slug} />
-          <Text color={{ custom: leagueColor }} size="20pt" weight="bold" align="left">
-            {league.name}
-          </Text>
-        </Box>
-      ) : (
-        <Text color={'label'} size="20pt" weight="bold" align="left">
-          {event.title}
+    <Box gap={12}>
+      <Box flexDirection="row" alignItems="center" gap={8}>
+        <SportsImage imageUrl={competition.imageUrl} name={competition.name} size={28} />
+        <Text color="label" size="20pt" weight="bold" align="left">
+          {competition.name}
         </Text>
-      )}
+      </Box>
+      <EventVolume volume={event.volume} />
     </Box>
   );
 });
+
+function EventVolume({ volume }: { volume: number }) {
+  return (
+    <Text color="labelQuaternary" size="15pt" weight="bold">
+      {`${formatNumber(String(volume), { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.market_data.vol)}`}
+    </Text>
+  );
+}
+
+function SportsEventLookup({ eventId }: { eventId: string }) {
+  const isFocused = useIsFocused();
+  const eventIds = useMemo(() => [eventId], [eventId]);
+  useSportsLookup(eventIds, Routes.POLYMARKET_EVENT_SCREEN, isFocused, eventIds);
+  return null;
+}
 
 const ChartSection = memo(function ChartSection({
   backgroundColor,
@@ -143,21 +147,24 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
-  const eventData = usePolymarketEventStore(state => state.getData());
+  const eventData = usePolymarketEventStore(state => state.getData({ eventId }));
   const event = eventData ?? initialEvent;
+  const financialEvent = 'markets' in event ? event : null;
+  const gameId = useSportsStore(state => state.eventGames[eventId]);
 
   const eventColor = useMemo(() => getColorValueForThemeWorklet(event.color, isDarkMode), [event.color, isDarkMode]);
   const screenBackgroundColor = isDarkMode
     ? getSolidColorEquivalent({ background: eventColor, foreground: '#000000', opacity: 0.92 })
     : POLYMARKET_BACKGROUND_LIGHT;
 
-  const isSportsGameEvent = event.gameId !== undefined;
+  const isSportsGameEvent = Boolean(gameId);
   const lineColors = useMemo(() => parseLineColors(event, isSportsGameEvent), [event, isSportsGameEvent]);
   const isEventResolved = event.closed;
   const shouldShowChart = !isEventResolved && !isSportsGameEvent;
 
   return (
     <>
+      <SportsEventLookup eventId={eventId} />
       <SlackSheet
         backgroundColor={screenBackgroundColor}
         // eslint-disable-next-line react/jsx-props-no-spreading
@@ -180,18 +187,13 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
           style={{ minHeight: DEVICE_HEIGHT }}
         >
           {isEventResolved && <ResolvedEventHeader resolvedAt={event.closedTime} />}
-          {isSportsGameEvent ? <SportsGameHeaderSection event={event} /> : <EventHeaderSection event={event} />}
-          {isSportsGameEvent && (
-            <Box gap={24}>
-              <GameBoxScore event={event} />
-              <MoneylineOddsRatioBar event={event} />
-            </Box>
-          )}
+          {gameId ? <SportsGameHeaderSection event={event} gameId={gameId} /> : <EventHeaderSection event={event} />}
+          {gameId && <GameBoxScore gameId={gameId} />}
           {shouldShowChart && (
             <ChartSection backgroundColor={screenBackgroundColor} isSportsEvent={isSportsGameEvent} lineColors={lineColors} />
           )}
           <OpenPositionsSection eventId={eventId} eventColor={eventColor} />
-          {isSportsGameEvent ? <SportsEventMarkets /> : <MarketsSection event={eventData} />}
+          {gameId ? <SportsEventMarkets event={financialEvent} /> : <MarketsSection event={financialEvent} />}
           <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
           <AboutSection event={event} screenBackgroundColor={screenBackgroundColor} />
         </Box>

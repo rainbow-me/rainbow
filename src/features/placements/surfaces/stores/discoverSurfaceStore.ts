@@ -6,25 +6,33 @@ import {
   filterMissingPlacementSurface,
   getDiscoverSurfacePlacementRefs,
   isSurfaceWaitingForPlacements,
+  removeDiscoverSportsTab,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTransforms';
 import { type DiscoverSurface, type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
 import { deepEqual } from '@/worklets/comparisons';
 
-export const useDiscoverSurfaceStore = getSurfaceStore('discover');
+const discoverSurfaceStore = getSurfaceStore('discover');
+
+export const useDiscoverSurfaceInput = createDerivedStore(
+  $ => ({
+    surface: removeDiscoverSportsTab($(discoverSurfaceStore, state => state.getData())),
+    lastFetchedAt: $(discoverSurfaceStore, state => state.lastFetchedAt),
+  }),
+  { equalityFn: deepEqual, lockDependencies: true }
+);
 
 export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
   $ => {
-    const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
-    const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
+    const { surface, lastFetchedAt: surfaceLastFetchedAt } = $(useDiscoverSurfaceInput);
     const placementsById = $(usePlacementsStore, state => state.placementsById);
     const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
     const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
 
-    if (!rawSurface) return undefined;
+    if (!surface) return undefined;
 
-    const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, Date.now()));
+    const enabledSurface = filterSurfaceTree(surface, item => isSurfaceEnabled(item.enabled, Date.now()));
     if (!enabledSurface) return undefined;
     if (!placementsReady) return buildDiscoverSurface(enabledSurface);
     if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) {

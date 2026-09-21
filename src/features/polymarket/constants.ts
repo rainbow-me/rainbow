@@ -51,8 +51,6 @@ export const POLYMARKET_GAMMA_API_URL = POLYMARKET_GAMMA_API_URL_PROD;
 export const POLYMARKET_DATA_API_URL = POLYMARKET_DATA_API_URL_PROD;
 export const POLYMARKET_CLOB_URL = POLYMARKET_CLOB_URL_PROD;
 
-export const POLYMARKET_SPORTS_WS_URL = 'wss://sports-api.polymarket.com/ws';
-
 export const POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: Address = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
 export const BUILDER_CONFIG = new BuilderConfig({
@@ -89,7 +87,6 @@ export const POLYMARKET_SPORTS_MARKET_TYPE = {
 } as const;
 
 export const DEFAULT_CATEGORY_KEY = 'trending';
-export const DEFAULT_SPORTS_LEAGUE_KEY = 'all' as const;
 export const CATEGORIES = {
   trending: {
     label: 'Trending',

@@ -6,7 +6,8 @@ import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withT
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/RouteContext';
-import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
 
@@ -28,6 +29,7 @@ export function useLiveTokenSharedValue({
 }: LiveTokenValueParams): SharedValue<string> {
   const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
+  const setSubscribedTokens = useLiveTokenSubscription(routeName);
   const liveValue = useSharedValue(initialValue);
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
   const prevValue = useRef(initialValue);
@@ -62,14 +64,8 @@ export function useLiveTokenSharedValue({
   }, [selector, tokenId, updateToken]);
 
   useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
-
-    addSubscribedToken({ route: routeName, tokenId });
-
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
-    };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
+    setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
+  }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
 
   return liveValue;
 }
@@ -83,6 +79,7 @@ export function useLiveTokenValue({
 }: LiveTokenValueParams): string {
   const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
+  const setSubscribedTokens = useLiveTokenSubscription(routeName);
   const [liveValue, setLiveValue] = useState(initialValue);
   // prevLiveValue and liveValue will always be equal, but state is async
   const prevLiveValue = useRef(initialValue);
@@ -117,14 +114,8 @@ export function useLiveTokenValue({
   }, [selector, tokenId, updateToken]);
 
   useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
-
-    addSubscribedToken({ route: routeName, tokenId });
-
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
-    };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
+    setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
+  }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
 
   return liveValue;
 }
