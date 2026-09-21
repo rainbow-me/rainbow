@@ -10,23 +10,18 @@ import {
   type ViewToken,
 } from 'react-native';
 
-import { shallowEqual } from '@storesjs/stores';
-import { LinearGradient } from 'expo-linear-gradient';
-
-import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { Border } from '@/design-system/components/Border/Border';
-import { Text } from '@/design-system/components/Text/Text';
-import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
-import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
+import { findScope, type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
 import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
-import { GameCard, GameCardSkeleton, type SportsGamePress } from '@/features/sports/ui/GameCard';
+import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
+import { SportsReadStatus } from '@/features/sports/ui/SportsReadStatus';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
+import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/SportsSection';
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
@@ -36,8 +31,6 @@ import { type Route } from '@/navigation/routesNames';
 export type SportsBrowseHandle = { scrollToTop: () => void };
 
 const EMPTY_SECTIONS: SportsSection[] = [];
-
-type SkeletonLayout = 'directory' | 'live' | 'games' | 'search';
 
 type Row =
   | { key: string; type: 'heading'; section: SportsSection; title: string }
@@ -133,7 +126,7 @@ export function SportsBrowse({
             </View>
           );
         case 'heading':
-          return <SectionHeading title={item.title} section={item.section} host={host} />;
+          return <SportsSectionHeading title={item.title} section={item.section} host={host} />;
         case 'carousel':
           return (
             <GameCarousel
@@ -145,7 +138,9 @@ export function SportsBrowse({
           );
         case 'expand':
           return (
-            <ButtonPressAnimation
+            <SportsSectionToggle
+              expanded={item.expanded}
+              remaining={item.remaining}
               onPress={() =>
                 setExpanded(previous => {
                   const next = new Set(previous);
@@ -154,31 +149,11 @@ export function SportsBrowse({
                   return next;
                 })
               }
-              scaleTo={0.98}
-            >
-              <View style={styles.expand}>
-                <View style={!isDarkMode && [styles.badgeShadow, styles.expandCorners]}>
-                  <View style={[styles.expandIcon, styles.expandCorners, isDarkMode ? styles.darkExpandIcon : styles.tightBadgeShadow]}>
-                    {!isDarkMode && (
-                      <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.expandCorners, styles.clip]}>
-                        <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
-                      </View>
-                    )}
-                    <TextIcon color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="icon 10px" weight="black" containerSize={20}>
-                      {item.expanded ? '􀆇' : '􀆈'}
-                    </TextIcon>
-                    {!isDarkMode && <Border borderRadius={10} borderWidth={4 / 3} borderColor="white" enableInLightMode />}
-                  </View>
-                </View>
-                <Text color="labelTertiary" size="17pt" weight="bold">
-                  {i18n.t(item.expanded ? i18n.l.sports.show_less : i18n.l.sports.show_more, { count: item.remaining })}
-                </Text>
-              </View>
-            </ButtonPressAnimation>
+            />
           );
       }
     },
-    [active, host, isDarkMode, onGamePress, route, visibleCarousels, width]
+    [active, host, onGamePress, route, visibleCarousels, width]
   );
 
   return (
@@ -218,59 +193,6 @@ export function SportsBrowse({
   );
 }
 
-function SectionHeading({ section, title, host }: { section: SportsSection; title: string; host: SportsHost }) {
-  const { isDarkMode } = useColorMode();
-  const scopeId = section.scopeId;
-  return (
-    <ButtonPressAnimation
-      disabled={!scopeId}
-      onPress={scopeId ? () => sportsActions.selectDestination(host, { type: 'scope', scopeId }) : undefined}
-      scaleTo={0.98}
-    >
-      <View style={styles.heading}>
-        {section.type === 'live' && !section.scopeId && (
-          <View style={styles.liveIndicator}>
-            <View style={[styles.liveRing, { borderColor: isDarkMode ? 'rgba(255,88,77,0.3)' : 'rgba(250,66,60,0.3)' }]}>
-              <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : '#FA423C' }]} />
-            </View>
-          </View>
-        )}
-        <Text color="label" size="22pt" weight="heavy">
-          {title}
-        </Text>
-        <View style={!isDarkMode && [styles.badgeShadow, styles.countCorners]}>
-          <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
-            {!isDarkMode && (
-              <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.countCorners, styles.clip]}>
-                <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
-              </View>
-            )}
-            <Text color="labelSecondary" size="14pt" weight="heavy">
-              {section.gameIds.length}
-            </Text>
-            <Border
-              borderRadius={8}
-              borderWidth={4 / 3}
-              borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
-              enableInLightMode
-            />
-          </View>
-        </View>
-        {section.scopeId && (
-          <TextIcon
-            color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
-            size="icon 15px"
-            weight="heavy"
-            containerSize={16}
-          >
-            {'􀯻'}
-          </TextIcon>
-        )}
-      </View>
-    </ButtonPressAnimation>
-  );
-}
-
 function SportsRefreshControl({ host, children, style }: { host: SportsHost } & Pick<RefreshControlProps, 'children' | 'style'>) {
   const [refreshing, setRefreshing] = useState(false);
   const color = useForegroundColor('labelTertiary');
@@ -290,118 +212,6 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
   );
 }
 
-function SportsReadStatus({ host }: { host: SportsHost }) {
-  const fill = useForegroundColor('fillTertiary');
-  const [pending, setPending] = useState(false);
-  const request = useSportsViewStore(state => state.hosts[host].request);
-  const status = useSportsStore(state => {
-    const result = getSportsResult(state, request);
-    const directory =
-      request.query === null &&
-      (request.destination.type === 'all' ||
-        (request.destination.type === 'scope' && hasCompetitionDirectory(state.catalog, request.destination.scopeId)));
-    const skeleton: SkeletonLayout = directory
-      ? 'directory'
-      : request.query !== null
-        ? 'search'
-        : request.destination.type === 'live'
-          ? 'live'
-          : 'games';
-    return {
-      error: state.getCacheEntry()?.errorInfo?.error,
-      empty: result?.sections.length === 0 && !directory,
-      nextCursor: result?.nextCursor,
-      searching: request.query !== null,
-      waitingForQuery: request.query === '',
-      hasResult: Boolean(result),
-      skeleton,
-      directory,
-      hasCatalog: Boolean(state.catalog),
-    };
-  }, shallowEqual);
-  if (status.waitingForQuery) return null;
-  if (!status.hasResult && !status.error) return status.directory && status.hasCatalog ? null : <SportsSkeleton layout={status.skeleton} />;
-  if (!status.error && !status.empty && !status.nextCursor) return null;
-  const onPress = async () => {
-    setPending(true);
-    try {
-      await (status.error ? sportsActions.refresh(host) : sportsActions.loadMore(host));
-    } finally {
-      setPending(false);
-    }
-  };
-  return (
-    <View style={styles.message}>
-      {status.error && (
-        <TextIcon color="labelQuaternary" size="icon 34px" weight="regular" containerSize={40}>
-          {'􀇿'}
-        </TextIcon>
-      )}
-      {(status.error || status.empty) && (
-        <Text align="center" color={status.error ? 'labelSecondary' : 'labelTertiary'} size={status.error ? '20pt' : '17pt'} weight="bold">
-          {i18n.t(status.error ? i18n.l.sports.error : status.searching ? i18n.l.sports.search_empty : i18n.l.sports.empty)}
-        </Text>
-      )}
-      {(status.error || status.nextCursor) && (
-        <View
-          accessible
-          accessibilityRole="button"
-          accessibilityState={{ disabled: pending }}
-          accessibilityLabel={i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
-          onAccessibilityTap={pending ? undefined : onPress}
-        >
-          <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
-            <View style={status.error && [styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
-              {status.error && (
-                <TextIcon color="accent" size="icon 15px" weight="bold" containerSize={20}>
-                  {'􀅈'}
-                </TextIcon>
-              )}
-              <Text color="accent" size="17pt" weight="bold">
-                {i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
-              </Text>
-            </View>
-          </ButtonPressAnimation>
-        </View>
-      )}
-    </View>
-  );
-}
-
-function SportsSkeleton({ layout }: { layout: SkeletonLayout }) {
-  const { width } = useDimensions();
-  const backgroundColor = useForegroundColor('fillTertiary');
-  if (layout === 'directory')
-    return (
-      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
-        {[0, 1, 2, 3, 4, 5].map(index => (
-          <View key={index} style={styles.skeletonDirectoryRow}>
-            <View style={[styles.skeletonDirectoryIcon, { backgroundColor }]} />
-            <View style={[styles.skeletonHeading, { backgroundColor }]} />
-          </View>
-        ))}
-      </View>
-    );
-  const groups = layout === 'live' ? [1, 1, 1] : layout === 'search' ? [3] : [2, 1];
-  return (
-    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
-      {groups.map((count, group) => (
-        <View key={group}>
-          <View style={styles.heading}>
-            <View style={[styles.skeletonHeading, { backgroundColor }]} />
-            <View style={[styles.skeletonCount, { backgroundColor }]} />
-          </View>
-          {Array.from({ length: count }, (_, card) => (
-            <View key={card} style={styles.card}>
-              <GameCardSkeleton width={width - 24} />
-            </View>
-          ))}
-        </View>
-      ))}
-    </View>
-  );
-}
-
 const SECTION_LABELS = {
   live: i18n.l.sports.live,
   today: i18n.l.sports.today,
@@ -409,7 +219,6 @@ const SECTION_LABELS = {
   search: i18n.l.sports.search_results,
 };
 const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
-const LIGHT_BADGE_GRADIENT = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -418,42 +227,4 @@ const styles = StyleSheet.create({
   header: { paddingBottom: 8 },
   directoryHeader: { paddingBottom: 13 },
   card: { marginHorizontal: 12, marginBottom: 8 },
-  heading: { height: 60, flexDirection: 'row', alignItems: 'center', gap: 6, marginHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
-  count: { height: 23, paddingHorizontal: 7, justifyContent: 'center', alignItems: 'center' },
-  countCorners: { borderRadius: 8, borderCurve: 'continuous' },
-  darkCount: { backgroundColor: 'rgba(255,255,255,0.03)' },
-  liveIndicator: { width: 16, height: 16, marginRight: 10 },
-  liveRing: {
-    position: 'absolute',
-    top: -6,
-    left: -6,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  liveDot: { width: 8, height: 8, borderRadius: 4 },
-  expand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 12, paddingBottom: 4 },
-  expandIcon: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
-  expandCorners: { borderRadius: 10, borderCurve: 'continuous' },
-  clip: { overflow: 'hidden' },
-  darkExpandIcon: { backgroundColor: 'rgba(255,255,255,0.16)' },
-  badgeShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 4 },
-  tightBadgeShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3 },
-  message: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', gap: 24, padding: 28 },
-  retry: {
-    height: 44,
-    paddingHorizontal: 20,
-    borderRadius: 22,
-    borderCurve: 'continuous',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  skeletonHeading: { width: 92, height: 16, borderRadius: 8 },
-  skeletonCount: { width: 24, height: 23, borderRadius: 8, borderCurve: 'continuous' },
-  skeletonDirectoryRow: { height: 66, marginHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
-  skeletonDirectoryIcon: { width: 40, height: 40, borderRadius: 12, borderCurve: 'continuous' },
 });

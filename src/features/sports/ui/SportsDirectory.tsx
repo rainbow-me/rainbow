@@ -15,51 +15,46 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
   const { isDarkMode } = useColorMode();
   const { destination, query } = useSportsViewStore(state => state.hosts[host].request);
   const catalog = useSportsStore(state => state.catalog);
-  const directory = useMemo(() => {
+  const showCompetitions = query === null && destination.type === 'scope' && hasCompetitionDirectory(catalog, destination.scopeId);
+  const scopes = useMemo(() => {
     const sports = catalog?.sports ?? [];
     if (query !== null) {
       const text = query.toLocaleLowerCase();
-      const scopes = [...sports, ...sports.flatMap(sport => sport.competitions)];
-      return {
-        searching: true,
-        competitions: false,
-        rows: text ? scopes.filter(scope => scope.name.toLocaleLowerCase().includes(text)) : [],
-      };
+      return text
+        ? [...sports, ...sports.flatMap(sport => sport.competitions)].filter(scope => scope.name.toLocaleLowerCase().includes(text))
+        : [];
     }
-    if (destination.type === 'all') return { searching: false, competitions: false, rows: sports };
-    if (destination.type !== 'scope' || !hasCompetitionDirectory(catalog, destination.scopeId)) return undefined;
-    const competitions = sports.find(sport => sport.id === destination.scopeId)?.competitions ?? [];
-    return {
-      searching: false,
-      competitions: true,
-      rows: competitions,
-    };
-  }, [catalog, destination, query]);
-  if (!directory?.rows.length) return null;
+    if (destination.type === 'all') return sports;
+    if (destination.type === 'scope' && showCompetitions) {
+      return sports.find(sport => sport.id === destination.scopeId)?.competitions ?? [];
+    }
+    return [];
+  }, [catalog, destination, query, showCompetitions]);
+  if (!scopes.length) return null;
 
   return (
     <View style={styles.directory}>
-      {directory.competitions && showHeading && (
+      {showCompetitions && showHeading && (
         <View style={styles.heading}>
           <Text color="label" size="22pt" weight="heavy">
             {i18n.t(i18n.l.sports.competitions)}
           </Text>
         </View>
       )}
-      {directory.competitions && !showHeading && (
+      {showCompetitions && !showHeading && (
         <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }]} />
       )}
-      {directory.rows.map(scope => {
+      {scopes.map(scope => {
         const open = () =>
-          directory.searching
+          query !== null
             ? sportsActions.selectDestination(host, { type: 'scope', scopeId: scope.id })
             : sportsActions.openScope(host, scope.id);
         return (
           <View key={scope.id} accessible accessibilityRole="button" accessibilityLabel={scope.name} onAccessibilityTap={open}>
             <ButtonPressAnimation onPress={open} scaleTo={0.98}>
-              <View style={[styles.row, directory.competitions && styles.competition]}>
-                <SportsBadge scope={scope} size={directory.competitions ? 28 : 40} />
-                <Text color="label" size={directory.competitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
+              <View style={[styles.row, showCompetitions && styles.competition]}>
+                <SportsBadge scope={scope} size={showCompetitions ? 28 : 40} />
+                <Text color="label" size={showCompetitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
                   {scope.name}
                 </Text>
                 <View style={styles.trailing}>
@@ -79,7 +74,7 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
               style={[
                 styles.separator,
                 {
-                  marginLeft: directory.competitions ? 38 : 54,
+                  marginLeft: showCompetitions ? 38 : 54,
                   backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
                 },
               ]}
@@ -111,7 +106,11 @@ function DirectoryCount({ scopeId }: { scopeId: string }) {
 
 const styles = StyleSheet.create({
   directory: { paddingHorizontal: 20 },
-  heading: { paddingHorizontal: 4, paddingTop: 24, paddingBottom: 16 },
+  heading: {
+    paddingHorizontal: 4,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
   row: {
     minHeight: 64,
     flexDirection: 'row',
@@ -119,9 +118,24 @@ const styles = StyleSheet.create({
     gap: 14,
     paddingVertical: 12,
   },
-  competition: { minHeight: 56, gap: 10, paddingVertical: 14 },
+  competition: {
+    minHeight: 56,
+    gap: 10,
+    paddingVertical: 14,
+  },
   name: { flex: 1 },
-  trailing: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  count: { height: 23, borderRadius: 8, borderCurve: 'continuous', paddingHorizontal: 7, justifyContent: 'center', alignItems: 'center' },
+  trailing: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  count: {
+    height: 23,
+    borderRadius: 8,
+    borderCurve: 'continuous',
+    paddingHorizontal: 7,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   separator: { height: 2 },
 });

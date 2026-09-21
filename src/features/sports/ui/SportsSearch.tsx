@@ -57,7 +57,13 @@ export function SportsSearch({ host }: { host: SportsHost }) {
 }
 
 const styles = StyleSheet.create({
-  row: { paddingHorizontal: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  row: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   field: {
     flex: 1,
     height: 46,
@@ -68,5 +74,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  input: { ...fonts.SFProRounded.semibold, flex: 1, fontSize: 17, letterSpacing: 0.37, height: 46 },
+  input: {
+    ...fonts.SFProRounded.semibold,
+    flex: 1,
+    fontSize: 17,
+    letterSpacing: 0.37,
+    height: 46,
+  },
 });
