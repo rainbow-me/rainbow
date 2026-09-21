@@ -19,6 +19,7 @@ import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/
 import { getSportsSections, type SportsSection } from '@/features/sports/core/sections';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
+import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
@@ -31,6 +32,7 @@ export type SportsBrowseHandle = { scrollToTop: () => void };
 
 type Row =
   | { key: string; type: 'heading'; section: SportsSection; title: string }
+  | { key: string; type: 'carousel'; section: SportsSection }
   | { key: string; type: 'game'; gameId: string; scopeId?: string }
   | { key: string; type: 'expand'; sectionKey: string; remaining: number; expanded: boolean };
 
@@ -57,6 +59,7 @@ export function SportsBrowse({
   const { isDarkMode } = useColorMode();
   const list = useRef<FlatList<Row>>(null);
   const [expanded, setExpanded] = useState(new Set<string>());
+  const [visibleCarousels, setVisibleCarousels] = useState(new Set<string>());
   const view = useSportsStore(state => {
     const { request, result } = state.hosts[host];
     const sections = getSportsSections({
@@ -75,7 +78,11 @@ export function SportsBrowse({
       const key = section.scopeId ?? section.type;
       const title = section.scopeId ? (findScope(view.catalog, section.scopeId)?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
       rows.push({ key: `heading:${key}`, type: 'heading', section, title });
-      const count = view.query !== null || expanded.has(key) ? section.gameIds.length : view.destination.type === 'live' ? 1 : 2;
+      if (view.query === null && view.destination.type === 'live') {
+        rows.push({ key: `carousel:${key}`, type: 'carousel', section });
+        continue;
+      }
+      const count = view.query !== null || expanded.has(key) ? section.gameIds.length : 2;
       for (const gameId of section.gameIds.slice(0, count))
         rows.push({
           key: `game:${gameId}`,
@@ -83,7 +90,7 @@ export function SportsBrowse({
           gameId,
           scopeId: view.destination.type === 'scope' ? view.destination.scopeId : section.scopeId,
         });
-      if (view.query === null && view.destination.type !== 'live' && section.gameIds.length > 2)
+      if (view.query === null && section.gameIds.length > 2)
         rows.push({
           key: `expand:${key}`,
           type: 'expand',
@@ -100,6 +107,8 @@ export function SportsBrowse({
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<Row>[] }) => {
       setVisibleGames(viewableItems.flatMap(({ item }) => (item.type === 'game' ? [item.gameId] : [])));
+      const keys = new Set(viewableItems.flatMap(({ item }) => (item.type === 'carousel' ? [item.key] : [])));
+      setVisibleCarousels(previous => (previous.size === keys.size && [...keys].every(key => previous.has(key)) ? previous : keys));
     },
     [setVisibleGames]
   );
@@ -121,6 +130,15 @@ export function SportsBrowse({
           );
         case 'heading':
           return <SectionHeading title={item.title} section={item.section} host={host} />;
+        case 'carousel':
+          return (
+            <GameCarousel
+              section={item.section}
+              route={route}
+              visible={active && visibleCarousels.has(item.key)}
+              onGamePress={onGamePress}
+            />
+          );
         case 'expand':
           return (
             <ButtonPressAnimation
@@ -146,7 +164,7 @@ export function SportsBrowse({
           );
       }
     },
-    [host, onGamePress]
+    [active, host, onGamePress, route, visibleCarousels]
   );
 
   return (
