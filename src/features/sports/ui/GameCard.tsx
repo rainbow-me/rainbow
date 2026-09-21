@@ -11,7 +11,7 @@ import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/f
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameOffer } from '@/features/sports/ui/GameOffer';
 import { GameScore } from '@/features/sports/ui/GameScore';
-import { SportsImage } from '@/features/sports/ui/SportsImage';
+import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import * as i18n from '@/languages';
 
@@ -135,13 +135,7 @@ function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: st
         <View style={styles.competition}>
           {header.competition && (
             <>
-              <SportsImage
-                imageUrl={header.competition.imageUrl}
-                name={header.competition.name}
-                color={header.competition.color}
-                decoration="badge"
-                size={28}
-              />
+              <SportsBadge scope={header.competition} size={28} />
               <Text color="label" size="17pt" weight="heavy" numberOfLines={1} style={styles.competitionName}>
                 {header.competition.name}
               </Text>

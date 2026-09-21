@@ -10,7 +10,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsDirectoryCounts } from '@/features/sports/core/sections';
 import { getSportsAvailableGameIds, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
-import { SportsImage } from '@/features/sports/ui/SportsImage';
+import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
 export function SportsDirectory({ host }: { host: SportsHost }) {
@@ -53,13 +53,7 @@ export function SportsDirectory({ host }: { host: SportsHost }) {
         <View key={scope.id}>
           <ButtonPressAnimation onPress={() => sportsActions.selectDestination(host, { type: 'scope', scopeId: scope.id })} scaleTo={0.98}>
             <View style={[styles.row, directory.competitions && styles.competition]}>
-              <SportsImage
-                imageUrl={scope.imageUrl}
-                name={scope.name}
-                color={scope.color}
-                decoration="badge"
-                size={directory.competitions ? 28 : 40}
-              />
+              <SportsBadge scope={scope} size={directory.competitions ? 28 : 40} />
               <Text color="label" size={directory.competitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
                 {scope.name}
               </Text>

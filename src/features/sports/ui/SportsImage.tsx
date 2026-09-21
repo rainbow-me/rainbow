@@ -1,42 +1,34 @@
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { type FastImageProps } from 'react-native-fast-image';
 
 import ImgixImage from '@/components/images/ImgixImage';
 import { Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
+import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export function SportsImage({
-  imageUrl,
-  name,
-  size,
-  width = size,
-  color,
-  decoration,
-}: {
-  imageUrl?: string;
-  name: string;
-  size: number;
-  width?: number;
-  color?: string;
-  decoration?: 'badge';
-}) {
+export function SportsImage({ imageUrl, name, size, width = size }: { imageUrl?: string; name: string; size: number; width?: number }) {
+  return (
+    <View style={[styles.image, styles.clip, { width, height: size, borderRadius: size === 24 ? 3 : 8 }]}>
+      <Artwork key={imageUrl ?? name} source={imageUrl ? { uri: imageUrl } : undefined} name={name} width={width} height={size} />
+    </View>
+  );
+}
+
+export function SportsBadge({ scope, size }: { scope: Sport | Competition; size: 28 | 40 | 44 }) {
   const { isDarkMode } = useColorMode();
   const fallback = useForegroundColor('fillTertiary');
-  const badge = decoration === 'badge';
-  const imageSize = badge ? (size === 28 ? 20 : size === 40 ? 28 : 32) : size;
-  const image = imageUrl ? (
-    <ImgixImage source={{ uri: imageUrl }} resizeMode="contain" style={{ width: badge ? imageSize : width, height: imageSize }} />
-  ) : (
-    <Text color="labelSecondary" size="13pt" weight="heavy">
-      {name.slice(0, 2).toUpperCase()}
-    </Text>
-  );
-  if (!badge) return <View style={[styles.image, { width, height: size }]}>{image}</View>;
-
+  const icon = (size === 44 ? sportsIcons[`${scope.id}-header`] : undefined) ?? sportsIcons[scope.id];
+  const color = icon?.color ?? scope.color;
+  const imageSize = size * (icon?.scale ?? 20 / 28);
   const background = color
-    ? getSolidColorEquivalent({ background: color, foreground: '#000000', opacity: isDarkMode ? 0.3 : 0.1 })
+    ? getSolidColorEquivalent({ background: color, foreground: '#000000', opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
     : fallback;
+
   return (
     <SportsSurface
       borderRadius={size === 28 ? 10 : size === 40 ? 12 : 14}
@@ -52,11 +44,65 @@ export function SportsImage({
       innerShadow={{ color: 'rgba(255,255,255,0.18)', blur: 2.5, dx: 0, dy: 1, blendMode: 'plus' }}
       style={[styles.image, { width: size, height: size }]}
     >
-      {image}
+      <Artwork
+        key={icon ? scope.id : (scope.imageUrl ?? scope.id)}
+        source={icon?.source ?? (scope.imageUrl ? { uri: scope.imageUrl } : undefined)}
+        name={scope.name}
+        width={imageSize}
+        height={imageSize}
+        offset={icon?.offset}
+      />
     </SportsSurface>
+  );
+}
+
+function Artwork({
+  source,
+  name,
+  width,
+  height,
+  offset,
+}: {
+  source?: FastImageProps['source'];
+  name: string;
+  width: number;
+  height: number;
+  offset?: readonly [number, number];
+}) {
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>(typeof source === 'number' ? 'ready' : 'loading');
+  const backgroundColor = useForegroundColor('fillTertiary');
+  if (!source || status === 'failed')
+    return (
+      <View style={[styles.image, styles.fallback, { width, height, backgroundColor }]}>
+        <Text color="labelSecondary" size="13pt" weight="heavy">
+          {name.slice(0, 2).toUpperCase()}
+        </Text>
+      </View>
+    );
+  return (
+    <>
+      {status === 'loading' && <View style={[styles.placeholder, { width, height, backgroundColor }]} />}
+      <ImgixImage
+        source={source}
+        resizeMode="contain"
+        onLoad={() => setStatus('ready')}
+        onError={() => setStatus('failed')}
+        style={{
+          width,
+          height,
+          opacity: status === 'loading' ? 0 : 1,
+          transform: offset ? [{ translateX: offset[0] }, { translateY: offset[1] }] : undefined,
+        }}
+      />
+    </>
   );
 }
 
 const HEADER_SHADOWS = [{ color: 'rgba(0,0,0,0.06)', blur: 3, dx: 0, dy: 4 }];
 const BADGE_SHADOWS = [{ color: 'rgba(0,0,0,0.06)', blur: 6, dx: 0, dy: 4 }];
-const styles = StyleSheet.create({ image: { alignItems: 'center', justifyContent: 'center' } });
+const styles = StyleSheet.create({
+  image: { alignItems: 'center', justifyContent: 'center' },
+  clip: { overflow: 'hidden', borderCurve: 'continuous' },
+  fallback: { borderRadius: 8, borderCurve: 'continuous', overflow: 'hidden' },
+  placeholder: { position: 'absolute', borderRadius: 8, borderCurve: 'continuous' },
+});

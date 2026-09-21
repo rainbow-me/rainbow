@@ -13,7 +13,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { opacity } from '@/design-system/utils/opacity';
 import { findScope, type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
-import { SportsImage } from '@/features/sports/ui/SportsImage';
+import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -37,7 +37,7 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
   return (
     <View style={styles.header} accessibilityRole="header">
       {scope ? (
-        <SportsImage imageUrl={scope.imageUrl} name={scope.name} color={scope.color} decoration="badge" size={44} />
+        <SportsBadge scope={scope} size={44} />
       ) : destination.type === 'live' ? (
         <View style={[styles.liveRing, { borderColor: opacity(isDarkMode ? '#FF584D' : red, 0.3) }]}>
           <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : red }]} />
