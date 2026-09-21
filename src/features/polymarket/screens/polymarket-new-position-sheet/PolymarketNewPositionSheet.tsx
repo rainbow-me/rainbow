@@ -10,18 +10,21 @@ import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard'
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, globalColors, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
+import { MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { usePolymarketOrderDetailsStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { type Selection } from '@/features/sports/core/generated/sports';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -31,12 +34,82 @@ import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
+type FromRoute = RootStackParamList[typeof Routes.POLYMARKET_NEW_POSITION_SHEET]['fromRoute'];
+
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
-  const {
-    params: { market, event, outcomeIndex, outcomeColor, fromRoute },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
-  const { isDarkMode } = useColorMode();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
+
+  return (
+    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
+      {'selection' in params ? (
+        <SelectedPosition selection={params.selection} fromRoute={params.fromRoute} />
+      ) : (
+        <NewPositionForm
+          event={params.event}
+          market={params.market}
+          outcomeIndex={params.outcomeIndex}
+          outcomeColor={params.outcomeColor}
+          fromRoute={params.fromRoute}
+        />
+      )}
+    </PanelSheet>
+  );
+});
+
+function SelectedPosition({ selection, fromRoute }: { selection: Selection; fromRoute: FromRoute }) {
+  const outcomeColor = useForegroundColor(selection.outcomeIndex === 0 ? 'green' : 'red');
+  const entry = usePolymarketOrderDetailsStore(state => state.getCacheEntry({ selection }));
+  const loading = usePolymarketOrderDetailsStore(state => state.status === 'loading');
+  const details = entry?.data;
+
+  if (!details) {
+    return (
+      <Box paddingHorizontal="32px" paddingTop={{ custom: 43 }} paddingBottom="24px" gap={28}>
+        <Text size="26pt" weight="heavy" color="label">
+          {i18n.t(i18n.l.predictions.new_position.title)}
+        </Text>
+        {!entry || loading ? (
+          <MarketRowLoadingSkeleton count={2} />
+        ) : (
+          <Box alignItems="center" gap={20} paddingVertical="28px">
+            <Text align="center" color="labelSecondary" size="17pt" weight="bold">
+              {i18n.t(i18n.l.sports.entry_error)}
+            </Text>
+            <ButtonPressAnimation onPress={() => usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true })}>
+              <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
+                <Text color="accent" size="17pt" weight="bold">
+                  {i18n.t(i18n.l.sports.retry)}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          </Box>
+        )}
+      </Box>
+    );
+  }
+
+  const { event, market, outcomeIndex } = details;
+  return (
+    <NewPositionForm
+      key={selection.tokenId}
+      event={event}
+      market={market}
+      outcomeIndex={outcomeIndex}
+      outcomeColor={outcomeColor}
+      fromRoute={fromRoute}
+    />
+  );
+}
+
+function NewPositionForm({
+  market,
+  event,
+  outcomeIndex,
+  outcomeColor,
+  fromRoute,
+}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: FromRoute }) {
+  const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -162,7 +235,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, []);
 
   return (
-    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
+    <>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
         <LinearGradient
           colors={
@@ -263,9 +336,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           )}
         </Box>
       </Box>
-    </PanelSheet>
+    </>
   );
-});
+}
 
 function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
   switch (step) {
