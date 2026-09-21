@@ -1,4 +1,5 @@
 # PATCH CONTEXT
+# Preserve pictures across native reattachment, scoped to their Skia API instance.
 # Use Display P3 on supported Apple displays by default.
 # Synchronize iOS drawRect presentation with Core Animation to address
 # frozen frames after navigation. Keep animation-driven frames asynchronous.
@@ -70,3 +71,134 @@ index 9bd64bd..37ff162 100644
 +#endif
    }
  }
+diff --git a/node_modules/@shopify/react-native-skia/cpp/rnskia/RNSkJsiViewApi.h b/node_modules/@shopify/react-native-skia/cpp/rnskia/RNSkJsiViewApi.h
+--- a/node_modules/@shopify/react-native-skia/cpp/rnskia/RNSkJsiViewApi.h
++++ b/node_modules/@shopify/react-native-skia/cpp/rnskia/RNSkJsiViewApi.h
+@@ -28,10 +28,7 @@
+
+ class ViewRegistry {
+ public:
+-  static ViewRegistry &getInstance() {
+-    static ViewRegistry instance;
+-    return instance;
+-  }
++  ViewRegistry() = default;
+
+   ViewRegistry(const ViewRegistry &) = delete;
+   ViewRegistry &operator=(const ViewRegistry &) = delete;
+@@ -63,7 +60,6 @@
+   }
+
+ private:
+-  ViewRegistry() = default;
+   mutable std::shared_mutex _mutex;
+   std::unordered_map<size_t, std::shared_ptr<RNSkViewInfo>> _registry;
+ };
+@@ -100,7 +96,7 @@
+     auto nativeId = arguments[0].asNumber();
+
+     // Safely execute operations while holding the registry lock
+-    ViewRegistry::getInstance().withViewInfo(
++    _viewRegistry.withViewInfo(
+         nativeId, [&](std::shared_ptr<RNSkViewInfo> info) {
+           auto name = arguments[1].asString(runtime).utf8(runtime);
+           info->props.insert_or_assign(
+@@ -111,7 +107,6 @@
+             // Update view!
+             info->view->setNativeId(nativeId);
+             info->view->setJsiProperties(info->props);
+-            info->props.clear();
+           }
+           return nullptr; // Return type for template deduction
+         });
+@@ -137,7 +132,7 @@
+
+     // find Skia View
+     int nativeId = arguments[0].asNumber();
+-    ViewRegistry::getInstance().withViewInfo(
++    _viewRegistry.withViewInfo(
+         nativeId, [](std::shared_ptr<RNSkViewInfo> info) {
+           if (info->view != nullptr) {
+             info->view->requestRedraw();
+@@ -164,7 +159,7 @@
+     // find Skia view
+     int nativeId = arguments[0].asNumber();
+     sk_sp<SkImage> image;
+-    std::shared_ptr<RNSkView> view = ViewRegistry::getInstance().withViewInfo(
++    std::shared_ptr<RNSkView> view = _viewRegistry.withViewInfo(
+         nativeId,
+         [](std::shared_ptr<RNSkViewInfo> info) { return info->view; });
+     if (view != nullptr) {
+@@ -202,7 +197,7 @@
+
+     // find Skia view
+     int nativeId = arguments[0].asNumber();
+-    std::shared_ptr<RNSkView> view = ViewRegistry::getInstance().withViewInfo(
++    std::shared_ptr<RNSkView> view = _viewRegistry.withViewInfo(
+         nativeId,
+         [](std::shared_ptr<RNSkViewInfo> info) { return info->view; });
+     auto context = _platformContext;
+@@ -248,7 +243,7 @@
+
+     // find Skia View
+     int nativeId = arguments[0].asNumber();
+-    std::shared_ptr<RNSkView> view = ViewRegistry::getInstance().withViewInfo(
++    std::shared_ptr<RNSkView> view = _viewRegistry.withViewInfo(
+         nativeId,
+         [](std::shared_ptr<RNSkViewInfo> info) { return info->view; });
+     if (view != nullptr) {
+@@ -284,7 +279,7 @@
+   /**
+    Call to remove all draw view infos
+    */
+-  void unregisterAll() { ViewRegistry::getInstance().clear(); }
++  void unregisterAll() { _viewRegistry.clear(); }
+
+   /**
+    * Registers a skia view
+@@ -292,13 +287,12 @@
+    * @param view View to register
+    */
+   void registerSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view) {
+-    ViewRegistry::getInstance().withViewInfo(
++    _viewRegistry.withViewInfo(
+         nativeId, [&](std::shared_ptr<RNSkViewInfo> info) {
+           info->view = view;
+           info->view->setNativeId(nativeId);
+
+           info->view->setJsiProperties(info->props);
+-          info->props.clear();
+
+           return nullptr;
+         });
+@@ -309,7 +303,7 @@
+    * @param nativeId View id
+    */
+   void unregisterSkiaView(size_t nativeId) {
+-    ViewRegistry::getInstance().removeViewInfo(nativeId);
++    _viewRegistry.removeViewInfo(nativeId);
+   }
+
+   /**
+@@ -319,13 +313,12 @@
+    or a valid view, effectively toggling the view's availability.
+    */
+   void setSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view) {
+-    ViewRegistry::getInstance().withViewInfo(
++    _viewRegistry.withViewInfo(
+         nativeId, [&](std::shared_ptr<RNSkViewInfo> info) {
+           if (view != nullptr) {
+             info->view = view;
+             info->view->setNativeId(nativeId);
+             info->view->setJsiProperties(info->props);
+-            info->props.clear();
+           } else {
+             info->view = view; // Set to nullptr
+           }
+@@ -335,5 +328,6 @@
+
+ private:
+   std::shared_ptr<RNSkPlatformContext> _platformContext;
++  ViewRegistry _viewRegistry;
+ };
+ } // namespace RNSkia
