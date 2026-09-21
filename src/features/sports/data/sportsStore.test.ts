@@ -273,3 +273,57 @@ it('can load another Search page after cancelling a different read and returning
   expect(result()?.sections[0].gameIds).toEqual(['1', '2']);
   expect(sportsClient.searchGames).toHaveBeenCalledTimes(2);
 });
+
+it('searches globally from a selected category and returns to that category on cancel', async () => {
+  sportsActions.selectDestination('main', { type: 'scope', scopeId: 'tennis' });
+  await read();
+  sportsActions.setSearch('main', '  NBA  ');
+  await read();
+  const request = jest.mocked(sportsClient.searchGames).mock.calls[0][0];
+  expect(request.query).toBe('NBA');
+  expect(request.scopeId).toBeUndefined();
+  expect(result()?.sections[0].gameIds).toEqual(['1']);
+  sportsActions.setSearch('main', null);
+  await read();
+  expect(useSportsViewStore.getState().hosts.main.request.destination).toEqual({ type: 'scope', scopeId: 'tennis' });
+  expect(result()?.sections[0].gameIds).toEqual(['2']);
+  expect(sportsClient.getGames).toHaveBeenCalledTimes(1);
+});
+
+it('retries a failed continuation without discarding earlier Search pages', async () => {
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' })
+    .mockRejectedValueOnce(new Error('Page unavailable'))
+    .mockResolvedValueOnce({ catalog, games: [game('3')], nextCursor: undefined });
+  sportsActions.setSearch('main', 'team');
+  await read();
+  await sportsActions.loadMore('main');
+  await sportsActions.loadMore('main');
+  expect(result()?.sections[0].gameIds).toEqual(['1', '2']);
+  await sportsActions.retry('main');
+  expect(jest.mocked(sportsClient.searchGames).mock.calls.map(([request]) => request.cursor)).toEqual([
+    undefined,
+    'page-2',
+    'page-3',
+    'page-3',
+  ]);
+  expect(result()?.sections[0].gameIds).toEqual(['1', '2', '3']);
+});
+
+it('retains provider relevance and statuses in Search without browse sorting', async () => {
+  jest.mocked(sportsClient.searchGames).mockResolvedValue({
+    catalog,
+    games: [
+      game('finished', { status: Game_Status.STATUS_ENDED }),
+      first,
+      game('postponed', { status: Game_Status.STATUS_POSTPONED }),
+      first,
+    ],
+    nextCursor: undefined,
+  });
+  sportsActions.setSearch('main', 'team');
+  await read();
+  expect(result()?.sections[0].gameIds).toEqual(['finished', '1', 'postponed']);
+});

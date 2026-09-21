@@ -51,6 +51,7 @@ type SportsViewState = {
   setSearch: (host: SportsHost, query: string | null) => void;
   loadMore: (host: SportsHost) => Promise<void>;
   refresh: (host: SportsHost) => Promise<void>;
+  retry: (host: SportsHost) => Promise<void>;
   updateWindow: (now?: Date) => void;
   setLookupConsumer: (owner: symbol, route: Route, eventIds: string[]) => void;
   removeLookupConsumer: (owner: symbol) => void;
@@ -100,11 +101,16 @@ export const useSportsViewStore = createBaseStore<SportsViewState>((set, get) =>
     const data = useSportsStore.getState();
     const cursor = getSportsResult(data, request)?.nextCursor;
     if (!get().hosts[host].visible || !request.query || !cursor) return;
-    await data.fetch({ request: { type: 'search', destination: request.destination, query: request.query, cursor } }, { force: true });
+    await data.fetch({ request: { type: 'search', query: request.query, cursor } }, { force: true });
   },
   refresh: async host => {
     if (!get().hosts[host].visible) return;
     await useSportsStore.getState().fetch(undefined, { force: true });
+  },
+  retry: host => {
+    const state = get();
+    const result = getSportsResult(useSportsStore.getState(), state.hosts[host].request);
+    return result?.nextCursor ? state.loadMore(host) : state.refresh(host);
   },
   updateWindow: now => {
     const window = getSportsWindow(now);
@@ -135,7 +141,7 @@ export const sportsActions = createStoreActions(useSportsViewStore);
 // ============ Data ========================================================== //
 
 export type SportsResult = { sections: SportsSection[]; nextCursor?: string };
-type SportsSearchResult = SportsResult & { query: string; destination: SportsDestination; queryKey: string };
+type SportsSearchResult = SportsResult & { query: string; queryKey: string };
 export type SportsState = {
   catalog: SportsCatalog | undefined;
   scopes: Partial<Record<string, Sport | Competition>>;
@@ -150,7 +156,7 @@ export type SportsState = {
 
 type SportsRequest =
   | { type: 'browse'; destination: SportsDestination }
-  | { type: 'search'; destination: SportsDestination; query: string; cursor?: string }
+  | { type: 'search'; query: string; cursor?: string }
   | { type: 'lookup'; eventIds: string[] };
 type SportsParams = { request: SportsRequest | null; window: SportsWindow };
 type SportsResponse = GetGamesResponse | SearchGamesResponse | LookupGamesResponse | null;
@@ -188,7 +194,7 @@ function getSportsRequest($: DeriveGetter): SportsRequest | null {
   if (host?.visible) {
     const { destination, query } = host.request;
     if (query === '') return null;
-    return query === null ? { type: 'browse', destination } : { type: 'search', destination, query };
+    return query === null ? { type: 'browse', destination } : { type: 'search', query };
   }
   const eventIds = [
     ...new Set([...state.lookupConsumers.values()].filter(consumer => consumer.route === route).flatMap(consumer => consumer.eventIds)),
@@ -200,10 +206,10 @@ function getSportsRequest($: DeriveGetter): SportsRequest | null {
 async function fetchSports({ request, window }: SportsParams, controller: AbortController | null): Promise<SportsResponse> {
   if (!request) return null;
   if (request.type === 'lookup') return sportsClient.lookupGames({ eventIds: request.eventIds }, controller);
+  if (request.type === 'search') {
+    return sportsClient.searchGames({ query: request.query, cursor: request.cursor, ...window }, controller);
+  }
   const { destination } = request;
-  const scopeId = destination.type === 'scope' ? destination.scopeId : undefined;
-  if (request.type === 'search')
-    return sportsClient.searchGames({ query: request.query, scopeId, cursor: request.cursor, ...window }, controller);
   if (destination.type === 'all') return { catalog: await sportsClient.getCatalog(controller), games: [] };
   if (destination.type === 'live') return sportsClient.getLiveGames({}, controller);
   const catalog = useSportsStore.getState().catalog ?? (await sportsClient.getCatalog(controller));
@@ -245,10 +251,7 @@ function setSportsData({ data, params: { request, window }, queryKey, set }: Set
       for (const eventId of data.unavailableEventIds) eventGames[eventId] = null;
     } else if (request.type === 'search') {
       const previous =
-        request.cursor &&
-        search?.query === request.query &&
-        getSportsDestinationKey(search.destination) === getSportsDestinationKey(request.destination) &&
-        search.nextCursor === request.cursor
+        request.cursor && search?.query === request.query && search.nextCursor === request.cursor
           ? (search.sections[0]?.gameIds ?? [])
           : [];
       const ids = [...new Set([...previous, ...data.games.map(game => game.id)])].slice(0, MAX_SPORTS_SECTION_GAMES);
@@ -258,7 +261,6 @@ function setSportsData({ data, params: { request, window }, queryKey, set }: Set
       }
       search = {
         query: request.query,
-        destination: request.destination,
         queryKey,
         sections: ids.length ? [{ type: 'search', gameIds: ids }] : [],
         nextCursor: ids.length < MAX_SPORTS_SECTION_GAMES && 'nextCursor' in data ? data.nextCursor : undefined,
@@ -308,8 +310,5 @@ function setSportsData({ data, params: { request, window }, queryKey, set }: Set
 
 export function getSportsResult(state: SportsState, request: BrowseRequest): SportsResult | undefined {
   if (request.query === null) return state.results[getSportsDestinationKey(request.destination)];
-  const search = state.search;
-  return search?.query === request.query && getSportsDestinationKey(search.destination) === getSportsDestinationKey(request.destination)
-    ? search
-    : undefined;
+  return state.search?.query === request.query ? state.search : undefined;
 }
