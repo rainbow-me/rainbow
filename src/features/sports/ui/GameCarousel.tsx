@@ -42,6 +42,7 @@ export const GameCarousel = memo(function GameCarousel({
       keyExtractor={gameId => gameId}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={VIEWABILITY}
+      style={styles.list}
       contentContainerStyle={styles.content}
       snapToInterval={cardWidth + 8}
       decelerationRate="fast"
@@ -54,5 +55,6 @@ export const GameCarousel = memo(function GameCarousel({
 
 const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
 const styles = StyleSheet.create({
+  list: { overflow: 'visible' },
   content: { gap: 8, paddingHorizontal: 12, paddingBottom: 8 },
 });
