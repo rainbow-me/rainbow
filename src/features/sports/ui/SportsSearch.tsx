@@ -5,7 +5,10 @@ import { debounce } from 'lodash';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Input from '@/components/inputs/Input';
-import { Text, TextIcon, useForegroundColor } from '@/design-system';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { fonts } from '@/design-system/typography/typography';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import * as i18n from '@/languages';
@@ -55,6 +58,15 @@ export function SportsSearch({ host }: { host: SportsHost }) {
 
 const styles = StyleSheet.create({
   row: { paddingHorizontal: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  field: { flex: 1, height: 46, borderRadius: 23, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  input: { flex: 1, fontSize: 17, fontWeight: '600', height: 46 },
+  field: {
+    flex: 1,
+    height: 46,
+    borderRadius: 23,
+    borderCurve: 'continuous',
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  input: { ...fonts.SFProRounded.semibold, flex: 1, fontSize: 17, letterSpacing: 0.37, height: 46 },
 });

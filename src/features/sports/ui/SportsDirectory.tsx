@@ -3,7 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import { deepEqual } from '@storesjs/stores';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { Text, TextIcon } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { Border } from '@/design-system/components/Border/Border';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsDirectoryCounts } from '@/features/sports/core/sections';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
@@ -11,6 +14,7 @@ import { SportsImage } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
 export function SportsDirectory({ host }: { host: SportsHost }) {
+  const { isDarkMode } = useColorMode();
   const directory = useSportsStore(state => {
     const { destination, query } = state.hosts[host].request;
     const sports = state.catalog?.sports ?? [];
@@ -46,26 +50,50 @@ export function SportsDirectory({ host }: { host: SportsHost }) {
         </View>
       )}
       {directory.rows.map(scope => (
-        <ButtonPressAnimation
-          key={scope.id}
-          onPress={() => sportsActions.selectDestination(host, { type: 'scope', scopeId: scope.id })}
-          scaleTo={0.98}
-        >
-          <View style={[styles.row, directory.competitions && styles.competition]}>
-            <SportsImage imageUrl={scope.imageUrl} name={scope.name} size={directory.competitions ? 28 : 40} />
-            <Text color="label" size={directory.competitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
-              {scope.name}
-            </Text>
-            <View style={styles.count}>
-              <Text color="labelSecondary" size="13pt" weight="heavy" tabularNumbers>
-                {scope.count}
+        <View key={scope.id}>
+          <ButtonPressAnimation onPress={() => sportsActions.selectDestination(host, { type: 'scope', scopeId: scope.id })} scaleTo={0.98}>
+            <View style={[styles.row, directory.competitions && styles.competition]}>
+              <SportsImage
+                imageUrl={scope.imageUrl}
+                name={scope.name}
+                color={scope.color}
+                decoration="badge"
+                size={directory.competitions ? 28 : 40}
+              />
+              <Text color="label" size={directory.competitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
+                {scope.name}
               </Text>
+              <View style={styles.trailing}>
+                <View style={[styles.count, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }]}>
+                  <Text color="labelSecondary" size="14pt" weight="heavy">
+                    {scope.count}
+                  </Text>
+                  <Border
+                    borderRadius={8}
+                    borderWidth={4 / 3}
+                    borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+                    enableInLightMode
+                  />
+                </View>
+                <TextIcon
+                  color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
+                  size="15pt"
+                  weight="heavy"
+                  width={13}
+                  height={10}
+                >
+                  {'􀯻'}
+                </TextIcon>
+              </View>
             </View>
-            <TextIcon color="labelQuaternary" size="13pt" weight="heavy">
-              {'􀆊'}
-            </TextIcon>
-          </View>
-        </ButtonPressAnimation>
+          </ButtonPressAnimation>
+          <View
+            style={[
+              styles.separator,
+              { marginLeft: directory.competitions ? 38 : 54, backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' },
+            ]}
+          />
+        </View>
       ))}
     </View>
   );
@@ -80,10 +108,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: 'rgba(128,128,128,0.06)',
   },
   competition: { minHeight: 56, gap: 10, paddingVertical: 14 },
   name: { flex: 1 },
-  count: { borderRadius: 6, backgroundColor: 'rgba(128,128,128,0.1)', paddingHorizontal: 4, paddingVertical: 4 },
+  trailing: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  count: { height: 23, borderRadius: 8, borderCurve: 'continuous', paddingHorizontal: 7, justifyContent: 'center', alignItems: 'center' },
+  separator: { height: 2 },
 });

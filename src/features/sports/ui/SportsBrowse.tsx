@@ -14,7 +14,10 @@ import {
 import { deepEqual } from '@storesjs/stores';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsSections, type SportsSection } from '@/features/sports/core/sections';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
@@ -23,6 +26,7 @@ import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
+import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import * as i18n from '@/languages';
@@ -153,9 +157,26 @@ export function SportsBrowse({
               scaleTo={0.98}
             >
               <View style={styles.expand}>
-                <TextIcon color="labelTertiary" size="15pt" weight="heavy">
-                  {item.expanded ? '􀁞' : '􀁠'}
-                </TextIcon>
+                <SportsSurface
+                  borderRadius={10}
+                  color={isDarkMode ? 'rgba(255,255,255,0.16)' : undefined}
+                  gradient={isDarkMode ? undefined : LIGHT_BADGE_GRADIENT}
+                  borderColor={isDarkMode ? undefined : '#FFFFFF'}
+                  borderWidth={4 / 3}
+                  shadows={isDarkMode ? undefined : LIGHT_BADGE_SHADOWS}
+                  style={styles.expandIcon}
+                >
+                  <TextIcon
+                    color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
+                    size="10pt"
+                    weight="black"
+                    width={16}
+                    height={8}
+                    textStyle={styles.expandChevron}
+                  >
+                    {item.expanded ? '􀆇' : '􀆈'}
+                  </TextIcon>
+                </SportsSurface>
                 <Text color="labelTertiary" size="17pt" weight="bold">
                   {i18n.t(item.expanded ? i18n.l.sports.show_less : i18n.l.sports.show_more, { count: item.remaining })}
                 </Text>
@@ -164,11 +185,11 @@ export function SportsBrowse({
           );
       }
     },
-    [active, host, onGamePress, route, visibleCarousels]
+    [active, host, isDarkMode, onGamePress, route, visibleCarousels]
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#080808' : '#FCFCFC' }]}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#0B0B0B' : '#FEFFFF' }]}>
       <FlatList
         ref={list}
         data={rows}
@@ -186,7 +207,7 @@ export function SportsBrowse({
         scrollEventThrottle={16}
         refreshControl={<SportsRefreshControl host={host} />}
         ListHeaderComponent={
-          <View style={styles.header}>
+          <View style={[styles.header, view.query === null && view.destination.type === 'all' && styles.directoryHeader]}>
             {view.query !== null ? <SportsSearch host={host} /> : <SportsHeader host={host} />}
             {view.query !== null && <SportsDirectory host={host} />}
           </View>
@@ -204,6 +225,7 @@ export function SportsBrowse({
 }
 
 function SectionHeading({ section, title, host }: { section: SportsSection; title: string; host: SportsHost }) {
+  const { isDarkMode } = useColorMode();
   const scopeId = section.scopeId;
   return (
     <ButtonPressAnimation
@@ -213,21 +235,37 @@ function SectionHeading({ section, title, host }: { section: SportsSection; titl
     >
       <View style={styles.heading}>
         {section.type === 'live' && !section.scopeId && (
-          <View style={styles.liveRing}>
-            <View style={styles.liveDot} />
+          <View style={styles.liveIndicator}>
+            <View style={[styles.liveRing, { borderColor: isDarkMode ? 'rgba(255,88,77,0.3)' : 'rgba(250,66,60,0.3)' }]}>
+              <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : '#FA423C' }]} />
+            </View>
           </View>
         )}
         <Text color="label" size="22pt" weight="heavy">
           {title}
         </Text>
-        <View style={styles.count}>
-          <Text color="labelSecondary" size="13pt" weight="heavy" tabularNumbers>
+        <SportsSurface
+          borderRadius={8}
+          color={isDarkMode ? 'rgba(255,255,255,0.03)' : undefined}
+          gradient={isDarkMode ? undefined : LIGHT_BADGE_GRADIENT}
+          borderColor={isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF'}
+          borderWidth={4 / 3}
+          shadows={isDarkMode ? undefined : LIGHT_BADGE_SHADOWS}
+          style={styles.count}
+        >
+          <Text color="labelSecondary" size="14pt" weight="heavy">
             {section.gameIds.length}
           </Text>
-        </View>
+        </SportsSurface>
         {section.scopeId && (
-          <TextIcon color="labelQuaternary" size="15pt" weight="heavy">
-            {'􀆊'}
+          <TextIcon
+            color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
+            size="15pt"
+            weight="heavy"
+            width={13}
+            height={10}
+          >
+            {'􀯻'}
           </TextIcon>
         )}
       </View>
@@ -308,24 +346,34 @@ const SECTION_LABELS = {
   search: i18n.l.sports.search_results,
 };
 const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
+const LIGHT_BADGE_GRADIENT = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
+const LIGHT_BADGE_SHADOWS = [
+  { color: 'rgba(0,0,0,0.06)', blur: 8, dx: 0, dy: 2, drawBehind: true },
+  { color: 'rgba(0,0,0,0.02)', blur: 3, dx: 0, dy: 2 },
+];
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingBottom: 8 },
+  directoryHeader: { paddingBottom: 13 },
   card: { marginHorizontal: 12, marginBottom: 8 },
-  heading: { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
-  count: { borderRadius: 8, backgroundColor: 'rgba(128,128,128,0.08)', paddingHorizontal: 6, paddingVertical: 5 },
+  heading: { height: 60, flexDirection: 'row', alignItems: 'center', gap: 6, marginHorizontal: 24, paddingTop: 24, paddingBottom: 20 },
+  count: { height: 23, paddingHorizontal: 7, justifyContent: 'center', alignItems: 'center' },
+  liveIndicator: { width: 16, height: 16, marginRight: 10 },
   liveRing: {
+    position: 'absolute',
+    top: -6,
+    left: -6,
     width: 28,
     height: 28,
     borderRadius: 14,
     borderWidth: 6,
-    borderColor: 'rgba(255,88,77,0.3)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 2,
   },
-  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF584D' },
-  expand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16 },
+  liveDot: { width: 8, height: 8, borderRadius: 4 },
+  expand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 12, paddingBottom: 4 },
+  expandIcon: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
+  expandChevron: { letterSpacing: 0.51 },
   message: { alignItems: 'center', gap: 20, padding: 28 },
 });
