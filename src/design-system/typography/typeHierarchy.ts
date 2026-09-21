@@ -269,6 +269,15 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
+    '14pt': {
+      fontSize: 14,
+      letterSpacing: 0,
+      lineHeight: 19,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
     '15pt': {
       // ⚠️ IMPORTANT: When modifying these values,
       // please read the note at the top of this file.
@@ -333,6 +342,15 @@ export const typeHierarchy = {
       marginCorrection: {
         android: 0,
         ios: -0.3,
+      },
+    },
+    '18pt': {
+      fontSize: 18,
+      letterSpacing: 0.36,
+      lineHeight: 24,
+      marginCorrection: {
+        android: 0.7,
+        ios: 0.7,
       },
     },
     '20pt': {
