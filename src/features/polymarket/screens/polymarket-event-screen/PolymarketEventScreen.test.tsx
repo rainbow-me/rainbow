@@ -14,7 +14,7 @@ import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolym
 import { Game } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import Routes from '@/navigation/routesNames';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -23,12 +23,13 @@ const renderer = require('react-native/Libraries/Renderer/implementations/ReactN
   unmountComponentAtNode: (containerTag: number) => void;
 };
 
+let mockRoute: Route;
 let mockParams: RootStackParamList[typeof Routes.POLYMARKET_EVENT_SCREEN];
 let mockRetry: (() => Promise<unknown>) | undefined;
 const mockText = jest.fn();
 const mockScoreMount = jest.fn();
 
-jest.mock('@react-navigation/native', () => ({ useRoute: () => ({ params: mockParams }), useIsFocused: () => true }));
+jest.mock('@react-navigation/native', () => ({ useRoute: () => ({ name: mockRoute, params: mockParams }), useIsFocused: () => true }));
 jest.mock('react-native-safe-area-context', () => ({ useSafeAreaInsets: () => ({ top: 60, bottom: 34 }) }));
 jest.mock('react-native-reanimated', () => ({
   useSharedValue: (value: unknown) => ({ value }),
@@ -38,6 +39,7 @@ jest.mock('@/navigation/Navigation', () => ({
   __esModule: true,
   default: {
     handleAction: (route: typeof Routes.POLYMARKET_EVENT_SCREEN, params: typeof mockParams) => {
+      mockRoute = route;
       mockParams = params;
       jest.requireActual('@/navigation/prefetchRegistry').prefetchRoute(route, params);
     },
@@ -131,13 +133,14 @@ afterEach(() => {
 
 let pressGame: ReturnType<typeof useSportsGamePress>;
 function GamePress() {
-  pressGame = useSportsGamePress(Routes.SPORTS_SCREEN);
+  pressGame = useSportsGamePress();
   return null;
 }
 
 afterAll(() => usePolymarketEventStore.getState().reset(true));
 
 async function openGame() {
+  mockRoute = Routes.SPORTS_SCREEN;
   act(() => renderer.render(<GamePress />, 101));
   await act(async () => {
     pressGame(eventId);

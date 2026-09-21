@@ -4,10 +4,11 @@ import { useStableValue } from '@storesjs/stores';
 
 import { subscribeToSportsQuotes } from '@/features/sports/data/sportsQuotes';
 import { sportsActions } from '@/features/sports/data/sportsStore';
-import { type Route } from '@/navigation/routesNames';
+import { useRoute } from '@/navigation/RouteContext';
 
 /** Viewability updates quote demand directly; price leaves only consume shared values. */
-export function useSportsQuotes(route: Route, active: boolean, renderedGameIds: string[]): (gameIds: string[]) => void {
+export function useSportsQuotes(active: boolean, renderedGameIds: string[]): (gameIds: string[]) => void {
+  const { name: route } = useRoute();
   const owner = useStableValue(() => Symbol('sportsQuotes'));
 
   useLayoutEffect(() => {

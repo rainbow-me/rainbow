@@ -5,7 +5,6 @@ import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withT
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import { useStableValue } from '@/hooks/useStableValue';
-import { useRoute } from '@/navigation/RouteContext';
 import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useTheme } from '@/theme/ThemeContext';
@@ -27,8 +26,7 @@ export function useLiveTokenSharedValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): SharedValue<string> {
-  const { name: routeName } = useRoute();
-  const setSubscribedTokens = useLiveTokenSubscription(routeName);
+  const setSubscribedTokens = useLiveTokenSubscription();
   const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
   const initial = useStableValue(() => selectValue(useLiveTokensStore.getState()));
   const liveValue = useSharedValue(initial);
@@ -59,8 +57,7 @@ export function useLiveTokenValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): string {
-  const { name: routeName } = useRoute();
-  const setSubscribedTokens = useLiveTokenSubscription(routeName);
+  const setSubscribedTokens = useLiveTokenSubscription();
   const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
   const liveValue = useLiveTokensStore(selectValue);
 

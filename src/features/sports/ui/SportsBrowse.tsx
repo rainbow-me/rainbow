@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
+import { useCallback, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -9,6 +9,8 @@ import {
   type RefreshControlProps,
   type ViewToken,
 } from 'react-native';
+
+import { shallowEqual, useListen } from '@storesjs/stores';
 
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
@@ -27,7 +29,6 @@ import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
-import { type Route } from '@/navigation/routesNames';
 
 export type SportsBrowseHandle = { scrollToTop: () => void };
 
@@ -42,7 +43,6 @@ type Row =
 export function SportsBrowse({
   host,
   visible,
-  route,
   topInset = 0,
   bottomInset,
   onGamePress,
@@ -51,7 +51,6 @@ export function SportsBrowse({
 }: {
   host: SportsHost;
   visible: boolean;
-  route: Route;
   topInset?: number;
   bottomInset: number;
   onGamePress: SportsGamePress;
@@ -103,7 +102,7 @@ export function SportsBrowse({
     () => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : row.type === 'carousel' ? row.section.gameIds : [])),
     [rows]
   );
-  const setVisibleGames = useSportsQuotes(route, visible, renderedGameIds);
+  const setVisibleGames = useSportsQuotes(visible, renderedGameIds);
   const updateVisibleGames = useCallback(() => {
     const { gameIds, carouselKeys } = viewport.current;
     setVisibleGames([...gameIds, ...carouselKeys.flatMap(key => carouselGames.current.get(key) ?? [])]);
@@ -128,10 +127,16 @@ export function SportsBrowse({
   );
 
   useImperativeHandle(ref, () => ({ scrollToTop: () => list.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
-  useEffect(() => {
-    list.current?.scrollToOffset({ offset: 0, animated: false });
-    setExpanded(new Set());
-  }, [destination, query]);
+
+  useListen(
+    useSportsViewStore,
+    state => state.hosts[host].request,
+    () => {
+      list.current?.scrollToOffset({ offset: 0, animated: false });
+      setExpanded(new Set());
+    },
+    { equalityFn: shallowEqual }
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: Row }) => {

@@ -31,7 +31,7 @@ import { SportsImage } from '@/features/sports/ui/SportsImage';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
+import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -181,7 +181,7 @@ function EventVolume({ volume }: { volume: number }) {
 function SportsEventLookup({ eventId }: { eventId: string }) {
   const isFocused = useIsFocused();
   const eventIds = useMemo(() => [eventId], [eventId]);
-  useSportsLookup(eventIds, Routes.POLYMARKET_EVENT_SCREEN, isFocused, eventIds);
+  useSportsLookup(eventIds, isFocused, eventIds);
   return null;
 }
 

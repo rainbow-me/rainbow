@@ -37,7 +37,6 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import { logger } from '@/logger';
-import Routes from '@/navigation/routesNames';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -148,7 +147,7 @@ function usePredictionTokenSubscription({
   items: PredictionPlacementItem[];
   limit: number | undefined;
 }) {
-  const setSubscribedTokens = useLiveTokenSubscription(Routes.DISCOVER_SCREEN);
+  const setSubscribedTokens = useLiveTokenSubscription();
   const renderedItems = useMemo(() => (typeof limit !== 'number' ? items : items.slice(0, limit)), [items, limit]);
 
   useEffect(() => {
