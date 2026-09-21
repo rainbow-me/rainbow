@@ -20,6 +20,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { opacity } from '@/design-system/utils/opacity';
@@ -77,9 +78,11 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
       {scope ? (
         <SportsBadge scope={scope} size={44} />
       ) : destination.type === 'live' ? (
-        <View style={[styles.liveRing, { borderColor: opacity(isDarkMode ? '#FF584D' : red, 0.3) }]}>
-          <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : red }]} />
-        </View>
+        <Bleed vertical="8px">
+          <View style={[styles.liveRing, { borderColor: opacity(isDarkMode ? '#FF584D' : red, 0.3) }]}>
+            <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : red }]} />
+          </View>
+        </Bleed>
       ) : null}
       <View style={styles.headerText}>
         {parent && (
@@ -295,9 +298,9 @@ const FADE_WIDTH = 67;
 const FADE_EDGE_INSET = 24;
 
 const styles = StyleSheet.create({
-  header: { minHeight: 44, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  header: { paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
   nestedHeader: { paddingLeft: 48 },
-  back: { position: 'absolute', left: 4, top: 0 },
+  back: { position: 'absolute', left: 4, top: '50%', marginTop: -22 },
   backButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   headerText: { flex: 1, gap: 10 },
   liveRing: { width: 28, height: 28, borderRadius: 14, borderWidth: 6, alignItems: 'center', justifyContent: 'center' },
