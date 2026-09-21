@@ -1,6 +1,7 @@
 import { createQueryStore } from '@storesjs/stores';
 
 import { POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
+import { polymarketOrderParamsStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
@@ -33,27 +34,16 @@ const EMPTY_ORDER_BOOK: OrderBook = {
   neg_risk: false,
 };
 
-type PolymarketOrderBookStoreState = {
-  tokenId: string | null;
-  setTokenId: (tokenId: string | null) => void;
-};
-
 type FetchParams = {
   tokenId: string | null;
 };
 
-export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams, PolymarketOrderBookStoreState>(
-  {
-    fetcher: fetchPolymarketOrderBook,
-    params: { tokenId: ($, store) => $(store).tokenId },
-    cacheTime: time.minutes(1),
-    staleTime: time.seconds(1),
-  },
-  set => ({
-    tokenId: null,
-    setTokenId: (tokenId: string | null) => set({ tokenId }),
-  })
-);
+export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams>({
+  fetcher: fetchPolymarketOrderBook,
+  params: { tokenId: $ => $(polymarketOrderParamsStore).params?.tokenId ?? null },
+  cacheTime: time.minutes(1),
+  staleTime: time.seconds(1),
+});
 
 async function fetchPolymarketOrderBook({ tokenId }: FetchParams): Promise<OrderBook> {
   if (!tokenId) return EMPTY_ORDER_BOOK;

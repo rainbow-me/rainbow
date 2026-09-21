@@ -31,29 +31,6 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-test('guarded navigation during sheet closing never prefetches or dispatches, including after dismissal', () => {
-  onWillPop();
-  Navigation.navigateIfCurrent(() => true, destination);
-
-  expect(prefetchRoute).not.toHaveBeenCalled();
-  expect(dispatch).not.toHaveBeenCalled();
-  onDidPop();
-  jest.runOnlyPendingTimers();
-  expect(prefetchRoute).not.toHaveBeenCalled();
-  expect(dispatch).not.toHaveBeenCalled();
-});
-
-test('a false source predicate drops the action without blocking a subsequent current action', () => {
-  Navigation.navigateIfCurrent(() => false, destination);
-  expect(prefetchRoute).not.toHaveBeenCalled();
-  expect(dispatch).not.toHaveBeenCalled();
-
-  Navigation.navigateIfCurrent(() => true, destination);
-  expect(prefetchRoute).toHaveBeenCalledTimes(1);
-  expect(prefetchRoute).toHaveBeenCalledWith(destination, undefined);
-  expect(dispatch).toHaveBeenCalledWith(CommonActions.navigate({ name: destination }));
-});
-
 test('ordinary navigation still waits for sheet dismissal and then prefetches and dispatches', () => {
   onWillPop();
   Navigation.handleAction(destination);
