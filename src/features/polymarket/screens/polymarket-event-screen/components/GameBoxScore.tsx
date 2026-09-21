@@ -1,194 +1,104 @@
-import React, { memo, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { memo } from 'react';
 
-import Animated from 'react-native-reanimated';
+import { deepEqual } from '@storesjs/stores';
 
-import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Box, globalColors, Separator, Text, TextShadow } from '@/design-system';
+import { Box, globalColors, Separator, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import { TeamLogo } from '@/features/polymarket/components/TeamLogo';
-import { usePolymarketLiveGame } from '@/features/polymarket/hooks/usePolymarketLiveGame';
-import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { parsePeriod, parseScore, selectGameInfo, type PolymarketEventGameInfo } from '@/features/polymarket/utils/sports';
-import { time } from '@/framework/core/utils/time';
+import { Game_Interruption, Game_Status } from '@/features/sports/core/generated/sports';
+import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { GameScore } from '@/features/sports/ui/GameScore';
+import { SportsImage } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { formatTimestampParts, toUnixTime } from '@/worklets/dates';
+import { formatTimestamp, toUnixTime } from '@/worklets/dates';
 
-export const GameBoxScore = memo(function GameBoxScore({ event }: { event: PolymarketMarketEvent | PolymarketEvent }) {
-  const [showPlaceholder, setShowPlaceholder] = useState(true);
-  const liveGame = usePolymarketLiveGame(event.gameId);
-  const gameInfo = selectGameInfo({ event, liveGame });
-  const gameStatus = getGameStatus(gameInfo);
-  const teamsLoaded = Boolean(gameInfo.teams?.[0]?.name && gameInfo.teams?.[1]?.name);
-
-  useEffect(() => {
-    if (teamsLoaded) return;
-    const timer = setTimeout(() => setShowPlaceholder(false), time.seconds(3));
-    return () => clearTimeout(timer);
-  }, [teamsLoaded]);
-
-  if (!teamsLoaded && !showPlaceholder) return null;
-
-  const statusBoxScore = (
-    <>
-      {gameStatus === 'upcoming' && <UpcomingGameBoxScore gameInfo={gameInfo} />}
-      {gameStatus === 'live' && <LiveGameBoxScore gameInfo={gameInfo} />}
-      {gameStatus === 'ended' && <EndedGameBoxScore gameInfo={gameInfo} />}
-    </>
-  );
-
-  return (
-    <View>
-      {!teamsLoaded && (
-        <View pointerEvents="none" style={{ opacity: 0 }}>
-          {statusBoxScore}
-        </View>
-      )}
-      {teamsLoaded && <Animated.View entering={DEFAULT_MOUNT_ANIMATIONS.entering}>{statusBoxScore}</Animated.View>}
-    </View>
-  );
-});
-
-const UpcomingGameBoxScore = memo(function UpcomingGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
-  const { teams } = gameInfo;
-
-  const teamA = teams?.[0];
-  const teamB = teams?.[1];
-
-  const startTimeParts = gameInfo.startTime
-    ? formatTimestampParts(toUnixTime(gameInfo.startTime), { case: 'uppercase', prefixSingleDigitsWithZero: false })
-    : undefined;
-
-  return (
-    <Box flexDirection="row" alignItems="center" height={80} justifyContent="center" gap={22}>
-      <Box gap={12} alignItems="center" width={120}>
-        {teamA && <TeamLogo team={teamA} size={32} borderRadius={8} />}
-        <Text size="17pt" weight="bold" color="label" align="center">
-          {teamA?.alias ?? teamA?.name}
-        </Text>
-      </Box>
-      {startTimeParts ? (
-        <Box gap={12} alignItems="center">
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {startTimeParts.date}
-          </Text>
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {startTimeParts.time}
-          </Text>
-        </Box>
-      ) : (
-        <Text size="15pt" weight="bold" color="labelQuaternary">
-          {i18n.t(i18n.l.predictions.sports.vs).toUpperCase()}
-        </Text>
-      )}
-      <Box gap={12} alignItems="center" width={120}>
-        {teamB && <TeamLogo team={teamB} size={32} borderRadius={8} />}
-        <Text size="17pt" weight="bold" color="label" align="center">
-          {teamB?.alias ?? teamB?.name}
-        </Text>
-      </Box>
-    </Box>
-  );
-});
-
-const LiveGameBoxScore = memo(function LiveGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
-  const { score, period, elapsed } = gameInfo;
-  const { periodTitle } = getGameBoxScore({ score, period, elapsed });
-
+export const GameBoxScore = memo(function GameBoxScore({ gameId }: { gameId: string }) {
   return (
     <Box gap={12}>
-      <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
-        <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
-          <Box width={8} height={8} backgroundColor={'#FF584D'} borderRadius={4} />
-          <TextShadow blur={14} shadowOpacity={0.5}>
-            <Text align="center" size="15pt" style={{ letterSpacing: 0.8 }} weight="heavy" color={{ custom: '#FF584D' }}>
-              {i18n.t(i18n.l.predictions.sports.live).toUpperCase()}
-            </Text>
-          </TextShadow>
-        </Box>
-        <Box
-          background="fillTertiary"
-          height={26}
-          paddingHorizontal={{ custom: 7 }}
-          borderWidth={THICKER_BORDER_WIDTH}
-          borderColor="separatorSecondary"
-          borderRadius={10}
-          justifyContent="center"
-        >
-          <Text align="right" size="15pt" weight="bold" color="labelTertiary">
-            {periodTitle}
-          </Text>
-        </Box>
+      <GameStatus gameId={gameId} />
+      <Box
+        gap={12}
+        backgroundColor={opacity(globalColors.white100, 0.02)}
+        borderRadius={24}
+        borderWidth={THICKER_BORDER_WIDTH}
+        borderColor="separatorSecondary"
+        paddingHorizontal="16px"
+        paddingVertical="12px"
+      >
+        <ParticipantScore gameId={gameId} index={0} />
+        <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
+        <ParticipantScore gameId={gameId} index={1} />
       </Box>
-      <TeamScores gameInfo={gameInfo} />
     </Box>
   );
 });
 
-const EndedGameBoxScore = memo(function EndedGameBoxScore({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
-  return <TeamScores gameInfo={gameInfo} />;
-});
+function GameStatus({ gameId }: { gameId: string }) {
+  const display = useSportsStore(state => {
+    const game = state.games[gameId];
+    return game
+      ? { status: game.status, interruption: game.interruption, period: game.period, clock: game.clock, startsAt: game.startsAt }
+      : undefined;
+  }, deepEqual);
+  if (!display) return null;
 
-const TeamScores = memo(function TeamScores({ gameInfo }: { gameInfo: PolymarketEventGameInfo }) {
-  const { score, elapsed, period, teams } = gameInfo;
-  const { teamAScore, teamBScore } = getGameBoxScore({ score, period, elapsed });
-
-  const teamA = teams?.[0];
-  const teamB = teams?.[1];
+  const interruption = INTERRUPTION_LABELS[display.interruption];
+  const label = interruption ?? STATUS_LABELS[display.status];
+  const live = display.status === Game_Status.STATUS_LIVE;
 
   return (
-    <Box
-      gap={12}
-      backgroundColor={opacity(globalColors.white100, 0.02)}
-      borderRadius={24}
-      borderWidth={THICKER_BORDER_WIDTH}
-      borderColor="separatorSecondary"
-      paddingHorizontal={'16px'}
-      paddingVertical={'12px'}
-    >
-      <Box flexDirection="row" alignItems="center" gap={10} height={28}>
-        {teamA && <TeamLogo team={teamA} size={24} borderRadius={4} />}
-        <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
-          {teamA?.name}
+    <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8}>
+      {live && !interruption && <Box width={8} height={8} background="red" borderRadius={4} />}
+      {label && (
+        <Text align="center" color={live && !interruption ? 'red' : 'labelTertiary'} size="15pt" weight="heavy">
+          {i18n.t(label)}
         </Text>
-        <Text size="17pt" weight="bold" color="label">
-          {teamAScore}
+      )}
+      {live && display.period && (
+        <Text color="labelTertiary" size="15pt" weight="bold">
+          {display.period}
         </Text>
-      </Box>
-      <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
-      <Box flexDirection="row" alignItems="center" gap={10} height={28}>
-        {teamB && <TeamLogo team={teamB} size={24} borderRadius={4} />}
-        <Text size="17pt" weight="bold" color="label" style={{ flex: 1 }}>
-          {teamB?.name}
+      )}
+      {live && display.clock && (
+        <Text color="labelTertiary" size="15pt" weight="bold" tabularNumbers>
+          {display.clock}
         </Text>
-        <Text size="17pt" weight="bold" color="label">
-          {teamBScore}
+      )}
+      {display.status === Game_Status.STATUS_SCHEDULED && display.startsAt && (
+        <Text color="labelQuaternary" size="15pt" weight="bold">
+          {formatTimestamp(toUnixTime(display.startsAt))}
         </Text>
-      </Box>
+      )}
     </Box>
   );
-});
-
-function getGameStatus(gameInfo: PolymarketEventGameInfo) {
-  const { live, ended } = gameInfo;
-  if (live) return 'live';
-  if (ended) return 'ended';
-  return 'upcoming';
 }
 
-function getGameBoxScore({ score, period, elapsed }: { score: string; period: string; elapsed?: string }) {
-  const parsedScore = parseScore(score);
-  const { currentPeriod } = parsePeriod(period);
-  let periodTitle = `${currentPeriod} ${elapsed ? `· ${elapsed}` : ''}`;
+function ParticipantScore({ gameId, index }: { gameId: string; index: 0 | 1 }) {
+  const participant = useSportsStore(state => {
+    const value = state.games[gameId]?.participants[index];
+    return value ? { name: value.name, imageUrl: value.imageUrl } : undefined;
+  }, deepEqual);
+  if (!participant) return null;
 
-  if ('bestOf' in parsedScore && parsedScore.bestOf !== undefined) {
-    periodTitle = i18n.t(i18n.l.predictions.sports.game_best_of, { currentPeriod, bestOf: String(parsedScore.bestOf) });
-  }
-
-  return {
-    teamAScore: parsedScore.teamAScore,
-    teamBScore: parsedScore.teamBScore,
-    periodTitle,
-  };
+  return (
+    <Box flexDirection="row" alignItems="center" gap={10} style={{ minHeight: 28 }}>
+      <SportsImage imageUrl={participant.imageUrl} name={participant.name} size={24} />
+      <Text color="label" size="17pt" weight="bold" numberOfLines={2} style={{ flex: 1 }}>
+        {participant.name}
+      </Text>
+      <GameScore gameId={gameId} participantIndex={index} />
+    </Box>
+  );
 }
+
+const STATUS_LABELS: Partial<Record<Game_Status, string>> = {
+  [Game_Status.STATUS_LIVE]: i18n.l.sports.live,
+  [Game_Status.STATUS_ENDED]: i18n.l.sports.final,
+  [Game_Status.STATUS_CANCELLED]: i18n.l.sports.cancelled,
+  [Game_Status.STATUS_POSTPONED]: i18n.l.sports.postponed,
+};
+
+const INTERRUPTION_LABELS: Partial<Record<Game_Interruption, string>> = {
+  [Game_Interruption.INTERRUPTION_DELAYED]: i18n.l.sports.delayed,
+  [Game_Interruption.INTERRUPTION_SUSPENDED]: i18n.l.sports.suspended,
+};
