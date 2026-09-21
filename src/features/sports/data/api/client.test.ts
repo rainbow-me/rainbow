@@ -5,14 +5,42 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { sportsClient } from './client';
 
 jest.mock('@/resources/platform/client', () => ({ getPlatformClient: jest.fn() }));
+jest.mock('@/config/debug', () => ({
+  get sportsApiBaseUrl() {
+    return mockSportsApiBaseUrl;
+  },
+}));
 
+const originalDev = __DEV__;
+let mockSportsApiBaseUrl = '';
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 beforeEach(() => {
+  Object.assign(global, { __DEV__: true });
+  mockSportsApiBaseUrl = '';
   mockFetch.mockReset();
   mockFetch.mockImplementation(async () => new Response('{}', { headers: { 'Content-Type': 'application/json' } }));
-  jest.mocked(getPlatformClient).mockReturnValue(new RainbowFetchClient({ baseURL: 'https://platform.test/v1' }));
+  jest
+    .mocked(getPlatformClient)
+    .mockReturnValue(new RainbowFetchClient({ baseURL: 'https://platform.test/v1', headers: { Authorization: 'Bearer test-key' } }));
+});
+
+afterEach(() => {
+  Object.assign(global, { __DEV__: originalDev });
+});
+
+test('uses the local Sports URL only in Debug and retains platform authentication', async () => {
+  mockSportsApiBaseUrl = 'http://127.0.0.1:8082';
+  const controller = new AbortController();
+  await sportsClient.getCatalog(controller);
+  expect(mockFetch.mock.calls[0][0]).toBe('http://127.0.0.1:8082/v1/sports/catalog');
+  expect(mockFetch.mock.calls[0][1]).toMatchObject({ headers: { Authorization: 'Bearer test-key' }, signal: controller.signal });
+  expect(getPlatformClient().baseURL).toBe('https://platform.test/v1');
+
+  Object.assign(global, { __DEV__: false });
+  await sportsClient.getCatalog(null);
+  expect(mockFetch.mock.calls[1][0]).toBe('https://platform.test/v1/sports/catalog');
 });
 
 test('uses the five Sports routes and preserves query values and cancellation', async () => {
