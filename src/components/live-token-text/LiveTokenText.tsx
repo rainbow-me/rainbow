@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { useListen } from '@storesjs/stores';
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import usePrevious from '@/hooks/usePrevious';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/RouteContext';
-import { useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
@@ -27,41 +27,26 @@ export function useLiveTokenSharedValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): SharedValue<string> {
-  const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
   const setSubscribedTokens = useLiveTokenSubscription(routeName);
-  const liveValue = useSharedValue(initialValue);
-  // prevValue and liveValue will always be equal, but there is a cost to reading shared values
-  const prevValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      liveValue.value = initialValue;
-      prevValue.current = initialValue;
-    }
-  }, [initialValue, liveValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) >= initialValueLastUpdated && newValue !== prevValue.current) {
-        liveValue.value = newValue;
-        prevValue.current = newValue;
-      }
+  const selectValue = useCallback(
+    ({ tokens }: { tokens: LiveTokensData }) => getTokenValue(tokens[tokenId], initialValue, initialValueLastUpdated, selector),
+    [initialValue, initialValueLastUpdated, selector, tokenId]
+  );
+  const initial = useStableValue(() => selectValue(useLiveTokensStore.getState()));
+  const liveValue = useSharedValue(initial);
+  const updateValue = useCallback(
+    (value: string) => {
+      liveValue.value = value;
     },
-    [initialValueLastUpdated, liveValue, selector]
+    [liveValue]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
+  useListen(useLiveTokensStore, selectValue, updateValue);
 
-  // Immediately update value when selector changes
-  useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
+  useLayoutEffect(() => {
+    updateValue(selectValue(useLiveTokensStore.getState()));
+  }, [selectValue, updateValue]);
 
   useEffect(() => {
     setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
@@ -77,47 +62,24 @@ export function useLiveTokenValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): string {
-  const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
   const setSubscribedTokens = useLiveTokenSubscription(routeName);
-  const [liveValue, setLiveValue] = useState(initialValue);
-  // prevLiveValue and liveValue will always be equal, but state is async
-  const prevLiveValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      setLiveValue(initialValue);
-      prevLiveValue.current = initialValue;
-    }
-  }, [initialValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
-        setLiveValue(newValue);
-        prevLiveValue.current = newValue;
-      }
-    },
-    [initialValueLastUpdated, selector]
-  );
-
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
-
-  // Immediately update value when selector changes
-  useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
+  const liveValue = useLiveTokensStore(state => getTokenValue(state.tokens[tokenId], initialValue, initialValueLastUpdated, selector));
 
   useEffect(() => {
     setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
   }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
 
   return liveValue;
+}
+
+function getTokenValue(
+  token: TokenData | undefined,
+  initialValue: string,
+  initialValueLastUpdated: number,
+  selector: LiveTokenValueParams['selector']
+): string {
+  return token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
