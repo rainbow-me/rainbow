@@ -19,6 +19,8 @@ export default function useAppState() {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', onChange);
+    // A native transition may occur between the initial render and subscription.
+    setAppState(AppState.currentState);
     return () => subscription.remove();
   }, []);
 
