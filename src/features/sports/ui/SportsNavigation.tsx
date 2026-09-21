@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { deepEqual } from '@storesjs/stores';
@@ -11,7 +11,13 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { opacity } from '@/design-system/utils/opacity';
-import { findScope, type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
+import {
+  findScope,
+  getSportsNavigationRoot,
+  getSportsParentDestination,
+  type SportsDestination,
+  type SportsHost,
+} from '@/features/sports/core/browse';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
@@ -20,13 +26,18 @@ import * as i18n from '@/languages';
 
 export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsHost }) {
   const { isDarkMode } = useColorMode();
-  const { catalog, destination } = useSportsStore(
-    state => ({ catalog: state.catalog, destination: state.hosts[host].request.destination }),
+  const { catalog, destination, navigationRoot } = useSportsStore(
+    state => ({
+      catalog: state.catalog,
+      destination: state.hosts[host].request.destination,
+      navigationRoot: state.hosts[host].navigationRoot,
+    }),
     deepEqual
   );
   const red = useForegroundColor('red');
   const scope = destination.type === 'scope' ? findScope(catalog, destination.scopeId) : undefined;
   const parent = scope && catalog?.sports.find(sport => sport.competitions.some(competition => competition.id === scope.id));
+  const back = getSportsParentDestination(catalog, destination, navigationRoot);
   const title =
     destination.type === 'live'
       ? i18n.t(i18n.l.sports.live)
@@ -35,7 +46,22 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
         : (scope?.name ?? i18n.t(i18n.l.sports.title));
 
   return (
-    <View style={styles.header} accessibilityRole="header">
+    <View style={[styles.header, back && styles.nestedHeader]} accessibilityRole="header">
+      {back && (
+        <View
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel={i18n.t(i18n.l.button.go_back)}
+          onAccessibilityTap={() => sportsActions.goBack(host)}
+          style={styles.back}
+        >
+          <ButtonPressAnimation onPress={() => sportsActions.goBack(host)} scaleTo={0.8} style={styles.backButton}>
+            <TextIcon color="label" size="icon 16px" weight="heavy" containerSize={20}>
+              {'􀆉'}
+            </TextIcon>
+          </ButtonPressAnimation>
+        </View>
+      )}
       {scope ? (
         <SportsBadge scope={scope} size={44} />
       ) : destination.type === 'live' ? (
@@ -58,10 +84,10 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
 });
 
 export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { host: SportsHost; bottom: number }) {
-  const { catalog, destination, searching } = useSportsStore(
+  const { catalog, navigationRoot, searching } = useSportsStore(
     state => ({
       catalog: state.catalog,
-      destination: state.hosts[host].request.destination,
+      navigationRoot: state.hosts[host].navigationRoot,
       searching: state.hosts[host].request.query !== null,
     }),
     deepEqual
@@ -70,13 +96,14 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
   const { width } = useDimensions();
   const scroll = useRef<ScrollView>(null);
   const scrollOffset = useRef(0);
+  const contentWidth = useRef(0);
   const positions = useRef(new Map<string, { x: number; width: number }>());
+  const [edges, setEdges] = useState({ left: false, right: false });
   const railWidth = width - 94;
-  const selectedKey = destinationKey(destination);
+  const selectedKey = destinationKey(getSportsNavigationRoot(catalog, navigationRoot));
   const scopeIds = catalog?.prominentScopeIds ?? [];
-  const selectedScope = destination.type === 'scope' && !scopeIds.includes(destination.scopeId) ? destination.scopeId : undefined;
   const items: { destination: SportsDestination; label: string }[] = [{ destination: { type: 'live' }, label: i18n.t(i18n.l.sports.live) }];
-  for (const scopeId of selectedScope ? [selectedScope, ...scopeIds] : scopeIds) {
+  for (const scopeId of scopeIds) {
     const scope = findScope(catalog, scopeId);
     if (scope) items.push({ destination: { type: 'scope', scopeId }, label: scope.name });
   }
@@ -86,17 +113,25 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
     (animated: boolean) => {
       const position = positions.current.get(selectedKey);
       if (!position) return;
-      const minOffset = position.x + position.width - railWidth + FADE_WIDTH;
-      const maxOffset = position.x - RAIL_PADDING;
-      const x = Math.max(0, Math.min(maxOffset, Math.max(minOffset, scrollOffset.current)));
+      const maxOffset = Math.max(0, contentWidth.current - railWidth);
+      const x = Math.max(0, Math.min(maxOffset, position.x - (railWidth - position.width) / 2));
       if (x !== scrollOffset.current) scroll.current?.scrollTo({ x, animated });
     },
     [railWidth, selectedKey]
   );
+  const updateEdges = useCallback(
+    (x: number) => {
+      scrollOffset.current = x;
+      const left = x > 1;
+      const right = contentWidth.current - railWidth - x > 1;
+      setEdges(previous => (previous.left === left && previous.right === right ? previous : { left, right }));
+    },
+    [railWidth]
+  );
   useEffect(() => {
-    if (searching) scrollOffset.current = 0;
-    else revealSelected(true);
-  }, [revealSelected, searching]);
+    updateEdges(searching ? 0 : scrollOffset.current);
+    if (!searching) revealSelected(true);
+  }, [revealSelected, searching, updateEdges]);
 
   if (searching) return null;
   return (
@@ -107,9 +142,12 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.items}
-          onScroll={({ nativeEvent }) => {
-            scrollOffset.current = nativeEvent.contentOffset.x;
+          onContentSizeChange={width => {
+            contentWidth.current = width;
+            updateEdges(scrollOffset.current);
+            revealSelected(false);
           }}
+          onScroll={({ nativeEvent }) => updateEdges(nativeEvent.contentOffset.x)}
           scrollEventThrottle={16}
         >
           {items.map(item => {
@@ -138,14 +176,26 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
             );
           })}
         </ScrollView>
-        <LinearGradient
-          colors={isDarkMode ? ['rgba(13,13,13,0)', 'rgba(13,13,13,0.92)'] : ['rgba(255,255,255,0)', '#FFFFFF']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          locations={[0, 0.644]}
-          pointerEvents="none"
-          style={styles.fade}
-        />
+        {edges.left && (
+          <LinearGradient
+            colors={isDarkMode ? ['rgba(13,13,13,0.92)', 'rgba(13,13,13,0)'] : ['#FFFFFF', 'rgba(255,255,255,0)']}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            locations={[0.356, 1]}
+            pointerEvents="none"
+            style={[styles.fade, styles.leftFade]}
+          />
+        )}
+        {edges.right && (
+          <LinearGradient
+            colors={isDarkMode ? ['rgba(13,13,13,0)', 'rgba(13,13,13,0.92)'] : ['rgba(255,255,255,0)', '#FFFFFF']}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            locations={[0, 0.644]}
+            pointerEvents="none"
+            style={[styles.fade, styles.rightFade]}
+          />
+        )}
       </ScopeSurface>
       <View
         accessible
@@ -205,12 +255,17 @@ const FADE_WIDTH = 67;
 
 const styles = StyleSheet.create({
   header: { minHeight: 44, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  nestedHeader: { paddingLeft: 48 },
+  back: { position: 'absolute', left: 4, top: 0 },
+  backButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   headerText: { flex: 1, gap: 10 },
   liveRing: { width: 28, height: 28, borderRadius: 14, borderWidth: 6, alignItems: 'center', justifyContent: 'center' },
   liveDot: { width: 8, height: 8, borderRadius: 4 },
   bar: { position: 'absolute', left: 20, right: 20, height: 46, flexDirection: 'row', gap: 8 },
-  items: { alignItems: 'center', paddingLeft: RAIL_PADDING, paddingRight: FADE_WIDTH, gap: 16 },
+  items: { alignItems: 'center', paddingHorizontal: RAIL_PADDING, gap: 16 },
   scopeButton: { height: 46, justifyContent: 'center' },
-  fade: { position: 'absolute', right: 0, top: 0, bottom: 0, width: FADE_WIDTH },
+  fade: { position: 'absolute', top: 0, bottom: 0, width: FADE_WIDTH },
+  leftFade: { left: 0 },
+  rightFade: { right: 0 },
   searchButton: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

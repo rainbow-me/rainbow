@@ -218,7 +218,7 @@ export function SportsBrowse({
         }
         ListFooterComponent={
           <>
-            {view.query === null && <SportsDirectory host={host} />}
+            {view.query === null && <SportsDirectory host={host} showHeading={view.sections.length > 0} />}
             <SportsReadStatus host={host} />
           </>
         }
