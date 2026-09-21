@@ -1,11 +1,23 @@
-import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { memo, useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 
+import MaskedView from '@react-native-masked-view/masked-view';
 import { deepEqual } from '@storesjs/stores';
-import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
+import Animated, {
+  interpolate,
+  runOnUI,
+  scrollTo,
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Text } from '@/design-system/components/Text/Text';
@@ -94,11 +106,10 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
   );
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
-  const scroll = useRef<ScrollView>(null);
-  const scrollOffset = useRef(0);
-  const contentWidth = useRef(0);
+  const scroll = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useSharedValue(0);
+  const contentWidth = useSharedValue(0);
   const positions = useRef(new Map<string, { x: number; width: number }>());
-  const [edges, setEdges] = useState({ left: false, right: false });
   const railWidth = width - 94;
   const selectedKey = destinationKey(getSportsNavigationRoot(catalog, navigationRoot));
   const scopeIds = catalog?.prominentScopeIds ?? [];
@@ -113,89 +124,72 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
     (animated: boolean) => {
       const position = positions.current.get(selectedKey);
       if (!position) return;
-      const maxOffset = Math.max(0, contentWidth.current - railWidth);
-      const x = Math.max(0, Math.min(maxOffset, position.x - (railWidth - position.width) / 2));
-      if (x !== scrollOffset.current) scroll.current?.scrollTo({ x, animated });
+      runOnUI((itemX: number, itemWidth: number, animated: boolean) => {
+        const maxOffset = Math.max(0, contentWidth.value - railWidth);
+        const x = Math.max(0, Math.min(maxOffset, itemX - (railWidth - itemWidth) / 2));
+        if (x !== scrollOffset.value) scrollTo(scroll, x, 0, animated);
+      })(position.x, position.width, animated);
     },
-    [railWidth, selectedKey]
+    [contentWidth, railWidth, scroll, scrollOffset, selectedKey]
   );
-  const updateEdges = useCallback(
-    (x: number) => {
-      scrollOffset.current = x;
-      const left = x > 1;
-      const right = contentWidth.current - railWidth - x > 1;
-      setEdges(previous => (previous.left === left && previous.right === right ? previous : { left, right }));
+  const onScroll = useAnimatedScrollHandler({
+    onScroll: event => {
+      scrollOffset.value = event.contentOffset.x;
     },
-    [railWidth]
-  );
+  });
   useEffect(() => {
-    updateEdges(searching ? 0 : scrollOffset.current);
-    if (!searching) revealSelected(true);
-  }, [revealSelected, searching, updateEdges]);
+    if (searching) scrollOffset.value = 0;
+    else revealSelected(true);
+  }, [revealSelected, scrollOffset, searching]);
 
   if (searching) return null;
   return (
     <View style={[styles.bar, { bottom }]} pointerEvents="box-none">
       <ScopeSurface width={railWidth}>
-        <ScrollView
-          ref={scroll}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.items}
-          onContentSizeChange={width => {
-            contentWidth.current = width;
-            updateEdges(scrollOffset.current);
-            revealSelected(false);
-          }}
-          onScroll={({ nativeEvent }) => updateEdges(nativeEvent.contentOffset.x)}
-          scrollEventThrottle={16}
+        <MaskedView
+          androidRenderingMode="software"
+          style={styles.scrollMask}
+          maskElement={<ScopeFadeMask contentWidth={contentWidth} scrollOffset={scrollOffset} width={railWidth} />}
         >
-          {items.map(item => {
-            const key = destinationKey(item.destination);
-            const selected = key === selectedKey;
-            const select = () => sportsActions.selectDestination(host, item.destination);
-            return (
-              <View
-                key={key}
-                accessible
-                accessibilityRole="tab"
-                accessibilityLabel={item.label}
-                accessibilityState={{ selected }}
-                onAccessibilityTap={select}
-                onLayout={({ nativeEvent: { layout } }) => {
-                  positions.current.set(key, { x: layout.x, width: layout.width });
-                  if (selected) revealSelected(false);
-                }}
-              >
-                <ButtonPressAnimation onPress={select} scaleTo={0.94} style={styles.scopeButton}>
-                  <Text color="label" size="20pt" weight="heavy" style={!selected && { opacity: isDarkMode ? 0.4 : 0.3 }}>
-                    {item.label}
-                  </Text>
-                </ButtonPressAnimation>
-              </View>
-            );
-          })}
-        </ScrollView>
-        {edges.left && (
-          <LinearGradient
-            colors={isDarkMode ? ['rgba(13,13,13,0.92)', 'rgba(13,13,13,0)'] : ['#FFFFFF', 'rgba(255,255,255,0)']}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            locations={[0.356, 1]}
-            pointerEvents="none"
-            style={[styles.fade, styles.leftFade]}
-          />
-        )}
-        {edges.right && (
-          <LinearGradient
-            colors={isDarkMode ? ['rgba(13,13,13,0)', 'rgba(13,13,13,0.92)'] : ['rgba(255,255,255,0)', '#FFFFFF']}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            locations={[0, 0.644]}
-            pointerEvents="none"
-            style={[styles.fade, styles.rightFade]}
-          />
-        )}
+          <Animated.ScrollView
+            ref={scroll}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.items}
+            onContentSizeChange={width => {
+              contentWidth.value = width;
+              revealSelected(false);
+            }}
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+          >
+            {items.map(item => {
+              const key = destinationKey(item.destination);
+              const selected = key === selectedKey;
+              const select = () => sportsActions.selectDestination(host, item.destination);
+              return (
+                <View
+                  key={key}
+                  accessible
+                  accessibilityRole="tab"
+                  accessibilityLabel={item.label}
+                  accessibilityState={{ selected }}
+                  onAccessibilityTap={select}
+                  onLayout={({ nativeEvent: { layout } }) => {
+                    positions.current.set(key, { x: layout.x, width: layout.width });
+                    if (selected) revealSelected(false);
+                  }}
+                >
+                  <ButtonPressAnimation onPress={select} scaleTo={0.94} style={styles.scopeButton}>
+                    <Text color="label" size="20pt" weight="heavy" style={!selected && { opacity: isDarkMode ? 0.4 : 0.3 }}>
+                      {item.label}
+                    </Text>
+                  </ButtonPressAnimation>
+                </View>
+              );
+            })}
+          </Animated.ScrollView>
+        </MaskedView>
       </ScopeSurface>
       <View
         accessible
@@ -216,6 +210,52 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
     </View>
   );
 });
+
+function ScopeFadeMask({
+  contentWidth,
+  scrollOffset,
+  width,
+}: {
+  contentWidth: SharedValue<number>;
+  scrollOffset: SharedValue<number>;
+  width: number;
+}) {
+  const leftCover = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollOffset.value, [0, DEFAULT_SCROLL_FADE_DISTANCE], [1, 0], 'clamp'),
+  }));
+  const rightCover = useAnimatedStyle(() => ({
+    opacity: interpolate(contentWidth.value - width - scrollOffset.value, [0, DEFAULT_SCROLL_FADE_DISTANCE], [1, 0], 'clamp'),
+  }));
+  return (
+    <View style={styles.mask}>
+      <View style={styles.maskEdge}>
+        <EasingGradient
+          startColor="#000000"
+          endColor="#000000"
+          startOpacity={0}
+          endOpacity={1}
+          startPosition="left"
+          endPosition="right"
+          style={[StyleSheet.absoluteFill, { left: FADE_EDGE_INSET }]}
+        />
+        <Animated.View style={[styles.maskCover, leftCover]} />
+      </View>
+      <View style={styles.maskCenter} />
+      <View style={styles.maskEdge}>
+        <EasingGradient
+          startColor="#000000"
+          endColor="#000000"
+          startOpacity={1}
+          endOpacity={0}
+          startPosition="left"
+          endPosition="right"
+          style={[StyleSheet.absoluteFill, { right: FADE_EDGE_INSET }]}
+        />
+        <Animated.View style={[styles.maskCover, rightCover]} />
+      </View>
+    </View>
+  );
+}
 
 function ScopeSurface({ children, width }: { children: ReactNode; width: number }) {
   const { isDarkMode } = useColorMode();
@@ -252,6 +292,7 @@ const LIGHT_SHADOWS = [
 const INNER_SHADOW = { color: 'rgba(255,255,255,0.15)', blur: 19.5, dx: 0, dy: 0 };
 const RAIL_PADDING = 16;
 const FADE_WIDTH = 67;
+const FADE_EDGE_INSET = 24;
 
 const styles = StyleSheet.create({
   header: { minHeight: 44, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
@@ -264,8 +305,10 @@ const styles = StyleSheet.create({
   bar: { position: 'absolute', left: 20, right: 20, height: 46, flexDirection: 'row', gap: 8 },
   items: { alignItems: 'center', paddingHorizontal: RAIL_PADDING, gap: 16 },
   scopeButton: { height: 46, justifyContent: 'center' },
-  fade: { position: 'absolute', top: 0, bottom: 0, width: FADE_WIDTH },
-  leftFade: { left: 0 },
-  rightFade: { right: 0 },
+  scrollMask: { flex: 1 },
+  mask: { flex: 1, flexDirection: 'row' },
+  maskEdge: { width: FADE_WIDTH },
+  maskCenter: { flex: 1, backgroundColor: '#000000' },
+  maskCover: { ...StyleSheet.absoluteFillObject, backgroundColor: '#000000' },
   searchButton: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
