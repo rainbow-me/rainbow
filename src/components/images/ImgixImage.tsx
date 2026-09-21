@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { PixelRatio, Platform, StyleSheet } from 'react-native';
+import { Image, PixelRatio, Platform, StyleSheet } from 'react-native';
 
 import { FasterImageView, type ImageOptions } from '@candlefinance/faster-image';
 import FastImage, { type FastImageProps, type Source } from 'react-native-fast-image';
+import VersionNumber from 'react-native-version-number';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -40,7 +41,15 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
 
     if (shouldUseFasterImage) {
       const fasterImageStyle = StyleSheet.flatten(props.style);
-      const signedUrl = props.source && typeof props.source === 'object' ? maybeSignSource(props.source, options)?.uri : props.source;
+      let url: string | undefined;
+      if (typeof props.source === 'number') {
+        url = Image.resolveAssetSource(props.source).uri;
+        if (Platform.OS === 'android' && !url.includes(':')) {
+          url = `android.resource://${VersionNumber.bundleIdentifier}/drawable/${url}`;
+        }
+      } else {
+        url = props.source && maybeSignSource(props.source, options)?.uri;
+      }
 
       return {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
@@ -50,7 +59,7 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
             : fasterImageStyle.borderRadius * PIXEL_RATIO,
         resizeMode: props.resizeMode && props.resizeMode !== 'stretch' ? props.resizeMode : DEFAULT_FASTER_IMAGE_CONFIG.resizeMode,
         ...props.fasterImageConfig,
-        url: signedUrl,
+        url,
       };
     } else {
       return props.source && typeof props.source === 'object' ? maybeSignSource(props.source, options) : props.source;
