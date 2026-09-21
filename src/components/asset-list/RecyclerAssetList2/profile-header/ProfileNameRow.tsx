@@ -10,7 +10,7 @@ import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -81,11 +81,11 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   // Spacings
 
   const { width: deviceWidth } = useDimensions();
-  const kingOfTheHillEnabled = useShowKingOfTheHill();
+  const sportsEnabled = useSportsEnabled();
 
-  const EXTRA_KOTH_WIDTH = kingOfTheHillEnabled && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
+  const activityButtonWidth = sportsEnabled && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
 
-  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP - EXTRA_KOTH_WIDTH;
+  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP - activityButtonWidth;
 
   return (
     <Box

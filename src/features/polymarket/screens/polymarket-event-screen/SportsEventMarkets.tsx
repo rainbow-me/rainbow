@@ -15,7 +15,6 @@ import {
   type LineBasedGroup,
   type MoneylineGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
-import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
@@ -24,10 +23,9 @@ import useDimensions from '@/hooks/useDimensions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-export const SportsEventMarkets = memo(function SportsEventMarkets() {
+export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { event: PolymarketEvent | null }) {
   const { isDarkMode } = useColorMode();
   const { width, height } = useDimensions();
-  const event = usePolymarketEventStore(state => state.getData());
   const groupedMarkets = event ? getMarketsGroupedByBetType(event) : null;
 
   const availableBetTypes = useMemo(() => {
@@ -41,6 +39,7 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
   }, [groupedMarkets]);
 
   const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes[0] ?? BET_TYPE.MONEYLINE);
+  const effectiveBetType = availableBetTypes.includes(selectedBetType) ? selectedBetType : availableBetTypes[0];
 
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
@@ -57,10 +56,10 @@ export const SportsEventMarkets = memo(function SportsEventMarkets() {
           color={isDarkMode ? '#FFFFFF' : '#000000'}
           containerWidth={width - 2 * 24}
           onSelectBetType={setSelectedBetType}
-          selectedBetType={selectedBetType}
+          selectedBetType={effectiveBetType}
         />
       )}
-      <Markets markets={groupedMarkets} selectedBetType={selectedBetType} teams={event.teams} event={event} />
+      {effectiveBetType && <Markets markets={groupedMarkets} selectedBetType={effectiveBetType} teams={event.teams} event={event} />}
     </Box>
   );
 });

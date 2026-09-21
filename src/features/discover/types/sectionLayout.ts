@@ -1,5 +1,7 @@
 import { type ReactNode } from 'react';
 
+import { type SharedValue } from 'react-native-reanimated';
+
 import { type MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
@@ -59,3 +61,5 @@ export type SectionLayoutProps<T extends PlacementItem> = {
   section: SurfaceLeaf;
   surfaceId: SurfaceId;
 };
+
+export type DiscoverViewport = SharedValue<{ top: number; bottom: number }>;

@@ -96,6 +96,12 @@ export function navigate<RouteName extends Route>(...args: NavigateArgs<RouteNam
   dispatchAction(CommonActions.navigate({ name: routeName, params }), routeName, params);
 }
 
+/** Opens a route while its caller is current; drops the action during sheet dismissal. */
+export function navigateIfCurrent<RouteName extends Route>(isCurrent: () => boolean, ...args: NavigateArgs<RouteName>): void {
+  if (sheetCoordinator.isClosing || !isCurrent()) return;
+  navigate(...args);
+}
+
 /**
  * Replaces the current screen in the stack.
  */
@@ -286,6 +292,7 @@ export default {
   getState,
   goBack,
   handleAction: navigate,
+  navigateIfCurrent,
   replace,
   setParams,
   setNavigationRef,

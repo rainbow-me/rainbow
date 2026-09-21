@@ -2,7 +2,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { debounce } from 'lodash';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
 
@@ -18,13 +17,12 @@ import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
-import { useStableValue } from '@/hooks/useStableValue';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
@@ -67,6 +65,7 @@ function extractTokenRowIds(items: CellTypes[]) {
 function WalletScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute();
+  const setSubscribedTokens = useLiveTokenSubscription(route.name);
 
   const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
 
@@ -83,39 +82,9 @@ function WalletScreen() {
     });
   }, []);
 
-  // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
-  const debouncedAddSubscribedTokens = useStableValue(() =>
-    debounce((viewableItems, routeName) => {
-      const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
-      if (viewableTokenUniqueIds.length > 0) {
-        addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
-        // Immediately force a fetch of the newly added tokens
-        useLiveTokensStore.getState().fetch(undefined, {
-          force: true,
-        });
-      }
-    }, 250)
-  );
-
   const handleViewableItemsChanged = useCallback(
-    ({
-      viewableItems,
-      viewableItemsRemoved,
-    }: {
-      viewableItems: CellTypes[];
-      viewableItemsAdded: CellTypes[];
-      viewableItemsRemoved: CellTypes[];
-    }) => {
-      const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
-
-      // removal cannot be debounced
-      if (viewableTokenUniqueIdsRemoved.length > 0) {
-        removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
-      }
-
-      debouncedAddSubscribedTokens(viewableItems, route.name);
-    },
-    [route.name, debouncedAddSubscribedTokens]
+    ({ viewableItems }: { viewableItems: CellTypes[] }) => setSubscribedTokens(extractTokenRowIds(viewableItems)),
+    [setSubscribedTokens]
   );
 
   return (

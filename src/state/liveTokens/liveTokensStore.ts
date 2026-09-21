@@ -36,11 +36,9 @@ function isEthVariant(tokenId: string) {
   return userAsset && (userAsset.mainnetAddress === ETH_ADDRESS || userAsset.mainnetAddress === WETH_ADDRESS);
 }
 
-// route -> token id -> subscription count
-type TokenSubscriptionCountByRoute = {
-  [route in Route]?: {
-    [tokenId: string]: number | undefined;
-  };
+type TokenSubscription = {
+  route: Route;
+  tokenIds: string[];
 };
 
 type LiveTokensResponse = {
@@ -54,41 +52,20 @@ type LiveTokensResponse = {
 };
 
 type LiveTokensParams = {
-  subscribedTokensByRoute: TokenSubscriptionCountByRoute;
-  activeRoute: Route;
+  tokenIds: string[];
   currency: SupportedCurrencyKey;
 };
 
-type UpdateSubscribedTokensParams = {
-  route: Route;
-  tokenIds: string[];
-};
-
-type LiveTokenStoreState = {
-  subscribedTokensByRoute: TokenSubscriptionCountByRoute;
+type LiveTokensStore = {
+  subscriptions: Map<symbol, TokenSubscription>;
   tokens: LiveTokensData;
-};
-
-type LiveTokenStoreActions = {
-  removeSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
-  addSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
+  setSubscription: (owner: symbol, route: Route, tokenIds: string[]) => void;
+  removeSubscription: (owner: symbol) => void;
   clear: () => void;
 };
 
-type LiveTokensStore = LiveTokenStoreState & LiveTokenStoreActions;
-
-const initialState: LiveTokenStoreState = {
-  subscribedTokensByRoute: {},
-  tokens: {},
-};
-
-const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
-  const tokenIds = Object.keys(subscribedTokensByRoute[activeRoute] || {}).map(tokenId => {
-    if (tokenId.includes('_')) {
-      return convertLegacyTokenIdToTokenId(tokenId);
-    }
-    return tokenId;
-  });
+const fetchTokensData = async ({ tokenIds: subscribedTokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
+  const tokenIds = subscribedTokenIds.map(tokenId => (tokenId.includes('_') ? convertLegacyTokenIdToTokenId(tokenId) : tokenId));
 
   if (tokenIds.length === 0) {
     return null;
@@ -206,83 +183,51 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
     },
     paramChangeThrottle: time.ms(250),
     params: {
-      subscribedTokensByRoute: ($, store) => $(store).subscribedTokensByRoute,
-      activeRoute: $ => $(useNavigationStore).activeRoute,
+      tokenIds: ($, store) => {
+        const route = $(useNavigationStore).activeRoute;
+        const subscriptions = $(store).subscriptions;
+        const tokenIds = new Set<string>();
+        for (const subscription of subscriptions.values()) {
+          if (subscription.route === route) {
+            for (const tokenId of subscription.tokenIds) tokenIds.add(tokenId);
+          }
+        }
+        return Array.from(tokenIds).sort();
+      },
       currency: $ => $(userAssetsStoreManager).currency,
     },
   },
 
   set => ({
-    ...initialState,
-    addSubscribedTokens({ route, tokenIds }: UpdateSubscribedTokensParams) {
+    subscriptions: new Map(),
+    tokens: {},
+
+    setSubscription: (owner, route, tokenIds) =>
       set(state => {
-        const { subscribedTokensByRoute } = state;
-
-        // TODO: deduplicate tokenUniqueIds, remove tokens where we only need to fetch the mainnet price
-        let hasChanges = false;
-
-        if (!subscribedTokensByRoute[route]) {
-          subscribedTokensByRoute[route] = {};
+        const ids = Array.from(new Set(tokenIds)).sort();
+        const previous = state.subscriptions.get(owner);
+        if (!ids.length && !previous) return state;
+        if (previous?.route === route && ids.length === previous.tokenIds.length && ids.every((id, i) => id === previous.tokenIds[i])) {
+          return state;
         }
 
-        for (const tokenId of tokenIds) {
-          if (!subscribedTokensByRoute[route][tokenId]) {
-            subscribedTokensByRoute[route][tokenId] = (subscribedTokensByRoute[route][tokenId] ?? 0) + 1;
-            hasChanges = true;
-          }
-        }
+        const subscriptions = new Map(state.subscriptions);
+        if (ids.length) subscriptions.set(owner, { route, tokenIds: ids });
+        else subscriptions.delete(owner);
+        return { subscriptions };
+      }),
 
-        if (!hasChanges) return state;
-
-        return {
-          subscribedTokensByRoute,
-        };
-      });
-    },
-
-    removeSubscribedTokens({ route, tokenIds }: UpdateSubscribedTokensParams) {
+    removeSubscription: owner =>
       set(state => {
-        const { subscribedTokensByRoute } = state;
+        if (!state.subscriptions.has(owner)) return state;
+        const subscriptions = new Map(state.subscriptions);
+        subscriptions.delete(owner);
+        return { subscriptions };
+      }),
 
-        let hasChanges = false;
-        for (const tokenId of tokenIds) {
-          if (subscribedTokensByRoute[route]?.[tokenId]) {
-            subscribedTokensByRoute[route][tokenId] -= 1;
-            if (subscribedTokensByRoute[route][tokenId] === 0) {
-              delete subscribedTokensByRoute[route][tokenId];
-            }
-            hasChanges = true;
-          }
-        }
-
-        if (!hasChanges) return state;
-
-        // remove routes with no subscriptions
-        const routeSubscriptions = subscribedTokensByRoute[route];
-        if (!routeSubscriptions || Object.keys(routeSubscriptions).length === 0) {
-          delete subscribedTokensByRoute[route];
-        }
-
-        return {
-          subscribedTokensByRoute,
-        };
-      });
-    },
-
-    clear() {
-      set({ ...initialState });
-    },
+    clear: () => set({ subscriptions: new Map(), tokens: {} }),
   })
 );
-
-export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();
-
-export function addSubscribedToken({ route, tokenId }: { route: Route; tokenId: string }) {
-  addSubscribedTokens({ route, tokenIds: [tokenId] });
-}
-export function removeSubscribedToken({ route, tokenId }: { route: Route; tokenId: string }) {
-  removeSubscribedTokens({ route, tokenIds: [tokenId] });
-}
 
 export function getLiquidityCappedBalance({
   token,
