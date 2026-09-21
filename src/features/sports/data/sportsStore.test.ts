@@ -102,19 +102,35 @@ test('a replaced destination cannot receive the old response', async () => {
 test('exact child resolution shares Games without adding browse membership', async () => {
   sportsActions.setHostVisibility('main', true);
   await useSportsStore.getState().fetch(undefined, { force: true });
-  sportsActions.setExactConsumer(owner, ['unsupported', 'child', 'child'], true);
+  sportsActions.setExactConsumer(owner, ['unsupported', 'child', 'child'], ['child', 'unsupported']);
   await useSportsLookupStore.getState().fetch(undefined, { force: true });
   expect(sportsClient.lookupGames).toHaveBeenLastCalledWith({ eventIds: ['child', 'unsupported'] }, expect.any(AbortController));
   expect(useSportsStore.getState().eventGames).toEqual({ child: '1', unsupported: null });
   expect(useSportsStore.getState().hosts.main.result?.gameIds).toEqual(['1']);
   sportsActions.releaseHost('main');
   expect(useSportsStore.getState().games['1']).toBeDefined();
-  sportsActions.setExactConsumer(owner, ['child', 'unsupported'], false);
+  sportsActions.setExactConsumer(owner, ['child', 'unsupported'], []);
   expect(useSportsLookupStore.getState().enabled).toBe(false);
   expect(useSportsStore.getState().games['1']).toBeDefined();
   sportsActions.removeExactConsumer(owner);
   expect(useSportsStore.getState().games).toEqual({});
   expect(useSportsStore.getState().eventGames).toEqual({});
+});
+
+test('visible lookup changes retain every rendered card until its consumer releases it', async () => {
+  sportsActions.setExactConsumer(owner, ['child', 'unsupported'], ['child']);
+  await useSportsLookupStore.getState().fetch(undefined, { force: true });
+  const game = useSportsStore.getState().games['1'];
+  expect(game).toBeDefined();
+  sportsActions.setExactConsumer(owner, ['child', 'unsupported'], ['unsupported', 'retired']);
+  jest.mocked(sportsClient.lookupGames).mockResolvedValueOnce({ catalog, games: [], resolved: [], unavailableEventIds: ['unsupported'] });
+  await useSportsLookupStore.getState().fetch(undefined, { force: true });
+  expect(sportsClient.lookupGames).toHaveBeenLastCalledWith({ eventIds: ['unsupported'] }, expect.any(AbortController));
+  expect(useSportsStore.getState().eventGames.child).toBe('1');
+  expect(useSportsStore.getState().games['1']).toBe(game);
+  sportsActions.removeExactConsumer(owner);
+  expect(useSportsStore.getState().eventGames).toEqual({});
+  expect(useSportsStore.getState().games).toEqual({});
 });
 
 test('lookup completion after its consumer leaves cannot retain orphan Games', async () => {
@@ -125,7 +141,7 @@ test('lookup completion after its consumer leaves cannot retain orphan Games', a
         finish = resolve;
       })
   );
-  sportsActions.setExactConsumer(owner, ['child'], true);
+  sportsActions.setExactConsumer(owner, ['child'], ['child']);
   const read = useSportsLookupStore.getState().fetch(undefined, { force: true });
   sportsActions.removeExactConsumer(owner);
   finish({ catalog, games: [first], resolved: [{ eventId: 'child', gameId: '1' }], unavailableEventIds: [] });

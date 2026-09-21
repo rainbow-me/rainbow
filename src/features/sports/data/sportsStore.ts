@@ -38,7 +38,7 @@ type HostState = {
   result: SportsResult | null;
 };
 
-type ExactConsumer = { eventIds: string[]; visible: boolean };
+type ExactConsumer = { eventIds: string[]; visibleEventIds: string[] };
 
 export type SportsState = {
   catalog: SportsCatalog | undefined;
@@ -54,7 +54,7 @@ export type SportsState = {
   loadMore: (host: SportsHost) => void;
   refresh: (host: SportsHost) => Promise<void>;
   updateWindow: (now?: Date) => void;
-  setExactConsumer: (owner: symbol, eventIds: string[], visible: boolean) => void;
+  setExactConsumer: (owner: symbol, eventIds: string[], visibleEventIds: string[]) => void;
   removeExactConsumer: (owner: symbol) => void;
 };
 
@@ -197,9 +197,13 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
         return { window, hosts: { main: restartSearch(state.hosts.main), predictions: restartSearch(state.hosts.predictions) } };
       }),
 
-    setExactConsumer: (owner, eventIds, visible) =>
+    setExactConsumer: (owner, eventIds, visibleEventIds) =>
       set(state => {
-        const consumer = { eventIds: [...new Set(eventIds)].sort(), visible };
+        const retained = new Set(eventIds);
+        const consumer = {
+          eventIds: [...retained].sort(),
+          visibleEventIds: [...new Set(visibleEventIds.filter(id => retained.has(id)))].sort(),
+        };
         if (deepEqual(state.exactConsumers.get(owner), consumer)) return state;
         const exactConsumers = new Map(state.exactConsumers);
         if (consumer.eventIds.length) exactConsumers.set(owner, consumer);
@@ -262,17 +266,15 @@ export const useSportsLookupStore = createQueryStore<LookupGamesResponse | null,
   staleTime: $ =>
     $(useSportsStore, state => {
       for (const consumer of state.exactConsumers.values()) {
-        if (consumer.visible && consumer.eventIds.some(id => state.eventGames[id] === undefined)) return 0;
+        if (consumer.visibleEventIds.some(id => state.eventGames[id] === undefined)) return 0;
       }
       return time.seconds(60);
     }),
   suppressStaleTimeWarning: true,
-  enabled: $ => $(useSportsStore, state => [...state.exactConsumers.values()].some(consumer => consumer.visible)),
+  enabled: $ => $(useSportsStore, state => [...state.exactConsumers.values()].some(consumer => consumer.visibleEventIds.length > 0)),
   params: {
     eventIds: $ =>
-      $(useSportsStore, state =>
-        [...new Set([...state.exactConsumers.values()].filter(consumer => consumer.visible).flatMap(consumer => consumer.eventIds))].sort()
-      ),
+      $(useSportsStore, state => [...new Set([...state.exactConsumers.values()].flatMap(consumer => consumer.visibleEventIds))].sort()),
   },
   fetcher: ({ eventIds }, controller) => (eventIds.length ? sportsClient.lookupGames({ eventIds }, controller) : null),
   setData: ({ data }) => {
