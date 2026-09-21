@@ -31,6 +31,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { getSportsDestinationKey, type SportsHost } from '@/features/sports/core/browse';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigation';
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { SPORTS_BACKGROUND_COLOR_DARK } from '@/features/sports/ui/colors';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -251,7 +252,7 @@ function ScopeFadeMask({
 function ScopeSurface({ children, width }: { children: ReactNode; width: number }) {
   const { isDarkMode } = useColorMode();
   const backgroundColor =
-    Platform.OS === 'android' ? (isDarkMode ? '#070707' : '#FFFFFF') : isDarkMode ? 'rgba(6,6,6,0.811)' : 'rgba(255,255,255,0.8)';
+    Platform.OS === 'android' ? (isDarkMode ? '#070707' : '#FFFFFF') : isDarkMode ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)';
   return (
     <View style={[styles.scopeShadow, isDarkMode ? styles.darkScopeShadow : styles.lightScopeShadow]}>
       <View style={[styles.scopeSurface, { width }, !isDarkMode && styles.tightScopeShadow]}>
@@ -344,15 +345,17 @@ const styles = StyleSheet.create({
   scopeShadow: {
     borderRadius: 32,
     borderCurve: 'continuous',
-    shadowColor: '#000000',
-    shadowOpacity: 0.04,
   },
   darkScopeShadow: {
-    shadowOffset: { width: 0, height: -4 },
-    shadowRadius: 20,
+    shadowColor: SPORTS_BACKGROUND_COLOR_DARK,
+    shadowOpacity: 1,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 15,
     elevation: 10,
   },
   lightScopeShadow: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
     elevation: 3,

@@ -41,7 +41,10 @@ export const GameOffer = memo(function GameOffer({
     autoSubscriptionEnabled: false,
     selector: formatProbability,
   });
-  const probabilityStyle = useAnimatedStyle(() => (isSpread || price.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
+  const probabilityStyle = useAnimatedStyle(() => {
+    if (isSpread) return SPREAD_PROBABILITY_STYLE;
+    return price.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE;
+  });
   const background = isSpread
     ? isDarkMode
       ? opacity(color, 0.2)
@@ -94,32 +97,29 @@ export const GameOffer = memo(function GameOffer({
                 />
               )}
             </View>
-            {isSpread && (
-              <View style={styles.line}>
+            <View style={styles.content}>
+              {isSpread && (
                 <Text
                   align="center"
                   color={{ custom: isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(27,29,31,0.5)' }}
-                  size="13pt"
+                  size="12pt"
                   weight="heavy"
-                  style={styles.lineText}
                 >
                   {line > 0 ? `+${line}` : line}
                 </Text>
-              </View>
-            )}
-            <View style={isSpread ? styles.spreadPrice : styles.winnerPrice}>
+              )}
               <AnimatedText
                 align="center"
                 color={isSpread && !isDarkMode ? 'label' : 'white'}
-                size="15pt"
-                style={[probabilityStyle, isSpread ? styles.spreadText : styles.winnerText]}
+                size={isSpread ? '13pt' : '17pt'}
+                style={[probabilityStyle, !isSpread && styles.winnerText]}
                 weight="heavy"
               >
                 {price}
               </AnimatedText>
             </View>
             <Border
-              borderRadius={15}
+              borderRadius={14}
               borderWidth={isSpread && !isDarkMode ? 4 / 3 : 2}
               borderColor={{
                 custom: isSpread
@@ -143,10 +143,11 @@ function formatProbability(token: TokenData): string {
   return `${roundWorklet(toPercentageWorklet(token.price))}%`;
 }
 
+const SPREAD_PROBABILITY_STYLE = textSizes['13pt'];
 const SMALL_PROBABILITY_STYLE = textSizes['15pt'];
-const PROBABILITY_STYLE = textSizes['18pt'];
-const SPREAD_VERTICAL_STOPS = [0, 4 / 42, 12 / 42, 30 / 42, 38 / 42, 1] as const;
-const SPREAD_HORIZONTAL_STOPS = [0, 4 / 62, 12 / 62, 50 / 62, 58 / 62, 1] as const;
+const PROBABILITY_STYLE = textSizes['17pt'];
+const SPREAD_VERTICAL_STOPS = [0, 4 / 40, 12 / 40, 28 / 40, 36 / 40, 1] as const;
+const SPREAD_HORIZONTAL_STOPS = [0, 4 / 60, 12 / 60, 48 / 60, 56 / 60, 1] as const;
 const LIGHT_SPREAD_FILL = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
 const WINNER_HIGHLIGHT = [
   'rgba(255,255,255,0.12)',
@@ -157,14 +158,14 @@ const WINNER_HIGHLIGHT = [
 ] as const;
 const styles = StyleSheet.create({
   surface: {
-    width: 62,
-    height: 42,
-    borderRadius: 15,
+    width: 60,
+    height: 40,
+    borderRadius: 14,
     borderCurve: 'continuous',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 15,
+    borderRadius: 14,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   spreadShadow: {
-    borderRadius: 15,
+    borderRadius: 14,
     borderCurve: 'continuous',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
@@ -198,27 +199,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   glow: {
-    borderRadius: 15,
+    borderRadius: 14,
     borderCurve: 'continuous',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
   },
-  line: {
-    position: 'absolute',
-    top: 8,
-    left: 0,
-    right: 0,
-  },
-  lineText: { letterSpacing: 0.72 },
-  spreadPrice: {
-    position: 'absolute',
-    top: 22,
-    left: 0,
-    right: 0,
-  },
-  spreadText: { letterSpacing: 0.36 },
-  winnerPrice: { flex: 1, justifyContent: 'center' },
+  content: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 6 },
   winnerText: {
     textShadowColor: 'rgba(0,0,0,0.15)',
     textShadowOffset: { width: 0, height: 1 },

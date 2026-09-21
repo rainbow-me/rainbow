@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
@@ -35,24 +36,26 @@ export function SportsSectionHeading({ section, host }: { section: SportsSection
         <Text color="label" size="22pt" weight="heavy">
           {title}
         </Text>
-        <View style={!isDarkMode && [styles.badgeShadow, styles.countCorners]}>
-          <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
-            {!isDarkMode && (
-              <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.countCorners, styles.clip]}>
-                <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
-              </View>
-            )}
-            <Text color="labelSecondary" size="14pt" weight="heavy">
-              {section.gameIds.length}
-            </Text>
-            <Border
-              borderRadius={8}
-              borderWidth={4 / 3}
-              borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
-              enableInLightMode
-            />
+        <Bleed vertical="8px">
+          <View style={!isDarkMode && [styles.badgeShadow, styles.countCorners]}>
+            <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
+              {!isDarkMode && (
+                <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.countCorners, styles.clip]}>
+                  <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
+                </View>
+              )}
+              <Text color="labelSecondary" size="13pt" weight="heavy">
+                {section.gameIds.length}
+              </Text>
+              <Border
+                borderRadius={9}
+                borderWidth={4 / 3}
+                borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
+                enableInLightMode
+              />
+            </View>
           </View>
-        </View>
+        </Bleed>
         {section.scopeId && (
           <TextIcon
             color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
@@ -73,7 +76,9 @@ export function SportsSectionHeadingSkeleton() {
   return (
     <View style={styles.heading}>
       <View style={[styles.skeletonTitle, { backgroundColor }]} />
-      <View style={[styles.skeletonCount, { backgroundColor }]} />
+      <Bleed vertical="8px">
+        <View style={[styles.skeletonCount, { backgroundColor }]} />
+      </Bleed>
     </View>
   );
 }
@@ -121,9 +126,8 @@ const LIGHT_BADGE_GRADIENT = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'
 
 const styles = StyleSheet.create({
   skeletonTitle: { width: 92, height: 16, borderRadius: 8 },
-  skeletonCount: { width: 24, height: 23, borderRadius: 8, borderCurve: 'continuous' },
+  skeletonCount: { width: 24, height: 24, borderRadius: 9, borderCurve: 'continuous' },
   heading: {
-    height: 60,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -132,12 +136,13 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   count: {
-    height: 23,
+    height: 24,
+    minWidth: 24,
     paddingHorizontal: 7,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  countCorners: { borderRadius: 8, borderCurve: 'continuous' },
+  countCorners: { borderRadius: 9, borderCurve: 'continuous' },
   darkCount: { backgroundColor: 'rgba(255,255,255,0.03)' },
   liveIndicator: {
     width: 16,

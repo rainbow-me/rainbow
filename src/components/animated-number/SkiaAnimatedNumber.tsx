@@ -1041,14 +1041,10 @@ function getHeightForTextSize(size: StandardTextSize): number {
       return 16;
     case '20pt':
       return 14;
-    case '18pt':
-      return 13;
     case '17pt':
       return 12;
     case '15pt':
       return 11;
-    case '14pt':
-      return 10;
     case '13pt':
       return 9;
     case '12pt':
