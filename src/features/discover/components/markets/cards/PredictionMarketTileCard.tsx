@@ -15,8 +15,8 @@ import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeC
 import { getPriceChangeColor } from '@/features/market/ui/utils/priceChangeColors';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { formatOdds } from '@/features/polymarket/utils/formatOdds';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { formatOdds } from '@/features/polymarket/utils/sportsEventBetData';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
 import Navigation from '@/navigation/Navigation';
