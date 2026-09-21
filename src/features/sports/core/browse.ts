@@ -20,6 +20,23 @@ export function findScope(catalog: SportsCatalog | undefined, scopeId: string): 
   }
 }
 
+export function getSportsNavigationRoot(catalog: SportsCatalog | undefined, destination: SportsDestination): SportsDestination {
+  if (destination.type !== 'scope' || !catalog || catalog.prominentScopeIds.includes(destination.scopeId)) return destination;
+  const parent = catalog.sports.find(sport => sport.competitions.some(competition => competition.id === destination.scopeId));
+  return parent && catalog.prominentScopeIds.includes(parent.id) ? { type: 'scope', scopeId: parent.id } : { type: 'all' };
+}
+
+export function getSportsParentDestination(
+  catalog: SportsCatalog | undefined,
+  destination: SportsDestination,
+  navigationRoot: SportsDestination
+): SportsDestination | undefined {
+  const root = getSportsNavigationRoot(catalog, navigationRoot);
+  if (destination.type !== 'scope' || (root.type === 'scope' && destination.scopeId === root.scopeId)) return undefined;
+  const parent = catalog?.sports.find(sport => sport.competitions.some(competition => competition.id === destination.scopeId));
+  return parent ? { type: 'scope', scopeId: parent.id } : root;
+}
+
 export function hasCompetitionDirectory(catalog: SportsCatalog | undefined, scopeId: string): boolean {
   return catalog?.sports.some(sport => sport.id === scopeId && sport.browse === Sport_Browse.BROWSE_COMPETITIONS) ?? false;
 }

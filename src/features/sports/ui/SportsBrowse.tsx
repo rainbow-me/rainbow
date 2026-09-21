@@ -20,7 +20,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsSections, type SportsSection } from '@/features/sports/core/sections';
-import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { getSportsResult, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
@@ -65,7 +65,8 @@ export function SportsBrowse({
   const [expanded, setExpanded] = useState(new Set<string>());
   const [visibleCarousels, setVisibleCarousels] = useState(new Set<string>());
   const view = useSportsStore(state => {
-    const { request, result } = state.hosts[host];
+    const { request } = state.hosts[host];
+    const result = getSportsResult(state, host);
     const sections = getSportsSections({
       catalog: state.catalog,
       games: state.games,
@@ -294,7 +295,8 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
 
 function SportsReadStatus({ host }: { host: SportsHost }) {
   const status = useSportsStore(state => {
-    const { request, result } = state.hosts[host];
+    const { request } = state.hosts[host];
+    const result = getSportsResult(state, host);
     const directory =
       request.query === null &&
       (request.destination.type === 'all' ||

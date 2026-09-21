@@ -9,7 +9,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsDirectoryCounts } from '@/features/sports/core/sections';
-import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { getSportsAvailableGameIds, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsImage } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
@@ -21,7 +21,7 @@ export function SportsDirectory({ host }: { host: SportsHost }) {
     const counts = getSportsDirectoryCounts({
       catalog: state.catalog,
       games: state.games,
-      gameIds: [...(state.hosts.main.result?.gameIds ?? []), ...(state.hosts.predictions.result?.gameIds ?? [])],
+      gameIds: getSportsAvailableGameIds(state),
     });
     if (query !== null) {
       const text = query.toLocaleLowerCase();

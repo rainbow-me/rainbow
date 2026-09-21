@@ -1,6 +1,7 @@
-import { createQueryStore, createStoreActions, deepEqual } from '@storesjs/stores';
+import { createQueryStore, createStoreActions, deepEqual, getQueryKey, parseQueryKey, type QueryStoreState } from '@storesjs/stores';
 
 import {
+  getSportsParentDestination,
   getSportsWindow,
   hasCompetitionDirectory,
   type SportsDestination,
@@ -33,9 +34,9 @@ export type SportsResult = {
 
 type HostState = {
   request: BrowseRequest;
+  navigationRoot: SportsDestination;
   mounted: boolean;
   visible: boolean;
-  result: SportsResult | null;
 };
 
 type ExactConsumer = { eventIds: string[]; visibleEventIds: string[] };
@@ -50,6 +51,8 @@ export type SportsState = {
   setHostVisibility: (host: SportsHost, visible: boolean) => void;
   releaseHost: (host: SportsHost) => void;
   selectDestination: (host: SportsHost, destination: SportsDestination) => void;
+  openScope: (host: SportsHost, scopeId: string) => void;
+  goBack: (host: SportsHost) => void;
   setSearch: (host: SportsHost, query: string | null) => void;
   loadMore: (host: SportsHost) => void;
   refresh: (host: SportsHost) => Promise<void>;
@@ -59,11 +62,12 @@ export type SportsState = {
 };
 
 type BrowseView = { host: SportsHost; request: BrowseRequest; window: SportsWindow };
-type BrowseParams = { view: BrowseView | null };
+type BrowseParams = { view: BrowseView | null; revision: number };
 type BrowseResponse = GetGamesResponse | SearchGamesResponse;
+type StoreState = QueryStoreState<SportsResult | null, BrowseParams, SportsState>;
 
 function initialHost(): HostState {
-  return { request: { destination: { type: 'live' }, query: null }, mounted: false, visible: false, result: null };
+  return { request: { destination: { type: 'live' }, query: null }, navigationRoot: { type: 'live' }, mounted: false, visible: false };
 }
 
 function activeHost(state: SportsState): SportsHost | null {
@@ -73,15 +77,16 @@ function activeHost(state: SportsState): SportsHost | null {
 
 // ============ Browse ======================================================== //
 
-export const useSportsStore = createQueryStore<BrowseResponse | null, BrowseParams, SportsState>(
+export const useSportsStore = createQueryStore<BrowseResponse | null, BrowseParams, SportsState, SportsResult | null>(
   {
     fetcher: fetchBrowse,
-    cacheTime: time.seconds(60),
+    cacheTime: Infinity,
     staleTime: ($, store) =>
       $(store, state => {
         const host = activeHost(state);
         const current = host ? state.hosts[host] : undefined;
-        if (!current?.result || (current.request.cursor && current.request.cursor === current.result.nextCursor)) return 0;
+        const result = host ? getSportsResult(state, host) : null;
+        if (!current || !result || (current.request.cursor && current.request.cursor === result.nextCursor)) return 0;
         return current.request.query !== null ? Infinity : time.seconds(60);
       }),
     suppressStaleTimeWarning: true,
@@ -91,6 +96,7 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
         return host !== null && state.hosts[host].request.query !== '';
       }),
     params: {
+      revision: ($, store) => $(store, state => state.catalog?.revision ?? 0),
       view: ($, store) =>
         $(
           store,
@@ -101,27 +107,14 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
           deepEqual
         ),
     },
-    setData: ({ data, params, set }) => {
-      const view = params.view;
-      if (!data || !view) return;
-      const { host, request, window } = view;
+    transform: admitBrowse,
+    onFetched: ({ data, params, set }) => {
       set(state => {
-        const current = state.hosts[host];
-        if (!current.mounted || !deepEqual(current.request, request) || !deepEqual(state.window, window)) return state;
-        const graph = withCatalog(state, data.catalog);
-        const previous = graph.hosts[host].result;
-        const continuation = request.cursor;
-        if (continuation && previous?.nextCursor !== continuation) return pruneGames(graph);
-        const gameIds =
-          continuation && previous
-            ? [...new Set([...previous.gameIds, ...data.games.map(game => game.id)])]
-            : data.games.map(game => game.id);
-        const result = { gameIds, nextCursor: 'nextCursor' in data ? data.nextCursor : undefined };
-        return pruneGames({
-          ...graph,
-          games: mergeGames(state.games, data.games),
-          hosts: { ...graph.hosts, [host]: { ...current, result: deepEqual(previous, result) ? previous : result } },
-        });
+        const queryKey = getQueryKey(params);
+        const effectiveKey = getQueryKey({ ...params, revision: state.catalog?.revision ?? 0 });
+        const entry = state.queryCache[queryKey];
+        const queryCache = data && entry ? { ...state.queryCache, [effectiveKey]: entry } : state.queryCache;
+        return pruneGames({ ...state, queryCache }, effectiveKey);
       });
     },
   },
@@ -144,17 +137,47 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
       set(state =>
         pruneGames({
           ...state,
-          hosts: { ...state.hosts, [host]: { ...restartSearch(state.hosts[host]), mounted: false, visible: false, result: null } },
+          hosts: { ...state.hosts, [host]: { ...restartSearch(state.hosts[host]), mounted: false, visible: false } },
         })
       ),
 
     selectDestination: (host, destination) =>
       set(state => {
         const current = state.hosts[host];
+        if (
+          current.request.query === null &&
+          deepEqual(current.request.destination, destination) &&
+          deepEqual(current.navigationRoot, destination)
+        )
+          return state;
+        return pruneGames({
+          ...state,
+          hosts: {
+            ...state.hosts,
+            [host]: { ...current, navigationRoot: destination, request: { destination, query: null } },
+          },
+        });
+      }),
+
+    openScope: (host, scopeId) =>
+      set(state => {
+        const current = state.hosts[host];
+        const destination: SportsDestination = { type: 'scope', scopeId };
         if (current.request.query === null && deepEqual(current.request.destination, destination)) return state;
         return pruneGames({
           ...state,
-          hosts: { ...state.hosts, [host]: { ...current, request: { destination, query: null }, result: null } },
+          hosts: { ...state.hosts, [host]: { ...current, request: { destination, query: null } } },
+        });
+      }),
+
+    goBack: host =>
+      set(state => {
+        const current = state.hosts[host];
+        const destination = getSportsParentDestination(state.catalog, current.request.destination, current.navigationRoot);
+        if (!destination) return state;
+        return pruneGames({
+          ...state,
+          hosts: { ...state.hosts, [host]: { ...current, request: { destination, query: null } } },
         });
       }),
 
@@ -167,7 +190,7 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
           ...state,
           hosts: {
             ...state.hosts,
-            [host]: { ...current, request: { destination: current.request.destination, query: text }, result: null },
+            [host]: { ...current, request: { destination: current.request.destination, query: text } },
           },
         });
       }),
@@ -175,7 +198,7 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
     loadMore: host => {
       const state = get();
       const current = state.hosts[host];
-      const cursor = current.result?.nextCursor;
+      const cursor = getSportsResult(state, host)?.nextCursor;
       if (activeHost(state) !== host || !current.request.query || !cursor || state.getStatus('isLoading')) return;
       set({ hosts: { ...state.hosts, [host]: { ...current, request: { ...current.request, cursor } } } });
     },
@@ -194,7 +217,11 @@ export const useSportsStore = createQueryStore<BrowseResponse | null, BrowsePara
       set(state => {
         const window = getSportsWindow(now);
         if (deepEqual(window, state.window)) return state;
-        return { window, hosts: { main: restartSearch(state.hosts.main), predictions: restartSearch(state.hosts.predictions) } };
+        return pruneGames({
+          ...state,
+          window,
+          hosts: { main: restartSearch(state.hosts.main), predictions: restartSearch(state.hosts.predictions) },
+        });
       }),
 
     setExactConsumer: (owner, eventIds, visibleEventIds) =>
@@ -291,15 +318,16 @@ export const useSportsLookupStore = createQueryStore<LookupGamesResponse | null,
 
 // ============ Graph Updates ================================================= //
 
-function withCatalog(state: SportsState, catalog: SportsCatalog | undefined): SportsState {
+function withCatalog(state: StoreState, catalog: SportsCatalog | undefined): StoreState {
   if (!catalog || catalog.revision === state.catalog?.revision) return state;
   if (state.catalog && catalog.revision < state.catalog.revision) throw new Error('Sports response uses an older catalog.');
   return {
     ...state,
     catalog,
+    queryCache: {},
     hosts: {
-      main: { ...restartSearch(state.hosts.main), result: null },
-      predictions: { ...restartSearch(state.hosts.predictions), result: null },
+      main: restartSearch(state.hosts.main),
+      predictions: restartSearch(state.hosts.predictions),
     },
   };
 }
@@ -316,8 +344,23 @@ function mergeGames(previous: SportsState['games'], incoming: Game[]): SportsSta
   return games;
 }
 
-function pruneGames(state: SportsState): Pick<SportsState, 'catalog' | 'games' | 'hosts' | 'eventGames' | 'exactConsumers'> {
-  const gameIds = new Set([...(state.hosts.main.result?.gameIds ?? []), ...(state.hosts.predictions.result?.gameIds ?? [])]);
+function pruneGames(state: StoreState, completedKey?: string): StoreState {
+  const queryCache: StoreState['queryCache'] = {};
+  const completedView = completedKey ? parseQueryKey<BrowseParams>(completedKey).view : null;
+  const gameIds = new Set<string>();
+  for (const [key, entry] of Object.entries(state.queryCache)) {
+    if (!entry) continue;
+    const { view, revision } = parseQueryKey<BrowseParams>(key);
+    if (!view || revision !== (state.catalog?.revision ?? 0) || !deepEqual(view.window, state.window)) continue;
+    const host = state.hosts[view.host];
+    if (!host.mounted) continue;
+    if (view.request.query !== null) {
+      if (view.request.query !== host.request.query || !deepEqual(view.request.destination, host.request.destination)) continue;
+      if (completedView && key !== completedKey && sameResult(view, completedView)) continue;
+    }
+    queryCache[key] = entry;
+    for (const id of entry.data?.gameIds ?? []) gameIds.add(id);
+  }
   const eventGames: SportsState['eventGames'] = {};
   for (const consumer of state.exactConsumers.values()) {
     for (const eventId of consumer.eventIds) {
@@ -329,5 +372,59 @@ function pruneGames(state: SportsState): Pick<SportsState, 'catalog' | 'games' |
   }
   const games: SportsState['games'] = {};
   for (const id of gameIds) if (state.games[id]) games[id] = state.games[id];
-  return { catalog: state.catalog, games, hosts: state.hosts, eventGames, exactConsumers: state.exactConsumers };
+  return { ...state, games, queryCache, eventGames };
+}
+
+function sameResult(a: BrowseView, b: BrowseView): boolean {
+  return (
+    a.host === b.host &&
+    a.request.query === b.request.query &&
+    deepEqual(a.request.destination, b.request.destination) &&
+    deepEqual(a.window, b.window)
+  );
+}
+
+/** Read this host's exact destination, retaining its accumulated Search while a page loads. */
+export function getSportsResult(state: StoreState, host: SportsHost): SportsResult | null {
+  const view = { host, request: state.hosts[host].request, window: state.window };
+  const revision = state.catalog?.revision ?? 0;
+  const exact = state.queryCache[getQueryKey({ view, revision })]?.data;
+  if (exact) return exact;
+  if (view.request.query === null) return null;
+  for (const [key, entry] of Object.entries(state.queryCache)) {
+    if (!entry?.data) continue;
+    const previous = parseQueryKey<BrowseParams>(key);
+    if (previous.view && previous.revision === revision && sameResult(view, previous.view)) return entry.data;
+  }
+  return null;
+}
+
+/** Game IDs available through retained browse/Search results, excluding exact-only lookups. */
+export function getSportsAvailableGameIds(state: StoreState): string[] {
+  return [...new Set(Object.values(state.queryCache).flatMap(entry => entry?.data?.gameIds ?? []))];
+}
+
+function admitBrowse(data: BrowseResponse | null, { view }: BrowseParams): SportsResult | null {
+  if (!data || !view) return null;
+  const { host, request, window } = view;
+  let result: SportsResult | null = null;
+  useSportsStore.setState(state => {
+    const current = state.hosts[host];
+    if (!current.mounted || !deepEqual(current.request, request) || !deepEqual(state.window, window)) return state;
+    const graph = withCatalog(state, data.catalog);
+    const previous = getSportsResult(graph, host);
+    if (request.cursor && previous?.nextCursor !== request.cursor) {
+      result = previous;
+      return graph;
+    }
+    const gameIds =
+      request.cursor && previous
+        ? [...new Set([...previous.gameIds, ...data.games.map(game => game.id)])]
+        : data.games.map(game => game.id);
+    const next = { gameIds, nextCursor: 'nextCursor' in data ? data.nextCursor : undefined };
+    result = deepEqual(previous, next) ? previous : next;
+    // Stores publishes these IDs after transform returns. Their Games must already exist.
+    return { ...graph, games: mergeGames(graph.games, data.games) };
+  });
+  return result;
 }
