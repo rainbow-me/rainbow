@@ -1,4 +1,4 @@
-import { Sport_Browse, type Competition, type Sport, type SportsCatalog } from './generated/sports';
+import { type SportsCatalog } from './catalog';
 
 export type SportsHost = 'main' | 'predictions';
 
@@ -16,18 +16,9 @@ export function getSportsWindow(now = new Date()): SportsWindow {
   return { from: from.toISOString(), until: until.toISOString() };
 }
 
-export function findScope(catalog: SportsCatalog | undefined, scopeId: string): Sport | Competition | undefined {
-  for (const sport of catalog?.sports ?? []) {
-    if (sport.id === scopeId) return sport;
-    const competition = sport.competitions.find(competition => competition.id === scopeId);
-    if (competition) return competition;
-  }
-}
-
 export function getSportsNavigationRoot(catalog: SportsCatalog | undefined, destination: SportsDestination): SportsDestination {
-  if (destination.type !== 'scope' || !catalog || catalog.prominentScopeIds.includes(destination.scopeId)) return destination;
-  const parent = catalog.sports.find(sport => sport.competitions.some(competition => competition.id === destination.scopeId));
-  return parent && catalog.prominentScopeIds.includes(parent.id) ? { type: 'scope', scopeId: parent.id } : { type: 'all' };
+  if (destination.type !== 'scope' || !catalog) return destination;
+  return catalog.scopes[destination.scopeId]?.navigationRoot ?? { type: 'all' };
 }
 
 export function getSportsParentDestination(
@@ -37,16 +28,14 @@ export function getSportsParentDestination(
 ): SportsDestination | undefined {
   const root = getSportsNavigationRoot(catalog, navigationRoot);
   if (destination.type !== 'scope' || (root.type === 'scope' && destination.scopeId === root.scopeId)) return undefined;
-  const parent = catalog?.sports.find(sport => sport.competitions.some(competition => competition.id === destination.scopeId));
-  return parent ? { type: 'scope', scopeId: parent.id } : root;
+  const parentId = catalog?.scopes[destination.scopeId]?.parentId;
+  return parentId ? { type: 'scope', scopeId: parentId } : root;
 }
 
 export function hasCompetitionDirectory(catalog: SportsCatalog | undefined, scopeId: string): boolean {
-  return catalog?.sports.some(sport => sport.id === scopeId && sport.browse === Sport_Browse.BROWSE_COMPETITIONS) ?? false;
+  return catalog?.scopes[scopeId]?.directoryIds !== undefined;
 }
 
 export function scopeContainsGame(catalog: SportsCatalog | undefined, scopeId: string, competitionIds: string[]): boolean {
-  if (competitionIds.includes(scopeId)) return true;
-  const sport = catalog?.sports.find(sport => sport.id === scopeId);
-  return sport?.competitions.some(competition => competitionIds.includes(competition.id)) ?? false;
+  return competitionIds.some(id => id === scopeId || catalog?.scopes[id]?.parentId === scopeId);
 }

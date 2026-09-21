@@ -26,10 +26,9 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePress';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { GameCard } from '@/features/sports/ui/GameCard';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
-import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -54,7 +53,6 @@ export function PredictionEventsSection({
   );
   const pending = useIsDiscoverSurfacePlacementPending(surface.placement);
   const [expanded, setExpanded] = useState(false);
-  const [visibleIds, setVisibleIds] = useState<string[]>([]);
   const { width } = useDimensions();
   const carousel = surface.display === 'prediction_event_card.carousel';
   const renderedItems = useMemo(
@@ -62,6 +60,7 @@ export function PredictionEventsSection({
     [carousel, expanded, items, surface.limit]
   );
   const ids = useMemo(() => renderedItems.map(item => item.id), [renderedItems]);
+  const { owner: lookupOwner, setVisibleEvents } = useSportsLookup(ids, Routes.DISCOVER_SCREEN, active);
   const cardWidth = width - (renderedItems.length === 1 ? 24 : 30);
   const title = resolveSectionTitle(surface);
   const openGame = useSportsGamePress(Routes.DISCOVER_SCREEN);
@@ -97,21 +96,10 @@ export function PredictionEventsSection({
       });
     },
     (next, previous) => {
-      if (!previous || next.length !== previous.length || next.some((id, index) => id !== previous[index])) runOnJS(setVisibleIds)(next);
+      if (!previous || next.length !== previous.length || next.some((id, index) => id !== previous[index])) runOnJS(setVisibleEvents)(next);
     },
-    [ids, carousel, cardWidth, width]
+    [ids, carousel, cardWidth, setVisibleEvents, width]
   );
-
-  const gameIds = useSportsStore(
-    state =>
-      visibleIds.flatMap(id => {
-        const gameId = state.eventGames[id];
-        return gameId ? [gameId] : [];
-      }),
-    shallowEqual
-  );
-  const setQuoteGames = useSportsQuotes(Routes.DISCOVER_SCREEN, active, gameIds);
-  useEffect(() => setQuoteGames(gameIds), [gameIds, setQuoteGames]);
 
   const recordPress = useCallback(
     (itemId: string, marketName: string, marketSlug?: string) => {
@@ -160,13 +148,13 @@ export function PredictionEventsSection({
         <PredictionEventCard
           eventId={item.id}
           width={carousel ? cardWidth : width - 24}
-          visible={active && visibleIds.includes(item.id)}
+          lookupOwner={lookupOwner}
           onPress={recordPress}
           openGame={openGame}
         />
       </View>
     ),
-    [active, cardWidth, carousel, frames, openGame, recordPress, visibleIds, width]
+    [cardWidth, carousel, frames, lookupOwner, openGame, recordPress, width]
   );
 
   if (!items.length && !pending) return null;
@@ -225,7 +213,7 @@ export function PredictionEventsSection({
           </View>
         )}
       </View>
-      <EventLookup eventIds={visibleIds} active={active} />
+      <EventLookupStatus owner={lookupOwner} />
     </View>
   );
 }
@@ -233,13 +221,13 @@ export function PredictionEventsSection({
 const PredictionEventCard = memo(function PredictionEventCard({
   eventId,
   width,
-  visible,
+  lookupOwner,
   onPress,
   openGame,
 }: {
   eventId: string;
   width: number;
-  visible: boolean;
+  lookupOwner: symbol;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
   openGame: ReturnType<typeof useSportsGamePress>;
 }) {
@@ -256,19 +244,23 @@ const PredictionEventCard = memo(function PredictionEventCard({
         }}
       />
     );
-  if (gameId === null) return <GenericEventCard eventId={eventId} visible={visible} onPress={onPress} />;
+  if (gameId === null) return <GenericEventCard eventId={eventId} lookupOwner={lookupOwner} onPress={onPress} />;
   return <Skeleton borderRadius={24} height={166} width="100%" />;
 });
 
 function GenericEventCard({
   eventId,
-  visible,
+  lookupOwner,
   onPress,
 }: {
   eventId: string;
-  visible: boolean;
+  lookupOwner: symbol;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
 }) {
+  const visible = useSportsViewStore(state => {
+    const consumer = state.lookupConsumers.get(lookupOwner);
+    return Boolean(consumer?.active && consumer.eventIds.includes(eventId) && consumer.visibleIds.includes(eventId));
+  });
   const { event, isLoading, error } = usePredictionEvent(eventId, visible);
   const subscribe = useLiveTokenSubscription(Routes.DISCOVER_SCREEN);
   useEffect(() => subscribe(visible && event ? getPolymarketEventsListTokenIds(event) : []), [event, subscribe, visible]);
@@ -295,9 +287,13 @@ function GenericEventCard({
   );
 }
 
-function EventLookup({ eventIds, active }: { eventIds: string[]; active: boolean }) {
-  const error = useSportsLookup(eventIds, Routes.DISCOVER_SCREEN, active);
-  if (!active || !eventIds.length || !error) return null;
+function EventLookupStatus({ owner }: { owner: symbol }) {
+  const active = useSportsViewStore(state => {
+    const consumer = state.lookupConsumers.get(owner);
+    return Boolean(consumer?.active && consumer.visibleIds.some(id => consumer.eventIds.includes(id)));
+  });
+  const error = useSportsStore(state => state.getCacheEntry()?.errorInfo?.error);
+  if (!active || !error) return null;
   return (
     <ButtonPressAnimation onPress={() => useSportsStore.getState().fetch(undefined, { force: true })} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">

@@ -1,8 +1,9 @@
+import { buildSportsCatalog } from './catalog';
 import { Game, Game_Status, Sport_Browse, SportsCatalog } from './generated/sports';
 import { getSportsDirectoryCounts, getSportsSections } from './sections';
 
 const now = new Date(2026, 8, 20, 12);
-const catalog = SportsCatalog.fromJSON({
+const catalogResponse = SportsCatalog.fromJSON({
   revision: 1,
   sports: [
     {
@@ -16,6 +17,7 @@ const catalog = SportsCatalog.fromJSON({
   liveGroupIds: ['tennis', 'us-open'],
   promotedGameIds: ['promoted-second', 'promoted-first'],
 });
+const catalog = buildSportsCatalog(catalogResponse);
 
 function game(id: string, fields: Partial<Game> = {}): Game {
   return Game.fromJSON({
@@ -57,7 +59,7 @@ describe('Sports sections', () => {
   it('uses preferred competition for uncurated Live games, ordered by the catalog', () => {
     expect(
       getSportsSections({
-        catalog: { ...catalog, liveGroupIds: ['us-open'] },
+        catalog: buildSportsCatalog({ ...catalogResponse, liveGroupIds: ['us-open'] }),
         games: gamesById(
           game('wta-match', { competitionIds: ['wta', 'atp'] }),
           game('atp-match'),
@@ -72,6 +74,38 @@ describe('Sports sections', () => {
       { type: 'live', scopeId: 'atp', gameIds: ['atp-match'] },
       { type: 'live', scopeId: 'wta', gameIds: ['wta-match'] },
     ]);
+  });
+
+  it('chooses the first curated Live group even when its competition is not first on the game', () => {
+    const games = gamesById(game('match', { competitionIds: ['atp', 'us-open'] }));
+    expect(
+      getSportsSections({
+        catalog: buildSportsCatalog({ ...catalogResponse, liveGroupIds: ['us-open', 'tennis'] }),
+        games,
+        gameIds: ['match'],
+        destination: { type: 'live' },
+        now,
+      })
+    ).toEqual([{ type: 'live', scopeId: 'us-open', gameIds: ['match'] }]);
+  });
+
+  it('caps each display section after sorting without changing the supplied membership', () => {
+    const games = gamesById(
+      ...Array.from({ length: 35 }, (_, index) => game(`live-${String(index).padStart(2, '0')}`)),
+      ...Array.from({ length: 35 }, (_, index) =>
+        game(`scheduled-${String(index).padStart(2, '0')}`, { status: Game_Status.STATUS_SCHEDULED })
+      )
+    );
+    const gameIds = Object.keys(games).reverse();
+    const sections = getSportsSections({ catalog, games, gameIds, destination: { type: 'scope', scopeId: 'tennis' }, now });
+
+    expect(sections.map(section => [section.type, section.gameIds.length])).toEqual([
+      ['live', 30],
+      ['today', 30],
+    ]);
+    expect(sections[0].gameIds[0]).toBe('live-00');
+    expect(sections[0].gameIds[29]).toBe('live-29');
+    expect(gameIds).toHaveLength(70);
   });
 
   it('uses local calendar boundaries without inferring Live from a past kickoff', () => {

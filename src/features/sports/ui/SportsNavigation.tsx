@@ -28,39 +28,22 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 import { opacity } from '@/design-system/utils/opacity';
-import {
-  findScope,
-  getSportsDestinationKey,
-  getSportsNavigationRoot,
-  getSportsParentDestination,
-  type SportsDestination,
-  type SportsHost,
-} from '@/features/sports/core/browse';
-import { sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { getSportsDestinationKey, type SportsHost } from '@/features/sports/core/browse';
+import { sportsBrowseStores } from '@/features/sports/data/sportsBrowse';
+import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 
 export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsHost }) {
   const { isDarkMode } = useColorMode();
-  const catalog = useSportsStore(state => state.catalog);
-  const { destination, navigationRoot } = useSportsViewStore(
-    state => ({
-      destination: state.hosts[host].request.destination,
-      navigationRoot: state.hosts[host].navigationRoot,
-    }),
+  const { scope, parent, back, layout } = sportsBrowseStores[host](
+    state => ({ scope: state.scope, parent: state.parent, back: state.back, layout: state.layout }),
     shallowEqual
   );
   const red = useForegroundColor('red');
-  const scope = destination.type === 'scope' ? findScope(catalog, destination.scopeId) : undefined;
-  const parent = scope && catalog?.sports.find(sport => sport.competitions.some(competition => competition.id === scope.id));
-  const back = getSportsParentDestination(catalog, destination, navigationRoot);
   const title =
-    destination.type === 'live'
-      ? i18n.t(i18n.l.sports.live)
-      : destination.type === 'all'
-        ? i18n.t(i18n.l.sports.all_sports)
-        : (scope?.name ?? i18n.t(i18n.l.sports.title));
+    scope?.name ?? i18n.t(layout === 'live' ? i18n.l.sports.live : layout === 'directory' ? i18n.l.sports.all_sports : i18n.l.sports.title);
 
   return (
     <View style={[styles.header, back && styles.nestedHeader]} accessibilityRole="header">
@@ -81,7 +64,7 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
       )}
       {scope ? (
         <SportsBadge scope={scope} size={44} />
-      ) : destination.type === 'live' ? (
+      ) : layout === 'live' ? (
         <Bleed vertical="8px">
           <View style={[styles.liveRing, { borderColor: opacity(isDarkMode ? '#FF584D' : red, 0.3) }]}>
             <View style={[styles.liveDot, { backgroundColor: isDarkMode ? '#E65048' : red }]} />
@@ -103,14 +86,15 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
 });
 
 export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { host: SportsHost; bottom: number }) {
-  const catalog = useSportsStore(state => state.catalog);
-  const { navigationRoot, searching } = useSportsViewStore(
-    state => ({
-      navigationRoot: state.hosts[host].navigationRoot,
-      searching: state.hosts[host].request.query !== null,
-    }),
+  const {
+    categories,
+    selectedCategory: selectedKey,
+    searching,
+  } = sportsBrowseStores[host](
+    state => ({ categories: state.categories, selectedCategory: state.selectedCategory, searching: state.layout === 'search' }),
     shallowEqual
   );
+  const scopes = useSportsStore(state => state.catalog?.scopes);
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
   const scroll = useAnimatedRef<Animated.ScrollView>();
@@ -119,15 +103,6 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
   const positions = useRef(new Map<string, { x: number; width: number }>());
   const showSearch = host === 'main';
   const railWidth = width - 40 - (showSearch ? 54 : 0);
-  const selectedKey = getSportsDestinationKey(getSportsNavigationRoot(catalog, navigationRoot));
-  const scopeIds = catalog?.prominentScopeIds ?? [];
-  const items: { destination: SportsDestination; label: string }[] = [{ destination: { type: 'live' }, label: i18n.t(i18n.l.sports.live) }];
-  for (const scopeId of scopeIds) {
-    const scope = findScope(catalog, scopeId);
-    if (scope) items.push({ destination: { type: 'scope', scopeId }, label: scope.name });
-  }
-  items.push({ destination: { type: 'all' }, label: i18n.t(i18n.l.sports.more) });
-
   const revealSelected = useCallback(
     (animated: boolean) => {
       const position = positions.current.get(selectedKey);
@@ -171,16 +146,20 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
             onScroll={onScroll}
             scrollEventThrottle={16}
           >
-            {items.map(item => {
-              const key = getSportsDestinationKey(item.destination);
+            {categories.map(destination => {
+              const key = getSportsDestinationKey(destination);
+              const label =
+                destination.type === 'scope'
+                  ? scopes?.[destination.scopeId]?.name
+                  : i18n.t(destination.type === 'live' ? i18n.l.sports.live : i18n.l.sports.more);
               const selected = key === selectedKey;
-              const select = () => sportsActions.selectDestination(host, item.destination);
+              const select = () => sportsActions.selectDestination(host, destination);
               return (
                 <View
                   key={key}
                   accessible
                   accessibilityRole="tab"
-                  accessibilityLabel={item.label}
+                  accessibilityLabel={label}
                   accessibilityState={{ selected }}
                   onAccessibilityTap={select}
                   onLayout={({ nativeEvent: { layout } }) => {
@@ -190,7 +169,7 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
                 >
                   <ButtonPressAnimation onPress={select} scaleTo={0.94} style={styles.scopeButton}>
                     <Text color="label" size="20pt" weight="heavy" style={!selected && { opacity: isDarkMode ? 0.4 : 0.3 }}>
-                      {item.label}
+                      {label}
                     </Text>
                   </ButtonPressAnimation>
                 </View>

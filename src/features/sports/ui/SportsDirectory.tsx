@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -6,31 +5,17 @@ import { useColorMode } from '@/design-system/color/ColorMode';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
-import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
-import { sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { type SportsHost } from '@/features/sports/core/browse';
+import { sportsBrowseStores } from '@/features/sports/data/sportsBrowse';
+import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
 export function SportsDirectory({ host, showHeading = false }: { host: SportsHost; showHeading?: boolean }) {
   const { isDarkMode } = useColorMode();
-  const { destination, query } = useSportsViewStore(state => state.hosts[host].request);
-  const catalog = useSportsStore(state => state.catalog);
-  const showCompetitions = query === null && destination.type === 'scope' && hasCompetitionDirectory(catalog, destination.scopeId);
-  const scopes = useMemo(() => {
-    const sports = catalog?.sports ?? [];
-    if (query !== null) {
-      const text = query.toLocaleLowerCase();
-      return text
-        ? [...sports, ...sports.flatMap(sport => sport.competitions)].filter(scope => scope.name.toLocaleLowerCase().includes(text))
-        : [];
-    }
-    if (destination.type === 'all') return sports;
-    if (destination.type === 'scope' && showCompetitions) {
-      return sports.find(sport => sport.id === destination.scopeId)?.competitions ?? [];
-    }
-    return [];
-  }, [catalog, destination, query, showCompetitions]);
-  if (!scopes.length) return null;
+  const scopeIds = sportsBrowseStores[host](state => state.directory.scopeIds);
+  const showCompetitions = sportsBrowseStores[host](state => state.directory.type === 'competitions');
+  if (!scopeIds.length) return null;
 
   return (
     <View style={styles.directory}>
@@ -44,44 +29,48 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
       {showCompetitions && !showHeading && (
         <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }]} />
       )}
-      {scopes.map(scope => {
-        const open = () =>
-          query !== null
-            ? sportsActions.selectDestination(host, { type: 'scope', scopeId: scope.id })
-            : sportsActions.openScope(host, scope.id);
-        return (
-          <View key={scope.id} accessible accessibilityRole="button" accessibilityLabel={scope.name} onAccessibilityTap={open}>
-            <ButtonPressAnimation onPress={open} scaleTo={0.98}>
-              <View style={[styles.row, showCompetitions && styles.competition]}>
-                <SportsBadge scope={scope} size={showCompetitions ? 28 : 40} />
-                <Text color="label" size={showCompetitions ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
-                  {scope.name}
-                </Text>
-                <View style={styles.trailing}>
-                  <DirectoryCount scopeId={scope.id} />
-                  <TextIcon
-                    color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
-                    size="icon 15px"
-                    weight="heavy"
-                    containerSize={16}
-                  >
-                    {'􀯻'}
-                  </TextIcon>
-                </View>
-              </View>
-            </ButtonPressAnimation>
-            <View
-              style={[
-                styles.separator,
-                {
-                  marginLeft: showCompetitions ? 38 : 54,
-                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-                },
-              ]}
-            />
+      {scopeIds.map(scopeId => (
+        <DirectoryRow key={scopeId} scopeId={scopeId} host={host} competition={showCompetitions} />
+      ))}
+    </View>
+  );
+}
+
+function DirectoryRow({ scopeId, host, competition }: { scopeId: string; host: SportsHost; competition: boolean }) {
+  const { isDarkMode } = useColorMode();
+  const scope = useSportsStore(state => state.catalog?.scopes[scopeId]);
+  if (!scope) return null;
+  const open = () => sportsActions.openScope(host, scopeId);
+  return (
+    <View accessible accessibilityRole="button" accessibilityLabel={scope.name} onAccessibilityTap={open}>
+      <ButtonPressAnimation onPress={open} scaleTo={0.98}>
+        <View style={[styles.row, competition && styles.competition]}>
+          <SportsBadge scope={scope} size={competition ? 28 : 40} />
+          <Text color="label" size={competition ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
+            {scope.name}
+          </Text>
+          <View style={styles.trailing}>
+            <DirectoryCount scopeId={scope.id} />
+            <TextIcon
+              color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
+              size="icon 15px"
+              weight="heavy"
+              containerSize={16}
+            >
+              {'􀯻'}
+            </TextIcon>
           </View>
-        );
-      })}
+        </View>
+      </ButtonPressAnimation>
+      <View
+        style={[
+          styles.separator,
+          {
+            marginLeft: competition ? 38 : 54,
+            backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+          },
+        ]}
+      />
     </View>
   );
 }

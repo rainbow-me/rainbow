@@ -10,12 +10,14 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import * as i18n from '@/languages';
 
-export function SportsSectionHeading({ section, title, host }: { section: SportsSection; title: string; host: SportsHost }) {
+export function SportsSectionHeading({ section, host }: { section: SportsSection; host: SportsHost }) {
   const { isDarkMode } = useColorMode();
   const scopeId = section.scopeId;
+  const scopeName = useSportsStore(state => (scopeId ? state.catalog?.scopes[scopeId]?.name : undefined));
+  const title = scopeId ? (scopeName ?? '') : i18n.t(SECTION_LABELS[section.type]);
   return (
     <ButtonPressAnimation
       disabled={!scopeId}
@@ -107,6 +109,13 @@ export function SportsSectionToggle({ expanded, remaining, onPress }: { expanded
     </ButtonPressAnimation>
   );
 }
+
+const SECTION_LABELS = {
+  live: i18n.l.sports.live,
+  today: i18n.l.sports.today,
+  upcoming: i18n.l.sports.upcoming,
+  search: i18n.l.sports.search_results,
+};
 
 const LIGHT_BADGE_GRADIENT = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
 

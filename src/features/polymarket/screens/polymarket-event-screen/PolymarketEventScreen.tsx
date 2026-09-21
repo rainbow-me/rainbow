@@ -66,7 +66,7 @@ const SportsGameHeaderSection = memo(function SportsGameHeaderSection({
 }) {
   const competition = useSportsStore(state => {
     const id = state.games[gameId]?.competitionIds[0];
-    return id ? state.scopes[id] : undefined;
+    return id ? state.catalog?.scopes[id] : undefined;
   });
   if (!competition) return <EventHeaderSection event={event} />;
 
@@ -94,7 +94,7 @@ function EventVolume({ volume }: { volume: number }) {
 function SportsEventLookup({ eventId }: { eventId: string }) {
   const isFocused = useIsFocused();
   const eventIds = useMemo(() => [eventId], [eventId]);
-  useSportsLookup(eventIds, Routes.POLYMARKET_EVENT_SCREEN, isFocused);
+  useSportsLookup(eventIds, Routes.POLYMARKET_EVENT_SCREEN, isFocused, eventIds);
   return null;
 }
 

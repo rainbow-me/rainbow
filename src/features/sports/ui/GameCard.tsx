@@ -140,7 +140,7 @@ function GameHeader({ gameId, scopeId }: { gameId: string; scopeId?: string }) {
     if (!game) return undefined;
     const id = scopeId && game.competitionIds.includes(scopeId) ? scopeId : game.competitionIds[0];
     return {
-      competition: id ? state.scopes[id] : undefined,
+      competition: id ? state.catalog?.scopes[id] : undefined,
       status: game.status,
       interruption: game.interruption,
       period: game.period,
@@ -221,7 +221,7 @@ function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 
   const participant = useSportsStore(state => state.games[gameId]?.participants[index]);
   const sportId = useSportsStore(state => {
     const competitionId = state.games[gameId]?.competitionIds[0];
-    return competitionId ? state.sportByCompetition[competitionId] : undefined;
+    return competitionId ? state.catalog?.scopes[competitionId]?.parentId : undefined;
   });
   if (!participant) return null;
   const compact = sportId === 'tennis' || sportId === 'esports';

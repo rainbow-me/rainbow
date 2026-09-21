@@ -12,8 +12,9 @@ import {
 
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { findScope, type SportsHost } from '@/features/sports/core/browse';
+import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
+import { sportsBrowseStores } from '@/features/sports/data/sportsBrowse';
 import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
@@ -25,7 +26,6 @@ import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
-import * as i18n from '@/languages';
 import { type Route } from '@/navigation/routesNames';
 
 export type SportsBrowseHandle = { scrollToTop: () => void };
@@ -33,7 +33,7 @@ export type SportsBrowseHandle = { scrollToTop: () => void };
 const EMPTY_SECTIONS: SportsSection[] = [];
 
 type Row =
-  | { key: string; type: 'heading'; section: SportsSection; title: string }
+  | { key: string; type: 'heading'; section: SportsSection }
   | { key: string; type: 'carousel'; section: SportsSection }
   | { key: string; type: 'game'; gameId: string; scopeId?: string }
   | { key: string; type: 'expand'; sectionKey: string; remaining: number; expanded: boolean };
@@ -57,25 +57,24 @@ export function SportsBrowse({
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   ref?: Ref<SportsBrowseHandle>;
 }) {
-  const active = useSportsHost(host, visible);
+  useSportsHost(host, visible);
   const { width } = useDimensions();
   const { isDarkMode } = useColorMode();
   const list = useRef<FlatList<Row>>(null);
   const [expanded, setExpanded] = useState(new Set<string>());
-  const [visibleCarousels, setVisibleCarousels] = useState(new Set<string>());
+  const viewport = useRef<{ gameIds: string[]; carouselKeys: string[] }>({ gameIds: [], carouselKeys: [] });
+  const carouselGames = useRef(new Map<string, string[]>());
+  const layout = sportsBrowseStores[host](state => state.layout);
   const request = useSportsViewStore(state => state.hosts[host].request);
-  const catalog = useSportsStore(state => state.catalog);
-  const result = useSportsStore(state => getSportsResult(state, request));
+  const sections = useSportsStore(state => getSportsResult(state, request)?.sections ?? EMPTY_SECTIONS);
   const { destination, query } = request;
-  const sections = result?.sections ?? EMPTY_SECTIONS;
 
   const rows = useMemo(() => {
     const rows: Row[] = [];
     for (const section of sections) {
       const key = section.scopeId ?? section.type;
-      const title = section.scopeId ? (findScope(catalog, section.scopeId)?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
-      rows.push({ key: `heading:${key}`, type: 'heading', section, title });
-      if (query === null && destination.type === 'live') {
+      rows.push({ key: `heading:${key}`, type: 'heading', section });
+      if (layout === 'live') {
         rows.push({ key: `carousel:${key}`, type: 'carousel', section });
         continue;
       }
@@ -97,17 +96,34 @@ export function SportsBrowse({
         });
     }
     return rows;
-  }, [catalog, destination, query, sections, expanded]);
+  }, [destination, query, sections, expanded, layout]);
 
-  const renderedGameIds = useMemo(() => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : [])), [rows]);
-  const setVisibleGames = useSportsQuotes(route, active, renderedGameIds);
+  const renderedGameIds = useMemo(
+    () => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : row.type === 'carousel' ? row.section.gameIds : [])),
+    [rows]
+  );
+  const setVisibleGames = useSportsQuotes(route, visible, renderedGameIds);
+  const updateVisibleGames = useCallback(() => {
+    const { gameIds, carouselKeys } = viewport.current;
+    setVisibleGames([...gameIds, ...carouselKeys.flatMap(key => carouselGames.current.get(key) ?? [])]);
+  }, [setVisibleGames]);
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<Row>[] }) => {
-      setVisibleGames(viewableItems.flatMap(({ item }) => (item.type === 'game' ? [item.gameId] : [])));
-      const keys = new Set(viewableItems.flatMap(({ item }) => (item.type === 'carousel' ? [item.key] : [])));
-      setVisibleCarousels(previous => (previous.size === keys.size && [...keys].every(key => previous.has(key)) ? previous : keys));
+      viewport.current = {
+        gameIds: viewableItems.flatMap(({ item }) => (item.type === 'game' ? [item.gameId] : [])),
+        carouselKeys: viewableItems.flatMap(({ item }) => (item.type === 'carousel' ? [item.key] : [])),
+      };
+      updateVisibleGames();
     },
-    [setVisibleGames]
+    [updateVisibleGames]
+  );
+  const onCarouselVisibleGamesChanged = useCallback(
+    (sectionKey: string, gameIds: string[]) => {
+      if (gameIds.length) carouselGames.current.set(sectionKey, gameIds);
+      else carouselGames.current.delete(sectionKey);
+      updateVisibleGames();
+    },
+    [updateVisibleGames]
   );
 
   useImperativeHandle(ref, () => ({ scrollToTop: () => list.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
@@ -126,13 +142,13 @@ export function SportsBrowse({
             </View>
           );
         case 'heading':
-          return <SportsSectionHeading title={item.title} section={item.section} host={host} />;
+          return <SportsSectionHeading section={item.section} host={host} />;
         case 'carousel':
           return (
             <GameCarousel
               section={item.section}
-              route={route}
-              visible={active && visibleCarousels.has(item.key)}
+              sectionKey={item.key}
+              onVisibleGamesChanged={onCarouselVisibleGamesChanged}
               onGamePress={onGamePress}
             />
           );
@@ -153,7 +169,7 @@ export function SportsBrowse({
           );
       }
     },
-    [active, host, onGamePress, route, visibleCarousels, width]
+    [host, onCarouselVisibleGamesChanged, onGamePress, width]
   );
 
   return (
@@ -212,12 +228,6 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
   );
 }
 
-const SECTION_LABELS = {
-  live: i18n.l.sports.live,
-  today: i18n.l.sports.today,
-  upcoming: i18n.l.sports.upcoming,
-  search: i18n.l.sports.search_results,
-};
 const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
 
 const styles = StyleSheet.create({

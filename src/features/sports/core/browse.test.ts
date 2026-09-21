@@ -1,15 +1,18 @@
 import { getSportsNavigationRoot, getSportsParentDestination, type SportsDestination } from './browse';
+import { buildSportsCatalog } from './catalog';
 import { SportsCatalog } from './generated/sports';
 
-const catalog = SportsCatalog.fromJSON({
-  sports: [
-    { id: 'soccer', competitions: [{ id: 'epl' }] },
-    { id: 'esports', competitions: [{ id: 'lol' }] },
-    { id: 'tennis', competitions: [{ id: 'us-open' }, { id: 'atp' }] },
-    { id: 'basketball', competitions: [{ id: 'nba' }] },
-  ],
-  prominentScopeIds: ['nba', 'soccer', 'esports', 'us-open'],
-});
+const catalog = buildSportsCatalog(
+  SportsCatalog.fromJSON({
+    sports: [
+      { id: 'soccer', competitions: [{ id: 'epl' }] },
+      { id: 'esports', competitions: [{ id: 'lol' }] },
+      { id: 'tennis', competitions: [{ id: 'us-open' }, { id: 'atp' }] },
+      { id: 'basketball', competitions: [{ id: 'nba' }] },
+    ],
+    prominentScopeIds: ['nba', 'soccer', 'esports', 'us-open'],
+  })
+);
 const more: SportsDestination = { type: 'all' };
 const scope = (scopeId: string): SportsDestination => ({ type: 'scope', scopeId });
 

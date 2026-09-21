@@ -5,31 +5,29 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
-import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
-import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { type SportsHost } from '@/features/sports/core/browse';
+import { sportsBrowseStores, sportsReadStatusStores } from '@/features/sports/data/sportsBrowse';
+import { sportsActions } from '@/features/sports/data/sportsStore';
 import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
 import * as i18n from '@/languages';
 
 export function SportsReadStatus({ host }: { host: SportsHost }) {
-  const request = useSportsViewStore(state => state.hosts[host].request);
-  const catalog = useSportsStore(state => state.catalog);
-  const result = useSportsStore(state => getSportsResult(state, request));
-  const error = useSportsStore(state => state.getCacheEntry()?.errorInfo?.error);
-  const { destination, query } = request;
-
-  if (query === '') return null;
-  if (error) return <SportsReadError retry={() => sportsActions.retry(host)} />;
-  if (result?.nextCursor) return <LoadMoreGames host={host} />;
-  if (result?.sections.length) return null;
-
-  if (query !== null) {
-    return result ? <EmptyGames message={i18n.t(i18n.l.sports.search_empty)} /> : <SportsSkeleton layout="search" />;
+  const status = sportsReadStatusStores[host]();
+  const layout = sportsBrowseStores[host](state => state.layout);
+  switch (status) {
+    case 'none':
+      return null;
+    case 'loading':
+      return <SportsSkeleton layout={layout} />;
+    case 'error':
+      return <SportsReadError retry={() => sportsActions.retry(host)} />;
+    case 'more':
+      return <LoadMoreGames host={host} />;
+    case 'empty':
+      return <EmptyGames message={i18n.t(i18n.l.sports.empty)} />;
+    case 'search-empty':
+      return <EmptyGames message={i18n.t(i18n.l.sports.search_empty)} />;
   }
-  if (destination.type === 'all' || (destination.type === 'scope' && hasCompetitionDirectory(catalog, destination.scopeId))) {
-    return catalog ? null : <SportsSkeleton layout="directory" />;
-  }
-  if (!result) return <SportsSkeleton layout={destination.type === 'live' ? 'live' : 'games'} />;
-  return <EmptyGames message={i18n.t(i18n.l.sports.empty)} />;
 }
 
 function EmptyGames({ message }: { message: string }) {

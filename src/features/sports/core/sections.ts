@@ -1,5 +1,6 @@
 import { getSportsWindow, hasCompetitionDirectory, scopeContainsGame, type SportsDestination } from './browse';
-import { Game_Status, type Game, type SportsCatalog } from './generated/sports';
+import { type SportsCatalog, type SportsScope } from './catalog';
+import { Game_Status, type Game } from './generated/sports';
 
 export const MAX_SPORTS_SECTION_GAMES = 30;
 
@@ -22,18 +23,17 @@ export function getSportsSections({
   destination,
   now = new Date(),
 }: SportsGames & { destination: SportsDestination; now?: Date }): SportsSection[] {
-  const available = availableGames(gameIds, games);
   if (destination.type === 'all') return [];
+  const available = availableGames(gameIds, games);
 
   const matching = available.filter(game =>
     destination.type === 'live'
       ? game.status === Game_Status.STATUS_LIVE
       : scopeContainsGame(catalog, destination.scopeId, game.competitionIds)
   );
-  const promoted = new Map(catalog?.promotedGameIds.map((id, index) => [id, index]));
   matching.sort(
     (first, second) =>
-      (promoted.get(first.id) ?? Infinity) - (promoted.get(second.id) ?? Infinity) ||
+      (catalog?.promotedRanks[first.id] ?? Infinity) - (catalog?.promotedRanks[second.id] ?? Infinity) ||
       (first.startsAt ? Date.parse(first.startsAt) : Infinity) - (second.startsAt ? Date.parse(second.startsAt) : Infinity) ||
       (first.id < second.id ? -1 : first.id > second.id ? 1 : 0)
   );
@@ -66,18 +66,11 @@ export function getSportsSections({
 
 export function getSportsDirectoryCounts({ catalog, games, gameIds }: SportsGames): Record<string, number> {
   const counts: Record<string, number> = {};
-  const sportsByCompetition = new Map<string, string>();
-  for (const sport of catalog?.sports ?? []) {
-    counts[sport.id] = 0;
-    for (const competition of sport.competitions) {
-      counts[competition.id] = 0;
-      sportsByCompetition.set(competition.id, sport.id);
-    }
-  }
+  for (const id of catalog?.scopeIds ?? []) counts[id] = 0;
   for (const game of availableGames(gameIds, games)) {
     const scopes = new Set<string>();
     for (const competitionId of game.competitionIds) {
-      const sportId = sportsByCompetition.get(competitionId);
+      const sportId = catalog?.scopes[competitionId]?.parentId;
       if (sportId) {
         scopes.add(competitionId);
         scopes.add(sportId);
@@ -100,18 +93,19 @@ function availableGames(gameIds: readonly string[], games: Partial<Record<string
 function liveSections(games: Game[], catalog: SportsCatalog | undefined): SportsSection[] {
   const grouped = new Map<string, string[]>();
   for (const game of games) {
-    const scopeId = catalog?.liveGroupIds.find(id => scopeContainsGame(catalog, id, game.competitionIds)) ?? game.competitionIds[0];
+    let liveGroup: SportsScope['liveGroup'];
+    for (const competitionId of game.competitionIds) {
+      const candidate = catalog?.scopes[competitionId]?.liveGroup;
+      if (candidate && (!liveGroup || candidate.rank < liveGroup.rank)) liveGroup = candidate;
+    }
+    const scopeId = liveGroup?.id ?? game.competitionIds[0];
     if (!scopeId) continue;
     const group = grouped.get(scopeId);
     if (group) group.push(game.id);
     else grouped.set(scopeId, [game.id]);
   }
-  const order = new Set([
-    ...(catalog?.liveGroupIds ?? []),
-    ...(catalog?.sports.flatMap(sport => sport.competitions.map(competition => competition.id)) ?? []),
-  ]);
   const sections: SportsSection[] = [];
-  for (const scopeId of order) {
+  for (const scopeId of catalog?.liveGroupOrder ?? []) {
     const gameIds = grouped.get(scopeId);
     if (gameIds) sections.push({ type: 'live', scopeId, gameIds: gameIds.slice(0, MAX_SPORTS_SECTION_GAMES) });
   }
