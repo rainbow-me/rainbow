@@ -6,10 +6,12 @@ import { shallowEqual } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { Text, useColorMode, useForegroundColor } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Border } from '@/design-system/components/Border/Border';
+import { Text } from '@/design-system/components/Text/Text';
 import { getSquirclePath } from '@/design-system/layout/shapes';
-import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/features/sports/core/generated/sports';
+import { Game_Interruption, Game_Status, Winner_Kind, type Participant, type Selection } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameOffer } from '@/features/sports/ui/GameOffer';
 import { GameScore } from '@/features/sports/ui/GameScore';
@@ -34,19 +36,21 @@ export const GameCard = memo(function GameCard({
   if (!exists) return null;
 
   return (
-    <GameCardSurface width={width} threeWay={threeWay} testID={`sports-game-${gameId}`}>
-      <GameHeader gameId={gameId} scopeId={scopeId} onPress={onPress} />
-      <GameDivider header />
-      <GameParticipant gameId={gameId} index={0} onPress={onPress} />
-      <GameDivider />
-      <GameParticipant gameId={gameId} index={1} onPress={onPress} />
-      {threeWay && (
-        <>
-          <GameDivider />
-          <DrawOffer gameId={gameId} onPress={onPress} />
-        </>
-      )}
-    </GameCardSurface>
+    <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98}>
+      <GameCardSurface width={width} threeWay={threeWay} testID={`sports-game-${gameId}`}>
+        <GameHeader gameId={gameId} scopeId={scopeId} />
+        <GameDivider header />
+        <GameParticipant gameId={gameId} index={0} onPress={onPress} />
+        <GameDivider />
+        <GameParticipant gameId={gameId} index={1} onPress={onPress} />
+        {threeWay && (
+          <>
+            <GameDivider />
+            <DrawOffer gameId={gameId} onPress={onPress} />
+          </>
+        )}
+      </GameCardSurface>
+    </ButtonPressAnimation>
   );
 });
 
@@ -129,7 +133,7 @@ function CardInnerShadow({ width, height }: { width: number; height: number }) {
   );
 }
 
-function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: string; onPress: SportsGamePress }) {
+function GameHeader({ gameId, scopeId }: { gameId: string; scopeId?: string }) {
   const { isDarkMode } = useColorMode();
   const header = useSportsStore(state => {
     const game = state.games[gameId];
@@ -151,67 +155,65 @@ function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: st
   const status = label ? i18n.t(label) : undefined;
 
   return (
-    <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98}>
-      <View style={styles.header}>
-        <View style={styles.competition}>
-          {header.competition && (
-            <>
-              <SportsBadge scope={header.competition} size={28} />
-              <Text color="label" size="17pt" weight="heavy" numberOfLines={1} style={styles.competitionName}>
-                {header.competition.name}
-              </Text>
-            </>
-          )}
-        </View>
-        <View style={styles.gameTime}>
-          {status ? (
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {status}
+    <View style={styles.header}>
+      <View style={styles.competition}>
+        {header.competition && (
+          <>
+            <SportsBadge scope={header.competition} size={28} />
+            <Text color="label" size="17pt" weight="heavy" numberOfLines={1} style={styles.competitionName}>
+              {header.competition.name}
             </Text>
-          ) : live ? (
-            <>
-              {!!header.clock && (
-                <Text color="labelTertiary" size="13pt" weight="bold" tabularNumbers>
-                  {header.clock}
-                </Text>
-              )}
-              {!!header.period && (
-                <View style={!isDarkMode && styles.periodShadow}>
-                  <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.tightShadow]}>
-                    {!isDarkMode && (
-                      <View pointerEvents="none" style={styles.periodBackground}>
-                        <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
-                      </View>
-                    )}
-                    <Text color="labelTertiary" size="13pt" weight="bold">
-                      {header.period}
-                    </Text>
-                    <Border
-                      borderRadius={8}
-                      borderWidth={4 / 3}
-                      borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
-                      enableInLightMode
-                    />
-                  </View>
-                </View>
-              )}
-              {(header.clock || header.period) && (
-                <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
-                  ·
-                </Text>
-              )}
-              <Text color={{ custom: isDarkMode ? '#FF584D' : '#FA423C' }} size="13pt" weight="heavy" uppercase>
-                {i18n.t(i18n.l.sports.live)}
-              </Text>
-            </>
-          ) : header.startsAt ? (
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {formatStart(header.startsAt)}
-            </Text>
-          ) : null}
-        </View>
+          </>
+        )}
       </View>
-    </ButtonPressAnimation>
+      <View style={styles.gameTime}>
+        {status ? (
+          <Text color="labelTertiary" size="13pt" weight="bold">
+            {status}
+          </Text>
+        ) : live ? (
+          <>
+            {!!header.clock && (
+              <Text color="labelTertiary" size="13pt" weight="bold" tabularNumbers>
+                {header.clock}
+              </Text>
+            )}
+            {!!header.period && (
+              <View style={!isDarkMode && styles.periodShadow}>
+                <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.tightShadow]}>
+                  {!isDarkMode && (
+                    <View pointerEvents="none" style={styles.periodBackground}>
+                      <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
+                    </View>
+                  )}
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    {header.period}
+                  </Text>
+                  <Border
+                    borderRadius={8}
+                    borderWidth={4 / 3}
+                    borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }}
+                    enableInLightMode
+                  />
+                </View>
+              </View>
+            )}
+            {(header.clock || header.period) && (
+              <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
+                ·
+              </Text>
+            )}
+            <Text color={{ custom: isDarkMode ? '#FF584D' : '#FA423C' }} size="13pt" weight="heavy" uppercase>
+              {i18n.t(i18n.l.sports.live)}
+            </Text>
+          </>
+        ) : header.startsAt ? (
+          <Text color="labelTertiary" size="13pt" weight="bold">
+            {formatStart(header.startsAt)}
+          </Text>
+        ) : null}
+      </View>
+    </View>
   );
 }
 
@@ -230,38 +232,45 @@ function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 
   const subtitle = hasPrefix ? participant.name.slice(0, -alias.length).trim() : undefined;
   return (
     <View style={styles.row}>
-      <View style={styles.participantButton}>
-        <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98}>
-          <View style={styles.participant}>
-            <View style={[styles.logo, compact && styles.compactLogo]}>
-              <SportsImage
-                imageUrl={participant.imageUrl}
-                name={participant.name}
-                size={imageSize}
-                width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
-              />
-            </View>
-            <View style={styles.name}>
-              {!!subtitle && (
-                <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1}>
-                  {subtitle}
-                </Text>
-              )}
-              <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
-                {name}
-              </Text>
-            </View>
-            <GameScore gameId={gameId} participantIndex={index} />
-          </View>
-        </ButtonPressAnimation>
+      <View style={styles.participant}>
+        <View style={[styles.logo, compact && styles.compactLogo]}>
+          <SportsImage
+            imageUrl={participant.imageUrl}
+            name={participant.name}
+            size={imageSize}
+            width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
+          />
+        </View>
+        <View style={styles.name}>
+          {!!subtitle && (
+            <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1}>
+              {subtitle}
+            </Text>
+          )}
+          <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
+            {name}
+          </Text>
+        </View>
+        <GameScore gameId={gameId} participantIndex={index} />
       </View>
-      <ParticipantOffers gameId={gameId} index={index} glow={compact} onPress={onPress} />
+      <ParticipantOffers gameId={gameId} index={index} participant={participant} glow={compact} onPress={onPress} />
     </View>
   );
 }
 
-function ParticipantOffers({ gameId, index, glow, onPress }: { gameId: string; index: 0 | 1; glow: boolean; onPress: SportsGamePress }) {
-  const participant = useSportsStore(state => state.games[gameId]?.participants[index]);
+function ParticipantOffers({
+  gameId,
+  index,
+  participant,
+  glow,
+  onPress,
+}: {
+  gameId: string;
+  index: 0 | 1;
+  participant: Participant;
+  glow: boolean;
+  onPress: SportsGamePress;
+}) {
   const spread = useSportsStore(state => state.games[gameId]?.spread);
   const outcome = spread?.outcomes[index];
   const selection = useMemo(
@@ -276,21 +285,21 @@ function ParticipantOffers({ gameId, index, glow, onPress }: { gameId: string; i
         : undefined,
     [spread, outcome]
   );
-  const name = participant?.name ?? '';
+  const { name, color, winner } = participant;
   const select = (selection: Selection) => onPress(gameId, selection);
   return (
     <View style={styles.offers}>
-      {selection && (
+      {selection && outcome && (
         <GameOffer
           selection={selection}
-          color={participant?.color}
-          line={outcome?.line}
+          color={color}
+          line={outcome.line}
           onPress={select}
-          accessibilityLabel={`${name}, ${outcome?.line && outcome?.line > 0 ? '+' : ''}${outcome?.line}`}
+          accessibilityLabel={`${name}, ${outcome.line > 0 ? '+' : ''}${outcome.line}`}
         />
       )}
-      {participant?.winner ? (
-        <GameOffer selection={participant?.winner} color={participant?.color} glow={glow} onPress={select} accessibilityLabel={name} />
+      {winner ? (
+        <GameOffer selection={winner} color={color} glow={glow} onPress={select} accessibilityLabel={name} />
       ) : (
         <View style={styles.unavailable}>
           <Text color="labelQuaternary" size="17pt" weight="heavy">
@@ -375,10 +384,31 @@ const LIGHT_CARD_FILL = ['rgba(255,255,255,0.68)', 'rgba(255,255,255,0.96)'] as 
 const LIGHT_BADGE_FILL = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
 
 const styles = StyleSheet.create({
-  surface: { paddingBottom: 6, borderRadius: 24, borderCurve: 'continuous' },
-  cardBackground: { ...StyleSheet.absoluteFillObject, borderRadius: 24, borderCurve: 'continuous', overflow: 'hidden' },
-  cardShadow: { borderRadius: 24, borderCurve: 'continuous', shadowColor: '#000000', shadowOpacity: 0.06, shadowRadius: 12, elevation: 6 },
-  tightShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3 },
+  surface: {
+    paddingBottom: 6,
+    borderRadius: 24,
+    borderCurve: 'continuous',
+  },
+  cardBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  },
+  cardShadow: {
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    shadowColor: '#000000',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  tightShadow: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+  },
   header: {
     height: 48,
     paddingTop: 12,
@@ -389,11 +419,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  competition: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  competition: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   competitionName: { flexShrink: 1 },
-  gameTime: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  period: { paddingHorizontal: 5, height: 19, justifyContent: 'center', borderRadius: 8, borderCurve: 'continuous' },
-  periodBackground: { ...StyleSheet.absoluteFillObject, borderRadius: 8, borderCurve: 'continuous', overflow: 'hidden' },
+  gameTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  period: {
+    paddingHorizontal: 5,
+    height: 19,
+    justifyContent: 'center',
+    borderRadius: 8,
+    borderCurve: 'continuous',
+  },
+  periodBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 8,
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  },
   darkPeriod: { backgroundColor: 'rgba(255,255,255,0.07)' },
   periodShadow: {
     borderRadius: 8,
@@ -405,14 +455,40 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   dot: { opacity: 0.7 },
-  row: { height: 54, paddingHorizontal: 12, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  participantButton: { flex: 1 },
-  participant: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 36 },
-  logo: { width: 42, height: 36, alignItems: 'center', justifyContent: 'center' },
+  row: {
+    height: 54,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  participant: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 36,
+  },
+  logo: {
+    width: 42,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   compactLogo: { width: 32, height: 28 },
   name: { flex: 1, gap: 8 },
-  offers: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  unavailable: { width: 62, height: 42, alignItems: 'center', justifyContent: 'center' },
+  offers: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  unavailable: {
+    width: 62,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   draw: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -425,13 +501,46 @@ const styles = StyleSheet.create({
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },
   dividerLine: { height: 1 },
-  skeletonBadge: { width: 28, height: 28, borderRadius: 10, borderCurve: 'continuous' },
-  skeletonLeague: { width: 48, height: 12, marginLeft: 2, borderRadius: 6 },
+  skeletonBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    borderCurve: 'continuous',
+  },
+  skeletonLeague: {
+    width: 48,
+    height: 12,
+    marginLeft: 2,
+    borderRadius: 6,
+  },
   skeletonSpacer: { flex: 1 },
-  skeletonTime: { width: 64, height: 9, borderRadius: 5 },
-  skeletonLogo: { width: 36, height: 36, marginHorizontal: 3, borderRadius: 8, borderCurve: 'continuous' },
+  skeletonTime: {
+    width: 64,
+    height: 9,
+    borderRadius: 5,
+  },
+  skeletonLogo: {
+    width: 36,
+    height: 36,
+    marginHorizontal: 3,
+    borderRadius: 8,
+    borderCurve: 'continuous',
+  },
   skeletonName: { flex: 1, gap: 8 },
-  skeletonSubtitle: { width: 70, height: 9, borderRadius: 5 },
-  skeletonTitle: { width: 90, height: 12, borderRadius: 6 },
-  skeletonOffer: { width: 62, height: 42, borderRadius: 15, borderCurve: 'continuous' },
+  skeletonSubtitle: {
+    width: 70,
+    height: 9,
+    borderRadius: 5,
+  },
+  skeletonTitle: {
+    width: 90,
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonOffer: {
+    width: 62,
+    height: 42,
+    borderRadius: 15,
+    borderCurve: 'continuous',
+  },
 });

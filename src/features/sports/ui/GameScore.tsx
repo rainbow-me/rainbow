@@ -16,8 +16,9 @@ export const GameScore = memo(function GameScore({ gameId, participantIndex }: {
       {score.map((column, index) => {
         const value = participantIndex === 0 ? column.first : column.second;
         const wide = column.kind === ScoreColumn_Kind.KIND_ROUNDS || column.kind === ScoreColumn_Kind.KIND_SERIES;
+        const hasTieBreak = column.first?.tieBreak !== undefined || column.second?.tieBreak !== undefined;
         return (
-          <View key={index} style={[styles.column, wide && styles.wideColumn]}>
+          <View key={index} style={[styles.column, wide && styles.wideColumn, hasTieBreak && styles.tieBreakColumn]}>
             <Text
               align="center"
               color={column.winner === otherWinner ? 'labelQuaternary' : 'label'}
@@ -43,8 +44,17 @@ export const GameScore = memo(function GameScore({ gameId, participantIndex }: {
 });
 
 const styles = StyleSheet.create({
-  columns: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  column: { minWidth: 16 },
+  columns: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  column: { minWidth: 10 },
   wideColumn: { minWidth: 24 },
-  tieBreak: { position: 'absolute', right: -8, top: -5 },
+  tieBreakColumn: { minWidth: 22, paddingRight: 12 },
+  tieBreak: {
+    position: 'absolute',
+    right: 0,
+    top: -5,
+  },
 });

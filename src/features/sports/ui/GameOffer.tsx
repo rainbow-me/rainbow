@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAnimatedStyle } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
@@ -10,6 +11,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { Text } from '@/design-system/components/Text/Text';
+import { textSizes } from '@/design-system/typography/typography';
 import { opacity } from '@/design-system/utils/opacity';
 import { type Selection } from '@/features/sports/core/generated/sports';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
@@ -40,6 +42,7 @@ export const GameOffer = memo(function GameOffer({
     autoSubscriptionEnabled: false,
     selector: formatProbability,
   });
+  const probabilityStyle = useAnimatedStyle(() => (isSpread || price.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
   const background = isSpread
     ? isDarkMode
       ? opacity(color, 0.2)
@@ -48,7 +51,14 @@ export const GameOffer = memo(function GameOffer({
 
   return (
     <View accessible accessibilityRole="button" accessibilityLabel={accessibilityLabel} onAccessibilityTap={() => onPress(selection)}>
-      <ButtonPressAnimation hitSlop={{ top: 1, bottom: 1 }} onPress={() => onPress(selection)} scaleTo={0.96}>
+      <ButtonPressAnimation
+        hitSlop={{ top: 1, bottom: 1 }}
+        onPress={event => {
+          event?.stopPropagation();
+          onPress(selection);
+        }}
+        scaleTo={0.96}
+      >
         <View
           style={
             isSpread
@@ -90,8 +100,8 @@ export const GameOffer = memo(function GameOffer({
               <AnimatedText
                 align="center"
                 color={isSpread && !isDarkMode ? 'label' : 'white'}
-                size={isSpread ? '15pt' : '18pt'}
-                style={isSpread ? styles.spreadText : styles.winnerText}
+                size="15pt"
+                style={[probabilityStyle, isSpread ? styles.spreadText : styles.winnerText]}
                 weight="heavy"
               >
                 {price}
@@ -122,6 +132,8 @@ function formatProbability(token: TokenData): string {
   return `${roundWorklet(toPercentageWorklet(token.price))}%`;
 }
 
+const SMALL_PROBABILITY_STYLE = textSizes['15pt'];
+const PROBABILITY_STYLE = textSizes['18pt'];
 const LIGHT_SPREAD_FILL = ['rgba(255,255,255,0.54)', 'rgba(255,255,255,0.81)'] as const;
 const WINNER_HIGHLIGHT = [
   'rgba(255,255,255,0.12)',
@@ -131,10 +143,32 @@ const WINNER_HIGHLIGHT = [
   'rgba(255,255,255,0)',
 ] as const;
 const styles = StyleSheet.create({
-  surface: { width: 62, height: 42, borderRadius: 15, borderCurve: 'continuous' },
-  background: { ...StyleSheet.absoluteFillObject, borderRadius: 15, borderCurve: 'continuous', overflow: 'hidden' },
-  highlight: { position: 'absolute', top: 0, left: 0, right: 0, height: 12 },
-  winnerShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 3 },
+  surface: {
+    width: 62,
+    height: 42,
+    borderRadius: 15,
+    borderCurve: 'continuous',
+  },
+  background: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 15,
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  },
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 12,
+  },
+  winnerShadow: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 3,
+  },
   spreadShadow: {
     borderRadius: 15,
     borderCurve: 'continuous',
@@ -144,11 +178,32 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  tightShadow: { shadowColor: '#000000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3 },
-  glow: { borderRadius: 15, borderCurve: 'continuous', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 12 },
-  line: { position: 'absolute', top: 8, left: 0, right: 0 },
+  tightShadow: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+  },
+  glow: {
+    borderRadius: 15,
+    borderCurve: 'continuous',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+  },
+  line: {
+    position: 'absolute',
+    top: 8,
+    left: 0,
+    right: 0,
+  },
   lineText: { letterSpacing: 0.72 },
-  spreadPrice: { position: 'absolute', top: 22, left: 0, right: 0 },
+  spreadPrice: {
+    position: 'absolute',
+    top: 22,
+    left: 0,
+    right: 0,
+  },
   spreadText: { letterSpacing: 0.36 },
   winnerPrice: { flex: 1, justifyContent: 'center' },
   winnerText: {
