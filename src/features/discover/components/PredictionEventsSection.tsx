@@ -225,7 +225,7 @@ export function PredictionEventsSection({
           </View>
         )}
       </View>
-      <EventLookup eventIds={ids} visibleEventIds={visibleIds} active={active} />
+      <EventLookup eventIds={visibleIds} active={active} />
     </View>
   );
 }
@@ -295,9 +295,9 @@ function GenericEventCard({
   );
 }
 
-function EventLookup({ eventIds, visibleEventIds, active }: { eventIds: string[]; visibleEventIds: string[]; active: boolean }) {
-  const error = useSportsLookup(eventIds, Routes.DISCOVER_SCREEN, active, visibleEventIds);
-  if (!active || !visibleEventIds.length || !error) return null;
+function EventLookup({ eventIds, active }: { eventIds: string[]; active: boolean }) {
+  const error = useSportsLookup(eventIds, Routes.DISCOVER_SCREEN, active);
+  if (!active || !eventIds.length || !error) return null;
   return (
     <ButtonPressAnimation onPress={() => useSportsStore.getState().fetch(undefined, { force: true })} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">

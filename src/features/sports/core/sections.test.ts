@@ -132,24 +132,6 @@ describe('Sports sections', () => {
       { type: 'today', gameIds: ['scheduled'] },
     ]);
   });
-
-  it('preserves Search relevance and returned statuses without browse sorting', () => {
-    expect(
-      getSportsSections({
-        catalog,
-        games: gamesById(
-          game('finished', { status: Game_Status.STATUS_ENDED }),
-          game('live'),
-          game('promoted-first'),
-          game('postponed', { status: Game_Status.STATUS_POSTPONED })
-        ),
-        gameIds: ['finished', 'live', 'promoted-first', 'missing', 'postponed', 'live'],
-        destination: { type: 'all' },
-        search: true,
-        now,
-      })
-    ).toEqual([{ type: 'search', gameIds: ['finished', 'live', 'promoted-first', 'postponed'] }]);
-  });
 });
 
 describe('Sports directory counts', () => {

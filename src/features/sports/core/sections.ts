@@ -20,12 +20,9 @@ export function getSportsSections({
   games,
   gameIds,
   destination,
-  search = false,
   now = new Date(),
-}: SportsGames & { destination: SportsDestination; search?: boolean; now?: Date }): SportsSection[] {
+}: SportsGames & { destination: SportsDestination; now?: Date }): SportsSection[] {
   const available = availableGames(gameIds, games);
-  if (search)
-    return available.length ? [{ type: 'search', gameIds: available.slice(0, MAX_SPORTS_SECTION_GAMES).map(game => game.id) }] : [];
   if (destination.type === 'all') return [];
 
   const matching = available.filter(game =>
