@@ -80,11 +80,11 @@ function DirectoryCount({ scopeId }: { scopeId: string }) {
   const count = useSportsStore(state => state.counts[scopeId] ?? 0);
   return (
     <View style={[styles.count, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }]}>
-      <Text color="labelSecondary" size="14pt" weight="heavy">
+      <Text color="labelSecondary" size="13pt" weight="heavy">
         {count}
       </Text>
       <Border
-        borderRadius={8}
+        borderRadius={9}
         borderWidth={4 / 3}
         borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
         enableInLightMode
@@ -119,8 +119,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   count: {
-    height: 23,
-    borderRadius: 8,
+    height: 24,
+    minWidth: 24,
+    borderRadius: 9,
     borderCurve: 'continuous',
     paddingHorizontal: 7,
     justifyContent: 'center',

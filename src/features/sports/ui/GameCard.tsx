@@ -100,7 +100,8 @@ function GameCardSurface({
   children: ReactNode;
 }) {
   const { isDarkMode } = useColorMode();
-  const height = threeWay ? 222 : 166;
+  const rows = threeWay ? 3 : 2;
+  const height = styles.header.height + rows * (styles.row.height + styles.divider.height) + styles.surface.paddingBottom;
   return (
     <View style={[styles.cardShadow, { shadowOffset: { width: 0, height: isDarkMode ? 4 : 2 } }]} testID={testID}>
       <View
@@ -250,7 +251,7 @@ function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 
         </View>
         <View style={styles.name}>
           {!!subtitle && (
-            <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1}>
+            <Text color="labelTertiary" size="13pt" weight="bold" numberOfLines={1}>
               {subtitle}
             </Text>
           )}
@@ -315,7 +316,7 @@ function ParticipantOffers({
 function DrawOffer({ gameId, onPress }: { gameId: string; onPress: SportsGamePress }) {
   const selection = useSportsStore(state => state.games[gameId]?.winner?.draw);
   return (
-    <View style={styles.draw}>
+    <View style={[styles.row, styles.draw]}>
       <Text color="labelSecondary" size="15pt" weight="bold">
         {i18n.t(i18n.l.sports.draw)}
       </Text>
@@ -455,7 +456,7 @@ const styles = StyleSheet.create({
   },
   dot: { opacity: 0.7 },
   row: {
-    height: 54,
+    height: 52,
     paddingHorizontal: 12,
     paddingVertical: 6,
     flexDirection: 'row',
@@ -483,19 +484,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   unavailable: {
-    width: 62,
-    height: 42,
+    width: 60,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  draw: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  draw: { justifyContent: 'space-between' },
   divider: { height: 2, paddingLeft: 2 },
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },
@@ -537,9 +531,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   skeletonOffer: {
-    width: 62,
-    height: 42,
-    borderRadius: 15,
+    width: 60,
+    height: 40,
+    borderRadius: 14,
     borderCurve: 'continuous',
   },
 });

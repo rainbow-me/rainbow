@@ -56,6 +56,7 @@ import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { SportsScreen } from '@/features/sports/ui/SportsScreen';
 import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -563,6 +564,8 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
 function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], isDarkMode: boolean): string {
   'worklet';
   switch (route) {
+    case Routes.SPORTS_SCREEN:
+      return isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.RNBW_REWARDS_SCREEN:
