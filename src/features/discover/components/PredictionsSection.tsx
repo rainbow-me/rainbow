@@ -51,7 +51,7 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
@@ -194,6 +194,7 @@ function usePredictionTokenSubscription({
 }) {
   // List displays render the full unsliced data (expandable via ShowMore), so subscribe all
   // items. Carousel/grid slice to surface.limit, so subscribe only the capped slice.
+  const setSubscribedTokens = useLiveTokenSubscription(Routes.DISCOVER_SCREEN);
   const isListDisplay = PREDICTIONS_SECTION_DESCRIPTORS[display].layout === 'list';
   const renderedItems = useMemo(
     () => (isListDisplay || typeof limit !== 'number' ? items : items.slice(0, limit)),
@@ -203,16 +204,8 @@ function usePredictionTokenSubscription({
   useEffect(() => {
     const extractTokenIds = getDisplayTokenIdExtractor(display);
     const tokenIds = renderedItems.flatMap(item => extractTokenIds(item.event));
-    const uniqueTokenIds = Array.from(new Set(tokenIds));
-    if (uniqueTokenIds.length === 0) return;
-
-    addSubscribedTokens({ route: Routes.DISCOVER_SCREEN, tokenIds: uniqueTokenIds });
-    useLiveTokensStore.getState().fetch(undefined, { force: true });
-
-    return () => {
-      removeSubscribedTokens({ route: Routes.DISCOVER_SCREEN, tokenIds: uniqueTokenIds });
-    };
-  }, [display, renderedItems]);
+    setSubscribedTokens(tokenIds);
+  }, [display, renderedItems, setSubscribedTokens]);
 }
 
 function PredictionsPlacementSection({ surface, surfaceId }: { surface: PlacementBackedPredictionsSurface; surfaceId: SurfaceId }) {
