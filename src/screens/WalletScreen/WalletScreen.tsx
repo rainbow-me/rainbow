@@ -19,7 +19,6 @@ import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
-import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
@@ -64,8 +63,7 @@ function extractTokenRowIds(items: CellTypes[]) {
 
 function WalletScreen() {
   const insets = useSafeAreaInsets();
-  const route = useRoute();
-  const setSubscribedTokens = useLiveTokenSubscription(route.name);
+  const setSubscribedTokens = useLiveTokenSubscription();
 
   const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
 

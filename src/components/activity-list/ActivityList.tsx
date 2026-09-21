@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import { Platform, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { LegendList, type LegendListRef } from '@legendapp/list';
+import { useScrollToTop } from '@react-navigation/native';
 import { type SharedValue } from 'react-native-reanimated';
 
 import { FastTransactionCoinRow } from '@/components/coin-row';
@@ -12,7 +13,6 @@ import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import styled from '@/framework/ui/styled-thing';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
-import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
@@ -154,6 +154,13 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   );
 
   const listRef = useRef<LegendListRef | null>(null);
+  const scrollToTopRef = useRef({
+    scrollToTop() {
+      const list = listRef.current;
+      if (!list || list.getState().isAtStart) return;
+      list.scrollToIndex({ index: 0, viewOffset: 200, animated: true });
+    },
+  });
 
   const onScroll = useMemo(() => {
     if (!scrollY) return undefined;
@@ -163,7 +170,7 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
     };
   }, [scrollY]);
 
-  useLegendListNavBarScrollToTop(listRef);
+  useScrollToTop(scrollToTopRef);
 
   if (isLoadingTransactions) {
     return (

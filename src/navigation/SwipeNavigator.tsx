@@ -76,7 +76,6 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { type Route } from './routesNames';
 
 const DOUBLE_PRESS_DELAY = 400;
@@ -109,7 +108,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const recyclerList = useRecyclerListViewScrollToTopContext();
-  const mainList = useMainList();
 
   const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
@@ -206,6 +204,9 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
 
   const onPress = useCallback(
     ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: string }) => {
+      const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+      if (event.defaultPrevented) return;
+
       const isFocused = getIsFocused(index);
       const time = new Date().getTime();
       const delta = time - (lastPressRef.current || 0);
@@ -229,18 +230,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
               return;
             }
             break;
-          case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
-            mainList?.scrollToTop();
-            break;
-          case TAB_BAR_ICONS[Routes.SPORTS_SCREEN]:
-            mainList?.scrollToTop();
-            break;
         }
       }
 
       lastPressRef.current = time;
     },
-    [getIsFocused, jumpTo, mainList, reanimatedPosition, recyclerList]
+    [getIsFocused, jumpTo, navigation, reanimatedPosition, recyclerList]
   );
 
   const onLongPress = useCallback(
@@ -726,11 +721,9 @@ export function SwipeNavigator() {
   return (
     <FlexItem backgroundColor={globalColors.white100}>
       <BrowserTabBarContextProvider>
-        <MainListProvider>
-          <RecyclerListViewScrollToTopProvider>
-            <SwipeNavigatorScreens />
-          </RecyclerListViewScrollToTopProvider>
-        </MainListProvider>
+        <RecyclerListViewScrollToTopProvider>
+          <SwipeNavigatorScreens />
+        </RecyclerListViewScrollToTopProvider>
       </BrowserTabBarContextProvider>
 
       <PendingTransactionWatcher />

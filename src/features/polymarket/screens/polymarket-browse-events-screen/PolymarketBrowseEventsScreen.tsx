@@ -39,7 +39,7 @@ const PolymarketBrowseEventsList = () => {
   const safeAreaInsets = useSafeAreaInsets();
   const visible = useNavigationStore(state => state.activeRoute === Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
   const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === CATEGORIES.sports.tagId);
-  const onGamePress = useSportsGamePress(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
+  const onGamePress = useSportsGamePress();
 
   const scrollOffset = useSharedValue(0);
   const onScroll = useScrollFadeHandler(scrollOffset);
@@ -55,7 +55,6 @@ const PolymarketBrowseEventsList = () => {
           ref={sportsBrowseRef}
           host="predictions"
           visible={visible}
-          route={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}
           onScroll={onScroll}

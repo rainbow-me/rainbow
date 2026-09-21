@@ -1,8 +1,9 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback } from 'react';
 import { FlatList, StyleSheet, View, type ViewToken } from 'react-native';
 
 import { type SportsSection } from '@/features/sports/core/sections';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
+import { useCleanup } from '@/hooks/useCleanup';
 import useDimensions from '@/hooks/useDimensions';
 
 export const GameCarousel = memo(function GameCarousel({
@@ -26,7 +27,6 @@ export const GameCarousel = memo(function GameCarousel({
       ),
     [onVisibleGamesChanged, sectionKey]
   );
-  useEffect(() => () => onVisibleGamesChanged(sectionKey, []), [onVisibleGamesChanged, sectionKey]);
   const renderItem = useCallback(
     ({ item }: { item: string }) => (
       <View style={{ width: cardWidth }}>
@@ -35,6 +35,8 @@ export const GameCarousel = memo(function GameCarousel({
     ),
     [cardWidth, onGamePress, section.scopeId]
   );
+
+  useCleanup(() => onVisibleGamesChanged(sectionKey, []), [onVisibleGamesChanged, sectionKey]);
 
   return (
     <FlatList

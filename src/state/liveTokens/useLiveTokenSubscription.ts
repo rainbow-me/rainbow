@@ -1,14 +1,16 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
+import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
-import { type Route } from '@/navigation/routesNames';
+import { useRoute } from '@/navigation/RouteContext';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 
 /** Replaces this consumer's quote demand and releases it on unmount. */
-export function useLiveTokenSubscription(route: Route): (tokenIds: string[]) => void {
+export function useLiveTokenSubscription(): (tokenIds: string[]) => void {
+  const { name: route } = useRoute();
   const owner = useStableValue(() => Symbol('liveTokens'));
 
-  useEffect(() => () => useLiveTokensStore.getState().removeSubscription(owner), [owner, route]);
+  useCleanup(() => useLiveTokensStore.getState().removeSubscription(owner), [owner, route]);
 
   return useCallback(tokenIds => useLiveTokensStore.getState().setSubscription(owner, route, tokenIds), [owner, route]);
 }

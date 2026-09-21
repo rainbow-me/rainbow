@@ -31,7 +31,6 @@ import { GameCard } from '@/features/sports/ui/GameCard';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 
 /** Event-card placements resolve as Games first; only an unavailable result admits generic hydration. */
@@ -60,10 +59,10 @@ export function PredictionEventsSection({
     [carousel, expanded, items, surface.limit]
   );
   const ids = useMemo(() => renderedItems.map(item => item.id), [renderedItems]);
-  const { owner: lookupOwner, setVisibleEvents } = useSportsLookup(ids, Routes.DISCOVER_SCREEN, active);
+  const { owner: lookupOwner, setVisibleEvents } = useSportsLookup(ids, active);
   const cardWidth = width - (renderedItems.length === 1 ? 24 : 30);
   const title = resolveSectionTitle(surface);
-  const openGame = useSportsGamePress(Routes.DISCOVER_SCREEN);
+  const openGame = useSportsGamePress();
 
   const sectionTop = useSharedValue(0);
   const cardsTop = useSharedValue(0);
@@ -262,7 +261,7 @@ function GenericEventCard({
     return Boolean(consumer?.active && consumer.eventIds.includes(eventId) && consumer.visibleIds.includes(eventId));
   });
   const { event, isLoading, error } = usePredictionEvent(eventId, visible);
-  const subscribe = useLiveTokenSubscription(Routes.DISCOVER_SCREEN);
+  const subscribe = useLiveTokenSubscription();
   useEffect(() => subscribe(visible && event ? getPolymarketEventsListTokenIds(event) : []), [event, subscribe, visible]);
   if (!event)
     return isLoading || !visible ? (

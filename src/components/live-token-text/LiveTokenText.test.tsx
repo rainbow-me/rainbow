@@ -33,7 +33,6 @@ jest.mock('@/state/liveTokens/liveTokensStore', () => ({
   useLiveTokensStore: jest.requireActual('@storesjs/stores').createBaseStore(() => ({ tokens: {} })),
 }));
 jest.mock('@/state/liveTokens/useLiveTokenSubscription', () => ({ useLiveTokenSubscription: () => jest.fn() }));
-jest.mock('@/navigation/RouteContext', () => ({ useRoute: () => ({ name: 'Sports' }) }));
 jest.mock('@/design-system', () => ({}));
 jest.mock('@/theme/ThemeContext', () => ({}));
 

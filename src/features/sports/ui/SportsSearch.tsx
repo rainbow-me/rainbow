@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 
 import { debounce } from 'lodash';
@@ -11,6 +11,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { fonts } from '@/design-system/typography/typography';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { sportsActions, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 
 export function SportsSearch({ host }: { host: SportsHost }) {
@@ -18,7 +19,8 @@ export function SportsSearch({ host }: { host: SportsHost }) {
   const label = useForegroundColor('label');
   const fill = useForegroundColor('fillQuaternary');
   const search = useMemo(() => debounce((query: string) => sportsActions.setSearch(host, query), 250), [host]);
-  useEffect(() => () => search.cancel(), [search]);
+
+  useCleanup(() => search.cancel(), [search]);
 
   return (
     <View style={styles.row}>

@@ -697,12 +697,7 @@ type ParamsByRoute = {
     event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
-    fromRoute:
-      | typeof Routes.POLYMARKET_EVENT_SCREEN
-      | typeof Routes.POLYMARKET_MARKET_SHEET
-      | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN
-      | typeof Routes.SPORTS_SCREEN
-      | typeof Routes.DISCOVER_SCREEN;
+    fromRoute: Route;
   } & (
     | { selection: Selection }
     | {
