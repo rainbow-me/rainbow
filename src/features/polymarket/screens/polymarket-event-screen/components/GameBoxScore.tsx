@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { deepEqual } from '@storesjs/stores';
+import { shallowEqual } from '@storesjs/stores';
 
 import { Box, globalColors, Separator, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
@@ -39,7 +39,7 @@ function GameStatus({ gameId }: { gameId: string }) {
     return game
       ? { status: game.status, interruption: game.interruption, period: game.period, clock: game.clock, startsAt: game.startsAt }
       : undefined;
-  }, deepEqual);
+  }, shallowEqual);
   if (!display) return null;
 
   const interruption = INTERRUPTION_LABELS[display.interruption];
@@ -74,10 +74,7 @@ function GameStatus({ gameId }: { gameId: string }) {
 }
 
 function ParticipantScore({ gameId, index }: { gameId: string; index: 0 | 1 }) {
-  const participant = useSportsStore(state => {
-    const value = state.games[gameId]?.participants[index];
-    return value ? { name: value.name, imageUrl: value.imageUrl } : undefined;
-  }, deepEqual);
+  const participant = useSportsStore(state => state.games[gameId]?.participants[index]);
   if (!participant) return null;
 
   return (

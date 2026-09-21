@@ -1,12 +1,11 @@
-import { memo, type ReactNode } from 'react';
+import { memo, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { deepEqual } from '@storesjs/stores';
+import { shallowEqual } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Text, useColorMode, useForegroundColor } from '@/design-system';
-import { findScope } from '@/features/sports/core/browse';
 import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameOffer } from '@/features/sports/ui/GameOffer';
@@ -115,14 +114,14 @@ function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: st
     if (!game) return undefined;
     const id = scopeId && game.competitionIds.includes(scopeId) ? scopeId : game.competitionIds[0];
     return {
-      competition: id ? findScope(state.catalog, id) : undefined,
+      competition: id ? state.scopes[id] : undefined,
       status: game.status,
       interruption: game.interruption,
       period: game.period,
       clock: game.clock,
       startsAt: game.startsAt,
     };
-  }, deepEqual);
+  }, shallowEqual);
   if (!header) return null;
 
   const live = header.status === Game_Status.STATUS_LIVE;
@@ -190,14 +189,11 @@ function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: st
 }
 
 function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 | 1; onPress: SportsGamePress }) {
-  const { participant, sportId } = useSportsStore(state => {
-    const game = state.games[gameId];
-    return {
-      participant: game?.participants[index],
-      sportId: state.catalog?.sports.find(sport => sport.competitions.some(competition => game?.competitionIds.includes(competition.id)))
-        ?.id,
-    };
-  }, deepEqual);
+  const participant = useSportsStore(state => state.games[gameId]?.participants[index]);
+  const sportId = useSportsStore(state => {
+    const competitionId = state.games[gameId]?.competitionIds[0];
+    return competitionId ? state.sportByCompetition[competitionId] : undefined;
+  });
   if (!participant) return null;
   const compact = sportId === 'tennis' || sportId === 'esports';
   const imageSize = sportId === 'tennis' ? 24 : sportId === 'esports' ? 32 : 36;
@@ -238,36 +234,36 @@ function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 
 }
 
 function ParticipantOffers({ gameId, index, glow, onPress }: { gameId: string; index: 0 | 1; glow: boolean; onPress: SportsGamePress }) {
-  const offers = useSportsStore(state => {
-    const game = state.games[gameId];
-    const participant = game?.participants[index];
-    const spread = game?.spread;
-    const outcome = spread?.outcomes[index];
-    return {
-      winner: participant?.winner,
-      color: participant?.color,
-      name: participant?.name ?? '',
-      spread:
-        spread && outcome
-          ? { eventId: spread.eventId, marketId: spread.marketId, tokenId: outcome.tokenId, outcomeIndex: outcome.outcomeIndex }
-          : undefined,
-      line: outcome?.line,
-    };
-  }, deepEqual);
+  const participant = useSportsStore(state => state.games[gameId]?.participants[index]);
+  const spread = useSportsStore(state => state.games[gameId]?.spread);
+  const outcome = spread?.outcomes[index];
+  const selection = useMemo(
+    () =>
+      spread && outcome
+        ? {
+            eventId: spread.eventId,
+            marketId: spread.marketId,
+            tokenId: outcome.tokenId,
+            outcomeIndex: outcome.outcomeIndex,
+          }
+        : undefined,
+    [spread, outcome]
+  );
+  const name = participant?.name ?? '';
   const select = (selection: Selection) => onPress(gameId, selection);
   return (
     <View style={styles.offers}>
-      {offers.spread && (
+      {selection && (
         <GameOffer
-          selection={offers.spread}
-          color={offers.color}
-          line={offers.line}
+          selection={selection}
+          color={participant?.color}
+          line={outcome?.line}
           onPress={select}
-          accessibilityLabel={`${offers.name}, ${offers.line && offers.line > 0 ? '+' : ''}${offers.line}`}
+          accessibilityLabel={`${name}, ${outcome?.line && outcome?.line > 0 ? '+' : ''}${outcome?.line}`}
         />
       )}
-      {offers.winner ? (
-        <GameOffer selection={offers.winner} color={offers.color} glow={glow} onPress={select} accessibilityLabel={offers.name} />
+      {participant?.winner ? (
+        <GameOffer selection={participant?.winner} color={participant?.color} glow={glow} onPress={select} accessibilityLabel={name} />
       ) : (
         <View style={styles.unavailable}>
           <Text color="labelQuaternary" size="17pt" weight="heavy">
@@ -280,7 +276,7 @@ function ParticipantOffers({ gameId, index, glow, onPress }: { gameId: string; i
 }
 
 function DrawOffer({ gameId, onPress }: { gameId: string; onPress: SportsGamePress }) {
-  const selection = useSportsStore(state => state.games[gameId]?.winner?.draw, deepEqual);
+  const selection = useSportsStore(state => state.games[gameId]?.winner?.draw);
   return (
     <View style={styles.draw}>
       <Text color="labelSecondary" size="15pt" weight="bold">

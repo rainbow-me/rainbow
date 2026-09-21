@@ -1,6 +1,5 @@
+import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-
-import { deepEqual } from '@storesjs/stores';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useColorMode } from '@/design-system/color/ColorMode';
@@ -8,42 +7,34 @@ import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
-import { getSportsDirectoryCounts } from '@/features/sports/core/sections';
-import { getSportsAvailableGameIds, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
 export function SportsDirectory({ host, showHeading = false }: { host: SportsHost; showHeading?: boolean }) {
   const { isDarkMode } = useColorMode();
-  const directory = useSportsStore(state => {
-    const { destination, query } = state.hosts[host].request;
-    const sports = state.catalog?.sports ?? [];
-    const counts = getSportsDirectoryCounts({
-      catalog: state.catalog,
-      games: state.games,
-      gameIds: getSportsAvailableGameIds(state),
-    });
+  const { destination, query } = useSportsViewStore(state => state.hosts[host].request);
+  const catalog = useSportsStore(state => state.catalog);
+  const directory = useMemo(() => {
+    const sports = catalog?.sports ?? [];
     if (query !== null) {
       const text = query.toLocaleLowerCase();
       const scopes = [...sports, ...sports.flatMap(sport => sport.competitions)];
       return {
         searching: true,
         competitions: false,
-        rows: text
-          ? scopes.filter(scope => scope.name.toLocaleLowerCase().includes(text)).map(scope => ({ ...scope, count: counts[scope.id] ?? 0 }))
-          : [],
+        rows: text ? scopes.filter(scope => scope.name.toLocaleLowerCase().includes(text)) : [],
       };
     }
-    if (destination.type === 'all')
-      return { searching: false, competitions: false, rows: sports.map(sport => ({ ...sport, count: counts[sport.id] ?? 0 })) };
-    if (destination.type !== 'scope' || !hasCompetitionDirectory(state.catalog, destination.scopeId)) return undefined;
+    if (destination.type === 'all') return { searching: false, competitions: false, rows: sports };
+    if (destination.type !== 'scope' || !hasCompetitionDirectory(catalog, destination.scopeId)) return undefined;
     const competitions = sports.find(sport => sport.id === destination.scopeId)?.competitions ?? [];
     return {
       searching: false,
       competitions: true,
-      rows: competitions.map(competition => ({ ...competition, count: counts[competition.id] ?? 0 })),
+      rows: competitions,
     };
-  }, deepEqual);
+  }, [catalog, destination, query]);
   if (!directory?.rows.length) return null;
 
   return (
@@ -72,17 +63,7 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
                   {scope.name}
                 </Text>
                 <View style={styles.trailing}>
-                  <View style={[styles.count, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }]}>
-                    <Text color="labelSecondary" size="14pt" weight="heavy">
-                      {scope.count}
-                    </Text>
-                    <Border
-                      borderRadius={8}
-                      borderWidth={4 / 3}
-                      borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
-                      enableInLightMode
-                    />
-                  </View>
+                  <DirectoryCount scopeId={scope.id} />
                   <TextIcon
                     color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
                     size="15pt"
@@ -107,6 +88,24 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
           </View>
         );
       })}
+    </View>
+  );
+}
+
+function DirectoryCount({ scopeId }: { scopeId: string }) {
+  const { isDarkMode } = useColorMode();
+  const count = useSportsStore(state => state.counts[scopeId] ?? 0);
+  return (
+    <View style={[styles.count, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }]}>
+      <Text color="labelSecondary" size="14pt" weight="heavy">
+        {count}
+      </Text>
+      <Border
+        borderRadius={8}
+        borderWidth={4 / 3}
+        borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+        enableInLightMode
+      />
     </View>
   );
 }

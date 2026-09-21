@@ -1,6 +1,8 @@
 import { getSportsWindow, hasCompetitionDirectory, scopeContainsGame, type SportsDestination } from './browse';
 import { Game_Status, type Game, type SportsCatalog } from './generated/sports';
 
+export const MAX_SPORTS_SECTION_GAMES = 30;
+
 export type SportsSection = {
   type: 'live' | 'today' | 'upcoming' | 'search';
   scopeId?: string;
@@ -22,7 +24,8 @@ export function getSportsSections({
   now = new Date(),
 }: SportsGames & { destination: SportsDestination; search?: boolean; now?: Date }): SportsSection[] {
   const available = availableGames(gameIds, games);
-  if (search) return available.length ? [{ type: 'search', gameIds: available.map(game => game.id) }] : [];
+  if (search)
+    return available.length ? [{ type: 'search', gameIds: available.slice(0, MAX_SPORTS_SECTION_GAMES).map(game => game.id) }] : [];
   if (destination.type === 'all') return [];
 
   const matching = available.filter(game =>
@@ -58,9 +61,9 @@ export function getSportsSections({
   }
 
   const sections: SportsSection[] = [];
-  if (live.length) sections.push({ type: 'live', gameIds: live });
-  if (today.length) sections.push({ type: 'today', gameIds: today });
-  if (upcoming.length) sections.push({ type: 'upcoming', gameIds: upcoming });
+  if (live.length) sections.push({ type: 'live', gameIds: live.slice(0, MAX_SPORTS_SECTION_GAMES) });
+  if (today.length) sections.push({ type: 'today', gameIds: today.slice(0, MAX_SPORTS_SECTION_GAMES) });
+  if (upcoming.length) sections.push({ type: 'upcoming', gameIds: upcoming.slice(0, MAX_SPORTS_SECTION_GAMES) });
   return sections;
 }
 
@@ -113,7 +116,7 @@ function liveSections(games: Game[], catalog: SportsCatalog | undefined): Sports
   const sections: SportsSection[] = [];
   for (const scopeId of order) {
     const gameIds = grouped.get(scopeId);
-    if (gameIds) sections.push({ type: 'live', scopeId, gameIds });
+    if (gameIds) sections.push({ type: 'live', scopeId, gameIds: gameIds.slice(0, MAX_SPORTS_SECTION_GAMES) });
   }
   return sections;
 }

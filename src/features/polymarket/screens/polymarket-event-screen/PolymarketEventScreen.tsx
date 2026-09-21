@@ -2,7 +2,6 @@ import React, { memo, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
-import { deepEqual } from '@storesjs/stores';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -26,13 +25,12 @@ import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-e
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { findScope } from '@/features/sports/core/browse';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsImage } from '@/features/sports/ui/SportsImage';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import type Routes from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -68,8 +66,8 @@ const SportsGameHeaderSection = memo(function SportsGameHeaderSection({
 }) {
   const competition = useSportsStore(state => {
     const id = state.games[gameId]?.competitionIds[0];
-    return id ? findScope(state.catalog, id) : undefined;
-  }, deepEqual);
+    return id ? state.scopes[id] : undefined;
+  });
   if (!competition) return <EventHeaderSection event={event} />;
 
   return (
@@ -96,7 +94,7 @@ function EventVolume({ volume }: { volume: number }) {
 function SportsEventLookup({ eventId }: { eventId: string }) {
   const isFocused = useIsFocused();
   const eventIds = useMemo(() => [eventId], [eventId]);
-  useSportsLookup(eventIds, isFocused);
+  useSportsLookup(eventIds, Routes.POLYMARKET_EVENT_SCREEN, isFocused);
   return null;
 }
 

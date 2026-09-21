@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
-import { deepEqual } from '@storesjs/stores';
+import { shallowEqual } from '@storesjs/stores';
 import { BlurView } from 'react-native-blur-view';
 import Animated, {
   interpolate,
@@ -26,12 +26,13 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { opacity } from '@/design-system/utils/opacity';
 import {
   findScope,
+  getSportsDestinationKey,
   getSportsNavigationRoot,
   getSportsParentDestination,
   type SportsDestination,
   type SportsHost,
 } from '@/features/sports/core/browse';
-import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import useDimensions from '@/hooks/useDimensions';
@@ -39,13 +40,13 @@ import * as i18n from '@/languages';
 
 export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsHost }) {
   const { isDarkMode } = useColorMode();
-  const { catalog, destination, navigationRoot } = useSportsStore(
+  const catalog = useSportsStore(state => state.catalog);
+  const { destination, navigationRoot } = useSportsViewStore(
     state => ({
-      catalog: state.catalog,
       destination: state.hosts[host].request.destination,
       navigationRoot: state.hosts[host].navigationRoot,
     }),
-    deepEqual
+    shallowEqual
   );
   const red = useForegroundColor('red');
   const scope = destination.type === 'scope' ? findScope(catalog, destination.scopeId) : undefined;
@@ -99,13 +100,13 @@ export const SportsHeader = memo(function SportsHeader({ host }: { host: SportsH
 });
 
 export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { host: SportsHost; bottom: number }) {
-  const { catalog, navigationRoot, searching } = useSportsStore(
+  const catalog = useSportsStore(state => state.catalog);
+  const { navigationRoot, searching } = useSportsViewStore(
     state => ({
-      catalog: state.catalog,
       navigationRoot: state.hosts[host].navigationRoot,
       searching: state.hosts[host].request.query !== null,
     }),
-    deepEqual
+    shallowEqual
   );
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
@@ -114,7 +115,7 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
   const contentWidth = useSharedValue(0);
   const positions = useRef(new Map<string, { x: number; width: number }>());
   const railWidth = width - 94;
-  const selectedKey = destinationKey(getSportsNavigationRoot(catalog, navigationRoot));
+  const selectedKey = getSportsDestinationKey(getSportsNavigationRoot(catalog, navigationRoot));
   const scopeIds = catalog?.prominentScopeIds ?? [];
   const items: { destination: SportsDestination; label: string }[] = [{ destination: { type: 'live' }, label: i18n.t(i18n.l.sports.live) }];
   for (const scopeId of scopeIds) {
@@ -167,7 +168,7 @@ export const SportsScopeBar = memo(function SportsScopeBar({ host, bottom }: { h
             scrollEventThrottle={16}
           >
             {items.map(item => {
-              const key = destinationKey(item.destination);
+              const key = getSportsDestinationKey(item.destination);
               const selected = key === selectedKey;
               const select = () => sportsActions.selectDestination(host, item.destination);
               return (
@@ -281,10 +282,6 @@ function ScopeSurface({ children, width }: { children: ReactNode; width: number 
       {children}
     </SportsSurface>
   );
-}
-
-function destinationKey(destination: SportsDestination): string {
-  return destination.type === 'scope' ? `scope:${destination.scopeId}` : destination.type;
 }
 
 const DARK_SHADOWS = [{ color: 'rgba(0,0,0,0.04)', blur: 20, dx: 0, dy: -4 }];

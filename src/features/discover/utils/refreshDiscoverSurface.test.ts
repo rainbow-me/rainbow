@@ -23,7 +23,7 @@ jest.mock('@/features/placements/surfaces/stores/surfaceStore', () => ({
   getSurfaceStore: (id: string) => mockSurfaceStore(id),
 }));
 jest.mock('@/features/sports/data/sportsStore', () => ({
-  useSportsLookupStore: { getState: () => mockSports },
+  useSportsStore: { getState: () => mockSports },
 }));
 
 const mockPerpsFetch = jest.fn();

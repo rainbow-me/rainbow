@@ -10,7 +10,7 @@ import {
   type ViewToken,
 } from 'react-native';
 
-import { deepEqual } from '@storesjs/stores';
+import { shallowEqual } from '@storesjs/stores';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useColorMode } from '@/design-system/color/ColorMode';
@@ -18,8 +18,8 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
-import { getSportsSections, type SportsSection } from '@/features/sports/core/sections';
-import { getSportsResult, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { type SportsSection } from '@/features/sports/core/sections';
+import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { GameCard, GameCardSkeleton, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
@@ -33,6 +33,8 @@ import * as i18n from '@/languages';
 import { type Route } from '@/navigation/routesNames';
 
 export type SportsBrowseHandle = { scrollToTop: () => void };
+
+const EMPTY_SECTIONS: SportsSection[] = [];
 
 type SkeletonLayout = 'directory' | 'live' | 'games' | 'search';
 
@@ -67,38 +69,31 @@ export function SportsBrowse({
   const list = useRef<FlatList<Row>>(null);
   const [expanded, setExpanded] = useState(new Set<string>());
   const [visibleCarousels, setVisibleCarousels] = useState(new Set<string>());
-  const view = useSportsStore(state => {
-    const { request } = state.hosts[host];
-    const result = getSportsResult(state, host);
-    const sections = getSportsSections({
-      catalog: state.catalog,
-      games: state.games,
-      gameIds: result?.gameIds ?? [],
-      destination: request.destination,
-      search: request.query !== null,
-    });
-    return { destination: request.destination, query: request.query, sections, catalog: state.catalog };
-  }, deepEqual);
+  const request = useSportsViewStore(state => state.hosts[host].request);
+  const catalog = useSportsStore(state => state.catalog);
+  const result = useSportsStore(state => getSportsResult(state, request));
+  const { destination, query } = request;
+  const sections = result?.sections ?? EMPTY_SECTIONS;
 
   const rows = useMemo(() => {
     const rows: Row[] = [];
-    for (const section of view.sections) {
+    for (const section of sections) {
       const key = section.scopeId ?? section.type;
-      const title = section.scopeId ? (findScope(view.catalog, section.scopeId)?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
+      const title = section.scopeId ? (findScope(catalog, section.scopeId)?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
       rows.push({ key: `heading:${key}`, type: 'heading', section, title });
-      if (view.query === null && view.destination.type === 'live') {
+      if (query === null && destination.type === 'live') {
         rows.push({ key: `carousel:${key}`, type: 'carousel', section });
         continue;
       }
-      const count = view.query !== null || expanded.has(key) ? section.gameIds.length : 2;
+      const count = query !== null || expanded.has(key) ? section.gameIds.length : 2;
       for (const gameId of section.gameIds.slice(0, count))
         rows.push({
           key: `game:${gameId}`,
           type: 'game',
           gameId,
-          scopeId: view.destination.type === 'scope' ? view.destination.scopeId : section.scopeId,
+          scopeId: destination.type === 'scope' ? destination.scopeId : section.scopeId,
         });
-      if (view.query === null && section.gameIds.length > 2)
+      if (query === null && section.gameIds.length > 2)
         rows.push({
           key: `expand:${key}`,
           type: 'expand',
@@ -108,7 +103,7 @@ export function SportsBrowse({
         });
     }
     return rows;
-  }, [view, expanded]);
+  }, [catalog, destination, query, sections, expanded]);
 
   const renderedGameIds = useMemo(() => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : [])), [rows]);
   const setVisibleGames = useSportsQuotes(route, active, renderedGameIds);
@@ -125,7 +120,7 @@ export function SportsBrowse({
   useEffect(() => {
     list.current?.scrollToOffset({ offset: 0, animated: false });
     setExpanded(new Set());
-  }, [view.destination, view.query]);
+  }, [destination, query]);
 
   const renderItem = useCallback(
     ({ item }: { item: Row }) => {
@@ -211,14 +206,14 @@ export function SportsBrowse({
         scrollEventThrottle={16}
         refreshControl={<SportsRefreshControl host={host} />}
         ListHeaderComponent={
-          <View style={[styles.header, view.query === null && view.destination.type === 'all' && styles.directoryHeader]}>
-            {view.query !== null ? <SportsSearch host={host} /> : <SportsHeader host={host} />}
-            {view.query !== null && <SportsDirectory host={host} />}
+          <View style={[styles.header, query === null && destination.type === 'all' && styles.directoryHeader]}>
+            {query !== null ? <SportsSearch host={host} /> : <SportsHeader host={host} />}
+            {query !== null && <SportsDirectory host={host} />}
           </View>
         }
         ListFooterComponent={
           <>
-            {view.query === null && <SportsDirectory host={host} showHeading={view.sections.length > 0} />}
+            {query === null && <SportsDirectory host={host} showHeading={sections.length > 0} />}
             <SportsReadStatus host={host} />
           </>
         }
@@ -299,9 +294,10 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
 
 function SportsReadStatus({ host }: { host: SportsHost }) {
   const fill = useForegroundColor('fillTertiary');
+  const [pending, setPending] = useState(false);
+  const request = useSportsViewStore(state => state.hosts[host].request);
   const status = useSportsStore(state => {
-    const { request } = state.hosts[host];
-    const result = getSportsResult(state, host);
+    const result = getSportsResult(state, request);
     const directory =
       request.query === null &&
       (request.destination.type === 'all' ||
@@ -314,9 +310,8 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
           ? 'live'
           : 'games';
     return {
-      error: state.error,
-      loading: state.getStatus('isLoading'),
-      empty: result?.gameIds.length === 0 && !directory,
+      error: state.getCacheEntry()?.errorInfo?.error,
+      empty: result?.sections.length === 0 && !directory,
       nextCursor: result?.nextCursor,
       searching: request.query !== null,
       waitingForQuery: request.query === '',
@@ -325,11 +320,18 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
       directory,
       hasCatalog: Boolean(state.catalog),
     };
-  }, deepEqual);
+  }, shallowEqual);
   if (status.waitingForQuery) return null;
   if (!status.hasResult && !status.error) return status.directory && status.hasCatalog ? null : <SportsSkeleton layout={status.skeleton} />;
   if (!status.error && !status.empty && !status.nextCursor) return null;
-  const onPress = () => (status.error ? sportsActions.refresh(host) : sportsActions.loadMore(host));
+  const onPress = async () => {
+    setPending(true);
+    try {
+      await (status.error ? sportsActions.refresh(host) : sportsActions.loadMore(host));
+    } finally {
+      setPending(false);
+    }
+  };
   return (
     <View style={styles.message}>
       {status.error && (
@@ -346,12 +348,12 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
         <View
           accessible
           accessibilityRole="button"
-          accessibilityState={{ disabled: status.loading }}
+          accessibilityState={{ disabled: pending }}
           accessibilityLabel={i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
-          onAccessibilityTap={status.loading ? undefined : onPress}
+          onAccessibilityTap={pending ? undefined : onPress}
         >
-          <ButtonPressAnimation disabled={status.loading} onPress={onPress} scaleTo={0.96}>
-            <View style={status.error && [styles.retry, { backgroundColor: fill, opacity: status.loading ? 0.5 : 1 }]}>
+          <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
+            <View style={status.error && [styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
               {status.error && (
                 <TextIcon color="accent" size="15pt" weight="bold" containerSize={20}>
                   {'􀅈'}

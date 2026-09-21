@@ -26,7 +26,7 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePress';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { useSportsLookupStore, useSportsStore } from '@/features/sports/data/sportsStore';
+import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameCard } from '@/features/sports/ui/GameCard';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
@@ -296,10 +296,10 @@ function GenericEventCard({
 }
 
 function EventLookup({ eventIds, visibleEventIds, active }: { eventIds: string[]; visibleEventIds: string[]; active: boolean }) {
-  const { error } = useSportsLookup(eventIds, active, visibleEventIds);
+  const error = useSportsLookup(eventIds, Routes.DISCOVER_SCREEN, active, visibleEventIds);
   if (!active || !visibleEventIds.length || !error) return null;
   return (
-    <ButtonPressAnimation onPress={() => useSportsLookupStore.getState().fetch(undefined, { force: true })} scaleTo={0.98}>
+    <ButtonPressAnimation onPress={() => useSportsStore.getState().fetch(undefined, { force: true })} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">
         {i18n.t(i18n.l.sports.error)} · {i18n.t(i18n.l.sports.retry)}
       </Text>

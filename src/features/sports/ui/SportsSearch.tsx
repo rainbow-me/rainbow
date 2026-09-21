@@ -10,11 +10,11 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { fonts } from '@/design-system/typography/typography';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { sportsActions, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import * as i18n from '@/languages';
 
 export function SportsSearch({ host }: { host: SportsHost }) {
-  const [text, setText] = useState(() => useSportsStore.getState().hosts[host].request.query ?? '');
+  const [text, setText] = useState(() => useSportsViewStore.getState().hosts[host].request.query ?? '');
   const label = useForegroundColor('label');
   const fill = useForegroundColor('fillQuaternary');
   const search = useMemo(() => debounce((query: string) => sportsActions.setSearch(host, query), 250), [host]);

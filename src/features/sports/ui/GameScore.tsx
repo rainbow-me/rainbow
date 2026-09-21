@@ -1,14 +1,12 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { deepEqual } from '@storesjs/stores';
-
 import { Text } from '@/design-system/components/Text/Text';
 import { ScoreColumn_Kind, ScoreColumn_Winner } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 
 export const GameScore = memo(function GameScore({ gameId, participantIndex }: { gameId: string; participantIndex: 0 | 1 }) {
-  const score = useSportsStore(state => state.games[gameId]?.score, deepEqual);
+  const score = useSportsStore(state => state.games[gameId]?.score);
   if (!score?.length) return null;
 
   const otherWinner = participantIndex === 0 ? ScoreColumn_Winner.WINNER_SECOND : ScoreColumn_Winner.WINNER_FIRST;

@@ -6,6 +6,10 @@ export type SportsDestination = { type: 'live' } | { type: 'all' } | { type: 'sc
 
 export type SportsWindow = { from: string; until: string };
 
+export function getSportsDestinationKey(destination: SportsDestination): string {
+  return destination.type === 'scope' ? `scope:${destination.scopeId}` : destination.type;
+}
+
 export function getSportsWindow(now = new Date()): SportsWindow {
   const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);

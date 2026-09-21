@@ -1,23 +1,19 @@
 import { useEffect } from 'react';
 
-import { shallowEqual, useStableValue } from '@storesjs/stores';
+import { useStableValue } from '@storesjs/stores';
 
-import { sportsActions, useSportsLookupStore } from '@/features/sports/data/sportsStore';
+import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { useSportsWindow } from '@/features/sports/ui/useSportsWindow';
 import useAppState from '@/hooks/useAppState';
+import { type Route } from '@/navigation/routesNames';
 
-/** Retains mounted events and refreshes their visible subset while the consumer is active. */
-export function useSportsLookup(
-  eventIds: string[],
-  visible: boolean,
-  visibleEventIds = eventIds
-): { isLoading: boolean; error: Error | null } {
+/** Reads the visible events while this route is in the foreground. */
+export function useSportsLookup(eventIds: string[], route: Route, visible: boolean, visibleEventIds = eventIds): Error | null {
   const owner = useStableValue(() => Symbol('sportsLookup'));
   const { appState } = useAppState();
   const active = visible && appState === 'active';
-  useEffect(
-    () => sportsActions.setExactConsumer(owner, eventIds, active ? visibleEventIds : []),
-    [owner, eventIds, visibleEventIds, active]
-  );
-  useEffect(() => () => sportsActions.removeExactConsumer(owner), [owner]);
-  return useSportsLookupStore(state => ({ isLoading: state.getStatus('isLoading'), error: state.error }), shallowEqual);
+  useSportsWindow(active);
+  useEffect(() => sportsActions.setLookupConsumer(owner, route, active ? visibleEventIds : []), [owner, route, visibleEventIds, active]);
+  useEffect(() => () => sportsActions.removeLookupConsumer(owner), [owner]);
+  return useSportsStore(state => state.getCacheEntry()?.errorInfo?.error ?? null);
 }
