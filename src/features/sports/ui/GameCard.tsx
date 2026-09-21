@@ -1,11 +1,11 @@
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { deepEqual } from '@storesjs/stores';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { Text, useColorMode } from '@/design-system';
+import { Text, useColorMode, useForegroundColor } from '@/design-system';
 import { findScope } from '@/features/sports/core/browse';
 import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
@@ -20,28 +20,20 @@ export type SportsGamePress = (gameId: string, selection?: Selection) => void;
 export const GameCard = memo(function GameCard({
   gameId,
   scopeId,
+  width,
   onPress,
 }: {
   gameId: string;
   scopeId?: string;
+  width: number;
   onPress: SportsGamePress;
 }) {
-  const { isDarkMode } = useColorMode();
   const exists = useSportsStore(state => Boolean(state.games[gameId]));
   const threeWay = useSportsStore(state => state.games[gameId]?.winner?.kind === Winner_Kind.KIND_THREE_WAY);
   if (!exists) return null;
 
   return (
-    <SportsSurface
-      borderRadius={24}
-      color={isDarkMode ? '#000000' : undefined}
-      gradient={isDarkMode ? undefined : LIGHT_CARD_FILL}
-      borderColor={isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF'}
-      shadows={isDarkMode ? DARK_CARD_SHADOWS : LIGHT_CARD_SHADOWS}
-      innerShadow={isDarkMode ? { color: 'rgba(255,255,255,0.15)', blur: 30, dx: 0, dy: 8 } : undefined}
-      style={styles.surface}
-      testID={`sports-game-${gameId}`}
-    >
+    <GameCardSurface width={width} threeWay={threeWay} testID={`sports-game-${gameId}`}>
       <GameHeader gameId={gameId} scopeId={scopeId} onPress={onPress} />
       <GameDivider header />
       <GameParticipant gameId={gameId} index={0} onPress={onPress} />
@@ -53,9 +45,68 @@ export const GameCard = memo(function GameCard({
           <DrawOffer gameId={gameId} onPress={onPress} />
         </>
       )}
-    </SportsSurface>
+    </GameCardSurface>
   );
 });
+
+export function GameCardSkeleton({ width }: { width: number }) {
+  const backgroundColor = useForegroundColor('fillTertiary');
+  return (
+    <GameCardSurface width={width} testID="sports-game-skeleton">
+      <View style={styles.header}>
+        <View style={[styles.skeletonBadge, { backgroundColor }]} />
+        <View style={[styles.skeletonLeague, { backgroundColor }]} />
+        <View style={styles.skeletonSpacer} />
+        <View style={[styles.skeletonTime, { backgroundColor }]} />
+      </View>
+      <GameDivider header />
+      <SkeletonParticipant backgroundColor={backgroundColor} />
+      <GameDivider />
+      <SkeletonParticipant backgroundColor={backgroundColor} />
+    </GameCardSurface>
+  );
+}
+
+function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }) {
+  return (
+    <View style={styles.row}>
+      <View style={[styles.skeletonLogo, { backgroundColor }]} />
+      <View style={styles.skeletonName}>
+        <View style={[styles.skeletonSubtitle, { backgroundColor }]} />
+        <View style={[styles.skeletonTitle, { backgroundColor }]} />
+      </View>
+      <View style={[styles.skeletonOffer, { backgroundColor }]} />
+    </View>
+  );
+}
+
+function GameCardSurface({
+  width,
+  threeWay = false,
+  testID,
+  children,
+}: {
+  width: number;
+  threeWay?: boolean;
+  testID: string;
+  children: ReactNode;
+}) {
+  const { isDarkMode } = useColorMode();
+  return (
+    <SportsSurface
+      borderRadius={24}
+      color={isDarkMode ? '#000000' : undefined}
+      gradient={isDarkMode ? undefined : LIGHT_CARD_FILL}
+      borderColor={isDarkMode ? 'rgba(255,255,255,0.03)' : '#FFFFFF'}
+      shadows={isDarkMode ? DARK_CARD_SHADOWS : LIGHT_CARD_SHADOWS}
+      innerShadow={isDarkMode ? { color: 'rgba(255,255,255,0.15)', blur: 30, dx: 0, dy: 8 } : undefined}
+      style={[styles.surface, { width, height: threeWay ? 222 : 166 }]}
+      testID={testID}
+    >
+      {children}
+    </SportsSurface>
+  );
+}
 
 function GameHeader({ gameId, scopeId, onPress }: { gameId: string; scopeId?: string; onPress: SportsGamePress }) {
   const { isDarkMode } = useColorMode();
@@ -179,7 +230,7 @@ function GameParticipant({ gameId, index, onPress }: { gameId: string; index: 0 
                   {subtitle}
                 </Text>
               )}
-              <Text color="label" size="17pt" weight="bold" numberOfLines={2}>
+              <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
                 {name}
               </Text>
             </View>
@@ -332,7 +383,7 @@ const styles = StyleSheet.create({
   gameTime: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   period: { paddingHorizontal: 5, height: 19, justifyContent: 'center' },
   dot: { opacity: 0.7 },
-  row: { minHeight: 54, paddingHorizontal: 12, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  row: { height: 54, paddingHorizontal: 12, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 12 },
   participantButton: { flex: 1 },
   participant: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 36 },
   logo: { width: 42, height: 36, alignItems: 'center', justifyContent: 'center' },
@@ -343,7 +394,7 @@ const styles = StyleSheet.create({
   draw: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    minHeight: 54,
+    height: 54,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -352,4 +403,13 @@ const styles = StyleSheet.create({
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },
   dividerLine: { height: 1 },
+  skeletonBadge: { width: 28, height: 28, borderRadius: 10, borderCurve: 'continuous' },
+  skeletonLeague: { width: 48, height: 12, marginLeft: 2, borderRadius: 6 },
+  skeletonSpacer: { flex: 1 },
+  skeletonTime: { width: 64, height: 9, borderRadius: 5 },
+  skeletonLogo: { width: 36, height: 36, marginHorizontal: 3, borderRadius: 8, borderCurve: 'continuous' },
+  skeletonName: { flex: 1, gap: 8 },
+  skeletonSubtitle: { width: 70, height: 9, borderRadius: 5 },
+  skeletonTitle: { width: 90, height: 12, borderRadius: 6 },
+  skeletonOffer: { width: 62, height: 42, borderRadius: 15, borderCurve: 'continuous' },
 });

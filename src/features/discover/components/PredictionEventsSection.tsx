@@ -157,10 +157,16 @@ export function PredictionEventsSection({
         }}
         style={carousel ? { width: cardWidth } : undefined}
       >
-        <PredictionEventCard eventId={item.id} visible={active && visibleIds.includes(item.id)} onPress={recordPress} openGame={openGame} />
+        <PredictionEventCard
+          eventId={item.id}
+          width={carousel ? cardWidth : width - 24}
+          visible={active && visibleIds.includes(item.id)}
+          onPress={recordPress}
+          openGame={openGame}
+        />
       </View>
     ),
-    [active, cardWidth, carousel, frames, openGame, recordPress, visibleIds]
+    [active, cardWidth, carousel, frames, openGame, recordPress, visibleIds, width]
   );
 
   if (!items.length && !pending) return null;
@@ -226,11 +232,13 @@ export function PredictionEventsSection({
 
 const PredictionEventCard = memo(function PredictionEventCard({
   eventId,
+  width,
   visible,
   onPress,
   openGame,
 }: {
   eventId: string;
+  width: number;
   visible: boolean;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
   openGame: ReturnType<typeof useSportsGamePress>;
@@ -240,6 +248,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
     return (
       <GameCard
         gameId={gameId}
+        width={width}
         onPress={(id, selection) => {
           const game = useSportsStore.getState().games[id];
           if (game) onPress(eventId, game.participants.map(participant => participant.name).join(' vs. '));

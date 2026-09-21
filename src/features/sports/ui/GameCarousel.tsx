@@ -28,7 +28,7 @@ export const GameCarousel = memo(function GameCarousel({
   const renderItem = useCallback(
     ({ item }: { item: string }) => (
       <View style={{ width: cardWidth }}>
-        <GameCard gameId={item} scopeId={section.scopeId} onPress={onGamePress} />
+        <GameCard gameId={item} scopeId={section.scopeId} width={cardWidth} onPress={onGamePress} />
       </View>
     ),
     [cardWidth, onGamePress, section.scopeId]

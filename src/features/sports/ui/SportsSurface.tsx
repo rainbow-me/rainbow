@@ -1,4 +1,4 @@
-import { memo, useCallback, type ReactNode } from 'react';
+import { memo, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Canvas, Group, LinearGradient, Path, Shadow } from '@shopify/react-native-skia';
@@ -42,6 +42,14 @@ export const SportsSurface = memo(function SportsSurface({
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
+  const { width: fixedWidth, height: fixedHeight } = StyleSheet.flatten(style) ?? {};
+  const fixedShape = useMemo(
+    () =>
+      typeof fixedWidth === 'number' && typeof fixedHeight === 'number'
+        ? { path: getSquirclePath({ width: fixedWidth, height: fixedHeight, borderRadius }), end: { x: 0, y: fixedHeight } }
+        : undefined,
+    [borderRadius, fixedHeight, fixedWidth]
+  );
   const path = useSharedValue('M0 0Z');
   const height = useSharedValue(0);
   const gradientEnd = useDerivedValue(() => ({ x: 0, y: height.value }));
@@ -54,9 +62,10 @@ export const SportsSurface = memo(function SportsSurface({
     [borderRadius, height, path]
   );
   const corners = { borderRadius, borderCurve: 'continuous' as const };
+  const drawingPath = fixedShape?.path ?? path;
 
   return (
-    <View onLayout={onLayout} testID={testID}>
+    <View onLayout={fixedShape ? undefined : onLayout} testID={testID}>
       {backdrop && (
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, corners, styles.clip]}>
           {backdrop}
@@ -66,7 +75,7 @@ export const SportsSurface = memo(function SportsSurface({
         <Group transform={[{ translateX: bleed }, { translateY: bleed }]}>
           {shadows.map((shadow, index) => {
             const drawing = (
-              <Path key={index} path={path}>
+              <Path key={index} path={drawingPath}>
                 <Shadow color={shadow.color} blur={shadow.blur} dx={shadow.dx} dy={shadow.dy} shadowOnly />
               </Path>
             );
@@ -74,16 +83,16 @@ export const SportsSurface = memo(function SportsSurface({
             return shadow.drawBehind ? (
               drawing
             ) : (
-              <Group key={index} clip={path} invertClip>
+              <Group key={index} clip={drawingPath} invertClip>
                 {drawing}
               </Group>
             );
           })}
-          <Path path={path} color={gradient ? '#FFFFFF' : color}>
-            {gradient && <LinearGradient start={{ x: 0, y: 0 }} end={gradientEnd} colors={[...gradient]} />}
+          <Path path={drawingPath} color={gradient ? '#FFFFFF' : color}>
+            {gradient && <LinearGradient start={{ x: 0, y: 0 }} end={fixedShape?.end ?? gradientEnd} colors={[...gradient]} />}
           </Path>
           {innerShadow && (
-            <Path path={path} blendMode={innerShadow.blendMode}>
+            <Path path={drawingPath} blendMode={innerShadow.blendMode}>
               <Shadow color={innerShadow.color} blur={innerShadow.blur} dx={innerShadow.dx} dy={innerShadow.dy} inner shadowOnly />
             </Path>
           )}

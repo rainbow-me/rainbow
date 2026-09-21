@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -21,7 +20,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { findScope, hasCompetitionDirectory, type SportsHost } from '@/features/sports/core/browse';
 import { getSportsSections, type SportsSection } from '@/features/sports/core/sections';
 import { getSportsResult, sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
-import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
+import { GameCard, GameCardSkeleton, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
@@ -29,10 +28,13 @@ import { SportsSearch } from '@/features/sports/ui/SportsSearch';
 import { SportsSurface } from '@/features/sports/ui/SportsSurface';
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
+import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { type Route } from '@/navigation/routesNames';
 
 export type SportsBrowseHandle = { scrollToTop: () => void };
+
+type SkeletonLayout = 'directory' | 'live' | 'games' | 'search';
 
 type Row =
   | { key: string; type: 'heading'; section: SportsSection; title: string }
@@ -60,6 +62,7 @@ export function SportsBrowse({
   ref?: Ref<SportsBrowseHandle>;
 }) {
   const active = useSportsHost(host, visible);
+  const { width } = useDimensions();
   const { isDarkMode } = useColorMode();
   const list = useRef<FlatList<Row>>(null);
   const [expanded, setExpanded] = useState(new Set<string>());
@@ -130,7 +133,7 @@ export function SportsBrowse({
         case 'game':
           return (
             <View style={styles.card}>
-              <GameCard gameId={item.gameId} scopeId={item.scopeId} onPress={onGamePress} />
+              <GameCard gameId={item.gameId} scopeId={item.scopeId} width={width - 24} onPress={onGamePress} />
             </View>
           );
         case 'heading':
@@ -186,7 +189,7 @@ export function SportsBrowse({
           );
       }
     },
-    [active, host, isDarkMode, onGamePress, route, visibleCarousels]
+    [active, host, isDarkMode, onGamePress, route, visibleCarousels, width]
   );
 
   return (
@@ -301,6 +304,13 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
       request.query === null &&
       (request.destination.type === 'all' ||
         (request.destination.type === 'scope' && hasCompetitionDirectory(state.catalog, request.destination.scopeId)));
+    const skeleton: SkeletonLayout = directory
+      ? 'directory'
+      : request.query !== null
+        ? 'search'
+        : request.destination.type === 'live'
+          ? 'live'
+          : 'games';
     return {
       error: state.error,
       loading: state.getStatus('isLoading'),
@@ -309,16 +319,13 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
       searching: request.query !== null,
       waitingForQuery: request.query === '',
       hasResult: Boolean(result),
+      skeleton,
+      directory,
+      hasCatalog: Boolean(state.catalog),
     };
   }, deepEqual);
-  const color = useForegroundColor('labelTertiary');
   if (status.waitingForQuery) return null;
-  if (status.loading && !status.hasResult)
-    return (
-      <View style={styles.message}>
-        <ActivityIndicator color={color} />
-      </View>
-    );
+  if (!status.hasResult && !status.error) return status.directory && status.hasCatalog ? null : <SportsSkeleton layout={status.skeleton} />;
   return (
     <View style={styles.message}>
       {(status.error || status.empty) && (
@@ -337,6 +344,40 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
           </Text>
         </ButtonPressAnimation>
       )}
+    </View>
+  );
+}
+
+function SportsSkeleton({ layout }: { layout: SkeletonLayout }) {
+  const { width } = useDimensions();
+  const backgroundColor = useForegroundColor('fillTertiary');
+  if (layout === 'directory')
+    return (
+      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
+        {[0, 1, 2, 3, 4, 5].map(index => (
+          <View key={index} style={styles.skeletonDirectoryRow}>
+            <View style={[styles.skeletonDirectoryIcon, { backgroundColor }]} />
+            <View style={[styles.skeletonHeading, { backgroundColor }]} />
+          </View>
+        ))}
+      </View>
+    );
+  const groups = layout === 'live' ? [1, 1, 1] : layout === 'search' ? [3] : [2, 1];
+  return (
+    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
+      {groups.map((count, group) => (
+        <View key={group}>
+          <View style={styles.heading}>
+            <View style={[styles.skeletonHeading, { backgroundColor }]} />
+            <View style={[styles.skeletonCount, { backgroundColor }]} />
+          </View>
+          {Array.from({ length: count }, (_, card) => (
+            <View key={card} style={styles.card}>
+              <GameCardSkeleton width={width - 24} />
+            </View>
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
@@ -378,4 +419,8 @@ const styles = StyleSheet.create({
   expandIcon: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
   expandChevron: { letterSpacing: 0.51 },
   message: { alignItems: 'center', gap: 20, padding: 28 },
+  skeletonHeading: { width: 92, height: 16, borderRadius: 8 },
+  skeletonCount: { width: 24, height: 23, borderRadius: 8, borderCurve: 'continuous' },
+  skeletonDirectoryRow: { height: 66, marginHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  skeletonDirectoryIcon: { width: 40, height: 40, borderRadius: 12, borderCurve: 'continuous' },
 });
