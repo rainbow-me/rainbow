@@ -5,7 +5,7 @@ type SportsIcon = { source: ImageRequireSource; color: string; darken: number; s
 /** Standard category artwork exported from the Sports design; other competitions use their catalog image. */
 export const sportsIcons: Partial<Record<string, SportsIcon>> = {
   'atp': { source: require('../assets/atp.png'), color: '#3A38D7', darken: 0.4, scale: 0.67271 },
-  'baseball': { source: require('../assets/baseball.png'), color: '#1372CA', darken: 0.3, scale: 0.55161 },
+  'baseball': { source: require('../assets/baseball.png'), color: '#2C8FEB', darken: 0.3, scale: 0.55161 },
   'basketball': { source: require('../assets/basketball.png'), color: '#FF6A37', darken: 0.3, scale: 0.5 },
   'cs2': { source: require('../assets/cs2.png'), color: '#D8A73A', darken: 0.4, scale: 0.71429 },
   'dota2': { source: require('../assets/dota2.png'), color: '#F44336', darken: 0.4, scale: 0.50893 },
