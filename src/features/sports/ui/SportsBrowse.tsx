@@ -205,7 +205,7 @@ export function SportsBrowse({
         windowSize={7}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }}
+        contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
         scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
         onScroll={onScroll}
         scrollEventThrottle={16}
@@ -222,6 +222,7 @@ export function SportsBrowse({
             <SportsReadStatus host={host} />
           </>
         }
+        ListFooterComponentStyle={rows.length === 0 && styles.footer}
       />
       <SportsScopeBar host={host} bottom={bottomInset + 12} />
     </View>
@@ -297,6 +298,7 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
 }
 
 function SportsReadStatus({ host }: { host: SportsHost }) {
+  const fill = useForegroundColor('fillTertiary');
   const status = useSportsStore(state => {
     const { request } = state.hosts[host];
     const result = getSportsResult(state, host);
@@ -326,23 +328,41 @@ function SportsReadStatus({ host }: { host: SportsHost }) {
   }, deepEqual);
   if (status.waitingForQuery) return null;
   if (!status.hasResult && !status.error) return status.directory && status.hasCatalog ? null : <SportsSkeleton layout={status.skeleton} />;
+  if (!status.error && !status.empty && !status.nextCursor) return null;
+  const onPress = () => (status.error ? sportsActions.refresh(host) : sportsActions.loadMore(host));
   return (
     <View style={styles.message}>
+      {status.error && (
+        <TextIcon color="labelQuaternary" size="34pt" weight="regular" containerSize={40}>
+          {'􀇿'}
+        </TextIcon>
+      )}
       {(status.error || status.empty) && (
-        <Text align="center" color="labelTertiary" size="17pt" weight="bold">
+        <Text align="center" color={status.error ? 'labelSecondary' : 'labelTertiary'} size={status.error ? '20pt' : '17pt'} weight="bold">
           {i18n.t(status.error ? i18n.l.sports.error : status.searching ? i18n.l.sports.search_empty : i18n.l.sports.empty)}
         </Text>
       )}
       {(status.error || status.nextCursor) && (
-        <ButtonPressAnimation
-          disabled={status.loading}
-          onPress={() => (status.error ? sportsActions.refresh(host) : sportsActions.loadMore(host))}
-          scaleTo={0.96}
+        <View
+          accessible
+          accessibilityRole="button"
+          accessibilityState={{ disabled: status.loading }}
+          accessibilityLabel={i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
+          onAccessibilityTap={status.loading ? undefined : onPress}
         >
-          <Text color="accent" size="17pt" weight="bold">
-            {i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
-          </Text>
-        </ButtonPressAnimation>
+          <ButtonPressAnimation disabled={status.loading} onPress={onPress} scaleTo={0.96}>
+            <View style={status.error && [styles.retry, { backgroundColor: fill, opacity: status.loading ? 0.5 : 1 }]}>
+              {status.error && (
+                <TextIcon color="accent" size="15pt" weight="bold" containerSize={20}>
+                  {'􀅈'}
+                </TextIcon>
+              )}
+              <Text color="accent" size="17pt" weight="bold">
+                {i18n.t(status.error ? i18n.l.sports.retry : i18n.l.sports.load_more)}
+              </Text>
+            </View>
+          </ButtonPressAnimation>
+        </View>
       )}
     </View>
   );
@@ -397,6 +417,8 @@ const LIGHT_BADGE_SHADOWS = [
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  content: { flexGrow: 1 },
+  footer: { flexGrow: 1 },
   header: { paddingBottom: 8 },
   directoryHeader: { paddingBottom: 13 },
   card: { marginHorizontal: 12, marginBottom: 8 },
@@ -418,7 +440,16 @@ const styles = StyleSheet.create({
   expand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 12, paddingBottom: 4 },
   expandIcon: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
   expandChevron: { letterSpacing: 0.51 },
-  message: { alignItems: 'center', gap: 20, padding: 28 },
+  message: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', gap: 24, padding: 28 },
+  retry: {
+    height: 44,
+    paddingHorizontal: 20,
+    borderRadius: 22,
+    borderCurve: 'continuous',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   skeletonHeading: { width: 92, height: 16, borderRadius: 8 },
   skeletonCount: { width: 24, height: 23, borderRadius: 8, borderCurve: 'continuous' },
   skeletonDirectoryRow: { height: 66, marginHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14 },
