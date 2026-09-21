@@ -30,6 +30,7 @@ import {
 import { getSportsDirectoryCounts, getSportsSections, MAX_SPORTS_SECTION_GAMES, type SportsSection } from '@/features/sports/core/sections';
 import { sportsClient } from '@/features/sports/data/api/client';
 import { time } from '@/framework/core/utils/time';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -107,10 +108,19 @@ export const useSportsViewStore = createBaseStore<SportsViewState>((set, get) =>
     if (!get().hosts[host].visible) return;
     await useSportsStore.getState().fetch(undefined, { force: true });
   },
-  retry: host => {
+  retry: async host => {
     const state = get();
-    const result = getSportsResult(useSportsStore.getState(), state.hosts[host].request);
-    return result?.nextCursor ? state.loadMore(host) : state.refresh(host);
+    const data = useSportsStore.getState();
+    const request = state.hosts[host].request;
+    const error = data.getCacheEntry()?.errorInfo?.error;
+    const code = error instanceof RainbowFetchError ? error.responseBody?.code : undefined;
+    if (code === 5 && request.query === null && request.destination.type === 'scope') {
+      state.selectDestination(host, { type: 'live' });
+      return;
+    }
+    const cursor = getSportsResult(data, request)?.nextCursor;
+    if (cursor && code !== 9) await state.loadMore(host);
+    else await state.refresh(host);
   },
   updateWindow: now => {
     const window = getSportsWindow(now);

@@ -1,6 +1,7 @@
 import { Game, Game_Status, SportsCatalog, type GetGamesResponse } from '@/features/sports/core/generated/sports';
 import { sportsClient } from '@/features/sports/data/api/client';
 import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -326,4 +327,27 @@ it('retains provider relevance and statuses in Search without browse sorting', a
   sportsActions.setSearch('main', 'team');
   await read();
   expect(result()?.sections[0].gameIds).toEqual(['finished', '1', 'postponed']);
+});
+
+it('restarts Search when its continuation no longer matches the catalog', async () => {
+  sportsActions.setSearch('main', 'team');
+  await read();
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockRejectedValueOnce(new RainbowFetchError({ message: 'Invalid cursor', responseBody: { code: 9 } }));
+  await sportsActions.loadMore('main');
+  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalog: { ...catalog, revision: 2 }, games: [second], nextCursor: undefined });
+  await sportsActions.retry('main');
+  expect(jest.mocked(sportsClient.searchGames).mock.calls[2][0].cursor).toBeUndefined();
+  expect(result()?.sections[0].gameIds).toEqual(['2']);
+});
+
+it('returns to Live when retrying a category removed from the catalog', async () => {
+  sportsActions.selectDestination('main', { type: 'scope', scopeId: 'nba' });
+  jest.mocked(sportsClient.getGames).mockRejectedValue(new RainbowFetchError({ message: 'Scope removed', responseBody: { code: 5 } }));
+  await read();
+  await sportsActions.retry('main');
+  await read();
+  expect(useSportsViewStore.getState().hosts.main.request.destination).toEqual({ type: 'live' });
+  expect(result()?.sections[0].gameIds).toEqual(['1']);
 });
