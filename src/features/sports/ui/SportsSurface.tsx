@@ -53,7 +53,8 @@ export const SportsSurface = memo(function SportsSurface({
   const path = useSharedValue('M0 0Z');
   const height = useSharedValue(0);
   const gradientEnd = useDerivedValue(() => ({ x: 0, y: height.value }));
-  const bleed = Math.ceil(Math.max(0, ...shadows.map(shadow => shadow.blur * 3 + Math.max(Math.abs(shadow.dx), Math.abs(shadow.dy)))));
+  // Skia truncates Canvas sizes to whole points; keep fractional edges inside its drawable.
+  const bleed = Math.ceil(Math.max(1, ...shadows.map(shadow => shadow.blur * 3 + Math.max(Math.abs(shadow.dx), Math.abs(shadow.dy)))));
   const onLayout = useCallback(
     ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
       height.value = layout.height;
