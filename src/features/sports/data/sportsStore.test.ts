@@ -122,7 +122,7 @@ it.each(['browse', 'lookup'] as const)('%s score updates preserve atomic records
   expect(count).not.toHaveBeenCalled();
 });
 
-it('retains visited categories through hiding, unmounting, and a host handoff without another fresh read', async () => {
+it('retains visited categories across visibility and host changes without refetching', async () => {
   sportsActions.setHostVisibility('main', true);
   await settle();
   sportsActions.selectDestination('main', { type: 'scope', scopeId: 'tennis' });
