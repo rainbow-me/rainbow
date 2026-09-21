@@ -54,10 +54,10 @@ import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/features/dapp-browser/context/BrowserContext';
 import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { SportsScreen } from '@/features/sports/ui/SportsScreen';
+import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
@@ -86,7 +86,7 @@ const TAB_BAR_ICONS = {
   [Routes.DISCOVER_SCREEN]: 'tabDiscover',
   [Routes.DAPP_BROWSER_SCREEN]: 'tabDappBrowser',
   [Routes.PROFILE_SCREEN]: 'tabActivity',
-  [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
+  [Routes.SPORTS_SCREEN]: 'tabSports',
   [Routes.RNBW_MEMBERSHIP_SCREEN]: 'tabMembership',
   [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
@@ -121,7 +121,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useSportsEnabled();
 
   const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -134,12 +134,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     const routes: Route[] = [Routes.WALLET_SCREEN];
     if (showDiscoverTab) routes.push(Routes.DISCOVER_SCREEN);
     if (showDappBrowserTab) routes.push(Routes.DAPP_BROWSER_SCREEN);
-    routes.push(showKingOfTheHillTab ? Routes.KING_OF_THE_HILL : Routes.PROFILE_SCREEN);
+    routes.push(showSportsTab ? Routes.SPORTS_SCREEN : Routes.PROFILE_SCREEN);
     if (showRnbwRewardsOrMembershipTab) {
       routes.push(showRnbwMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN);
     }
     return routes;
-  }, [showDappBrowserTab, showDiscoverTab, showKingOfTheHillTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
+  }, [showDappBrowserTab, showDiscoverTab, showSportsTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
 
   const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
@@ -231,7 +231,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
             mainList?.scrollToTop();
             break;
-          case TAB_BAR_ICONS[Routes.KING_OF_THE_HILL]:
+          case TAB_BAR_ICONS[Routes.SPORTS_SCREEN]:
             mainList?.scrollToTop();
             break;
         }
@@ -639,7 +639,7 @@ function SwipeNavigatorScreens() {
   );
   const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useSportsEnabled();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
@@ -661,8 +661,8 @@ function SwipeNavigatorScreens() {
 
   const key = useMemo(() => {
     let key = 'swipe-navigator';
-    if (showKingOfTheHillTab) {
-      key += '-koth';
+    if (showSportsTab) {
+      key += '-sports';
     }
     if (showDiscoverTab) {
       key += '-discover';
@@ -677,11 +677,11 @@ function SwipeNavigatorScreens() {
       key += `-${language}`;
     }
     return key;
-  }, [showKingOfTheHillTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
+  }, [showSportsTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
 
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab or language changes
+      // required to force re-render when showSportsTab, showRnbwRewardsTab or language changes
       key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
@@ -696,12 +696,8 @@ function SwipeNavigatorScreens() {
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
-      {showKingOfTheHillTab ? (
-        <Swipe.Screen
-          component={KingOfTheHillScreen}
-          name={Routes.KING_OF_THE_HILL}
-          options={{ title: TAB_BAR_ICONS[Routes.KING_OF_THE_HILL] }}
-        />
+      {showSportsTab ? (
+        <Swipe.Screen component={SportsScreen} name={Routes.SPORTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.SPORTS_SCREEN] }} />
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}

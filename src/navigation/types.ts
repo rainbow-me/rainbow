@@ -706,7 +706,8 @@ type ParamsByRoute = {
     fromRoute:
       | typeof Routes.POLYMARKET_EVENT_SCREEN
       | typeof Routes.POLYMARKET_MARKET_SHEET
-      | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN;
+      | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN
+      | typeof Routes.SPORTS_SCREEN;
   };
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;

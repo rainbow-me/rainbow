@@ -28,8 +28,6 @@ import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegist
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
 import { PinAuthenticationScreen } from '@/features/local-auth/screens/PinAuthenticationScreen';
 import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
@@ -64,6 +62,7 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
+import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
 import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import { SendSheet } from '@/features/transfer/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
@@ -167,7 +166,7 @@ function MainNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useSportsEnabled();
 
   return (
     <BSStack.Navigator>
@@ -201,7 +200,7 @@ function BSNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
-      {showKingOfTheHillTab && (
+      {showSportsTab && (
         <BSStack.Screen
           component={ActivitySheetScreen}
           name={Routes.PROFILE_SCREEN}
@@ -286,7 +285,6 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsTradeHistoryScreen} name={Routes.PERPS_TRADE_HISTORY_SCREEN} />
       <BSStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} />
       <BSStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} />
-      <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} />
       <BSStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} />
       <BSStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} />

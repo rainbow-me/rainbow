@@ -89,7 +89,6 @@ export interface RainbowConfig extends Record<
   king_of_the_hill_enabled: boolean;
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
-  king_of_the_hill2_enabled: boolean;
   discover_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
@@ -223,7 +222,6 @@ export const DEFAULT_CONFIG = {
   claimables: true,
   nfts_enabled: true,
 
-  king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
