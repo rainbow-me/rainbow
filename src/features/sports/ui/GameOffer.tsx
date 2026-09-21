@@ -45,7 +45,7 @@ export const GameOffer = memo(function GameOffer({
   const probabilityStyle = useAnimatedStyle(() => (isSpread || price.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
   const background = isSpread
     ? isDarkMode
-      ? opacity(color, 0.2)
+      ? opacity(color, 0.28)
       : undefined
     : getSolidColorEquivalent({ background: color, foreground: '#000000', opacity: isDarkMode ? 0.3 : 0.06 });
 
@@ -76,7 +76,7 @@ export const GameOffer = memo(function GameOffer({
             <View pointerEvents="none" style={styles.background}>
               {isSpread ? (
                 <LinearGradient
-                  colors={isDarkMode ? [opacity(color, 0.35), opacity(color, 0), opacity(color, 0.35)] : LIGHT_SPREAD_FILL}
+                  colors={isDarkMode ? [opacity(color, 0.18), opacity(color, 0), opacity(color, 0.18)] : LIGHT_SPREAD_FILL}
                   style={StyleSheet.absoluteFill}
                 />
               ) : (
