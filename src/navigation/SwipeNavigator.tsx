@@ -29,7 +29,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
+import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FlexItem } from '@/components/layout';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
@@ -63,10 +63,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
-import {
-  RecyclerListViewScrollToTopProvider,
-  useRecyclerListViewScrollToTopContext,
-} from '@/navigation/RecyclerListViewScrollToTopContext';
+import { tabReselectEvents } from '@/navigation/tabEvents';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -107,7 +104,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { extraWebViewHeight, tabViewProgress } = useBrowserTabBarContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  const recyclerList = useRecyclerListViewScrollToTopContext();
 
   const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
@@ -203,7 +199,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const onPress = useCallback(
-    ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: string }) => {
+    ({ route, index }: { route: { key: string; name: string }; index: number }): void => {
       const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
       if (event.defaultPrevented) return;
 
@@ -215,27 +211,16 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         reanimatedPosition.value = index;
         jumpTo(route.key);
         setActiveRoute(route.name as Route);
+      } else if (route.name === Routes.DISCOVER_SCREEN && delta < DOUBLE_PRESS_DELAY) {
+        discoverOpenSearchFnRef?.();
+        return;
       } else {
-        switch (tabBarIcon) {
-          case TAB_BAR_ICONS[Routes.WALLET_SCREEN]:
-            recyclerList.scrollToTop?.();
-            break;
-          case TAB_BAR_ICONS[Routes.DISCOVER_SCREEN]:
-            if (delta < DOUBLE_PRESS_DELAY) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            if (discoverScrollToTopFnRef?.() === 0) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            break;
-        }
+        tabReselectEvents.emit(route.key);
       }
 
       lastPressRef.current = time;
     },
-    [getIsFocused, jumpTo, navigation, reanimatedPosition, recyclerList]
+    [getIsFocused, jumpTo, navigation, reanimatedPosition]
   );
 
   const onLongPress = useCallback(
@@ -316,6 +301,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       showRnbwMembership,
       showRnbwRewardsTab,
       stateRef,
+      tabWidth,
     ]
   );
 
@@ -443,7 +429,7 @@ type BaseTabIconProps = {
   activeIndex: SharedValue<number>;
   index: number;
   onLongPress: ({ route, tabBarIcon }: { route: { key: string; name: string }; tabBarIcon: TabIconKey }) => void;
-  onPress: ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: TabIconKey }) => void;
+  onPress: ({ route, index }: { route: { key: string; name: string }; index: number }) => void;
   route: { key: string; name: string };
   tabBarIcon: TabIconKey;
 };
@@ -470,7 +456,7 @@ export const BaseTabIcon = memo(function BaseTabIcon({
         enableHapticFeedback
         scaleTo={0.75}
         onLongPress={() => onLongPress({ route, tabBarIcon })}
-        onPress={() => onPress({ route, index, tabBarIcon })}
+        onPress={() => onPress({ route, index })}
       >
         <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center">
           {tabBarIcon === TAB_BAR_ICONS[Routes.PROFILE_SCREEN] ? (
@@ -534,7 +520,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
           <ButtonPressAnimation
             disallowInterruption
             enableHapticFeedback={!showBrowserButtons}
-            onPress={() => onPress({ route, index, tabBarIcon })}
+            onPress={() => onPress({ route, index })}
             scaleTo={showBrowserButtons ? 1 : 0.75}
             style={{ pointerEvents: showBrowserButtons ? 'box-none' : 'auto' }}
           >
@@ -721,9 +707,7 @@ export function SwipeNavigator() {
   return (
     <FlexItem backgroundColor={globalColors.white100}>
       <BrowserTabBarContextProvider>
-        <RecyclerListViewScrollToTopProvider>
-          <SwipeNavigatorScreens />
-        </RecyclerListViewScrollToTopProvider>
+        <SwipeNavigatorScreens />
       </BrowserTabBarContextProvider>
 
       <PendingTransactionWatcher />

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, type LegacyRef } from '
 import { type LayoutChangeEvent } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
@@ -19,7 +20,7 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import usePrevious from '@/hooks/usePrevious';
-import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
+import { useOnTabReselect } from '@/navigation/tabEvents';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
@@ -105,8 +106,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
     [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
-  const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
-
+  const topInset = useSafeAreaInsets().top;
   const topMarginRef = useRef<number>(0);
   const ref = useRef<RecyclerListViewRef>(undefined);
 
@@ -120,11 +120,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
     }
   );
 
-  useEffect(() => {
-    if (!ref.current) return;
-
-    setScrollToTopRef(ref.current);
-  }, [ref, setScrollToTopRef]);
+  useOnTabReselect(() => ref.current?.scrollToOffset(0, -topInset, true));
 
   const onLayout = useCallback(
     () =>
