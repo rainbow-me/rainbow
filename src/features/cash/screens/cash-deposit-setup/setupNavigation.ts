@@ -1,5 +1,6 @@
 import { goBack, navigate } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
 import { useCashAccountStore } from '../../stores/cashAccountStore';
 import { selectIsPhoneVerified, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
@@ -7,6 +8,7 @@ import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getNextSetupStep, isSetupEditDetour } from './steps';
+import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 export function completeSetupStep(): void {
@@ -65,6 +67,30 @@ export function endSetupSession(): void {
 
 export function abandonSetupSession(): void {
   useCashSetupSessionStore.getState().reset();
+}
+
+// A session can also clear while Setup stays mounted: the bootstrap credential expiring mid-flow.
+// The wizard would otherwise keep a step that needed it, whose action then silently no-ops.
+export function restartSetupWithoutCredential(): void {
+  if (useCashSetupSessionStore.getState().session.status !== 'empty') return;
+  if (useCashAccountStore.getState().userId != null) return;
+  if (useAddPasskeyFlowStore.getState().state === 'submitting') return;
+  if (CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+
+  const isActive = selectIsSetupScreenActive(useNavigationStore.getState());
+
+  useVerifyPhoneFlowStore.getState().reset();
+  useSubmitReviewFlowStore.getState().reset();
+  useKycReturnFlowStore.getState().reset();
+  useAddPasskeyFlowStore.getState().reset();
+
+  CashDepositSetupNavigation.resetNavigationState();
+  if (isActive) CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PHONE);
+}
+
+/** Matches Setup's native screen on entry/dismissal, or its active step after virtual navigation. */
+export function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean {
+  return isRouteActive(Routes.CASH_DEPOSIT_SETUP_SCREEN) || isRouteActive(useCashDepositSetupNavigationStore.getState().activeRoute);
 }
 
 function hasTerminalKycRejection(): boolean {

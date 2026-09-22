@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,6 +17,7 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStore';
+import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
@@ -23,7 +25,7 @@ import { KycReturnCheck } from './components/KycReturnCheck';
 import { SetupActionButton } from './components/SetupActionButton';
 import { SetupStepHeader } from './components/SetupStepHeader';
 import { createSetupContext, SetupProvider } from './setupContext';
-import { cancelSetup, completeSetupStep, endSetupSession } from './setupNavigation';
+import { cancelSetup, completeSetupStep, endSetupSession, restartSetupWithoutCredential } from './setupNavigation';
 import { SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
@@ -71,6 +73,9 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     false,
     []
   );
+
+  useListen(useCashSetupSessionStore, s => s.session.status === 'empty', restartSetupWithoutCredential);
+  useListen(useAddPasskeyFlowStore, s => s.state === 'submitting', restartSetupWithoutCredential);
 
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();

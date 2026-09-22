@@ -1,5 +1,7 @@
 import React, { memo, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
+import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSheet';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 
 import { getShouldCheckKycOnReturn, useKycReturnFlowStore, type KycReturnResult } from '../../../stores/kycReturnFlowStore';
@@ -29,7 +31,18 @@ export const KycReturnCheck = memo(function KycReturnCheck({ children }: { child
     };
   }, [isChecking]);
 
-  if (isChecking) return null;
+  // The wizard must stay unmounted until the outcome is known, so the wait needs its own feedback:
+  // a blank screen hides the header and close button for the whole, potentially long, status read.
+  if (isChecking) {
+    return (
+      <CashStatusHalfSheet
+        description={i18n.t(i18n.l.cash.deposit_setup.kyc.verifying_description)}
+        status="inProgress"
+        testID="cash-setup-kyc-return-checking"
+        title={i18n.t(i18n.l.cash.deposit_setup.kyc.verifying_title)}
+      />
+    );
+  }
   return (
     <>
       {children}
