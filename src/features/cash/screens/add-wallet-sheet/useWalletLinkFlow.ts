@@ -5,8 +5,7 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { isPasskeyCancellation } from '../../services/cashPasskeyService';
-import { isCashUserServiceNetworkPolicyError } from '../../services/cashUserServiceNetworkPolicy';
+import { isHandledCashError } from '../../services/cashHandledError';
 import { linkWalletWithSignature, WalletSignatureError } from '../../services/walletLinkService';
 import { getTelemetryErrorReason } from '../../utils/getTelemetryErrorReason';
 
@@ -38,9 +37,9 @@ export function useWalletLinkFlow({ onLinked, walletAddress }: { onLinked: () =>
       onLinked();
     } catch (e) {
       if (controller.signal.aborted) return;
-      // A cancelled passkey and the signature stage both already spoke to the user; anything past
-      // them is ours to surface.
-      if (e instanceof WalletSignatureError || isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
+      // A cancelled passkey, the signature stage, and a network-policy block already spoke to the
+      // user; anything past them is ours to surface.
+      if (e instanceof WalletSignatureError || isHandledCashError(e)) {
         setState('idle');
         return;
       }

@@ -5,8 +5,7 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
 import { linkCardWithVault, type CardLinkProgress } from '../services/cardLinkService';
-import { isPasskeyCancellation } from '../services/cashPasskeyService';
-import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { isHandledCashError } from '../services/cashHandledError';
 import type { CardBrand } from '../services/rampClient';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashPaymentMethodStore } from './cashPaymentMethodStore';
@@ -51,7 +50,7 @@ export const useCardLinkFlowStore = createBaseStore<CardLinkFlowStore>((set, get
     } catch (e) {
       if (controller.signal.aborted) return 'cancelled';
       // Return to the form without showing the generic card-link error.
-      if (isCashUserServiceNetworkPolicyError(e) || isPasskeyCancellation(e)) {
+      if (isHandledCashError(e)) {
         set({ pendingProgress: progress, state: 'entry' });
         return 'cancelled';
       }
