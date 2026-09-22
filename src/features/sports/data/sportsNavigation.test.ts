@@ -115,7 +115,10 @@ it('does not repeat catalog search for score, request metadata, or host visibili
   expect(sportsNavigationStores.main.getState().directoryIds).toEqual(['epl']);
   readSearchName.mockClear();
 
-  useSportsStore.setState({ games: { game: Game.fromJSON({ id: 'game', score: [{ first: { value: 1 } }] }) }, queryCache: {} });
+  useSportsStore.setState({
+    games: { game: { ...Game.fromJSON({ id: 'game', score: [{ first: { value: 1 } }] }), quoteTokenIds: [] } },
+    queryCache: {},
+  });
   sportsActions.setHostVisibility('main', false);
   expect(sportsNavigationStores.main.getState().directoryIds).toEqual(['epl']);
   expect(readSearchName).not.toHaveBeenCalled();

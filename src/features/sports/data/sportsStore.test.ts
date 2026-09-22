@@ -1,7 +1,7 @@
 import { Game, Game_Status, SportsCatalog, type GetGamesResponse } from '@/features/sports/core/generated/sports';
 import * as sections from '@/features/sports/core/sections';
 import { sportsClient } from '@/features/sports/data/api/client';
-import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore, type SportsResult } from '@/features/sports/data/sportsStore';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
@@ -37,7 +37,7 @@ function game(id: string, fields: Partial<Game> = {}): Game {
   });
 }
 
-function result(host: 'main' | 'predictions' = 'main') {
+function result(host: 'main' | 'predictions' = 'main'): SportsResult | undefined {
   return getSportsResult(useSportsStore.getState(), useSportsViewStore.getState().hosts[host].request);
 }
 
@@ -598,4 +598,63 @@ it('does not recreate an abandoned search entry when its request fails late', as
   await settle();
   expect(useSportsStore.getState().getCacheEntry(abandonedKey)).toBeNull();
   expect(result()?.gameIds).toEqual(['1']);
+});
+
+it.each(['browse', 'search', 'lookup'] as const)('%s admission retains quote IDs until offers change', async source => {
+  let incoming = Game.fromJSON({
+    ...first,
+    participants: [{ winner: { tokenId: 'first' } }, { winner: { tokenId: 'second' } }],
+    spread: { outcomes: [{ tokenId: 'spread-first' }, { tokenId: 'spread-second' }] },
+    winner: { draw: { tokenId: 'draw' } },
+  });
+  const response = (): GetGamesResponse => ({ catalog, games: [Game.fromJSON(incoming)] });
+
+  jest.mocked(sportsClient.getLiveGames).mockImplementation(async () => response());
+  jest.mocked(sportsClient.searchGames).mockImplementation(async () => response());
+  jest.mocked(sportsClient.lookupGames).mockImplementation(async () => ({
+    ...response(),
+    resolved: [{ eventId: 'child', gameId: '1' }],
+    unavailableEventIds: [],
+  }));
+
+  if (source === 'lookup') {
+    sportsActions.setLookupConsumer(owner, { route: Routes.SPORTS_SCREEN, eventIds: ['child'], visibleIds: ['child'], active: true });
+  } else {
+    if (source === 'search') sportsActions.setSearch('main', 'test');
+    sportsActions.setHostVisibility('main', true);
+  }
+  await settle();
+
+  const original = useSportsStore.getState().games['1'];
+  expect(original?.quoteTokenIds).toEqual(['first', 'second', 'spread-first', 'spread-second', 'draw']);
+
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  expect(useSportsStore.getState().games['1']).toBe(original);
+
+  incoming = { ...incoming, clock: '3:21', score: [{ ...first.score[0], first: { value: 2 } }] };
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  const scored = useSportsStore.getState().games['1'];
+  expect(scored).not.toBe(original);
+  expect(scored?.quoteTokenIds).toBe(original?.quoteTokenIds);
+
+  incoming = { ...incoming, participants: [{ ...incoming.participants[0], name: 'Renamed' }, incoming.participants[1]] };
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  expect(useSportsStore.getState().games['1']?.quoteTokenIds).toBe(original?.quoteTokenIds);
+
+  incoming = Game.fromJSON({ ...incoming, participants: [{ winner: { tokenId: 'replacement' } }, { winner: { tokenId: 'second' } }] });
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  const changed = useSportsStore.getState().games['1'];
+  expect(changed?.quoteTokenIds).toEqual(['replacement', 'second', 'spread-first', 'spread-second', 'draw']);
+  expect(changed?.quoteTokenIds).not.toBe(original?.quoteTokenIds);
+
+  incoming = { ...incoming, spread: undefined, winner: undefined };
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  expect(useSportsStore.getState().games['1']?.quoteTokenIds).toEqual(['replacement', 'second']);
+
+  incoming = Game.fromJSON({ ...incoming, winner: { draw: { tokenId: 'second' } } });
+  await useSportsStore.getState().fetch(undefined, { force: true });
+  expect(useSportsStore.getState().games['1']?.quoteTokenIds).toEqual(['replacement', 'second', 'second']);
+
+  useSportsStore.getState().clear();
+  expect(useSportsStore.getState().games).toEqual({});
 });

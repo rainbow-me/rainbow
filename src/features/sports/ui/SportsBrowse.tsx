@@ -42,7 +42,6 @@ type Row =
 
 export function SportsBrowse({
   host,
-  visible,
   topInset = 0,
   bottomInset,
   onGamePress,
@@ -50,14 +49,13 @@ export function SportsBrowse({
   ref,
 }: {
   host: SportsHost;
-  visible: boolean;
   topInset?: number;
   bottomInset: number;
   onGamePress: SportsGamePress;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   ref?: Ref<SportsBrowseHandle>;
 }) {
-  useSportsHost(host, visible);
+  useSportsHost(host);
   const { width } = useDimensions();
   const { isDarkMode } = useColorMode();
   const list = useRef<FlatList<Row>>(null);
@@ -102,7 +100,7 @@ export function SportsBrowse({
     () => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : row.type === 'carousel' ? row.section.gameIds : [])),
     [rows]
   );
-  const setVisibleGames = useSportsQuotes(visible, renderedGameIds);
+  const setVisibleGames = useSportsQuotes(renderedGameIds);
   const updateVisibleGames = useCallback(() => {
     const { gameIds, carouselKeys } = viewport.current;
     setVisibleGames([...gameIds, ...carouselKeys.flatMap(key => carouselGames.current.get(key) ?? [])]);

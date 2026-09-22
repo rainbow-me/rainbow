@@ -111,7 +111,7 @@ jest.mock('@/features/sports/ui/useSportsLookup', () => ({ useSportsLookup: () =
 const eventId = '980512';
 const source = { id: eventId, slug: 'match', title: 'First vs Second', volume: 1000, markets: [] };
 const color = { light: '#3366ff', dark: '#6699ff' };
-const game = Game.fromJSON({ id: eventId, participants: [{ name: 'First' }, { name: 'Second' }] });
+const game = { ...Game.fromJSON({ id: eventId, participants: [{ name: 'First' }, { name: 'Second' }] }), quoteTokenIds: [] };
 
 beforeEach(async () => {
   usePolymarketEventStore.setState({ queryCache: {}, lastFetchedAt: null, status: 'idle' });

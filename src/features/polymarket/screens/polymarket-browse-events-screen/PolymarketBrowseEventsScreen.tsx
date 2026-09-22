@@ -21,8 +21,6 @@ import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-n
 import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { SportsBrowse } from '@/features/sports/ui/SportsBrowse';
-import Routes from '@/navigation/routesNames';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (
@@ -37,14 +35,14 @@ const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
   const { sportsBrowseRef, scrollBrowseToTop } = usePolymarketContext();
   const safeAreaInsets = useSafeAreaInsets();
-  const visible = useNavigationStore(state => state.activeRoute === Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
-  const isSportsCategory = usePolymarketCategoryStore(state => state.tagId === CATEGORIES.sports.tagId);
-  const onGamePress = useSportsGamePress();
 
+  const isSportsCategory = usePolymarketCategoryStore(s => s.tagId === CATEGORIES.sports.tagId);
   const scrollOffset = useSharedValue(0);
+
+  const onGamePress = useSportsGamePress();
   const onScroll = useScrollFadeHandler(scrollOffset);
 
-  useListen(usePolymarketCategoryStore, state => state.tagId, scrollBrowseToTop);
+  useListen(usePolymarketCategoryStore, s => s.tagId, scrollBrowseToTop);
 
   const backgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
@@ -54,7 +52,6 @@ const PolymarketBrowseEventsList = () => {
         <SportsBrowse
           ref={sportsBrowseRef}
           host="predictions"
-          visible={visible}
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}
           onScroll={onScroll}

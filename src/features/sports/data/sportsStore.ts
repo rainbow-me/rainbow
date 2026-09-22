@@ -40,8 +40,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 type BrowseRequest = { destination: SportsDestination; query: string | null };
 type HostState = { request: BrowseRequest; category: SportsDestination; visible: boolean };
 type LookupConsumer = { route: Route; eventIds: string[]; visibleIds: string[]; active: boolean };
-
-type QuoteConsumer = { active: boolean; renderedGameIds: string[]; visibleGameIds: string[] };
+type QuoteConsumer = { renderedGameIds: string[]; visibleGameIds: string[] };
 
 type SportsViewState = {
   appActive: boolean;
@@ -58,7 +57,7 @@ type SportsViewState = {
   refresh: (host: SportsHost) => Promise<void>;
   retry: (host: SportsHost) => Promise<void>;
   updateWindow: (now?: Date) => void;
-  setQuoteConsumer: (owner: symbol, consumer: Pick<QuoteConsumer, 'active' | 'renderedGameIds'>) => void;
+  setQuoteConsumer: (owner: symbol, renderedGameIds: string[]) => void;
   setVisibleQuoteGames: (owner: symbol, visibleGameIds: string[]) => void;
   removeQuoteConsumer: (owner: symbol) => void;
   setLookupConsumer: (owner: symbol, consumer: Omit<LookupConsumer, 'visibleIds'> & { visibleIds?: string[] }) => void;
@@ -140,11 +139,12 @@ export const useSportsViewStore = createBaseStore<SportsViewState>((set, get) =>
     set({ window });
   },
 
-  setQuoteConsumer: (owner, update) =>
+  setQuoteConsumer: (owner, renderedGameIds) =>
     set(state => {
       const previous = state.quoteConsumers.get(owner);
-      const consumer = { ...update, visibleGameIds: previous?.visibleGameIds ?? [] };
-      if (previous && consumer.active === previous.active && shallowEqual(consumer.renderedGameIds, previous.renderedGameIds)) return state;
+      if (previous && shallowEqual(renderedGameIds, previous.renderedGameIds)) return state;
+
+      const consumer = { renderedGameIds, visibleGameIds: previous?.visibleGameIds ?? [] };
       return { quoteConsumers: new Map(state.quoteConsumers).set(owner, consumer) };
     }),
 
@@ -217,11 +217,13 @@ function setBrowseRequest(host: SportsHost, request: BrowseRequest, category?: S
 
 // ============ Data ========================================================== //
 
+export type SportsGame = Game & { quoteTokenIds: string[] };
+
 export type SportsResult = { gameIds: string[]; sections: SportsSection[]; nextCursor?: string };
 type SportsSearchResult = SportsResult & { query: string; queryKey: string };
 type SportsState = {
   catalog: SportsCatalog | undefined;
-  games: Partial<Record<string, Game>>;
+  games: Partial<Record<string, SportsGame>>;
   results: Partial<Record<string, SportsResult & { destination: SportsDestination }>>;
   search: SportsSearchResult | undefined;
   eventGames: Partial<Record<string, string | null>>;
@@ -296,7 +298,12 @@ async function fetchSports({ request, window }: SportsParams, controller: AbortC
 
 // ============ Admission ===================================================== //
 
-function setSportsData({ data, params: { request, window }, queryKey, set }: SetDataParams<SportsResponse, SportsParams, SportsState>) {
+function setSportsData({
+  data,
+  params: { request, window },
+  queryKey,
+  set,
+}: SetDataParams<SportsResponse, SportsParams, SportsState>): void {
   if (!data || !request) return;
   set(state => {
     if (data.catalog && state.catalog && data.catalog.revision < state.catalog.revision) {
@@ -390,7 +397,9 @@ function setSportsData({ data, params: { request, window }, queryKey, set }: Set
     for (const incomingGame of data.games) {
       const previous = games[incomingGame.id];
       if (!previous && !admitted.has(incomingGame.id)) continue;
-      const game = replaceEqualDeep(previous, incomingGame);
+
+      const quoteTokenIds = getGameQuoteTokenIds(incomingGame, previous);
+      const game = replaceEqualDeep(previous, Object.assign(incomingGame, { quoteTokenIds }));
       if (game === previous) continue;
 
       if (games === state.games) games = { ...games };
@@ -435,6 +444,27 @@ function setSportsData({ data, params: { request, window }, queryKey, set }: Set
   });
 }
 
+function getGameQuoteTokenIds(game: Game, previous?: SportsGame): string[] {
+  if (
+    previous &&
+    game.participants[0]?.winner?.tokenId === previous.participants[0]?.winner?.tokenId &&
+    game.participants[1]?.winner?.tokenId === previous.participants[1]?.winner?.tokenId &&
+    game.spread?.outcomes[0]?.tokenId === previous.spread?.outcomes[0]?.tokenId &&
+    game.spread?.outcomes[1]?.tokenId === previous.spread?.outcomes[1]?.tokenId &&
+    game.winner?.draw?.tokenId === previous.winner?.draw?.tokenId
+  ) {
+    return previous.quoteTokenIds;
+  }
+
+  return [
+    game.participants[0]?.winner?.tokenId,
+    game.participants[1]?.winner?.tokenId,
+    game.spread?.outcomes[0]?.tokenId,
+    game.spread?.outcomes[1]?.tokenId,
+    game.winner?.draw?.tokenId,
+  ].filter((tokenId): tokenId is string => tokenId !== undefined);
+}
+
 function sameDisplayedGames(previous: SportsSection[] | undefined, next: SportsSection[]): boolean {
   if (previous === next) return true;
   return sameIds(
@@ -465,7 +495,7 @@ function retainedLookupEvents(): Set<string> {
   return new Set([...useSportsViewStore.getState().lookupConsumers.values()].flatMap(consumer => consumer.eventIds));
 }
 
-function pruneGames(state: Pick<SportsState, 'games' | 'results' | 'search' | 'eventGames'>) {
+function pruneGames(state: Pick<SportsState, 'games' | 'results' | 'search' | 'eventGames'>): Pick<SportsState, 'games'> {
   const retained = new Set([
     ...Object.values(state.results).flatMap(result => result?.gameIds ?? []),
     ...(state.search?.gameIds ?? []),
@@ -480,7 +510,7 @@ function pruneGames(state: Pick<SportsState, 'games' | 'results' | 'search' | 'e
   return { games };
 }
 
-function releaseLookupData(releaseEvents: boolean) {
+function releaseLookupData(releaseEvents: boolean): void {
   const retained = releaseEvents ? retainedLookupEvents() : undefined;
   useSportsStore.setState(state => {
     let eventGames = state.eventGames;
