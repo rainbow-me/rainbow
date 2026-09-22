@@ -60,24 +60,16 @@ function SportsReadError({ retry }: { retry: () => Promise<void> }) {
       <Text align="center" color="labelSecondary" size="20pt" weight="bold">
         {i18n.t(i18n.l.sports.error)}
       </Text>
-      <View
-        accessible
-        accessibilityRole="button"
-        accessibilityState={{ disabled: pending }}
-        accessibilityLabel={i18n.t(i18n.l.sports.retry)}
-        onAccessibilityTap={pending ? undefined : onPress}
-      >
-        <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
-          <View style={[styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
-            <TextIcon color="accent" size="icon 15px" weight="bold" containerSize={20}>
-              {'􀅈'}
-            </TextIcon>
-            <Text color="accent" size="17pt" weight="bold">
-              {i18n.t(i18n.l.sports.retry)}
-            </Text>
-          </View>
-        </ButtonPressAnimation>
-      </View>
+      <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
+        <View style={[styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
+          <TextIcon color="accent" size="icon 15px" weight="bold" containerSize={20}>
+            {'􀅈'}
+          </TextIcon>
+          <Text color="accent" size="17pt" weight="bold">
+            {i18n.t(i18n.l.sports.retry)}
+          </Text>
+        </View>
+      </ButtonPressAnimation>
     </View>
   );
 }

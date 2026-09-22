@@ -10,25 +10,31 @@ import { sportsNavigationStores } from '@/features/sports/data/sportsNavigation'
 import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
+import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { black, white } from '@/worklets/colors';
 
 export function SportsDirectory({ host, showHeading = false }: { host: SportsHost; showHeading?: boolean }) {
   const { isDarkMode } = useColorMode();
-  const scopeIds = sportsNavigationStores[host](state => state.directoryIds);
-  const showCompetitions = sportsNavigationStores[host](state => state.page === 'competitions');
+
+  const scopeIds = sportsNavigationStores[host](s => s.directoryIds);
+  const showCompetitions = sportsNavigationStores[host](s => s.page === 'competitions');
+
   if (!scopeIds.length) return null;
 
   return (
     <View style={styles.directory}>
-      {showCompetitions && showHeading && (
+      {showCompetitions && showHeading ? (
         <View style={styles.heading}>
           <Text color="label" size="22pt" weight="heavy">
             {i18n.t(i18n.l.sports.competitions)}
           </Text>
         </View>
-      )}
-      {showCompetitions && !showHeading && (
-        <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }]} />
-      )}
+      ) : null}
+
+      {showCompetitions && !showHeading ? (
+        <View style={[styles.separator, { backgroundColor: (isDarkMode ? white : black)(0.04) }]} />
+      ) : null}
+
       {scopeIds.map(scopeId => (
         <DirectoryRow key={scopeId} scopeId={scopeId} host={host} competition={showCompetitions} />
       ))}
@@ -38,55 +44,47 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
 
 function DirectoryRow({ scopeId, host, competition }: { scopeId: string; host: SportsHost; competition: boolean }) {
   const { isDarkMode } = useColorMode();
-  const scope = useSportsStore(state => state.catalog?.scopes[scopeId]);
+  const scope = useSportsStore(s => s.catalog?.scopes[scopeId]);
+
   if (!scope) return null;
-  const open = () => sportsActions.openScope(host, scopeId);
+
   return (
-    <View accessible accessibilityRole="button" accessibilityLabel={scope.name} onAccessibilityTap={open}>
-      <ButtonPressAnimation onPress={open} scaleTo={0.98}>
-        <View style={[styles.row, competition && styles.competition]}>
+    <>
+      <ButtonPressAnimation onPress={() => sportsActions.openScope(host, scopeId)} scaleTo={0.98}>
+        <View style={[styles.row, competition ? styles.competition : undefined]}>
           <SportsBadge scope={scope} size={competition ? 28 : 40} />
+
           <Text color="label" size={competition ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
             {scope.name}
           </Text>
+
           <View style={styles.trailing}>
             <DirectoryCount scopeId={scope.id} />
-            <TextIcon
-              color={{ custom: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
-              size="icon 15px"
-              weight="heavy"
-              containerSize={16}
-            >
+            <TextIcon color={{ custom: (isDarkMode ? white : black)(0.3) }} size="icon 15px" weight="heavy" containerSize={16}>
               {'􀯻'}
             </TextIcon>
           </View>
         </View>
       </ButtonPressAnimation>
-      <View
-        style={[
-          styles.separator,
-          {
-            marginLeft: competition ? 38 : 54,
-            backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-          },
-        ]}
-      />
-    </View>
+
+      <View style={[styles.separator, { marginLeft: competition ? 38 : 54, backgroundColor: (isDarkMode ? white : black)(0.04) }]} />
+    </>
   );
 }
 
 function DirectoryCount({ scopeId }: { scopeId: string }) {
   const { isDarkMode } = useColorMode();
-  const count = useSportsStore(state => state.counts[scopeId] ?? 0);
+  const count = useSportsStore(s => s.counts[scopeId] ?? 0);
+
   return (
-    <View style={[styles.count, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }]}>
+    <View style={[styles.count, { backgroundColor: (isDarkMode ? white : black)(0.03) }]}>
       <Text color="labelSecondary" size="13pt" weight="heavy">
         {count}
       </Text>
       <Border
         borderRadius={9}
-        borderWidth={4 / 3}
-        borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+        borderWidth={THICK_BORDER_WIDTH}
+        borderColor={{ custom: isDarkMode ? white(0.06) : black(0.04) }}
         enableInLightMode
       />
     </View>

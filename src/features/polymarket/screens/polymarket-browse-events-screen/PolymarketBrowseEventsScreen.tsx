@@ -20,7 +20,7 @@ import { PolymarketEventCategorySelector } from '@/features/polymarket/screens/p
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
 import { polymarketEventsActions, usePolymarketEventsStore } from '@/features/polymarket/stores/polymarketEventsStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { SportsBrowse } from '@/features/sports/ui/SportsBrowse';
+import { SportsGamesList } from '@/features/sports/ui/SportsGamesList';
 
 export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEventsScreen() {
   return (
@@ -33,7 +33,7 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
 
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
-  const { sportsBrowseRef, scrollBrowseToTop } = usePolymarketContext();
+  const { sportsGamesListRef, scrollBrowseToTop } = usePolymarketContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   const isSportsCategory = usePolymarketCategoryStore(s => s.tagId === CATEGORIES.sports.tagId);
@@ -49,8 +49,8 @@ const PolymarketBrowseEventsList = () => {
   return (
     <View style={styles.listContainer}>
       {isSportsCategory ? (
-        <SportsBrowse
-          ref={sportsBrowseRef}
+        <SportsGamesList
+          ref={sportsGamesListRef}
           host="predictions"
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}

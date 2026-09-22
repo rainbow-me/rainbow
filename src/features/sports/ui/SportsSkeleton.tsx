@@ -11,7 +11,7 @@ export function SportsSkeleton({ page }: { page: SportsPage }) {
   const backgroundColor = useForegroundColor('fillTertiary');
   if (page === 'sports' || page === 'competitions')
     return (
-      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
+      <View pointerEvents="none" testID="sports-loading">
         {[0, 1, 2, 3, 4, 5].map(index => (
           <View key={index} style={styles.skeletonDirectoryRow}>
             <View style={[styles.skeletonDirectoryIcon, { backgroundColor }]} />
@@ -22,7 +22,7 @@ export function SportsSkeleton({ page }: { page: SportsPage }) {
     );
   const groups = page === 'live' ? [1, 1, 1] : page === 'search' ? [3] : [2, 1];
   return (
-    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="sports-loading">
+    <View pointerEvents="none" testID="sports-loading">
       {groups.map((count, group) => (
         <View key={group}>
           <SportsSectionHeadingSkeleton />

@@ -6,7 +6,7 @@ import { ScoreColumn_Kind, ScoreColumn_Winner } from '@/features/sports/core/gen
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 
 export const GameScore = memo(function GameScore({ gameId, participantIndex }: { gameId: string; participantIndex: 0 | 1 }) {
-  const score = useSportsStore(state => state.games[gameId]?.score);
+  const score = useSportsStore(s => s.games[gameId]?.score);
   if (!score?.length) return null;
 
   const otherWinner = participantIndex === 0 ? ScoreColumn_Winner.WINNER_SECOND : ScoreColumn_Winner.WINNER_FIRST;
@@ -17,8 +17,9 @@ export const GameScore = memo(function GameScore({ gameId, participantIndex }: {
         const value = participantIndex === 0 ? column.first : column.second;
         const wide = column.kind === ScoreColumn_Kind.KIND_ROUNDS || column.kind === ScoreColumn_Kind.KIND_SERIES;
         const hasTieBreak = column.first?.tieBreak !== undefined || column.second?.tieBreak !== undefined;
+
         return (
-          <View key={index} style={[styles.column, wide && styles.wideColumn, hasTieBreak && styles.tieBreakColumn]}>
+          <View key={index} style={[styles.column, wide ? styles.wideColumn : undefined, hasTieBreak ? styles.tieBreakColumn : undefined]}>
             <Text
               align="center"
               color={column.winner === otherWinner ? 'labelQuaternary' : 'label'}
@@ -29,7 +30,8 @@ export const GameScore = memo(function GameScore({ gameId, participantIndex }: {
             >
               {value?.value}
             </Text>
-            {value?.tieBreak !== undefined && (
+
+            {value?.tieBreak === undefined ? null : (
               <View style={styles.tieBreak}>
                 <Text color={column.winner === otherWinner ? 'labelQuaternary' : 'label'} size="11pt" tabularNumbers weight="heavy">
                   {value.tieBreak}

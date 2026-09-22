@@ -1,4 +1,4 @@
-import { useCallback, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
+import { useCallback, useImperativeHandle, useMemo, useRef, useState, type ReactElement, type Ref } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -29,10 +29,11 @@ import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/
 import { useSportsHost } from '@/features/sports/ui/useSportsHost';
 import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
+import { useLazyRef } from '@/hooks/useLazyRef';
 
-export type SportsBrowseHandle = { scrollToTop: () => void };
+// ============ Types ========================================================== //
 
-const EMPTY_SECTIONS: SportsSection[] = [];
+export type SportsGamesListHandle = { scrollToTop: () => void };
 
 type Row =
   | { key: string; type: 'heading'; section: SportsSection }
@@ -40,7 +41,14 @@ type Row =
   | { key: string; type: 'game'; gameId: string; scopeId?: string }
   | { key: string; type: 'expand'; sectionKey: string; remaining: number; expanded: boolean };
 
-export function SportsBrowse({
+// ============ Constants ====================================================== //
+
+const EMPTY_SECTIONS: SportsSection[] = [];
+const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
+
+// ============ Components ===================================================== //
+
+export function SportsGamesList({
   host,
   topInset = 0,
   bottomInset,
@@ -53,84 +61,68 @@ export function SportsBrowse({
   bottomInset: number;
   onGamePress: SportsGamePress;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  ref?: Ref<SportsBrowseHandle>;
-}) {
+  ref?: Ref<SportsGamesListHandle>;
+}): ReactElement {
   useSportsHost(host);
   const { width } = useDimensions();
   const { isDarkMode } = useColorMode();
-  const list = useRef<FlatList<Row>>(null);
-  const [expanded, setExpanded] = useState(new Set<string>());
-  const viewport = useRef<{ gameIds: string[]; carouselKeys: string[] }>({ gameIds: [], carouselKeys: [] });
-  const carouselGames = useRef(new Map<string, string[]>());
-  const page = sportsNavigationStores[host](state => state.page);
-  const request = useSportsViewStore(state => state.hosts[host].request);
-  const sections = useSportsStore(state => getSportsResult(state, request)?.sections ?? EMPTY_SECTIONS);
-  const { destination, query } = request;
 
-  const rows = useMemo(() => {
-    const rows: Row[] = [];
-    for (const section of sections) {
-      const key = section.scopeId ?? section.type;
-      rows.push({ key: `heading:${key}`, type: 'heading', section });
-      if (page === 'live') {
-        rows.push({ key: `carousel:${key}`, type: 'carousel', section });
-        continue;
-      }
-      const count = query !== null || expanded.has(key) ? section.gameIds.length : 2;
-      for (const gameId of section.gameIds.slice(0, count))
-        rows.push({
-          key: `game:${gameId}`,
-          type: 'game',
-          gameId,
-          scopeId: destination.type === 'scope' ? destination.scopeId : section.scopeId,
-        });
-      if (query === null && section.gameIds.length > 2)
-        rows.push({
-          key: `expand:${key}`,
-          type: 'expand',
-          sectionKey: key,
-          remaining: section.gameIds.length - 2,
-          expanded: expanded.has(key),
-        });
-    }
-    return rows;
-  }, [destination, query, sections, expanded, page]);
+  const [expanded, setExpanded] = useState(() => new Set<string>());
+  const request = useSportsViewStore(s => s.hosts[host].request);
+  const sections = useSportsStore(s => getSportsResult(s, request)?.sections ?? EMPTY_SECTIONS);
+  const page = sportsNavigationStores[host](s => s.page);
+
+  const listRef = useRef<FlatList<Row>>(null);
+  const viewportRef = useLazyRef<{ gameIds: string[]; carouselKeys: string[] }>(() => ({ gameIds: [], carouselKeys: [] }));
+  const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
+
+  const destination = request.destination;
+  const isSearching = !(request.query === null);
+
+  const rows = useMemo(
+    () => buildRows(sections, page, isSearching, expanded, destination.type === 'scope' ? destination.scopeId : undefined),
+    [destination, isSearching, sections, expanded, page]
+  );
 
   const renderedGameIds = useMemo(
     () => rows.flatMap(row => (row.type === 'game' ? [row.gameId] : row.type === 'carousel' ? row.section.gameIds : [])),
     [rows]
   );
+
   const setVisibleGames = useSportsQuotes(renderedGameIds);
+
   const updateVisibleGames = useCallback(() => {
-    const { gameIds, carouselKeys } = viewport.current;
-    setVisibleGames([...gameIds, ...carouselKeys.flatMap(key => carouselGames.current.get(key) ?? [])]);
-  }, [setVisibleGames]);
+    const { gameIds, carouselKeys } = viewportRef.current;
+    setVisibleGames([...gameIds, ...carouselKeys.flatMap(key => carouselGamesRef.current.get(key) ?? [])]);
+  }, [carouselGamesRef, setVisibleGames, viewportRef]);
+
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<Row>[] }) => {
-      viewport.current = {
+      viewportRef.current = {
         gameIds: viewableItems.flatMap(({ item }) => (item.type === 'game' ? [item.gameId] : [])),
         carouselKeys: viewableItems.flatMap(({ item }) => (item.type === 'carousel' ? [item.key] : [])),
       };
       updateVisibleGames();
     },
-    [updateVisibleGames]
-  );
-  const onCarouselVisibleGamesChanged = useCallback(
-    (sectionKey: string, gameIds: string[]) => {
-      if (gameIds.length) carouselGames.current.set(sectionKey, gameIds);
-      else carouselGames.current.delete(sectionKey);
-      updateVisibleGames();
-    },
-    [updateVisibleGames]
+    [updateVisibleGames, viewportRef]
   );
 
-  useImperativeHandle(ref, () => ({ scrollToTop: () => list.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
+  const onCarouselVisibleGamesChanged = useCallback(
+    (sectionKey: string, gameIds: string[]) => {
+      if (gameIds.length) carouselGamesRef.current.set(sectionKey, gameIds);
+      else carouselGamesRef.current.delete(sectionKey);
+      updateVisibleGames();
+    },
+    [carouselGamesRef, updateVisibleGames]
+  );
+
+  useImperativeHandle(ref, () => ({ scrollToTop: () => listRef.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
 
   useListen(
     useSportsViewStore,
-    state => state.hosts[host].request,
+    s => s.hosts[host].request,
     () => {
-      list.current?.scrollToOffset({ offset: 0, animated: false });
+      listRef.current?.scrollToOffset({ offset: 0, animated: false });
       setExpanded(new Set());
     },
     { equalityFn: shallowEqual }
@@ -179,7 +171,7 @@ export function SportsBrowse({
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT }]}>
       <FlatList
-        ref={list}
+        ref={listRef}
         data={rows}
         keyExtractor={row => row.key}
         renderItem={renderItem}
@@ -195,27 +187,33 @@ export function SportsBrowse({
         scrollEventThrottle={16}
         refreshControl={<SportsRefreshControl host={host} />}
         ListHeaderComponent={
-          <View style={[styles.header, query === null && destination.type === 'all' && styles.directoryHeader]}>
-            {query !== null ? <SportsSearch host={host} /> : <SportsHeader host={host} />}
-            {query !== null && <SportsDirectory host={host} />}
+          <View style={[styles.header, !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined]}>
+            {!isSearching ? <SportsHeader host={host} /> : <SportsSearch host={host} />}
+            {!isSearching ? null : <SportsDirectory host={host} />}
           </View>
         }
         ListFooterComponent={
           <>
-            {query === null && <SportsDirectory host={host} showHeading={sections.length > 0} />}
+            {!isSearching ? <SportsDirectory host={host} showHeading={sections.length > 0} /> : null}
             <SportsReadStatus host={host} />
           </>
         }
-        ListFooterComponentStyle={rows.length === 0 && styles.footer}
+        ListFooterComponentStyle={rows.length === 0 ? styles.footer : undefined}
       />
+
       <SportsScopeBar host={host} bottom={bottomInset + 20} />
     </View>
   );
 }
 
-function SportsRefreshControl({ host, children, style }: { host: SportsHost } & Pick<RefreshControlProps, 'children' | 'style'>) {
+function SportsRefreshControl({
+  host,
+  children,
+  style,
+}: { host: SportsHost } & Pick<RefreshControlProps, 'children' | 'style'>): ReactElement {
   const [refreshing, setRefreshing] = useState(false);
   const color = useForegroundColor('labelTertiary');
+
   return (
     <RefreshControl
       refreshing={refreshing}
@@ -232,7 +230,52 @@ function SportsRefreshControl({ host, children, style }: { host: SportsHost } & 
   );
 }
 
-const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
+// ============ Helpers ======================================================== //
+
+function buildRows(
+  sections: SportsSection[],
+  page: string,
+  isSearching: boolean,
+  expanded: ReadonlySet<string>,
+  destinationScopeId: string | undefined
+): Row[] {
+  const rows: Row[] = [];
+
+  for (const section of sections) {
+    const key = section.scopeId ?? section.type;
+    rows.push({ key: `heading:${key}`, type: 'heading', section });
+
+    if (page === 'live') {
+      rows.push({ key: `carousel:${key}`, type: 'carousel', section });
+      continue;
+    }
+
+    const count = isSearching || expanded.has(key) ? section.gameIds.length : 2;
+
+    for (const gameId of section.gameIds.slice(0, count)) {
+      rows.push({
+        key: `game:${gameId}`,
+        type: 'game',
+        gameId,
+        scopeId: destinationScopeId ?? section.scopeId,
+      });
+    }
+
+    if (!isSearching && section.gameIds.length > 2) {
+      rows.push({
+        key: `expand:${key}`,
+        type: 'expand',
+        sectionKey: key,
+        remaining: section.gameIds.length - 2,
+        expanded: expanded.has(key),
+      });
+    }
+  }
+
+  return rows;
+}
+
+// ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

@@ -1,4 +1,5 @@
 import { sportsApiBaseUrl } from '@/config/debug';
+import { IS_DEV } from '@/env';
 import { type SportsWindow } from '@/features/sports/core/browse';
 import {
   GetGamesResponse,
@@ -15,19 +16,19 @@ import { getPlatformClient } from '@/resources/platform/client';
 
 let localClient: RainbowFetchClient | undefined;
 
-function getClient(): RainbowFetchClient {
-  if (!__DEV__ || !sportsApiBaseUrl) return getPlatformClient();
+function getFetchClient(): RainbowFetchClient {
+  if (!IS_DEV || !sportsApiBaseUrl) return getPlatformClient();
   return (localClient ??= new RainbowFetchClient({ ...getPlatformClient().opts, baseURL: `${sportsApiBaseUrl}/v1` }));
 }
 
 export const sportsClient = {
   async getCatalog(abortController: AbortController | null) {
-    const { data } = await getClient().get<unknown>('/sports/catalog', { abortController });
+    const { data } = await getFetchClient().get<unknown>('/sports/catalog', { abortController });
     return SportsCatalog.fromJSON(data);
   },
 
   async getLiveGames({ scopeId }: GetLiveGamesRequest, abortController: AbortController | null) {
-    const { data } = await getClient().get<unknown>('/sports/live', {
+    const { data } = await getFetchClient().get<unknown>('/sports/live', {
       abortController,
       params: scopeId === undefined ? undefined : { scopeId },
     });
@@ -35,7 +36,7 @@ export const sportsClient = {
   },
 
   async getGames({ scopeId, from, until }: GetGamesRequest & SportsWindow, abortController: AbortController | null) {
-    const { data } = await getClient().get<unknown>('/sports/games', {
+    const { data } = await getFetchClient().get<unknown>('/sports/games', {
       abortController,
       params: { scopeId, from, until },
     });
@@ -43,7 +44,7 @@ export const sportsClient = {
   },
 
   async lookupGames({ eventIds }: LookupGamesRequest, abortController: AbortController | null) {
-    const { data } = await getClient().get<unknown>('/sports/games/lookup', {
+    const { data } = await getFetchClient().get<unknown>('/sports/games/lookup', {
       abortController,
       params: eventIds.map(id => ['eventIds', id]),
     });
@@ -51,14 +52,14 @@ export const sportsClient = {
   },
 
   async searchGames({ query, scopeId, from, until, cursor }: SearchGamesRequest & SportsWindow, abortController: AbortController | null) {
-    const { data } = await getClient().get<unknown>('/sports/search', {
+    const { data } = await getFetchClient().get<unknown>('/sports/search', {
       abortController,
       params: {
         query,
-        ...(scopeId !== undefined && { scopeId }),
+        ...(scopeId === undefined ? undefined : { scopeId }),
         from,
         until,
-        ...(cursor !== undefined && { cursor }),
+        ...(cursor === undefined ? undefined : { cursor }),
       },
     });
     return SearchGamesResponse.fromJSON(data);
