@@ -12,9 +12,8 @@ import { RAINBOW_SUPPORT_URL } from '@/references/constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { AccountAvatar } from './AccountAvatar';
-import { SettingsButton } from './SettingsButton';
 
-export function PendingOrderContent({ onSettings }: { onSettings: () => void }) {
+export function PendingOrderContent() {
   const blue = useForegroundColor('blue');
 
   const handleContactSupport = useCallback(() => {
@@ -23,9 +22,8 @@ export function PendingOrderContent({ onSettings }: { onSettings: () => void }) 
 
   return (
     <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)}>
-      <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingHorizontal="24px" paddingTop="28px">
+      <Box paddingHorizontal="24px" paddingTop="28px">
         <AccountAvatar />
-        <SettingsButton onPress={onSettings} />
       </Box>
       <Box alignItems="center" gap={23} paddingHorizontal={{ custom: 40 }} paddingTop="44px">
         <Box alignItems="center" height={{ custom: 64 }} justifyContent="center" width={{ custom: 64 }}>

@@ -47,7 +47,6 @@ import { AddFromRow } from './AddFromRow';
 import { AmountDisplay } from './AmountDisplay';
 import { PendingOrderContent } from './PendingOrderContent';
 import { ReauthenticateContent } from './ReauthenticateContent';
-import { SettingsButton } from './SettingsButton';
 import { useAddCashAmount } from './useAddCashAmount';
 
 type AddCashMode = 'presets' | 'keypad';
@@ -71,14 +70,14 @@ const PANEL_LAYOUT = LinearTransition.springify()
   .damping(SPRING_CONFIGS.sheetTransition.damping)
   .stiffness(SPRING_CONFIGS.sheetTransition.stiffness);
 
-function AddCashHeader({ onSettings, topPadding }: { onSettings: () => void; topPadding: '8px' | '28px' }) {
+function AddCashHeader({ topPadding }: { topPadding: '8px' | '28px' }) {
   return (
     <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingHorizontal="24px" paddingTop={topPadding}>
       <AccountAvatar />
       <Text align="center" color="label" size="22pt" weight="heavy">
         {i18n.t(i18n.l.cash.add_cash)}
       </Text>
-      <SettingsButton onPress={onSettings} />
+      <Box height={{ custom: 36 }} width={{ custom: 36 }} />
     </Box>
   );
 }
@@ -275,7 +274,6 @@ function PresetAmountContent({
   onHoldToAdd,
   onMore,
   onSelectPreset,
-  onSettings,
 }: {
   amount: AddCashAmount;
   funding: CashFundingState;
@@ -285,13 +283,12 @@ function PresetAmountContent({
   onHoldToAdd: () => void;
   onMore: () => void;
   onSelectPreset: (amount: number) => void;
-  onSettings: () => void;
 }) {
   const selectedAmount = useStoreSharedValue(amount.useAddCashStore, s => s.amount);
 
   return (
     <>
-      <AddCashHeader onSettings={onSettings} topPadding="28px" />
+      <AddCashHeader topPadding="28px" />
       <AmountPresetGrid onMore={onMore} onSelectPreset={onSelectPreset} useAddCashStore={amount.useAddCashStore} />
       {funding.kind === 'none' ? (
         <AddCardHint paddingBottom="4px" paddingTop="16px" />
@@ -317,7 +314,6 @@ function KeypadAmountContent({
   onAddCard,
   onAddFrom,
   onHoldToAdd,
-  onSettings,
   useAddCashStore,
 }: {
   amount: AddCashAmount;
@@ -326,13 +322,12 @@ function KeypadAmountContent({
   onAddCard: () => void;
   onAddFrom: () => void;
   onHoldToAdd: () => void;
-  onSettings: () => void;
   useAddCashStore: AddCashStore;
 }) {
   return (
     <>
       <KeypadHandle />
-      <AddCashHeader onSettings={onSettings} topPadding="8px" />
+      <AddCashHeader topPadding="8px" />
 
       <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)} style={styles.amountArea}>
         <AmountDisplay displayedAmount={amount.displayedAmount} shakeOffset={amount.shakeOffset} />
@@ -493,10 +488,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
     navigation.navigate(Routes.CASH_PAYMENT_METHODS_SHEET);
   }, [isProcessing, navigation]);
 
-  const handleSettings = useCallback(() => {
-    // TODO(cash): open cash settings once they land.
-  }, []);
-
   const handleMore = useCallback(() => {
     resetKeypadAmount();
     setMode('keypad');
@@ -520,7 +511,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
     >
       <Box style={isKeypad ? styles.fullScreenContent : undefined}>
         {view === 'pending' ? (
-          <PendingOrderContent onSettings={handleSettings} />
+          <PendingOrderContent />
         ) : openGate ? (
           <ReauthenticateContent status={openGate} />
         ) : view === 'keypad' ? (
@@ -531,7 +522,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
             onAddCard={handleAddCard}
             onAddFrom={handleAddFrom}
             onHoldToAdd={handleHoldToAdd}
-            onSettings={handleSettings}
             useAddCashStore={amount.useAddCashStore}
           />
         ) : (
@@ -544,7 +534,6 @@ export const AddCashSheet = memo(function AddCashSheet() {
             onHoldToAdd={handleHoldToAdd}
             onMore={handleMore}
             onSelectPreset={amount.selectPresetAmount}
-            onSettings={handleSettings}
           />
         )}
       </Box>
