@@ -26,6 +26,22 @@ export interface RGBA extends RGB {
 }
 
 /**
+ * Get RGBA black with the specified opacity.
+ */
+export function black(opacity: number): string {
+  'worklet';
+  return `rgba(0,0,0,${opacity})`;
+}
+
+/**
+ * Get RGBA white with the specified opacity.
+ */
+export function white(opacity: number): string {
+  'worklet';
+  return `rgba(255,255,255,${opacity})`;
+}
+
+/**
  * Convert color to hex string
  */
 export function colorToHex(r: number, g: number, b: number): string {
