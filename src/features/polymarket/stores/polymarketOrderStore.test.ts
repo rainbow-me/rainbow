@@ -99,7 +99,7 @@ it('uses one selection for the book and resolved fees without changing the event
       : Promise.resolve(response({ asset_id: tokenId }))
   );
 
-  prefetchRoute(Routes.POLYMARKET_NEW_POSITION_SHEET, { selection, fromRoute: Routes.SPORTS_SCREEN });
+  prefetchRoute(Routes.POLYMARKET_NEW_POSITION_SHEET, { selection, outcomeColor: '#123456', fromRoute: Routes.SPORTS_SCREEN });
   await settle();
 
   expect(rainbowFetch).toHaveBeenCalledWith(`https://clob.test/book?token_id=${tokenId}`, expect.any(Object));

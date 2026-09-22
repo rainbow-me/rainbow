@@ -30,7 +30,7 @@ export const GameOffer = memo(function GameOffer({
   color?: string;
   line?: number;
   glow?: boolean;
-  onPress: () => void;
+  onPress: (color: string) => void;
   accessibilityLabel: string;
 }) {
   const { isDarkMode } = useColorMode();
@@ -64,12 +64,12 @@ export const GameOffer = memo(function GameOffer({
       : undefined;
 
   return (
-    <View accessible accessibilityRole="button" accessibilityLabel={accessibilityLabel} onAccessibilityTap={onPress}>
+    <View accessible accessibilityRole="button" accessibilityLabel={accessibilityLabel} onAccessibilityTap={() => onPress(color)}>
       <ButtonPressAnimation
         hitSlop={{ top: 1, bottom: 1 }}
         onPress={event => {
           event?.stopPropagation();
-          onPress();
+          onPress(color);
         }}
         scaleTo={0.96}
       >

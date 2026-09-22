@@ -1,16 +1,16 @@
 import { useCallback } from 'react';
 
-import { type Selection } from '@/features/sports/core/generated/sports';
+import { type SportsGamePress } from '@/features/sports/ui/GameCard';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 
-export function useSportsGamePress() {
-  const { name: fromRoute } = useRoute();
+export function useSportsGamePress(): SportsGamePress {
+  const fromRoute = useRoute().name;
 
-  return useCallback(
-    (gameId: string, selection?: Selection) => {
-      if (selection) Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { selection, fromRoute });
+  return useCallback<SportsGamePress>(
+    (gameId, offer) => {
+      if (offer) Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { ...offer, fromRoute });
       else Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { gameId });
     },
     [fromRoute]

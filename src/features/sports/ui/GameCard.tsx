@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 
 // ============ Card ========================================================== //
 
-export type SportsGamePress = (gameId: string, selection?: Selection) => void;
+export type SportsGamePress = (gameId: string, offer?: { selection: Selection; outcomeColor: string }) => void;
 
 export const GameCard = memo(function GameCard({
   gameId,
@@ -289,19 +289,28 @@ function ParticipantOffers({
           tokenId={outcome.tokenId}
           color={color}
           line={outcome.line}
-          onPress={() =>
+          onPress={outcomeColor =>
             onPress(gameId, {
-              eventId: spread.eventId,
-              marketId: spread.marketId,
-              tokenId: outcome.tokenId,
-              outcomeIndex: outcome.outcomeIndex,
+              selection: {
+                eventId: spread.eventId,
+                marketId: spread.marketId,
+                tokenId: outcome.tokenId,
+                outcomeIndex: outcome.outcomeIndex,
+              },
+              outcomeColor,
             })
           }
           accessibilityLabel={`${name}, ${outcome.line > 0 ? '+' : ''}${outcome.line}`}
         />
       )}
       {winner ? (
-        <GameOffer tokenId={winner.tokenId} color={color} glow={glow} onPress={() => onPress(gameId, winner)} accessibilityLabel={name} />
+        <GameOffer
+          tokenId={winner.tokenId}
+          color={color}
+          glow={glow}
+          onPress={outcomeColor => onPress(gameId, { selection: winner, outcomeColor })}
+          accessibilityLabel={name}
+        />
       ) : (
         <View style={styles.unavailable}>
           <Text color="labelQuaternary" size="17pt" weight="heavy">
@@ -321,7 +330,11 @@ function DrawOffer({ gameId, onPress }: { gameId: string; onPress: SportsGamePre
         {i18n.t(i18n.l.sports.draw)}
       </Text>
       {selection && (
-        <GameOffer tokenId={selection.tokenId} onPress={() => onPress(gameId, selection)} accessibilityLabel={i18n.t(i18n.l.sports.draw)} />
+        <GameOffer
+          tokenId={selection.tokenId}
+          onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
+          accessibilityLabel={i18n.t(i18n.l.sports.draw)}
+        />
       )}
     </View>
   );

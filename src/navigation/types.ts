@@ -698,12 +698,12 @@ type ParamsByRoute = {
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
     fromRoute: Route;
+    outcomeColor: string;
   } & (
     | { selection: Selection }
     | {
         market: PolymarketMarket;
         outcomeIndex: number;
-        outcomeColor: string;
         event: PolymarketMarketEvent | PolymarketEvent;
       }
   );

@@ -2,9 +2,11 @@ import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import ImgixImage from '@/components/images/ImgixImage';
-import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { Bleed, Box, globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+
+export const POLYMARKET_OUTCOME_CARD_MIN_HEIGHT = 78;
 
 type OutcomeCardProps = {
   accentColor: string;
@@ -27,24 +29,28 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
 }: OutcomeCardProps) {
   const { isDarkMode } = useColorMode();
   const isOutcomeBadgeRepetitive = useMemo(() => outcomeSubtitle.toLowerCase().includes(outcome.toLowerCase()), [outcomeSubtitle, outcome]);
+
   return (
     <Box
-      padding={'20px'}
       backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
-      borderRadius={26}
       borderColor={{ custom: opacity(accentColor, 0.03) }}
+      borderRadius={26}
       borderWidth={isDarkMode ? 2.5 : 0}
+      padding="20px"
+      style={styles.container}
     >
       <Box flexDirection="row" alignItems="center" gap={12}>
         <ImgixImage enableFasterImage resizeMode="cover" size={38} source={{ uri: icon }} style={styles.image} />
-        <Box gap={12} style={styles.flex}>
-          <Box flexDirection="row" alignItems="center" gap={6} style={styles.flex}>
+        <Box gap={10} style={styles.flex}>
+          <Box flexDirection="row" alignItems="center" gap={6}>
             <Text size="15pt" weight="semibold" color="labelTertiary" numberOfLines={1} style={styles.flex}>
               {outcomeTitle}
             </Text>
-            {groupItemTitle && !isOutcomeBadgeRepetitive && (
-              <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} color={accentColor} />
-            )}
+            {groupItemTitle && !isOutcomeBadgeRepetitive ? (
+              <Bleed vertical="8px">
+                <OutcomeBadge outcome={outcome} outcomeIndex={outcomeIndex} color={accentColor} />
+              </Bleed>
+            ) : null}
           </Box>
           <Text size="17pt" weight="bold" color="label">
             {outcomeSubtitle}
@@ -56,6 +62,7 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
 });
 
 const styles = StyleSheet.create({
+  container: { minHeight: POLYMARKET_OUTCOME_CARD_MIN_HEIGHT },
   flex: {
     flex: 1,
   },
