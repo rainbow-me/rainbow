@@ -23,7 +23,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
   const accountAddress = useWalletsStore(state => state.accountAddress);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   return (
     <Box
@@ -96,12 +96,12 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
         {isBalanceZero && (
           <HyperliquidButton
             onPress={() => {
-              if (checkIfReadOnlyWallet(accountAddress)) return;
               if (hasNoAssets) {
-                Navigation.handleAction(addCashRoute);
-              } else {
-                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+                navigateToAddCash();
+                return;
               }
+              if (checkIfReadOnlyWallet(accountAddress)) return;
+              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
             }}
             paddingHorizontal={'16px'}
             paddingVertical={'12px'}

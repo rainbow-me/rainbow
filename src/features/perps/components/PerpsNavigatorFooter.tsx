@@ -128,7 +128,7 @@ const PerpsAccountScreenFooter = () => {
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   return (
     <>
@@ -153,7 +153,11 @@ const PerpsAccountScreenFooter = () => {
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
-            Navigation.handleAction(hasNoAssets ? addCashRoute : Routes.PERPS_DEPOSIT_SCREEN);
+            if (hasNoAssets) {
+              navigateToAddCash();
+            } else {
+              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+            }
           } else {
             PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
           }
