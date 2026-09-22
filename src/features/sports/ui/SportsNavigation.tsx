@@ -278,7 +278,7 @@ function ScopeSurface({ children, width }: { children: ReactNode; width: number 
 function ScopeInnerShadow({ width }: { width: number }) {
   const path = useMemo(() => getSquirclePath({ width, height: 46, borderRadius: 32 }), [width]);
   return (
-    <Canvas style={{ width: Math.ceil(width), height: 46 }}>
+    <Canvas style={{ width, height: 46 }}>
       <Path path={path}>
         <Shadow color="rgba(255,255,255,0.15)" blur={19.5} dx={0} dy={0} inner shadowOnly />
       </Path>

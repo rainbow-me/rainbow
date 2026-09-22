@@ -129,7 +129,7 @@ function GameCardSurface({
 function CardInnerShadow({ width, height }: { width: number; height: number }) {
   const path = useMemo(() => getSquirclePath({ width, height, borderRadius: 24 }), [height, width]);
   return (
-    <Canvas style={{ width: Math.ceil(width), height }}>
+    <Canvas style={{ width, height }}>
       <Path path={path}>
         <Shadow color="rgba(255,255,255,0.15)" blur={30} dx={0} dy={8} inner shadowOnly />
       </Path>
