@@ -64,12 +64,12 @@ export const EthCard = () => {
         e.stopPropagation();
       }
 
-      if (getIsDamagedWallet()) {
-        navigate(Routes.WALLET_ERROR_SHEET);
-        return;
-      }
-
       navigateToAddCash(route => {
+        if (getIsDamagedWallet()) {
+          navigate(Routes.WALLET_ERROR_SHEET);
+          return;
+        }
+
         navigate(route);
         analytics.track(analytics.event.buyButtonPressed, {
           componentName: 'EthCard',
