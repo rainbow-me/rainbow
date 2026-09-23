@@ -2,7 +2,7 @@ import { getSportsWindow, hasCompetitionDirectory, scopeContainsGame, type Sport
 import { type SportsCatalog, type SportsScope } from './catalog';
 import { Game_Status, type Game } from './generated/sports';
 
-export const MAX_SPORTS_SECTION_GAMES = 30;
+// ============ Types ========================================================== //
 
 export type SportsSection = {
   type: 'live' | 'today' | 'upcoming' | 'search';
@@ -16,6 +16,14 @@ type SportsGames = {
   gameIds: readonly string[];
 };
 
+type SectionGame = { game: Game; startsAt: number };
+
+// ============ Constants ====================================================== //
+
+export const MAX_SPORTS_SECTION_GAMES = 30;
+
+// ============ Sections ======================================================= //
+
 export function getSportsSections({
   catalog,
   games,
@@ -24,50 +32,61 @@ export function getSportsSections({
   now = new Date(),
 }: SportsGames & { destination: SportsDestination; now?: Date }): SportsSection[] {
   if (destination.type === 'all') return [];
-  const available = availableGames(gameIds, games);
 
-  const matching = available.filter(game =>
-    destination.type === 'live'
-      ? game.status === Game_Status.STATUS_LIVE
-      : scopeContainsGame(catalog, destination.scopeId, game.competitionIds)
-  );
+  let schedule: { from: number; until: number } | undefined;
+  if (destination.type === 'scope' && !hasCompetitionDirectory(catalog, destination.scopeId)) {
+    const window = getSportsWindow(now);
+    schedule = { from: Date.parse(window.from), until: Date.parse(window.until) };
+  }
+
+  const matching: SectionGame[] = [];
+  for (const id of gameIds) {
+    const game = games[id];
+    if (!game) continue;
+    if (game.status !== Game_Status.STATUS_LIVE && (!schedule || game.status !== Game_Status.STATUS_SCHEDULED)) continue;
+    if (destination.type === 'scope' && !scopeContainsGame(catalog, destination.scopeId, game.competitionIds)) continue;
+
+    const startsAt = game.startsAt ? Date.parse(game.startsAt) : Infinity;
+    if (schedule && game.status === Game_Status.STATUS_SCHEDULED && !(startsAt >= schedule.from && startsAt < schedule.until)) continue;
+
+    matching.push({ game, startsAt });
+  }
+
   matching.sort(
     (first, second) =>
-      (catalog?.promotedRanks[first.id] ?? Infinity) - (catalog?.promotedRanks[second.id] ?? Infinity) ||
-      (first.startsAt ? Date.parse(first.startsAt) : Infinity) - (second.startsAt ? Date.parse(second.startsAt) : Infinity) ||
-      (first.id < second.id ? -1 : first.id > second.id ? 1 : 0)
+      (catalog?.promotedRanks[first.game.id] ?? Infinity) - (catalog?.promotedRanks[second.game.id] ?? Infinity) ||
+      first.startsAt - second.startsAt ||
+      (first.game.id < second.game.id ? -1 : first.game.id > second.game.id ? 1 : 0)
   );
-  if (destination.type === 'live') return liveSections(matching, catalog);
+
+  if (destination.type === 'live') return buildLiveSections(matching, catalog);
 
   const live: string[] = [];
   const today: string[] = [];
   const upcoming: string[] = [];
-  const window = getSportsWindow(now);
-  const from = Date.parse(window.from);
-  const until = Date.parse(window.until);
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
-  const directory = hasCompetitionDirectory(catalog, destination.scopeId);
 
-  for (const game of matching) {
-    if (game.status === Game_Status.STATUS_LIVE) {
-      live.push(game.id);
-    } else if (!directory && game.status === Game_Status.STATUS_SCHEDULED && game.startsAt) {
-      const start = Date.parse(game.startsAt);
-      if (start >= from && start < until) (start < tomorrow ? today : upcoming).push(game.id);
-    }
+  for (const { game, startsAt } of matching) {
+    const section = game.status === Game_Status.STATUS_LIVE ? live : startsAt < tomorrow ? today : upcoming;
+    if (section.length < MAX_SPORTS_SECTION_GAMES) section.push(game.id);
   }
 
   const sections: SportsSection[] = [];
-  if (live.length) sections.push({ type: 'live', gameIds: live.slice(0, MAX_SPORTS_SECTION_GAMES) });
-  if (today.length) sections.push({ type: 'today', gameIds: today.slice(0, MAX_SPORTS_SECTION_GAMES) });
-  if (upcoming.length) sections.push({ type: 'upcoming', gameIds: upcoming.slice(0, MAX_SPORTS_SECTION_GAMES) });
+  if (live.length) sections.push({ type: 'live', gameIds: live });
+  if (today.length) sections.push({ type: 'today', gameIds: today });
+  if (upcoming.length) sections.push({ type: 'upcoming', gameIds: upcoming });
   return sections;
 }
+
+// ============ Directory Counts ============================================== //
 
 export function getSportsDirectoryCounts({ catalog, games, gameIds }: SportsGames): Record<string, number> {
   const counts: Record<string, number> = {};
   for (const id of catalog?.scopeIds ?? []) counts[id] = 0;
-  for (const game of availableGames(new Set(gameIds), games)) {
+  for (const id of new Set(gameIds)) {
+    const game = games[id];
+    if (!game) continue;
+
     const scopes = new Set<string>();
     for (const competitionId of game.competitionIds) {
       const sportId = catalog?.scopes[competitionId]?.parentId;
@@ -81,18 +100,11 @@ export function getSportsDirectoryCounts({ catalog, games, gameIds }: SportsGame
   return counts;
 }
 
-function availableGames(gameIds: Iterable<string>, games: Partial<Record<string, Game>>): Game[] {
-  const available: Game[] = [];
-  for (const id of gameIds) {
-    const game = games[id];
-    if (game) available.push(game);
-  }
-  return available;
-}
+// ============ Helpers ======================================================== //
 
-function liveSections(games: Game[], catalog: SportsCatalog | undefined): SportsSection[] {
+function buildLiveSections(games: SectionGame[], catalog: SportsCatalog | undefined): SportsSection[] {
   const grouped = new Map<string, string[]>();
-  for (const game of games) {
+  for (const { game } of games) {
     let liveGroup: SportsScope['liveGroup'];
     for (const competitionId of game.competitionIds) {
       const candidate = catalog?.scopes[competitionId]?.liveGroup;
@@ -101,13 +113,13 @@ function liveSections(games: Game[], catalog: SportsCatalog | undefined): Sports
     const scopeId = liveGroup?.id ?? game.competitionIds[0];
     if (!scopeId) continue;
     const group = grouped.get(scopeId);
-    if (group) group.push(game.id);
-    else grouped.set(scopeId, [game.id]);
+    if (!group) grouped.set(scopeId, [game.id]);
+    else if (group.length < MAX_SPORTS_SECTION_GAMES) group.push(game.id);
   }
   const sections: SportsSection[] = [];
   for (const scopeId of catalog?.liveGroupOrder ?? []) {
     const gameIds = grouped.get(scopeId);
-    if (gameIds) sections.push({ type: 'live', scopeId, gameIds: gameIds.slice(0, MAX_SPORTS_SECTION_GAMES) });
+    if (gameIds) sections.push({ type: 'live', scopeId, gameIds });
   }
   return sections;
 }
