@@ -1,24 +1,27 @@
 import { memo, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { shallowEqual } from '@storesjs/stores';
-
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsNavigationStores } from '@/features/sports/data/sportsNavigation';
+import { type SportsNavigation } from '@/features/sports/data/sportsNavigation';
 import { sportsActions } from '@/features/sports/data/sportsStore';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 
-export const SportsHeader = memo(function SportsHeader({ host, isDarkMode }: { host: SportsHost; isDarkMode: boolean }): ReactElement {
-  const { scope, parent, back, page } = sportsNavigationStores[host](
-    s => ({ scope: s.scope, parent: s.parent, back: s.back, page: s.page }),
-    shallowEqual
-  );
+export const SportsHeader = memo(function SportsHeader({
+  host,
+  isDarkMode,
+  navigation,
+}: {
+  host: SportsHost;
+  isDarkMode: boolean;
+  navigation: SportsNavigation;
+}): ReactElement {
+  const { scope, parent, back, page } = navigation;
 
   const title =
     scope?.name ?? i18n.t(page === 'live' ? i18n.l.sports.live : page === 'sports' ? i18n.l.sports.all_sports : i18n.l.sports.title);

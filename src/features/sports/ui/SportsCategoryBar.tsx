@@ -1,12 +1,10 @@
 import { memo, useMemo, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { shallowEqual } from '@storesjs/stores';
-
 import { globalColors } from '@/design-system/color/palettes';
 import { getSportsDestinationKey, type SportsHost } from '@/features/sports/core/browse';
 import { type SportsCatalog } from '@/features/sports/core/catalog';
-import { sportsNavigationStores } from '@/features/sports/data/sportsNavigation';
+import { type SportsNavigation } from '@/features/sports/data/sportsNavigation';
 import { sportsActions } from '@/features/sports/data/sportsStore';
 import { SPORTS_BACKGROUND_COLOR_DARK } from '@/features/sports/ui/colors';
 import { FloatingTabBar } from '@/framework/ui/components/FloatingTabBar';
@@ -14,21 +12,20 @@ import * as i18n from '@/languages';
 
 export const SportsCategoryBar = memo(function SportsCategoryBar({
   host,
+  navigation,
   bottom,
   width,
   isDarkMode,
   catalog,
 }: {
   host: SportsHost;
+  navigation: SportsNavigation;
   bottom: number;
   width: number;
   isDarkMode: boolean;
   catalog?: SportsCatalog;
-}): ReactElement | null {
-  const { categories, selectedCategory, searching } = sportsNavigationStores[host](
-    s => ({ categories: s.categories, selectedCategory: s.selectedCategory, searching: s.page === 'search' }),
-    shallowEqual
-  );
+}): ReactElement {
+  const { categories, selectedCategory } = navigation;
 
   const tabs = useMemo(
     () =>
@@ -42,8 +39,6 @@ export const SportsCategoryBar = memo(function SportsCategoryBar({
       })),
     [catalog, categories, host]
   );
-
-  if (searching) return null;
 
   return (
     <FloatingTabBar

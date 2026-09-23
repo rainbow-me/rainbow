@@ -14,7 +14,7 @@ import { getSportsRequestKey, getSportsResult, useSportsStore, useSportsViewStor
 
 export type SportsPage = 'live' | 'sports' | 'competitions' | 'games' | 'search';
 
-type SportsNavigation = {
+export type SportsNavigation = {
   page: SportsPage;
   directoryIds: string[];
   scope: SportsScope | undefined;
