@@ -1,4 +1,6 @@
-import React, { act, type ReactNode } from 'react';
+import React, { act, type ReactElement } from 'react';
+
+import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 
 import { Game } from '@/features/sports/core/generated/sports';
 import { useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
@@ -10,11 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const renderer = require('react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev') as {
-  render: (element: ReactNode, containerTag: number) => void;
-  unmountComponentAtNode: (containerTag: number) => void;
-};
+const renderer = jest.requireActual<ReactNativeType>('react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev');
 
 jest.mock('@/features/sports/data/api/client', () => ({
   sportsClient: { lookupGames: jest.fn(async () => ({ games: [], resolved: [], unavailableEventIds: [] })) },
@@ -56,6 +54,10 @@ function Host(): null {
   return null;
 }
 
+function render(element: ReactElement): void {
+  act(() => renderer.render(element, 101, undefined, undefined));
+}
+
 async function settle(): Promise<void> {
   await act(async () => {
     await new Promise<void>(resolve => {
@@ -85,7 +87,7 @@ afterEach(() => {
 afterAll(() => useSportsStore.getState().reset(true));
 
 it('publishes committed membership, follows routes without rendering, and releases the owner on unmount', async () => {
-  act(() => renderer.render(<Quotes gameIds={['a', 'b']} />, 101));
+  render(<Quotes gameIds={['a', 'b']} />);
   expect(setSubscription).toHaveBeenCalledTimes(1);
   const owner = setSubscription.mock.calls[0][0];
   expect(setSubscription).toHaveBeenLastCalledWith(owner, route, []);
@@ -94,7 +96,7 @@ it('publishes committed membership, follows routes without rendering, and releas
   await settle();
   expect(setSubscription).toHaveBeenLastCalledWith(owner, route, ['quote:a', 'quote:b']);
 
-  act(() => renderer.render(<Quotes gameIds={['a']} />, 101));
+  render(<Quotes gameIds={['a']} />);
   await settle();
   expect(setSubscription).toHaveBeenLastCalledWith(owner, route, ['quote:a']);
   expect(useSportsViewStore.getState().quoteConsumers.get(owner)?.visibleGameIds).toEqual(['a', 'b']);
@@ -119,18 +121,18 @@ it('publishes committed membership, follows routes without rendering, and releas
 });
 
 it('retains the lookup viewport across deactivation and removes both registrations on unmount', async () => {
-  act(() => renderer.render(<Lookup eventIds={['child']} active />, 101));
+  render(<Lookup eventIds={['child']} active />);
   expect(setSubscription).toHaveBeenCalledTimes(1);
   lookup.setVisibleEvents(['child']);
   await settle();
   expect(setSubscription).toHaveBeenLastCalledWith(lookup.owner, route, ['quote:a']);
 
-  act(() => renderer.render(<Lookup eventIds={['child']} active={false} />, 101));
+  render(<Lookup eventIds={['child']} active={false} />);
   await settle();
   expect(setSubscription).toHaveBeenLastCalledWith(lookup.owner, route, []);
   expect(useSportsViewStore.getState().lookupConsumers.get(lookup.owner)?.visibleIds).toEqual(['child']);
 
-  act(() => renderer.render(<Lookup eventIds={['child']} active />, 101));
+  render(<Lookup eventIds={['child']} active />);
   await settle();
   expect(setSubscription).toHaveBeenLastCalledWith(lookup.owner, route, ['quote:a']);
 
@@ -144,7 +146,7 @@ it('retains the lookup viewport across deactivation and removes both registratio
 });
 
 it('registers the current route immediately and responds to navigation without a React render', async () => {
-  act(() => renderer.render(<Host />, 101));
+  render(<Host />);
   expect(useSportsViewStore.getState().hosts.main.visible).toBe(true);
   expect(syncSportsActivity).toHaveBeenCalledTimes(1);
 
