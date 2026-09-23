@@ -12,7 +12,6 @@ import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
 const BADGE_HIGHLIGHT = [white(0.18), white(0)] as const;
-const IMAGE_CONFIG = { transitionDuration: 0 };
 
 export function SportsImage({
   isDarkMode,
@@ -84,7 +83,7 @@ export function SportsBadge({
             enableFasterImage
             source={icon.source}
             resizeMode="contain"
-            fasterImageConfig={IMAGE_CONFIG}
+            size={imageSize}
             style={{
               width: imageSize,
               height: imageSize,
@@ -121,25 +120,19 @@ function RemoteImage({
   height: number;
   borderRadius: number;
 }): ReactElement {
-  const [aspectRatio, setAspectRatio] = useState<number | null>(width / height);
+  const [failed, setFailed] = useState(false);
 
-  if (aspectRatio === null) return <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, height)} />;
-
-  const fittedWidth = Math.min(width, height * aspectRatio);
-  const fittedHeight = fittedWidth / aspectRatio;
+  if (failed) return <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, height)} />;
 
   return (
-    <View style={[styles.clip, { width: fittedWidth, height: fittedHeight }]}>
-      <ImgixImage
-        enableFasterImage
-        source={{ uri: imageUrl }}
-        resizeMode="contain"
-        fasterImageConfig={IMAGE_CONFIG}
-        onLoad={({ nativeEvent: { width, height } }) => setAspectRatio(width / height)}
-        onError={() => setAspectRatio(null)}
-        style={[StyleSheet.absoluteFill, { borderRadius }]}
-      />
-    </View>
+    <ImgixImage
+      enableFasterImage
+      source={{ uri: imageUrl }}
+      resizeMode="contain"
+      size={Math.max(width, height)}
+      onError={() => setFailed(true)}
+      style={{ width, height, borderRadius }}
+    />
   );
 }
 
