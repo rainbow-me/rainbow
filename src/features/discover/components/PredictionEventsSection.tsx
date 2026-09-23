@@ -1,15 +1,14 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import { StyleSheet, View, type LayoutRectangle } from 'react-native';
 
-import { shallowEqual } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 import { analytics } from '@/analytics';
 import { event as analyticsEvent } from '@/analytics/event';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Skeleton } from '@/components/Skeleton';
-import { Text } from '@/design-system';
 import { useColorMode } from '@/design-system/color/ColorMode';
+import { Text } from '@/design-system/components/Text/Text';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { ShowMoreButton } from '@/features/discover/components/markets/layouts/ShowMoreButton';
 import { resolveSectionTitle } from '@/features/discover/components/SectionLayout';
@@ -17,10 +16,9 @@ import { type DiscoverViewport } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
 import { usePredictionEvent } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { selectPlacementItemsBySource, usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type PlacementItem } from '@/features/placements/types';
 import {
   getPolymarketEventsListTokenIds,
   PolymarketEventsListItem,
@@ -29,13 +27,14 @@ import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePre
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { type SportsCatalog } from '@/features/sports/core/catalog';
 import { useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
-import { GameCard } from '@/features/sports/ui/GameCard';
+import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 
-/** Event-card placements resolve as Games first; only an unavailable result admits generic hydration. */
+// ============ PredictionEventsSection ======================================= //
+
 export function PredictionEventsSection({
   surface,
   surfaceId,
@@ -46,25 +45,27 @@ export function PredictionEventsSection({
   surfaceId: SurfaceId;
   viewport: DiscoverViewport;
   active: boolean;
-}) {
+}): ReactElement | null {
   const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
-  const items = usePlacementsStore(
-    state => [...new Map(selectPlacementItemsBySource(state, surface.placement, 'polymarket').map(item => [item.id, item])).values()],
-    shallowEqual
-  );
+  const eventIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (placement?.source === 'polymarket') {
+      for (const item of placement.items) ids.add(item.id);
+    }
+    return [...ids];
+  }, [placement]);
   const pending = useIsDiscoverSurfacePlacementPending(surface.placement);
   const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
   const { isDarkMode } = useColorMode();
   const catalog = useSportsStore(s => s.catalog);
   const carousel = surface.display === 'prediction_event_card.carousel';
-  const renderedItems = useMemo(
-    () => (!carousel && expanded ? items : items.slice(0, surface.limit)),
-    [carousel, expanded, items, surface.limit]
+  const renderedIds = useMemo(
+    () => (!carousel && expanded ? eventIds : eventIds.slice(0, surface.limit)),
+    [carousel, expanded, eventIds, surface.limit]
   );
-  const ids = useMemo(() => renderedItems.map(item => item.id), [renderedItems]);
-  const { owner: lookupOwner, setVisibleEvents } = useSportsLookup(ids, active);
-  const cardWidth = width - (renderedItems.length === 1 ? 24 : 30);
+  const { owner: lookupOwner, setVisibleEvents } = useSportsLookup(renderedIds, active);
+  const cardWidth = width - (renderedIds.length === 1 ? 24 : 30);
   const title = resolveSectionTitle(surface);
   const openGame = useSportsGamePress();
 
@@ -79,35 +80,41 @@ export function PredictionEventsSection({
   useEffect(() => {
     frames.modify(previous => {
       'worklet';
-      for (const id of Object.keys(previous)) if (!ids.includes(id)) delete previous[id];
+      for (const id of Object.keys(previous)) if (!renderedIds.includes(id)) delete previous[id];
       return previous;
     });
-  }, [frames, ids]);
+  }, [frames, renderedIds]);
 
   useAnimatedReaction(
     () => {
       const top = viewport.value.top - sectionTop.value - cardsTop.value;
       const bottom = viewport.value.bottom - sectionTop.value - cardsTop.value;
       const left = carousel ? scrollX.value : 0;
-      return ids.filter((id, index) => {
+      const start = carousel ? Math.max(0, Math.floor((left - 12) / (cardWidth + 8))) : 0;
+      const end = carousel ? Math.min(renderedIds.length, Math.ceil((left + width - 12) / (cardWidth + 8))) : renderedIds.length;
+      const visibleIds: string[] = [];
+
+      for (let index = start; index < end; index++) {
+        const id = renderedIds[index];
         const frame = frames.value[id];
-        if (!frame) return false;
-        // Horizontal FlatList reports each child's position within its own cell.
+        if (!frame) continue;
+
         const x = carousel ? 12 + index * (cardWidth + 8) : frame.x;
         const y = carousel ? 0 : frame.y;
-        return y < bottom && y + frame.height > top && x < left + width && x + frame.width > left;
-      });
+        if (y < bottom && y + frame.height > top && x < left + width && x + frame.width > left) visibleIds.push(id);
+      }
+      return visibleIds;
     },
     (next, previous) => {
       if (!previous || next.length !== previous.length || next.some((id, index) => id !== previous[index])) runOnJS(setVisibleEvents)(next);
     },
-    [ids, carousel, cardWidth, setVisibleEvents, width]
+    [renderedIds, carousel, cardWidth, setVisibleEvents, width]
   );
 
   const recordPress = useCallback(
     (itemId: string, marketName: string, marketSlug?: string) => {
       if (!placement) return;
-      const itemOrder = items.findIndex(item => item.id === itemId);
+      const itemOrder = eventIds.indexOf(itemId);
       analytics.track(analyticsEvent.discoverCardPressed, {
         placementId: placement.id,
         placementSource: placement.source,
@@ -133,17 +140,19 @@ export function PredictionEventsSection({
         version: placement.version,
       });
     },
-    [items, placement, surface.display, surface.id, surfaceId, title]
+    [eventIds, placement, surface.display, surface.id, surfaceId, title]
   );
 
   const renderCard = useCallback(
-    ({ item }: { item: PlacementItem }) => (
+    ({ item: eventId }: { item: string }) => (
       <View
-        key={item.id}
+        key={eventId}
         onLayout={({ nativeEvent: { layout } }) => {
           frames.modify(previous => {
             'worklet';
-            return { ...previous, [item.id]: layout };
+            const layouts: Record<string, LayoutRectangle> = previous;
+            layouts[eventId] = layout;
+            return previous;
           });
         }}
         style={carousel ? { width: cardWidth } : undefined}
@@ -151,7 +160,7 @@ export function PredictionEventsSection({
         <PredictionEventCard
           catalog={catalog}
           isDarkMode={isDarkMode}
-          eventId={item.id}
+          eventId={eventId}
           width={carousel ? cardWidth : width - 24}
           lookupOwner={lookupOwner}
           onPress={recordPress}
@@ -162,8 +171,10 @@ export function PredictionEventsSection({
     [cardWidth, carousel, catalog, frames, isDarkMode, lookupOwner, openGame, recordPress, width]
   );
 
-  if (!items.length && !pending) return null;
+  if (!eventIds.length && !pending) return null;
+
   const destination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : undefined;
+
   return (
     <View
       onLayout={({ nativeEvent: { layout } }) => {
@@ -192,16 +203,16 @@ export function PredictionEventsSection({
           cardsTop.value = layout.y;
         }}
       >
-        {pending && !items.length ? (
+        {pending && !eventIds.length ? (
           <View style={styles.list}>
             <Skeleton borderRadius={24} height={166} width="100%" />
           </View>
         ) : carousel ? (
           <Animated.FlatList
             horizontal
-            data={renderedItems}
+            data={renderedIds}
             renderItem={renderCard}
-            keyExtractor={item => item.id}
+            keyExtractor={eventId => eventId}
             contentContainerStyle={styles.carousel}
             showsHorizontalScrollIndicator={false}
             snapToInterval={cardWidth + 8}
@@ -213,8 +224,8 @@ export function PredictionEventsSection({
           />
         ) : (
           <View style={styles.list}>
-            {renderedItems.map(item => renderCard({ item }))}
-            {!expanded && renderedItems.length < items.length && <ShowMoreButton onPress={() => setExpanded(true)} />}
+            {renderedIds.map(eventId => renderCard({ item: eventId }))}
+            {!expanded && renderedIds.length < eventIds.length ? <ShowMoreButton onPress={() => setExpanded(true)} /> : null}
           </View>
         )}
       </View>
@@ -222,6 +233,8 @@ export function PredictionEventsSection({
     </View>
   );
 }
+
+// ============ Event Cards =================================================== //
 
 const PredictionEventCard = memo(function PredictionEventCard({
   catalog,
@@ -238,10 +251,10 @@ const PredictionEventCard = memo(function PredictionEventCard({
   catalog?: SportsCatalog;
   isDarkMode: boolean;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
-  openGame: ReturnType<typeof useSportsGamePress>;
-}) {
+  openGame: SportsGamePress;
+}): ReactElement {
   const gameId = useSportsStore(state => state.eventGames[eventId]);
-  if (gameId)
+  if (gameId) {
     return (
       <GameCard
         catalog={catalog}
@@ -255,6 +268,8 @@ const PredictionEventCard = memo(function PredictionEventCard({
         }}
       />
     );
+  }
+
   if (gameId === null) return <GenericEventCard eventId={eventId} lookupOwner={lookupOwner} onPress={onPress} />;
   return <Skeleton borderRadius={24} height={166} width="100%" />;
 });
@@ -267,7 +282,7 @@ function GenericEventCard({
   eventId: string;
   lookupOwner: symbol;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
-}) {
+}): ReactElement {
   const visible = useSportsViewStore(state => {
     const consumer = state.lookupConsumers.get(lookupOwner);
     return Boolean(consumer?.active && consumer.eventIds.includes(eventId) && consumer.visibleIds.includes(eventId));
@@ -275,7 +290,8 @@ function GenericEventCard({
   const { event, isLoading, error } = usePredictionEvent(eventId, visible);
   const subscribe = useLiveTokenSubscription();
   useEffect(() => subscribe(visible && event ? getPolymarketEventsListTokenIds(event) : []), [event, subscribe, visible]);
-  if (!event)
+
+  if (!event) {
     return isLoading || !visible ? (
       <Skeleton borderRadius={24} height={166} width="100%" />
     ) : (
@@ -285,6 +301,8 @@ function GenericEventCard({
         </Text>
       </View>
     );
+  }
+
   return (
     <PolymarketEventsListItem
       event={event}
@@ -298,13 +316,17 @@ function GenericEventCard({
   );
 }
 
-function EventLookupStatus({ owner }: { owner: symbol }) {
+// ============ Lookup Status ================================================= //
+
+function EventLookupStatus({ owner }: { owner: symbol }): ReactElement | null {
   const active = useSportsViewStore(state => {
     const consumer = state.lookupConsumers.get(owner);
     return Boolean(consumer?.active && consumer.visibleIds.some(id => consumer.eventIds.includes(id)));
   });
   const error = useSportsStore(state => state.getCacheEntry()?.errorInfo?.error);
+
   if (!active || !error) return null;
+
   return (
     <ButtonPressAnimation onPress={() => useSportsStore.getState().fetch(undefined, { force: true })} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">
@@ -313,6 +335,8 @@ function EventLookupStatus({ owner }: { owner: symbol }) {
     </ButtonPressAnimation>
   );
 }
+
+// ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   section: { gap: 20 },
