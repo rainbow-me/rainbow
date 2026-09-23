@@ -1,17 +1,24 @@
-import { memo, useMemo, type ReactElement, type ReactNode } from 'react';
+import { Fragment, memo, useMemo, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { globalColors } from '@/design-system';
-import { useColorMode } from '@/design-system/color/ColorMode';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { getSquirclePath } from '@/design-system/layout/shapes';
-import { Game_Interruption, Game_Status, Winner_Kind, type Selection } from '@/features/sports/core/generated/sports';
+import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
+import {
+  Game_Interruption,
+  Game_Status,
+  Winner_Kind,
+  type Game,
+  type Participant,
+  type Selection,
+  type Spread,
+} from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { GameOffer } from '@/features/sports/ui/GameOffer';
 import { GameScore } from '@/features/sports/ui/GameScore';
@@ -24,9 +31,9 @@ import { black, white } from '@/worklets/colors';
 
 export type SportsGamePress = (gameId: string, offer?: { selection: Selection; outcomeColor: string }) => void;
 
-type ParticipantProps = { gameId: string; index: 0 | 1; onPress: SportsGamePress };
-
 // ============ Constants ====================================================== //
+
+const PARTICIPANT_INDICES: readonly (0 | 1)[] = [0, 1];
 
 const STATUS_LABELS: Partial<
   Record<Game_Status | Game_Interruption.INTERRUPTION_DELAYED | Game_Interruption.INTERRUPTION_SUSPENDED, string>
@@ -46,38 +53,75 @@ const LIGHT_BADGE_FILL = [white(0.54), white(0.81)] as const;
 export const GameCard = memo(function GameCard({
   gameId,
   scopeId,
+  catalog,
+  isDarkMode,
   width,
   onPress,
   style,
 }: {
   gameId: string;
   scopeId?: string;
+  catalog?: SportsCatalog;
+  isDarkMode: boolean;
   width: number;
   onPress: SportsGamePress;
   style?: ViewStyle;
 }): ReactElement | null {
-  const rowCount = useSportsStore(s => {
-    const game = s.games[gameId];
-    if (!game) return 0;
-    return game.winner?.kind === Winner_Kind.KIND_THREE_WAY ? 3 : 2;
-  });
+  const game = useSportsStore(s => s.games[gameId]);
 
-  if (!rowCount) return null;
+  if (!game) return null;
+
+  const competitionId = scopeId && game.competitionIds.includes(scopeId) ? scopeId : game.competitionIds[0];
+  const competition = catalog?.scopes[competitionId];
+  const sportId = catalog?.scopes[game.competitionIds[0]]?.parentId;
+  const threeWay = game.winner?.kind === Winner_Kind.KIND_THREE_WAY;
 
   return (
     <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98} style={style}>
-      <GameCardSurface width={width} threeWay={rowCount === 3} testID={`sports-game-${gameId}`}>
-        <GameHeader gameId={gameId} scopeId={scopeId} />
-        <GameDivider header />
+      <GameCardSurface isDarkMode={isDarkMode} width={width} threeWay={threeWay} testID={`sports-game-${gameId}`}>
+        <View style={styles.header}>
+          <GameCompetition competition={competition} isDarkMode={isDarkMode} />
+          <GameTime
+            isDarkMode={isDarkMode}
+            status={game.status}
+            interruption={game.interruption}
+            clock={game.clock}
+            period={game.period}
+            startsAt={game.startsAt}
+          />
+        </View>
+        {PARTICIPANT_INDICES.map(index => {
+          const participant = game.participants[index];
 
-        <GameParticipant gameId={gameId} index={0} onPress={onPress} />
-        <GameDivider />
+          return (
+            <Fragment key={index}>
+              <GameDivider isDarkMode={isDarkMode} header={index === 0} />
+              {participant ? (
+                <View style={styles.row}>
+                  <View style={styles.participant}>
+                    <ParticipantIdentity participant={participant} sportId={sportId} isDarkMode={isDarkMode} />
+                    <GameScore score={game.score} participantIndex={index} />
+                  </View>
 
-        <GameParticipant gameId={gameId} index={1} onPress={onPress} />
-        {rowCount === 3 ? (
+                  <ParticipantOffers
+                    gameId={gameId}
+                    index={index}
+                    spread={game.spread}
+                    winner={participant.winner}
+                    color={participant.color}
+                    glow={sportId === 'tennis' || sportId === 'esports'}
+                    isDarkMode={isDarkMode}
+                    onPress={onPress}
+                  />
+                </View>
+              ) : null}
+            </Fragment>
+          );
+        })}
+        {threeWay ? (
           <>
-            <GameDivider />
-            <GameDrawRow gameId={gameId} onPress={onPress} />
+            <GameDivider isDarkMode={isDarkMode} />
+            <GameDrawRow isDarkMode={isDarkMode} gameId={gameId} selection={game.winner?.draw} onPress={onPress} />
           </>
         ) : null}
       </GameCardSurface>
@@ -88,17 +132,18 @@ export const GameCard = memo(function GameCard({
 // ============ Base Card Components =========================================== //
 
 function GameCardSurface({
+  isDarkMode,
   width,
   threeWay = false,
   testID,
   children,
 }: {
+  isDarkMode: boolean;
   width: number;
   threeWay?: boolean;
   testID: string;
   children: ReactNode;
-}) {
-  const { isDarkMode } = useColorMode();
+}): ReactElement {
   const rows = threeWay ? 3 : 2;
   const height = styles.header.height + rows * (styles.row.height + styles.divider.height) + styles.surface.paddingBottom;
 
@@ -125,7 +170,7 @@ function GameCardSurface({
   );
 }
 
-const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width: number; height: number }) {
+const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width: number; height: number }): ReactElement {
   const path = useMemo(() => getSquirclePath({ width, height, borderRadius: 24 }), [height, width]);
   return (
     <Canvas style={{ width, height }}>
@@ -136,25 +181,25 @@ const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width
   );
 });
 
-export function GameCardSkeleton({ width }: { width: number }) {
-  const backgroundColor = useForegroundColor('fillTertiary');
+export function GameCardSkeleton({ width, isDarkMode }: { width: number; isDarkMode: boolean }): ReactElement {
+  const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
-    <GameCardSurface width={width} testID="sports-game-skeleton">
+    <GameCardSurface isDarkMode={isDarkMode} width={width} testID="sports-game-skeleton">
       <View style={styles.header}>
         <View style={[styles.skeletonBadge, { backgroundColor }]} />
         <View style={[styles.skeletonLeague, { backgroundColor }]} />
         <View style={styles.skeletonSpacer} />
         <View style={[styles.skeletonTime, { backgroundColor }]} />
       </View>
-      <GameDivider header />
+      <GameDivider isDarkMode={isDarkMode} header />
       <SkeletonParticipant backgroundColor={backgroundColor} />
-      <GameDivider />
+      <GameDivider isDarkMode={isDarkMode} />
       <SkeletonParticipant backgroundColor={backgroundColor} />
     </GameCardSurface>
   );
 }
 
-function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }) {
+function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }): ReactElement {
   return (
     <View style={styles.row}>
       <View style={[styles.skeletonLogo, { backgroundColor }]} />
@@ -167,8 +212,7 @@ function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }) {
   );
 }
 
-const GameDivider = memo(function GameDivider({ header = false }: { header?: boolean }) {
-  const { isDarkMode } = useColorMode();
+const GameDivider = memo(function GameDivider({ header = false, isDarkMode }: { header?: boolean; isDarkMode: boolean }): ReactElement {
   return (
     <View style={styles.divider}>
       {isDarkMode ? (
@@ -196,27 +240,18 @@ const GameDivider = memo(function GameDivider({ header = false }: { header?: boo
 
 // ============ Game Header ==================================================== //
 
-const GameHeader = memo(function GameHeader({ gameId, scopeId }: { gameId: string; scopeId?: string }): ReactElement {
-  return (
-    <View style={styles.header}>
-      <GameCompetition gameId={gameId} scopeId={scopeId} />
-      <GameTime gameId={gameId} />
-    </View>
-  );
-});
-
-function GameCompetition({ gameId, scopeId }: { gameId: string; scopeId?: string }): ReactElement {
-  const competition = useSportsStore(s => {
-    const ids = s.games[gameId]?.competitionIds;
-    const id = scopeId && ids?.includes(scopeId) ? scopeId : ids?.[0];
-    return id ? s.catalog?.scopes[id] : undefined;
-  });
-
+const GameCompetition = memo(function GameCompetition({
+  competition,
+  isDarkMode,
+}: {
+  competition?: SportsScope;
+  isDarkMode: boolean;
+}): ReactElement {
   return (
     <View style={styles.competition}>
       {competition ? (
         <>
-          <SportsBadge scope={competition} size={28} />
+          <SportsBadge isDarkMode={isDarkMode} scope={competition} size={28} />
           <Text color="label" size="17pt" weight="heavy" numberOfLines={1} style={styles.competitionName}>
             {competition.name}
           </Text>
@@ -224,19 +259,22 @@ function GameCompetition({ gameId, scopeId }: { gameId: string; scopeId?: string
       ) : null}
     </View>
   );
-}
+});
 
-const GameTime = memo(function GameTime({ gameId }: { gameId: string }): ReactElement {
-  const status = useSportsStore(s => {
-    const game = s.games[gameId];
-    if (!game) return undefined;
-
-    return game.interruption === Game_Interruption.INTERRUPTION_DELAYED || game.interruption === Game_Interruption.INTERRUPTION_SUSPENDED
-      ? game.interruption
-      : game.status;
-  });
-
-  const label = status ? STATUS_LABELS[status] : undefined;
+const GameTime = memo(function GameTime({
+  isDarkMode,
+  status,
+  interruption,
+  clock,
+  period,
+  startsAt,
+}: Pick<Game, 'status' | 'interruption' | 'clock' | 'period' | 'startsAt'> & { isDarkMode: boolean }): ReactElement {
+  const label =
+    STATUS_LABELS[
+      interruption === Game_Interruption.INTERRUPTION_DELAYED || interruption === Game_Interruption.INTERRUPTION_SUSPENDED
+        ? interruption
+        : status
+    ];
 
   return (
     <View style={styles.gameTime}>
@@ -245,44 +283,35 @@ const GameTime = memo(function GameTime({ gameId }: { gameId: string }): ReactEl
           {i18n.t(label)}
         </Text>
       ) : status === Game_Status.STATUS_LIVE ? (
-        <GameLiveTime gameId={gameId} />
-      ) : (
-        <GameStartTime gameId={gameId} />
-      )}
+        <>
+          {clock ? (
+            <Text color="labelTertiary" size="13pt" weight="bold" tabularNumbers>
+              {clock}
+            </Text>
+          ) : null}
+
+          {period ? <GamePeriod isDarkMode={isDarkMode} period={period} /> : null}
+
+          {clock || period ? (
+            <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
+              ·
+            </Text>
+          ) : null}
+
+          <Text color="red" size="13pt" weight="heavy" uppercase>
+            {i18n.t(i18n.l.sports.live)}
+          </Text>
+        </>
+      ) : startsAt ? (
+        <Text color="labelTertiary" size="13pt" weight="bold">
+          {formatStart(startsAt)}
+        </Text>
+      ) : null}
     </View>
   );
 });
 
-function GameLiveTime({ gameId }: { gameId: string }): ReactElement {
-  const clock = useSportsStore(s => s.games[gameId]?.clock);
-  const period = useSportsStore(s => s.games[gameId]?.period);
-
-  return (
-    <>
-      {clock ? (
-        <Text color="labelTertiary" size="13pt" weight="bold" tabularNumbers>
-          {clock}
-        </Text>
-      ) : null}
-
-      {period ? <GamePeriod period={period} /> : null}
-
-      {clock || period ? (
-        <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
-          ·
-        </Text>
-      ) : null}
-
-      <Text color="red" size="13pt" weight="heavy" uppercase>
-        {i18n.t(i18n.l.sports.live)}
-      </Text>
-    </>
-  );
-}
-
-const GamePeriod = memo(function GamePeriod({ period }: { period: string }): ReactElement {
-  const { isDarkMode } = useColorMode();
-
+const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: string; isDarkMode: boolean }): ReactElement {
   return (
     <View style={isDarkMode ? undefined : styles.periodShadow}>
       <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.tightShadow]}>
@@ -306,61 +335,18 @@ const GamePeriod = memo(function GamePeriod({ period }: { period: string }): Rea
   );
 });
 
-function GameStartTime({ gameId }: { gameId: string }): ReactElement | null {
-  const startsAt = useSportsStore(s => s.games[gameId]?.startsAt);
-  if (!startsAt) return null;
-
-  return (
-    <Text color="labelTertiary" size="13pt" weight="bold">
-      {formatStart(startsAt)}
-    </Text>
-  );
-}
-
 // ============ Game Rows ====================================================== //
 
-const GameParticipant = memo(function GameParticipant({ gameId, index, onPress }: ParticipantProps): ReactElement | null {
-  const participant = useSportsStore(s => s.games[gameId]?.participants[index]);
-
-  const sportId = useSportsStore(s => {
-    const competitionId = s.games[gameId]?.competitionIds[0];
-    return competitionId ? s.catalog?.scopes[competitionId]?.parentId : undefined;
-  });
-
-  if (!participant) return null;
-
-  return (
-    <View style={styles.row}>
-      <View style={styles.participant}>
-        <ParticipantIdentity name={participant.name} shortName={participant.shortName} imageUrl={participant.imageUrl} sportId={sportId} />
-        <GameScore gameId={gameId} participantIndex={index} />
-      </View>
-
-      <View style={styles.offers}>
-        <ParticipantSpreadOffer gameId={gameId} index={index} color={participant.color} onPress={onPress} />
-        <ParticipantWinnerOffer
-          gameId={gameId}
-          selection={participant.winner}
-          color={participant.color}
-          glow={sportId === 'tennis' || sportId === 'esports'}
-          onPress={onPress}
-        />
-      </View>
-    </View>
-  );
-});
-
 const ParticipantIdentity = memo(function ParticipantIdentity({
-  name,
-  shortName,
-  imageUrl,
+  isDarkMode,
+  participant,
   sportId,
 }: {
-  name: string;
-  shortName?: string;
-  imageUrl?: string;
+  isDarkMode: boolean;
+  participant: Participant;
   sportId?: string;
 }): ReactElement {
+  const { name, shortName, imageUrl } = participant;
   const compact = sportId === 'tennis' || sportId === 'esports';
   const imageSize = sportId === 'tennis' ? 24 : sportId === 'esports' ? 32 : 36;
   const hasPrefix = shortName && name.endsWith(` ${shortName}`);
@@ -369,7 +355,13 @@ const ParticipantIdentity = memo(function ParticipantIdentity({
   return (
     <>
       <View style={[styles.logo, compact ? styles.compactLogo : undefined]}>
-        <SportsImage imageUrl={imageUrl} name={name} size={imageSize} width={sportId === 'tennis' ? 24 : compact ? 28 : 42} />
+        <SportsImage
+          isDarkMode={isDarkMode}
+          imageUrl={imageUrl}
+          name={name}
+          size={imageSize}
+          width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
+        />
       </View>
 
       <View style={styles.name}>
@@ -387,83 +379,97 @@ const ParticipantIdentity = memo(function ParticipantIdentity({
   );
 });
 
-const ParticipantSpreadOffer = memo(function ParticipantSpreadOffer({
+const ParticipantOffers = memo(function ParticipantOffers({
+  isDarkMode,
   gameId,
   index,
-  color,
-  onPress,
-}: ParticipantProps & { color?: string }): ReactElement | null {
-  const spread = useSportsStore(s => s.games[gameId]?.spread);
-  const outcome = spread?.outcomes[index];
-
-  if (!spread || !outcome) return null;
-
-  return (
-    <GameOffer
-      tokenId={outcome.tokenId}
-      color={color}
-      line={outcome.line}
-      onPress={outcomeColor =>
-        onPress(gameId, {
-          selection: {
-            eventId: spread.eventId,
-            marketId: spread.marketId,
-            tokenId: outcome.tokenId,
-            outcomeIndex: outcome.outcomeIndex,
-          },
-          outcomeColor,
-        })
-      }
-    />
-  );
-});
-
-const ParticipantWinnerOffer = memo(function ParticipantWinnerOffer({
-  gameId,
-  selection,
+  spread,
+  winner,
   color,
   glow,
   onPress,
 }: {
   gameId: string;
-  selection?: Selection;
+  index: 0 | 1;
+  spread?: Spread;
+  winner?: Selection;
   color?: string;
   glow: boolean;
+  isDarkMode: boolean;
   onPress: SportsGamePress;
 }): ReactElement {
-  return selection ? (
-    <GameOffer
-      tokenId={selection.tokenId}
-      color={color}
-      glow={glow}
-      onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
-    />
-  ) : (
-    <View style={styles.unavailable}>
-      <Text color="labelQuaternary" size="17pt" weight="heavy">
-        —
-      </Text>
+  const outcome = spread?.outcomes[index];
+
+  return (
+    <View style={styles.offers}>
+      {spread && outcome ? (
+        <GameOffer
+          isDarkMode={isDarkMode}
+          key={outcome.tokenId}
+          tokenId={outcome.tokenId}
+          color={color}
+          line={outcome.line}
+          onPress={outcomeColor =>
+            onPress(gameId, {
+              selection: {
+                eventId: spread.eventId,
+                marketId: spread.marketId,
+                tokenId: outcome.tokenId,
+                outcomeIndex: outcome.outcomeIndex,
+              },
+              outcomeColor,
+            })
+          }
+        />
+      ) : null}
+
+      {winner ? (
+        <GameOffer
+          isDarkMode={isDarkMode}
+          key={winner.tokenId}
+          tokenId={winner.tokenId}
+          color={color}
+          glow={glow}
+          onPress={outcomeColor => onPress(gameId, { selection: winner, outcomeColor })}
+        />
+      ) : (
+        <View style={styles.unavailable}>
+          <Text color="labelQuaternary" size="17pt" weight="heavy">
+            —
+          </Text>
+        </View>
+      )}
     </View>
   );
 });
 
-const GameDrawRow = memo(function GameDrawRow({ gameId, onPress }: { gameId: string; onPress: SportsGamePress }): ReactElement {
+const GameDrawRow = memo(function GameDrawRow({
+  isDarkMode,
+  gameId,
+  selection,
+  onPress,
+}: {
+  gameId: string;
+  selection?: Selection;
+  isDarkMode: boolean;
+  onPress: SportsGamePress;
+}): ReactElement {
   return (
     <View style={[styles.row, styles.draw]}>
       <Text color="labelSecondary" size="15pt" weight="bold">
         {i18n.t(i18n.l.sports.draw)}
       </Text>
-      <DrawOffer gameId={gameId} onPress={onPress} />
+      {selection ? (
+        <GameOffer
+          isDarkMode={isDarkMode}
+          key={selection.tokenId}
+          tokenId={selection.tokenId}
+          onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
+        />
+      ) : null}
     </View>
   );
 });
-
-function DrawOffer({ gameId, onPress }: { gameId: string; onPress: SportsGamePress }): ReactElement | null {
-  const selection = useSportsStore(s => s.games[gameId]?.winner?.draw);
-  if (!selection) return null;
-
-  return <GameOffer tokenId={selection.tokenId} onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })} />;
-}
 
 // ============ Utilities ====================================================== //
 

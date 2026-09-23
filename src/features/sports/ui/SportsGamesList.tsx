@@ -13,7 +13,6 @@ import {
 import { shallowEqual, useListen } from '@storesjs/stores';
 
 import { useColorMode } from '@/design-system/color/ColorMode';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigation';
@@ -21,8 +20,9 @@ import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } fr
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
+import { SportsCategoryBar } from '@/features/sports/ui/SportsCategoryBar';
 import { SportsDirectory } from '@/features/sports/ui/SportsDirectory';
-import { SportsHeader, SportsScopeBar } from '@/features/sports/ui/SportsNavigation';
+import { SportsHeader } from '@/features/sports/ui/SportsHeader';
 import { SportsReadStatus } from '@/features/sports/ui/SportsReadStatus';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
 import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/SportsSection';
@@ -65,11 +65,12 @@ export function SportsGamesList({
 }): ReactElement {
   useSportsHost(host);
   const { width } = useDimensions();
-  const { isDarkMode } = useColorMode();
+  const { isDarkMode, foregroundColors } = useColorMode();
 
   const [expanded, setExpanded] = useState(() => new Set<string>());
   const request = useSportsViewStore(s => s.hosts[host].request);
   const sections = useSportsStore(s => getSportsResult(s, request)?.sections ?? EMPTY_SECTIONS);
+  const catalog = useSportsStore(s => s.catalog);
   const page = sportsNavigationStores[host](s => s.page);
 
   const listRef = useRef<FlatList<Row>>(null);
@@ -132,12 +133,32 @@ export function SportsGamesList({
     ({ item }: { item: Row }) => {
       switch (item.type) {
         case 'game':
-          return <GameCard gameId={item.gameId} scopeId={item.scopeId} width={width - 24} onPress={onGamePress} style={styles.card} />;
+          return (
+            <GameCard
+              catalog={catalog}
+              isDarkMode={isDarkMode}
+              gameId={item.gameId}
+              scopeId={item.scopeId}
+              width={width - 24}
+              onPress={onGamePress}
+              style={styles.card}
+            />
+          );
         case 'heading':
-          return <SportsSectionHeading section={item.section} host={host} />;
+          return (
+            <SportsSectionHeading
+              section={item.section}
+              host={host}
+              isDarkMode={isDarkMode}
+              scope={item.section.scopeId ? catalog?.scopes[item.section.scopeId] : undefined}
+            />
+          );
         case 'carousel':
           return (
             <GameCarousel
+              catalog={catalog}
+              width={width}
+              isDarkMode={isDarkMode}
               section={item.section}
               sectionKey={item.key}
               onVisibleGamesChanged={onCarouselVisibleGamesChanged}
@@ -147,6 +168,7 @@ export function SportsGamesList({
         case 'expand':
           return (
             <SportsSectionToggle
+              isDarkMode={isDarkMode}
               expanded={item.expanded}
               remaining={item.remaining}
               onPress={() =>
@@ -161,7 +183,7 @@ export function SportsGamesList({
           );
       }
     },
-    [host, onCarouselVisibleGamesChanged, onGamePress, width]
+    [catalog, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, width]
   );
 
   return (
@@ -180,34 +202,38 @@ export function SportsGamesList({
         contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
         scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
         onScroll={onScroll}
-        refreshControl={<SportsRefreshControl host={host} />}
+        refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
         ListHeaderComponent={
           <View style={[styles.header, !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined]}>
-            {!isSearching ? <SportsHeader host={host} /> : <SportsSearch host={host} />}
-            {!isSearching ? null : <SportsDirectory host={host} />}
+            {!isSearching ? (
+              <SportsHeader host={host} isDarkMode={isDarkMode} />
+            ) : (
+              <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+            )}
+            {!isSearching ? null : <SportsDirectory isDarkMode={isDarkMode} host={host} />}
           </View>
         }
         ListFooterComponent={
           <>
-            {!isSearching ? <SportsDirectory host={host} showHeading={sections.length > 0} /> : null}
-            <SportsReadStatus host={host} />
+            {!isSearching ? <SportsDirectory isDarkMode={isDarkMode} host={host} showHeading={sections.length > 0} /> : null}
+            <SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />
           </>
         }
         ListFooterComponentStyle={rows.length === 0 ? styles.footer : undefined}
       />
 
-      <SportsScopeBar host={host} bottom={bottomInset + 20} />
+      <SportsCategoryBar isDarkMode={isDarkMode} width={width} catalog={catalog} host={host} bottom={bottomInset + 20} />
     </View>
   );
 }
 
 function SportsRefreshControl({
   host,
+  color,
   children,
   style,
-}: { host: SportsHost } & Pick<RefreshControlProps, 'children' | 'style'>): ReactElement {
+}: { host: SportsHost; color: string } & Pick<RefreshControlProps, 'children' | 'style'>): ReactElement {
   const [refreshing, setRefreshing] = useState(false);
-  const color = useForegroundColor('labelTertiary');
 
   return (
     <RefreshControl

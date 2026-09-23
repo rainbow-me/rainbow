@@ -4,16 +4,15 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { useColorMode } from '@/design-system/color/ColorMode';
 import { globalColors } from '@/design-system/color/palettes';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
+import { type SportsScope } from '@/features/sports/core/catalog';
 import { type SportsSection } from '@/features/sports/core/sections';
-import { sportsActions, useSportsStore } from '@/features/sports/data/sportsStore';
+import { sportsActions } from '@/features/sports/data/sportsStore';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -32,13 +31,20 @@ const LIGHT_BADGE_GRADIENT = [white(0.54), white(0.81)] as const;
 
 // ============ Components ===================================================== //
 
-export function SportsSectionHeading({ section, host }: { section: SportsSection; host: SportsHost }): ReactElement {
-  const { isDarkMode } = useColorMode();
-
+export function SportsSectionHeading({
+  section,
+  host,
+  scope,
+  isDarkMode,
+}: {
+  section: SportsSection;
+  host: SportsHost;
+  scope?: SportsScope;
+  isDarkMode: boolean;
+}): ReactElement {
   const scopeId = section.scopeId;
-  const scopeName = useSportsStore(s => (scopeId ? s.catalog?.scopes[scopeId]?.name : undefined));
 
-  const title = scopeId ? (scopeName ?? '') : i18n.t(SECTION_LABELS[section.type]);
+  const title = scopeId ? (scope?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
 
   return (
     <ButtonPressAnimation
@@ -90,9 +96,7 @@ export function SportsSectionHeading({ section, host }: { section: SportsSection
   );
 }
 
-export function SportsSectionHeadingSkeleton() {
-  const backgroundColor = useForegroundColor('fillTertiary');
-
+export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundColor: string }): ReactElement {
   return (
     <View style={styles.heading}>
       <View style={[styles.skeletonTitle, { backgroundColor }]} />
@@ -103,9 +107,17 @@ export function SportsSectionHeadingSkeleton() {
   );
 }
 
-export function SportsSectionToggle({ expanded, remaining, onPress }: { expanded: boolean; remaining: number; onPress: () => void }) {
-  const { isDarkMode } = useColorMode();
-
+export function SportsSectionToggle({
+  expanded,
+  remaining,
+  onPress,
+  isDarkMode,
+}: {
+  expanded: boolean;
+  remaining: number;
+  onPress: () => void;
+  isDarkMode: boolean;
+}): ReactElement {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
       <View style={styles.expand}>

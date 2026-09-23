@@ -9,6 +9,7 @@ import { event as analyticsEvent } from '@/analytics/event';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Skeleton } from '@/components/Skeleton';
 import { Text } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { ShowMoreButton } from '@/features/discover/components/markets/layouts/ShowMoreButton';
 import { resolveSectionTitle } from '@/features/discover/components/SectionLayout';
@@ -26,6 +27,7 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePress';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
+import { type SportsCatalog } from '@/features/sports/core/catalog';
 import { useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { GameCard } from '@/features/sports/ui/GameCard';
 import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
@@ -53,6 +55,8 @@ export function PredictionEventsSection({
   const pending = useIsDiscoverSurfacePlacementPending(surface.placement);
   const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
+  const { isDarkMode } = useColorMode();
+  const catalog = useSportsStore(s => s.catalog);
   const carousel = surface.display === 'prediction_event_card.carousel';
   const renderedItems = useMemo(
     () => (!carousel && expanded ? items : items.slice(0, surface.limit)),
@@ -145,6 +149,8 @@ export function PredictionEventsSection({
         style={carousel ? { width: cardWidth } : undefined}
       >
         <PredictionEventCard
+          catalog={catalog}
+          isDarkMode={isDarkMode}
           eventId={item.id}
           width={carousel ? cardWidth : width - 24}
           lookupOwner={lookupOwner}
@@ -153,7 +159,7 @@ export function PredictionEventsSection({
         />
       </View>
     ),
-    [cardWidth, carousel, frames, lookupOwner, openGame, recordPress, width]
+    [cardWidth, carousel, catalog, frames, isDarkMode, lookupOwner, openGame, recordPress, width]
   );
 
   if (!items.length && !pending) return null;
@@ -218,6 +224,8 @@ export function PredictionEventsSection({
 }
 
 const PredictionEventCard = memo(function PredictionEventCard({
+  catalog,
+  isDarkMode,
   eventId,
   width,
   lookupOwner,
@@ -227,6 +235,8 @@ const PredictionEventCard = memo(function PredictionEventCard({
   eventId: string;
   width: number;
   lookupOwner: symbol;
+  catalog?: SportsCatalog;
+  isDarkMode: boolean;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
   openGame: ReturnType<typeof useSportsGamePress>;
 }) {
@@ -234,6 +244,8 @@ const PredictionEventCard = memo(function PredictionEventCard({
   if (gameId)
     return (
       <GameCard
+        catalog={catalog}
+        isDarkMode={isDarkMode}
         gameId={gameId}
         width={width}
         onPress={(id, selection) => {

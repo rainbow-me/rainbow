@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 
 import { debounce } from 'lodash';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Input from '@/components/inputs/Input';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { fonts } from '@/design-system/typography/typography';
@@ -14,17 +13,15 @@ import { sportsActions, useSportsViewStore } from '@/features/sports/data/sports
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 
-export function SportsSearch({ host }: { host: SportsHost }) {
+export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }): ReactElement {
   const [text, setText] = useState(() => useSportsViewStore.getState().hosts[host].request.query ?? '');
-  const label = useForegroundColor('label');
-  const fill = useForegroundColor('fillQuaternary');
   const search = useMemo(() => debounce((query: string) => sportsActions.setSearch(host, query), 250), [host]);
 
   useCleanup(() => search.cancel(), [search]);
 
   return (
     <View style={styles.row}>
-      <View style={[styles.field, { backgroundColor: fill }]}>
+      <View style={[styles.field, { backgroundColor }]}>
         <TextIcon color="labelTertiary" size="icon 17px" weight="bold">
           {'􀊫'}
         </TextIcon>
@@ -38,7 +35,7 @@ export function SportsSearch({ host }: { host: SportsHost }) {
           onSubmitEditing={() => search.flush()}
           placeholder={i18n.t(i18n.l.sports.search)}
           returnKeyType="search"
-          style={[styles.input, { color: label }]}
+          style={[styles.input, { color }]}
           testID="sports-search"
         />
       </View>

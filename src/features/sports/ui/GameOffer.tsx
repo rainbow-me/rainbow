@@ -2,11 +2,9 @@ import { memo, useMemo, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { useColorMode } from '@/design-system/color/ColorMode';
 import { globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
@@ -14,8 +12,9 @@ import { Text } from '@/design-system/components/Text/Text';
 import { textSizes } from '@/design-system/typography/typography';
 import { opacity } from '@/design-system/utils/opacity';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { type TokenData } from '@/state/liveTokens/types';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
@@ -31,27 +30,26 @@ const WINNER_HIGHLIGHT = [white(0.12), white(0.055), white(0.018), white(0.004),
 
 export const GameOffer = memo(function GameOffer({
   tokenId,
+  isDarkMode,
   color = globalColors.grey60,
   line,
   glow = false,
   onPress,
 }: {
   tokenId: string;
+  isDarkMode: boolean;
   color?: string;
   line?: number;
   glow?: boolean;
   onPress: (color: string) => void;
 }): ReactElement {
-  const { isDarkMode } = useColorMode();
-
-  const price = useLiveTokenSharedValue({
-    tokenId: getPolymarketTokenId(tokenId, 'midpoint'),
-    initialValue: '—',
-    autoSubscriptionEnabled: false,
-    selector: formatProbability,
+  const liveTokenId = getPolymarketTokenId(tokenId, 'midpoint');
+  const price = useStoreSharedValue(useLiveTokensStore, s => s.tokens[liveTokenId]?.price);
+  const probability = useDerivedValue(() => {
+    return price.value === undefined ? '—' : `${roundWorklet(toPercentageWorklet(price.value))}%`;
   });
 
-  const isSpread = !(line === undefined);
+  const isSpread = line !== undefined;
 
   const background = useMemo(() => {
     return isSpread
@@ -72,7 +70,7 @@ export const GameOffer = memo(function GameOffer({
 
   const probabilityStyle = useAnimatedStyle(() => {
     if (isSpread) return SPREAD_PROBABILITY_STYLE;
-    return price.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE;
+    return probability.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE;
   });
 
   return (
@@ -131,7 +129,7 @@ export const GameOffer = memo(function GameOffer({
               style={[probabilityStyle, isSpread ? undefined : styles.winnerText]}
               weight="heavy"
             >
-              {price}
+              {probability}
             </AnimatedText>
           </View>
 
@@ -148,10 +146,6 @@ export const GameOffer = memo(function GameOffer({
     </ButtonPressAnimation>
   );
 });
-
-function formatProbability(token: TokenData): string {
-  return `${roundWorklet(toPercentageWorklet(token.price))}%`;
-}
 
 const styles = StyleSheet.create({
   surface: {

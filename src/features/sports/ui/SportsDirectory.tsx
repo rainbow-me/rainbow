@@ -1,7 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { useColorMode } from '@/design-system/color/ColorMode';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
@@ -13,9 +12,15 @@ import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, white } from '@/worklets/colors';
 
-export function SportsDirectory({ host, showHeading = false }: { host: SportsHost; showHeading?: boolean }) {
-  const { isDarkMode } = useColorMode();
-
+export function SportsDirectory({
+  host,
+  showHeading = false,
+  isDarkMode,
+}: {
+  host: SportsHost;
+  showHeading?: boolean;
+  isDarkMode: boolean;
+}) {
   const scopeIds = sportsNavigationStores[host](s => s.directoryIds);
   const showCompetitions = sportsNavigationStores[host](s => s.page === 'competitions');
 
@@ -36,14 +41,23 @@ export function SportsDirectory({ host, showHeading = false }: { host: SportsHos
       ) : null}
 
       {scopeIds.map(scopeId => (
-        <DirectoryRow key={scopeId} scopeId={scopeId} host={host} competition={showCompetitions} />
+        <DirectoryRow isDarkMode={isDarkMode} key={scopeId} scopeId={scopeId} host={host} competition={showCompetitions} />
       ))}
     </View>
   );
 }
 
-function DirectoryRow({ scopeId, host, competition }: { scopeId: string; host: SportsHost; competition: boolean }) {
-  const { isDarkMode } = useColorMode();
+function DirectoryRow({
+  scopeId,
+  host,
+  competition,
+  isDarkMode,
+}: {
+  scopeId: string;
+  host: SportsHost;
+  competition: boolean;
+  isDarkMode: boolean;
+}) {
   const scope = useSportsStore(s => s.catalog?.scopes[scopeId]);
 
   if (!scope) return null;
@@ -52,14 +66,14 @@ function DirectoryRow({ scopeId, host, competition }: { scopeId: string; host: S
     <>
       <ButtonPressAnimation onPress={() => sportsActions.openScope(host, scopeId)} scaleTo={0.98}>
         <View style={[styles.row, competition ? styles.competition : undefined]}>
-          <SportsBadge scope={scope} size={competition ? 28 : 40} />
+          <SportsBadge isDarkMode={isDarkMode} scope={scope} size={competition ? 28 : 40} />
 
           <Text color="label" size={competition ? '17pt' : '20pt'} weight="heavy" numberOfLines={1} style={styles.name}>
             {scope.name}
           </Text>
 
           <View style={styles.trailing}>
-            <DirectoryCount scopeId={scope.id} />
+            <DirectoryCount isDarkMode={isDarkMode} scopeId={scope.id} />
             <TextIcon color={{ custom: (isDarkMode ? white : black)(0.3) }} size="icon 15px" weight="heavy" containerSize={16}>
               {'􀯻'}
             </TextIcon>
@@ -72,8 +86,7 @@ function DirectoryRow({ scopeId, host, competition }: { scopeId: string; host: S
   );
 }
 
-function DirectoryCount({ scopeId }: { scopeId: string }) {
-  const { isDarkMode } = useColorMode();
+function DirectoryCount({ scopeId, isDarkMode }: { scopeId: string; isDarkMode: boolean }) {
   const count = useSportsStore(s => s.counts[scopeId] ?? 0);
 
   return (

@@ -163,7 +163,7 @@ it('shows a retained Game before its one financial read completes, then reuses t
   );
 
   await openGame();
-  expect(GameBoxScore).toHaveBeenCalledWith({ gameId: eventId }, undefined);
+  expect(GameBoxScore).toHaveBeenCalledWith({ gameId: eventId, isDarkMode: true }, undefined);
   expect(MarketRowLoadingSkeleton).toHaveBeenCalled();
   expect(PolymarketChart).not.toHaveBeenCalled();
   expect(MarketsSection).not.toHaveBeenCalled();
@@ -190,7 +190,7 @@ it('keeps the known Game after a failed financial read and retries through the s
   jest.mocked(rainbowFetch).mockRejectedValueOnce(new Error('offline'));
   await openGame();
 
-  expect(GameBoxScore).toHaveBeenCalledWith({ gameId: eventId }, undefined);
+  expect(GameBoxScore).toHaveBeenCalledWith({ gameId: eventId, isDarkMode: true }, undefined);
   expect(mockText).toHaveBeenCalledWith('Unable to load event');
   expect(mockRetry).toBeDefined();
   expect(PolymarketChart).not.toHaveBeenCalled();

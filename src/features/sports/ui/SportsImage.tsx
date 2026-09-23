@@ -1,12 +1,10 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import ImgixImage from '@/components/images/ImgixImage';
-import { useColorMode } from '@/design-system/color/ColorMode';
-import { globalColors } from '@/design-system/color/palettes';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
@@ -17,36 +15,51 @@ const BADGE_HIGHLIGHT = [white(0.18), white(0)] as const;
 const IMAGE_CONFIG = { transitionDuration: 0 };
 
 export function SportsImage({
+  isDarkMode,
   imageUrl,
   name,
   size,
   width = size,
   borderRadius = size === 24 ? 3 : 8,
 }: {
+  isDarkMode: boolean;
   imageUrl?: string;
   name: string;
   size: number;
   width?: number;
   borderRadius?: number;
-}) {
+}): ReactElement {
   return imageUrl ? (
-    <RemoteImage key={imageUrl} imageUrl={imageUrl} name={name} width={width} height={size} borderRadius={borderRadius} />
+    <RemoteImage
+      isDarkMode={isDarkMode}
+      key={imageUrl}
+      imageUrl={imageUrl}
+      name={name}
+      width={width}
+      height={size}
+      borderRadius={borderRadius}
+    />
   ) : (
-    <ImageFallback name={name} size={Math.min(width, size)} />
+    <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, size)} />
   );
 }
 
-export function SportsBadge({ scope, size }: { scope: Sport | Competition; size: 28 | 40 | 44 }) {
-  const { isDarkMode } = useColorMode();
-  const fallback = useForegroundColor('fillTertiary');
-
+export function SportsBadge({
+  scope,
+  size,
+  isDarkMode,
+}: {
+  scope: Sport | Competition;
+  size: 28 | 40 | 44;
+  isDarkMode: boolean;
+}): ReactElement {
   const icon = (size === 44 ? sportsIcons[`${scope.id}-header`] : undefined) ?? sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
   const imageSize = size * (icon?.scale ?? 20 / 28);
 
   const backgroundColor = color
     ? getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
-    : fallback;
+    : foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
 
   const borderRadius = size === 28 ? 10 : size === 40 ? 12 : 14;
   const corners = { borderRadius, borderCurve: 'continuous' as const };
@@ -59,7 +72,7 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
           styles.shadow,
           corners,
           { width: size, height: size, backgroundColor },
-          size === 44 && !isDarkMode && styles.headerShadow,
+          size === 44 && !isDarkMode ? styles.headerShadow : undefined,
         ]}
       >
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip, corners]}>
@@ -79,7 +92,7 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
             }}
           />
         ) : (
-          <SportsImage imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
+          <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
         )}
 
         <Border
@@ -94,21 +107,23 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
 }
 
 function RemoteImage({
+  isDarkMode,
   imageUrl,
   name,
   width,
   height,
   borderRadius,
 }: {
+  isDarkMode: boolean;
   imageUrl: string;
   name: string;
   width: number;
   height: number;
   borderRadius: number;
-}) {
+}): ReactElement {
   const [aspectRatio, setAspectRatio] = useState<number | null>(width / height);
 
-  if (aspectRatio === null) return <ImageFallback name={name} size={Math.min(width, height)} />;
+  if (aspectRatio === null) return <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, height)} />;
 
   const fittedWidth = Math.min(width, height * aspectRatio);
   const fittedHeight = fittedWidth / aspectRatio;
@@ -128,8 +143,8 @@ function RemoteImage({
   );
 }
 
-function ImageFallback({ name, size }: { name: string; size: number }) {
-  const backgroundColor = useForegroundColor('fillTertiary');
+function ImageFallback({ name, size, isDarkMode }: { name: string; size: number; isDarkMode: boolean }): ReactElement {
+  const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
     <View style={[styles.image, styles.fallback, { width: size, height: size, backgroundColor }]}>
       <Text color="labelSecondary" size="13pt" weight="heavy">

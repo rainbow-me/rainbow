@@ -57,7 +57,11 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
       <SportsEventLookup eventId={eventId} />
       <EventSheet backgroundColor={screenBackgroundColor}>
         {event?.closed && <ResolvedEventHeader resolvedAt={event.closedTime} />}
-        {gameId ? <SportsGameOverview gameId={gameId} event={event} /> : event && <EventHeaderSection event={event} />}
+        {gameId ? (
+          <SportsGameOverview isDarkMode={isDarkMode} gameId={gameId} event={event} />
+        ) : (
+          event && <EventHeaderSection event={event} />
+        )}
         {event ? (
           <EventContent event={event} gameId={gameId} eventColor={eventColor} backgroundColor={screenBackgroundColor} />
         ) : (
@@ -144,7 +148,15 @@ const EventHeaderSection = memo(function EventHeaderSection({ event }: { event: 
   );
 });
 
-function SportsGameOverview({ gameId, event }: { gameId: string; event?: PolymarketEvent | PolymarketMarketEvent }) {
+function SportsGameOverview({
+  gameId,
+  event,
+  isDarkMode,
+}: {
+  gameId: string;
+  event?: PolymarketEvent | PolymarketMarketEvent;
+  isDarkMode: boolean;
+}) {
   const competition = useSportsStore(state => {
     const id = state.games[gameId]?.competitionIds[0];
     return id ? state.catalog?.scopes[id] : undefined;
@@ -155,7 +167,7 @@ function SportsGameOverview({ gameId, event }: { gameId: string; event?: Polymar
       {competition ? (
         <Box gap={12}>
           <Box flexDirection="row" alignItems="center" gap={8}>
-            <SportsImage imageUrl={competition.imageUrl} name={competition.name} size={28} />
+            <SportsImage isDarkMode={isDarkMode} imageUrl={competition.imageUrl} name={competition.name} size={28} />
             <Text color="label" size="20pt" weight="bold">
               {competition.name}
             </Text>
@@ -165,7 +177,7 @@ function SportsGameOverview({ gameId, event }: { gameId: string; event?: Polymar
       ) : (
         event && <EventHeaderSection event={event} />
       )}
-      <GameBoxScore gameId={gameId} />
+      <GameBoxScore gameId={gameId} isDarkMode={isDarkMode} />
     </>
   );
 }

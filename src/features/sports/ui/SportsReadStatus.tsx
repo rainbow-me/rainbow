@@ -1,26 +1,35 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { foregroundColors } from '@/design-system/color/palettes';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsNavigationStores, sportsReadStatusStores } from '@/features/sports/data/sportsNavigation';
+import { sportsReadStatusStores, type SportsPage } from '@/features/sports/data/sportsNavigation';
 import { sportsActions } from '@/features/sports/data/sportsStore';
 import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
 import * as i18n from '@/languages';
 
-export function SportsReadStatus({ host }: { host: SportsHost }) {
+export function SportsReadStatus({
+  host,
+  page,
+  width,
+  isDarkMode,
+}: {
+  host: SportsHost;
+  page: SportsPage;
+  width: number;
+  isDarkMode: boolean;
+}): ReactElement | null {
   const status = sportsReadStatusStores[host]();
-  const page = sportsNavigationStores[host](state => state.page);
   switch (status) {
     case 'none':
       return null;
     case 'loading':
-      return <SportsSkeleton page={page} />;
+      return <SportsSkeleton page={page} width={width} isDarkMode={isDarkMode} />;
     case 'error':
-      return <SportsReadError retry={() => sportsActions.retry(host)} />;
+      return <SportsReadError isDarkMode={isDarkMode} retry={() => sportsActions.retry(host)} />;
     case 'more':
       return <LoadMoreGames host={host} />;
     case 'empty':
@@ -30,7 +39,7 @@ export function SportsReadStatus({ host }: { host: SportsHost }) {
   }
 }
 
-function EmptyGames({ message }: { message: string }) {
+function EmptyGames({ message }: { message: string }): ReactElement {
   return (
     <View style={styles.message}>
       <Text align="center" color="labelTertiary" size="17pt" weight="bold">
@@ -40,8 +49,8 @@ function EmptyGames({ message }: { message: string }) {
   );
 }
 
-function SportsReadError({ retry }: { retry: () => Promise<void> }) {
-  const fill = useForegroundColor('fillTertiary');
+function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; isDarkMode: boolean }): ReactElement {
+  const fill = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   const [pending, setPending] = useState(false);
   const onPress = async () => {
     setPending(true);
@@ -74,7 +83,7 @@ function SportsReadError({ retry }: { retry: () => Promise<void> }) {
   );
 }
 
-function LoadMoreGames({ host }: { host: SportsHost }) {
+function LoadMoreGames({ host }: { host: SportsHost }): ReactElement {
   const [pending, setPending] = useState(false);
   const onPress = async () => {
     setPending(true);

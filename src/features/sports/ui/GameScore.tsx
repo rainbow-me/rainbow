@@ -1,12 +1,16 @@
-import { memo } from 'react';
+import { memo, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@/design-system/components/Text/Text';
-import { ScoreColumn_Kind, ScoreColumn_Winner } from '@/features/sports/core/generated/sports';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { ScoreColumn_Kind, ScoreColumn_Winner, type ScoreColumn } from '@/features/sports/core/generated/sports';
 
-export const GameScore = memo(function GameScore({ gameId, participantIndex }: { gameId: string; participantIndex: 0 | 1 }) {
-  const score = useSportsStore(s => s.games[gameId]?.score);
+export const GameScore = memo(function GameScore({
+  score,
+  participantIndex,
+}: {
+  score?: ScoreColumn[];
+  participantIndex: 0 | 1;
+}): ReactElement | null {
   if (!score?.length) return null;
 
   const otherWinner = participantIndex === 0 ? ScoreColumn_Winner.WINNER_SECOND : ScoreColumn_Winner.WINNER_FIRST;

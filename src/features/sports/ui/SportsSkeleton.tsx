@@ -1,15 +1,15 @@
+import { type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { foregroundColors } from '@/design-system/color/palettes';
 import { type SportsPage } from '@/features/sports/data/sportsNavigation';
 import { GameCardSkeleton } from '@/features/sports/ui/GameCard';
 import { SportsSectionHeadingSkeleton } from '@/features/sports/ui/SportsSection';
-import useDimensions from '@/hooks/useDimensions';
 
-export function SportsSkeleton({ page }: { page: SportsPage }) {
-  const { width } = useDimensions();
-  const backgroundColor = useForegroundColor('fillTertiary');
-  if (page === 'sports' || page === 'competitions')
+export function SportsSkeleton({ page, width, isDarkMode }: { page: SportsPage; width: number; isDarkMode: boolean }): ReactElement {
+  const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
+
+  if (page === 'sports' || page === 'competitions') {
     return (
       <View pointerEvents="none" testID="sports-loading">
         {[0, 1, 2, 3, 4, 5].map(index => (
@@ -20,15 +20,18 @@ export function SportsSkeleton({ page }: { page: SportsPage }) {
         ))}
       </View>
     );
+  }
+
   const groups = page === 'live' ? [1, 1, 1] : page === 'search' ? [3] : [2, 1];
+
   return (
     <View pointerEvents="none" testID="sports-loading">
       {groups.map((count, group) => (
         <View key={group}>
-          <SportsSectionHeadingSkeleton />
+          <SportsSectionHeadingSkeleton backgroundColor={backgroundColor} />
           {Array.from({ length: count }, (_, card) => (
             <View key={card} style={styles.card}>
-              <GameCardSkeleton width={width - 24} />
+              <GameCardSkeleton isDarkMode={isDarkMode} width={width - 24} />
             </View>
           ))}
         </View>
