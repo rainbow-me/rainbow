@@ -12,13 +12,12 @@ import { Text } from '@/design-system/components/Text/Text';
 import { textSizes } from '@/design-system/typography/typography';
 import { opacity } from '@/design-system/utils/opacity';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
-const SPREAD_PROBABILITY_STYLE = textSizes['13pt'];
 const SMALL_PROBABILITY_STYLE = textSizes['15pt'];
 const PROBABILITY_STYLE = textSizes['17pt'];
 
@@ -45,10 +44,6 @@ export const GameOffer = memo(function GameOffer({
 }): ReactElement {
   const liveTokenId = getPolymarketTokenId(tokenId, 'midpoint');
   const price = useStoreSharedValue(useLiveTokensStore, s => s.tokens[liveTokenId]?.price);
-  const probability = useDerivedValue(() => {
-    return price.value === undefined ? '—' : `${roundWorklet(toPercentageWorklet(price.value))}%`;
-  });
-
   const isSpread = line !== undefined;
 
   const background = useMemo(() => {
@@ -67,11 +62,6 @@ export const GameOffer = memo(function GameOffer({
 
     return [outer, middle, inner, inner, middle, outer] as const;
   }, [color, isDarkMode, isSpread]);
-
-  const probabilityStyle = useAnimatedStyle(() => {
-    if (isSpread) return SPREAD_PROBABILITY_STYLE;
-    return probability.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE;
-  });
 
   return (
     <ButtonPressAnimation
@@ -122,15 +112,13 @@ export const GameOffer = memo(function GameOffer({
                 {line > 0 ? `+${line}` : line}
               </Text>
             ) : null}
-            <AnimatedText
-              align="center"
-              color={isSpread && !isDarkMode ? 'label' : 'white'}
-              size={isSpread ? '13pt' : '17pt'}
-              style={[probabilityStyle, isSpread ? undefined : styles.winnerText]}
-              weight="heavy"
-            >
-              {probability}
-            </AnimatedText>
+            {isSpread ? (
+              <AnimatedText align="center" color={isDarkMode ? 'white' : 'label'} size="13pt" weight="heavy" selector={formatProbability}>
+                {price}
+              </AnimatedText>
+            ) : (
+              <WinnerProbability price={price} />
+            )}
           </View>
 
           <Border
@@ -146,6 +134,22 @@ export const GameOffer = memo(function GameOffer({
     </ButtonPressAnimation>
   );
 });
+
+function WinnerProbability({ price }: { price: ReadOnlySharedValue<string | undefined> }): ReactElement {
+  const probability = useDerivedValue(() => formatProbability(price));
+  const probabilityStyle = useAnimatedStyle(() => (probability.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
+
+  return (
+    <AnimatedText align="center" color="white" size="17pt" style={[probabilityStyle, styles.winnerText]} weight="heavy">
+      {probability}
+    </AnimatedText>
+  );
+}
+
+function formatProbability(price: ReadOnlySharedValue<string | undefined>): string {
+  'worklet';
+  return price.value === undefined ? '—' : `${roundWorklet(toPercentageWorklet(price.value))}%`;
+}
 
 const styles = StyleSheet.create({
   surface: {
