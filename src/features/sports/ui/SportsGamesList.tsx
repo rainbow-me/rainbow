@@ -46,6 +46,7 @@ type Row =
 // ============ Constants ====================================================== //
 
 const COLLAPSED_GAME_COUNT = 2;
+const EMPTY_EXPANDED_SET = new Set<string>();
 const EMPTY_SECTIONS: SportsSection[] = [];
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 
@@ -70,70 +71,55 @@ export function SportsGamesList({
   const { width } = useDimensions();
   const { isDarkMode, foregroundColors } = useColorMode();
 
-  const [expanded, setExpanded] = useState(() => new Set<string>());
+  const [expanded, setExpanded] = useState(() => EMPTY_EXPANDED_SET);
   const request = useSportsViewStore(s => s.hosts[host].request);
   const sections = useSportsStore(s => getSportsResult(s, request)?.sections ?? EMPTY_SECTIONS);
   const catalog = useSportsStore(s => s.catalog);
   const counts = useSportsStore(s => s.counts);
   const navigation = sportsNavigationStores[host]();
-  const { page, directoryIds } = navigation;
 
   const listRef = useRef<FlatList<Row>>(null);
-  const viewportRef = useLazyRef<{ gameIds: string[]; carouselKeys: string[] }>(() => ({ gameIds: [], carouselKeys: [] }));
+  const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
   const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
 
+  const { page, directoryIds } = navigation;
   const destination = request.destination;
   const isSearching = page === 'search';
 
-  const rows = useMemo(
+  const { rows, gameIds } = useMemo(
     () => buildRows(sections, page, expanded, destination.type === 'scope' ? destination.scopeId : undefined, directoryIds),
     [destination, directoryIds, sections, expanded, page]
   );
 
-  const renderedGameIds = useMemo(() => {
-    const gameIds: string[] = [];
-    for (const row of rows) {
-      if (row.type === 'game') gameIds.push(row.gameId);
-      else if (row.type === 'carousel') gameIds.push(...row.section.gameIds);
-    }
-    return gameIds;
-  }, [rows]);
-
-  const setVisibleGames = useSportsQuotes(renderedGameIds);
+  const setVisibleGames = useSportsQuotes(gameIds);
 
   const updateVisibleGames = useCallback(() => {
-    const { gameIds, carouselKeys } = viewportRef.current;
-    if (!carouselKeys.length) return setVisibleGames(gameIds);
-
-    const visibleGameIds = [...gameIds];
-    for (const key of carouselKeys) {
-      const carouselGameIds = carouselGamesRef.current.get(key);
-      if (carouselGameIds) visibleGameIds.push(...carouselGameIds);
+    const gameIds: string[] = [];
+    for (const { item } of visibleRowsRef.current) {
+      if (item.type === 'game') gameIds.push(item.gameId);
+      else if (item.type === 'carousel') {
+        const visibleGames = carouselGamesRef.current.get(item.key);
+        if (visibleGames) gameIds.push(...visibleGames);
+      }
     }
-    setVisibleGames(visibleGameIds);
-  }, [carouselGamesRef, setVisibleGames, viewportRef]);
+    setVisibleGames(gameIds);
+  }, [carouselGamesRef, setVisibleGames, visibleRowsRef]);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<Row>[] }) => {
-      const gameIds: string[] = [];
-      const carouselKeys: string[] = [];
-      for (const { item } of viewableItems) {
-        if (item.type === 'game') gameIds.push(item.gameId);
-        else if (item.type === 'carousel') carouselKeys.push(item.key);
-      }
-      viewportRef.current = { gameIds, carouselKeys };
+      visibleRowsRef.current = viewableItems;
       updateVisibleGames();
     },
-    [updateVisibleGames, viewportRef]
+    [updateVisibleGames, visibleRowsRef]
   );
 
   const onCarouselVisibleGamesChanged = useCallback(
     (sectionKey: string, gameIds: string[]) => {
       if (gameIds.length) carouselGamesRef.current.set(sectionKey, gameIds);
       else carouselGamesRef.current.delete(sectionKey);
-      if (viewportRef.current.carouselKeys.includes(sectionKey)) updateVisibleGames();
+      if (visibleRowsRef.current.some(({ item }) => item.type === 'carousel' && item.key === sectionKey)) updateVisibleGames();
     },
-    [carouselGamesRef, updateVisibleGames, viewportRef]
+    [carouselGamesRef, updateVisibleGames, visibleRowsRef]
   );
 
   useImperativeHandle(ref, () => ({ scrollToTop: () => listRef.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
@@ -143,7 +129,7 @@ export function SportsGamesList({
     s => s.hosts[host].request,
     () => {
       listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      setExpanded(new Set());
+      setExpanded(EMPTY_EXPANDED_SET);
     },
     { equalityFn: shallowEqual }
   );
@@ -244,10 +230,10 @@ export function SportsGamesList({
               !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined,
             ]}
           >
-            {!isSearching ? (
-              <SportsHeader host={host} isDarkMode={isDarkMode} navigation={navigation} />
-            ) : (
+            {isSearching ? (
               <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+            ) : (
+              <SportsHeader host={host} isDarkMode={isDarkMode} navigation={navigation} />
             )}
           </View>
         }
@@ -301,8 +287,9 @@ function buildRows(
   expanded: ReadonlySet<string>,
   destinationScopeId: string | undefined,
   directoryIds: string[]
-): Row[] {
+): { rows: Row[]; gameIds: string[] } {
   const rows: Row[] = [];
+  const gameIds: string[] = [];
   const isSearching = page === 'search';
 
   if (isSearching) {
@@ -315,6 +302,7 @@ function buildRows(
 
     if (page === 'live') {
       rows.push({ key: `carousel:${key}`, type: 'carousel', section });
+      gameIds.push(...section.gameIds);
       continue;
     }
 
@@ -328,6 +316,7 @@ function buildRows(
         gameId,
         scopeId: destinationScopeId ?? section.scopeId,
       });
+      gameIds.push(gameId);
     }
 
     if (!isSearching && section.gameIds.length > COLLAPSED_GAME_COUNT) {
@@ -346,7 +335,7 @@ function buildRows(
     for (const scopeId of directoryIds) rows.push({ key: `directory:${scopeId}`, type: 'directory', scopeId });
   }
 
-  return rows;
+  return { rows, gameIds };
 }
 
 // ============ Styles ========================================================= //
