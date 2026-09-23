@@ -6,12 +6,14 @@ import { type SportsSection } from '@/features/sports/core/sections';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { useCleanup } from '@/hooks/useCleanup';
 
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
+
 export const GameCarousel = memo(function GameCarousel({
   section,
   catalog,
   width,
   isDarkMode,
-  sectionKey,
+  rowKey,
   onVisibleGamesChanged,
   onGamePress,
 }: {
@@ -19,18 +21,18 @@ export const GameCarousel = memo(function GameCarousel({
   catalog?: SportsCatalog;
   width: number;
   isDarkMode: boolean;
-  sectionKey: string;
-  onVisibleGamesChanged: (sectionKey: string, gameIds: string[]) => void;
+  rowKey: string;
+  onVisibleGamesChanged: (rowKey: string, gameIds: string[]) => void;
   onGamePress: SportsGamePress;
 }): ReactElement {
   const cardWidth = width - (section.gameIds.length === 1 ? 24 : 30);
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<string>[] }) =>
       onVisibleGamesChanged(
-        sectionKey,
+        rowKey,
         viewableItems.map(({ item }) => item)
       ),
-    [onVisibleGamesChanged, sectionKey]
+    [onVisibleGamesChanged, rowKey]
   );
   const renderItem = useCallback(
     ({ item }: { item: string }) => (
@@ -48,7 +50,7 @@ export const GameCarousel = memo(function GameCarousel({
     [cardWidth, catalog, isDarkMode, onGamePress, section.scopeId]
   );
 
-  useCleanup(() => onVisibleGamesChanged(sectionKey, []), [onVisibleGamesChanged, sectionKey]);
+  useCleanup(() => onVisibleGamesChanged(rowKey, []), [onVisibleGamesChanged, rowKey]);
 
   return (
     <FlatList
@@ -57,7 +59,7 @@ export const GameCarousel = memo(function GameCarousel({
       renderItem={renderItem}
       keyExtractor={gameId => gameId}
       onViewableItemsChanged={onViewableItemsChanged}
-      viewabilityConfig={VIEWABILITY}
+      viewabilityConfig={VIEWABILITY_CONFIG}
       style={styles.list}
       contentContainerStyle={styles.content}
       snapToInterval={cardWidth + 8}
@@ -69,7 +71,6 @@ export const GameCarousel = memo(function GameCarousel({
   );
 });
 
-const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
 const styles = StyleSheet.create({
   list: { overflow: 'visible' },
   content: { gap: 8, paddingHorizontal: 12, paddingBottom: 8 },

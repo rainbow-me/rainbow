@@ -7,6 +7,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type RefreshControlProps,
+  type ViewStyle,
   type ViewToken,
 } from 'react-native';
 
@@ -36,7 +37,7 @@ import { useLazyRef } from '@/hooks/useLazyRef';
 export type SportsGamesListHandle = { scrollToTop: () => void };
 
 type Row =
-  | { key: string; type: 'directory'; scopeId: string }
+  | { key: string; type: 'directory'; scopeId: string; competition: boolean; style?: ViewStyle }
   | { key: string; type: 'directory-heading'; showTitle: boolean }
   | { key: string; type: 'heading'; section: SportsSection }
   | { key: string; type: 'carousel'; section: SportsSection }
@@ -75,12 +76,10 @@ export function SportsGamesList({
   const request = useSportsViewStore(s => s.hosts[host].request);
   const sections = useSportsStore(s => getSportsResult(s, request)?.sections ?? EMPTY_SECTIONS);
   const catalog = useSportsStore(s => s.catalog);
-  const counts = useSportsStore(s => s.counts);
   const navigation = sportsNavigationStores[host]();
+  const counts = useSportsStore(s => (navigation.directoryIds.length ? s.counts : undefined));
 
   const listRef = useRef<FlatList<Row>>(null);
-  const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
-  const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
   const cardPathsRef = useLazyRef(() => new Map<string, string>());
 
   const { page, directoryIds } = navigation;
@@ -92,36 +91,16 @@ export function SportsGamesList({
     [destination, directoryIds, sections, expanded, page]
   );
 
-  const setVisibleGames = useSportsQuotes(gameIds);
+  const { onViewableItemsChanged, onCarouselVisibleGamesChanged } = useGameVisibility(gameIds);
 
-  const updateVisibleGames = useCallback(() => {
-    const gameIds: string[] = [];
-    for (const { item } of visibleRowsRef.current) {
-      if (item.type === 'game') gameIds.push(item.gameId);
-      else if (item.type === 'carousel') {
-        const visibleGames = carouselGamesRef.current.get(item.key);
-        if (visibleGames) gameIds.push(...visibleGames);
-      }
-    }
-    setVisibleGames(gameIds);
-  }, [carouselGamesRef, setVisibleGames, visibleRowsRef]);
-
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken<Row>[] }) => {
-      visibleRowsRef.current = viewableItems;
-      updateVisibleGames();
-    },
-    [updateVisibleGames, visibleRowsRef]
-  );
-
-  const onCarouselVisibleGamesChanged = useCallback(
-    (sectionKey: string, gameIds: string[]) => {
-      if (gameIds.length) carouselGamesRef.current.set(sectionKey, gameIds);
-      else carouselGamesRef.current.delete(sectionKey);
-      if (visibleRowsRef.current.some(({ item }) => item.type === 'carousel' && item.key === sectionKey)) updateVisibleGames();
-    },
-    [carouselGamesRef, updateVisibleGames, visibleRowsRef]
-  );
+  const toggleSection = useCallback((sectionKey: string) => {
+    setExpanded(previous => {
+      const next = new Set(previous);
+      if (next.has(sectionKey)) next.delete(sectionKey);
+      else next.add(sectionKey);
+      return next;
+    });
+  }, []);
 
   useImperativeHandle(ref, () => ({ scrollToTop: () => listRef.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
 
@@ -143,11 +122,11 @@ export function SportsGamesList({
           return scope ? (
             <SportsDirectoryRow
               scope={scope}
-              count={counts[item.scopeId] ?? 0}
+              count={counts?.[item.scopeId] ?? 0}
               host={host}
-              competition={page === 'competitions'}
+              competition={item.competition}
               isDarkMode={isDarkMode}
-              style={isSearching && item.scopeId === directoryIds[directoryIds.length - 1] ? styles.searchDirectoryEnd : undefined}
+              style={item.style}
             />
           ) : null;
         }
@@ -181,7 +160,7 @@ export function SportsGamesList({
               width={width}
               isDarkMode={isDarkMode}
               section={item.section}
-              sectionKey={item.key}
+              rowKey={item.key}
               onVisibleGamesChanged={onCarouselVisibleGamesChanged}
               onGamePress={onGamePress}
             />
@@ -192,19 +171,12 @@ export function SportsGamesList({
               isDarkMode={isDarkMode}
               expanded={item.expanded}
               remaining={item.remaining}
-              onPress={() =>
-                setExpanded(previous => {
-                  const next = new Set(previous);
-                  if (next.has(item.sectionKey)) next.delete(item.sectionKey);
-                  else next.add(item.sectionKey);
-                  return next;
-                })
-              }
+              onPress={() => toggleSection(item.sectionKey)}
             />
           );
       }
     },
-    [catalog, counts, directoryIds, host, isDarkMode, isSearching, onCarouselVisibleGamesChanged, onGamePress, page, width]
+    [catalog, counts, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
   );
 
   return (
@@ -282,6 +254,44 @@ function SportsRefreshControl({
   );
 }
 
+// ============ Visibility ===================================================== //
+
+function useGameVisibility(gameIds: string[]): {
+  onViewableItemsChanged: (info: { viewableItems: ViewToken<Row>[] }) => void;
+  onCarouselVisibleGamesChanged: (rowKey: string, gameIds: string[]) => void;
+} {
+  const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
+  const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
+  const setVisibleGames = useSportsQuotes(gameIds);
+
+  return useMemo(() => {
+    function updateVisibleGames(): void {
+      const visibleGameIds: string[] = [];
+      for (const { item } of visibleRowsRef.current) {
+        if (item.type === 'game') visibleGameIds.push(item.gameId);
+        else if (item.type === 'carousel') {
+          const games = carouselGamesRef.current.get(item.key);
+          if (games) visibleGameIds.push(...games);
+        }
+      }
+      setVisibleGames(visibleGameIds);
+    }
+
+    return {
+      onViewableItemsChanged: ({ viewableItems }) => {
+        visibleRowsRef.current = viewableItems;
+        updateVisibleGames();
+      },
+      onCarouselVisibleGamesChanged: (rowKey, gameIds) => {
+        if (gameIds.length) carouselGamesRef.current.set(rowKey, gameIds);
+        else carouselGamesRef.current.delete(rowKey);
+
+        if (visibleRowsRef.current.some(({ item }) => item.key === rowKey)) updateVisibleGames();
+      },
+    };
+  }, [carouselGamesRef, setVisibleGames, visibleRowsRef]);
+}
+
 // ============ Helpers ======================================================== //
 
 function buildRows(
@@ -296,7 +306,15 @@ function buildRows(
   const isSearching = page === 'search';
 
   if (isSearching) {
-    for (const scopeId of directoryIds) rows.push({ key: `directory:${scopeId}`, type: 'directory', scopeId });
+    for (const scopeId of directoryIds) {
+      rows.push({
+        key: `directory:${scopeId}`,
+        type: 'directory',
+        scopeId,
+        competition: false,
+        style: scopeId === directoryIds[directoryIds.length - 1] ? styles.searchDirectoryEnd : undefined,
+      });
+    }
   }
 
   for (const section of sections) {
@@ -335,7 +353,9 @@ function buildRows(
 
   if (!isSearching && directoryIds.length) {
     if (page === 'competitions') rows.push({ key: 'directory-heading', type: 'directory-heading', showTitle: sections.length > 0 });
-    for (const scopeId of directoryIds) rows.push({ key: `directory:${scopeId}`, type: 'directory', scopeId });
+    for (const scopeId of directoryIds) {
+      rows.push({ key: `directory:${scopeId}`, type: 'directory', scopeId, competition: page === 'competitions' });
+    }
   }
 
   return { rows, gameIds };
