@@ -1,4 +1,4 @@
-import { Fragment, memo, useMemo, type ReactElement, type ReactNode } from 'react';
+import { createContext, Fragment, memo, useContext, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
@@ -47,6 +47,8 @@ const STATUS_LABELS: Partial<
 
 const LIGHT_CARD_FILL = [white(0.68), white(0.96)] as const;
 const LIGHT_BADGE_FILL = [white(0.54), white(0.81)] as const;
+
+export const GameCardPathsContext = createContext<Map<string, string> | undefined>(undefined);
 
 // ============ GameCard ======================================================= //
 
@@ -171,7 +173,15 @@ function GameCardSurface({
 }
 
 const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width: number; height: number }): ReactElement {
-  const path = useMemo(() => getSquirclePath({ width, height, borderRadius: 24 }), [height, width]);
+  const paths = useContext(GameCardPathsContext);
+  const key = `${width}:${height}`;
+  let path = paths?.get(key);
+
+  if (path === undefined) {
+    path = getSquirclePath({ width, height, borderRadius: 24 });
+    paths?.set(key, path);
+  }
+
   return (
     <Canvas style={{ width, height }}>
       <Path path={path}>

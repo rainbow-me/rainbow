@@ -18,7 +18,7 @@ import { type SportsSection } from '@/features/sports/core/sections';
 import { sportsNavigationStores, type SportsPage } from '@/features/sports/data/sportsNavigation';
 import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
-import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
+import { GameCard, GameCardPathsContext, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsCategoryBar } from '@/features/sports/ui/SportsCategoryBar';
 import { SportsDirectoryHeading, SportsDirectoryRow } from '@/features/sports/ui/SportsDirectory';
@@ -81,6 +81,7 @@ export function SportsGamesList({
   const listRef = useRef<FlatList<Row>>(null);
   const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
   const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
+  const cardPathsRef = useLazyRef(() => new Map<string, string>());
 
   const { page, directoryIds } = navigation;
   const destination = request.destination;
@@ -207,51 +208,53 @@ export function SportsGamesList({
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT }]}>
-      <FlatList
-        ref={listRef}
-        data={rows}
-        keyExtractor={row => row.key}
-        renderItem={renderItem}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={VIEWABILITY_CONFIG}
-        initialNumToRender={8}
-        windowSize={3}
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
-        scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
-        onScroll={onScroll}
-        refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
-        ListHeaderComponent={
-          <View
-            style={[
-              isSearching && directoryIds.length ? undefined : styles.header,
-              !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined,
-            ]}
-          >
-            {isSearching ? (
-              <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
-            ) : (
-              <SportsHeader host={host} isDarkMode={isDarkMode} navigation={navigation} />
-            )}
-          </View>
-        }
-        ListFooterComponent={<SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />}
-        ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
-      />
-
-      {isSearching ? null : (
-        <SportsCategoryBar
-          navigation={navigation}
-          isDarkMode={isDarkMode}
-          width={width}
-          catalog={catalog}
-          host={host}
-          bottom={bottomInset + 20}
+    <GameCardPathsContext value={cardPathsRef.current}>
+      <View style={[styles.container, { backgroundColor: isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT }]}>
+        <FlatList
+          ref={listRef}
+          data={rows}
+          keyExtractor={row => row.key}
+          renderItem={renderItem}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={VIEWABILITY_CONFIG}
+          initialNumToRender={8}
+          windowSize={3}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
+          scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
+          onScroll={onScroll}
+          refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
+          ListHeaderComponent={
+            <View
+              style={[
+                isSearching && directoryIds.length ? undefined : styles.header,
+                !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined,
+              ]}
+            >
+              {isSearching ? (
+                <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+              ) : (
+                <SportsHeader host={host} isDarkMode={isDarkMode} navigation={navigation} />
+              )}
+            </View>
+          }
+          ListFooterComponent={<SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />}
+          ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
         />
-      )}
-    </View>
+
+        {isSearching ? null : (
+          <SportsCategoryBar
+            navigation={navigation}
+            isDarkMode={isDarkMode}
+            width={width}
+            catalog={catalog}
+            host={host}
+            bottom={bottomInset + 20}
+          />
+        )}
+      </View>
+    </GameCardPathsContext>
   );
 }
 
