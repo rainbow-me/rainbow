@@ -18,16 +18,29 @@ import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
+// ============ Types ========================================================== //
+
+type BetContentProps = {
+  color: string;
+  isDarkMode: boolean;
+  price: ReadOnlySharedValue<string | undefined>;
+};
+
+// ============ Constants ====================================================== //
+
 const SMALL_PROBABILITY_STYLE = textSizes['15pt'];
 const PROBABILITY_STYLE = textSizes['17pt'];
 
 const SPREAD_VERTICAL_STOPS = [0, 4 / 40, 12 / 40, 28 / 40, 36 / 40, 1] as const;
 const SPREAD_HORIZONTAL_STOPS = [0, 4 / 60, 12 / 60, 48 / 60, 56 / 60, 1] as const;
+const WINNER_HIGHLIGHT_STOPS = [0, 0.25, 0.5, 0.75, 1] as const;
 
 const LIGHT_SPREAD_FILL = [white(0.54), white(0.81)] as const;
 const WINNER_HIGHLIGHT = [white(0.12), white(0.055), white(0.018), white(0.004), white(0)] as const;
 
-export const GameOffer = memo(function GameOffer({
+// ============ Bet Button ===================================================== //
+
+export const GameBetButton = memo(function GameBetButton({
   tokenId,
   isDarkMode,
   color = globalColors.grey60,
@@ -44,24 +57,6 @@ export const GameOffer = memo(function GameOffer({
 }): ReactElement {
   const liveTokenId = getPolymarketTokenId(tokenId, 'midpoint');
   const price = useStoreSharedValue(useLiveTokensStore, s => s.tokens[liveTokenId]?.price);
-  const isSpread = line !== undefined;
-
-  const background = useMemo(() => {
-    return isSpread
-      ? isDarkMode
-        ? opacity(color, 0.2)
-        : undefined
-      : getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? 0.3 : 0.06 });
-  }, [color, isDarkMode, isSpread]);
-
-  const spreadGradient = useMemo(() => {
-    if (!isSpread || !isDarkMode) return undefined;
-    const outer = opacity(color, 0.18);
-    const middle = opacity(color, 0.08);
-    const inner = opacity(color, 0);
-
-    return [outer, middle, inner, inner, middle, outer] as const;
-  }, [color, isDarkMode, isSpread]);
 
   return (
     <ButtonPressAnimation
@@ -72,84 +67,104 @@ export const GameOffer = memo(function GameOffer({
       }}
       scaleTo={0.96}
     >
-      <View
-        style={
-          isSpread ? (isDarkMode ? undefined : styles.spreadShadow) : glow && isDarkMode ? [styles.glow, { shadowColor: color }] : undefined
-        }
-      >
-        <View
-          style={[
-            styles.surface,
-            { backgroundColor: background },
-            isSpread ? (isDarkMode ? undefined : styles.tightShadow) : styles.winnerShadow,
-          ]}
-        >
-          <View pointerEvents="none" style={styles.background}>
-            {isSpread ? (
-              <LinearGradient
-                colors={spreadGradient ?? LIGHT_SPREAD_FILL}
-                locations={spreadGradient ? SPREAD_VERTICAL_STOPS : undefined}
-                style={StyleSheet.absoluteFill}
-              />
-            ) : (
-              <LinearGradient colors={WINNER_HIGHLIGHT} locations={[0, 0.25, 0.5, 0.75, 1]} style={styles.highlight} />
-            )}
-
-            {spreadGradient ? (
-              <LinearGradient
-                colors={spreadGradient}
-                locations={SPREAD_HORIZONTAL_STOPS}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={StyleSheet.absoluteFill}
-              />
-            ) : null}
-          </View>
-
-          <View style={styles.content}>
-            {isSpread ? (
-              <Text align="center" color={{ custom: isDarkMode ? white(0.6) : globalColors.grey70 }} size="12pt" weight="heavy">
-                {line > 0 ? `+${line}` : line}
-              </Text>
-            ) : null}
-            {isSpread ? (
-              <AnimatedText align="center" color={isDarkMode ? 'white' : 'label'} size="13pt" weight="heavy" selector={formatProbability}>
-                {price}
-              </AnimatedText>
-            ) : (
-              <WinnerProbability price={price} />
-            )}
-          </View>
-
-          <Border
-            borderRadius={14}
-            borderWidth={isSpread && !isDarkMode ? THICK_BORDER_WIDTH : 2}
-            borderColor={{
-              custom: isSpread ? (isDarkMode ? opacity(color, 0.06) : globalColors.white100) : (isDarkMode ? white : black)(0.1),
-            }}
-            enableInLightMode
-          />
-        </View>
-      </View>
+      {line === undefined ? (
+        <WinnerBet color={color} isDarkMode={isDarkMode} price={price} glow={glow} />
+      ) : (
+        <SpreadBet color={color} isDarkMode={isDarkMode} price={price} line={line} />
+      )}
     </ButtonPressAnimation>
   );
 });
 
-function WinnerProbability({ price }: { price: ReadOnlySharedValue<string | undefined> }): ReactElement {
+// ============ Bet Content ==================================================== //
+
+function WinnerBet({ color, isDarkMode, price, glow }: BetContentProps & { glow: boolean }): ReactElement {
+  const backgroundColor = useMemo(
+    () => getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? 0.3 : 0.06 }),
+    [color, isDarkMode]
+  );
   const probability = useDerivedValue(() => formatProbability(price));
   const probabilityStyle = useAnimatedStyle(() => (probability.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
 
   return (
-    <AnimatedText align="center" color="white" size="17pt" style={[probabilityStyle, styles.winnerText]} weight="heavy">
-      {probability}
-    </AnimatedText>
+    <View style={glow && isDarkMode ? [styles.glow, { shadowColor: color }] : undefined}>
+      <View style={[styles.surface, { backgroundColor }, styles.winnerShadow]}>
+        <View pointerEvents="none" style={styles.background}>
+          <LinearGradient colors={WINNER_HIGHLIGHT} locations={WINNER_HIGHLIGHT_STOPS} style={styles.highlight} />
+        </View>
+
+        <View style={styles.content}>
+          <AnimatedText align="center" color="white" size="17pt" style={[probabilityStyle, styles.winnerText]} weight="heavy">
+            {probability}
+          </AnimatedText>
+        </View>
+
+        <Border borderRadius={14} borderWidth={2} borderColor={{ custom: (isDarkMode ? white : black)(0.1) }} enableInLightMode />
+      </View>
+    </View>
   );
 }
+
+function SpreadBet({ color, isDarkMode, price, line }: BetContentProps & { line: number }): ReactElement {
+  const gradient = useMemo(() => {
+    if (!isDarkMode) return LIGHT_SPREAD_FILL;
+
+    const outer = opacity(color, 0.18);
+    const middle = opacity(color, 0.08);
+    const inner = opacity(color, 0);
+    return [outer, middle, inner, inner, middle, outer] as const;
+  }, [color, isDarkMode]);
+
+  return (
+    <View style={isDarkMode ? undefined : styles.spreadShadow}>
+      <View
+        style={[
+          styles.surface,
+          { backgroundColor: isDarkMode ? opacity(color, 0.2) : undefined },
+          isDarkMode ? undefined : styles.tightShadow,
+        ]}
+      >
+        <View pointerEvents="none" style={styles.background}>
+          <LinearGradient colors={gradient} locations={isDarkMode ? SPREAD_VERTICAL_STOPS : undefined} style={StyleSheet.absoluteFill} />
+          {isDarkMode ? (
+            <LinearGradient
+              colors={gradient}
+              locations={SPREAD_HORIZONTAL_STOPS}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={StyleSheet.absoluteFill}
+            />
+          ) : null}
+        </View>
+
+        <View style={styles.content}>
+          <Text align="center" color={{ custom: isDarkMode ? white(0.6) : globalColors.grey70 }} size="12pt" weight="heavy">
+            {line > 0 ? `+${line}` : line}
+          </Text>
+          <AnimatedText align="center" color={isDarkMode ? 'white' : 'label'} size="13pt" weight="heavy" selector={formatProbability}>
+            {price}
+          </AnimatedText>
+        </View>
+
+        <Border
+          borderRadius={14}
+          borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+          borderColor={{ custom: isDarkMode ? opacity(color, 0.06) : globalColors.white100 }}
+          enableInLightMode
+        />
+      </View>
+    </View>
+  );
+}
+
+// ============ Formatting ===================================================== //
 
 function formatProbability(price: ReadOnlySharedValue<string | undefined>): string {
   'worklet';
   return price.value === undefined ? '—' : `${roundWorklet(toPercentageWorklet(price.value))}%`;
 }
+
+// ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   surface: {

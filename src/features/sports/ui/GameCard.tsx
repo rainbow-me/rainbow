@@ -20,7 +20,7 @@ import {
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
-import { GameOffer } from '@/features/sports/ui/GameOffer';
+import { GameBetButton } from '@/features/sports/ui/GameBetButton';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
@@ -105,7 +105,7 @@ export const GameCard = memo(function GameCard({
                     <GameScore score={game.score} participantIndex={index} />
                   </View>
 
-                  <ParticipantOffers
+                  <ParticipantBetButtons
                     gameId={gameId}
                     index={index}
                     spread={game.spread}
@@ -217,7 +217,7 @@ function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }): 
         <View style={[styles.skeletonSubtitle, { backgroundColor }]} />
         <View style={[styles.skeletonTitle, { backgroundColor }]} />
       </View>
-      <View style={[styles.skeletonOffer, { backgroundColor }]} />
+      <View style={[styles.skeletonBetButton, { backgroundColor }]} />
     </View>
   );
 }
@@ -389,7 +389,7 @@ const ParticipantIdentity = memo(function ParticipantIdentity({
   );
 });
 
-const ParticipantOffers = memo(function ParticipantOffers({
+const ParticipantBetButtons = memo(function ParticipantBetButtons({
   isDarkMode,
   gameId,
   index,
@@ -411,9 +411,9 @@ const ParticipantOffers = memo(function ParticipantOffers({
   const outcome = spread?.outcomes[index];
 
   return (
-    <View style={styles.offers}>
+    <View style={styles.betButtons}>
       {spread && outcome ? (
-        <GameOffer
+        <GameBetButton
           isDarkMode={isDarkMode}
           key={outcome.tokenId}
           tokenId={outcome.tokenId}
@@ -434,7 +434,7 @@ const ParticipantOffers = memo(function ParticipantOffers({
       ) : null}
 
       {winner ? (
-        <GameOffer
+        <GameBetButton
           isDarkMode={isDarkMode}
           key={winner.tokenId}
           tokenId={winner.tokenId}
@@ -470,7 +470,7 @@ const GameDrawRow = memo(function GameDrawRow({
         {i18n.t(i18n.l.sports.draw)}
       </Text>
       {selection ? (
-        <GameOffer
+        <GameBetButton
           isDarkMode={isDarkMode}
           key={selection.tokenId}
           tokenId={selection.tokenId}
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
   },
   compactLogo: { width: 32, height: 28 },
   name: { flex: 1, gap: 8 },
-  offers: {
+  betButtons: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -641,7 +641,7 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
   },
-  skeletonOffer: {
+  skeletonBetButton: {
     width: 60,
     height: 40,
     borderRadius: 14,
