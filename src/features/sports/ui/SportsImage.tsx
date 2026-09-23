@@ -5,12 +5,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ImgixImage from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
-import { getSolidColorEquivalent } from '@/worklets/colors';
+import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
+
+const BADGE_HIGHLIGHT = [white(0.18), white(0)] as const;
+const IMAGE_CONFIG = { transitionDuration: 0 };
 
 export function SportsImage({
   imageUrl,
@@ -35,12 +39,15 @@ export function SportsImage({
 export function SportsBadge({ scope, size }: { scope: Sport | Competition; size: 28 | 40 | 44 }) {
   const { isDarkMode } = useColorMode();
   const fallback = useForegroundColor('fillTertiary');
+
   const icon = (size === 44 ? sportsIcons[`${scope.id}-header`] : undefined) ?? sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
   const imageSize = size * (icon?.scale ?? 20 / 28);
+
   const backgroundColor = color
-    ? getSolidColorEquivalent({ background: color, foreground: '#000000', opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
+    ? getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
     : fallback;
+
   const borderRadius = size === 28 ? 10 : size === 40 ? 12 : 14;
   const corners = { borderRadius, borderCurve: 'continuous' as const };
 
@@ -58,6 +65,7 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip, corners]}>
           <LinearGradient colors={BADGE_HIGHLIGHT} style={styles.highlight} />
         </View>
+
         {icon ? (
           <ImgixImage
             enableFasterImage
@@ -73,10 +81,11 @@ export function SportsBadge({ scope, size }: { scope: Sport | Competition; size:
         ) : (
           <SportsImage imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
         )}
+
         <Border
           borderRadius={borderRadius}
           borderWidth={2}
-          borderColor={{ custom: isDarkMode ? 'rgba(255,255,255,0.1)' : size === 44 ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.06)' }}
+          borderColor={{ custom: isDarkMode ? white(0.1) : black(size === 44 ? 0.12 : 0.06) }}
           enableInLightMode
         />
       </View>
@@ -98,12 +107,14 @@ function RemoteImage({
   borderRadius: number;
 }) {
   const [aspectRatio, setAspectRatio] = useState<number | null>(width / height);
+
   if (aspectRatio === null) return <ImageFallback name={name} size={Math.min(width, height)} />;
 
   const fittedWidth = Math.min(width, height * aspectRatio);
   const fittedHeight = fittedWidth / aspectRatio;
+
   return (
-    <View style={[styles.clip, { width: fittedWidth, height: fittedHeight, borderRadius }]}>
+    <View style={[styles.clip, { width: fittedWidth, height: fittedHeight }]}>
       <ImgixImage
         enableFasterImage
         source={{ uri: imageUrl }}
@@ -111,7 +122,7 @@ function RemoteImage({
         fasterImageConfig={IMAGE_CONFIG}
         onLoad={({ nativeEvent: { width, height } }) => setAspectRatio(width / height)}
         onError={() => setAspectRatio(null)}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { borderRadius }]}
       />
     </View>
   );
@@ -128,8 +139,6 @@ function ImageFallback({ name, size }: { name: string; size: number }) {
   );
 }
 
-const BADGE_HIGHLIGHT = ['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)'] as const;
-const IMAGE_CONFIG = { transitionDuration: 0 };
 const styles = StyleSheet.create({
   image: { alignItems: 'center', justifyContent: 'center' },
   clip: { overflow: 'hidden', borderCurve: 'continuous' },
@@ -146,7 +155,7 @@ const styles = StyleSheet.create({
     height: 6,
   },
   shadow: {
-    shadowColor: '#000000',
+    shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 6,

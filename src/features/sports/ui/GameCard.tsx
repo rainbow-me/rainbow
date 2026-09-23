@@ -1,5 +1,5 @@
 import { memo, useMemo, type ReactElement, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -48,11 +48,13 @@ export const GameCard = memo(function GameCard({
   scopeId,
   width,
   onPress,
+  style,
 }: {
   gameId: string;
   scopeId?: string;
   width: number;
   onPress: SportsGamePress;
+  style?: ViewStyle;
 }): ReactElement | null {
   const rowCount = useSportsStore(s => {
     const game = s.games[gameId];
@@ -63,7 +65,7 @@ export const GameCard = memo(function GameCard({
   if (!rowCount) return null;
 
   return (
-    <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98}>
+    <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98} style={style}>
       <GameCardSurface width={width} threeWay={rowCount === 3} testID={`sports-game-${gameId}`}>
         <GameHeader gameId={gameId} scopeId={scopeId} />
         <GameDivider header />

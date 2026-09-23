@@ -44,7 +44,7 @@ type Row =
 // ============ Constants ====================================================== //
 
 const EMPTY_SECTIONS: SportsSection[] = [];
-const VIEWABILITY = { itemVisiblePercentThreshold: 1 };
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 
 // ============ Components ===================================================== //
 
@@ -132,11 +132,7 @@ export function SportsGamesList({
     ({ item }: { item: Row }) => {
       switch (item.type) {
         case 'game':
-          return (
-            <View style={styles.card}>
-              <GameCard gameId={item.gameId} scopeId={item.scopeId} width={width - 24} onPress={onGamePress} />
-            </View>
-          );
+          return <GameCard gameId={item.gameId} scopeId={item.scopeId} width={width - 24} onPress={onGamePress} style={styles.card} />;
         case 'heading':
           return <SportsSectionHeading section={item.section} host={host} />;
         case 'carousel':
@@ -176,15 +172,14 @@ export function SportsGamesList({
         keyExtractor={row => row.key}
         renderItem={renderItem}
         onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={VIEWABILITY}
+        viewabilityConfig={VIEWABILITY_CONFIG}
         initialNumToRender={8}
-        windowSize={7}
+        windowSize={3}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
         scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
         onScroll={onScroll}
-        scrollEventThrottle={16}
         refreshControl={<SportsRefreshControl host={host} />}
         ListHeaderComponent={
           <View style={[styles.header, !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined]}>
@@ -216,14 +211,14 @@ function SportsRefreshControl({
 
   return (
     <RefreshControl
-      refreshing={refreshing}
-      style={style}
+      colors={[color]}
       onRefresh={() => {
         setRefreshing(true);
         void sportsActions.refresh(host).finally(() => setRefreshing(false));
       }}
+      refreshing={refreshing}
+      style={style}
       tintColor={color}
-      colors={[color]}
     >
       {children}
     </RefreshControl>
