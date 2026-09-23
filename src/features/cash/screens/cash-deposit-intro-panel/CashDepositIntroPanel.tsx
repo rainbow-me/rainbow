@@ -9,9 +9,11 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 
 import { CashDepositIntroFeatureRow } from '../../components/CashDepositIntroFeatureRow';
@@ -22,6 +24,7 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
+  const isHardwareWallet = useIsHardwareWallet();
 
   const backgroundGradientColors = isDarkMode
     ? ([opacity(HERO_DOLLAR_COLOR, 0.2), opacity(HERO_DOLLAR_COLOR, 0)] as const)
@@ -36,8 +39,15 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
 
   // Set Up Account → close the intro panel, then open the Cash Deposit Setup wizard.
   const handleSetUpAccount = useCallback(() => {
+    if (isHardwareWallet) {
+      Alert.alert(i18n.t(i18n.l.cash.add_wallet.unsupported_title), i18n.t(i18n.l.cash.add_wallet.hardware_description), [
+        { text: i18n.t(i18n.l.cash.add_wallet.cancel) },
+      ]);
+      return;
+    }
+
     replace(Routes.CASH_DEPOSIT_SETUP_SCREEN);
-  }, []);
+  }, [isHardwareWallet]);
 
   // Other Deposit Methods → legacy third-party provider widgets.
   const handleOtherDepositMethods = useCallback(() => {

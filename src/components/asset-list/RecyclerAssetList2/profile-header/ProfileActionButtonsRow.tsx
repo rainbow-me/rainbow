@@ -129,17 +129,18 @@ function ActionButton({ children, icon, onPress, testID }: { children: string; i
 }
 
 function BuyButton() {
-  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
+  const { navigateToAddCash, isCashEnabled } = useAddCashRoute();
   const handlePress = React.useCallback(() => {
-    if (getIsDamagedWallet()) {
-      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-      return;
-    }
+    navigateToAddCash(route => {
+      if (getIsDamagedWallet()) {
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+        return;
+      }
 
-    analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
-
-    Navigation.handleAction(addCashRoute);
-  }, [addCashRoute]);
+      analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
+      Navigation.handleAction(route);
+    });
+  }, [navigateToAddCash]);
 
   return (
     <Box>
