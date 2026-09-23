@@ -1,6 +1,7 @@
 import { NativeCurrencyKeys } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { Language } from '@/languages';
+import { legacy } from '@/storage/legacy';
 
 import { getGlobal, saveGlobal } from './common';
 
@@ -17,11 +18,12 @@ const TESTNETS_ENABLED = 'testnetsEnabled';
 
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 
-export const saveAuthTimelock = (ts: any) => saveGlobal(AUTH_TIMELOCK, ts);
+// Authentication writes must report failure so the caller can refuse further PIN entry.
+export const saveAuthTimelock = (ts: number | null) => legacy.set([AUTH_TIMELOCK], { data: ts });
 
 export const getPinAuthAttemptsLeft = () => getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
 
-export const savePinAuthAttemptsLeft = (amount: any) => saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
+export const savePinAuthAttemptsLeft = (amount: number | null) => legacy.set([PIN_AUTH_ATTEMPTS_LEFT], { data: amount });
 
 export const getLanguage = () => getGlobal(LANGUAGE, Language.EN_US);
 
