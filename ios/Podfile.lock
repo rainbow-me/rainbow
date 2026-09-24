@@ -4750,9 +4750,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNRudderSdk (2.0.0):
-    - React
-    - Rudder (< 2.0.0, >= 1.31.0)
   - RNScreens (4.16.0):
     - boost
     - DoubleConversion
@@ -4847,7 +4844,6 @@ PODS:
     - React-Core
   - RNSVG (15.15.4):
     - React-Core
-  - Rudder (1.32.0)
   - SDWebImage (5.18.12):
     - SDWebImage/Core (= 5.18.12)
   - SDWebImage/Core (5.18.12)
@@ -5067,7 +5063,6 @@ DEPENDENCIES:
   - RNOS (from `../node_modules/react-native-os`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
-  - "RNRudderSdk (from `../node_modules/@rudderstack/rudder-sdk-react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNShare (from `../node_modules/react-native-share`)
@@ -5119,7 +5114,6 @@ SPEC REPOS:
     - MultiplatformBleAdapter
     - nanopb
     - PromisesObjC
-    - Rudder
     - SDWebImage
     - SDWebImageWebPCoder
     - Sentry
@@ -5429,8 +5423,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
-  RNRudderSdk:
-    :path: "../node_modules/@rudderstack/rudder-sdk-react-native"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
@@ -5642,13 +5634,11 @@ SPEC CHECKSUMS:
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae
   RNPermissions: bd0d9ca7969ff7b999aa605ee2e5919c12522bfe
   RNReanimated: a0d1d8b8d8d38f504c7acc2e6019061eed29186d
-  RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
   RNScreens: 35525ebfe219c8709da0d26aebbc9a5e02e1077b
   RNSentry: 70dd4ad2d37e8a37df18c1d324093c30e8801726
   RNShare: 2df11ee286754d74a9d7ca249350418cac4a20bb
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
   RNSVG: 0c9ef13eab498a85510c1ec82fb0010f07ff33e6
-  Rudder: fcd39cc69aeb05880a789b6ffdaf4ea93f6448a2
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be

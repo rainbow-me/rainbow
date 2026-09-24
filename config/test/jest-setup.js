@@ -16,12 +16,7 @@ jest.mock('react-native-device-info', () => ({
   setup: () => null,
 }));
 
-jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
-  createClient: jest.fn(),
-  identify: jest.fn(),
-  reset: jest.fn(),
-  setup: jest.fn(),
-}));
+jest.mock('posthog-react-native', () => ({ PostHog: jest.fn() }));
 
 jest.mock('react-native-appsflyer', () => ({
   __esModule: true,

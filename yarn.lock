@@ -5296,6 +5296,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@posthog/core@npm:^1.55.1":
+  version: 1.55.2
+  resolution: "@posthog/core@npm:1.55.2"
+  dependencies:
+    "@posthog/types": "npm:^1.412.4"
+  checksum: 10c0/2f8c3ccd06abd8aff0cbf810b25339af035a4cc40593f23021e73401695170c34bcd98554509202aafe7d7e71c2bc5bd6cd2fd51a3de603033d4bf2d085a3af7
+  languageName: node
+  linkType: hard
+
+"@posthog/types@npm:^1.412.4":
+  version: 1.412.4
+  resolution: "@posthog/types@npm:1.412.4"
+  checksum: 10c0/06479892bee8b0509a3e45af60944bbc7d2d949160f675250e9fe7232378f98bb08ab5388361581e20e33344d905451928e7ee3677b564b795c78b7de78d1032
+  languageName: node
+  linkType: hard
+
 "@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
   version: 1.1.2
   resolution: "@protobufjs/aspromise@npm:1.1.2"
@@ -6916,16 +6932,6 @@ __metadata:
     tar: "npm:^7.4.3"
     tslib: "npm:^2.3.0"
   checksum: 10c0/4dafcefe07632927033fe78c3055c42fb90c8595335e1d0eda02c22a78ce22e70a8b904d1c61f417dc11f6524df61c78058159536ff1cfa0347144b743f36274
-  languageName: node
-  linkType: hard
-
-"@rudderstack/rudder-sdk-react-native@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@rudderstack/rudder-sdk-react-native@npm:2.0.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-native: ">= 0.41.2 < 0.80.0 || ^0.0.0-0"
-  checksum: 10c0/40c71a1abee481045e37e8be3c92b147e15d3c41c398449c5b7d6a552ebce3a977260ffeb1d2831103442556e8f258332a041f9d19451c1009c367c9024f07ec
   languageName: node
   linkType: hard
 
@@ -9130,7 +9136,6 @@ __metadata:
     "@rock-js/platform-android": "npm:0.9.2"
     "@rock-js/platform-ios": "npm:0.9.2"
     "@rock-js/plugin-metro": "npm:0.9.2"
-    "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:7.13.0"
     "@shopify/flash-list": "npm:1.8.3"
     "@shopify/react-native-performance": "npm:4.1.2"
@@ -9236,6 +9241,7 @@ __metadata:
     parse-ms: "npm:2.1.0"
     patch-package: "npm:8.0.0"
     path-browserify: "npm:0.0.0"
+    posthog-react-native: "npm:4.77.0"
     prettier: "npm:3.8.1"
     prettier-plugin-packagejson: "npm:3.0.2"
     prop-types: "npm:15.8.1"
@@ -21353,6 +21359,62 @@ __metadata:
     picocolors: "npm:^1.1.0"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/929f68b5081b7202709456532cee2a145c1843d391508c5a09de2517e8c4791638f71dd63b1898dba6712f8839d7a6da046c72a5e44c162e908f5911f57b5f44
+  languageName: node
+  linkType: hard
+
+"posthog-react-native@npm:4.77.0":
+  version: 4.77.0
+  resolution: "posthog-react-native@npm:4.77.0"
+  dependencies:
+    "@posthog/core": "npm:^1.55.1"
+    "@posthog/types": "npm:^1.412.4"
+  peerDependencies:
+    "@posthog/react-native-plugin": ">= 2.9.3"
+    "@react-native-async-storage/async-storage": ">=1.0.0"
+    "@react-navigation/native": ">= 5.0.0"
+    expo-application: ">= 4.0.0"
+    expo-device: ">= 4.0.0"
+    expo-file-system: ">= 13.0.0"
+    expo-localization: ">= 11.0.0"
+    expo-updates: ">= 0.25.0"
+    posthog-react-native-session-replay: ">= 1.6.0"
+    react-native-device-info: ">= 10.0.0"
+    react-native-localize: ">= 3.0.0"
+    react-native-navigation: ">= 6.0.0"
+    react-native-safe-area-context: ">= 4.0.0"
+    react-native-svg: ">= 15.0.0"
+  peerDependenciesMeta:
+    "@posthog/react-native-plugin":
+      optional: true
+    "@react-native-async-storage/async-storage":
+      optional: true
+    "@react-navigation/native":
+      optional: true
+    expo-application:
+      optional: true
+    expo-device:
+      optional: true
+    expo-file-system:
+      optional: true
+    expo-localization:
+      optional: true
+    expo-updates:
+      optional: true
+    posthog-react-native-session-replay:
+      optional: true
+    react-native-device-info:
+      optional: true
+    react-native-localize:
+      optional: true
+    react-native-navigation:
+      optional: true
+    react-native-safe-area-context:
+      optional: true
+    react-native-svg:
+      optional: true
+  bin:
+    posthog-react-native-xcode: tooling/posthog-xcode.sh
+  checksum: 10c0/b02b839b1a5659427fb6f444b372092164e44678194eb0393850f9357de1677b29622e92f517dabe243beedbcea1620e7269f3ebf8da476e20054d5a05cf5cd2
   languageName: node
   linkType: hard
 

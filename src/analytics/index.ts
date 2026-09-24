@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
-import rudderClient from '@rudderstack/rudder-sdk-react-native';
+import { PostHog } from 'posthog-react-native';
 import * as DeviceInfo from 'react-native-device-info';
-import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
+import { POSTHOG_API_KEY, POSTHOG_HOST } from 'react-native-dotenv';
 
 import { AppsFlyer } from '@/analytics/appsflyer';
 import { event, type EventProperties } from '@/analytics/event';
@@ -14,6 +14,9 @@ import { device } from '@/storage';
 
 import { type WalletContext } from './getWalletContext';
 
+// Existing event schemas allow optional values; JSON serialization omits undefined properties.
+type PostHogProperties = Parameters<PostHog['identify']>[1];
+
 type DefaultMetadata = {
   walletAddressHash: WalletContext['walletAddressHash'];
   walletType: WalletContext['walletType'];
@@ -23,10 +26,8 @@ type DefaultMetadata = {
   device_model?: string;
 };
 
-type ExternalIds = { externalId?: { id: string; type: string }[] };
-
 export class Analytics {
-  client = rudderClient;
+  client?: PostHog;
   event = event;
 
   private appsFlyer = new AppsFlyer();
@@ -58,7 +59,7 @@ export class Analytics {
   }
 
   /**
-   * Initialize analytics with the device ID and start the Rudderstack client.
+   * Initialize analytics with the device ID and start the PostHog client.
    * Must be called once during app startup, after `getOrCreateDeviceId()`.
    */
   init({ deviceId }: { deviceId: string }): void {
@@ -81,7 +82,7 @@ export class Analytics {
       return;
     }
     const metadata = this.getDefaultMetadata();
-    this.enqueue(() => this.client.identify(deviceId, { ...metadata, ...userProperties }, {}));
+    this.enqueue(() => this.client?.identify(deviceId, { ...metadata, ...userProperties } as PostHogProperties));
   }
 
   /**
@@ -90,7 +91,7 @@ export class Analytics {
   screen(route: (typeof Routes)[keyof typeof Routes], params?: Record<string, unknown>, walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    this.enqueue(() => this.client.screen(route, { ...metadata, ...walletContext, ...params }));
+    this.enqueue(() => this.client?.screen(route, { ...metadata, ...walletContext, ...params } as PostHogProperties));
   }
 
   /**
@@ -101,8 +102,9 @@ export class Analytics {
   track<T extends keyof EventProperties>(event: T, params?: EventProperties[T], walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    const externalIds = this.getExternalIds();
-    this.enqueue(() => this.client.track(event, { ...metadata, ...walletContext, ...params }, externalIds));
+    const uid = this.appsFlyer.uid;
+    const attribution = uid ? { appsflyer_id: uid } : {};
+    this.enqueue(() => this.client?.capture(event, { ...metadata, ...walletContext, ...params, ...attribution } as PostHogProperties));
   }
 
   /**
@@ -123,6 +125,9 @@ export class Analytics {
     this.disabled = false;
     this.appsFlyer.stop(false);
     this.ensureInit();
+    void this.client?.optIn().catch(error => {
+      logger.error(new RainbowError('[Analytics]: PostHog opt-in failed'), { error });
+    });
   }
 
   /**
@@ -130,6 +135,10 @@ export class Analytics {
    */
   disable(): void {
     this.disabled = true;
+    this.pending = [];
+    void this.client?.optOut().catch(error => {
+      logger.error(new RainbowError('[Analytics]: PostHog opt-out failed'), { error });
+    });
     this.appsFlyer.stop(true);
   }
 
@@ -148,36 +157,70 @@ export class Analytics {
     return metadata;
   }
 
-  private getExternalIds(): ExternalIds {
-    const uid = this.appsFlyer.uid;
-    return uid ? { externalId: [{ type: 'appsflyerExternalId', id: uid }] } : {};
-  }
-
   private ensureInit(): void {
-    if (this.disabled || this.initPromise) return;
+    if (this.disabled || this.initPromise || !this.deviceId) return;
 
     this.appsFlyer.init(this.deviceId);
+    if (!POSTHOG_API_KEY || !POSTHOG_HOST) {
+      logger.warn('[Analytics]: POSTHOG_API_KEY and POSTHOG_HOST are required');
+      this.pending = [];
+      return;
+    }
 
-    this.initPromise = this.client
-      .setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
-        dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
-        trackAppLifecycleEvents: !IS_TEST,
-      })
-      .then(() => {
+    const deviceId = this.deviceId;
+    const isReturningUser = Boolean(device.get(['isReturningUser']));
+    this.initPromise = Promise.resolve()
+      .then(async () => {
+        this.client = new PostHog(POSTHOG_API_KEY, {
+          host: POSTHOG_HOST,
+          bootstrap: { distinctId: deviceId, isIdentifiedId: true },
+          captureAppLifecycleEvents: true,
+          enableSessionReplay: false,
+          errorTracking: { autocapture: false },
+          disableSurveys: true,
+          disableRemoteFeatureFlags: true,
+          customAppProperties: properties => ({ ...properties, $os: properties.$os_name }),
+          before_send: event => {
+            if (this.disabled || !event) return null;
+            // The first PostHog launch is not a new install for existing Rainbow users.
+            if (event.event === 'Application Installed' && isReturningUser) return null;
+            // Keep RudderStack's foreground event name for existing funnels.
+            if (event.event === 'Application Became Active') {
+              event.event = 'Application Opened';
+              event.properties = { ...event.properties, from_background: true };
+            }
+            if (event.event === 'Application Opened') {
+              event.properties = {
+                from_background: false,
+                version: event.properties?.$app_version ?? null,
+                ...event.properties,
+              };
+            } else if (event.event === 'Application Installed' || event.event === 'Application Updated') {
+              event.properties = {
+                version: event.properties?.$app_version ?? null,
+                build: event.properties?.$app_build ?? null,
+                ...event.properties,
+              };
+            }
+            return event;
+          },
+        });
+        await this.client.ready();
+        if (this.disabled) await this.client.optOut();
+        else await this.client.optIn();
         this.flushQueueAndSetReady();
       })
       .catch(error => {
-        logger.error(new RainbowError('[Analytics]: Rudderstack initialization failed'), {
+        logger.error(new RainbowError('[Analytics]: PostHog initialization failed'), {
           error,
         });
         this.disable();
         this.initPromise = null;
-        this.pending = [];
       });
   }
 
   private enqueue(fn: () => void): void {
-    if (this.disabled) return;
+    if (this.disabled || !POSTHOG_API_KEY || !POSTHOG_HOST) return;
 
     if (this.ready) {
       fn();
