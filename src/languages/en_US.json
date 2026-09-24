@@ -1539,14 +1539,14 @@
         "introducing": "Introducing",
         "title": "Cash Deposits",
         "encrypted_feature": "Your information is encrypted and protected.",
-        "visa_feature": "Available for US-based customers using a Visa card.",
+        "instant_feature": "Cash transactions are instant and seamless.",
+        "availability_disclaimer": "Available for US-based customers except New York and California, using a Visa card.",
         "set_up_account": "Set Up Account",
         "other_deposit_methods": "Other Deposit Methods",
         "sign_in": "Sign In"
       },
       "add_cash_screen": {
-        "add_from": "Add From",
-        "add_credit_card": "Add Credit Card",
+        "add_debit_card": "Add Debit Card",
         "add_a_card_to_continue": "Add a card to continue",
         "hold_to_add": "Hold to Add",
         "enter_amount": "Enter Amount",
@@ -1555,6 +1555,8 @@
         "adding_cash": "Adding Cash",
         "pending_title": "Adding Cash...",
         "pending_description": "Adding cash is in progress.\nThis may take up to a few minutes.",
+        "receive": "Receive",
+        "minimum": "Minimum",
         "contact_support": "Contact Support",
         "buy_error_title": "Purchase Failed",
         "buy_error_generic": "Something went wrong. Try again",
@@ -1659,7 +1661,9 @@
           "rejected_title": "There was an issue verifying your details",
           "rejected_description": "We weren’t able to verify your identity. Contact support if you think this is a mistake.",
           "contact_support": "Contact Support",
-          "close": "Close"
+          "close": "Close",
+          "state_not_supported_title": "New York support coming soon",
+          "state_not_supported_description": "Sorry, instant cash deposits are not available in NY yet.\n\nWe’ll let you know as soon as your state is supported."
         },
         "passkey": {
           "title": "Add a Passkey",

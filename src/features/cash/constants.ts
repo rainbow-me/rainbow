@@ -12,6 +12,12 @@ export const ORDER_FAST_POLL_INTERVAL_MS = time.seconds(2);
 export const ORDER_FAST_POLL_DURATION_MS = time.minutes(5);
 export const ORDER_SLOW_POLL_INTERVAL_MS = time.seconds(15);
 
+/** Default rate applied when adding cash (3% flat fee). */
+export const DEFAULT_ADD_CASH_RATE = '0.97';
+
+/** Rate applied when adding cash for Rainbow Black users (no fee). */
+export const BLACK_TIER_ADD_CASH_RATE = '1';
+
 /** Each platform admits exactly one destination: production `usdc/base`, staging `usdc/arbitrum_testnet`. */
 export const CASH_BUY_DESTINATION_ASSET: RampAsset = {
   asset: RampCryptoAsset.USDC,

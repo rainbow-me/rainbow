@@ -1,4 +1,14 @@
 # PATCH CONTEXT
+# Native repair (iOS Paper): Reanimated's synchronous layout pass suppresses
+#   mounting observers. JBAnimatedTextManager normally queues text storage from
+#   an observer, allowing new layout frames to mount before the new glyphs.
+#   Queue the inherited guarded text update after shadow layout instead, so
+#   text and frames share the same mount. Keep the observer for other updates;
+#   its existing guard prevents duplicate text installation.
+#   Fabric and Android are unchanged. Remove this native hunk when upstream
+#   provides atomic text/layout mounting on Paper.
+# Upstream issue for native repair: not filed.
+#
 # Why: react-native-animateable-text@0.17.1 fixed `AnimateableTextProps`
 #   in src/TextProps.tsx (drops `Omit<…, "children">`) but the published
 #   .d.ts files in lib/typescript/ were not regenerated and still carry
@@ -49,3 +59,17 @@ index 0000000..0000001 100644
      forwardedRef?: import("react").Ref<import("react-native").Text>;
      text?: string;
      onStartShouldSetResponder?: () => boolean;
+diff --git a/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm b/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
+--- a/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
++++ b/node_modules/react-native-animateable-text/ios/JBTextShadowView.mm
+@@ -37,1 +37,10 @@
++- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
++{
++  [super layoutSubviewsWithContext:layoutContext];
++
++  // Reanimated's synchronous layout pass suppresses mounting observers.
++  // Queue text in this batch so its glyphs and measured frame mount together.
++  [self uiManagerWillPerformMounting];
++}
++
+ - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size

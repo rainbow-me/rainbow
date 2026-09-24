@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.45-1",
+  "version": "2.0.46-1",
   "private": true,
   "browser": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
@@ -202,7 +202,7 @@
     "@polymarket/clob-client-v2": "1.1.0",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/sdk": "0.4.0",
+    "@rainbow-me/sdk": "0.4.1",
     "@rainbow-me/swaps": "0.41.0",
     "@rainbow-me/token-launcher": "0.3.0",
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -354,7 +354,7 @@
     "react-native-text-input-mask": "2.0.0",
     "react-native-tooltip": "rainbow-me/react-native-tooltip#db20e9521c5be9e151728ce402cd70fdb556bd97",
     "react-native-tooltips": "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa",
-    "react-native-turbo-haptics": "1.0.9",
+    "react-native-turbo-haptics": "1.2.0",
     "react-native-udp": "2.7.0",
     "react-native-url-polyfill": "2.0.0",
     "react-native-version-number": "0.3.6",

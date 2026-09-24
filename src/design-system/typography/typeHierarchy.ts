@@ -445,6 +445,17 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
+    '76pt': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 76,
+      letterSpacing: 0.37,
+      lineHeight: 91,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
     'icon 8px': {
       // ⚠️ IMPORTANT: When modifying these values,
       // please read the note at the top of this file.

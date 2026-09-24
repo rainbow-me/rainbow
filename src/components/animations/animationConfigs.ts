@@ -41,6 +41,7 @@ const springAnimations = deepFreeze({
   browserTabTransition: { dampingRatio: 0.82, duration: 800 },
   keyboardConfig: { damping: 500, mass: 3, stiffness: 1000 },
   priceChangeConfig: { mass: 0.8, stiffness: 300, damping: 30 },
+  sheetTransition: { mass: 0.8, stiffness: 680, damping: 46 },
   sliderConfig: { damping: 40, mass: 1.25, stiffness: 450 },
   slowSpring: { damping: 500, mass: 3, stiffness: 800 },
   snappierSpringConfig: { damping: 42, mass: 0.8, stiffness: 800 },

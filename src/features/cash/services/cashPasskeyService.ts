@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
+
 import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
-import { create, get } from 'react-native-passkeys';
+import { cancel, create, get } from 'react-native-passkeys';
 
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
@@ -49,6 +51,11 @@ export async function getPasskeyAssertion(publicKeyOptionsJson: string): Promise
   const assertion = await get(publicKey);
   if (!assertion) throw new Error('Passkey assertion returned no credential');
   return JSON.stringify(assertion);
+}
+
+export async function cancelPasskeyRequest(): Promise<void> {
+  if (Platform.OS !== 'ios') return;
+  await cancel();
 }
 
 export function isPasskeyCancellation(error: unknown): boolean {

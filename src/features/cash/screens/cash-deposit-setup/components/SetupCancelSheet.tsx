@@ -6,12 +6,17 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 
+import { abandonSetupSession } from '../setupNavigation';
+
 const l = i18n.l.cash.deposit_setup.cancel_sheet;
 
 export const SetupCancelSheet = memo(function SetupCancelSheet() {
   const { goBack, pop } = useNavigation<typeof Routes.CASH_SETUP_CANCEL_SHEET>();
 
-  const confirm = () => pop(2);
+  const confirm = () => {
+    abandonSetupSession();
+    pop(2);
+  };
 
   return (
     <>

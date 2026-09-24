@@ -535,9 +535,9 @@ export type EventProperties = {
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
   [event.cashAmountEntered]: {
-    /** The chosen USD amount. */
+    /** The USD amount confirmed with Hold to Add. */
     amount: number | undefined;
-    /** Which amount-entry surface the user used first. */
+    /** The amount-entry surface at confirmation. */
     entryMode: 'preset' | 'keypad';
   };
   [event.cashBuyOrderSubmitted]: {
@@ -584,10 +584,10 @@ export type EventProperties = {
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;
   [event.cashKycAwaitingDecision]: {
-    source: 'submit' | 'resume';
+    source: 'submit' | 'resume' | 'return';
   };
   [event.cashKycFailed]: {
-    reason: TelemetryErrorReason | 'rejected';
+    reason: TelemetryErrorReason | 'rejected' | 'state_not_supported';
   };
   [event.cashPasskeySubmitted]: undefined;
   [event.cashPasskeyAdded]: undefined;
@@ -614,7 +614,7 @@ export type EventProperties = {
   };
   [event.cashSignInFailed]: {
     trigger: CashSignInTrigger;
-    reason: TelemetryErrorReason;
+    reason: TelemetryErrorReason | 'timeout';
   };
   [event.cashSignInCancelled]: {
     trigger: CashSignInTrigger;

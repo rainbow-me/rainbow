@@ -22,7 +22,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   return (
     <Box
@@ -94,12 +94,12 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
         {isBalanceZero && (
           <PolymarketButton
             onPress={() => {
-              if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
-                Navigation.handleAction(addCashRoute);
-              } else {
-                Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
+                navigateToAddCash();
+                return;
               }
+              if (getIsReadOnlyWallet()) return;
+              Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
             }}
             paddingHorizontal={'16px'}
             paddingVertical={'12px'}

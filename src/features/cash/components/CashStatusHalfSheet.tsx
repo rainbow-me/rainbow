@@ -5,7 +5,7 @@ import Animated, { Easing, FadeIn, FadeOut, LinearTransition, SlideInDown, Slide
 
 import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Text } from '@/design-system';
+import { Box, Text, type TextProps } from '@/design-system';
 
 import { useCashHalfSheetVisibilityStore } from '../stores/cashHalfSheetVisibilityStore';
 import { CashActionButton } from './CashActionButton';
@@ -16,6 +16,7 @@ type HalfSheetAction = {
   loading?: boolean;
   onPress: () => void;
   testID: string;
+  textSize?: TextProps['size'];
 };
 
 type CommonProps = {
@@ -26,9 +27,10 @@ type CommonProps = {
 
 type CashStatusPanelContent = CommonProps &
   (
-    | { status: 'inProgress' }
-    | { status: 'reviewing'; action: HalfSheetAction }
-    | { status: 'success'; action: HalfSheetAction; successIcon: string }
+    | { status: 'inProgress'; primaryAction?: never; secondaryAction?: never }
+    | { status: 'reviewing'; primaryAction: HalfSheetAction; secondaryAction?: never }
+    | { status: 'info'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
+    | { status: 'success'; primaryAction: HalfSheetAction; secondaryAction?: never; successIcon: string }
     | { status: 'error'; primaryAction: HalfSheetAction; secondaryAction?: HalfSheetAction }
     | { status: 'warning'; primaryAction: HalfSheetAction; secondaryAction: HalfSheetAction }
   );
@@ -36,6 +38,7 @@ type CashStatusPanelContent = CommonProps &
 const STATUS_ICONS = {
   error: '􀁠',
   inProgress: '􀖇',
+  info: '􀆪',
   reviewing: '􀐫',
   warning: '􀇾',
 } as const;
@@ -43,6 +46,7 @@ const STATUS_ICONS = {
 const STATUS_ICON_COLORS = {
   error: 'red',
   inProgress: 'blue',
+  info: 'labelQuaternary',
   reviewing: 'blue',
   success: 'green',
   warning: 'red',
@@ -76,24 +80,31 @@ export function CashStatusPanel({ content: props }: { content: CashStatusPanelCo
             </Text>
           </Box>
 
-          {props.status === 'success' && (
-            <Box paddingTop="32px">
-              <CashActionButton {...props.action} shadow />
-            </Box>
-          )}
-
-          {props.status === 'reviewing' && (
-            <Box paddingTop="32px">
-              <CashActionButton {...props.action} variant="tinted" />
-            </Box>
-          )}
-
-          {isAlert && (
+          {props.primaryAction && (
             <Box gap={16} paddingTop="32px">
-              <CashActionButton {...props.primaryAction} variant="tinted" />
-              {props.secondaryAction && (
-                <CashActionButton {...props.secondaryAction} color={props.status === 'warning' ? 'red' : 'blue'} variant="plain" />
-              )}
+              <CashActionButton
+                disabled={props.primaryAction.disabled}
+                label={props.primaryAction.label}
+                loading={props.primaryAction.loading}
+                onPress={props.primaryAction.onPress}
+                shadow={props.status === 'success'}
+                testID={props.primaryAction.testID}
+                textSize={props.primaryAction.textSize}
+                variant={props.status === 'success' ? 'solid' : 'tinted'}
+              />
+
+              {props.secondaryAction ? (
+                <CashActionButton
+                  color={props.status === 'warning' ? 'red' : 'blue'}
+                  disabled={props.secondaryAction.disabled}
+                  label={props.secondaryAction.label}
+                  loading={props.secondaryAction.loading}
+                  onPress={props.secondaryAction.onPress}
+                  testID={props.secondaryAction.testID}
+                  textSize={props.secondaryAction.textSize}
+                  variant="plain"
+                />
+              ) : null}
             </Box>
           )}
         </Box>

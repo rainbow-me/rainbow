@@ -21,6 +21,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.45](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.45)
+
+### Added
+
+- Gate Add Cash screen with authentication (https://github.com/rainbow-me/rainbow/pull/7811)
+
+### Changed
+
+- Bump iOS and Android to v2.0.45 (https://github.com/rainbow-me/rainbow/pull/7810)
+- Refactor design-system to use useState over app lazyRef hook in Skia font manager (https://github.com/rainbow-me/rainbow/pull/7789)
+- Disallow src/vendor importing app code in dep-cruiser (https://github.com/rainbow-me/rainbow/pull/7803)
+- Drop app-level SharedOrDerivedValue alias for reanimated's own types (https://github.com/rainbow-me/rainbow/pull/7804)
+- Move opacity color helper from framework into the design system (https://github.com/rainbow-me/rainbow/pull/7805)
+- Convert local-auth and app-icon features to named exports (https://github.com/rainbow-me/rainbow/pull/7806)
+- Reduce circular dependencies from 30 to 17 (https://github.com/rainbow-me/rainbow/pull/7762)
+- Reduce circular dependencies from 17 to 0 (https://github.com/rainbow-me/rainbow/pull/7763)
+- Document PR scope and review contract in AGENTS.md (https://github.com/rainbow-me/rainbow/pull/7787)
+- Convert all mechanical default exports to named (https://github.com/rainbow-me/rainbow/pull/7812)
+- Update Add Cash intro availability copy for NY and CA (https://github.com/rainbow-me/rainbow/pull/7814)
+- Upgrade SDK for Arc support (https://github.com/rainbow-me/rainbow/pull/7826)
+
+### Fixed
+
+- Fix variable order polling and validate ramp responses (https://github.com/rainbow-me/rainbow/pull/7750)
+- Improve accuracy of displayed gas estimates in swaps (https://github.com/rainbow-me/rainbow/pull/7809)
+- Stop calling arc's Popular in Rainbow endpoint in swaps (https://github.com/rainbow-me/rainbow/pull/7821)
+- Map jinchung GitHub handle to Slack user in E2E failure alerts (https://github.com/rainbow-me/rainbow/pull/7825)
+
 ## [2.0.44](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.44)
 
 ### Added

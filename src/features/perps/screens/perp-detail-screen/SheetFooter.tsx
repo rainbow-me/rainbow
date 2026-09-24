@@ -33,13 +33,13 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const hasPosition = !!position;
   const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
   const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   const noPositionButton = useMemo(() => {
     if (!hasUserAssets) {
       return {
         onPress: () => {
-          Navigation.handleAction(addCashRoute);
+          navigateToAddCash();
         },
         text: i18n.t(i18n.l.perps.actions.fund_wallet),
       };
@@ -63,7 +63,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       },
       text: i18n.t(i18n.l.perps.actions.open_position),
     };
-  }, [addCashRoute, hasUserAssets, hasPerpsBalance, market, navigation]);
+  }, [hasUserAssets, hasPerpsBalance, market, navigateToAddCash, navigation]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">

@@ -8,7 +8,8 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import { CardBrand } from '../../services/rampClient';
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
-import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { selectCanSubmitReview, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { useKycReturnFlowStore, type KycReturnResult } from '../../stores/kycReturnFlowStore';
 import { NATIONAL_NUMBER_LENGTH } from '../../utils/phoneNumber';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { completeSetup, completeSetupStep } from './setupNavigation';
@@ -74,6 +75,12 @@ export async function submitReview(): Promise<void> {
   else if (result === 'phoneCodeRequired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
 }
 
+export async function checkKycOnReturn(isActive: () => boolean): Promise<KycReturnResult> {
+  const result = await useKycReturnFlowStore.getState().check();
+  if (result === 'expired' && isActive()) CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PHONE);
+  return result;
+}
+
 export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardFormStore: BaseStore<{ isReady: boolean }>) {
   async function linkCard(): Promise<void> {
     if (!cardFormStore.getState().isReady) return;
@@ -130,10 +137,14 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
         return { disabled: $(useCashSetupSessionStore, s => s.getGovernmentId() === null), label, onPress: completeSetupStep };
 
       case Routes.CASH_SETUP_REVIEW: {
-        const isReady = $(useCashSetupSessionStore, s => s.getIdentity() !== null && s.getGovernmentId() !== null);
+        const isReady = $(
+          useCashSetupSessionStore,
+          s => selectCanSubmitReview(s) && s.getIdentity() !== null && s.getGovernmentId() !== null
+        );
         const state = $(useSubmitReviewFlowStore, s => s.state);
+        const checking = $(useKycReturnFlowStore, s => s.state === 'checking');
         return {
-          disabled: !isReady || state !== 'entry',
+          disabled: !isReady || state !== 'entry' || checking,
           label,
           loading: state === 'submitting',
           onPress: submitReview,

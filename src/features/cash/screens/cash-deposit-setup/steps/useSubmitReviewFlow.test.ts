@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
-import { getUserStatus, KycStatus, submitOnboarding } from '../../../services/userClient';
+import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
@@ -35,13 +35,7 @@ jest.mock('@/utils/delay', () => ({
 }));
 
 jest.mock('../../../services/userClient', () => ({
-  KycStatus: {
-    Unspecified: 'KYC_STATUS_UNSPECIFIED',
-    Pending: 'KYC_STATUS_PENDING',
-    Approved: 'KYC_STATUS_APPROVED',
-    Rejected: 'KYC_STATUS_REJECTED',
-    Review: 'KYC_STATUS_REVIEW',
-  },
+  ...jest.requireActual('../../../services/userClient'),
   getUserStatus: jest.fn(),
   submitOnboarding: jest.fn(),
 }));
@@ -109,6 +103,16 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
     expect(flow().state).toBe('approved');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
+  });
+
+  it('does not resubmit a previously submitted KYC application', async () => {
+    session().markKycSubmitted(TOKEN);
+
+    await expect(flow().submit()).resolves.toBe('skipped');
+
+    expect(mockSubmitOnboarding).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalled();
   });
 
   it('polls while pending, then approves', async () => {
@@ -172,6 +176,16 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(flow().state).toBe('rejected');
   });
 
+  it('reports unsupportedState when rejected for an unsupported state', async () => {
+    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
+
+    await expect(flow().submit()).resolves.toBe('unsupportedState');
+
+    expect(mockGetUserStatus).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'state_not_supported' });
+    expect(flow().state).toBe('unsupportedState');
+  });
+
   it.each([KycStatus.Unspecified, KycStatus.Review])('keeps polling on %s instead of failing', async kycStatus => {
     mockSubmitOnboarding.mockResolvedValue({ kycStatus });
     mockGetUserStatus.mockResolvedValue({ kycStatus: KycStatus.Approved });
@@ -195,7 +209,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
-    const poll = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const poll = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
     const pollStarted = Promise.withResolvers<void>();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockImplementationOnce(() => {
@@ -212,6 +226,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
     expect(flow().state).toBe('entry');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
     expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
   });
 
@@ -223,10 +238,11 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'unknown' });
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('error');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'notSubmitted' });
   });
 
   it('skips a second submit while one is in flight', async () => {
-    const submit = Promise.withResolvers<{ kycStatus: KycStatus }>();
+    const submit = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
     mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();

@@ -1,25 +1,44 @@
 # PATCH CONTEXT
-# Why: Rainbow's default React Native Babel profile compiles the package's
-#   native-module spread to Object.assign. Hermes does not expose the lazy JSI
-#   host methods as enumerable to Object.assign, so nothing from the spread
-#   survives: `this.isSupported` is undefined and create() throws before
-#   reaching native code, and `get` is missing from the default export
-#   entirely. Check support on the native module directly and re-declare
-#   get() as an explicit delegate.
+# Why:
+#   - Rainbow's Babel profile compiles the native-module spread to Object.assign,
+#     but Hermes does not expose lazy JSI host methods as enumerable properties.
+#     Explicit get()/cancel() delegates and a direct support check preserve access.
+#   - The iOS module can retain a request after its JS caller times out. Expose
+#     cancellation and identify callbacks so a timed-out request releases the
+#     native slot without settling a newer request. Android implements the shared
+#     bridge method as a no-op because Cash only invokes cancellation on iOS.
 # Upstream Issue: https://github.com/peterferguson/react-native-passkeys/issues/13
-#   (same symptom; the issue does not establish the root cause).
-# Linear Issue: none.
-# Remove when: react-native-passkeys stops reading its own methods off the
-#   spread default export.
+#   (same missing-method symptom; the issue does not establish the root cause).
+# Linear Issue: APP-4117.
+# Remove when: react-native-passkeys exposes cancellation and no longer reads its
+#   own methods off the spread default export.
 
+diff --git a/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt b/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
+index 42f67d0..2601d4b 100644
+--- a/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
++++ b/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
+@@ -48,6 +48,8 @@ class ReactNativePasskeysModule : Module() {
+             false
+         }
+ 
++        AsyncFunction("cancel") {}
++
+         AsyncFunction("create") { request: PublicKeyCredentialCreationOptions, promise: Promise ->
+             val credentialManager =
+                 CredentialManager.create(appContext.reactContext?.applicationContext!!)
 diff --git a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js b/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
+index 4e8d2d1..cb784a4 100644
 --- a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
 +++ b/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.js
-@@ -6,7 +6,10 @@ const passkeys = requireNativeModule("ReactNativePasskeys");
+@@ -5,8 +5,14 @@ import { NotSupportedError } from "./errors";
+ const passkeys = requireNativeModule("ReactNativePasskeys");
  export default {
      ...passkeys,
 +    async get(request) {
 +        return await passkeys.get(request);
++    },
++    async cancel() {
++        await passkeys.cancel();
 +    },
      async create(request) {
 -        if (!this.isSupported)
@@ -27,3 +46,300 @@ diff --git a/node_modules/react-native-passkeys/build/ReactNativePasskeysModule.
              throw new NotSupportedError();
          const credential = await passkeys.create(request);
          return {
+@@ -20,4 +26,4 @@ export default {
+         };
+     },
+ };
+-//# sourceMappingURL=ReactNativePasskeysModule.js.map
+\ No newline at end of file
++//# sourceMappingURL=ReactNativePasskeysModule.js.map
+diff --git a/node_modules/react-native-passkeys/build/index.d.ts b/node_modules/react-native-passkeys/build/index.d.ts
+index 4541ef7..944ed03 100644
+--- a/node_modules/react-native-passkeys/build/index.d.ts
++++ b/node_modules/react-native-passkeys/build/index.d.ts
+@@ -1,6 +1,7 @@
+ import type { AuthenticationExtensionsLargeBlobInputs, AuthenticationExtensionsPRFInputs, AuthenticationResponseJSON, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, CreationResponse } from "./ReactNativePasskeys.types";
+ export declare function isSupported(): boolean;
+ export declare function isAutoFillAvalilable(): boolean;
++export declare function cancel(): Promise<void>;
+ export declare function create(request: Omit<PublicKeyCredentialCreationOptionsJSON, "extensions"> & {
+     extensions?: {
+         largeBlob?: AuthenticationExtensionsLargeBlobInputs;
+@@ -14,4 +15,4 @@ export declare function get(request: Omit<PublicKeyCredentialRequestOptionsJSON,
+         prf?: AuthenticationExtensionsPRFInputs;
+     };
+ }): Promise<AuthenticationResponseJSON | null>;
+-//# sourceMappingURL=index.d.ts.map
+\ No newline at end of file
++//# sourceMappingURL=index.d.ts.map
+diff --git a/node_modules/react-native-passkeys/build/index.js b/node_modules/react-native-passkeys/build/index.js
+index ee3ef5f..c5c94e8 100644
+--- a/node_modules/react-native-passkeys/build/index.js
++++ b/node_modules/react-native-passkeys/build/index.js
+@@ -7,10 +7,13 @@ export function isSupported() {
+ export function isAutoFillAvalilable() {
+     return ReactNativePasskeysModule.isAutoFillAvalilable();
+ }
++export async function cancel() {
++    await ReactNativePasskeysModule.cancel();
++}
+ export async function create(request) {
+     return await ReactNativePasskeysModule.create(request);
+ }
+ export async function get(request) {
+     return await ReactNativePasskeysModule.get(request);
+ }
+-//# sourceMappingURL=index.js.map
+\ No newline at end of file
++//# sourceMappingURL=index.js.map
+diff --git a/node_modules/react-native-passkeys/ios/PasskeyDelegate.swift b/node_modules/react-native-passkeys/ios/PasskeyDelegate.swift
+index c90ec61..6c5ad3f 100644
+--- a/node_modules/react-native-passkeys/ios/PasskeyDelegate.swift
++++ b/node_modules/react-native-passkeys/ios/PasskeyDelegate.swift
+@@ -3,17 +3,19 @@ import ExpoModulesCore
+ import Foundation
+ 
+ protocol PasskeyResultHandler {
+-    func onSuccess(_ data: PublicKeyCredentialJSON)
+-    func onFailure(_ error: Error)
++    func onSuccess(_ data: PublicKeyCredentialJSON, requestId: UUID)
++    func onFailure(_ error: Error, requestId: UUID)
+ }
+ 
+ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+     ASAuthorizationControllerPresentationContextProviding
+ {
+     private let handler: PasskeyResultHandler
++    private let requestId: UUID
+ 
+-    init(handler: PasskeyResultHandler) {
++    init(handler: PasskeyResultHandler, requestId: UUID) {
+         self.handler = handler
++        self.requestId = requestId
+     }
+ 
+     // Perform the authorization request for a given ASAuthorizationController instance
+@@ -34,7 +36,7 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+         controller: ASAuthorizationController,
+         didCompleteWithError error: Error
+     ) {
+-        handler.onFailure(error)
++        handler.onFailure(error, requestId: requestId)
+     }
+ 
+     @available(iOS 15.0, *)
+@@ -46,7 +48,7 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+         switch authorization.credential {
+         case let credential as ASAuthorizationPlatformPublicKeyCredentialRegistration:
+             if credential.rawAttestationObject == nil {
+-                handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)))
++                handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)), requestId: requestId)
+             }
+ 
+             var largeBlob: AuthenticationExtensionsLargeBlobOutputsJSON?
+@@ -94,11 +96,11 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+                 clientExtensionResults: Field.init(wrappedValue: clientExtensionResults)
+             )
+ 
+-            handler.onSuccess(Either(registrationResult))
++            handler.onSuccess(Either(registrationResult), requestId: requestId)
+ 
+         case let credential as ASAuthorizationSecurityKeyPublicKeyCredentialRegistration:
+             if credential.rawAttestationObject == nil {
+-                handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)))
++                handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)), requestId: requestId)
+             }
+ 
+             let response = AuthenticatorAttestationResponseJSON(
+@@ -117,7 +119,7 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+                 response: Field.init(wrappedValue: response)
+             )
+ 
+-            handler.onSuccess(Either(registrationResult))
++            handler.onSuccess(Either(registrationResult), requestId: requestId)
+ 
+         case let credential as ASAuthorizationPlatformPublicKeyCredentialAssertion:
+             var largeBlob: AuthenticationExtensionsLargeBlobOutputsJSON? =
+@@ -168,7 +170,7 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+                 clientExtensionResults: Field.init(wrappedValue: clientExtensionResults)
+             )
+ 
+-            handler.onSuccess(Either(assertionResult))
++            handler.onSuccess(Either(assertionResult), requestId: requestId)
+ 
+         case let credential as ASAuthorizationSecurityKeyPublicKeyCredentialAssertion:
+             let response = AuthenticatorAssertionResponseJSON(
+@@ -187,9 +189,9 @@ class PasskeyDelegate: NSObject, ASAuthorizationControllerDelegate,
+                 response: Field.init(wrappedValue: response)
+             )
+ 
+-            handler.onSuccess(Either(assertionResult))
++            handler.onSuccess(Either(assertionResult), requestId: requestId)
+         default:
+-            handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)))
++            handler.onFailure((ASAuthorizationError(ASAuthorizationError.Code.failed)), requestId: requestId)
+         }
+     }
+ }
+diff --git a/node_modules/react-native-passkeys/ios/PasskeyExceptions.swift b/node_modules/react-native-passkeys/ios/PasskeyExceptions.swift
+index 0138931..215b4b5 100644
+--- a/node_modules/react-native-passkeys/ios/PasskeyExceptions.swift
++++ b/node_modules/react-native-passkeys/ios/PasskeyExceptions.swift
+@@ -12,6 +12,12 @@ internal class PendingPasskeyRequestException: Exception {
+   }
+ }
+ 
++internal class PasskeyRequestCancelledException: Exception {
++  override var reason: String {
++    "The pending passkey request was cancelled"
++  }
++}
++
+ internal class NotSupportedException: Exception {
+   override var reason: String {
+     "Passkeys are not supported on this iOS version. Please use iOS 15 or above"
+diff --git a/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift b/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
+index 06e9aa9..660c1f0 100644
+--- a/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
++++ b/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
+@@ -3,8 +3,10 @@ import ExpoModulesCore
+ import LocalAuthentication
+ 
+ struct PasskeyContext {
++    let id: UUID
+     let passkeyDelegate: PasskeyDelegate
+     let promise: Promise
++    let authController: ASAuthorizationController
+ }
+ 
+ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+@@ -34,8 +36,8 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+             } catch let error {
+                 throw error
+             }
+-            let passkeyDelegate = PasskeyDelegate(handler: self)
+-            passkeyContext = PasskeyContext(passkeyDelegate: passkeyDelegate, promise: promise)
++            let requestId = UUID()
++            let passkeyDelegate = PasskeyDelegate(handler: self, requestId: requestId)
+ 
+             guard let challengeData: Data = Data(base64URLEncoded: request.challenge) else {
+                 throw InvalidChallengeException()
+@@ -50,6 +52,11 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+                 platformKeyAssertionRequest, crossPlatformKeyAssertionRequest,
+             ])
+ 
++            passkeyContext = PasskeyContext(
++                id: requestId,
++                passkeyDelegate: passkeyDelegate,
++                promise: promise,
++                authController: authController)
+             passkeyDelegate.performAuthForController(controller: authController)
+         }.runOnQueue(.main)
+ 
+@@ -63,8 +70,8 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+                 throw error
+             }
+ 
+-            let passkeyDelegate = PasskeyDelegate(handler: self)
+-            let context = PasskeyContext(passkeyDelegate: passkeyDelegate, promise: promise)
++            let requestId = UUID()
++            let passkeyDelegate = PasskeyDelegate(handler: self, requestId: requestId)
+ 
+             guard let challengeData: Data = Data(base64URLEncoded: request.challenge) else {
+                 throw InvalidChallengeException()
+@@ -105,11 +112,31 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+                 ])
+             }
+ 
++            let context = PasskeyContext(
++                id: requestId,
++                passkeyDelegate: passkeyDelegate,
++                promise: promise,
++                authController: authController)
++
+             passkeyContext = context
+ 
+             context.passkeyDelegate.performAuthForController(controller: authController)
+         }.runOnQueue(.main)
+ 
++        AsyncFunction("cancel") {
++            guard let context = self.passkeyContext else {
++                return
++            }
++
++            self.passkeyContext = nil
++            context.authController.delegate = nil
++            context.authController.presentationContextProvider = nil
++            if #available(iOS 16.0, *) {
++                context.authController.cancel()
++            }
++            context.promise.reject(PasskeyRequestCancelledException())
++        }.runOnQueue(.main)
++
+     }
+ 
+     private func isAvailable() throws -> Bool {
+@@ -128,12 +155,13 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+         return true
+     }
+ 
+-    internal func onSuccess(_ data: PublicKeyCredentialJSON) {
+-        guard let promise = passkeyContext?.promise else {
+-            log.error("Passkey context has been lost")
++    internal func onSuccess(_ data: PublicKeyCredentialJSON, requestId: UUID) {
++        guard let context = passkeyContext, context.id == requestId else {
++            log.error("Passkey context has been lost or superseded")
+             return
+         }
+         passkeyContext = nil
++        let promise = context.promise
+ 
+         if let registrationResult: RegistrationResponseJSON = data.get() {
+             promise.resolve(registrationResult)
+@@ -146,12 +174,13 @@ final public class ReactNativePasskeysModule: Module, PasskeyResultHandler {
+         }
+     }
+ 
+-    internal func onFailure(_ error: Error) {
+-        guard let promise = passkeyContext?.promise else {
+-            log.error("Passkey context has been lost")
++    internal func onFailure(_ error: Error, requestId: UUID) {
++        guard let context = passkeyContext, context.id == requestId else {
++            log.error("Passkey context has been lost or superseded")
+             return
+         }
+         passkeyContext = nil
++        let promise = context.promise
+         promise.reject(
+             handleASAuthorizationError(
+                 errorCode: (error as NSError).code,
+diff --git a/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts b/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts
+index 22b8020..6d744de 100644
+--- a/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts
++++ b/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts
+@@ -14,6 +14,10 @@ const passkeys = requireNativeModule("ReactNativePasskeys");
+ export default {
+ 	...passkeys,
+ 
++	async cancel(): Promise<void> {
++		await passkeys.cancel();
++	},
++
+ 	async create(request: PublicKeyCredentialCreationOptionsJSON): Promise<CreationResponse | null> {
+ 		if (!this.isSupported) throw new NotSupportedError();
+ 
+diff --git a/node_modules/react-native-passkeys/src/index.ts b/node_modules/react-native-passkeys/src/index.ts
+index 8713ab6..5395535 100644
+--- a/node_modules/react-native-passkeys/src/index.ts
++++ b/node_modules/react-native-passkeys/src/index.ts
+@@ -19,6 +19,10 @@ export function isAutoFillAvalilable(): boolean {
+ 	return ReactNativePasskeysModule.isAutoFillAvalilable();
+ }
+ 
++export async function cancel(): Promise<void> {
++	await ReactNativePasskeysModule.cancel();
++}
++
+ export async function create(
+ 	request: Omit<PublicKeyCredentialCreationOptionsJSON, "extensions"> & {
+ 		// Platform support:

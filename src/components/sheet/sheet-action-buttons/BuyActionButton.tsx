@@ -19,7 +19,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
   const { name: routeName } = useRoute();
-  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
+  const { navigateToAddCash, isCashEnabled } = useAddCashRoute();
 
   const handlePress = useCallback(() => {
     if (getIsDamagedWallet()) {
@@ -27,13 +27,14 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
       return;
     }
 
-    navigate(addCashRoute);
-
-    analytics.track(analytics.event.buyButtonPressed, {
-      componentName: 'BuyActionButton',
-      routeName,
+    navigateToAddCash(route => {
+      navigate(route);
+      analytics.track(analytics.event.buyButtonPressed, {
+        componentName: 'BuyActionButton',
+        routeName,
+      });
     });
-  }, [addCashRoute, navigate, routeName]);
+  }, [navigate, navigateToAddCash, routeName]);
 
   return (
     <SheetActionButton
