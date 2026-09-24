@@ -286,7 +286,7 @@ export type RemoteConfigState = {
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
   {
     fetcher: fetchRemoteConfig,
-    retryDelay: (retryCount: number) => Math.min(retryCount > 1 ? 2 ** retryCount * 1_000 : 1_000, 30_000),
+    retryDelay: ({ retryCount }) => Math.min(retryCount > 0 ? 2 ** retryCount * 2_000 : 1_000, 30_000),
     setData: ({ data, set }) =>
       set(state => {
         const configChanged = !dequal(state.config, data);
@@ -301,7 +301,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
       }),
 
     cacheTime: time.weeks(1),
-    maxRetries: 3,
+    retry: 3,
     staleTime: time.minutes(10),
   },
 
