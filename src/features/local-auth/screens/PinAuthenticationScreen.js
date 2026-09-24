@@ -14,7 +14,7 @@ import { getAuthTimelock, getPinAuthAttemptsLeft, saveAuthTimelock, savePinAuthA
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import useDimensions from '@/hooks/useDimensions';
-import useShakeAnimation from '@/hooks/useShakeAnimation';
+import { useShakeAnimation } from '@/hooks/useShakeAnimation';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { padding } from '@/styles';
