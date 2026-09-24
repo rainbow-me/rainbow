@@ -9270,6 +9270,7 @@ __metadata:
     react-native-get-random-values: "npm:1.5.0"
     react-native-image-colors: "npm:2.5.1"
     react-native-indicators: "npm:0.17.0"
+    react-native-interaction-primitives: "npm:0.6.0"
     react-native-ios-context-menu: "npm:1.15.3"
     react-native-keyboard-controller: "npm:1.21.7"
     react-native-keychain: "npm:10.0.0"
@@ -22194,6 +22195,20 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/a9e29cf3d7115bcd497b6075936c36d1385e31cd4d4a06c41260dcc40eb1db5561016122a9d46d9e632a448332011743547c40e9612f7e39394871edc341610e
+  languageName: node
+  linkType: hard
+
+"react-native-interaction-primitives@npm:0.6.0":
+  version: 0.6.0
+  resolution: "react-native-interaction-primitives@npm:0.6.0"
+  peerDependencies:
+    react: ">=18.2.0"
+    react-native: ">=0.81.0"
+    react-native-reanimated: ">=3.19.5"
+  peerDependenciesMeta:
+    react-native-reanimated:
+      optional: true
+  checksum: 10c0/42e1ec4f2e33d123eb31f45b57ac7cf93820dd73a01271c7339db3c496d78035c96e85c5d0adfc915a023f284dcd39e9eeecd816e32260e1b7808a378f506207
   languageName: node
   linkType: hard
 

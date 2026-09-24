@@ -4564,6 +4564,34 @@ PODS:
     - SocketRocket
     - Yoga
   - RNInputMask (4.1.0)
+  - RNInteractionPrimitives (0.6.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNKeychain (10.0.0):
     - boost
     - DoubleConversion
@@ -5062,6 +5090,7 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
+  - RNInteractionPrimitives (from `../node_modules/react-native-interaction-primitives`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNOS (from `../node_modules/react-native-os`)
@@ -5419,6 +5448,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
     :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
+  RNInteractionPrimitives:
+    :path: "../node_modules/react-native-interaction-primitives"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNNotifee:
@@ -5637,6 +5668,7 @@ SPEC CHECKSUMS:
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8f419c0cb781bcb722f7118e7c177a313278fa5c
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
+  RNInteractionPrimitives: 914f95fded5572e243f1f0975ab00a110fea92a5
   RNKeychain: d9571527e40c1616307e6d213628b266fee8485b
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae

@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Platform, ScrollView, StyleSheet, type ScrollViewProps, type StyleProp, type ViewStyle } from 'react-native';
 
-import Animated, { useAnimatedStyle, type AnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, type AnimatedStyle, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -60,7 +60,7 @@ export const ListPanel = ({
   pageTitle: string;
   renderLabelComponent?: (label: string) => React.ReactNode;
   scrollViewProps?: ScrollViewProps;
-  selectedItemId?: SharedValue<string>;
+  selectedItemId?: DerivedValue<string>;
   showBackButton?: boolean;
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
@@ -173,7 +173,7 @@ export interface ControlPanelMenuItemProps {
   secondaryLabel?: string;
   secondaryLabelColor?: TextColor;
   selected?: boolean;
-  selectedItemId?: SharedValue<string>;
+  selectedItemId?: DerivedValue<string>;
   uniqueId: string;
 }
 
@@ -194,14 +194,6 @@ export const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const borderColor = isDarkMode ? opacity(separatorSecondary, 0.02) : opacity(separatorSecondary, 0.015);
 
-  const handlePress = useCallback(() => {
-    if (selectedItemId) {
-      selectedItemId.value = uniqueId;
-    }
-
-    onPress?.();
-  }, [onPress, selectedItemId, uniqueId]);
-
   const selectedStyle = useAnimatedStyle(() => {
     const selected = !disableSelectedStyle && selectedItemId?.value === uniqueId;
     return {
@@ -218,13 +210,13 @@ export const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
   const selectedTextStyle = useAnimatedStyle(() => {
     const selected = !disableSelectedStyle && selectedItemId?.value === uniqueId;
     return {
-      color: selected ? animatedAccentColor?.value : labelTextColor,
+      color: selected ? (animatedAccentColor?.value ?? labelTextColor) : labelTextColor,
       ...fontWithWidthWorklet(selected ? '700' : '600'),
     };
   });
 
   return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
       <Animated.View style={[selectedStyle, controlPanelStyles.menuItem]}>
         <Columns alignVertical="center" space="12px">
           <Column width="content">
@@ -254,20 +246,22 @@ export const ListAvatar = React.memo(function ListAvatar({ size = 36, url }: { s
   );
 });
 
-export const ListEmojiAvatar = React.memo(function ListEmojiAvatar({
+export const ListEmojiAvatar = memo(function ListEmojiAvatar({
   address,
   color,
+  emoji,
   label,
   size = 36,
 }: {
   address: string;
   color: number | string;
+  emoji: string | undefined;
   label: string;
   size?: number;
 }) {
   const fillTertiary = useForegroundColor('fillTertiary');
   const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
+  const accountSymbol = emoji || returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
 
   const backgroundColor =
     typeof color === 'number'
@@ -285,7 +279,13 @@ export const ListEmojiAvatar = React.memo(function ListEmojiAvatar({
       style={{ backgroundColor }}
       width={{ custom: size }}
     >
-      <Text align="center" color="label" containsEmoji size="icon 18px" weight="heavy">
+      <Text
+        align="center"
+        color="label"
+        containsEmoji
+        size={size < 28 ? 'icon 12px' : size < 36 ? 'icon 15px' : 'icon 18px'}
+        weight="heavy"
+      >
         {accountSymbol}
       </Text>
     </Box>
