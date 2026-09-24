@@ -77,6 +77,7 @@ export type WalletSectionsState = {
   perpsData: PerpsWalletListData;
   polymarketData: PolymarketWalletListData;
   rnbwRewardsEnabled: boolean;
+  cashBalanceEnabled: boolean;
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
   isHiddenDataMigrated: boolean;
@@ -104,6 +105,7 @@ const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const polymarketDataSelector = (state: WalletSectionsState) => state.polymarketData;
 const rnbwRewardsEnabledSelector = (state: WalletSectionsState) => state.rnbwRewardsEnabled;
+const cashBalanceEnabledSelector = (state: WalletSectionsState) => state.cashBalanceEnabled;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
 const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
@@ -145,6 +147,7 @@ const buildBriefWalletSections = (
   perpsData: PerpsWalletListData,
   polymarketData: PolymarketWalletListData,
   rnbwRewardsEnabled: boolean,
+  cashBalanceEnabled: boolean,
   isDismissedPerpsFeatureCard?: boolean,
   isDismissedPolymarketFeatureCard?: boolean,
   isDismissedRnbwFeatureCard?: boolean
@@ -164,13 +167,17 @@ const buildBriefWalletSections = (
   // const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   // NOTE: Only showing RNBW feature card for now. Polymarket logic preserved for future use.
   const featureCardSection = [...rnbwFeatureCardSection];
+  const cashBalanceSection = cashBalanceEnabled ? withCashBalanceSection() : EMPTY_ARRAY;
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
+
+  // Sections above are fixed-position and unconditional relative to one another; only the
+  // ordering of perps/polymarket/content below varies by which of them has content to show.
+  const prefixSections = [...headerSection, ...featureCardSection, ...cashBalanceSection];
 
   if (hasPerpsContent && hasPolymarketContent) {
     return {
       briefSectionsData: [
-        ...headerSection,
-        ...featureCardSection,
+        ...prefixSections,
         ...perpsSection,
         ...polymarketSection,
         ...tokensHeaderSection,
@@ -185,8 +192,7 @@ const buildBriefWalletSections = (
   if (hasPerpsContent && !hasPolymarketContent) {
     return {
       briefSectionsData: [
-        ...headerSection,
-        ...featureCardSection,
+        ...prefixSections,
         ...perpsSection,
         ...tokensHeaderSection,
         ...contentSection,
@@ -200,8 +206,7 @@ const buildBriefWalletSections = (
   }
   return {
     briefSectionsData: [
-      ...headerSection,
-      ...featureCardSection,
+      ...prefixSections,
       ...contentSection,
       ...perpsSection,
       ...polymarketSection,
@@ -228,6 +233,15 @@ const withRnbwFeatureCardSection = (): CellTypes[] => {
       type: CellType.SPACER,
       uid: 'rnbw-feature-card-after-spacer',
       height: 24,
+    },
+  ];
+};
+
+const withCashBalanceSection = (): CellTypes[] => {
+  return [
+    {
+      type: CellType.CASH_BALANCE_HEADER,
+      uid: 'cash-balance-header',
     },
   ];
 };
@@ -560,6 +574,7 @@ export const buildBriefWalletSectionsSelector = createSelector(
     perpsDataSelector,
     polymarketDataSelector,
     rnbwRewardsEnabledSelector,
+    cashBalanceEnabledSelector,
     isDismissedPerpsFeatureCardSelector,
     isDismissedPolymarketFeatureCardSelector,
     isDismissedRnbwFeatureCardSelector,
