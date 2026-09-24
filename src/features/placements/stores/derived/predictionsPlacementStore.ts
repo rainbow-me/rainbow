@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo } from 'react';
 
 import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 
@@ -20,6 +20,7 @@ import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-eve
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
+import { useCleanup } from '@/hooks/useCleanup';
 import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
@@ -38,8 +39,9 @@ type PredictionEventsData = {
 };
 
 type PredictionEventsState = {
-  fallbackConsumers: Map<symbol, string>;
-  setFallbackConsumer: (owner: symbol, eventId?: string) => void;
+  /** Events that lists show as Polymarket cards because Sports reported them unavailable. */
+  fallbackEventIds: Partial<Record<string, readonly string[]>>;
+  setFallbackEventIds: (owner: string, eventIds: readonly string[]) => void;
 };
 
 type EventsById = Record<string, PolymarketEvent>;
@@ -49,6 +51,10 @@ type PredictionEventResult = {
   error: Error | null;
   isLoading: boolean;
 };
+
+// ============ Constants ====================================================== //
+
+const DISABLED_EVENT: PredictionEventResult = { event: undefined, error: null, isLoading: false };
 
 // ============ Stores ========================================================= //
 
@@ -65,14 +71,17 @@ const usePredictionsEnabled = createDerivedStore<boolean>(
 export const usePredictionEventsStore = createQueryStore<PredictionEventsData, PredictionEventsParams, PredictionEventsState>(
   {
     fetcher: fetchPredictionEvents,
-    enabled: ($, store) =>
-      $(usePredictionsEnabled) &&
-      ($(useDiscoverSurfacePlacementRefs, refs => refs.polymarket.length > 0) || $(store, state => state.fallbackConsumers.size > 0)),
+    enabled: ($, store) => {
+      const predictionsEnabled = $(usePredictionsEnabled);
+      const hasPlacementEvents = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket.length > 0);
+      const hasFallbackEvents = $(store, state => Object.keys(state.fallbackEventIds).length > 0);
+      return predictionsEnabled && (hasPlacementEvents || hasFallbackEvents);
+    },
     params: {
       eventIds: ($, store) =>
         getConsistentArray(
           $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket),
-          [...$(store, state => state.fallbackConsumers).values()]
+          Object.values($(store, state => state.fallbackEventIds)).flatMap(eventIds => eventIds ?? [])
         ),
     },
     keepPreviousData: true,
@@ -80,14 +89,15 @@ export const usePredictionEventsStore = createQueryStore<PredictionEventsData, P
     cacheTime: time.minutes(15),
   },
   set => ({
-    fallbackConsumers: new Map(),
-    setFallbackConsumer: (owner, eventId) =>
+    fallbackEventIds: {},
+    setFallbackEventIds: (owner, eventIds) =>
       set(state => {
-        if (state.fallbackConsumers.get(owner) === eventId) return state;
-        const fallbackConsumers = new Map(state.fallbackConsumers);
-        if (eventId === undefined) fallbackConsumers.delete(owner);
-        else fallbackConsumers.set(owner, eventId);
-        return { fallbackConsumers };
+        if (shallowEqual(state.fallbackEventIds[owner] ?? [], eventIds)) return state;
+
+        const fallbackEventIds = { ...state.fallbackEventIds };
+        if (eventIds.length) fallbackEventIds[owner] = eventIds;
+        else delete fallbackEventIds[owner];
+        return { fallbackEventIds };
       }),
   })
 );
@@ -114,37 +124,36 @@ async function fetchPredictionEvents(
 
 // ============ Utilities ====================================================== //
 
-/** Hydrates a visible event card after Sports lookup explicitly reports it unavailable. */
-export function usePredictionEvent(eventId: string, visible: boolean): PredictionEventResult {
-  const owner = useRef(Symbol('predictionFallback')).current;
-  const enabled = usePredictionsEnabled();
+/**
+ * Keeps the given events loaded for a list that shows them as Polymarket cards, until it unmounts.
+ */
+export function usePredictionEventSubscription(eventIds: readonly string[]): void {
+  const owner = useId();
 
-  useEffect(() => {
-    if (!visible) return;
-    usePredictionEventsStore.getState().setFallbackConsumer(owner, eventId);
-    return () => usePredictionEventsStore.getState().setFallbackConsumer(owner);
-  }, [eventId, owner, visible]);
-
-  return usePredictionEventsStore(state => {
-    const result = selectPredictionEvent(state, eventId, owner);
-    return {
-      event: enabled ? result.event : undefined,
-      error: enabled ? result.error : null,
-      isLoading: visible && enabled && result.isLoading,
-    };
-  }, shallowEqual);
+  useEffect(() => usePredictionEventsStore.getState().setFallbackEventIds(owner, eventIds), [eventIds, owner]);
+  useCleanup(() => usePredictionEventsStore.getState().setFallbackEventIds(owner, []), [owner]);
 }
 
-export function selectPredictionEvent(
-  state: ReturnType<typeof usePredictionEventsStore.getState>,
-  eventId: string,
-  owner: symbol
-): PredictionEventResult {
+/**
+ * A card's Polymarket event, with whether its fallback request is loading or failed.
+ */
+export function usePredictionEvent(eventId: string): PredictionEventResult {
+  const enabled = usePredictionsEnabled();
+
+  return usePredictionEventsStore(state => (enabled ? selectPredictionEvent(state, eventId) : DISABLED_EVENT), shallowEqual);
+}
+
+/**
+ * An event from the loaded predictions. Its request status applies only while a list requests it as a fallback.
+ */
+export function selectPredictionEvent(state: ReturnType<typeof usePredictionEventsStore.getState>, eventId: string): PredictionEventResult {
   const data = state.getData();
   const event = data?.activeEventIds.includes(eventId) ? data.eventsById[eventId] : undefined;
+  const requested = !event && Object.values(state.fallbackEventIds).some(eventIds => eventIds?.includes(eventId));
   // An empty params override reads the current request, even while getData retains the previous result.
-  const entry = state.fallbackConsumers.get(owner) === eventId ? state.getCacheEntry({}) : null;
+  const entry = requested ? state.getCacheEntry({}) : null;
   const error = entry?.errorInfo?.error ?? null;
+
   return {
     event,
     error,

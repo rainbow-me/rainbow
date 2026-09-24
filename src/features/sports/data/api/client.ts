@@ -27,6 +27,7 @@ export const sportsClient = {
     return SportsCatalog.fromJSON(data);
   },
 
+  /** Live Games in the requested scope, ordered by promotion, start time, then ID. */
   async getLiveGames({ scopeId }: GetLiveGamesRequest, abortController: AbortController | null) {
     const { data } = await getFetchClient().get<unknown>('/sports/live', {
       abortController,
@@ -35,6 +36,10 @@ export const sportsClient = {
     return GetGamesResponse.fromJSON(data);
   },
 
+  /**
+   * Live Games and scheduled Games starting in [from, until), within the requested scope.
+   * Every Game has a valid start time; order is promotion, start time, then ID.
+   */
   async getGames({ scopeId, from, until }: GetGamesRequest & SportsWindow, abortController: AbortController | null) {
     const { data } = await getFetchClient().get<unknown>('/sports/games', {
       abortController,

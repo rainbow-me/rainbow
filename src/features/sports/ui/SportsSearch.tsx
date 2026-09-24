@@ -9,13 +9,14 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { fonts } from '@/design-system/typography/typography';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsActions, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 
 export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }): ReactElement {
-  const [text, setText] = useState(() => useSportsViewStore.getState().hosts[host].request.query ?? '');
-  const search = useMemo(() => debounce((query: string) => sportsActions.setSearch(host, query), 250), [host]);
+  const navigation = sportsNavigationStores[host];
+  const [text, setText] = useState(() => navigation.getState().query ?? '');
+  const search = useMemo(() => debounce((query: string) => navigation.getState().search(query), 250), [navigation]);
 
   useCleanup(() => search.cancel(), [search]);
 
@@ -43,7 +44,7 @@ export function SportsSearch({ host, color, backgroundColor }: { host: SportsHos
         onPress={() => {
           search.cancel();
           Keyboard.dismiss();
-          sportsActions.setSearch(host, null);
+          navigation.getState().search(null);
         }}
         scaleTo={0.96}
       >

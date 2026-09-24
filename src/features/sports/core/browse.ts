@@ -2,40 +2,50 @@ import { type SportsCatalog } from './catalog';
 
 export type SportsHost = 'main' | 'predictions';
 
-export type SportsDestination = { type: 'live' } | { type: 'all' } | { type: 'scope'; scopeId: string };
+/**
+ * `'live'`, `'all'` (the sports directory), or a catalog scope ID.
+ */
+export type SportsDestination = string;
 
 export type SportsWindow = { from: string; until: string };
 
-export function getSportsDestinationKey(destination: SportsDestination): string {
-  return destination.type === 'scope' ? `scope:${destination.scopeId}` : destination.type;
-}
-
+/**
+ * The local week, from today's midnight, in which scheduled games are shown.
+ */
 export function getSportsWindow(now = new Date()): SportsWindow {
   const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
   return { from: from.toISOString(), until: until.toISOString() };
 }
 
-export function getSportsCategory(catalog: SportsCatalog | undefined, destination: SportsDestination): SportsDestination {
-  if (destination.type !== 'scope' || !catalog) return destination;
-  return catalog.scopes[destination.scopeId]?.category ?? { type: 'all' };
+/**
+ * The local midnight that ends the day containing `time`.
+ */
+export function getNextMidnight(time: Date): number {
+  return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1).getTime();
 }
 
+/**
+ * The category tab that stays selected while the user browses from `category`.
+ */
+export function getSportsCategory(catalog: SportsCatalog | undefined, category: SportsDestination): SportsDestination {
+  if (!catalog || !isSportsScope(category)) return category;
+  return catalog.scopes[category]?.category ?? 'all';
+}
+
+/**
+ * Where Back leads from `destination`: its parent scope, then the category's root, which has no Back.
+ */
 export function getSportsBackDestination(
   catalog: SportsCatalog | undefined,
   destination: SportsDestination,
   category: SportsDestination
 ): SportsDestination | undefined {
   const root = getSportsCategory(catalog, category);
-  if (destination.type !== 'scope' || (root.type === 'scope' && destination.scopeId === root.scopeId)) return undefined;
-  const parentId = catalog?.scopes[destination.scopeId]?.parentId;
-  return parentId ? { type: 'scope', scopeId: parentId } : root;
+  if (!isSportsScope(destination) || destination === root) return undefined;
+  return catalog?.scopes[destination]?.parentId ?? root;
 }
 
-export function hasCompetitionDirectory(catalog: SportsCatalog | undefined, scopeId: string): boolean {
-  return catalog?.scopes[scopeId]?.directoryIds !== undefined;
-}
-
-export function scopeContainsGame(catalog: SportsCatalog | undefined, scopeId: string, competitionIds: string[]): boolean {
-  return competitionIds.some(id => id === scopeId || catalog?.scopes[id]?.parentId === scopeId);
+function isSportsScope(destination: SportsDestination): boolean {
+  return destination !== 'live' && destination !== 'all';
 }

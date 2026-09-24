@@ -6,8 +6,8 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsReadStatusStores, type SportsPage } from '@/features/sports/data/sportsNavigation';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { sportsPageStatusStores, type SportsPage } from '@/features/sports/data/sportsPageStore';
+import { loadMoreSportsGames, retrySportsPage } from '@/features/sports/data/sportsStore';
 import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
 import * as i18n from '@/languages';
 
@@ -22,14 +22,14 @@ export function SportsReadStatus({
   width: number;
   isDarkMode: boolean;
 }): ReactElement | null {
-  const status = sportsReadStatusStores[host]();
+  const status = sportsPageStatusStores[host]();
   switch (status) {
     case 'none':
       return null;
     case 'loading':
       return <SportsSkeleton page={page} width={width} isDarkMode={isDarkMode} />;
     case 'error':
-      return <SportsReadError isDarkMode={isDarkMode} retry={() => sportsActions.retry(host)} />;
+      return <SportsReadError isDarkMode={isDarkMode} retry={() => retrySportsPage(host)} />;
     case 'more':
       return <LoadMoreGames host={host} />;
     case 'empty':
@@ -88,7 +88,7 @@ function LoadMoreGames({ host }: { host: SportsHost }): ReactElement {
   const onPress = async () => {
     setPending(true);
     try {
-      await sportsActions.loadMore(host);
+      await loadMoreSportsGames(host);
     } finally {
       setPending(false);
     }

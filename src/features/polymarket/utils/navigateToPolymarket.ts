@@ -1,6 +1,6 @@
 import { CATEGORIES, type CategoryKey } from '@/features/polymarket/constants';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -24,7 +24,7 @@ export function navigateToPolymarketCategory(tagId: string): void {
 }
 
 export function navigateToPolymarketSportsLeague(scopeId: string): void {
-  sportsActions.selectDestination('predictions', scopeId === 'live' || scopeId === 'all' ? { type: scopeId } : { type: 'scope', scopeId });
+  sportsNavigationStores.predictions.getState().select(scopeId);
   usePolymarketCategoryStore.getState().setTagId('sports');
   navigateToPolymarketBrowse();
 }

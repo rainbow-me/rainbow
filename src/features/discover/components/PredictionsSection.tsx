@@ -15,7 +15,6 @@ import { PredictionEventsSection } from '@/features/discover/components/Predicti
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
 import {
   type CardPressHandler,
-  type DiscoverViewport,
   type OrderPressHandler,
   type PlacementBackedSurfaceLeafWithDisplay,
   type SectionDescriptor,
@@ -26,7 +25,7 @@ import { usePredictionsPlacement, type PredictionPlacementItem } from '@/feature
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
-import { type Display, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type Display, type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import {
   getPolymarketEventsListTokenIds,
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -92,21 +91,18 @@ export function isPredictionsSurface(surface: SurfaceLeaf): surface is SurfaceLe
 }
 
 export function PredictionsSection({
+  sectionId,
   surface,
   surfaceId,
-  viewport,
-  active,
 }: {
+  sectionId: SectionId;
   surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: SurfaceId;
-  viewport: DiscoverViewport;
-  active: boolean;
 }) {
   const enabled = useSportsEnabled();
   if (!enabled) return null;
   if (!hasPlacement(surface)) return unsupportedUnplacedPredictionSurface(surface, surfaceId);
-  if (isEventCardDisplay(surface.display))
-    return <PredictionEventsSection surface={surface} surfaceId={surfaceId} viewport={viewport} active={active} />;
+  if (isEventCardDisplay(surface.display)) return <PredictionEventsSection sectionId={sectionId} surface={surface} surfaceId={surfaceId} />;
   if (
     surface.display === 'prediction_tile.carousel' ||
     surface.display === 'prediction_tile.grid' ||

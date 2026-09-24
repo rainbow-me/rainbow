@@ -2,9 +2,8 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, type MutableRefOb
 import { Platform, ScrollView, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
-import Animated, { runOnJS, useAnimatedScrollHandler, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
@@ -13,19 +12,18 @@ import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { DiscoverRefreshControl } from '@/features/discover/components/DiscoverRefreshControl';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
+import { DiscoverSectionDisplayedContext } from '@/features/discover/components/DiscoverSectionDisplayedContext';
 import {
   DiscoverPagerNavigation,
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
-import useAppState from '@/hooks/useAppState';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import Routes from '@/navigation/routesNames';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { clamp } from '@/worklets/numbers';
 
 type DiscoverSectionsPagerProps = {
@@ -39,10 +37,7 @@ const FALLBACK_TILE_COUNT = 2;
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const focused = useNavigationStore(state => state.activeRoute === Routes.DISCOVER_SCREEN);
   const searching = useDiscoverSearchQueryStore(state => state.isSearching);
-  const { appState } = useAppState();
-  const visible = focused && !searching && appState === 'active';
   const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
@@ -84,18 +79,24 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
         springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
         verticalPageAlignment="top"
       >
-        {tabs.map((section, index) => (
-          <SmoothPager.Page id={section.id} key={section.id} lazy>
-            <DiscoverSectionScrollView
-              isActive={visible && section.id === activeSectionId}
-              scrollOffset={scrollOffset}
-              section={section}
-              sectionIndex={index}
-              sectionScrollOffsets={sectionScrollOffsets}
-              surfaceId={surface.id}
-            />
-          </SmoothPager.Page>
-        ))}
+        {tabs.map((section, index) => {
+          const isActive = section.id === activeSectionId;
+
+          return (
+            <SmoothPager.Page id={section.id} key={section.id} lazy>
+              <DiscoverSectionDisplayedContext value={isActive && !searching}>
+                <DiscoverSectionScrollView
+                  isActive={isActive}
+                  scrollOffset={scrollOffset}
+                  section={section}
+                  sectionIndex={index}
+                  sectionScrollOffsets={sectionScrollOffsets}
+                  surfaceId={surface.id}
+                />
+              </DiscoverSectionDisplayedContext>
+            </SmoothPager.Page>
+          );
+        })}
       </SmoothPager>
     </Box>
   );
@@ -148,9 +149,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
   const tabBarOffset = useTabBarOffset();
   const bottomInset = tabBarOffset + 12;
   const storedScrollOffset = useSharedValue(sectionScrollOffsets.current[section.id] ?? 0);
-  const contentOffset = useSharedValue(0);
-  const viewportHeight = useSharedValue(0);
-  const viewport = useDerivedValue(() => ({ top: contentOffset.value, bottom: contentOffset.value + viewportHeight.value }));
 
   const setScrollViewRef = useCallback(
     (scrollView: DiscoverSectionScrollViewRef | null) => {
@@ -168,7 +166,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 
   const onAndroidScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      contentOffset.value = event.nativeEvent.contentOffset.y;
       const clampedPosition = clamp(event.nativeEvent.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
       if (storedScrollOffset.value !== clampedPosition) {
@@ -179,12 +176,11 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       if (!isActive || scrollOffset.value === clampedPosition) return;
       scrollOffset.value = clampedPosition;
     },
-    [contentOffset, isActive, scrollOffset, storedScrollOffset, updateSectionScrollOffset]
+    [isActive, scrollOffset, storedScrollOffset, updateSectionScrollOffset]
   );
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: event => {
-      contentOffset.value = event.contentOffset.y;
       const clampedPosition = clamp(event.contentOffset.y, 0, DEFAULT_SCROLL_FADE_DISTANCE);
 
       if (storedScrollOffset.value !== clampedPosition) {
@@ -205,9 +201,6 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={[styles.scrollContent, Platform.OS === 'android' && { paddingBottom: bottomInset }]}
       onScroll={sectionScrollHandler}
-      onLayout={({ nativeEvent: { layout } }) => {
-        viewportHeight.value = Math.max(0, layout.height - bottomInset);
-      }}
       pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
       refreshControl={<DiscoverRefreshControl />}
@@ -218,7 +211,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       testID={`discover-section-page-${sectionIndex + 1}`}
     >
       <Box testID={`discover-section-${section.id}`}>
-        <DiscoverSections items={section.sections} surfaceId={surfaceId} viewport={viewport} active={isActive} />
+        <DiscoverSections items={section.sections} sectionId={section.id} surfaceId={surfaceId} />
       </Box>
     </SectionScrollView>
   );

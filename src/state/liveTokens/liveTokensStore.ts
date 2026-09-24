@@ -7,6 +7,7 @@ import { greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import { getPlatformClient } from '@/resources/platform/client';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
@@ -169,6 +170,7 @@ const FAST_REFRESH_STALE_TIME = time.seconds(2);
 export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
+    enabled: $ => $(useAppStateStore, state => state === 'active'),
     disableCache: true,
     staleTime: $ => $(useNavigationStore, determineStaleTime),
     setData: ({ data, set }) => {

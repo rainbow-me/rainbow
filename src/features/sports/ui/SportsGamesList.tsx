@@ -16,19 +16,19 @@ import { shallowEqual, useListen } from '@storesjs/stores';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
-import { sportsNavigationStores, type SportsPage } from '@/features/sports/data/sportsNavigation';
-import { getSportsResult, sportsActions, useSportsStore, useSportsViewStore } from '@/features/sports/data/sportsStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
+import { sportsPageStores, type SportsPage } from '@/features/sports/data/sportsPageStore';
+import { refreshSportsPage, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameCard, GameCardPathsContext, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { GameCarousel } from '@/features/sports/ui/GameCarousel';
 import { SportsCategoryBar } from '@/features/sports/ui/SportsCategoryBar';
 import { SportsDirectoryHeading, SportsDirectoryRow } from '@/features/sports/ui/SportsDirectory';
 import { SportsHeader } from '@/features/sports/ui/SportsHeader';
+import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
 import { SportsReadStatus } from '@/features/sports/ui/SportsReadStatus';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
 import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/SportsSection';
-import { useSportsHost } from '@/features/sports/ui/useSportsHost';
-import { useSportsQuotes } from '@/features/sports/ui/useSportsQuotes';
 import useDimensions from '@/hooks/useDimensions';
 import { useLazyRef } from '@/hooks/useLazyRef';
 
@@ -48,7 +48,6 @@ type Row =
 
 const COLLAPSED_GAME_COUNT = 2;
 const EMPTY_EXPANDED_SET = new Set<string>();
-const EMPTY_SECTIONS: SportsSection[] = [];
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 
 // ============ Components ===================================================== //
@@ -68,30 +67,19 @@ export function SportsGamesList({
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   ref?: Ref<SportsGamesListHandle>;
 }): ReactElement {
-  useSportsHost(host);
   const { width } = useDimensions();
   const { isDarkMode, foregroundColors } = useColorMode();
 
   const [expanded, setExpanded] = useState(() => EMPTY_EXPANDED_SET);
-  const request = useSportsViewStore(s => s.hosts[host].request);
-  const sections = useSportsStore(s => getSportsResult(s, request)?.sections ?? EMPTY_SECTIONS);
+  const { page, scope, parent, back, selectedCategory, categories, directoryIds, sections } = sportsPageStores[host]();
   const catalog = useSportsStore(s => s.catalog);
-  const navigation = sportsNavigationStores[host]();
-  const counts = useSportsStore(s => (navigation.directoryIds.length ? s.counts : undefined));
 
   const listRef = useRef<FlatList<Row>>(null);
   const cardPathsRef = useLazyRef(() => new Map<string, string>());
 
-  const { page, directoryIds } = navigation;
-  const destination = request.destination;
   const isSearching = page === 'search';
-
-  const { rows, gameIds } = useMemo(
-    () => buildRows(sections, page, expanded, destination.type === 'scope' ? destination.scopeId : undefined, directoryIds),
-    [destination, directoryIds, sections, expanded, page]
-  );
-
-  const { onViewableItemsChanged, onCarouselVisibleGamesChanged } = useGameVisibility(gameIds);
+  const rows = useMemo(() => buildRows(sections, page, expanded, scope?.id, directoryIds), [directoryIds, sections, expanded, page, scope]);
+  const { onViewableItemsChanged, onCarouselVisibleGamesChanged } = useGameVisibility();
 
   const toggleSection = useCallback((sectionKey: string) => {
     setExpanded(previous => {
@@ -105,8 +93,8 @@ export function SportsGamesList({
   useImperativeHandle(ref, () => ({ scrollToTop: () => listRef.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
 
   useListen(
-    useSportsViewStore,
-    s => s.hosts[host].request,
+    sportsNavigationStores[host],
+    s => [s.destination, s.query],
     () => {
       listRef.current?.scrollToOffset({ offset: 0, animated: false });
       setExpanded(EMPTY_EXPANDED_SET);
@@ -118,11 +106,10 @@ export function SportsGamesList({
     ({ item }: { item: Row }) => {
       switch (item.type) {
         case 'directory': {
-          const scope = catalog?.scopes[item.scopeId];
-          return scope ? (
+          const directoryScope = catalog?.scopes[item.scopeId];
+          return directoryScope ? (
             <SportsDirectoryRow
-              scope={scope}
-              count={counts?.[item.scopeId] ?? 0}
+              scope={directoryScope}
               host={host}
               competition={item.competition}
               isDarkMode={isDarkMode}
@@ -176,7 +163,7 @@ export function SportsGamesList({
           );
       }
     },
-    [catalog, counts, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
+    [catalog, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
   );
 
   return (
@@ -201,13 +188,13 @@ export function SportsGamesList({
             <View
               style={[
                 isSearching && directoryIds.length ? undefined : styles.header,
-                !isSearching && destination.type === 'all' ? styles.directoryHeader : undefined,
+                page === 'sports' ? styles.directoryHeader : undefined,
               ]}
             >
               {isSearching ? (
                 <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
               ) : (
-                <SportsHeader host={host} isDarkMode={isDarkMode} navigation={navigation} />
+                <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
               )}
             </View>
           }
@@ -217,7 +204,8 @@ export function SportsGamesList({
 
         {isSearching ? null : (
           <SportsCategoryBar
-            navigation={navigation}
+            categories={categories}
+            selectedCategory={selectedCategory}
             isDarkMode={isDarkMode}
             width={width}
             catalog={catalog}
@@ -243,7 +231,7 @@ function SportsRefreshControl({
       colors={[color]}
       onRefresh={() => {
         setRefreshing(true);
-        void sportsActions.refresh(host).finally(() => setRefreshing(false));
+        void refreshSportsPage(host).finally(() => setRefreshing(false));
       }}
       refreshing={refreshing}
       style={style}
@@ -256,13 +244,13 @@ function SportsRefreshControl({
 
 // ============ Visibility ===================================================== //
 
-function useGameVisibility(gameIds: string[]): {
+function useGameVisibility(): {
   onViewableItemsChanged: (info: { viewableItems: ViewToken<Row>[] }) => void;
   onCarouselVisibleGamesChanged: (rowKey: string, gameIds: string[]) => void;
 } {
   const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
   const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
-  const setVisibleGames = useSportsQuotes(gameIds);
+  const setVisibleGames = useSportsPriceSubscription();
 
   return useMemo(() => {
     function updateVisibleGames(): void {
@@ -300,9 +288,8 @@ function buildRows(
   expanded: ReadonlySet<string>,
   destinationScopeId: string | undefined,
   directoryIds: string[]
-): { rows: Row[]; gameIds: string[] } {
+): Row[] {
   const rows: Row[] = [];
-  const gameIds: string[] = [];
   const isSearching = page === 'search';
 
   if (isSearching) {
@@ -323,7 +310,6 @@ function buildRows(
 
     if (page === 'live') {
       rows.push({ key: `carousel:${key}`, type: 'carousel', section });
-      gameIds.push(...section.gameIds);
       continue;
     }
 
@@ -337,7 +323,6 @@ function buildRows(
         gameId,
         scopeId: destinationScopeId ?? section.scopeId,
       });
-      gameIds.push(gameId);
     }
 
     if (!isSearching && section.gameIds.length > COLLAPSED_GAME_COUNT) {
@@ -358,7 +343,7 @@ function buildRows(
     }
   }
 
-  return { rows, gameIds };
+  return rows;
 }
 
 // ============ Styles ========================================================= //

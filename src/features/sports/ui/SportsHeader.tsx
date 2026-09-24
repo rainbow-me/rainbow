@@ -5,9 +5,10 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
-import { type SportsHost } from '@/features/sports/core/browse';
-import { type SportsNavigation } from '@/features/sports/data/sportsNavigation';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
+import { type SportsScope } from '@/features/sports/core/catalog';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
+import { type SportsPage } from '@/features/sports/data/sportsPageStore';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
@@ -15,14 +16,18 @@ import * as i18n from '@/languages';
 export const SportsHeader = memo(function SportsHeader({
   host,
   isDarkMode,
-  navigation,
+  page,
+  scope,
+  parent,
+  back,
 }: {
   host: SportsHost;
   isDarkMode: boolean;
-  navigation: SportsNavigation;
+  page: SportsPage;
+  scope: SportsScope | undefined;
+  parent: SportsScope | undefined;
+  back: SportsDestination | undefined;
 }): ReactElement {
-  const { scope, parent, back, page } = navigation;
-
   const title =
     scope?.name ?? i18n.t(page === 'live' ? i18n.l.sports.live : page === 'sports' ? i18n.l.sports.all_sports : i18n.l.sports.title);
 
@@ -30,7 +35,7 @@ export const SportsHeader = memo(function SportsHeader({
     <View style={[styles.header, back ? styles.nestedHeader : undefined]}>
       {back ? (
         <View style={styles.back}>
-          <ButtonPressAnimation onPress={() => sportsActions.goBack(host)} scaleTo={0.8} style={styles.backButton}>
+          <ButtonPressAnimation onPress={() => sportsNavigationStores[host].getState().open(back)} scaleTo={0.8} style={styles.backButton}>
             <TextIcon color="label" size="icon 16px" weight="heavy" containerSize={20}>
               {'􀆉'}
             </TextIcon>

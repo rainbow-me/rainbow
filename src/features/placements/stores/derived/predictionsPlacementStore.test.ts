@@ -31,11 +31,11 @@ jest.mock('@/features/polymarket/utils/transforms', () => ({ processRawPolymarke
 const { setRefs } = jest.requireMock<{ setRefs: (refs: Partial<DiscoverSurfacePlacementRefs>) => void }>(
   '@/features/placements/surfaces/stores/discoverSurfaceStore'
 );
-const first = Symbol('first fallback');
-const second = Symbol('second fallback');
+const first = 'first';
+const second = 'second';
 
 beforeEach(() => {
-  usePredictionEventsStore.setState({ fallbackConsumers: new Map() });
+  usePredictionEventsStore.setState({ fallbackEventIds: {} });
   setRefs({ polymarket: [] });
   jest.clearAllMocks();
   jest.mocked(fetchPolymarketEventsByIds).mockResolvedValue([]);
@@ -44,67 +44,67 @@ beforeEach(() => {
 
 afterAll(() => usePredictionEventsStore.getState().reset(true));
 
-test('no generic or visible fallback demand means no Gamma or team hydration', async () => {
+test('no placement or fallback events means no Gamma or team hydration', async () => {
   expect(usePredictionEventsStore.getState().enabled).toBe(false);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(fetchPolymarketEventsByIds).not.toHaveBeenCalled();
   expect(fetchPolymarketTeamMetadataForGameEvents).not.toHaveBeenCalled();
 });
 
-test('visible fallback registrations and generic tiles share one deduplicated event request', async () => {
+test('fallback lists and placement events share one deduplicated event request', async () => {
   setRefs({ polymarket: ['tile-only', 'shared'] });
-  const { setFallbackConsumer } = usePredictionEventsStore.getState();
-  setFallbackConsumer(first, 'shared');
-  setFallbackConsumer(second, 'teaser-only');
+  const { setFallbackEventIds } = usePredictionEventsStore.getState();
+  setFallbackEventIds(first, ['shared']);
+  setFallbackEventIds(second, ['teaser-only']);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'teaser-only', 'tile-only']);
 
-  setFallbackConsumer(second);
+  setFallbackEventIds(second, []);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'tile-only']);
 
-  setFallbackConsumer(first);
+  setFallbackEventIds(first, []);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'tile-only']);
   expect(usePredictionEventsStore.getState().enabled).toBe(true);
 });
 
-test('overlapping fallback consumers release independently and stop reads after the last exit', async () => {
-  const { setFallbackConsumer } = usePredictionEventsStore.getState();
-  setFallbackConsumer(first, 'shared');
-  const unchanged = usePredictionEventsStore.getState().fallbackConsumers;
-  setFallbackConsumer(first, 'shared');
-  expect(usePredictionEventsStore.getState().fallbackConsumers).toBe(unchanged);
-  setFallbackConsumer(second, 'shared');
-  setFallbackConsumer(first);
+test('overlapping fallback lists release independently and stop reads after the last exit', async () => {
+  const { setFallbackEventIds } = usePredictionEventsStore.getState();
+  setFallbackEventIds(first, ['shared']);
+  const unchanged = usePredictionEventsStore.getState().fallbackEventIds;
+  setFallbackEventIds(first, ['shared']);
+  expect(usePredictionEventsStore.getState().fallbackEventIds).toBe(unchanged);
+  setFallbackEventIds(second, ['shared']);
+  setFallbackEventIds(first, []);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared']);
 
-  setFallbackConsumer(second, 'replacement');
+  setFallbackEventIds(second, ['replacement']);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
   expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['replacement']);
 
-  setFallbackConsumer(second);
+  setFallbackEventIds(second, []);
   jest.clearAllMocks();
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(usePredictionEventsStore.getState().fallbackConsumers.size).toBe(0);
+  expect(usePredictionEventsStore.getState().fallbackEventIds).toEqual({});
   expect(usePredictionEventsStore.getState().enabled).toBe(false);
   expect(fetchPolymarketEventsByIds).not.toHaveBeenCalled();
   expect(fetchPolymarketTeamMetadataForGameEvents).not.toHaveBeenCalled();
 });
 
-test('a newly registered fallback waits for its own request after an existing generic success', async () => {
+test('a newly listed fallback waits for its own request after an existing placement success', async () => {
   setRefs({ polymarket: ['existing-tile'] });
   await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
   expect(usePredictionEventsStore.getState().getStatus('isSuccess')).toBe(true);
 
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback', first)).toEqual({
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback')).toEqual({
     event: undefined,
     error: null,
     isLoading: true,
   });
-  usePredictionEventsStore.getState().setFallbackConsumer(first, 'new-fallback');
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback', first).isLoading).toBe(true);
+  usePredictionEventsStore.getState().setFallbackEventIds(first, ['new-fallback']);
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback').isLoading).toBe(true);
 
   let finish: () => void = () => {
     throw new Error('Request did not start');
@@ -116,34 +116,34 @@ test('a newly registered fallback waits for its own request after an existing ge
       })
   );
   const pending = usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback', first).isLoading).toBe(true);
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback').isLoading).toBe(true);
   finish();
   await pending;
 
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback', first)).toEqual({
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback')).toEqual({
     event: undefined,
     error: null,
     isLoading: false,
   });
 });
 
-test('fallback failure is terminal for the failed request and does not leak into a newly requested ID', async () => {
-  usePredictionEventsStore.getState().setFallbackConsumer(first, 'failed-fallback');
+test('a fallback failure stays with its request and does not leak into a newly listed event', async () => {
+  usePredictionEventsStore.getState().setFallbackEventIds(first, ['failed-fallback']);
   const error = new Error('Gamma unavailable');
   jest.mocked(fetchPolymarketEventsByIds).mockRejectedValueOnce(error);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'failed-fallback', first)).toEqual({
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'failed-fallback')).toEqual({
     event: undefined,
     error,
     isLoading: false,
   });
 
-  usePredictionEventsStore.getState().setFallbackConsumer(first, 'next-fallback');
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback', first)).toEqual({
+  usePredictionEventsStore.getState().setFallbackEventIds(first, ['next-fallback']);
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback')).toEqual({
     event: undefined,
     error: null,
     isLoading: true,
   });
   await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback', first).isLoading).toBe(false);
+  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback').isLoading).toBe(false);
 });

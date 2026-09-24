@@ -2,7 +2,7 @@ import { type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { foregroundColors } from '@/design-system/color/palettes';
-import { type SportsPage } from '@/features/sports/data/sportsNavigation';
+import { type SportsPage } from '@/features/sports/data/sportsPageStore';
 import { GameCardSkeleton } from '@/features/sports/ui/GameCard';
 import { SportsSectionHeadingSkeleton } from '@/features/sports/ui/SportsSection';
 

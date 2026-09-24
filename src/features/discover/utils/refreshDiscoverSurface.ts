@@ -5,7 +5,7 @@ import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/sto
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { refreshSportsEvents } from '@/features/sports/data/sportsStore';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([
@@ -34,10 +34,7 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     refreshes.push(predictionEvents.fetch(undefined, { force: true }));
   }
 
-  const sportsLookup = useSportsStore.getState();
-  if (sportsLookup.enabled) {
-    refreshes.push(sportsLookup.fetch(undefined, { force: true }));
-  }
+  refreshes.push(refreshSportsEvents());
 
   await Promise.allSettled(refreshes);
 }

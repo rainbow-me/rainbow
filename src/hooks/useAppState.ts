@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 
 import usePrevious from './usePrevious';
 
@@ -9,20 +8,12 @@ const AppStateTypes = {
   inactive: 'inactive',
 };
 
+/**
+ * The app's state, and whether it just became active.
+ */
 export default function useAppState() {
-  const [appState, setAppState] = useState(AppState.currentState);
+  const appState = useAppStateStore();
   const prevAppState = usePrevious(appState);
-
-  function onChange(newState: AppStateStatus) {
-    setAppState(newState);
-  }
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onChange);
-    // A native transition may occur between the initial render and subscription.
-    setAppState(AppState.currentState);
-    return () => subscription.remove();
-  }, []);
 
   return {
     appState,

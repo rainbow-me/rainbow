@@ -12,7 +12,7 @@ import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsScope } from '@/features/sports/core/catalog';
 import { type SportsSection } from '@/features/sports/core/sections';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -49,7 +49,7 @@ export function SportsSectionHeading({
   return (
     <ButtonPressAnimation
       disabled={!scopeId}
-      onPress={scopeId ? () => sportsActions.selectDestination(host, { type: 'scope', scopeId }) : undefined}
+      onPress={scopeId ? () => sportsNavigationStores[host].getState().select(scopeId) : undefined}
       scaleTo={0.98}
     >
       <View style={styles.heading}>

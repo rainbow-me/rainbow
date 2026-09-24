@@ -2,40 +2,36 @@ import { memo, useMemo, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { globalColors } from '@/design-system/color/palettes';
-import { getSportsDestinationKey, type SportsHost } from '@/features/sports/core/browse';
+import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { type SportsCatalog } from '@/features/sports/core/catalog';
-import { type SportsNavigation } from '@/features/sports/data/sportsNavigation';
-import { sportsActions } from '@/features/sports/data/sportsStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { SPORTS_BACKGROUND_COLOR_DARK } from '@/features/sports/ui/colors';
 import { FloatingTabBar } from '@/framework/ui/components/FloatingTabBar';
 import * as i18n from '@/languages';
 
 export const SportsCategoryBar = memo(function SportsCategoryBar({
   host,
-  navigation,
+  categories,
+  selectedCategory,
   bottom,
   width,
   isDarkMode,
   catalog,
 }: {
   host: SportsHost;
-  navigation: SportsNavigation;
+  categories: SportsDestination[];
+  selectedCategory: SportsDestination;
   bottom: number;
   width: number;
   isDarkMode: boolean;
   catalog?: SportsCatalog;
 }): ReactElement {
-  const { categories, selectedCategory } = navigation;
-
   const tabs = useMemo(
     () =>
       categories.map(destination => ({
-        key: getSportsDestinationKey(destination),
-        label:
-          destination.type === 'scope'
-            ? (catalog?.scopes[destination.scopeId]?.name ?? '')
-            : i18n.t(destination.type === 'live' ? i18n.l.sports.live : i18n.l.sports.more),
-        onPress: () => sportsActions.selectDestination(host, destination),
+        key: destination,
+        label: getCategoryLabel(catalog, destination),
+        onPress: () => sportsNavigationStores[host].getState().select(destination),
       })),
     [catalog, categories, host]
   );
@@ -48,10 +44,16 @@ export const SportsCategoryBar = memo(function SportsCategoryBar({
       width={width - 40}
       isDarkMode={isDarkMode}
       shadowColor={isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : globalColors.grey100}
-      onSearch={host === 'main' ? () => sportsActions.setSearch(host, '') : undefined}
+      onSearch={host === 'main' ? () => sportsNavigationStores[host].getState().search('') : undefined}
     />
   );
 });
+
+function getCategoryLabel(catalog: SportsCatalog | undefined, destination: SportsDestination): string {
+  if (destination === 'live') return i18n.t(i18n.l.sports.live);
+  if (destination === 'all') return i18n.t(i18n.l.sports.more);
+  return catalog?.scopes[destination]?.name ?? '';
+}
 
 const styles = StyleSheet.create({
   bar: { position: 'absolute', left: 20, right: 20 },

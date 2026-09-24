@@ -19,6 +19,10 @@ export type SportsCatalog = {
   liveGroupOrder: string[];
 };
 
+/**
+ * Indexes a catalog response for browsing: scopes by ID with their parents, directories, and categories, the
+ * category tabs, promoted games' ranks, and the order of Live groups.
+ */
 export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
   const scopes: SportsCatalog['scopes'] = {};
   const sportIds: string[] = [];
@@ -28,7 +32,7 @@ export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
 
   for (const sport of catalog.sports) {
     const children = sport.competitions.map(competition => competition.id);
-    const category: SportsDestination = prominent.has(sport.id) ? { type: 'scope', scopeId: sport.id } : { type: 'all' };
+    const category = prominent.has(sport.id) ? sport.id : 'all';
     sportIds.push(sport.id);
     competitionsBySport[sport.id] = children;
     scopes[sport.id] = {
@@ -40,13 +44,14 @@ export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
       searchName: sport.name.toLocaleLowerCase(),
       category,
     };
+
     for (const competition of sport.competitions) {
       competitionIds.push(competition.id);
       scopes[competition.id] = {
         ...competition,
         parentId: sport.id,
         searchName: competition.name.toLocaleLowerCase(),
-        category: prominent.has(competition.id) ? { type: 'scope', scopeId: competition.id } : category,
+        category: prominent.has(competition.id) ? competition.id : category,
       };
     }
   }
@@ -59,18 +64,12 @@ export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
     }
   }
 
-  const categories: SportsDestination[] = [{ type: 'live' }];
-  for (const scopeId of catalog.prominentScopeIds) {
-    if (scopes[scopeId]) categories.push({ type: 'scope', scopeId });
-  }
-  categories.push({ type: 'all' });
-
   return {
     revision: catalog.revision,
     scopes,
     sportIds,
     scopeIds: [...sportIds, ...competitionIds],
-    categories,
+    categories: ['live', ...catalog.prominentScopeIds.filter(id => scopes[id]), 'all'],
     promotedRanks: Object.fromEntries(catalog.promotedGameIds.map((id, rank) => [id, rank])),
     liveGroupOrder: [...new Set([...catalog.liveGroupIds, ...competitionIds])],
   };

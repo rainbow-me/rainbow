@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useEffect, useRef, type RefObject } from 'react';
 import { type SectionList, type TextInput } from 'react-native';
 
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { analytics } from '@/analytics';
 import { useDiscoverNavigationStore, type DiscoverSection } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useOnTabReselect } from '@/navigation/tabEvents';
 
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';

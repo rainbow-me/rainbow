@@ -23,7 +23,7 @@ jest.mock('@/features/placements/surfaces/stores/surfaceStore', () => ({
   getSurfaceStore: (id: string) => mockSurfaceStore(id),
 }));
 jest.mock('@/features/sports/data/sportsStore', () => ({
-  useSportsStore: { getState: () => mockSports },
+  refreshSportsEvents: () => mockRefreshSportsEvents(),
 }));
 
 const mockPerpsFetch = jest.fn();
@@ -33,38 +33,35 @@ const mockPlacementsFetch = jest.fn();
 const mockSurfaceFetch = jest.fn();
 const mockSurfaceStore = jest.fn().mockReturnValue({ getState: () => ({ fetch: mockSurfaceFetch }) });
 const mockPredictions = { enabled: false, fetch: jest.fn() };
-const mockSports = { enabled: false, fetch: jest.fn() };
+const mockRefreshSportsEvents = jest.fn();
 let mockPerpsEnabled = false;
-let mockRefs = { hyperliquid: [] as string[], rainbow: [] as string[], polymarket: [] as string[] };
+let mockRefs: { hyperliquid: string[]; rainbow: string[]; polymarket: string[] } = { hyperliquid: [], rainbow: [], polymarket: [] };
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockPredictions.enabled = false;
-  mockSports.enabled = false;
   mockPerpsEnabled = false;
   mockRefs = { hyperliquid: [], rainbow: [], polymarket: [] };
 });
 
 test('refreshes visible Sports lookups and generic fallbacks without static Polymarket refs', async () => {
   mockPredictions.enabled = true;
-  mockSports.enabled = true;
 
   await refreshDiscoverSurface('discover');
 
   expect(mockSurfaceStore).toHaveBeenCalledWith('discover');
   expect(mockSurfaceFetch).toHaveBeenCalledWith(undefined, { force: true });
   expect(mockPlacementsFetch).toHaveBeenCalledWith(undefined, { force: true });
-  expect(mockSports.fetch).toHaveBeenCalledWith(undefined, { force: true });
+  expect(mockRefreshSportsEvents).toHaveBeenCalledTimes(1);
   expect(mockPredictions.fetch).toHaveBeenCalledWith(undefined, { force: true });
 });
 
-test('leaves disabled prediction owners idle while preserving other provider refreshes', async () => {
+test('leaves disabled generic predictions idle while refreshing the other providers', async () => {
   mockRefs = { hyperliquid: ['BTC'], rainbow: ['token'], polymarket: ['event'] };
   mockPerpsEnabled = true;
 
   await refreshDiscoverSurface('discover');
 
-  expect(mockSports.fetch).not.toHaveBeenCalled();
   expect(mockPredictions.fetch).not.toHaveBeenCalled();
   expect(mockPerpsFetch).toHaveBeenCalledWith(undefined, { force: true });
   expect(mockClearTokenRefCache).toHaveBeenCalledTimes(1);

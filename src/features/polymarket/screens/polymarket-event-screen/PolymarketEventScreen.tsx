@@ -1,7 +1,7 @@
 import React, { memo, useMemo, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
-import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -26,9 +26,8 @@ import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-e
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsImage } from '@/features/sports/ui/SportsImage';
-import { useSportsLookup } from '@/features/sports/ui/useSportsLookup';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
@@ -45,7 +44,7 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const { isDarkMode } = useColorMode();
   const eventData = usePolymarketEventStore(state => state.getData({ eventId }));
   const event = eventData ?? initialEvent;
-  const gameId = useSportsStore(state => ('gameId' in params ? params.gameId : (state.games[eventId]?.id ?? state.eventGames[eventId])));
+  const gameId = useSportsStore(state => ('gameId' in params ? params.gameId : getGameId(state, eventId)));
   const eventColor = getColorValueForThemeWorklet(event?.color, isDarkMode);
   let screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
   if (isDarkMode && event) {
@@ -53,22 +52,19 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   }
 
   return (
-    <>
-      <SportsEventLookup eventId={eventId} />
-      <EventSheet backgroundColor={screenBackgroundColor}>
-        {event?.closed && <ResolvedEventHeader resolvedAt={event.closedTime} />}
-        {gameId ? (
-          <SportsGameOverview isDarkMode={isDarkMode} gameId={gameId} event={event} />
-        ) : (
-          event && <EventHeaderSection event={event} />
-        )}
-        {event ? (
-          <EventContent event={event} gameId={gameId} eventColor={eventColor} backgroundColor={screenBackgroundColor} />
-        ) : (
-          <EventDetailsStatus eventId={eventId} />
-        )}
-      </EventSheet>
-    </>
+    <EventSheet backgroundColor={screenBackgroundColor}>
+      {event?.closed && <ResolvedEventHeader resolvedAt={event.closedTime} />}
+      {gameId ? (
+        <SportsGameOverview isDarkMode={isDarkMode} gameId={gameId} event={event} />
+      ) : (
+        event && <EventHeaderSection event={event} />
+      )}
+      {event ? (
+        <EventContent event={event} gameId={gameId} eventColor={eventColor} backgroundColor={screenBackgroundColor} />
+      ) : (
+        <EventDetailsStatus eventId={eventId} />
+      )}
+    </EventSheet>
   );
 });
 
@@ -188,13 +184,6 @@ function EventVolume({ volume }: { volume: number }) {
       {`${formatNumber(String(volume), { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.market_data.vol)}`}
     </Text>
   );
-}
-
-function SportsEventLookup({ eventId }: { eventId: string }) {
-  const isFocused = useIsFocused();
-  const eventIds = useMemo(() => [eventId], [eventId]);
-  useSportsLookup(eventIds, isFocused, eventIds);
-  return null;
 }
 
 const ChartSection = memo(function ChartSection({

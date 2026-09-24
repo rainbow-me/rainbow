@@ -102,21 +102,17 @@ jest.mock('@/features/polymarket/screens/polymarket-event-screen/MarketRow', () 
 jest.mock('@/features/polymarket/screens/polymarket-event-screen/MarketsSection', () => ({ MarketsSection: jest.fn(() => null) }));
 jest.mock('@/features/polymarket/screens/polymarket-event-screen/OpenPositionsSection', () => ({ OpenPositionsSection: () => null }));
 jest.mock('@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets', () => ({ SportsEventMarkets: jest.fn(() => null) }));
-jest.mock('@/features/sports/data/sportsStore', () => ({
-  useSportsStore: jest.requireActual('@storesjs/stores').createBaseStore(() => ({ games: {}, eventGames: {} })),
-}));
 jest.mock('@/features/sports/ui/SportsImage', () => ({ SportsImage: () => null }));
-jest.mock('@/features/sports/ui/useSportsLookup', () => ({ useSportsLookup: () => undefined }));
 
 const eventId = '980512';
 const source = { id: eventId, slug: 'match', title: 'First vs Second', volume: 1000, markets: [] };
 const color = { light: '#3366ff', dark: '#6699ff' };
-const game = { ...Game.fromJSON({ id: eventId, participants: [{ name: 'First' }, { name: 'Second' }] }), quoteTokenIds: [] };
+const game = Game.fromJSON({ id: eventId, participants: [{ name: 'First' }, { name: 'Second' }] });
 
 beforeEach(async () => {
   usePolymarketEventStore.setState({ queryCache: {}, lastFetchedAt: null, status: 'idle' });
   polymarketEventIdStore.setState({ eventId: null });
-  useSportsStore.setState({ games: { [eventId]: game }, eventGames: {} });
+  useSportsStore.setState({ games: { [eventId]: game }, eventGameIds: {} });
   jest.clearAllMocks();
   jest.mocked(rainbowFetch).mockReset();
   jest.mocked(resolvePolymarketCardColor).mockResolvedValue(color);
@@ -202,4 +198,15 @@ it('keeps the known Game after a failed financial read and retries through the s
 
   expect(rainbowFetch).toHaveBeenCalledTimes(2);
   expect(SportsEventMarkets).toHaveBeenLastCalledWith({ event: usePolymarketEventStore.getState().getData({ eventId }) }, undefined);
+});
+
+it('shows a known Game as a sports event before its Game data loads', async () => {
+  useSportsStore.setState({ games: {}, eventGameIds: {} });
+  jest.mocked(rainbowFetch).mockResolvedValueOnce({ data: source, status: 200, headers: new Headers() });
+  await openGame();
+
+  expect(mockParams).toEqual({ gameId: eventId });
+  expect(SportsEventMarkets).toHaveBeenCalled();
+  expect(MarketsSection).not.toHaveBeenCalled();
+  expect(PolymarketChart).not.toHaveBeenCalled();
 });
