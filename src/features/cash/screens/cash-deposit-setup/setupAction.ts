@@ -33,6 +33,23 @@ async function submitPhone(): Promise<void> {
   }
 }
 
+export async function signInToExistingAccount(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if (
+    (await useSubmitPhoneFlowStore.getState().signInWithExistingPasskey()) === 'signedIn' &&
+    CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)
+  ) {
+    completeSetup();
+  }
+}
+
+export async function recoverExistingAccount(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if ((await useSubmitPhoneFlowStore.getState().chooseRecovery()) && CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) {
+    completeSetupStep();
+  }
+}
+
 export async function submitPhoneCode(): Promise<void> {
   const result = await useVerifyPhoneFlowStore.getState().submit();
   if (result === 'verified') completeSetupStep();
@@ -93,7 +110,10 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
 
     switch (activeRoute) {
       case Routes.CASH_SETUP_PHONE: {
-        const disabled = $(useSubmitPhoneFlowStore, s => s.digits.length !== NATIONAL_NUMBER_LENGTH);
+        const disabled = $(
+          useSubmitPhoneFlowStore,
+          s => s.digits.length !== NATIONAL_NUMBER_LENGTH || s.state === 'existingAccount' || s.state === 'signingIn'
+        );
         const loading = $(useSubmitPhoneFlowStore, s => s.state === 'submitting');
         return { disabled, label, loading, onPress: submitPhone };
       }

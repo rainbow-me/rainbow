@@ -237,6 +237,15 @@ describe('signInWithPhone', () => {
     ]);
   });
 
+  it('defaults to the signInScreen trigger but tracks a caller-provided trigger instead', async () => {
+    await expect(signInWithPhone('4155550100', 'existingAccountPrompt')).resolves.toBeUndefined();
+
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'existingAccountPrompt' }],
+      ['cash.sign_in_succeeded', { trigger: 'existingAccountPrompt' }],
+    ]);
+  });
+
   it('cancellation leaves both stores untouched and tracks cancelled', async () => {
     mockGetPasskeyAssertion.mockRejectedValue(new Error('UserCancelled'));
 

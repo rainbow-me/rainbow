@@ -2,14 +2,20 @@ import { createBaseStore } from '@storesjs/stores';
 
 import Routes from '@/navigation/routesNames';
 
+import { signInWithPhone } from '../../services/cashSignInService';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { checkKycOnReturn, createSetupActionStore } from './setupAction';
-import { completeSetupStep } from './setupNavigation';
+import { checkKycOnReturn, createSetupActionStore, signInToExistingAccount } from './setupAction';
+import { completeSetup, completeSetupStep } from './setupNavigation';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 
+jest.mock('../../services/cashSignInService', () => ({
+  signInWithPhone: jest.fn(),
+}));
+
 jest.mock('./setupNavigation', () => ({
+  completeSetup: jest.fn(),
   completeSetupStep: jest.fn(),
   goBackInSetup: jest.fn(),
 }));
@@ -60,6 +66,38 @@ it('advances only once when a pending-code re-entry is submitted twice', async (
 
   expect(mockCompleteSetupStep).toHaveBeenCalledTimes(1);
   expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_CONFIRM_PHONE);
+});
+
+it('does not start sign-in outside the phone step', async () => {
+  useSubmitPhoneFlowStore.setState({ state: 'existingAccount' });
+  CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
+
+  await signInToExistingAccount();
+
+  expect(signInWithPhone).not.toHaveBeenCalled();
+  expect(completeSetup).not.toHaveBeenCalled();
+});
+
+it.each([
+  { step: Routes.CASH_SETUP_PHONE, expectedCompletions: 1 },
+  { step: Routes.CASH_SETUP_CONFIRM_PHONE, expectedCompletions: 0 },
+])('completes sign-in $expectedCompletions times when it resolves on $step', async ({ step, expectedCompletions }) => {
+  let resolveSignIn!: () => void;
+  jest.mocked(signInWithPhone).mockReturnValue(
+    new Promise<void>(resolve => {
+      resolveSignIn = resolve;
+    })
+  );
+  useSubmitPhoneFlowStore.setState({ state: 'existingAccount' });
+
+  const pending = signInToExistingAccount();
+  expect(completeSetup).not.toHaveBeenCalled();
+
+  CashDepositSetupNavigation.navigate(step);
+  resolveSignIn();
+  await pending;
+
+  expect(completeSetup).toHaveBeenCalledTimes(expectedCompletions);
 });
 
 describe('checkKycOnReturn', () => {
