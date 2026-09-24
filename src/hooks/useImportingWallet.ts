@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-native';
+import { Keyboard, Platform, type TextInput } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 
@@ -82,7 +82,7 @@ export default function useImportingWallet({
   const startImportProfile = useCallback(
     (name: string, forceColor: string | number | null | undefined, address: string, avatarUrl: string | null | undefined) => {
       const importWallet = (color: number | null, name: string, image?: string) =>
-        InteractionManager.runAfterInteractions(() => {
+        requestIdleCallback(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);
           if (image) setImage(image);
@@ -317,7 +317,7 @@ export default function useImportingWallet({
         }
       }
 
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         if (
           flowContext === 'in_app' &&
           backupProvider === walletBackupTypes.cloud &&

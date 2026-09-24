@@ -276,7 +276,6 @@ export const PolymarketChart = memo(function PolymarketChart({
   }));
 
   useCleanup(() => {
-    initialPicture.dispose();
     runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
@@ -368,7 +367,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },

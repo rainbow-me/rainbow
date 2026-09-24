@@ -34,7 +34,6 @@ import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { tabHitTest, type TabHitResult } from '../utils/tabHitTest';
 
 const ENABLE_PAN_LOGS = false;
-const ENABLE_SCROLL_VIEW_LOGS = false;
 
 export function useBrowserScrollView() {
   const {
@@ -118,16 +117,11 @@ export function useBrowserScrollView() {
   );
 
   const gestureManager = useMemo(() => {
-    // Native ScrollView Gesture
     const nativeScrollViewGesture = Gesture.Native()
       .onTouchesDown((_, manager) => {
-        if (ENABLE_SCROLL_VIEW_LOGS) console.log('[ScrollView Gesture] TOUCH DOWN');
-
         if (gestureManagerState.value === 'active') manager.fail();
       })
       .onTouchesMove((_, manager) => {
-        if (ENABLE_SCROLL_VIEW_LOGS) console.log('[ScrollView Gesture] TOUCH MOVE');
-
         if (gestureManagerState.value === 'active') manager.fail();
       });
 

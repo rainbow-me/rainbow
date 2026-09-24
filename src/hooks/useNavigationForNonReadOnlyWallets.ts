@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
@@ -17,8 +16,8 @@ export default function useNavigationForNonReadOnlyWallets() {
         return;
       }
 
-      InteractionManager.runAfterInteractions(goBack);
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(goBack);
+      requestIdleCallback(() => {
         setTimeout(() => navigate(...navigateArgs), 50);
       });
     },

@@ -1,9 +1,11 @@
 import React, { forwardRef, useMemo, type ReactNode } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 
 import { type BackgroundColor } from '@/design-system/color/palettes';
+import { IS_TEST } from '@/env';
 
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
@@ -14,6 +16,8 @@ import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
 import { Border, type BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
+
+const COMPONENTS_TO_OVERRIDE_IN_TEST_MODE = [LinearGradient];
 
 const positions = ['absolute'] as const;
 type Position = (typeof positions)[number];
@@ -190,7 +194,8 @@ export const Box = forwardRef(function Box(
   const width = typeof widthProp === 'number' ? widthProp : resolveToken(widths, widthProp);
   const height = typeof heightProp === 'number' ? heightProp : resolveToken(heights, heightProp);
 
-  const isView = Component === View || Component === Animated.View;
+  const ComponentToUse = IS_TEST && COMPONENTS_TO_OVERRIDE_IN_TEST_MODE.some(_C => Component instanceof _C) ? View : Component;
+  const isView = ComponentToUse === View || Object.is(ComponentToUse, Animated.View);
 
   const shadowStylesExist =
     !!styleProp &&
@@ -297,7 +302,7 @@ export const Box = forwardRef(function Box(
         return (
           <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-            <Component style={backgroundStyle} {...restProps} ref={ref}>
+            <ComponentToUse style={backgroundStyle} {...restProps} ref={ref}>
               {children}
               {borderColor || borderWidth ? (
                 <Border
@@ -310,14 +315,14 @@ export const Box = forwardRef(function Box(
                   enableInLightMode
                 />
               ) : null}
-            </Component>
+            </ComponentToUse>
           </ApplyShadow>
         );
       }}
     </BackgroundProvider>
   ) : (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <Component style={style} {...restProps} ref={ref}>
+    <ComponentToUse style={style} {...restProps} ref={ref}>
       {children}
       {borderColor || borderWidth ? (
         <Border
@@ -330,7 +335,7 @@ export const Box = forwardRef(function Box(
           enableInLightMode
         />
       ) : null}
-    </Component>
+    </ComponentToUse>
   );
 }) as PolymorphicBox;
 

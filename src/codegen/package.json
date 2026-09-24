@@ -1,0 +1,19 @@
+{
+  "name": "@rainbow-me/codegen",
+  "version": "0.0.0",
+  "private": true,
+  "codegenConfig": {
+    "name": "rainbow",
+    "type": "all",
+    "jsSrcsDir": "./specs",
+    "android": {
+      "javaPackageName": "me.rainbow"
+    },
+    "ios": {
+      "componentProvider": {
+        "Button": "ButtonComponentView",
+        "RetainedView": "RetainedViewComponentView"
+      }
+    }
+  }
+}

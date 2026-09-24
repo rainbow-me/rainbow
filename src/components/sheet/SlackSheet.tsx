@@ -14,7 +14,7 @@ import {
 
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { ScrollView } from 'react-native-gesture-handler';
+import { LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -213,7 +213,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
 
   return (
     <Fragment>
-      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFill]} /> : null}
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}

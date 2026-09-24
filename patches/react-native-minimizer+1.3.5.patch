@@ -1,62 +1,91 @@
 diff --git a/node_modules/react-native-minimizer/android/build.gradle b/node_modules/react-native-minimizer/android/build.gradle
-index 43e070f..ee65662 100644
+index 43e070f..e442945 100644
 --- a/node_modules/react-native-minimizer/android/build.gradle
 +++ b/node_modules/react-native-minimizer/android/build.gradle
-@@ -20,7 +20,7 @@ def safeExtGet(prop, fallback) {
- }
- 
- apply plugin: 'com.android.library'
+@@ -23 +22,0 @@
 -apply plugin: 'maven'
-+// apply plugin: 'maven'
- 
- buildscript {
-     // The Android Gradle plugin is only required when opening the android folder stand-alone.
-@@ -39,7 +39,7 @@ buildscript {
- }
- 
- apply plugin: 'com.android.library'
+@@ -33 +32 @@
+-            jcenter()
++            mavenCentral()
+@@ -42 +40,0 @@
 -apply plugin: 'maven'
-+// apply plugin: 'maven'
- 
- android {
-     compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
-@@ -109,17 +109,17 @@ afterEvaluate { project ->
-     task androidJavadoc(type: Javadoc) {
-         source = android.sourceSets.main.java.srcDirs
-         classpath += files(android.bootClasspath)
+@@ -70 +68 @@
+-    jcenter()
++    mavenCentral()
+@@ -77,73 +74,0 @@
+-
+-def configureReactNativePom(def pom) {
+-    def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
+-
+-    pom.project {
+-        name packageJson.title
+-        artifactId packageJson.name
+-        version = packageJson.version
+-        group = "com.oila.minimizer"
+-        description packageJson.description
+-        url packageJson.repository.baseUrl
+-
+-        licenses {
+-            license {
+-                name packageJson.license
+-                url packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
+-                distribution 'repo'
+-            }
+-        }
+-
+-        developers {
+-            developer {
+-                id packageJson.author.username
+-                name packageJson.author.name
+-            }
+-        }
+-    }
+-}
+-
+-afterEvaluate { project ->
+-    // some Gradle build hooks ref:
+-    // https://www.oreilly.com/library/view/gradle-beyond-the/9781449373801/ch03.html
+-    task androidJavadoc(type: Javadoc) {
+-        source = android.sourceSets.main.java.srcDirs
+-        classpath += files(android.bootClasspath)
 -        classpath += files(project.getConfigurations().getByName('compile').asList())
-+        // classpath += files(project.getConfigurations().getByName('implementation').asList())
-         include '**/*.java'
-     }
- 
-     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        include '**/*.java'
+-    }
+-
+-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
 -        classifier = 'javadoc'
-+        archiveClassifier = 'javadoc'
-         from androidJavadoc.destinationDir
-     }
- 
-     task androidSourcesJar(type: Jar) {
+-        from androidJavadoc.destinationDir
+-    }
+-
+-    task androidSourcesJar(type: Jar) {
 -        classifier = 'sources'
-+        archiveClassifier = 'sources'
-         from android.sourceSets.main.java.srcDirs
-         include '**/*.java'
-     }
-@@ -140,10 +140,10 @@ afterEvaluate { project ->
- 
-     task installArchives(type: Upload) {
-         configuration = configurations.archives
+-        from android.sourceSets.main.java.srcDirs
+-        include '**/*.java'
+-    }
+-
+-    android.libraryVariants.all { variant ->
+-        def name = variant.name.capitalize()
+-        def javaCompileTask = variant.javaCompileProvider.get()
+-
+-        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
+-            from javaCompileTask.destinationDir
+-        }
+-    }
+-
+-    artifacts {
+-        archives androidSourcesJar
+-        archives androidJavadocJar
+-    }
+-
+-    task installArchives(type: Upload) {
+-        configuration = configurations.archives
 -        repositories.mavenDeployer {
 -            // Deploy to react-native-event-bridge/maven, ready to publish to npm
 -            repository url: "file://${projectDir}/../android/maven"
 -            configureReactNativePom pom
 -        }
-+//         repositories.mavenDeployer {
-+//             // Deploy to react-native-event-bridge/maven, ready to publish to npm
-+//             repository url: "file://${projectDir}/../android/maven"
-+//             configureReactNativePom pom
-+//         }
-     }
- }
+-    }
+-}
 diff --git a/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java b/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java
 index 4301f8d..b06152f 100644
 --- a/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java

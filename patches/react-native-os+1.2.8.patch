@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-os/android/build.gradle b/node_modules/react-native-os/android/build.gradle
+index 4db446b..2782463 100644
+--- a/node_modules/react-native-os/android/build.gradle
++++ b/node_modules/react-native-os/android/build.gradle
+@@ -8 +8 @@
+-        jcenter()
++        mavenCentral()
+@@ -33 +33 @@
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+@@ -46 +46 @@
+-    jcenter()
++    mavenCentral()
+diff --git a/node_modules/react-native-os/ios/RNOS.m b/node_modules/react-native-os/ios/RNOS.m
+index f24b100..c8559f9 100644
+--- a/node_modules/react-native-os/ios/RNOS.m
++++ b/node_modules/react-native-os/ios/RNOS.m
+@@ -8,8 +8,6 @@
+ 
+ #import "RNOS.h"
+ 
+-#import "RCTAssert.h"
+-
+ #include <ifaddrs.h>
+ #include <arpa/inet.h>
+ #include <net/if.h>

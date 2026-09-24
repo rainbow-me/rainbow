@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { parseUri } from '@walletconnect/utils';
 import { isValidAddress } from 'ethereumjs-util';
@@ -60,7 +59,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Profile sheet
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         Navigation.handleAction(Routes.PROFILE_SHEET, {
           address: ensName || address,
           fromRoute: 'QR Code',
@@ -86,7 +85,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         navigate(Routes.WALLET_SCREEN);
 
         // And then navigate to Profile sheet
-        InteractionManager.runAfterInteractions(() => {
+        requestIdleCallback(() => {
           Navigation.handleAction(Routes.PROFILE_SHEET, {
             address: ensName ?? '',
             fromRoute: 'QR Code',

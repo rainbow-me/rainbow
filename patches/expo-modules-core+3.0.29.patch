@@ -1,0 +1,209 @@
+# PATCH CONTEXT
+# Why: RN 0.87 no longer provides CallInvoker or CallbackWrapper transitively,
+#   and Expo 54's Objective-C delegate wrapper imports a generated Swift header
+#   across pod boundaries. Expo's current source owns a finite Objective-C
+#   protocol for that Swift delegate instead. RN's Android AAR also omits the
+#   jserrorhandler header required by its deprecated cxxreact forwarding header.
+#   Expo's bridgeless JSI setup must also read RN 0.87's RuntimeExecutor directly
+#   from ReactContext instead of constructing the deprecated CatalystInstance.
+# Remove when: Expo Modules Core includes both JSI owner headers, exposes its
+#   React delegate through EXReactDelegateProtocol, and supports RN 0.87's
+#   ErrorUtils header layout and direct bridgeless RuntimeExecutor API.
+
+diff --git a/node_modules/expo-modules-core/ios/ExpoModulesCore.h b/node_modules/expo-modules-core/ios/ExpoModulesCore.h
+--- a/node_modules/expo-modules-core/ios/ExpoModulesCore.h
++++ b/node_modules/expo-modules-core/ios/ExpoModulesCore.h
+@@ -76,2 +76,3 @@
+ #import <ExpoModulesCore/RCTComponentData+Privates.h>
++#import <ExpoModulesCore/EXReactDelegateProtocol.h>
+ #import <ExpoModulesCore/EXReactDelegateWrapper.h>
+diff --git a/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.h b/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.h
+--- a/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.h
++++ b/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.h
+@@ -7,2 +7,3 @@
+ #import <jsi/jsi.h>
++#import <ReactCommon/CallInvoker.h>
+ #import <React/RCTBridgeModule.h>
+diff --git a/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.mm b/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.mm
+--- a/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.mm
++++ b/node_modules/expo-modules-core/ios/JSI/EXJSIUtils.mm
+@@ -3 +3,2 @@
++#import <react/bridging/CallbackWrapper.h>
+ #import <sstream>
+diff --git a/node_modules/expo-modules-core/ios/Protocols/EXReactDelegateProtocol.h b/node_modules/expo-modules-core/ios/Protocols/EXReactDelegateProtocol.h
+new file mode 100644
+--- /dev/null
++++ b/node_modules/expo-modules-core/ios/Protocols/EXReactDelegateProtocol.h
+@@ -0,0 +1,30 @@
++// Copyright 2024-present 650 Industries. All rights reserved.
++
++#import <Foundation/Foundation.h>
++#import <ExpoModulesCore/Platform.h>
++
++NS_ASSUME_NONNULL_BEGIN
++
++/**
++ Protocol defining the interface for ExpoReactDelegate that can be used from Objective-C
++ without importing Swift.h, breaking the ObjC → Swift → ObjC cyclic dependency.
++ */
++@protocol EXReactDelegateProtocol <NSObject>
++
++#if !TARGET_OS_OSX
++- (UIView *)createReactRootViewWithModuleName:(NSString *)moduleName
++                            initialProperties:(nullable NSDictionary<NSString *, id> *)initialProperties
++                                launchOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
++#else
++- (NSView *)createReactRootViewWithModuleName:(NSString *)moduleName
++                            initialProperties:(nullable NSDictionary<NSString *, id> *)initialProperties
++                                launchOptions:(nullable NSDictionary *)launchOptions;
++#endif
++
++- (nullable NSURL *)bundleURL;
++
++- (UIViewController *)createRootViewController;
++
++@end
++
++NS_ASSUME_NONNULL_END
+diff --git a/node_modules/expo-modules-core/ios/ReactDelegates/EXReactDelegateWrapper.mm b/node_modules/expo-modules-core/ios/ReactDelegates/EXReactDelegateWrapper.mm
+--- a/node_modules/expo-modules-core/ios/ReactDelegates/EXReactDelegateWrapper.mm
++++ b/node_modules/expo-modules-core/ios/ReactDelegates/EXReactDelegateWrapper.mm
+@@ -3,2 +3,2 @@
+ #import <ExpoModulesCore/EXReactDelegateWrapper.h>
+-#import <ExpoModulesCore/Swift.h>
++#import <ExpoModulesCore/EXReactDelegateProtocol.h>
+@@ -8 +8 @@
+-@property (nonatomic, weak) EXReactDelegate *expoReactDelegate;
++@property (nonatomic, weak) id<EXReactDelegateProtocol> expoReactDelegate;
+@@ -17 +17 @@
+-    _expoReactDelegate = expoReactDelegate;
++    _expoReactDelegate = (id<EXReactDelegateProtocol>)expoReactDelegate;
+diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/build.gradle.kts b/node_modules/expo-modules-core/expo-module-gradle-plugin/build.gradle.kts
+--- a/node_modules/expo-modules-core/expo-module-gradle-plugin/build.gradle.kts
++++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/build.gradle.kts
+@@ -2 +2,2 @@
++import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@@ -5 +6 @@
+-  kotlin("jvm") version "2.1.20"
++  kotlin("jvm") version "2.2.0"
+@@ -57,3 +58,3 @@
+-tasks.withType<KotlinCompile> {
+-  kotlinOptions {
+-    jvmTarget = JavaVersion.VERSION_11.toString()
++tasks.withType<KotlinCompile>().configureEach {
++  compilerOptions {
++    jvmTarget.set(JvmTarget.JVM_11)
+diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt
+--- a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt
++++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt
+@@ -5 +5 @@
+-import com.android.build.gradle.LibraryExtension
++import com.android.build.api.dsl.LibraryExtension
+@@ -56,3 +56 @@
+-        ?: logger.warnIfNotDefined("minSdkVersion", 24),
+-      targetSdk = rootProject.extra.safeGet("targetSdkVersion")
+-        ?: logger.warnIfNotDefined("targetSdkVersion", 36)
++        ?: logger.warnIfNotDefined("minSdkVersion", 24)
+diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
+--- a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
++++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
+@@ -3 +3 @@
+-import com.android.build.gradle.LibraryExtension
++import com.android.build.api.dsl.LibraryExtension
+@@ -5 +5 @@
+-internal fun LibraryExtension.applySDKVersions(compileSdk: Int, minSdk: Int, targetSdk: Int) {
++internal fun LibraryExtension.applySDKVersions(compileSdk: Int, minSdk: Int) {
+@@ -9 +8,0 @@
+-    this@defaultConfig.targetSdk = targetSdk
+@@ -14 +13 @@
+-  lintOptions.isAbortOnError = false
++  lint.abortOnError = false
+@@ -18,2 +17,2 @@
+-  publishing { publishing ->
+-    publishing.singleVariant("release") {
++  publishing {
++    singleVariant("release") {
+diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/MavenPublicationExtension.kt b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/MavenPublicationExtension.kt
+--- a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/MavenPublicationExtension.kt
++++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/MavenPublicationExtension.kt
+@@ -43,2 +43,2 @@
+-    version = requireNotNull(project.androidLibraryExtension().defaultConfig.versionName) {
+-      "'android.defaultConfig.versionName' is not defined"
++    version = requireNotNull(project.version.toString().takeUnless { it == "unspecified" }) {
++      "'project.version' is not defined. Set `version = \"<x.y.z>\"` in the module's android/build.gradle."
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+index cc342ff..287735e 100644
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+@@ -28 +28 @@
+-  fun reject(code: String, message: String?, cause: Throwable?)
++  fun reject(code: String?, message: String?, cause: Throwable?)
+@@ -48 +48 @@
+-    override fun reject(code: String, message: String?) {
++    override fun reject(code: String?, message: String?) {
+@@ -52 +52 @@
+-    override fun reject(code: String, throwable: Throwable?) {
++    override fun reject(code: String?, throwable: Throwable?) {
+@@ -56 +56 @@
+-    override fun reject(code: String, message: String?, throwable: Throwable?) {
++    override fun reject(code: String?, message: String?, throwable: Throwable?) {
+@@ -68 +68 @@
+-    override fun reject(code: String, userInfo: WritableMap) {
++    override fun reject(code: String?, userInfo: WritableMap) {
+@@ -72 +72 @@
+-    override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
++    override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap) {
+@@ -76 +76 @@
+-    override fun reject(code: String, message: String?, userInfo: WritableMap) {
++    override fun reject(code: String?, message: String?, userInfo: WritableMap) {
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
+index 8de08b7..05af06c 100644
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
+@@ -15 +15 @@
+-  override fun reject(code: String, message: String?, cause: Throwable?) {
++  override fun reject(code: String?, message: String?, cause: Throwable?) {
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
+index d2e13ef..096eb09 100644
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
+@@ -57 +57 @@
+-  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
++  override fun reject(code: String?, message: String?, cause: Throwable?) = checkIfWasSettled {
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
+index 7d15bd5..fce5087 100644
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
+@@ -76 +76 @@
+-  operator fun invoke(code: String, errorMessage: String) = checkIfValid {
++  operator fun invoke(code: String?, errorMessage: String) = checkIfValid {
+@@ -91 +91 @@
+-  private external fun invokeNative(code: String, errorMessage: String)
++  private external fun invokeNative(code: String?, errorMessage: String)
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/RuntimeContext.kt
+@@ -87,7 +87,7 @@
+           jsiContext.installJSIForBridgeless(
+             this,
+             jsRuntimePointer,
+-            reactContext.catalystInstance.runtimeExecutor!!
++            reactContext.runtimeExecutor!!
+           )
+         } else {
+           jsiContext.installJSI(
+diff --git a/node_modules/expo-modules-core/android/CMakeLists.txt b/node_modules/expo-modules-core/android/CMakeLists.txt
+--- a/node_modules/expo-modules-core/android/CMakeLists.txt
++++ b/node_modules/expo-modules-core/android/CMakeLists.txt
+@@ -102,3 +102,4 @@
+        ${PACKAGE_NAME}
+        PRIVATE
++       "${REACT_NATIVE_DIR}/ReactCommon"
+        ${INCLUDE_reactnativejni}/react
+diff --git a/node_modules/expo-modules-core/common/cpp/EventEmitter.cpp b/node_modules/expo-modules-core/common/cpp/EventEmitter.cpp
+--- a/node_modules/expo-modules-core/common/cpp/EventEmitter.cpp
++++ b/node_modules/expo-modules-core/common/cpp/EventEmitter.cpp
+@@ -5 +5 @@
+-#include <cxxreact/ErrorUtils.h>
++#include <jserrorhandler/ErrorUtils.h>

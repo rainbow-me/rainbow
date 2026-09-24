@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, requireNativeComponent, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { useActiveRoute } from '@/hooks/useActiveRoute';
@@ -7,7 +7,9 @@ import { sheetVerticalOffset } from '@/navigation/effects';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
-const NativePortal = Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
+import NativeWindowPortal from './specs/NativeWindowPortal';
+
+const NativePortal = Platform.OS === 'ios' ? NativeWindowPortal : View;
 const Wrapper = Platform.OS === 'ios' ? ({ children }: { children: React.ReactNode }) => children : View;
 
 export function Portal() {
@@ -21,11 +23,11 @@ export function Portal() {
     <Wrapper
       pointerEvents="none"
       style={{
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         pointerEvents: 'none',
       }}
     >
-      <NativePortal {...(Platform.OS === 'ios' ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+      <NativePortal {...(Platform.OS === 'ios' ? { blockTouches: true } : {})} pointerEvents="none" style={StyleSheet.absoluteFill}>
         <LoadingOverlay paddingTop={sheetVerticalOffset} title={loadingState} />
       </NativePortal>
     </Wrapper>

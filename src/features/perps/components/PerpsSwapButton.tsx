@@ -133,16 +133,11 @@ export const PerpsSwapButton = ({
         >
           {isDarkMode && (
             <>
-              <LinearGradient
-                colors={accentColors.gradient}
-                style={StyleSheet.absoluteFillObject}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              />
-              <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+              <LinearGradient colors={accentColors.gradient} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000000', opacity: 0.12 }]} />
             </>
           )}
-          {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
+          {!isDarkMode && <View style={[StyleSheet.absoluteFill, { backgroundColor: accentColors.opacity100 }]} />}
           <HoldProgress holdProgress={holdProgress} color={accentColor ?? accentColors.opacity100} />
           <AnimatedText size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
             {label}

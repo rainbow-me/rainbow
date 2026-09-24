@@ -503,11 +503,11 @@ const styles = StyleSheet.create({
     width: ODDS_PILL_WIDTH,
   },
   oddsPillOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: ODDS_PILL_BORDER_RADIUS,
   },
   oddsPillsOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1,
   },
   oddsPillSlot: {

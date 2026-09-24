@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView } from 'react-native-gesture-handler';
+import { LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import { captureRef } from 'react-native-view-shot';
 
 import rainbowPlainLogo from '@/assets/rainbows/plain.png';
@@ -139,7 +139,7 @@ function PnlShareContent({
           overflow: 'hidden',
         },
         contentContainer: {
-          ...StyleSheet.absoluteFillObject,
+          ...StyleSheet.absoluteFill,
           padding: s(14),
         },
         characterContainer: {

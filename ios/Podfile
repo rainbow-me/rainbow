@@ -28,6 +28,9 @@ require Pod::Executable.execute_command('node', ['-p',
 
 prepare_react_native_project!
 
+# Native React patches require compiling React Native from source.
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -67,7 +70,6 @@ target 'Rainbow' do
   use_react_native!(
     privacy_file_aggregation_enabled: false,
     :path => config[:reactNativePath],
-    :new_arch_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -78,13 +80,11 @@ target 'Rainbow' do
 
   pod 'FLAnimatedImage'
   pod 'libwebp'
-  pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
-
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
-  pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
+  pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => '36b0a6cd69aaef1842ad3e5ed13666bfb4e60c7a'
   pod 'Shimmer'
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'

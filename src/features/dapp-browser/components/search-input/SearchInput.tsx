@@ -1,5 +1,13 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, View, type NativeSyntheticEvent, type TextInput, type TextInputChangeEventData } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  View,
+  type NativeSyntheticEvent,
+  type TextInput,
+  type TextInputChangeEventData,
+  type ViewStyle,
+} from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { BlurView } from 'react-native-blur-view';
@@ -349,7 +357,7 @@ const AddressBar = memo(function AddressBar({
   onBlurWorklet: () => void;
   onPressWorklet: () => void;
   onSubmitEditing: (newUrl: string) => void;
-  pointerEventsStyle: AnimatedStyle;
+  pointerEventsStyle: AnimatedStyle<ViewStyle>;
   tabUrl: DerivedValue<string>;
 }) {
   const { searchViewProgress } = useBrowserContext();
@@ -603,8 +611,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   searchBarContextMenu: {
-    marginTop: -6,
-    paddingTop: 6,
     width: SEARCH_BAR_WIDTH,
   },
   searchBarContextMenuContainer: {

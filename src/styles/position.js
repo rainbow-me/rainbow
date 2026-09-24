@@ -26,7 +26,7 @@ position.centeredAsObject = {
   justifyContent: 'center',
 };
 
-position.coverAsObject = StyleSheet.absoluteFillObject;
+position.coverAsObject = StyleSheet.absoluteFill;
 
 position.layout = (...args) => buildLayoutStyles(args);
 

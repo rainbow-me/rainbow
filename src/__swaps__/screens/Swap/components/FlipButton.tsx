@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { InteractionManager, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
@@ -81,7 +81,7 @@ export const FlipButton = () => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
+          requestIdleCallback(() => {
             if (shouldUpdateSelectedOutputChainId) {
               useSwapsStore.setState(state => ({
                 selectedOutputChainId: state.inputAsset?.chainId ?? ChainId.mainnet,
@@ -168,12 +168,20 @@ export const FlipButton = () => {
               blurIntensity={10}
               blurStyle={isDarkMode ? 'regular' : 'light'}
               style={[
-                AnimatedSwapStyles.flipButtonFetchingStyle,
-                styles.flipButton,
+                StyleSheet.absoluteFill,
+                styles.flipButtonLayer,
                 {
                   backgroundColor: Platform.OS === 'android' ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
-                  borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
                 },
+              ]}
+            />
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                styles.flipButtonLayer,
+                AnimatedSwapStyles.flipButtonFetchingStyle,
+                { borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5) },
               ]}
             />
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
@@ -218,16 +226,13 @@ const SpinnerComponent = () => {
 };
 
 const styles = StyleSheet.create({
-  flipButton: {
+  flipButtonLayer: {
     borderRadius: 15,
-    height: 30,
-    overflow: 'hidden',
-    position: 'absolute',
-    width: 30,
   },
   flipButtonContainer: {
     borderRadius: 15,
     height: 30,
+    overflow: 'hidden',
     width: 30,
   },
 });

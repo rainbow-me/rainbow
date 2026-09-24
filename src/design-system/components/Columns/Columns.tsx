@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { Children, type JSX, type ReactNode } from 'react';
+import { type ViewStyle } from 'react-native';
 
 import flattenChildren from 'react-flatten-children';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
@@ -13,7 +14,7 @@ type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 export interface ColumnProps {
   width?: Width | 'content';
   children?: ReactNode;
-  style?: AnimatedStyle;
+  style?: AnimatedStyle<ViewStyle>;
 }
 
 /**
@@ -45,7 +46,7 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
 interface PrivateColumnProps extends ColumnProps {
   space?: Space;
   alignVertical?: AlignVertical | undefined;
-  style?: AnimatedStyle;
+  style?: AnimatedStyle<ViewStyle>;
 }
 
 // This is the component that's rendered instead of the Column component that

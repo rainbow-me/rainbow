@@ -1,0 +1,8 @@
+diff --git a/node_modules/react-native-radial-gradient/android/build.gradle b/node_modules/react-native-radial-gradient/android/build.gradle
+index e6cda4f..7908e38 100644
+--- a/node_modules/react-native-radial-gradient/android/build.gradle
++++ b/node_modules/react-native-radial-gradient/android/build.gradle
+@@ -5 +4,0 @@
+-        jcenter()
+@@ -43 +41,0 @@
+-        jcenter()

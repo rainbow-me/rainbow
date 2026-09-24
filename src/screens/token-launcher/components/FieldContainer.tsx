@@ -1,12 +1,12 @@
-import React from 'react';
-import { Platform, type StyleProp, type ViewStyle } from 'react-native';
+import React, { type ComponentProps } from 'react';
+import { Platform } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
 import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
 
 type FieldContainerProps = {
-  style?: StyleProp<ViewStyle> | undefined;
+  style?: ComponentProps<typeof Animated.View>['style'];
   children: React.ReactNode;
 };
 

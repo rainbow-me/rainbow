@@ -1,17 +1,23 @@
-import { type GestureResponderEvent, type PressableProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+import { type PressableProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 
 import { type HapticType } from 'react-native-turbo-haptics';
 
 export type TransformOrigin = [number, number];
 export type Direction = 'bottom' | 'left' | 'right' | 'top';
 
+export interface ButtonPressEvent {
+  stopPropagation(): void;
+}
+
 export interface ButtonPressAnimationProps
-  extends Pick<PressableProps, 'disabled' | 'hitSlop' | 'onLayout' | 'testID'>, Pick<ViewProps, 'style'> {
+  extends Pick<PressableProps, 'disabled' | 'hitSlop' | 'onLayout' | 'testID' | 'accessible'>, Pick<ViewProps, 'style'> {
   children?: React.ReactNode;
-  onPress?: ((event?: GestureResponderEvent) => void) | null | undefined;
-  onLongPress?: ((event?: GestureResponderEvent) => void) | null;
+  onPress?: ((event?: ButtonPressEvent) => void) | null;
+  onLongPress?: (() => void) | null;
   activeOpacity?: number;
+  /** Milliseconds. */
   duration?: number;
+  /** Milliseconds. */
   minLongPressDuration?: number;
   onLongPressEnded?: () => void;
   onPressStart?: () => void;
@@ -22,10 +28,11 @@ export interface ButtonPressAnimationProps
   shouldLongPressHoldPress?: boolean;
 
   /** @platform ios */
-  compensateForTransformOrigin?: boolean;
-  /** @platform ios */
-  onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
-  /** @platform ios */
+  onCancel?: (event: { nativeEvent: { close: boolean; longPressFailed: boolean } }) => void;
+  /**
+   * Milliseconds, or -1 to use `duration`.
+   * @platform ios
+   */
   pressOutDuration?: number;
   /** @platform ios */
   throttle?: boolean;
@@ -34,8 +41,6 @@ export interface ButtonPressAnimationProps
   /** @platform ios */
   isInteraction?: boolean;
 
-  /** @platform android */
-  reanimatedButton?: boolean;
   /** @platform android */
   backgroundColor?: string;
   /** @platform android */

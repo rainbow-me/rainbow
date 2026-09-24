@@ -5,8 +5,25 @@ import { analytics } from '@/analytics';
 import { type EventProperties } from '@/analytics/event';
 import { type QuoteError } from '@rainbow-me/swaps';
 
-const analyticsTrack: typeof analytics.track = (...args) => analytics.track(...args);
-let lastParams: EventProperties[typeof analytics.event.swapsQuoteFailed];
+type QuoteFailureParams = EventProperties[typeof analytics.event.swapsQuoteFailed];
+
+let lastParams: QuoteFailureParams | undefined;
+
+function trackQuoteFailure(params: QuoteFailureParams) {
+  if (
+    lastParams &&
+    params.error_code === lastParams.error_code &&
+    params.inputAmount === lastParams.inputAmount &&
+    params.outputAmount === lastParams.outputAmount &&
+    params.inputAsset.address === lastParams.inputAsset.address &&
+    params.outputAsset.address === lastParams.outputAsset.address
+  )
+    return;
+
+  lastParams = params;
+  analytics.track(analytics.event.swapsQuoteFailed, params);
+}
+
 export function analyticsTrackQuoteFailed(
   quote: QuoteError | null,
   {
@@ -25,16 +42,6 @@ export function analyticsTrackQuoteFailed(
   // we are tracking 'Insufficient funds' 'Out of gas' 'No routes found' and 'No quotes found'
   if (!quote || !inputAsset || !outputAsset || !inputAmount) return;
 
-  if (
-    lastParams &&
-    quote.error_code === lastParams.error_code &&
-    inputAmount === lastParams.inputAmount &&
-    outputAmount === lastParams.outputAmount &&
-    inputAsset.address === lastParams.inputAsset.address &&
-    outputAsset.address === lastParams.outputAsset.address
-  )
-    return;
-
   const params = {
     error_code: quote.error_code,
     reason: quote.message,
@@ -43,6 +50,5 @@ export function analyticsTrackQuoteFailed(
     inputAmount,
     outputAmount,
   };
-  lastParams = params;
-  runOnJS(analyticsTrack)(analytics.event.swapsQuoteFailed, params);
+  runOnJS(trackQuoteFailure)(params);
 }

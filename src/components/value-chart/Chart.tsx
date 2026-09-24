@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
 import Animated, {
@@ -224,7 +224,7 @@ const ChartHeader = memo(function ChartHeader({
   const headerComponent = useMemo(
     () => (
       <Box alignItems="center" flexDirection="row" justifyContent="space-between" width="full" zIndex={1}>
-        <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
+        <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={[styles.chartHeader, chartHeaderStyle]}>
           <ChartExpandedStateHeader
             accentColor={accentColor}
             backgroundColor={backgroundColor}
@@ -297,3 +297,9 @@ function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'o
     [accentColors.color, accentColors.opacity12, accentColors.opacity24, isDarkMode]
   );
 }
+
+const styles = StyleSheet.create({
+  chartHeader: {
+    flex: 1,
+  },
+});

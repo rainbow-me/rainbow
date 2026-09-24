@@ -1,6 +1,6 @@
 import React, { useCallback, useReducer } from 'react';
 
-import { Switch } from 'react-native-gesture-handler';
+import { LegacySwitch as Switch } from 'react-native-gesture-handler';
 
 import { analytics } from '@/analytics';
 import { PROFILES } from '@/features/config/constants/experimental';

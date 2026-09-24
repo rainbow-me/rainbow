@@ -52,7 +52,7 @@ export const MainThemeProvider = (props: PropsWithChildren) => {
   const colorSchemeSystemAdjusted = colorScheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : colorScheme;
 
   useEffect(() => {
-    Appearance.setColorScheme(colorSchemeSystemAdjusted);
+    Appearance.setColorScheme(colorSchemeSystemAdjusted ?? 'auto');
   }, [colorSchemeSystemAdjusted]);
 
   // Override default with user preferences

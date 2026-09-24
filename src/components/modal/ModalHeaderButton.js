@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { LegacyBorderlessButton as BorderlessButton } from 'react-native-gesture-handler';
 
 import styled from '@/framework/ui/styled-thing';
 

@@ -1,9 +1,9 @@
 import React, { memo, useEffect, useRef, useState, type MutableRefObject } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, type ViewStyle } from 'react-native';
 
 import { Freeze } from 'react-freeze';
 import Animated, { FadeIn, useAnimatedProps, type AnimatedStyle, type DerivedValue, type SharedValue } from 'react-native-reanimated';
-import ViewShot from 'react-native-view-shot';
+import ViewShot, { type ViewShotRef } from 'react-native-view-shot';
 import { type WebViewProps } from 'react-native-webview';
 import type WebView from 'react-native-webview';
 
@@ -36,7 +36,7 @@ import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
-  const viewShotRef = useRef<ViewShot | null>(null);
+  const viewShotRef = useRef<ViewShotRef | null>(null);
 
   const { animatedWebViewBackgroundColorStyle, animatedWebViewStyle, backgroundColor, zIndexAnimatedStyle } = useAnimatedTab({ tabId });
 
@@ -80,7 +80,7 @@ const HomepageOrWebView = ({
   setLogo: BrowserState['setLogo'];
   setTitle: BrowserState['setTitle'];
   tabId: string;
-  viewShotRef: MutableRefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShotRef | null>;
 }) => {
   const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
   const { isDarkMode } = useColorMode();
@@ -123,7 +123,7 @@ const TabScreenshot = memo(function TabScreenshot({
   animatedStyle,
   screenshotData,
 }: {
-  animatedStyle: AnimatedStyle;
+  animatedStyle: AnimatedStyle<ViewStyle>;
   screenshotData: DerivedValue<ScreenshotType | undefined>;
 }) {
   const animatedProps = useAnimatedProps(() => {
@@ -155,7 +155,7 @@ const FreezableWebViewComponent = ({
   setLogo: BrowserState['setLogo'];
   setTitle: BrowserState['setTitle'];
   tabId: string;
-  viewShotRef: MutableRefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShotRef | null>;
 }) => {
   const { activeTabRef, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
 
@@ -194,7 +194,7 @@ const FreezableWebViewComponent = ({
         if (titleRef.current) activeTabRef.current.title = titleRef.current;
       }
     }
-  }, [activeTabRef, isActiveTab, isOnHomepage, resetScrollHandlers, screenshotCaptureRef, webViewRef]);
+  }, [activeTabRef, isActiveTab, isOnHomepage, renderKey, resetScrollHandlers, screenshotCaptureRef, webViewRef]);
 
   useEffect(() => {
     if (isActiveTab) screenshotCaptureRef.current = viewShotRef.current;
@@ -210,7 +210,7 @@ const FreezableWebViewComponent = ({
         webViewRef.current.setActive(false);
       }
     }
-  }, [isActiveTab, screenshotCaptureRef, viewShotRef, webViewRef]);
+  }, [isActiveTab, renderKey, screenshotCaptureRef, viewShotRef, webViewRef]);
 
   return (
     <Freeze freeze={!isActiveTab}>
@@ -223,7 +223,7 @@ const FreezableWebViewComponent = ({
         onRenderProcessGone={handleOnContentProcessDidTerminate}
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
-        source={{ uri: tabUrl }}
+        source={tabUrl}
         onOpenWindow={handleOnOpenWindow}
       />
     </Freeze>
@@ -232,13 +232,25 @@ const FreezableWebViewComponent = ({
 
 const FreezableWebView = memo(FreezableWebViewComponent);
 
-const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
+const TabWebViewComponent = (
+  props: Required<
+    Pick<
+      WebViewProps,
+      | 'onContentProcessDidTerminate'
+      | 'onLoadProgress'
+      | 'onMessage'
+      | 'onNavigationStateChange'
+      | 'onRenderProcessGone'
+      | 'onShouldStartLoadWithRequest'
+      | 'onOpenWindow'
+    >
+  > & { source: string },
+  ref: React.Ref<WebView>
+) => {
   const { onScrollWebView, onTouchEnd, onTouchMove, onTouchStart } = useBrowserContext();
 
   return (
     <DappBrowserWebview
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...props}
       allowsBackForwardNavigationGestures
       allowsInlineMediaPlayback
       applicationNameForUserAgent={USER_AGENT_APPLICATION_NAME}
@@ -249,7 +261,14 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       fraudulentWebsiteWarningEnabled
       injectedJavaScript={SCRIPTS_TO_INJECT}
       mediaPlaybackRequiresUserAction
+      onContentProcessDidTerminate={props.onContentProcessDidTerminate}
+      onLoadProgress={props.onLoadProgress}
+      onMessage={props.onMessage}
+      onNavigationStateChange={props.onNavigationStateChange}
+      onRenderProcessGone={props.onRenderProcessGone}
       onScroll={Platform.OS === 'ios' ? onScrollWebView : undefined}
+      onShouldStartLoadWithRequest={props.onShouldStartLoadWithRequest}
+      onOpenWindow={props.onOpenWindow}
       onTouchEnd={Platform.OS === 'ios' ? onTouchEnd : undefined}
       onTouchMove={Platform.OS === 'ios' ? onTouchMove : undefined}
       onTouchStart={Platform.OS === 'ios' ? onTouchStart : undefined}
@@ -257,6 +276,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       ref={ref}
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
+      source={{ uri: props.source }}
       style={styles.webView}
       userAgent={USER_AGENT[Platform.OS === 'ios' ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}

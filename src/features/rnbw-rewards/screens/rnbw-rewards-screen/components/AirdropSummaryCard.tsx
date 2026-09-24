@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   gradientFillContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: BORDER_RADIUS,
     overflow: 'hidden',
   },
@@ -223,13 +223,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backgroundCoinWrapper: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   backgroundCoinLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   backgroundCoinLayerClipped: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: BORDER_RADIUS,
     overflow: 'hidden',
   },

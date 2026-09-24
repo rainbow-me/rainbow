@@ -3,7 +3,7 @@ import { type GestureResponderEvent, type NativeScrollEvent, type NativeSyntheti
 
 import { type AnimatedRef, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 import type Animated from 'react-native-reanimated';
-import type ViewShot from 'react-native-view-shot';
+import type { ViewShotRef } from 'react-native-view-shot';
 import type WebView from 'react-native-webview';
 
 import { type Site } from './stores/browserHistoryStore';
@@ -98,7 +98,7 @@ export interface BrowserContextType {
   loadProgress: SharedValue<number>;
   multipleTabsOpen: DerivedValue<boolean>;
   pendingTabSwitchOffset: SharedValue<number>;
-  screenshotCaptureRef: MutableRefObject<ViewShot | null>;
+  screenshotCaptureRef: MutableRefObject<ViewShotRef | null>;
   scrollViewOffset: SharedValue<number>;
   scrollViewRef: AnimatedRef<Animated.ScrollView>;
   searchViewProgress: SharedValue<number>;

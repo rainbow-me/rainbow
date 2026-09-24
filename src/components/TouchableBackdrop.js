@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { LegacyBorderlessButton as BorderlessButton } from 'react-native-gesture-handler';
 
 import { position } from '@/styles';
 import neverRerender from '@/utils/neverRerender';

@@ -1,0 +1,197 @@
+# PATCH CONTEXT
+# Why: RN 0.87 removes legacy factory-delegate callbacks and starts roots
+#   through the bundle/dev-menu-aware method. Expo 54 retains the removed
+#   callbacks, relies on a transitive React import, includes an unavailable
+#   generated Swift-header import, and only uses the old root-view dispatch.
+#   Expo's current source owns the compatible boundary.
+# Remove when: Expo's factory and root-view delegate use RN 0.87's contracts.
+
+diff --git a/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.h b/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.h
+--- a/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.h
++++ b/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.h
+@@ -25 +25,2 @@
+- Calls super `viewWithModuleName:initialProperties:launchOptions:` from `RCTRootViewFactory`.
++ Calls super `viewWithModuleName:initialProperties:launchOptions:bundleConfiguration:devMenuConfiguration:`
++ from `RCTRootViewFactory`.
+@@ -29 +30,3 @@
+-                      launchOptions:(nullable NSDictionary *)launchOptions;
++                      launchOptions:(nullable NSDictionary *)launchOptions
++                bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
++               devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration;
+diff --git a/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.mm b/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.mm
+--- a/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.mm
++++ b/node_modules/expo/ios/AppDelegates/EXReactRootViewFactory.mm
+@@ -5,9 +5,2 @@
+-#import <Expo/Swift.h>
+-
+-// When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.
+-// Otherwise, it's available only locally with double-quoted imports.
+-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+-#else
+-#import "ExpoModulesCore-Swift.h"
+-#endif
++#import <ExpoModulesCore/EXReactDelegateProtocol.h>
++#import <React/RCTDevMenu.h>
+@@ -35 +28,3 @@
+-                 launchOptions:(nullable NSDictionary *)launchOptions
++                 launchOptions:(nullable NSDictionary *)launchOptions
++           bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
++          devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
+@@ -38 +33 @@
+-    return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
++    return [((id<EXReactDelegateProtocol>)self.reactDelegate) createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+@@ -40 +35,5 @@
+-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
++  return [super viewWithModuleName:moduleName
++                 initialProperties:initialProperties
++                     launchOptions:launchOptions
++               bundleConfiguration:bundleConfiguration
++              devMenuConfiguration:devMenuConfiguration];
+@@ -45 +44,3 @@
+-                      launchOptions:(nullable NSDictionary *)launchOptions
++                      launchOptions:(nullable NSDictionary *)launchOptions
++                bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
++               devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
+@@ -47 +48,5 @@
+-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
++  return [super viewWithModuleName:moduleName
++                 initialProperties:initialProperties
++                     launchOptions:launchOptions
++               bundleConfiguration:bundleConfiguration
++              devMenuConfiguration:devMenuConfiguration];
+@@ -52 +57 @@
+-  return [self.reactDelegate bundleURL] ?: [super bundleURL];
++  return [((id<EXReactDelegateProtocol>)self.reactDelegate) bundleURL] ?: [super bundleURL];
+diff --git a/node_modules/expo/ios/AppDelegates/ExpoAppDelegate.swift b/node_modules/expo/ios/AppDelegates/ExpoAppDelegate.swift
+--- a/node_modules/expo/ios/AppDelegates/ExpoAppDelegate.swift
++++ b/node_modules/expo/ios/AppDelegates/ExpoAppDelegate.swift
+@@ -4 +4 @@
+-import ReactAppDependencyProvider
++import React
+@@ -29,4 +29,4 @@
+-    guard let delegate = self.factory?.delegate,
+-    let rootViewFactory = self.factory?.rootViewFactory else {
++    guard let factory = self.factory else {
+       fatalError("recreateRootView: Missing factory in ExpoAppDelegate")
+     }
++    let rootViewFactory = factory.rootViewFactory
+@@ -34 +34 @@
+-    if delegate.newArchEnabled() {
++    if RCTIsNewArchEnabled() {
+@@ -51 +51 @@
+-    if let factory = rootViewFactory as? ExpoReactRootViewFactory {
++    if let expoRootViewFactory = rootViewFactory as? ExpoReactRootViewFactory {
+@@ -54 +54 @@
+-      rootView = factory.superView(
++      rootView = expoRootViewFactory.superView(
+@@ -56 +56,3 @@
+-        launchOptions: launchOptions ?? [:]
++        launchOptions: launchOptions ?? [:],
++        bundleConfiguration: factory.bundleConfiguration,
++        devMenuConfiguration: factory.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
+@@ -62 +64,3 @@
+-        launchOptions: launchOptions
++        launchOptions: launchOptions,
++        bundleConfiguration: factory.bundleConfiguration,
++        devMenuConfiguration: factory.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
+diff --git a/node_modules/expo/ios/AppDelegates/ExpoReactNativeFactory.swift b/node_modules/expo/ios/AppDelegates/ExpoReactNativeFactory.swift
+--- a/node_modules/expo/ios/AppDelegates/ExpoReactNativeFactory.swift
++++ b/node_modules/expo/ios/AppDelegates/ExpoReactNativeFactory.swift
+@@ -45 +45 @@
+-      newArchEnabled: weakDelegate.newArchEnabled()
++      newArchEnabled: true
+@@ -48,4 +47,0 @@
+-    configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
+-      return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
+-    }
+-
+@@ -54,4 +49,0 @@
+-    configuration.createBridgeWithDelegate = { delegate, launchOptions in
+-      weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
+-    }
+-
+@@ -62,25 +53,0 @@
+-    // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
+-    configuration.sourceURLForBridge = nil
+-
+-    configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
+-      weakDelegate.loadSource(for: bridge, onProgress: onProgress, onComplete: onComplete)
+-    }
+-
+-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
+-      configuration.extraModulesForBridge = { bridge in
+-        weakDelegate.extraModules(for: bridge)
+-      }
+-    }
+-
+-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
+-      configuration.extraLazyModuleClassesForBridge = { bridge in
+-        weakDelegate.extraLazyModuleClasses(for: bridge)
+-      }
+-    }
+-
+-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.bridge(_:didNotFindModule:))) {
+-      configuration.bridgeDidNotFindModule = { bridge, moduleName in
+-        weakDelegate.bridge(bridge, didNotFindModule: moduleName)
+-      }
+-    }
+-
+@@ -126 +93,3 @@
+-        launchOptions: launchOptions ?? [:]
++        launchOptions: launchOptions ?? [:],
++        bundleConfiguration: self.bundleConfiguration,
++        devMenuConfiguration: self.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
+@@ -132 +101,3 @@
+-        launchOptions: launchOptions
++        launchOptions: launchOptions,
++        bundleConfiguration: self.bundleConfiguration,
++        devMenuConfiguration: self.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
+diff --git a/node_modules/expo/android/src/main/java/expo/modules/ExpoReactHostFactory.kt b/node_modules/expo/android/src/main/java/expo/modules/ExpoReactHostFactory.kt
+index a1da771..abc5807 100644
+--- a/node_modules/expo/android/src/main/java/expo/modules/ExpoReactHostFactory.kt
++++ b/node_modules/expo/android/src/main/java/expo/modules/ExpoReactHostFactory.kt
+@@ -45 +45 @@
+-        reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
++        reactNativeHostWrapper.getJSBundleFile()?.let { jsBundleFile ->
+@@ -51 +51 @@
+-        val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
++        val jsBundleAssetPath = reactNativeHostWrapper.getBundleAssetName()
+@@ -56 +56 @@
+-      get() = reactNativeHostWrapper.jsMainModuleName
++      get() = reactNativeHostWrapper.getJSMainModuleName()
+@@ -62 +62 @@
+-      get() = reactNativeHostWrapper.packages
++      get() = reactNativeHostWrapper.getPackages()
+@@ -69 +69 @@
+-      val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
++      val useDeveloperSupport = reactNativeHostWrapper.getUseDeveloperSupport()
+@@ -86 +86 @@
+-      val useDeveloperSupport = reactNativeHost.useDeveloperSupport
++      val useDeveloperSupport = reactNativeHost.getUseDeveloperSupport()
+diff --git a/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapper.kt b/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapper.kt
+index c886f8c..4f7e332 100644
+--- a/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapper.kt
++++ b/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapper.kt
+@@ -34 +34 @@
+-    return host.shouldRequireActivity
++    return host.getShouldRequireActivity()
+@@ -38 +38 @@
+-    return host.surfaceDelegateFactory
++    return host.getSurfaceDelegateFactory()
+diff --git a/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapperBase.kt b/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapperBase.kt
+index 051092d..3ec5126 100644
+--- a/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapperBase.kt
++++ b/node_modules/expo/android/src/main/java/expo/modules/ReactNativeHostWrapperBase.kt
+@@ -24 +24 @@
+-    val developerSupport = useDeveloperSupport
++    val developerSupport = getUseDeveloperSupport()
+@@ -60 +60 @@
+-      .mapNotNull { it.getJSBundleFile(useDeveloperSupport) }
++      .mapNotNull { it.getJSBundleFile(getUseDeveloperSupport()) }
+@@ -66 +66 @@
+-      .mapNotNull { it.getBundleAssetName(useDeveloperSupport) }
++      .mapNotNull { it.getBundleAssetName(getUseDeveloperSupport()) }
+@@ -73 +73 @@
+-      .firstOrNull() ?: host.useDeveloperSupport
++      .firstOrNull() ?: host.getUseDeveloperSupport()

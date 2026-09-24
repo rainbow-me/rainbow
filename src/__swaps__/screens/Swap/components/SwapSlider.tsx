@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { Gesture, GestureDetector, type TapGesture } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, type LegacyTapGesture as TapGesture } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,

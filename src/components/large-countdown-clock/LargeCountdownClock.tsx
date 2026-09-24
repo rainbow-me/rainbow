@@ -71,8 +71,6 @@ export function LargeCountdownClock({ minutes, seconds, initialSeconds, initialM
         {
           scale: withSpring(1, {
             damping: 12,
-            restDisplacementThreshold: 0.001,
-            restSpeedThreshold: 0.001,
             stiffness: 260,
           }),
         },

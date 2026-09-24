@@ -89,7 +89,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({
                 >
                   <LinearGradient
                     colors={['transparent', accentColor]}
-                    style={[StyleSheet.absoluteFillObject, { opacity: 0.12 }]}
+                    style={[StyleSheet.absoluteFill, { opacity: 0.12 }]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                   />

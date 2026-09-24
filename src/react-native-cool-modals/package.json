@@ -1,0 +1,17 @@
+{
+  "name": "react-native-cool-modals",
+  "version": "0.0.0",
+  "private": true,
+  "codegenConfig": {
+    "name": "react_native_cool_modals",
+    "type": "all",
+    "jsSrcsDir": "./specs",
+    "ios": {
+      "componentProvider": {
+        "RNCMScreen": "RNCMScreenComponentView",
+        "RNCMScreenStack": "RNCMScreenStackComponentView",
+        "WindowPortal": "WindowPortalComponentView"
+      }
+    }
+  }
+}

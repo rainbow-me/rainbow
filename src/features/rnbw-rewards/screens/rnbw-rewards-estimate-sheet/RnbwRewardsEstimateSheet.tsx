@@ -65,7 +65,7 @@ const GradientFill = memo(function GradientFill() {
   const canvasHeight = viewHeight + blurPadding * 2;
 
   return (
-    <View style={{ ...StyleSheet.absoluteFillObject, top: -blurPadding + topOffset, alignItems: 'center' }}>
+    <View style={{ ...StyleSheet.absoluteFill, top: -blurPadding + topOffset, alignItems: 'center' }}>
       <Canvas
         style={{
           width: canvasWidth,

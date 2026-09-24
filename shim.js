@@ -13,9 +13,6 @@ import { logger } from '@/logger';
 
 import 'fast-text-encoding';
 
-// @ts-ignore – Event shadows the global, triggering TS2866 under isolatedModules
-import { Event, EventTarget } from 'event-target-shim';
-
 import globalVariables from './globalVariables';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
@@ -122,23 +119,6 @@ ReactNative.LayoutAnimation.configureNext = () => null;
 //   ReactNative.LayoutAnimation.configureNext.__shimmed = true;
 // }
 
-if (!ReactNative.InteractionManager._shimmed) {
-  const oldCreateInteractionHandle = ReactNative.InteractionManager.createInteractionHandle;
-
-  ReactNative.InteractionManager.createInteractionHandle = function (finishAutomatically = true) {
-    const handle = oldCreateInteractionHandle();
-    if (finishAutomatically) {
-      setTimeout(() => {
-        ReactNative.InteractionManager.clearInteractionHandle(handle);
-        logger.debug(`[shim]: Interaction finished automatically`);
-      }, 3000);
-    }
-    return handle;
-  };
-
-  ReactNative.InteractionManager._shimmed = true;
-}
-
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 // eslint-disable-next-line import/no-commonjs
@@ -162,22 +142,6 @@ if (!description.writable) {
     })(),
     writable: true,
   });
-}
-
-// Polyfills for @nktkas/hyperliquid
-if (!globalThis.EventTarget || !globalThis.Event) {
-  globalThis.EventTarget = EventTarget;
-  globalThis.Event = Event;
-}
-
-if (!globalThis.CustomEvent) {
-  globalThis.CustomEvent = function (type, params) {
-    // eslint-disable-next-line no-param-reassign
-    params = params || {};
-    const event = new Event(type, params);
-    event.detail = params.detail || null;
-    return event;
-  };
 }
 
 if (!AbortSignal.any) {

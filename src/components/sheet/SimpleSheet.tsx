@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, type ColorValue } from 'react-native';
+import { ScrollView, View, type ColorValue } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,51 +7,68 @@ import useDimensions from '@/hooks/useDimensions';
 
 import SlackSheet from './SlackSheet';
 
-type SimpleSheetProps = {
+type SimpleSheetBaseProps = {
   children: React.ReactNode;
   backgroundColor?: string | ColorValue;
   customHeight?: number;
   onDismiss?: () => void;
-  scrollEnabled?: boolean;
   useAdditionalTopPadding?: boolean;
   testID?: string;
 };
 
+type SimpleSheetProps = SimpleSheetBaseProps &
+  (
+    | {
+        contentContainer?: 'scroll';
+        scrollEnabled?: boolean;
+      }
+    | {
+        contentContainer: 'view';
+        scrollEnabled?: never;
+      }
+  );
+
 export const SimpleSheet = ({
   children,
   backgroundColor,
+  contentContainer = 'scroll',
   customHeight,
   onDismiss,
-  scrollEnabled = true,
+  scrollEnabled,
   testID,
   useAdditionalTopPadding = false,
 }: SimpleSheetProps) => {
   const insets = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - insets.top;
-  return (
-    <SlackSheet
-      additionalTopPadding={useAdditionalTopPadding}
-      contentHeight={customHeight ?? fullSheetHeight}
-      height="100%"
-      removeTopPadding
-      scrollEnabled={scrollEnabled}
-      backgroundColor={backgroundColor}
-      onDismiss={onDismiss}
-      testID={testID}
-    >
+  const sheetScrollEnabled = contentContainer === 'scroll' ? (scrollEnabled ?? true) : false;
+  const content =
+    contentContainer === 'scroll' ? (
       <ScrollView
-        scrollEnabled={scrollEnabled}
-        style={{
-          top: 0,
-          backgroundColor: backgroundColor,
-        }}
+        scrollEnabled={sheetScrollEnabled}
+        style={{ backgroundColor }}
         contentContainerStyle={{
           minHeight: customHeight ?? fullSheetHeight,
         }}
       >
         {children}
       </ScrollView>
+    ) : (
+      <View style={{ backgroundColor, height: customHeight ?? fullSheetHeight }}>{children}</View>
+    );
+
+  return (
+    <SlackSheet
+      additionalTopPadding={useAdditionalTopPadding}
+      contentHeight={customHeight ?? fullSheetHeight}
+      height="100%"
+      removeTopPadding
+      scrollEnabled={sheetScrollEnabled}
+      backgroundColor={backgroundColor}
+      onDismiss={onDismiss}
+      testID={testID}
+    >
+      {content}
     </SlackSheet>
   );
 };

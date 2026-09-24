@@ -30,6 +30,7 @@ import Animated, {
   withSpring,
   withTiming,
   type SharedValue,
+  type WithSpringConfig,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -71,7 +72,6 @@ import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGu
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { normalizeSpringConfig, type DampingMassStiffnessConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 
 import { NoChartData } from '../../components/NoChartData';
@@ -109,6 +109,8 @@ type TokenProps =
       chainId?: undefined;
       symbol: HyperliquidSymbol;
     };
+
+type DampingMassStiffnessConfig = WithSpringConfig & Required<Pick<WithSpringConfig, 'damping' | 'mass' | 'stiffness'>>;
 
 type CandlestickConfig = {
   activeCandleCard: {
@@ -217,7 +219,7 @@ export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
 
   animation: {
     enableCrosshairPulse: false,
-    springConfig: { mass: 0.1, stiffness: 50, damping: 50 },
+    springConfig: { mass: 0.1, stiffness: 50, damping: 50, preserveVelocityOnRetarget: true },
   },
 
   candles: {
@@ -1016,9 +1018,7 @@ class CandlestickChartManager {
       this.perpsIndicatorBuilder.drawBubbles(canvas, perpsIndicatorPositions);
     }
 
-    const oldPicture = this.chartPicture.value;
     this.chartPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Indicator Picture ============================================ //
@@ -1063,9 +1063,7 @@ class CandlestickChartManager {
       stride,
     });
 
-    const oldPicture = this.indicatorPicture.value;
     indicatorPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Crosshair Picture ============================================ //
@@ -1144,9 +1142,7 @@ class CandlestickChartManager {
       if (previousActiveCandle) triggerHaptics('selection');
     }
 
-    const oldPicture = this.crosshairPicture.value;
     crosshairPicture.value = this.pictureRecorder.finishRecordingAsPicture();
-    oldPicture.dispose();
   }
 
   // ============ Animation Handler ============================================ //
@@ -1157,15 +1153,7 @@ class CandlestickChartManager {
 
     if (animate) {
       if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
-        this.animator.spring(
-          [this.chartMinY, this.chartMaxY],
-          [min, max],
-          normalizeSpringConfig(
-            Math.abs(this.chartMinY.value - min),
-            Math.abs(this.chartMaxY.value - max),
-            this.config.animation.springConfig
-          )
-        );
+        this.animator.spring([this.chartMinY, this.chartMaxY], [min, max], this.config.animation.springConfig);
         const maxDisplayedVolume = this.getMaxDisplayedVolume(startIndex, endIndex);
         if (forceRebuildBounds || maxDisplayedVolume !== this.maxDisplayedVolume.value) {
           if (this.maxDisplayedVolume.value === -1) this.maxDisplayedVolume.value = maxDisplayedVolume;
@@ -1475,9 +1463,6 @@ class CandlestickChartManager {
 
   public dispose(): void {
     this.candles = [];
-    this.crosshairPicture.value.dispose();
-    this.chartPicture.value.dispose();
-    this.indicatorPicture.value.dispose();
     this.pictureRecorder.dispose();
 
     this.animator.dispose();
@@ -1884,7 +1869,6 @@ function useCandlestickChart({
 
   useCleanup(() => {
     chartStatus.value = ChartStatus.Loaded;
-    initialPicture.dispose();
     runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
@@ -2201,7 +2185,7 @@ const styles = StyleSheet.create({
   canvas: {
     flex: 1,
   },
-  emptyState: StyleSheet.absoluteFillObject,
+  emptyState: StyleSheet.absoluteFill,
   leftFade: {
     bottom: 0,
     position: 'absolute',
