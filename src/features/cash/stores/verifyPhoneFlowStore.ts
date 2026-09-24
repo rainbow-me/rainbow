@@ -1,18 +1,15 @@
 import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
-import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { delay } from '@/utils/delay';
 
 import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
 import {
   finishSignupResume,
-  getUserStatus,
   resendPhoneCode,
   startRecovery,
   startSignupResume,
-  toKycOutcome,
   verifyPhone,
   type KycOutcome,
 } from '../services/userClient';
@@ -31,31 +28,6 @@ type PendingResumeStatus = {
   credential: ResumeCredential;
 };
 
-// Best-effort: failing only costs the user a redundant pass through KYC entry,
-// so a transient status failure gets one delayed retry. Null means the wizard
-// proceeds to the KYC steps: either nothing was ever submitted, or the status
-// could not be read and a redundant pass is the safe guess — showing "we're
-// reviewing" to someone who never submitted strands them.
-async function getResumeKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
-  const check = async () => {
-    const { kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken });
-    return toKycOutcome(kycStatus, kycRejectionReason);
-  };
-  try {
-    return await check();
-  } catch (error) {
-    if (isCashUserServiceNetworkPolicyError(error)) throw error;
-  }
-
-  await delay(time.seconds(2));
-  try {
-    return await check();
-  } catch (error) {
-    if (isCashUserServiceNetworkPolicyError(error)) throw error;
-    return null;
-  }
-}
-
 type VerifyPhoneFlowStore = {
   state: VerifyPhoneState;
   code: string;
@@ -69,6 +41,8 @@ type VerifyPhoneFlowStore = {
   clearKycOutcome: () => void;
   reset: () => void;
 };
+
+let activeKycCheck: object | null = null;
 
 export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((set, get) => ({
   state: 'entry',
@@ -95,6 +69,8 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       return 'recoveryCodeAccepted';
     }
     const { challenge } = session;
+    const kycCheck = {};
+    activeKycCheck = kycCheck;
     let resumeCredential =
       challenge.kind === 'resume' && pendingResumeStatus?.challenge === challenge && pendingResumeStatus.credential.expiresAt > Date.now()
         ? pendingResumeStatus.credential
@@ -131,21 +107,30 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
       // A resumed account may have submitted KYC in an earlier signup attempt.
       if (challenge.kind === 'resume') resumeCredential = result;
-      const kycOutcome = resumeCredential ? await getResumeKycOutcome(resumeCredential.bootstrapToken) : null;
+      const kycOutcome = resumeCredential
+        ? await readKycOutcome(resumeCredential.bootstrapToken).catch(error => {
+            if (isCashUserServiceNetworkPolicyError(error)) throw error;
+            return null;
+          })
+        : null;
+      if (activeKycCheck !== kycCheck) return 'failed';
+      activeKycCheck = null;
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
         return 'failed';
       }
       sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
       analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
-      if (kycOutcome === 'approved') analytics.track(analytics.event.cashKycApproved);
-      else if (kycOutcome === 'reviewing') analytics.track(analytics.event.cashKycAwaitingDecision, { source: 'resume' });
-      else if (kycOutcome === 'rejected') analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
-      else if (kycOutcome === 'unsupportedState') analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
+      if (kycOutcome) {
+        sessionStore.markKycSubmitted(result.bootstrapToken);
+        trackKycOutcome(kycOutcome, 'resume');
+      }
       // Keep the retained OTP input disabled without leaving setup controls loading.
       set({ kycOutcome, pendingResumeStatus: null, state: 'submitted' });
       return kycOutcome ? 'verifiedKycOutcome' : 'verified';
     } catch (e) {
+      if (activeKycCheck !== kycCheck) return 'failed';
+      activeKycCheck = null;
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
         return 'failed';
@@ -208,5 +193,8 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   // Dismiss the outcome without undoing the session's completed phone verification.
   clearKycOutcome: () => set({ kycOutcome: null }),
 
-  reset: () => set({ code: '', kycOutcome: null, pendingResumeStatus: null, resending: null, state: 'entry' }),
+  reset: () => {
+    activeKycCheck = null;
+    set({ code: '', kycOutcome: null, pendingResumeStatus: null, resending: null, state: 'entry' });
+  },
 }));

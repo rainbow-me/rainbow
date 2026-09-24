@@ -105,6 +105,16 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
     expect(mockGetUserStatus).not.toHaveBeenCalled();
     expect(flow().state).toBe('approved');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
+  });
+
+  it('does not resubmit a previously submitted KYC application', async () => {
+    session().markKycSubmitted(TOKEN);
+
+    await expect(flow().submit()).resolves.toBe('skipped');
+
+    expect(mockSubmitOnboarding).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalled();
   });
 
   it('polls while pending, then approves', async () => {
@@ -235,6 +245,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
     expect(flow().state).toBe('entry');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
     expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
   });
 
@@ -246,6 +257,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'unknown' });
     expect(logger.error).toHaveBeenCalled();
     expect(flow().state).toBe('error');
+    expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'notSubmitted' });
   });
 
   it('skips a second submit while one is in flight', async () => {

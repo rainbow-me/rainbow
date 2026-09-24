@@ -55,7 +55,7 @@ export const EthCard = () => {
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
-  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
+  const { navigateToAddCash, isCashEnabled } = useAddCashRoute();
   const cardType = 'stretch';
 
   const handlePressBuy = useCallback(
@@ -64,19 +64,20 @@ export const EthCard = () => {
         e.stopPropagation();
       }
 
-      if (getIsDamagedWallet()) {
-        navigate(Routes.WALLET_ERROR_SHEET);
-        return;
-      }
+      navigateToAddCash(route => {
+        if (getIsDamagedWallet()) {
+          navigate(Routes.WALLET_ERROR_SHEET);
+          return;
+        }
 
-      navigate(addCashRoute);
-
-      analytics.track(analytics.event.buyButtonPressed, {
-        componentName: 'EthCard',
-        routeName,
+        navigate(route);
+        analytics.track(analytics.event.buyButtonPressed, {
+          componentName: 'EthCard',
+          routeName,
+        });
       });
     },
-    [addCashRoute, navigate, routeName]
+    [navigate, navigateToAddCash, routeName]
   );
 
   const handleAssetPress = useCallback(() => {

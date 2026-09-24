@@ -19,7 +19,7 @@ import {
   type KycOutcome,
   type KycRejectionReason,
 } from '../../../services/userClient';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { selectCanSubmitReview, selectIsPhoneVerified, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { OTP_LENGTH, useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { getTelemetryErrorReason } from '../../../utils/getTelemetryErrorReason';
 
@@ -61,6 +61,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
 
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
+    if (!selectCanSubmitReview(sessionStore) && !(kycSubmitted && selectIsPhoneVerified(sessionStore))) return 'skipped';
     const identity = sessionStore.getIdentity();
     const governmentId = sessionStore.getGovernmentId();
     if (!identity || !governmentId) return 'skipped';
@@ -192,6 +193,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
       if (isStale()) return 'cancelled';
       set({ kycSubmitted: true });
     }
+    sessionStore.markKycSubmitted(bootstrapToken);
     if (isStale()) return 'cancelled';
 
     const reviewingAt = Date.now() + getRemoteConfig().cash_kyc_review_delay_ms;
