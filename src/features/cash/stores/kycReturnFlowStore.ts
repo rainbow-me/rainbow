@@ -2,6 +2,7 @@ import { createBaseStore } from '@storesjs/stores';
 
 import { logger } from '@/logger';
 
+import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
 import { type KycOutcome } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
@@ -9,7 +10,7 @@ import { selectIsPhoneVerified, useCashSetupSessionStore } from './cashSetupSess
 
 export type KycReturnState = 'idle' | 'checking' | KycOutcome;
 
-export type KycReturnResult = 'outcome' | 'notSubmitted' | 'expired' | 'cancelled' | 'skipped';
+export type KycReturnResult = 'outcome' | 'notSubmitted' | 'blocked' | 'expired' | 'cancelled' | 'skipped';
 
 type KycReturnFlowStore = {
   state: KycReturnState;
@@ -64,7 +65,10 @@ export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, g
         return finish('expired');
       }
 
-      if (!read.ok) logger.warn('[kycReturnFlowStore]: KYC status check failed', { error: read.error });
+      if (!read.ok) {
+        if (isCashUserServiceNetworkPolicyError(read.error)) return finish('blocked');
+        logger.warn('[kycReturnFlowStore]: KYC status check failed', { error: read.error });
+      }
       const outcome = resolveReturnOutcome(read.ok ? read.verdict : null, after.kycSubmission);
       if (outcome === null) return finish('notSubmitted');
 

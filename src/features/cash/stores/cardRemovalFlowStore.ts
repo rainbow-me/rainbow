@@ -3,7 +3,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { logger, RainbowError } from '@/logger';
 
 import { removeLinkedCard } from '../services/cardRemovalService';
-import { isPasskeyCancellation } from '../services/cashPasskeyService';
+import { isHandledCashError } from '../services/cashHandledError';
 import { selectCashLinkedCards, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
 type CardRemovalResult = 'removed' | 'cancelled' | 'failed' | 'skipped';
@@ -26,8 +26,8 @@ export const useCardRemovalFlowStore = createBaseStore<CardRemovalFlowStore>((se
       useCashPaymentMethodStore.getState().removeCard(card.id);
       return 'removed';
     } catch (error) {
-      // A cancelled sign-in is a deliberate dismissal, not a failure.
-      if (isPasskeyCancellation(error)) return 'cancelled';
+      // A cancelled sign-in or policy block is a deliberate stop, not a failure.
+      if (isHandledCashError(error)) return 'cancelled';
       logger.error(new RainbowError('[cardRemovalFlowStore]: Failed to remove card', error));
       return 'failed';
     } finally {

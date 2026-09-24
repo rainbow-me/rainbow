@@ -50,6 +50,20 @@ describe('linkCardWithVault', () => {
     expect(mockComplete).toHaveBeenCalledWith({ brand: CARD_BRAND, providerCardId: 'provider-card-1' }, abortController);
   });
 
+  it('resumes completion without submitting the card to the vault again', async () => {
+    const abortController = new AbortController();
+    const progress = {
+      cardBrand: 'CARD_BRAND_MASTERCARD' as CardBrand,
+      providerCardId: 'persisted-provider-card',
+    };
+
+    await expect(linkCardWithVault(bivoStore, CARD_BRAND, abortController, { progress })).resolves.toEqual(CARD);
+
+    expect(mockStart).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
+    expect(mockComplete).toHaveBeenCalledWith({ brand: progress.cardBrand, providerCardId: progress.providerCardId }, abortController);
+  });
+
   it('does not touch the vault when the session fetch fails', async () => {
     mockStart.mockRejectedValue(new Error('no session'));
 

@@ -2,6 +2,7 @@ import { analytics } from '@/analytics';
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 
+import { isCashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import { getUserStatus, toKycOutcome, type KycOutcome } from './userClient';
 
 export async function readKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
@@ -9,7 +10,10 @@ export async function readKycOutcome(bootstrapToken: string): Promise<KycOutcome
     const { kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken });
     return toKycOutcome(kycStatus, kycRejectionReason);
   };
-  return check().catch(() => delay(time.seconds(2)).then(check));
+  return check().catch(error => {
+    if (isCashUserServiceNetworkPolicyError(error)) throw error;
+    return delay(time.seconds(2)).then(check);
+  });
 }
 
 export function trackKycOutcome(outcome: KycOutcome, source: 'resume' | 'return'): void {

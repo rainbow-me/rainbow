@@ -16,7 +16,7 @@ import { Box, globalColors, Inline, Text, useColorMode, useForegroundColor } fro
 import { opacity } from '@/design-system/utils/opacity';
 import { ORDER_FAST_POLL_DURATION_MS, ORDER_FAST_POLL_INTERVAL_MS, ORDER_SLOW_POLL_INTERVAL_MS } from '@/features/cash/constants';
 import { openCashAuthGate } from '@/features/cash/services/cashAuthGateService';
-import { isPasskeyCancellation } from '@/features/cash/services/cashPasskeyService';
+import { isHandledCashError } from '@/features/cash/services/cashHandledError';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { useCashAuthGateStore } from '@/features/cash/stores/cashAuthGateStore';
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, useCashBuyPhase } from '@/features/cash/stores/cashBuyOrderStore';
@@ -394,12 +394,13 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
-  // On open, replay a submit interrupted before an order id came back; otherwise clear the settled
-  // previous run so the sheet starts fresh.
+  // On open, replay an interrupted submit and retain any id parked by the network-policy warning;
+  // otherwise clear the settled previous run so the sheet starts fresh.
   useEffect(() => {
-    if (selectCashBuyPhase(useCashBuyOrderStore.getState()) === 'pending') {
+    const { status } = useCashBuyOrderStore.getState();
+    if (selectCashBuyPhase({ status }) === 'pending') {
       cashBuyOrderActions.resumePendingSubmission();
-    } else {
+    } else if (status.step !== 'networkPolicy') {
       cashBuyOrderActions.reset();
     }
   }, []);
@@ -463,7 +464,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
       }
       cashBuyOrderActions.submitBuyOrder({ cardId: funding.card.id, depositAmount, walletAddress: accountAddress });
     } catch (error) {
-      if (controller.signal.aborted || isPasskeyCancellation(error)) return;
+      if (controller.signal.aborted || isHandledCashError(error)) return;
       logger.error(new RainbowError('[AddCashSheet]: Failed to resolve the deposit wallet', error));
       analytics.track(analytics.event.cashWalletCheckFailed, { reason: getTelemetryErrorReason(error) });
       Alert.alert(

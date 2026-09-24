@@ -4,6 +4,7 @@ import { logger } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { CASH_BUY_DESTINATION_ASSET } from '../constants';
+import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import {
   OrderFailureReason,
   OrderStatus,
@@ -103,6 +104,10 @@ const LINKED_WALLET = { id: 'wallet-1', address: RAMP_WALLET_ADDRESS };
 
 function fetchError(status: number): RainbowFetchError {
   return new RainbowFetchError({ message: 'not found', response: { status } as Response });
+}
+
+function networkPolicyError(): CashUserServiceNetworkPolicyError {
+  return new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
 }
 
 const store = useCashBuyOrderStore;
@@ -466,6 +471,23 @@ describe('resumePendingSubmission', () => {
     await getState().resumePendingSubmission(); // idle from beforeEach
     expect(createBuyOrder).not.toHaveBeenCalled();
   });
+
+  it('retains a rehydrated order id for a manual retry after a network policy response', async () => {
+    store.setState({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
+    createBuyOrder.mockRejectedValueOnce(networkPolicyError()).mockResolvedValueOnce(undefined);
+
+    await getState().resumePendingSubmission();
+
+    expect(getState().status).toEqual({ step: 'networkPolicy', spec: SPEC });
+    expect(phase()).toBe('idle');
+    expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
+
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+
+    expect(createBuyOrder).toHaveBeenCalledTimes(2);
+    expect(createBuyOrder.mock.calls[1][0].id).toBe(SPEC.id);
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
+  });
 });
 
 // A dismiss/reopen replays the persisted spec while the original POST may still be in flight, so
@@ -552,6 +574,12 @@ describe('persistence', () => {
     const persisted = await readPersisted();
     expect(Object.keys(persisted)).toEqual(['status']);
     expect(persisted).toEqual({ status: { step: 'submitting', spec: SPEC, submittedAt: SUBMITTED_AT } });
+  });
+
+  it('keeps an order id retained after a network policy response on disk', async () => {
+    store.setState({ status: { step: 'networkPolicy', spec: SPEC } });
+
+    await expect(readPersisted()).resolves.toEqual({ status: { step: 'networkPolicy', spec: SPEC } });
   });
 
   it('keeps a polled order on disk so polling can resume after a crash', async () => {
