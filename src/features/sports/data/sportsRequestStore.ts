@@ -25,7 +25,7 @@ export type CatalogRequest = { type: 'catalog' };
 export type ScopeRequest = SportsGamesScope & { type: 'scope' };
 
 /** A Search query over the week its page shows, so a new day starts it over. */
-export type SearchRequest = { type: 'search'; query: string; window: SportsWindow };
+export type SearchRequest = { type: 'search'; query: string; window: Pick<SportsWindow, 'from' | 'until'> };
 
 /** An event lookup for a route. The cache key uses the route; each event's last update determines whether it needs fetching. */
 export type EventsRequest = { type: 'events'; route: Route; eventIds: readonly string[] };

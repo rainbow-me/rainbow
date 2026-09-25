@@ -6,7 +6,7 @@ import { sportsClient } from './client';
 
 jest.mock('@/resources/platform/client', () => ({ getPlatformClient: jest.fn() }));
 
-const window = { from: '2026-09-20T04:00:00Z', until: '2026-09-27T04:00:00Z' };
+const window = { from: '2026-09-20T04:00:00Z', todayUntil: '2026-09-21T04:00:00Z', until: '2026-09-27T04:00:00Z' };
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
@@ -21,24 +21,27 @@ beforeEach(() => {
 test('uses Sports routes and preserves query values, authentication, and cancellation', async () => {
   const controller = new AbortController();
 
-  await sportsClient.getCatalog(controller);
+  await sportsClient.getCatalog({ knownCatalogRevision: 0 }, controller);
   await sportsClient.getLiveGames({}, controller);
-  await sportsClient.getLiveGames({ scopeId: 'nba' }, controller);
-  await sportsClient.getGames({ scopeId: 'nba', ...window }, controller);
-  await sportsClient.lookupGames({ eventIds: ['980512', '980884', '980512'] }, controller);
-  await sportsClient.searchGames({ query: 'Fulham & Manchester', scopeId: 'soccer', ...window, cursor: 'next +/=' }, controller);
+  await sportsClient.getLiveGames({ knownCatalogRevision: 3 }, controller);
+  await sportsClient.getGames({ scopeId: 'nba', ...window, knownCatalogRevision: 3 }, controller);
+  await sportsClient.lookupGames({ eventIds: ['980512', '980884', '980512'], knownCatalogRevision: 3 }, controller);
+  await sportsClient.searchGames(
+    { query: 'Fulham & Manchester', scopeId: 'soccer', ...window, cursor: 'next +/=', knownCatalogRevision: 3 },
+    controller
+  );
 
   const paths = mockFetch.mock.calls.map(([url]) => {
     const { pathname, search } = new URL(url);
     return pathname + search;
   });
   expect(paths).toEqual([
-    '/v1/sports/catalog',
+    '/v1/sports/catalog?knownCatalogRevision=0',
     '/v1/sports/live',
-    '/v1/sports/live?scopeId=nba',
-    '/v1/sports/games?scopeId=nba&from=2026-09-20T04%3A00%3A00Z&until=2026-09-27T04%3A00%3A00Z',
-    '/v1/sports/games/lookup?eventIds=980512&eventIds=980884&eventIds=980512',
-    '/v1/sports/search?query=Fulham+%26+Manchester&scopeId=soccer&from=2026-09-20T04%3A00%3A00Z&until=2026-09-27T04%3A00%3A00Z&cursor=next+%2B%2F%3D',
+    '/v1/sports/live?knownCatalogRevision=3',
+    '/v1/sports/games?scopeId=nba&from=2026-09-20T04%3A00%3A00Z&todayUntil=2026-09-21T04%3A00%3A00Z&until=2026-09-27T04%3A00%3A00Z&knownCatalogRevision=3',
+    '/v1/sports/games/lookup?eventIds=980512&eventIds=980884&eventIds=980512&knownCatalogRevision=3',
+    '/v1/sports/search?query=Fulham+%26+Manchester&scopeId=soccer&from=2026-09-20T04%3A00%3A00Z&until=2026-09-27T04%3A00%3A00Z&cursor=next+%2B%2F%3D&knownCatalogRevision=3',
   ]);
   for (const [, options] of mockFetch.mock.calls) {
     expect(options).toMatchObject({ method: 'get', headers: { Authorization: 'Bearer test-key' }, signal: controller.signal });
@@ -50,7 +53,8 @@ test('decodes structured scores and omitted protobuf zero values directly', asyn
   mockFetch.mockResolvedValueOnce(
     new Response(
       JSON.stringify({
-        catalog: { revision: 3 },
+        catalogRevision: 3,
+        catalog: {},
         games: [
           {
             id: '980512',
@@ -73,7 +77,7 @@ test('decodes structured scores and omitted protobuf zero values directly', asyn
   );
 
   const response = await sportsClient.getGames({ scopeId: 'tennis', ...window }, null);
-  expect(response.catalog?.revision).toBe(3);
+  expect(response.catalogRevision).toBe(3);
   expect(response.games[0]).toMatchObject({ id: '980512', status: Game_Status.STATUS_LIVE, period: 'SET 3', clock: '54:09' });
   expect(response.games[0].score).toEqual([
     {
@@ -96,7 +100,7 @@ test('preserves HTTP errors and abort errors', async () => {
   mockFetch.mockResolvedValueOnce(
     new Response(JSON.stringify({ error: 'Unavailable' }), { status: 503, headers: { 'Content-Type': 'application/json' } })
   );
-  await expect(sportsClient.getCatalog(null)).rejects.toMatchObject({
+  await expect(sportsClient.getCatalog({}, null)).rejects.toMatchObject({
     name: 'RainbowFetchError',
     response: { status: 503 },
     responseBody: { error: 'Unavailable' },
@@ -105,5 +109,5 @@ test('preserves HTTP errors and abort errors', async () => {
   const abortError = new Error('Aborted');
   abortError.name = 'AbortError';
   mockFetch.mockRejectedValueOnce(abortError);
-  await expect(sportsClient.getCatalog(null)).rejects.toBe(abortError);
+  await expect(sportsClient.getCatalog({}, null)).rejects.toBe(abortError);
 });

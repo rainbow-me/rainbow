@@ -1,6 +1,6 @@
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 
-import { getNextMidnight, type SportsWindow } from './browse';
+import { type SportsWindow } from './browse';
 import { type SportsCatalog, type SportsScope } from './catalog';
 import { Game_Status, type Game } from './generated/sports';
 
@@ -19,11 +19,6 @@ export type SportsGamesScope = {
   window: SportsWindow;
 };
 
-type GameSelection = {
-  games: Game[];
-  sections: SportsSection[];
-};
-
 type RankedGame = {
   game: Game;
   rank: number;
@@ -40,17 +35,17 @@ const LAST = Number.MAX_SAFE_INTEGER;
 // ============ Sections ======================================================= //
 
 /**
- * Groups a browse response into sections of at most thirty games, preserving the server's order within each section.
+ * Groups a bounded browse response, preserving the server's membership and order within each section.
  * Live groups follow catalog order; sport and competition pages show live, today, then upcoming.
  */
-export function groupSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): GameSelection {
+export function groupSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): SportsSection[] {
   return scope ? groupScopeGames(games, scope.window) : groupLiveGames(catalog, games);
 }
 
 /**
- * Filters stored games for a page, sorts by promotion, start time, then ID, and groups the results into sections.
+ * Filters stored games for a page, sorts by promotion, start time, then ID, and caps each section at thirty games.
  */
-export function selectSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): GameSelection {
+export function selectSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): SportsSection[] {
   const showsSchedule = scope && !catalog?.scopes[scope.scopeId]?.directoryIds;
   const from = scope ? Date.parse(scope.window.from) : 0;
   const until = scope ? Date.parse(scope.window.until) : 0;
@@ -71,37 +66,40 @@ export function selectSportsGames(catalog: SportsCatalog | undefined, games: rea
   );
 }
 
-function groupLiveGames(catalog: SportsCatalog | undefined, games: readonly Game[]): GameSelection {
-  const groups: Partial<Record<string, Game[]>> = {};
+function groupLiveGames(catalog: SportsCatalog | undefined, games: readonly Game[]): SportsSection[] {
+  const groups: Partial<Record<string, string[]>> = {};
 
   for (const game of games) {
     const groupId = getLiveGroupId(catalog, game);
     if (groupId) addGame((groups[groupId] ??= []), game);
   }
 
-  const selection: GameSelection = { games: [], sections: [] };
+  const sections: SportsSection[] = [];
 
   for (const scopeId of catalog?.liveGroupOrder ?? []) {
-    const games = groups[scopeId];
-    if (games) addSection(selection, games, 'live', scopeId);
+    const gameIds = groups[scopeId];
+    if (gameIds) sections.push({ type: 'live', scopeId, gameIds });
   }
 
-  return selection;
+  return sections;
 }
 
-function groupScopeGames(games: readonly Game[], window: SportsWindow): GameSelection {
-  const tomorrow = getNextMidnight(new Date(window.from));
-  const groups: Record<ScheduleSectionType, Game[]> = { live: [], today: [], upcoming: [] };
+function groupScopeGames(games: readonly Game[], window: SportsWindow): SportsSection[] {
+  const todayUntil = Date.parse(window.todayUntil);
+  const groups: Record<ScheduleSectionType, string[]> = { live: [], today: [], upcoming: [] };
 
   for (const game of games) {
-    addGame(groups[getScheduleSectionType(game, tomorrow)], game);
+    addGame(groups[getScheduleSectionType(game, todayUntil)], game);
   }
 
-  const selection: GameSelection = { games: [], sections: [] };
+  const sections: SportsSection[] = [];
 
-  for (const type of SCHEDULE_SECTION_TYPES) addSection(selection, groups[type], type);
+  for (const type of SCHEDULE_SECTION_TYPES) {
+    const gameIds = groups[type];
+    if (gameIds.length) sections.push({ type, gameIds });
+  }
 
-  return selection;
+  return sections;
 }
 
 /**
@@ -173,9 +171,9 @@ function getLiveGroupId(catalog: SportsCatalog | undefined, game: Game): string 
   return group?.id ?? game.competitionIds[0];
 }
 
-function getScheduleSectionType(game: Game, tomorrow: number): ScheduleSectionType {
+function getScheduleSectionType(game: Game, todayUntil: number): ScheduleSectionType {
   if (isLive(game)) return 'live';
-  return getStartTime(game) < tomorrow ? 'today' : 'upcoming';
+  return getStartTime(game) < todayUntil ? 'today' : 'upcoming';
 }
 
 function isLive(game: Game): boolean {
@@ -201,13 +199,6 @@ function compareRankedGames(first: RankedGame, second: RankedGame): number {
   return first.game.id < second.game.id ? -1 : 1;
 }
 
-function addGame(games: Game[], game: Game): void {
-  if (games.length < MAX_SPORTS_SECTION_GAMES) games.push(game);
-}
-
-function addSection(selection: GameSelection, games: Game[], type: SportsSection['type'], scopeId?: string): void {
-  if (!games.length) return;
-
-  selection.games.push(...games);
-  selection.sections.push({ type, scopeId, gameIds: games.map(game => game.id) });
+function addGame(gameIds: string[], game: Game): void {
+  if (gameIds.length < MAX_SPORTS_SECTION_GAMES) gameIds.push(game.id);
 }

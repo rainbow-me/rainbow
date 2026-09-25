@@ -2,10 +2,11 @@ import { sportsApiBaseUrl } from '@/config/debug';
 import { IS_DEV } from '@/env';
 import { type SportsWindow } from '@/features/sports/core/browse';
 import {
+  GetCatalogResponse,
   GetGamesResponse,
   LookupGamesResponse,
   SearchGamesResponse,
-  SportsCatalog,
+  type GetCatalogRequest,
   type GetGamesRequest,
   type GetLiveGamesRequest,
   type LookupGamesRequest,
@@ -22,41 +23,65 @@ function getFetchClient(): RainbowFetchClient {
 }
 
 export const sportsClient = {
-  async getCatalog(abortController: AbortController | null) {
-    const { data } = await getFetchClient().get<unknown>('/sports/catalog', { abortController });
-    return SportsCatalog.fromJSON(data);
+  async getCatalog({ knownCatalogRevision }: GetCatalogRequest, abortController: AbortController | null): Promise<GetCatalogResponse> {
+    const { data } = await getFetchClient().get<unknown>('/sports/catalog', {
+      abortController,
+      params: knownCatalogRevision === undefined ? undefined : { knownCatalogRevision: String(knownCatalogRevision) },
+    });
+    return GetCatalogResponse.fromJSON(data);
   },
 
-  /** Live Games in the requested scope, ordered by promotion, start time, then ID. */
-  async getLiveGames({ scopeId }: GetLiveGamesRequest, abortController: AbortController | null) {
+  /**
+   * At most thirty games per global Live group, ordered by promotion, start time, then ID.
+   */
+  async getLiveGames({ knownCatalogRevision }: GetLiveGamesRequest, abortController: AbortController | null): Promise<GetGamesResponse> {
     const { data } = await getFetchClient().get<unknown>('/sports/live', {
       abortController,
-      params: scopeId === undefined ? undefined : { scopeId },
+      params: knownCatalogRevision === undefined ? undefined : { knownCatalogRevision: String(knownCatalogRevision) },
     });
     return GetGamesResponse.fromJSON(data);
   },
 
   /**
-   * Live Games and scheduled Games starting in [from, until), within the requested scope.
-   * Every Game has a valid start time; order is promotion, start time, then ID.
+   * A scope's live games and scheduled games in Today `[from, todayUntil)` and Upcoming `[todayUntil, until)`.
+   * Each section contains at most thirty games. Live games remain eligible outside the scheduled interval.
+   * Sports browsed by competition return only live games.
    */
-  async getGames({ scopeId, from, until }: GetGamesRequest & SportsWindow, abortController: AbortController | null) {
+  async getGames(
+    { scopeId, from, todayUntil, until, knownCatalogRevision }: GetGamesRequest & SportsWindow,
+    abortController: AbortController | null
+  ): Promise<GetGamesResponse> {
     const { data } = await getFetchClient().get<unknown>('/sports/games', {
       abortController,
-      params: { scopeId, from, until },
+      params: {
+        scopeId,
+        from,
+        todayUntil,
+        until,
+        ...(knownCatalogRevision === undefined ? undefined : { knownCatalogRevision: String(knownCatalogRevision) }),
+      },
     });
     return GetGamesResponse.fromJSON(data);
   },
 
-  async lookupGames({ eventIds }: LookupGamesRequest, abortController: AbortController | null) {
+  async lookupGames(
+    { eventIds, knownCatalogRevision }: LookupGamesRequest,
+    abortController: AbortController | null
+  ): Promise<LookupGamesResponse> {
+    const params = eventIds.map(id => ['eventIds', id]);
+    if (knownCatalogRevision !== undefined) params.push(['knownCatalogRevision', String(knownCatalogRevision)]);
+
     const { data } = await getFetchClient().get<unknown>('/sports/games/lookup', {
       abortController,
-      params: eventIds.map(id => ['eventIds', id]),
+      params,
     });
     return LookupGamesResponse.fromJSON(data);
   },
 
-  async searchGames({ query, scopeId, from, until, cursor }: SearchGamesRequest & SportsWindow, abortController: AbortController | null) {
+  async searchGames(
+    { query, scopeId, from, until, cursor, knownCatalogRevision }: SearchGamesRequest & Pick<SportsWindow, 'from' | 'until'>,
+    abortController: AbortController | null
+  ): Promise<SearchGamesResponse> {
     const { data } = await getFetchClient().get<unknown>('/sports/search', {
       abortController,
       params: {
@@ -65,6 +90,7 @@ export const sportsClient = {
         from,
         until,
         ...(cursor === undefined ? undefined : { cursor }),
+        ...(knownCatalogRevision === undefined ? undefined : { knownCatalogRevision: String(knownCatalogRevision) }),
       },
     });
     return SearchGamesResponse.fromJSON(data);

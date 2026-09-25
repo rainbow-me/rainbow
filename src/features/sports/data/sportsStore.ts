@@ -6,8 +6,9 @@ import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketE
 import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { buildSportsCatalog, type SportsCatalog } from '@/features/sports/core/catalog';
 import {
-  type SportsCatalog as CatalogResponse,
+  type SportsCatalog as CatalogMessage,
   type Game,
+  type GetCatalogResponse,
   type GetGamesResponse,
   type LookupGamesResponse,
   type SearchGamesResponse,
@@ -43,12 +44,16 @@ import { useAppStateStore } from '@/state/appState/appStateStore';
 
 type SportsResponse =
   | (LiveRequest & GetGamesResponse)
-  | (CatalogRequest & { catalog: CatalogResponse })
+  | (CatalogRequest & GetCatalogResponse)
   | (ScopeRequest & GetGamesResponse)
   | SportsSearchResponse
   | (EventsRequest & LookupGamesResponse);
 
-type SportsSearchResponse = SearchRequest & SearchGamesResponse & { gameIds: string[] };
+type SportsSearchResponse = SearchRequest &
+  SearchGamesResponse & {
+    gameIds: string[];
+    requestedCount: number;
+  };
 
 type SportsParams = { request: SportsRequest | null };
 
@@ -231,42 +236,39 @@ async function fetchSports({ request }: SportsParams, abortController: AbortCont
   if (!request) return null;
 
   pruneQueryCache(request);
+  const knownCatalogRevision = useSportsStore.getState().catalog?.revision;
 
   switch (request.type) {
     case 'live':
-      return { ...request, ...(await sportsClient.getLiveGames({}, abortController)) };
+      return { ...request, ...(await sportsClient.getLiveGames({ knownCatalogRevision }, abortController)) };
 
     case 'catalog':
-      return { ...request, catalog: await sportsClient.getCatalog(abortController) };
+      return { ...request, ...(await sportsClient.getCatalog({ knownCatalogRevision }, abortController)) };
 
     case 'scope':
-      return { ...request, ...(await fetchScope(request, abortController)) };
+      return {
+        ...request,
+        ...(await sportsClient.getGames({ scopeId: request.scopeId, ...request.window, knownCatalogRevision }, abortController)),
+      };
 
     case 'search':
       return fetchSearch(request, abortController);
 
     case 'events': {
       const eventIds = getDueEventIds(useSportsStore.getState().answeredAt, request.eventIds);
-      return eventIds.length ? { ...request, ...(await sportsClient.lookupGames({ eventIds }, abortController)) } : null;
+      return eventIds.length
+        ? { ...request, ...(await sportsClient.lookupGames({ eventIds, knownCatalogRevision }, abortController)) }
+        : null;
     }
   }
 }
 
-/**
- * Live games for a sport browsed by competition, and the week's games for any other scope.
- */
-async function fetchScope({ scopeId, window }: ScopeRequest, abortController: AbortController | null): Promise<GetGamesResponse> {
-  const catalog = useSportsStore.getState().catalog ?? buildSportsCatalog(await sportsClient.getCatalog(abortController));
-  if (catalog.scopes[scopeId]?.directoryIds) return sportsClient.getLiveGames({ scopeId }, abortController);
-
-  return sportsClient.getGames({ scopeId, ...window }, abortController);
-}
-
 async function fetchSearch(request: SearchRequest, abortController: AbortController | null): Promise<SportsSearchResponse> {
-  const { search, queryCache } = useSportsStore.getState();
+  const state = useSportsStore.getState();
+  const { from, until } = request.window;
   const queryKey = getPageQueryKey(request);
-  const previous = search?.queryKey === queryKey ? search : undefined;
-  const entry = queryCache[queryKey];
+  const previous = state.search?.queryKey === queryKey ? state.search : undefined;
+  const entry = state.queryCache[queryKey];
   const canContinue =
     previous &&
     previous.requestedCount > previous.gameIds.length &&
@@ -274,41 +276,68 @@ async function fetchSearch(request: SearchRequest, abortController: AbortControl
     getErrorCode(entry?.errorInfo?.error) !== RPC_FAILED_PRECONDITION;
 
   let cursor = canContinue ? previous.nextCursor : undefined;
-  let requestedCount = Math.max(previous?.gameIds.length ?? 0, previous?.requestedCount ?? 1);
-  let response: SearchGamesResponse;
+  let requestedCount = Math.min(MAX_SPORTS_SECTION_GAMES, Math.max(previous?.gameIds.length ?? 0, previous?.requestedCount ?? 1));
+  let knownCatalogRevision = state.catalog?.revision;
+  let catalog: CatalogMessage | undefined;
+  let restarted = false;
   let requestedCursors: Set<string> | undefined;
   const gameIds = new Set(cursor ? previous?.gameIds : undefined);
-  const games: Game[] = [];
+  const games = new Map<string, Game>();
 
-  do {
+  for (;;) {
     if (cursor) (requestedCursors ??= new Set()).add(cursor);
-    response = await sportsClient.searchGames({ query: request.query, ...request.window, cursor }, abortController);
+    let response: SearchGamesResponse;
 
-    if (response.nextCursor && requestedCursors?.has(response.nextCursor)) {
-      throw new Error('Sports Search returned a repeated cursor');
+    try {
+      response = await sportsClient.searchGames({ query: request.query, from, until, cursor, knownCatalogRevision }, abortController);
+    } catch (error) {
+      if (!cursor || restarted || abortController?.signal.aborted || getErrorCode(error) !== RPC_FAILED_PRECONDITION) throw error;
+
+      restarted = true;
+      cursor = undefined;
+      knownCatalogRevision = useSportsStore.getState().catalog?.revision;
+      catalog = undefined;
+      gameIds.clear();
+      games.clear();
+      requestedCursors = undefined;
+      continue;
     }
 
+    if (cursor && response.catalogRevision !== knownCatalogRevision)
+      throw new Error('Sports Search changed catalog revision between pages.');
+    if (response.nextCursor && requestedCursors?.has(response.nextCursor)) throw new Error('Sports Search returned a repeated cursor');
+
+    knownCatalogRevision = response.catalogRevision;
+    catalog ??= response.catalog;
     for (const game of response.games) {
       if (gameIds.size === MAX_SPORTS_SECTION_GAMES && !gameIds.has(game.id)) break;
       gameIds.add(game.id);
-      games.push(game);
+      games.set(game.id, game);
     }
 
     const current = useSportsStore.getState().search;
-    if (current?.queryKey === queryKey) requestedCount = Math.max(requestedCount, current.requestedCount);
+    if (current?.queryKey === queryKey)
+      requestedCount = Math.min(MAX_SPORTS_SECTION_GAMES, Math.max(requestedCount, current.requestedCount));
     cursor = response.nextCursor;
-  } while (cursor && gameIds.size < requestedCount);
+    if (cursor && gameIds.size < requestedCount) continue;
 
-  return {
-    ...request,
-    catalog: response.catalog,
-    gameIds: [...gameIds],
-    games,
-    nextCursor: gameIds.size < MAX_SPORTS_SECTION_GAMES ? cursor : undefined,
-  };
+    return {
+      ...request,
+      catalogRevision: response.catalogRevision,
+      catalog,
+      gameIds: [...gameIds],
+      requestedCount,
+      games: [...games.values()],
+      nextCursor: gameIds.size < MAX_SPORTS_SECTION_GAMES ? cursor : undefined,
+    };
+  }
 }
 
 function getRequestKey(request: SportsRequest | null): SportsPageRequest | Omit<EventsRequest, 'eventIds'> | null {
+  if (request?.type === 'search') {
+    const { from, until } = request.window;
+    return { type: 'search', query: request.query, window: { from, until } };
+  }
   return request?.type === 'events' ? { type: 'events', route: request.route } : request;
 }
 
@@ -346,7 +375,7 @@ function setSportsData({ data: response, queryKey, set }: SetDataParams<SportsRe
   const now = Date.now();
 
   set(state => {
-    const catalog = updateCatalog(state.catalog, response.catalog);
+    const catalog = updateCatalog(state.catalog, response.catalogRevision, response.catalog);
     const isNewCatalog = catalog !== state.catalog;
     const data = mergeSportsResponse(isNewCatalog ? getEmptyData() : state, response, catalog, queryKey, now);
     let queryCache = isNewCatalog ? { [queryKey]: state.queryCache[queryKey] } : state.queryCache;
@@ -370,12 +399,12 @@ function setSportsData({ data: response, queryKey, set }: SetDataParams<SportsRe
 function mergeSportsResponse(
   data: SportsData,
   response: SportsResponse,
-  catalog: SportsCatalog | undefined,
+  catalog: SportsCatalog,
   queryKey: string,
   now: number
 ): SportsData {
   let { games, eventGameIds, answeredAt, results, search } = data;
-  let shown: readonly Game[] = [];
+  const incomingGames: readonly Game[] = response.type === 'catalog' ? [] : response.games;
   let updatedPage: SportsDestination | undefined;
   let membershipChanged = false;
 
@@ -389,20 +418,15 @@ function mergeSportsResponse(
         previous.gameIds.size === response.games.length &&
         response.games.every(game => previous.gameIds.has(game.id) && areSectionFieldsEqual(data.games[game.id], game));
 
-      if (unchanged) {
-        shown = response.games;
-        break;
-      }
+      if (unchanged) break;
 
       const scope = response.type === 'scope' ? { scopeId: response.scopeId, window: response.window } : undefined;
-      const selection = groupSportsGames(catalog, response.games, scope);
-      shown = selection.games;
 
       const gameIds =
-        previous?.gameIds.size === shown.length && shown.every(game => previous.gameIds.has(game.id))
+        previous?.gameIds.size === incomingGames.length && incomingGames.every(game => previous.gameIds.has(game.id))
           ? previous.gameIds
-          : new Set(shown.map(game => game.id));
-      const sections = reuseSections(previous?.sections, selection.sections);
+          : new Set(incomingGames.map(game => game.id));
+      const sections = reuseSections(previous?.sections, groupSportsGames(catalog, incomingGames, scope));
       membershipChanged = gameIds !== previous?.gameIds;
 
       if (previous?.queryKey !== queryKey || membershipChanged || sections !== previous.sections) {
@@ -412,9 +436,7 @@ function mergeSportsResponse(
     }
 
     case 'search': {
-      const { gameIds, nextCursor } = response;
-      const requestedCount = search?.queryKey === queryKey ? search.requestedCount : 1;
-      shown = response.games;
+      const { gameIds, nextCursor, requestedCount } = response;
       search = replaceEqualDeep(search, { queryKey, requestedCount, gameIds, nextCursor });
       break;
     }
@@ -428,7 +450,6 @@ function mergeSportsResponse(
         eventGameIds = setEntry(eventGameIds, data.eventGameIds, eventId, gameId);
       };
 
-      shown = response.games;
       for (const { eventId, gameId } of response.resolved) resolve(eventId, gameId);
       for (const eventId of response.unavailableEventIds) resolve(eventId, null);
       break;
@@ -440,7 +461,7 @@ function mergeSportsResponse(
 
   let sectionChanges: string[] | undefined;
 
-  for (const game of shown) {
+  for (const game of incomingGames) {
     const previous = data.games[game.id];
     const stored = replaceEqualDeep(previous, game);
     if (stored !== previous) {
@@ -455,8 +476,7 @@ function mergeSportsResponse(
     for (const [destination, result] of Object.entries(results)) {
       if (!result || destination === updatedPage || !sectionChanges.some(id => result.gameIds.has(id))) continue;
 
-      const selection = selectSportsGames(catalog, getGames(games, result.gameIds), result.scope);
-      const sections = reuseSections(result.sections, selection.sections);
+      const sections = reuseSections(result.sections, selectSportsGames(catalog, getGames(games, result.gameIds), result.scope));
       if (sections !== result.sections) results = setEntry(results, data.results, destination, { ...result, sections });
     }
   }
@@ -579,12 +599,14 @@ function getPageQueryKeys(): Set<string> {
 }
 
 /**
- * Keeps the current catalog unless the response carries a newer revision. Throws if the revision is older.
+ * Keeps an equal revision's catalog and requires a catalog for the first or a newer revision.
+ * Throws before storing any response data if its revision is older or its required catalog is missing.
  */
-function updateCatalog(catalog: SportsCatalog | undefined, incoming: CatalogResponse | undefined): SportsCatalog | undefined {
-  if (!incoming || incoming.revision === catalog?.revision) return catalog;
-  if (catalog && incoming.revision < catalog.revision) throw new Error('Sports response uses an older catalog.');
-  return buildSportsCatalog(incoming);
+function updateCatalog(catalog: SportsCatalog | undefined, revision: number, incoming: CatalogMessage | undefined): SportsCatalog {
+  if (catalog && revision < catalog.revision) throw new Error('Sports response uses an older catalog.');
+  if (catalog && revision === catalog.revision) return catalog;
+  if (!incoming) throw new Error('Sports response is missing its catalog.');
+  return buildSportsCatalog(incoming, revision);
 }
 
 /**
@@ -612,7 +634,7 @@ function setMapEntry<T>(map: Map<string, T>, original: Map<string, T>, key: stri
   return next;
 }
 
-function getErrorCode(error: Error | undefined): number | undefined {
+function getErrorCode(error: unknown): number | undefined {
   const code: unknown = error instanceof RainbowFetchError ? error.responseBody?.code : undefined;
   return typeof code === 'number' ? code : undefined;
 }

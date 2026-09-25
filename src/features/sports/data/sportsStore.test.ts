@@ -21,6 +21,7 @@ import { sportsRequestStore } from '@/features/sports/data/sportsRequestStore';
 import {
   getGame,
   getGameId,
+  getPageQueryKey,
   loadMoreSportsGames,
   refreshSportsEvents,
   refreshSportsPage,
@@ -49,7 +50,6 @@ jest.mock('@/features/polymarket/stores/usePolymarketCategoryStore', () => ({
 }));
 
 const catalog = SportsCatalog.fromJSON({
-  revision: 1,
   sports: [
     { id: 'basketball', name: 'Basketball', browse: 'BROWSE_GAMES', competitions: [{ id: 'nba', name: 'NBA' }] },
     { id: 'tennis', name: 'Tennis', browse: 'BROWSE_GAMES', competitions: [{ id: 'atp', name: 'ATP' }] },
@@ -71,12 +71,13 @@ function game(id: string, fields: Partial<Game> = {}): Game {
   });
 }
 
-function lookupEvents({ eventIds }: { eventIds: string[] }) {
+function lookupEvents({ eventIds }: { eventIds: string[] }): Promise<LookupGamesResponse> {
   return Promise.resolve(lookupResponse(eventIds.map(id => game(id))));
 }
 
 function lookupResponse(games: Game[], resolved = games.map(game => ({ eventId: game.id, gameId: game.id }))): LookupGamesResponse {
   return {
+    catalogRevision: 1,
     catalog,
     games,
     resolved,
@@ -84,15 +85,15 @@ function lookupResponse(games: Game[], resolved = games.map(game => ({ eventId: 
   };
 }
 
-function page(host: 'main' | 'predictions' = 'main') {
+function page(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsPageStores.main.getState> {
   return sportsPageStores[host].getState();
 }
 
-function status(host: 'main' | 'predictions' = 'main') {
+function status(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsPageStatusStores.main.getState> {
   return sportsPageStatusStores[host].getState();
 }
 
-function navigation(host: 'main' | 'predictions' = 'main') {
+function navigation(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsNavigationStores.main.getState> {
   return sportsNavigationStores[host].getState();
 }
 
@@ -154,8 +155,7 @@ beforeEach(async () => {
   useAppStateStore.setState('active');
   useDiscoverSearchQueryStore.setState(useDiscoverSearchQueryStore.getInitialState());
   useNavigationStore.setState({ activeRoute: Routes.WALLET_SCREEN });
-  for (const host of ['main', 'predictions'] as const)
-    sportsNavigationStores[host].setState(sportsNavigationStores[host].getInitialState());
+  for (const store of Object.values(sportsNavigationStores)) store.setState(store.getInitialState());
   polymarketEventIdStore.setState({ eventId: null });
   usePolymarketCategoryStore.setState({ tagId: 'trending' });
   discoverEventListsStore.setState(discoverEventListsStore.getInitialState());
@@ -174,23 +174,34 @@ beforeEach(async () => {
   await settle();
 
   jest.clearAllMocks();
-  jest.mocked(sportsClient.getCatalog).mockReset().mockResolvedValue(catalog);
+  jest.mocked(sportsClient.getCatalog).mockReset().mockResolvedValue({ catalogRevision: 1, catalog });
   jest
     .mocked(sportsClient.getLiveGames)
     .mockReset()
-    .mockResolvedValue({ catalog, games: [first] });
+    .mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   jest
     .mocked(sportsClient.getGames)
     .mockReset()
-    .mockResolvedValue({ catalog, games: [second] });
+    .mockResolvedValue({ catalogRevision: 1, catalog, games: [second] });
   jest
     .mocked(sportsClient.searchGames)
     .mockReset()
-    .mockImplementation(async ({ cursor }) => ({ catalog, games: cursor ? [] : [first], nextCursor: cursor ? undefined : 'page-2' }));
+    .mockImplementation(async ({ cursor }) => ({
+      catalogRevision: 1,
+      catalog,
+      games: cursor ? [] : [first],
+      nextCursor: cursor ? undefined : 'page-2',
+    }));
   jest
     .mocked(sportsClient.lookupGames)
     .mockReset()
-    .mockResolvedValue({ catalog, games: [first], resolved: [{ eventId: 'child', gameId: '1' }], unavailableEventIds: ['unsupported'] });
+    .mockResolvedValue({
+      catalogRevision: 1,
+      catalog,
+      games: [first],
+      resolved: [{ eventId: 'child', gameId: '1' }],
+      unavailableEventIds: ['unsupported'],
+    });
 
   unsubscribes.push(
     useSportsStore.subscribe(() => undefined),
@@ -222,7 +233,7 @@ it('groups a page once and reuses its sections for display and score-only respon
   unsubscribes.push(sportsPageStores.main.subscribe(pageListener));
 
   const updated = game('1', { score: [{ ...first.score[0], first: { value: 1 } }] });
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [updated] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [updated] });
   await refreshSportsPage('main');
   await settle();
 
@@ -235,10 +246,10 @@ it('groups a page once and reuses its sections for display and score-only respon
   expect(pageListener).not.toHaveBeenCalled();
 });
 
-it('caps ordered browse responses without repeating eligibility or ranking', async () => {
-  const games = Array.from({ length: 40 }, (_, index) => game(String(index).padStart(2, '0')));
+it('stores bounded browse responses without repeating eligibility or ranking', async () => {
+  const games = Array.from({ length: 30 }, (_, index) => game(String(index).padStart(2, '0')));
   const selectGames = jest.spyOn(sections, 'selectSportsGames');
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games });
   showMain();
   await settle();
 
@@ -252,18 +263,17 @@ it('caps ordered browse responses without repeating eligibility or ranking', asy
   expect(Object.keys(useSportsStore.getState().games)).toHaveLength(30);
 });
 
-it('computes a page’s cache key when its request changes, not on each update', async () => {
+it('keeps the page’s query-cache identity through score updates', async () => {
   showMain();
   await settle();
+  const before = useSportsStore.getState();
 
-  const stringify = jest.spyOn(JSON, 'stringify');
   for (let value = 1; value <= 3; value++) {
     useSportsStore.setState(state => ({ games: { ...state.games, '1': game('1', { score: [{ ...first.score[0], first: { value } }] }) } }));
   }
-  const keyBuilds = stringify.mock.calls.filter(([input]) => typeof input === 'object' && input !== null && 'request' in input);
-  stringify.mockRestore();
 
-  expect(keyBuilds).toHaveLength(0);
+  expect(useSportsStore.getState().queryCache).toBe(before.queryCache);
+  expect(useSportsStore.getState().results.live?.queryKey).toBe(before.results.live?.queryKey);
 });
 
 it('retains visited pages across hosts without refetching them', async () => {
@@ -296,20 +306,27 @@ it('returns to the sports directory without fetching the catalog again within a 
   expect(sportsClient.getCatalog).toHaveBeenCalledTimes(1);
 });
 
-it('shows live games for a sport browsed by competition, loading the catalog first on a cold entry', async () => {
+it('loads a cold directory scope with one Games request and no catalog prefetch', async () => {
   navigation().select('soccer');
   showMain();
   await settle();
 
-  expect(sportsClient.getCatalog).toHaveBeenCalledTimes(1);
-  expect(sportsClient.getLiveGames).toHaveBeenCalledWith({ scopeId: 'soccer' }, expect.anything());
-  expect(sportsClient.getGames).not.toHaveBeenCalled();
+  expect(sportsClient.getCatalog).not.toHaveBeenCalled();
+  expect(sportsClient.getLiveGames).not.toHaveBeenCalled();
+  expect(sportsClient.getGames).toHaveBeenCalledTimes(1);
+  expect(sportsClient.getGames).toHaveBeenCalledWith(
+    { scopeId: 'soccer', ...getSportsWindow(), knownCatalogRevision: undefined },
+    expect.anything()
+  );
   expect(page()).toMatchObject({ page: 'competitions', directoryIds: ['epl'] });
 
   navigation().open('epl');
   await settle();
-  expect(sportsClient.getGames).toHaveBeenCalledWith(expect.objectContaining({ scopeId: 'epl' }), expect.anything());
-  expect(sportsClient.getCatalog).toHaveBeenCalledTimes(1);
+  expect(sportsClient.getGames).toHaveBeenCalledWith(
+    expect.objectContaining({ scopeId: 'epl', knownCatalogRevision: 1 }),
+    expect.anything()
+  );
+  expect(sportsClient.getCatalog).not.toHaveBeenCalled();
 });
 
 it('discards an interrupted response instead of publishing it', async () => {
@@ -319,23 +336,23 @@ it('discards an interrupted response instead of publishing it', async () => {
   await settle();
   navigation().select('tennis');
   await settle();
-  response.resolve({ catalog, games: [first] });
+  response.resolve({ catalogRevision: 1, catalog, games: [first] });
   await settle();
 
   expect(page().sections[0]?.gameIds).toEqual(['2']);
   expect(useSportsStore.getState().games['1']).toBeUndefined();
 });
 
-it('caps each section at thirty and stores only the games its sections show', async () => {
+it('stores the server’s thirty Games in each scheduled section', async () => {
   const today = getSportsWindow().from;
   const date = new Date(today);
   const tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString();
-  const live = Array.from({ length: 31 }, (_, i) => game(String(100 + i), { startsAt: today }));
-  const scheduled = Array.from({ length: 31 }, (_, i) => game(String(200 + i), { status: Game_Status.STATUS_SCHEDULED, startsAt: today }));
-  const upcoming = Array.from({ length: 31 }, (_, i) =>
+  const live = Array.from({ length: 30 }, (_, i) => game(String(100 + i), { startsAt: today }));
+  const scheduled = Array.from({ length: 30 }, (_, i) => game(String(200 + i), { status: Game_Status.STATUS_SCHEDULED, startsAt: today }));
+  const upcoming = Array.from({ length: 30 }, (_, i) =>
     game(String(300 + i), { status: Game_Status.STATUS_SCHEDULED, startsAt: tomorrow })
   );
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [...live, ...scheduled, ...upcoming] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [...live, ...scheduled, ...upcoming] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -349,10 +366,10 @@ it('caps each section at thirty and stores only the games its sections show', as
   expect(Object.keys(useSportsStore.getState().games)).toEqual(expectedSections.flatMap(section => section.gameIds));
 });
 
-it('caps each Live group at thirty', async () => {
-  const basketball = Array.from({ length: 31 }, (_, i) => game(String(100 + i)));
-  const tennis = Array.from({ length: 31 }, (_, i) => game(String(200 + i), { competitionIds: ['atp'] }));
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [...basketball, ...tennis] });
+it('stores the server’s thirty Games in each Live group', async () => {
+  const basketball = Array.from({ length: 30 }, (_, i) => game(String(100 + i)));
+  const tennis = Array.from({ length: 30 }, (_, i) => game(String(200 + i), { competitionIds: ['atp'] }));
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [...basketball, ...tennis] });
   showMain();
   await settle();
 
@@ -368,7 +385,7 @@ it('moves a game between sections as its status changes in any response', async 
   await startClock(new Date(2026, 8, 20, 12));
   const scheduled = game('1', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(2026, 8, 20, 18).toISOString() });
   const answer = (status: Game_Status) => lookupResponse([{ ...scheduled, status }], [{ eventId: 'child', gameId: '1' }]);
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [scheduled] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [scheduled] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -390,10 +407,10 @@ it('moves a game between sections as its status changes in any response', async 
 });
 
 it('regroups only cached pages affected by a lookup’s section-field changes', async () => {
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [first, second] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, second] });
   jest
     .mocked(sportsClient.getGames)
-    .mockImplementation(({ scopeId }) => Promise.resolve({ catalog, games: scopeId === 'nba' ? [first] : [second] }));
+    .mockImplementation(({ scopeId }) => Promise.resolve({ catalogRevision: 1, catalog, games: scopeId === 'nba' ? [first] : [second] }));
   showMain();
   await settle();
   navigation().select('nba');
@@ -417,7 +434,7 @@ it('regroups only cached pages affected by a lookup’s section-field changes', 
 });
 
 it('keeps score polls off page Game comparisons after a status change', async () => {
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [first, second] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, second] });
   jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([first, second]));
   showMain();
   await settle();
@@ -437,7 +454,7 @@ it('keeps score polls off page Game comparisons after a status change', async ()
 });
 
 it('reuses stored sections after the page remounts and refreshes', async () => {
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [first] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -459,13 +476,13 @@ it('reuses stored sections after the page remounts and refreshes', async () => {
   expect(page().sections).toBe(stored?.sections);
   const compareGames = jest.spyOn(sections, 'areSectionInputsEqual');
   const scored = game('1', { score: [{ ...first.score[0], first: { value: 1 } }] });
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [scored] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [scored] });
   await refreshSportsPage('main');
   expect(compareGames).not.toHaveBeenCalled();
 });
 
 it('removes a game from a page when any response moves it out of the page’s scope', async () => {
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [first] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -484,7 +501,7 @@ it('reorders a page when any response changes a start time', async () => {
   const at = (hours: number) => new Date(Date.parse(getSportsWindow().from) + time.hours(hours)).toISOString();
   const early = game('1', { status: Game_Status.STATUS_SCHEDULED, startsAt: at(33) });
   const late = game('2', { status: Game_Status.STATUS_SCHEDULED, startsAt: at(34) });
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [early, late] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [early, late] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -502,23 +519,68 @@ it('reorders a page when any response changes a start time', async () => {
 it('replaces every page and its freshness on a catalog revision', async () => {
   showMain();
   await settle();
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog: { ...catalog, revision: 2 }, games: [second] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 2, catalog, games: [second] });
   navigation().select('tennis');
   await settle();
   expect(useSportsStore.getState().results.live).toBeUndefined();
 
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog: { ...catalog, revision: 2 }, games: [first] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 2, catalog, games: [first] });
   navigation().select('live');
   await settle();
   expect(sportsClient.getLiveGames).toHaveBeenCalledTimes(2);
 });
 
+it('admits catalogs and Games together, retaining equal revisions and rejecting incomplete or older responses', async () => {
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValueOnce({ catalogRevision: 2, catalog: undefined, games: [first] });
+  showMain();
+  await settle();
+  expect(useSportsStore.getState().catalog).toBeUndefined();
+  expect(useSportsStore.getState().games).toEqual({});
+  expect(status()).toBe('error');
+
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 2, catalog, games: [first] });
+  await retrySportsPage('main');
+  const acceptedCatalog = useSportsStore.getState().catalog;
+  const updated = game('1', { clock: '12:00' });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 2, catalog: undefined, games: [updated] });
+  await refreshSportsPage('main');
+  expect(useSportsStore.getState().catalog).toBe(acceptedCatalog);
+  expect(useSportsStore.getState().games['1']?.clock).toBe('12:00');
+  expect(jest.mocked(sportsClient.getLiveGames).mock.lastCall?.[0].knownCatalogRevision).toBe(2);
+
+  const before = useSportsStore.getState();
+  for (const response of [
+    { catalogRevision: 1, catalog, games: [second] },
+    { catalogRevision: 3, catalog: undefined, games: [second] },
+  ]) {
+    jest.mocked(sportsClient.getLiveGames).mockResolvedValue(response);
+    await refreshSportsPage('main');
+    expect(useSportsStore.getState().catalog).toBe(before.catalog);
+    expect(useSportsStore.getState().games).toBe(before.games);
+    expect(useSportsStore.getState().results).toBe(before.results);
+    expect(page().sections[0]?.gameIds).toEqual(['1']);
+    expect(status()).toBe('error');
+  }
+});
+
 // ============ Days =========================================================== //
+
+it('keys scheduled reads by all three boundaries and Search by its week alone', () => {
+  const window = getSportsWindow(new Date(2026, 8, 20));
+  const changed = { ...window, todayUntil: new Date(Date.parse(window.todayUntil) + time.hours(1)).toISOString() };
+
+  expect(getPageQueryKey({ type: 'scope', scopeId: 'nba', window })).not.toBe(
+    getPageQueryKey({ type: 'scope', scopeId: 'nba', window: changed })
+  );
+  expect(getPageQueryKey({ type: 'search', query: 'team', window })).toBe(
+    getPageQueryKey({ type: 'search', query: 'team', window: changed })
+  );
+});
 
 it('shows the new day at midnight and requests the new week', async () => {
   await startClock(new Date(2026, 8, 20, 23, 59, 30));
   const later = game('tomorrow', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(2026, 8, 21, 16).toISOString() });
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [later] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [later] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -533,12 +595,16 @@ it('shows the new day at midnight and requests the new week', async () => {
     getSportsWindow(new Date(2026, 8, 20)).from,
     getSportsWindow(new Date(2026, 8, 21)).from,
   ]);
+  expect(jest.mocked(sportsClient.getGames).mock.calls.map(([request]) => request.todayUntil)).toEqual([
+    getSportsWindow(new Date(2026, 8, 20)).todayUntil,
+    getSportsWindow(new Date(2026, 8, 21)).todayUntil,
+  ]);
 });
 
 it('shows a scope as loading, not empty, while its new week loads', async () => {
   await startClock(new Date(2026, 8, 20, 23, 59, 30));
   const tonight = game('tonight', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(2026, 8, 20, 23, 59, 50).toISOString() });
-  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalog, games: [tonight] });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [tonight] });
   navigation().select('nba');
   showMain();
   await settle();
@@ -566,6 +632,10 @@ it('requests only the current week when the app returns on a later day', async (
   expect(jest.mocked(sportsClient.getGames).mock.calls.map(([request]) => request.from)).toEqual([
     getSportsWindow(new Date(2026, 8, 20)).from,
     getSportsWindow(new Date(2026, 8, 21)).from,
+  ]);
+  expect(jest.mocked(sportsClient.getGames).mock.calls.map(([request]) => request.todayUntil)).toEqual([
+    getSportsWindow(new Date(2026, 8, 20)).todayUntil,
+    getSportsWindow(new Date(2026, 8, 21)).todayUntil,
   ]);
 });
 
@@ -626,7 +696,7 @@ it('drops a failed request no page shows with the next response', async () => {
     await settle();
   }
 
-  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalog, games: [first] });
+  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   navigation().search('third');
   await settle();
 
@@ -721,8 +791,13 @@ it('returns to Live when retrying a category removed from the catalog', async ()
 it('accumulates Search to thirty and refreshes from the first page', async () => {
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: Array.from({ length: 20 }, (_, i) => game(`${i}`)), nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: Array.from({ length: 20 }, (_, i) => game(`${i + 15}`)), nextCursor: 'page-3' });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: Array.from({ length: 20 }, (_, i) => game(`${i}`)), nextCursor: 'page-2' })
+    .mockResolvedValueOnce({
+      catalogRevision: 1,
+      catalog,
+      games: Array.from({ length: 20 }, (_, i) => game(`${i + 15}`)),
+      nextCursor: 'page-3',
+    });
   navigation().search('team');
   showMain();
   await settle();
@@ -744,9 +819,9 @@ it('accumulates Search to thirty and refreshes from the first page', async () =>
 it('continues across Search pages that repeat Games but advance the cursor', async () => {
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-3' })
-    .mockResolvedValueOnce({ catalog, games: [second] });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second] });
   navigation().search('team');
   showMain();
   await settle();
@@ -761,13 +836,13 @@ it('rejects a Search cursor cycle without replacing loaded data and can retry', 
   const updated = game('1', { clock: '12:00' });
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' })
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-3' })
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second] });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second] });
   navigation().search('team');
   showMain();
   await settle();
@@ -800,12 +875,12 @@ it('refreshes the loaded Search range every minute without polling its continuat
   const updatedSecond = game('2', { clock: '12:00' });
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' })
-    .mockResolvedValueOnce({ catalog, games: [updatedFirst], nextCursor: 'new-page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updatedFirst], nextCursor: 'new-page-2' })
     .mockImplementationOnce(() => continuation.promise)
-    .mockResolvedValueOnce({ catalog, games: [updatedFirst], nextCursor: 'new-page-2' })
-    .mockResolvedValueOnce({ catalog, games: [updatedSecond], nextCursor: 'new-page-3' });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updatedFirst], nextCursor: 'new-page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updatedSecond], nextCursor: 'new-page-3' });
   navigation().search('team');
   showMain();
   await settle();
@@ -821,7 +896,7 @@ it('refreshes the loaded Search range every minute without polling its continuat
   expect(page().sections).toBe(before);
   expect(useSportsStore.getState().games['1']?.clock).toBe(first.clock);
 
-  continuation.resolve({ catalog, games: [updatedSecond], nextCursor: 'new-page-3' });
+  continuation.resolve({ catalogRevision: 1, catalog, games: [updatedSecond], nextCursor: 'new-page-3' });
   await settle();
   expect(page().sections).toBe(before);
   expect(useSportsStore.getState().games['1']?.clock).toBe('12:00');
@@ -844,12 +919,12 @@ it('keeps all Search data when a refresh fails and retries the loaded range', as
   const updated = game('1', { clock: '12:00' });
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' })
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-2' })
     .mockRejectedValueOnce(new Error('Offline'))
-    .mockResolvedValueOnce({ catalog, games: [updated], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second] });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [updated], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second] });
   navigation().search('team');
   showMain();
   await settle();
@@ -881,9 +956,9 @@ it('includes load-more requested while a Search refresh is in flight', async () 
   const refresh = Promise.withResolvers<SearchGamesResponse>();
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
     .mockImplementationOnce(() => refresh.promise)
-    .mockResolvedValueOnce({ catalog, games: [second] });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second] });
   navigation().search('team');
   showMain();
   await settle();
@@ -893,7 +968,7 @@ it('includes load-more requested while a Search refresh is in flight', async () 
   await settle();
   const loading = loadMoreSportsGames('main');
   expect(page().sections).toBe(before);
-  refresh.resolve({ catalog, games: [first], nextCursor: 'page-2' });
+  refresh.resolve({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' });
   await loading;
 
   expect(jest.mocked(sportsClient.searchGames).mock.calls.map(([request]) => request.cursor)).toEqual([undefined, undefined, 'page-2']);
@@ -905,7 +980,7 @@ it('restarts a paginated Search at midnight even when it is still fresh', async 
   navigation().search('team');
   showMain();
   await settle();
-  jest.mocked(sportsClient.searchGames).mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' });
+  jest.mocked(sportsClient.searchGames).mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second], nextCursor: 'page-3' });
   await loadMoreSportsGames('main');
   expect(page().sections[0]?.gameIds).toEqual(['1', '2']);
 
@@ -926,7 +1001,9 @@ it('restarts a paginated Search at midnight even when it is still fresh', async 
 });
 
 it('keeps only the latest query’s results and loads a replaced query again when revisited', async () => {
-  jest.mocked(sportsClient.searchGames).mockImplementation(async ({ query }) => ({ catalog, games: [query === 'first' ? first : second] }));
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockImplementation(async ({ query }) => ({ catalogRevision: 1, catalog, games: [query === 'first' ? first : second] }));
   navigation().search('first');
   showMain();
   await settle();
@@ -942,7 +1019,9 @@ it('keeps only the latest query’s results and loads a replaced query again whe
 });
 
 it('searches again for a host whose Search result another host replaced', async () => {
-  jest.mocked(sportsClient.searchGames).mockImplementation(async ({ query }) => ({ catalog, games: [query === 'first' ? first : second] }));
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockImplementation(async ({ query }) => ({ catalogRevision: 1, catalog, games: [query === 'first' ? first : second] }));
   navigation().search('first');
   showMain();
   await settle();
@@ -978,10 +1057,10 @@ it('searches globally from a category and returns to it on cancel', async () => 
 it('retries a failed continuation without discarding earlier pages', async () => {
   jest
     .mocked(sportsClient.searchGames)
-    .mockResolvedValueOnce({ catalog, games: [first], nextCursor: 'page-2' })
-    .mockResolvedValueOnce({ catalog, games: [second], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [second], nextCursor: 'page-3' })
     .mockRejectedValueOnce(new Error('Page unavailable'))
-    .mockResolvedValueOnce({ catalog, games: [game('3')], nextCursor: undefined });
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [game('3')], nextCursor: undefined });
   navigation().search('team');
   showMain();
   await settle();
@@ -996,7 +1075,7 @@ it('retries a failed continuation without discarding earlier pages', async () =>
 });
 
 it('keeps Search relevance order', async () => {
-  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalog, games: [game('3'), first, second] });
+  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [game('3'), first, second] });
   navigation().search('team');
   showMain();
   await settle();
@@ -1004,19 +1083,136 @@ it('keeps Search relevance order', async () => {
   expect(page().sections).toEqual([{ type: 'search', gameIds: ['3', '1', '2'] }]);
 });
 
-it('restarts Search when its continuation is rejected', async () => {
+it('retains the first Search page’s catalog when later refresh pages omit it', async () => {
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog: undefined, games: [second] })
+    .mockResolvedValueOnce({ catalogRevision: 2, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 2, catalog: undefined, games: [second] });
   navigation().search('team');
   showMain();
   await settle();
+  await loadMoreSportsGames('main');
+  await refreshSportsPage('main');
+
+  expect(jest.mocked(sportsClient.searchGames).mock.calls.map(([request]) => request.knownCatalogRevision)).toEqual([undefined, 1, 1, 2]);
+  expect(useSportsStore.getState().catalog?.revision).toBe(2);
+  expect(page().sections[0]?.gameIds).toEqual(['1', '2']);
+  expect(status()).toBe('none');
+});
+
+it('restarts one rejected continuation without publishing abandoned data or an error footer', async () => {
+  const restart = Promise.withResolvers<SearchGamesResponse>();
+  const invalidCursor = new RainbowFetchError({ message: 'Invalid cursor', responseBody: { code: 9 } });
   jest
     .mocked(sportsClient.searchGames)
-    .mockRejectedValueOnce(new RainbowFetchError({ message: 'Invalid cursor', responseBody: { code: 9 } }));
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog: undefined, games: [second], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 2, catalog, games: [game('abandoned')], nextCursor: 'page-2' })
+    .mockRejectedValueOnce(invalidCursor)
+    .mockImplementationOnce(() => restart.promise)
+    .mockResolvedValueOnce({ catalogRevision: 3, catalog: undefined, games: [game('new-2')], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 3, catalog: undefined, games: [] });
+  navigation().search('team');
+  showMain();
+  await settle();
+  await loadMoreSportsGames('main');
+  const before = useSportsStore.getState();
+  const footer = jest.fn();
+  unsubscribes.push(sportsPageStatusStores.main.subscribe(footer));
+
+  const refresh = refreshSportsPage('main');
+  await settle();
+  expect(useSportsStore.getState().catalog).toBe(before.catalog);
+  expect(useSportsStore.getState().games).toBe(before.games);
+  expect(page().sections[0]?.gameIds).toEqual(['1', '2']);
+  expect(status()).toBe('more');
+  expect(footer).not.toHaveBeenCalled();
+
+  const more = loadMoreSportsGames('main');
+  restart.resolve({ catalogRevision: 3, catalog, games: [game('new-1')], nextCursor: 'page-2' });
+  await Promise.all([refresh, more]);
+
+  const calls = jest.mocked(sportsClient.searchGames).mock.calls.map(([request]) => request);
+  expect(calls.map(request => request.cursor)).toEqual([undefined, 'page-2', undefined, 'page-2', undefined, 'page-2', 'page-3']);
+  expect(calls.map(request => request.knownCatalogRevision)).toEqual([undefined, 1, 1, 2, 1, 3, 3]);
+  expect(new Set(calls.map(request => `${request.query}/${request.from}/${request.until}`)).size).toBe(1);
+  expect(useSportsStore.getState().catalog?.revision).toBe(3);
+  expect(page().sections[0]?.gameIds).toEqual(['new-1', 'new-2']);
+  expect(Object.keys(useSportsStore.getState().games).sort()).toEqual(['new-1', 'new-2']);
+  expect(status()).toBe('none');
+  expect(useSportsStore.getState().search?.requestedCount).toBe(3);
+
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockResolvedValueOnce({ catalogRevision: 3, catalog: undefined, games: [game('new-1')], nextCursor: 'page-2' })
+    .mockResolvedValueOnce({ catalogRevision: 3, catalog: undefined, games: [game('new-2')], nextCursor: 'page-3' })
+    .mockResolvedValueOnce({ catalogRevision: 3, catalog: undefined, games: [game('new-3')] });
+  await refreshSportsPage('main');
+  expect(sportsClient.searchGames).toHaveBeenCalledTimes(10);
+  expect(page().sections[0]?.gameIds).toEqual(['new-1', 'new-2', 'new-3']);
+});
+
+it('keeps committed Search data when a second continuation fails', async () => {
+  const invalidCursor = new RainbowFetchError({ message: 'Invalid cursor', responseBody: { code: 9 } });
+  jest
+    .mocked(sportsClient.searchGames)
+    .mockResolvedValueOnce({ catalogRevision: 1, catalog, games: [first], nextCursor: 'page-2' })
+    .mockRejectedValueOnce(invalidCursor)
+    .mockResolvedValueOnce({ catalogRevision: 2, catalog, games: [second], nextCursor: 'page-2' })
+    .mockRejectedValueOnce(invalidCursor);
+  navigation().search('team');
+  showMain();
+  await settle();
+  const before = useSportsStore.getState();
   await loadMoreSportsGames('main');
 
-  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalog: { ...catalog, revision: 2 }, games: [second], nextCursor: undefined });
-  await retrySportsPage('main');
-  expect(jest.mocked(sportsClient.searchGames).mock.calls[2][0].cursor).toBeUndefined();
-  expect(page().sections[0]?.gameIds).toEqual(['2']);
+  expect(sportsClient.searchGames).toHaveBeenCalledTimes(4);
+  expect(useSportsStore.getState().catalog).toBe(before.catalog);
+  expect(useSportsStore.getState().games).toBe(before.games);
+  expect(page().sections[0]?.gameIds).toEqual(['1']);
+  expect(status()).toBe('error');
+});
+
+it('does not restart a failed-precondition response to an initial Search request', async () => {
+  jest.mocked(sportsClient.searchGames).mockRejectedValue(new RainbowFetchError({ message: 'Rejected', responseBody: { code: 9 } }));
+  navigation().search('team');
+  showMain();
+  await settle();
+
+  expect(sportsClient.searchGames).toHaveBeenCalledTimes(1);
+  expect(status()).toBe('error');
+});
+
+it('does not restart a canceled Search continuation', async () => {
+  navigation().search('team');
+  showMain();
+  await settle();
+  const before = useSportsStore.getState();
+  jest.mocked(sportsClient.searchGames).mockImplementationOnce(async (_, controller) => {
+    controller?.abort();
+    throw new RainbowFetchError({ message: 'Invalid cursor', responseBody: { code: 9 } });
+  });
+  await loadMoreSportsGames('main');
+
+  expect(sportsClient.searchGames).toHaveBeenCalledTimes(2);
+  expect(useSportsStore.getState().games).toBe(before.games);
+  expect(page().sections[0]?.gameIds).toEqual(['1']);
+});
+
+it('rejects a Search continuation with a different revision instead of mixing its Games', async () => {
+  navigation().search('team');
+  showMain();
+  await settle();
+  const before = useSportsStore.getState();
+  jest.mocked(sportsClient.searchGames).mockResolvedValue({ catalogRevision: 2, catalog, games: [second] });
+  await loadMoreSportsGames('main');
+
+  expect(useSportsStore.getState().catalog).toBe(before.catalog);
+  expect(useSportsStore.getState().games).toBe(before.games);
+  expect(page().sections[0]?.gameIds).toEqual(['1']);
+  expect(status()).toBe('error');
 });
 
 // ============ Events ========================================================= //
@@ -1219,38 +1415,26 @@ it('keeps the games of lists in other Discover sections and of the selected even
   expect(Object.keys(useSportsStore.getState().games).sort()).toEqual(['1', '2', '3']);
 });
 
-it('does not traverse retention or cache ownership during stable event polling', async () => {
+it('preserves unchanged Game and resolution identities through event polling', async () => {
   await startClock(new Date(2026, 8, 20, 12));
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
   setList(['1', '2']);
   showDiscover();
   await settle();
+  const before = useSportsStore.getState();
 
-  const indices = new Set<object>();
-  const caches = new Set<object>();
-  const recordInputs = () => {
-    const state = useSportsStore.getState();
-    indices.add(state.games);
-    indices.add(state.eventGameIds);
-    caches.add(state.queryCache);
-  };
-  recordInputs();
-  unsubscribes.push(useSportsStore.subscribe(recordInputs));
-
-  const keys = jest.spyOn(Object, 'keys');
-  const entries = jest.spyOn(Object, 'entries');
-  const values = jest.spyOn(Object, 'values');
-  const results = useSportsStore.getState().results;
-
-  for (let poll = 0; poll < 10; poll++) {
+  for (let poll = 0; poll < 3; poll++) {
     jest.setSystemTime(Date.now() + time.seconds(60));
     await useSportsStore.getState().fetch(undefined, { force: true });
     await settle();
   }
 
-  expect(keys.mock.calls.filter(([value]) => indices.has(value))).toHaveLength(0);
-  expect(entries.mock.calls.filter(([value]) => caches.has(value))).toHaveLength(0);
-  expect(values.mock.calls.filter(([value]) => value === results)).toHaveLength(0);
+  const after = useSportsStore.getState();
+  expect(after.games).toBe(before.games);
+  expect(after.eventGameIds).toBe(before.eventGameIds);
+  expect(after.results).toBe(before.results);
+  expect(after.answeredAt.get('1')).toBe(Date.now());
+  expect(after.answeredAt.get('1')).toBeGreaterThan(before.answeredAt.get('1') ?? 0);
 });
 
 it('releases a formerly selected event’s answer with the next response', async () => {
@@ -1277,7 +1461,7 @@ it('releases a page-origin game after its last mounted list releases it', async 
   await settle();
   expect(sportsClient.lookupGames).not.toHaveBeenCalled();
 
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [] });
   await refreshSportsPage('main');
   expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
 
@@ -1288,12 +1472,12 @@ it('releases a page-origin game after its last mounted list releases it', async 
 });
 
 it('releases a game with the page response that no longer shows it', async () => {
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [first, game('3')] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, game('3')] });
   showMain();
   await settle();
   expect(Object.keys(useSportsStore.getState().games).sort()).toEqual(['1', '3']);
 
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [first] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   await refreshSportsPage('main');
   expect(Object.keys(useSportsStore.getState().games)).toEqual(['1']);
 });
@@ -1304,7 +1488,9 @@ it('releases an event’s game once the event stops being a game', async () => {
   await settle();
   expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
 
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue({ catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
+  jest
+    .mocked(sportsClient.lookupGames)
+    .mockResolvedValue({ catalogRevision: 1, catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
   await refreshSportsEvents();
   expect(useSportsStore.getState().games).toEqual({});
 });
@@ -1390,7 +1576,9 @@ it('waits a minute before asking again about an event that stopped being a game'
   openEvent('1');
   await settle();
 
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue({ catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
+  jest
+    .mocked(sportsClient.lookupGames)
+    .mockResolvedValue({ catalogRevision: 1, catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
   jest.advanceTimersByTime(time.minutes(1));
   await settle();
   expect(getGameId(useSportsStore.getState(), '1')).toBeNull();
@@ -1401,7 +1589,9 @@ it('waits a minute before asking again about an event that stopped being a game'
 });
 
 it('resolves an event reported unavailable once its game arrives, and keeps the game for it', async () => {
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue({ catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
+  jest
+    .mocked(sportsClient.lookupGames)
+    .mockResolvedValue({ catalogRevision: 1, catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
   openEvent('1');
   await settle();
   expect(getGameId(useSportsStore.getState(), '1')).toBeNull();
@@ -1410,7 +1600,7 @@ it('resolves an event reported unavailable once its game arrives, and keeps the 
   await settle();
   expect(getGameId(useSportsStore.getState(), '1')).toBe('1');
 
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [second] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [second] });
   await refreshSportsPage('main');
   expect(page().sections[0]?.gameIds).toEqual(['2']);
   expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
@@ -1430,7 +1620,7 @@ it('pauses while the app is inactive and resumes on return', async () => {
 // ============ Navigation ===================================================== //
 
 it('keeps the category tab while browsing into it and Back returns through its parents', async () => {
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalog, games: [] });
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [] });
   showMain();
   await settle();
 

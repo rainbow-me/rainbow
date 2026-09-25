@@ -4,8 +4,7 @@ import { Game, Game_Status, Sport_Browse, SportsCatalog } from './generated/spor
 import { areSectionInputsEqual, groupSportsGames, reuseSections, selectSportsGames, type SportsSection } from './sections';
 
 const window = getSportsWindow(new Date(2026, 8, 20, 12));
-const catalogResponse = SportsCatalog.fromJSON({
-  revision: 1,
+const catalogMessage = SportsCatalog.fromJSON({
   sports: [
     {
       id: 'tennis',
@@ -17,7 +16,7 @@ const catalogResponse = SportsCatalog.fromJSON({
   ],
   liveGroupIds: ['tennis', 'us-open'],
 });
-const catalog = buildSportsCatalog(catalogResponse);
+const catalog = buildSportsCatalog(catalogMessage, 1);
 
 function game(id: string, fields: Partial<Game> = {}): Game {
   return Game.fromJSON({
@@ -37,15 +36,14 @@ describe('Sports sections', () => {
       game('live'),
       game('tomorrow', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(2026, 8, 21).toISOString() }),
     ];
-    const promoted = buildSportsCatalog({ ...catalogResponse, promotedGameIds: ['promoted'] });
+    const promoted = buildSportsCatalog({ ...catalogMessage, promotedGameIds: ['promoted'] }, 1);
     const selection = groupSportsGames(promoted, games, { scopeId: 'tennis', window });
 
-    expect(selection.sections).toEqual([
+    expect(selection).toEqual([
       { type: 'live', gameIds: ['promoted', 'live'] },
       { type: 'today', gameIds: ['today'] },
       { type: 'upcoming', gameIds: ['tomorrow'] },
     ]);
-    expect(selection.games).toEqual([games[0], games[2], games[1], games[3]]);
   });
 
   it('groups live games under the first matching Live group', () => {
@@ -55,20 +53,19 @@ describe('Sports sections', () => {
       game('scheduled', { status: Game_Status.STATUS_SCHEDULED }),
     ];
 
-    expect(selectSportsGames(catalog, games).sections).toEqual([
+    expect(selectSportsGames(catalog, games)).toEqual([
       { type: 'live', scopeId: 'tennis', gameIds: ['tennis-match'] },
       { type: 'live', scopeId: 'nba', gameIds: ['basketball-match'] },
     ]);
   });
 
-  it('admits only Games belonging to emitted sections', () => {
+  it('shows only Games belonging to catalogued Live groups', () => {
     const known = game('known');
     const unknown = game('unknown', { competitionIds: ['unlisted'] });
     const selected = selectSportsGames(catalog, [known, unknown]);
 
-    expect(selected.games).toEqual([known]);
-    expect(selected.sections).toEqual([{ type: 'live', scopeId: 'tennis', gameIds: ['known'] }]);
-    expect(selectSportsGames(undefined, [known])).toEqual({ games: [], sections: [] });
+    expect(selected).toEqual([{ type: 'live', scopeId: 'tennis', gameIds: ['known'] }]);
+    expect(selectSportsGames(undefined, [known])).toEqual([]);
   });
 
   it('uses the preferred competition for uncurated Live games, ordered by the catalog', () => {
@@ -78,7 +75,7 @@ describe('Sports sections', () => {
       game('tournament-match', { competitionIds: ['us-open', 'atp'] }),
     ];
 
-    expect(selectSportsGames(buildSportsCatalog({ ...catalogResponse, liveGroupIds: ['us-open'] }), games).sections).toEqual([
+    expect(selectSportsGames(buildSportsCatalog({ ...catalogMessage, liveGroupIds: ['us-open'] }, 1), games)).toEqual([
       { type: 'live', scopeId: 'us-open', gameIds: ['tournament-match'] },
       { type: 'live', scopeId: 'atp', gameIds: ['atp-match'] },
       { type: 'live', scopeId: 'wta', gameIds: ['wta-match'] },
@@ -88,7 +85,7 @@ describe('Sports sections', () => {
   it('chooses the first curated Live group even when its competition is not first on the game', () => {
     const games = [game('match', { competitionIds: ['atp', 'us-open'] })];
 
-    expect(selectSportsGames(buildSportsCatalog({ ...catalogResponse, liveGroupIds: ['us-open', 'tennis'] }), games).sections).toEqual([
+    expect(selectSportsGames(buildSportsCatalog({ ...catalogMessage, liveGroupIds: ['us-open', 'tennis'] }, 1), games)).toEqual([
       { type: 'live', scopeId: 'us-open', gameIds: ['match'] },
     ]);
   });
@@ -96,11 +93,9 @@ describe('Sports sections', () => {
   it('orders each Live group by promotion, then start, then ID', () => {
     const at = (hour: number) => new Date(2026, 8, 20, hour).toISOString();
     const games = [game('late', { startsAt: at(18) }), game('early', { startsAt: at(9) }), game('promoted', { startsAt: at(20) })];
-    const promoted = buildSportsCatalog({ ...catalogResponse, promotedGameIds: ['promoted'] });
+    const promoted = buildSportsCatalog({ ...catalogMessage, promotedGameIds: ['promoted'] }, 1);
 
-    expect(selectSportsGames(promoted, games).sections).toEqual([
-      { type: 'live', scopeId: 'tennis', gameIds: ['promoted', 'early', 'late'] },
-    ]);
+    expect(selectSportsGames(promoted, games)).toEqual([{ type: 'live', scopeId: 'tennis', gameIds: ['promoted', 'early', 'late'] }]);
   });
 
   it('orders games by promotion, then start, then ID', () => {
@@ -112,9 +107,9 @@ describe('Sports sections', () => {
       game('promoted-second', { startsAt: at(8) }),
       game('promoted-first', { startsAt: at(20) }),
     ];
-    const promoted = buildSportsCatalog({ ...catalogResponse, promotedGameIds: ['promoted-first', 'promoted-second'] });
+    const promoted = buildSportsCatalog({ ...catalogMessage, promotedGameIds: ['promoted-first', 'promoted-second'] }, 1);
 
-    expect(selectSportsGames(promoted, games, { scopeId: 'tennis', window }).sections).toEqual([
+    expect(selectSportsGames(promoted, games, { scopeId: 'tennis', window })).toEqual([
       { type: 'live', gameIds: ['promoted-first', 'promoted-second', 'a-early', 'b-early', 'late'] },
     ]);
   });
@@ -124,7 +119,7 @@ describe('Sports sections', () => {
       game(`live-${String(index).padStart(2, '0')}`),
       game(`today-${String(index).padStart(2, '0')}`, { status: Game_Status.STATUS_SCHEDULED }),
     ]).flat();
-    const sections = selectSportsGames(catalog, games, { scopeId: 'tennis', window }).sections;
+    const sections = selectSportsGames(catalog, games, { scopeId: 'tennis', window });
 
     expect(sections.map(section => [section.type, section.gameIds.length])).toEqual([
       ['live', 30],
@@ -136,10 +131,10 @@ describe('Sports sections', () => {
   it('shows the games of a scope and of its competitions', () => {
     const games = [game('atp-match'), game('wta-match', { competitionIds: ['wta'] }), game('nba-match', { competitionIds: ['nba'] })];
 
-    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window }).sections).toEqual([
+    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window })).toEqual([
       { type: 'live', gameIds: ['atp-match', 'wta-match'] },
     ]);
-    expect(selectSportsGames(catalog, games, { scopeId: 'wta', window }).sections).toEqual([{ type: 'live', gameIds: ['wta-match'] }]);
+    expect(selectSportsGames(catalog, games, { scopeId: 'wta', window })).toEqual([{ type: 'live', gameIds: ['wta-match'] }]);
   });
 
   it('shows only live games for a sport browsed by competition', () => {
@@ -148,8 +143,8 @@ describe('Sports sections', () => {
       game('scheduled', { competitionIds: ['epl'], status: Game_Status.STATUS_SCHEDULED }),
     ];
 
-    expect(selectSportsGames(catalog, games, { scopeId: 'soccer', window }).sections).toEqual([{ type: 'live', gameIds: ['live'] }]);
-    expect(selectSportsGames(catalog, games, { scopeId: 'epl', window }).sections).toEqual([
+    expect(selectSportsGames(catalog, games, { scopeId: 'soccer', window })).toEqual([{ type: 'live', gameIds: ['live'] }]);
+    expect(selectSportsGames(catalog, games, { scopeId: 'epl', window })).toEqual([
       { type: 'live', gameIds: ['live'] },
       { type: 'today', gameIds: ['scheduled'] },
     ]);
@@ -170,10 +165,27 @@ describe('Sports sections', () => {
       game('unknown', { status: Game_Status.STATUS_UNSPECIFIED }),
     ];
 
-    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window }).sections).toEqual([
+    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window })).toEqual([
       { type: 'live', gameIds: ['overnight-live'] },
       { type: 'today', gameIds: ['past-kickoff', 'tonight'] },
       { type: 'upcoming', gameIds: ['tomorrow', 'last-day'] },
+    ]);
+  });
+
+  it.each([
+    { hours: 23, from: '2026-03-08T05:00:00Z', todayUntil: '2026-03-09T04:00:00Z', until: '2026-03-15T04:00:00Z' },
+    { hours: 25, from: '2026-11-01T04:00:00Z', todayUntil: '2026-11-02T05:00:00Z', until: '2026-11-08T05:00:00Z' },
+  ])('groups at the supplied $hours-hour Today boundary', ({ hours, ...window }) => {
+    const boundary = Date.parse(window.todayUntil);
+    const games = [
+      game('today', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(boundary - 1).toISOString() }),
+      game('upcoming', { status: Game_Status.STATUS_SCHEDULED, startsAt: window.todayUntil }),
+    ];
+
+    expect(boundary - Date.parse(window.from)).toBe(hours * 60 * 60 * 1000);
+    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window })).toEqual([
+      { type: 'today', gameIds: ['today'] },
+      { type: 'upcoming', gameIds: ['upcoming'] },
     ]);
   });
 

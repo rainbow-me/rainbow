@@ -1,5 +1,5 @@
 import { type SportsDestination } from './browse';
-import { Sport_Browse, type SportsCatalog as CatalogResponse, type Competition } from './generated/sports';
+import { Sport_Browse, type SportsCatalog as CatalogMessage, type Competition } from './generated/sports';
 
 export type SportsScope = Competition & {
   parentId?: string;
@@ -20,10 +20,10 @@ export type SportsCatalog = {
 };
 
 /**
- * Indexes a catalog response for browsing: scopes by ID with their parents, directories, and categories, the
+ * Indexes a catalog at its response's revision: scopes by ID with their parents, directories, and categories, the
  * category tabs, promoted games' ranks, and the order of Live groups.
  */
-export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
+export function buildSportsCatalog(catalog: CatalogMessage, revision: number): SportsCatalog {
   const scopes: SportsCatalog['scopes'] = {};
   const sportIds: string[] = [];
   const competitionIds: string[] = [];
@@ -65,7 +65,7 @@ export function buildSportsCatalog(catalog: CatalogResponse): SportsCatalog {
   }
 
   return {
-    revision: catalog.revision,
+    revision,
     scopes,
     sportIds,
     scopeIds: [...sportIds, ...competitionIds],

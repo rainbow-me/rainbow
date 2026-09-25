@@ -8,9 +8,8 @@
 
 export const protobufPackage = "apiproxy.sports";
 
-/** SportsCatalog is the current editorial navigation policy. It contains no game counts. */
+/** SportsCatalog describes editorial navigation. Its revision belongs to the enclosing response. */
 export interface SportsCatalog {
-  revision: number;
   sports: Sport[];
   prominentScopeIds: string[];
   liveGroupIds: string[];
@@ -325,46 +324,74 @@ export interface ScoreValue {
 }
 
 export interface GetCatalogRequest {
+  /** Suppresses an unchanged catalog; it does not change selection or cursor identity. */
+  knownCatalogRevision?: number | undefined;
+}
+
+export interface GetCatalogResponse {
+  catalogRevision: number;
+  /** Included when the request omits its known revision or supplies a different one. */
+  catalog: SportsCatalog | undefined;
 }
 
 export interface GetLiveGamesRequest {
-  /** Absent means all enabled scopes. */
-  scopeId?: string | undefined;
+  knownCatalogRevision?: number | undefined;
 }
 
 export interface GetGamesRequest {
   scopeId: string;
-  /** Inclusive scheduled-start boundary, encoded as RFC3339 UTC in JSON. */
-  from:
-    | string
-    | undefined;
-  /** Exclusive scheduled-start boundary. Live games are included outside this window. */
+  /**
+   * All three local-calendar boundaries are required absolute timestamps: from < today_until <= until.
+   * Today selects scheduled starts in [from, today_until); Upcoming selects [today_until, until).
+   * Live games remain eligible outside these intervals. Directory sports select only live games.
+   */
+  from: string | undefined;
+  todayUntil: string | undefined;
   until: string | undefined;
+  knownCatalogRevision?: number | undefined;
 }
 
 export interface LookupGamesRequest {
   /** Primary or child Polymarket event IDs. Duplicate inputs are treated as one ID. */
   eventIds: string[];
+  knownCatalogRevision?: number | undefined;
 }
 
 export interface SearchGamesRequest {
   query: string;
-  scopeId?: string | undefined;
+  scopeId?:
+    | string
+    | undefined;
+  /** Inclusive and exclusive scheduled-start boundaries. Live games remain eligible outside them. */
   from: string | undefined;
   until:
     | string
     | undefined;
   /** Opaque continuation bound to the query, scope, interval and policy revision. */
   cursor?: string | undefined;
+  knownCatalogRevision?: number | undefined;
 }
 
-/** GetGamesResponse is complete for its requested browse selection; failures never return a prefix. */
+/**
+ * GetGamesResponse contains at most thirty games per displayed Live group or
+ * per Live/Today/Upcoming scope section. Directory sports have one Live section.
+ * Global Live assigns each game to the first applicable catalog live_group_ids entry,
+ * or its first competition_ids entry when no curated group applies.
+ * Games are returned as a flat list ordered by promotion rank (unlisted last), start time ascending,
+ * then canonical game ID lexicographically. All relevant source pages are traversed before returning;
+ * a source failure never returns a successful prefix.
+ */
 export interface GetGamesResponse {
+  /** Identifies the editorial policy used for both the catalog and games. */
+  catalogRevision: number;
+  /** Omitted when the request already knows this revision. */
   catalog: SportsCatalog | undefined;
   games: Game[];
 }
 
 export interface LookupGamesResponse {
+  catalogRevision: number;
+  /** Omitted when the request already knows this revision. */
   catalog:
     | SportsCatalog
     | undefined;
@@ -380,17 +407,19 @@ export interface EventResolution {
   gameId: string;
 }
 
+/** SearchGamesResponse is a relevance page, independent of Browse's section limits. */
 export interface SearchGamesResponse {
+  catalogRevision: number;
+  /** Omitted when the request already knows this revision. */
   catalog: SportsCatalog | undefined;
   games: Game[];
-  /** A present cursor is meaningful even when this page contains no admitted games. */
+  /** Continuation for the next relevance page; absent at source exhaustion. */
   nextCursor?: string | undefined;
 }
 
 export const SportsCatalog: MessageFns<SportsCatalog> = {
   fromJSON(object: any): SportsCatalog {
     return {
-      revision: isSet(object.revision) ? globalThis.Number(object.revision) : 0,
       sports: globalThis.Array.isArray(object?.sports) ? object.sports.map((e: any) => Sport.fromJSON(e)) : [],
       prominentScopeIds: globalThis.Array.isArray(object?.prominentScopeIds)
         ? object.prominentScopeIds.map((e: any) => globalThis.String(e))
@@ -598,18 +627,37 @@ export const ScoreValue: MessageFns<ScoreValue> = {
 };
 
 export const GetCatalogRequest: MessageFns<GetCatalogRequest> = {
-  fromJSON(_: any): GetCatalogRequest {
-    return {};
+  fromJSON(object: any): GetCatalogRequest {
+    return {
+      knownCatalogRevision: isSet(object.knownCatalogRevision)
+        ? globalThis.Number(object.knownCatalogRevision)
+        : isSet(object.known_catalog_revision)
+        ? globalThis.Number(object.known_catalog_revision)
+        : undefined,
+    };
+  },
+};
+
+export const GetCatalogResponse: MessageFns<GetCatalogResponse> = {
+  fromJSON(object: any): GetCatalogResponse {
+    return {
+      catalogRevision: isSet(object.catalogRevision)
+        ? globalThis.Number(object.catalogRevision)
+        : isSet(object.catalog_revision)
+        ? globalThis.Number(object.catalog_revision)
+        : 0,
+      catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
+    };
   },
 };
 
 export const GetLiveGamesRequest: MessageFns<GetLiveGamesRequest> = {
   fromJSON(object: any): GetLiveGamesRequest {
     return {
-      scopeId: isSet(object.scopeId)
-        ? globalThis.String(object.scopeId)
-        : isSet(object.scope_id)
-        ? globalThis.String(object.scope_id)
+      knownCatalogRevision: isSet(object.knownCatalogRevision)
+        ? globalThis.Number(object.knownCatalogRevision)
+        : isSet(object.known_catalog_revision)
+        ? globalThis.Number(object.known_catalog_revision)
         : undefined,
     };
   },
@@ -624,7 +672,17 @@ export const GetGamesRequest: MessageFns<GetGamesRequest> = {
         ? globalThis.String(object.scope_id)
         : "",
       from: isSet(object.from) ? globalThis.String(object.from) : undefined,
+      todayUntil: isSet(object.todayUntil)
+        ? globalThis.String(object.todayUntil)
+        : isSet(object.today_until)
+        ? globalThis.String(object.today_until)
+        : undefined,
       until: isSet(object.until) ? globalThis.String(object.until) : undefined,
+      knownCatalogRevision: isSet(object.knownCatalogRevision)
+        ? globalThis.Number(object.knownCatalogRevision)
+        : isSet(object.known_catalog_revision)
+        ? globalThis.Number(object.known_catalog_revision)
+        : undefined,
     };
   },
 };
@@ -637,6 +695,11 @@ export const LookupGamesRequest: MessageFns<LookupGamesRequest> = {
         : globalThis.Array.isArray(object?.event_ids)
         ? object.event_ids.map((e: any) => globalThis.String(e))
         : [],
+      knownCatalogRevision: isSet(object.knownCatalogRevision)
+        ? globalThis.Number(object.knownCatalogRevision)
+        : isSet(object.known_catalog_revision)
+        ? globalThis.Number(object.known_catalog_revision)
+        : undefined,
     };
   },
 };
@@ -653,6 +716,11 @@ export const SearchGamesRequest: MessageFns<SearchGamesRequest> = {
       from: isSet(object.from) ? globalThis.String(object.from) : undefined,
       until: isSet(object.until) ? globalThis.String(object.until) : undefined,
       cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : undefined,
+      knownCatalogRevision: isSet(object.knownCatalogRevision)
+        ? globalThis.Number(object.knownCatalogRevision)
+        : isSet(object.known_catalog_revision)
+        ? globalThis.Number(object.known_catalog_revision)
+        : undefined,
     };
   },
 };
@@ -660,8 +728,15 @@ export const SearchGamesRequest: MessageFns<SearchGamesRequest> = {
 export const GetGamesResponse: MessageFns<GetGamesResponse> = {
   fromJSON(object: any): GetGamesResponse {
     return {
+      catalogRevision: isSet(object.catalogRevision)
+        ? globalThis.Number(object.catalogRevision)
+        : isSet(object.catalog_revision)
+        ? globalThis.Number(object.catalog_revision)
+        : 0,
       catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games) ? object.games.map((e: any) => Game.fromJSON(e)) : [],
+      games: globalThis.Array.isArray(object?.games)
+        ? object.games.map((e: any) => Game.fromJSON(e))
+        : [],
     };
   },
 };
@@ -669,8 +744,15 @@ export const GetGamesResponse: MessageFns<GetGamesResponse> = {
 export const LookupGamesResponse: MessageFns<LookupGamesResponse> = {
   fromJSON(object: any): LookupGamesResponse {
     return {
+      catalogRevision: isSet(object.catalogRevision)
+        ? globalThis.Number(object.catalogRevision)
+        : isSet(object.catalog_revision)
+        ? globalThis.Number(object.catalog_revision)
+        : 0,
       catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games) ? object.games.map((e: any) => Game.fromJSON(e)) : [],
+      games: globalThis.Array.isArray(object?.games)
+        ? object.games.map((e: any) => Game.fromJSON(e))
+        : [],
       resolved: globalThis.Array.isArray(object?.resolved)
         ? object.resolved.map((e: any) => EventResolution.fromJSON(e))
         : [],
@@ -703,8 +785,15 @@ export const EventResolution: MessageFns<EventResolution> = {
 export const SearchGamesResponse: MessageFns<SearchGamesResponse> = {
   fromJSON(object: any): SearchGamesResponse {
     return {
+      catalogRevision: isSet(object.catalogRevision)
+        ? globalThis.Number(object.catalogRevision)
+        : isSet(object.catalog_revision)
+        ? globalThis.Number(object.catalog_revision)
+        : 0,
       catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games) ? object.games.map((e: any) => Game.fromJSON(e)) : [],
+      games: globalThis.Array.isArray(object?.games)
+        ? object.games.map((e: any) => Game.fromJSON(e))
+        : [],
       nextCursor: isSet(object.nextCursor)
         ? globalThis.String(object.nextCursor)
         : isSet(object.next_cursor)

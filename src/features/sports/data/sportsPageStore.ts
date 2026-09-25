@@ -114,7 +114,7 @@ function getPageSections($: DeriveGetter, request: SportsPageRequest | null, cat
         state => state.games,
         (previous, next) => areSectionInputsEqual(previous, next, result.gameIds)
       );
-      return selectSportsGames(catalog, getGames(games, result.gameIds), request).sections;
+      return selectSportsGames(catalog, getGames(games, result.gameIds), request);
     }
 
     case 'search': {

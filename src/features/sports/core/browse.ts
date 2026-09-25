@@ -7,15 +7,20 @@ export type SportsHost = 'main' | 'predictions';
  */
 export type SportsDestination = string;
 
-export type SportsWindow = { from: string; until: string };
+export type SportsWindow = {
+  from: string;
+  todayUntil: string;
+  until: string;
+};
 
 /**
  * The local week, from today's midnight, in which scheduled games are shown.
  */
 export function getSportsWindow(now = new Date()): SportsWindow {
   const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayUntil = new Date(getNextMidnight(from));
   const until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
-  return { from: from.toISOString(), until: until.toISOString() };
+  return { from: from.toISOString(), todayUntil: todayUntil.toISOString(), until: until.toISOString() };
 }
 
 /**
