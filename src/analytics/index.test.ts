@@ -7,6 +7,7 @@ import { AppsFlyer } from '@/analytics/appsflyer';
 import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
+import { type Device } from '@/storage/schema';
 
 jest.mock('@/env', () => ({
   IS_DEV: false,
@@ -16,7 +17,12 @@ jest.mock('@/env', () => ({
 }));
 
 jest.mock('@/storage', () => ({
-  device: { get: jest.fn(() => undefined) },
+  device: { get: jest.fn(() => undefined), set: jest.fn() },
+}));
+
+jest.mock('react-native-device-info', () => ({
+  getVersion: () => '2.0.47',
+  getBuildNumber: () => '1',
 }));
 
 jest.mock('@/analytics/appsflyer', () => ({
@@ -59,6 +65,7 @@ describe('@/analytics', () => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
     mockDeviceGet.mockReturnValue(undefined);
+    jest.mocked(device.set).mockReset();
   });
 
   test('track', async () => {
@@ -222,5 +229,43 @@ describe('@/analytics', () => {
     expect(getLatestAppsFlyerInstance().init).toHaveBeenCalledTimes(1);
     expect(getLatestAppsFlyerInstance().stop).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalledWith('[Analytics]: POSTHOG_API_KEY and POSTHOG_HOST are required');
+  });
+
+  test('tracks a version upgrade with an unchanged build only once across launches', async () => {
+    let previous = { version: '2.0.46', build: '1' };
+    mockDeviceGet.mockImplementation(([key]) => (key === 'analyticsAppVersion' ? previous : undefined));
+    jest.mocked(device.set).mockImplementation((key, value) => {
+      if (key[0] === 'analyticsAppVersion') previous = value as Device['analyticsAppVersion'];
+    });
+
+    const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
+
+    expect(analytics.client?.capture).toHaveBeenCalledTimes(1);
+    expect(analytics.client?.capture).toHaveBeenCalledWith('Application Updated', {
+      previous_version: '2.0.46',
+      previous_build: '1',
+    });
+    expect(previous).toEqual({ version: '2.0.47', build: '1' });
+
+    const relaunchedAnalytics = new Analytics();
+    relaunchedAnalytics.init({ deviceId: 'test-device' });
+    await flushPromises();
+    expect(relaunchedAnalytics.client?.capture).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['first PostHog launch', undefined],
+    ['version and build change handled by PostHog', { version: '2.0.46', build: '2' }],
+    ['build-only change handled by PostHog', { version: '2.0.47', build: '2' }],
+  ])('does not add an update event on %s', async (_description, previous) => {
+    mockDeviceGet.mockImplementation(([key]) => (key === 'analyticsAppVersion' ? previous : undefined));
+    const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
+
+    expect(analytics.client?.capture).not.toHaveBeenCalled();
+    expect(device.set).toHaveBeenCalledWith(['analyticsAppVersion'], { version: '2.0.47', build: '1' });
   });
 });

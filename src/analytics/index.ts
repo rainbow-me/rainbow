@@ -157,6 +157,23 @@ export class Analytics {
     return metadata;
   }
 
+  private captureVersionUpdate(): void {
+    if (this.disabled) return;
+
+    const version = DeviceInfo.getVersion();
+    const build = DeviceInfo.getBuildNumber();
+    const previous = device.get(['analyticsAppVersion']);
+
+    // PostHog handles build changes, but iOS releases can reuse the same build number.
+    if (previous && previous.version !== version && previous.build === build) {
+      this.client?.capture('Application Updated', {
+        previous_version: previous.version,
+        previous_build: previous.build,
+      });
+    }
+    device.set(['analyticsAppVersion'], { version, build });
+  }
+
   private ensureInit(): void {
     if (this.disabled || this.initPromise || !this.deviceId) return;
 
@@ -208,6 +225,7 @@ export class Analytics {
         await this.client.ready();
         if (this.disabled) await this.client.optOut();
         else await this.client.optIn();
+        this.captureVersionUpdate();
         this.flushQueueAndSetReady();
       })
       .catch(error => {
