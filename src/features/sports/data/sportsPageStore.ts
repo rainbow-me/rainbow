@@ -10,9 +10,9 @@ import { getGames, getPageQueryKey, useSportsStore } from '@/features/sports/dat
 // ============ Types ========================================================== //
 
 export type SportsPage = 'live' | 'sports' | 'competitions' | 'games' | 'search';
-export type SportsPageStatus = 'none' | 'loading' | 'error' | 'empty' | 'search-empty' | 'more';
+type SportsPageStatus = 'none' | 'loading' | 'error' | 'empty' | 'search-empty' | 'more';
 
-export type SportsPageState = {
+type SportsPageState = {
   page: SportsPage;
   scope: SportsScope | undefined;
   parent: SportsScope | undefined;

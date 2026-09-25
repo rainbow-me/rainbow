@@ -69,7 +69,7 @@ type SearchResult = {
   nextCursor?: string;
 };
 
-export type SportsState = {
+type SportsState = {
   catalog: SportsCatalog | undefined;
   games: Partial<Record<string, Game>>;
   /** Explicit event resolutions; `null` means the event is not a sports game. */
@@ -470,7 +470,7 @@ function mergeSportsResponse(
 let retainedRoots: { listIds: ReadonlySet<string>; selectedId: string | null } | undefined;
 
 /**
- * Collects unowned Games and answers after result membership, event resolutions, or external consumers change.
+ * Collects unreferenced games and answers after page results, event resolutions, mounted lists, or the selected event change.
  */
 function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
   const listIds = discoverEventListsStore.getState().mountedEventIds;

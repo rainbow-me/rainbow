@@ -4,7 +4,7 @@ import { type SportsDestination, type SportsHost } from '@/features/sports/core/
 
 // ============ Navigation Store =============================================== //
 
-export type SportsNavigationState = {
+type SportsNavigationState = {
   /** The destination whose category tab stays selected while the user browses from it. */
   category: SportsDestination;
   destination: SportsDestination;
