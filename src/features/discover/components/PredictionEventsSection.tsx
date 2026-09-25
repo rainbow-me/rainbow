@@ -14,11 +14,7 @@ import { resolveSectionTitle } from '@/features/discover/components/SectionLayou
 import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
-import {
-  usePredictionEvent,
-  usePredictionEventsStore,
-  usePredictionEventSubscription,
-} from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -127,7 +123,7 @@ export function PredictionEventsSection({
 
   return (
     <View style={styles.section}>
-      {displayed ? <EventSubscriptions eventIds={renderedIds} /> : null}
+      {displayed ? <EventPriceSubscription eventIds={renderedIds} /> : null}
       <SectionHeader
         title={title}
         onPress={
@@ -175,27 +171,26 @@ export function PredictionEventsSection({
 // ============ Subscriptions ================================================== //
 
 /**
- * Subscribes a displayed section's cards to live prices and loads Polymarket data for events not found in Sports.
+ * Subscribes a displayed section's cards to live prices.
  * Renders no UI.
  */
-function EventSubscriptions({ eventIds }: { eventIds: readonly string[] }): null {
+function EventPriceSubscription({ eventIds }: { eventIds: readonly string[] }): null {
   const eventGameIds = useSportsStore(
     state => state.eventGameIds,
     (previous, next) => eventIds.every(id => (previous[id] === null) === (next[id] === null))
   );
-  const fallbackIds = useMemo(() => eventIds.filter(id => eventGameIds[id] === null), [eventGameIds, eventIds]);
+  const polymarketEventIds = useMemo(() => eventIds.filter(id => eventGameIds[id] === null), [eventGameIds, eventIds]);
   const eventsById = usePredictionEventsStore(
-    state => state.getData()?.eventsById,
-    (previous, next) => fallbackIds.every(id => previous?.[id] === next?.[id])
+    state => state.getData(),
+    (previous, next) => polymarketEventIds.every(id => previous?.[id] === next?.[id])
   );
-  const fallbackTokenIds = useMemo(
-    () => fallbackIds.flatMap(id => (eventsById?.[id] ? getPolymarketEventsListTokenIds(eventsById[id]) : [])),
-    [eventsById, fallbackIds]
+  const polymarketTokenIds = useMemo(
+    () => polymarketEventIds.flatMap(id => (eventsById?.[id] ? getPolymarketEventsListTokenIds(eventsById[id]) : [])),
+    [eventsById, polymarketEventIds]
   );
   const setPrices = useSportsPriceSubscription();
 
-  usePredictionEventSubscription(fallbackIds);
-  useEffect(() => setPrices(eventIds, fallbackTokenIds), [eventIds, fallbackTokenIds, setPrices]);
+  useEffect(() => setPrices(eventIds, polymarketTokenIds), [eventIds, polymarketTokenIds, setPrices]);
 
   return null;
 }
@@ -246,19 +241,8 @@ function GenericEventCard({
   eventId: string;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
 }): ReactElement {
-  const { event, isLoading, error } = usePredictionEvent(eventId);
-
-  if (!event) {
-    return isLoading ? (
-      <Skeleton borderRadius={24} height={166} width="100%" />
-    ) : (
-      <View style={styles.unavailable}>
-        <Text color="labelTertiary" align="center" size="15pt" weight="bold">
-          {i18n.t(error ? i18n.l.sports.event_error : i18n.l.sports.event_unavailable)}
-        </Text>
-      </View>
-    );
-  }
+  const event = usePredictionEventsStore(state => state.getData()?.[eventId]);
+  if (!event) return <PredictionEventPlaceholder />;
 
   return (
     <PolymarketEventsListItem
@@ -270,6 +254,23 @@ function GenericEventCard({
       shouldActivateOnStart={false}
       style={styles.genericCard}
     />
+  );
+}
+
+function PredictionEventPlaceholder(): ReactElement {
+  const status = usePredictionEventsStore(state => {
+    if (state.getStatus('isInitialLoad')) return 'loading';
+    return state.error ? 'error' : 'unavailable';
+  });
+
+  if (status === 'loading') return <Skeleton borderRadius={24} height={166} width="100%" />;
+
+  return (
+    <View style={styles.unavailable}>
+      <Text color="labelTertiary" align="center" size="15pt" weight="bold">
+        {i18n.t(status === 'error' ? i18n.l.sports.event_error : i18n.l.sports.event_unavailable)}
+      </Text>
+    </View>
   );
 }
 

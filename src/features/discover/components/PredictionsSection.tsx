@@ -22,7 +22,6 @@ import {
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
-import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -40,7 +39,6 @@ import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscri
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
-type PlacementBackedPredictionsSurface = PlacementBackedSurfaceLeafWithDisplay<PredictionsDisplay>;
 
 const PREDICTION_TILE_SHADOW_BLEED = 28;
 const PREDICTION_TILE_WIDTH = Math.round((DEVICE_WIDTH - 20 * 2 - 8) / 2);
@@ -113,15 +111,6 @@ export function PredictionsSection({
   return null;
 }
 
-function useIsPredictionPlacementPending(surface: PlacementBackedPredictionsSurface): boolean {
-  const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsStore(state => {
-    if (state.getPlacement(surface.placement) !== undefined) return false;
-    return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
-  });
-  return isPendingSurfacePlacement || isLoadingPlacementSource;
-}
-
 function getDisplayTokenIdExtractor(display: keyof typeof PREDICTIONS_SECTION_DESCRIPTORS): (event: PolymarketEvent) => string[] {
   switch (display) {
     case 'prediction_tile_widget.carousel':
@@ -161,7 +150,7 @@ function PredictionsPlacementSection({
   surfaceId: SurfaceId;
 }) {
   const result = usePredictionsPlacement(surface.placement);
-  const isPlacementPending = useIsPredictionPlacementPending(surface);
+  const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
   const onPressSeeAll = useCallback(() => {

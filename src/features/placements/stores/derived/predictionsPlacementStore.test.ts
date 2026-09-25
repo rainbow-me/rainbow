@@ -1,8 +1,13 @@
+import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
+import { useDiscoverNavigationStore } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
-import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { rainbowFetch, type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 
-import { selectPredictionEvent, usePredictionEventsStore } from './predictionsPlacementStore';
+import { usePredictionEventsStore } from './predictionsPlacementStore';
 
 jest.mock('@/features/config/stores/remoteConfig', () => ({
   useRemoteConfigStore: jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores').createBaseStore(() => ({
@@ -16,134 +21,187 @@ jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
 }));
 jest.mock('@/features/placements/surfaces/stores/discoverSurfaceStore', () => {
   const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
-  const refs = createBaseStore<DiscoverSurfacePlacementRefs>(() => ({
-    hyperliquid: [],
-    polymarket: [],
-    rainbow: [],
-  }));
+  const refs = createBaseStore<DiscoverSurfacePlacementRefs>(() => ({ hyperliquid: [], polymarket: [], rainbow: [] }));
   return { useDiscoverSurfacePlacementRefs: refs, setRefs: refs.setState };
 });
 jest.mock('@/features/placements/stores/placementsStore', () => ({}));
-jest.mock('@/features/polymarket/stores/polymarketEventsStore', () => ({ fetchPolymarketEventsByIds: jest.fn() }));
+jest.mock('@/features/sports/data/sportsStore', () => ({
+  useSportsStore: jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores').createBaseStore(() => ({ eventGameIds: {} })),
+}));
+jest.mock('@/features/polymarket/constants', () => ({
+  CATEGORIES: { sports: { tagId: 'sports' } },
+  DEFAULT_CATEGORY_KEY: 'trending',
+  POLYMARKET_GAMMA_API_URL: 'https://gamma.test',
+}));
 jest.mock('@/features/polymarket/stores/polymarketTeamMetadataStore', () => ({ fetchPolymarketTeamMetadataForGameEvents: jest.fn() }));
 jest.mock('@/features/polymarket/utils/transforms', () => ({ processRawPolymarketEvent: jest.fn() }));
+jest.mock('@/framework/data/http/rainbowFetch', () => ({ rainbowFetch: jest.fn() }));
 
 const { setRefs } = jest.requireMock<{ setRefs: (refs: Partial<DiscoverSurfacePlacementRefs>) => void }>(
   '@/features/placements/surfaces/stores/discoverSurfaceStore'
 );
-const first = 'first';
-const second = 'second';
+const color = { dark: '#000000', light: '#ffffff' };
+let unsubscribe: (() => void) | undefined;
+
+function response<T>(data: T): RainbowFetchResponse<T> {
+  return { data, headers: new Headers(), status: 200 };
+}
+
+function event(id: string) {
+  return { id, title: id, markets: [{ active: true, closed: false }] };
+}
+
+function requestedIds(): string[][] {
+  return jest.mocked(rainbowFetch).mock.calls.map(([url]) => new URL(String(url)).searchParams.getAll('id'));
+}
+
+function settle(): Promise<void> {
+  return new Promise(resolve => {
+    setImmediate(resolve);
+  });
+}
 
 beforeEach(() => {
-  usePredictionEventsStore.setState({ fallbackEventIds: {} });
+  discoverEventListsStore.setState({ sections: {}, mountedEventIds: new Set() });
+  useDiscoverNavigationStore.getState().navigate('featured');
+  useDiscoverSearchQueryStore.setState({ isSearching: false });
+  useSportsStore.setState({ eventGameIds: {} });
   setRefs({ polymarket: [] });
+  usePredictionEventsStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   jest.clearAllMocks();
-  jest.mocked(fetchPolymarketEventsByIds).mockResolvedValue([]);
+  jest.mocked(rainbowFetch).mockResolvedValue(response([]));
   jest.mocked(fetchPolymarketTeamMetadataForGameEvents).mockResolvedValue(new Map());
+  jest.mocked(processRawPolymarketEvent).mockImplementation(async event => ({
+    ...event,
+    color,
+    markets: event.markets.map(market => ({
+      ...market,
+      clobTokenIds: [],
+      outcomes: [],
+      outcomePrices: [],
+      events: [],
+      color,
+      secondaryColor: undefined,
+    })),
+  }));
+});
+
+afterEach(async () => {
+  unsubscribe?.();
+  unsubscribe = undefined;
+  await settle();
 });
 
 afterAll(() => usePredictionEventsStore.getState().reset(true));
 
-test('no placement or fallback events means no Gamma or team hydration', async () => {
+test('an empty request skips event fetching and team metadata', async () => {
   expect(usePredictionEventsStore.getState().enabled).toBe(false);
   await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(fetchPolymarketEventsByIds).not.toHaveBeenCalled();
+
+  expect(rainbowFetch).not.toHaveBeenCalled();
   expect(fetchPolymarketTeamMetadataForGameEvents).not.toHaveBeenCalled();
 });
 
-test('fallback lists and placement events share one deduplicated event request', async () => {
-  setRefs({ polymarket: ['tile-only', 'shared'] });
-  const { setFallbackEventIds } = usePredictionEventsStore.getState();
-  setFallbackEventIds(first, ['shared']);
-  setFallbackEventIds(second, ['teaser-only']);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'teaser-only', 'tile-only']);
+test('requests tiles and displayed non-sports cards directly from their stores', async () => {
+  setRefs({ polymarket: ['shared', 'tile'] });
+  discoverEventListsStore.getState().setList('featured', 'cards', ['sports', 'shared', 'other', 'unknown']);
+  discoverEventListsStore.getState().setList('next', 'cards', ['hidden']);
+  useSportsStore.setState({ eventGameIds: { sports: 'sports', shared: null, other: null, hidden: null } });
+  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
+  await settle();
 
-  setFallbackEventIds(second, []);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'tile-only']);
+  expect(requestedIds()).toEqual([['other', 'shared', 'tile']]);
 
-  setFallbackEventIds(first, []);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared', 'tile-only']);
-  expect(usePredictionEventsStore.getState().enabled).toBe(true);
+  useSportsStore.setState({ eventGameIds: { sports: 'sports', shared: null, other: null, hidden: null, unrelated: null } });
+  discoverEventListsStore.getState().setList('featured', 'cards', ['unknown', 'other', 'shared', 'sports']);
+  await settle();
+  expect(rainbowFetch).toHaveBeenCalledTimes(1);
+
+  useDiscoverNavigationStore.getState().navigate('next');
+  await settle();
+  expect(requestedIds().at(-1)).toEqual(['hidden', 'shared', 'tile']);
+
+  useDiscoverSearchQueryStore.setState({ isSearching: true });
+  await settle();
+  expect(requestedIds().at(-1)).toEqual(['shared', 'tile']);
 });
 
-test('overlapping fallback lists release independently and stop reads after the last exit', async () => {
-  const { setFallbackEventIds } = usePredictionEventsStore.getState();
-  setFallbackEventIds(first, ['shared']);
-  const unchanged = usePredictionEventsStore.getState().fallbackEventIds;
-  setFallbackEventIds(first, ['shared']);
-  expect(usePredictionEventsStore.getState().fallbackEventIds).toBe(unchanged);
-  setFallbackEventIds(second, ['shared']);
-  setFallbackEventIds(first, []);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['shared']);
+test('overlapping lists share a request and removing the last list disables it', async () => {
+  useSportsStore.setState({ eventGameIds: { shared: null } });
+  discoverEventListsStore.getState().setList('featured', 'first', ['shared']);
+  discoverEventListsStore.getState().setList('featured', 'second', ['shared']);
+  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
+  await settle();
 
-  setFallbackEventIds(second, ['replacement']);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(jest.mocked(fetchPolymarketEventsByIds).mock.calls.at(-1)?.[0]).toEqual(['replacement']);
+  discoverEventListsStore.getState().removeList('featured', 'first');
+  await settle();
+  expect(requestedIds()).toEqual([['shared']]);
 
-  setFallbackEventIds(second, []);
-  jest.clearAllMocks();
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(usePredictionEventsStore.getState().fallbackEventIds).toEqual({});
+  discoverEventListsStore.getState().removeList('featured', 'second');
+  await settle();
   expect(usePredictionEventsStore.getState().enabled).toBe(false);
-  expect(fetchPolymarketEventsByIds).not.toHaveBeenCalled();
-  expect(fetchPolymarketTeamMetadataForGameEvents).not.toHaveBeenCalled();
+  expect(rainbowFetch).toHaveBeenCalledTimes(1);
 });
 
-test('a newly listed fallback waits for its own request after an existing placement success', async () => {
-  setRefs({ polymarket: ['existing-tile'] });
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(usePredictionEventsStore.getState().getStatus('isSuccess')).toBe(true);
+test('discards inactive events before team lookup and card processing', async () => {
+  const active = event('active');
+  setRefs({ polymarket: ['active', 'closed', 'ended', 'resolved', 'inactive'] });
+  jest
+    .mocked(rainbowFetch)
+    .mockResolvedValue(
+      response([
+        active,
+        { ...event('closed'), closed: true },
+        { ...event('ended'), ended: true },
+        { id: 'resolved', markets: [{ umaResolutionStatus: 'resolved' }] },
+        { id: 'inactive', markets: [{ active: false }] },
+      ])
+    );
+  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
+  await settle();
 
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback')).toEqual({
-    event: undefined,
-    error: null,
-    isLoading: true,
-  });
-  usePredictionEventsStore.getState().setFallbackEventIds(first, ['new-fallback']);
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback').isLoading).toBe(true);
+  expect(fetchPolymarketTeamMetadataForGameEvents).toHaveBeenCalledWith([active], expect.anything());
+  expect(processRawPolymarketEvent).toHaveBeenCalledTimes(1);
+  expect(Object.keys(usePredictionEventsStore.getState().getData() ?? {})).toEqual(['active']);
+});
 
-  let finish: () => void = () => {
+test('keeps displayed data through request changes and failed refreshes', async () => {
+  let finish: (response: RainbowFetchResponse<unknown>) => void = () => {
     throw new Error('Request did not start');
   };
-  jest.mocked(fetchPolymarketEventsByIds).mockImplementationOnce(
+  jest.mocked(rainbowFetch).mockImplementation(
     () =>
       new Promise(resolve => {
-        finish = () => resolve([]);
+        finish = resolve;
       })
   );
-  const pending = usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback').isLoading).toBe(true);
-  finish();
-  await pending;
 
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'new-fallback')).toEqual({
-    event: undefined,
-    error: null,
-    isLoading: false,
-  });
-});
+  setRefs({ polymarket: ['first'] });
+  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
+  await settle();
+  expect(usePredictionEventsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  finish(response([event('first')]));
+  await settle();
+  const previous = usePredictionEventsStore.getState().getData();
 
-test('a fallback failure stays with its request and does not leak into a newly listed event', async () => {
-  usePredictionEventsStore.getState().setFallbackEventIds(first, ['failed-fallback']);
+  setRefs({ polymarket: ['first', 'missing'] });
+  await settle();
+
+  expect(usePredictionEventsStore.getState().getData()).toBe(previous);
+  expect(usePredictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  finish(response([event('first')]));
+  await settle();
+  expect(usePredictionEventsStore.getState().getData()?.first?.id).toBe('first');
+  expect(usePredictionEventsStore.getState().getData()?.missing).toBeUndefined();
+  expect(usePredictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(usePredictionEventsStore.getState().error).toBeNull();
+
+  const displayed = usePredictionEventsStore.getState().getData();
   const error = new Error('Gamma unavailable');
-  jest.mocked(fetchPolymarketEventsByIds).mockRejectedValueOnce(error);
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'failed-fallback')).toEqual({
-    event: undefined,
-    error,
-    isLoading: false,
-  });
+  jest.mocked(rainbowFetch).mockRejectedValueOnce(error);
+  await usePredictionEventsStore.getState().fetch(undefined, { force: true });
 
-  usePredictionEventsStore.getState().setFallbackEventIds(first, ['next-fallback']);
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback')).toEqual({
-    event: undefined,
-    error: null,
-    isLoading: true,
-  });
-  await usePredictionEventsStore.getState().fetch(undefined, { force: true, updateQueryKey: true });
-  expect(selectPredictionEvent(usePredictionEventsStore.getState(), 'next-fallback').isLoading).toBe(false);
+  expect(usePredictionEventsStore.getState().getData()).toBe(displayed);
+  expect(usePredictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(usePredictionEventsStore.getState().error).toBe(error);
 });
