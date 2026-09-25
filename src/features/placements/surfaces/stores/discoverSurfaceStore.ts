@@ -20,7 +20,10 @@ export const useDiscoverSurfaceInput = createDerivedStore(
     surface: removeDiscoverSportsTab($(discoverSurfaceStore, state => state.getData())),
     lastFetchedAt: $(discoverSurfaceStore, state => state.lastFetchedAt),
   }),
-  { equalityFn: deepEqual, lockDependencies: true }
+  {
+    equalityFn: (previous, next) => previous.lastFetchedAt === next.lastFetchedAt && deepEqual(previous.surface, next.surface),
+    lockDependencies: true,
+  }
 );
 
 export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
