@@ -175,8 +175,8 @@ export function PredictionEventsSection({
 // ============ Subscriptions ================================================== //
 
 /**
- * Keeps a displayed section's cards current without rendering the section: events Sports reports are not games
- * load as Polymarket cards, and one subscription prices every card.
+ * Subscribes a displayed section's cards to live prices and loads Polymarket data for events not found in Sports.
+ * Renders no UI.
  */
 function EventSubscriptions({ eventIds }: { eventIds: readonly string[] }): null {
   const eventGameIds = useSportsStore(

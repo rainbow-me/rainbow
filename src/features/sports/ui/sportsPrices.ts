@@ -31,8 +31,8 @@ const OUTCOME_SELECTORS: readonly ((game: Game) => { tokenId: string } | undefin
 // ============ Price Subscription ============================================= //
 
 /**
- * Returns a callback that replaces the list's price subscriptions for game or event IDs and other tokens.
- * Follows token changes and releases the subscriptions on unmount.
+ * Subscribes to live prices for a list of games. The returned function replaces the game or event IDs
+ * and any additional token IDs. Updates subscriptions when a game's tokens change and removes them on unmount.
  */
 export function useSportsPriceSubscription(): (ids: readonly string[], otherTokenIds?: readonly string[]) => void {
   const subscribe = useLiveTokenSubscription();

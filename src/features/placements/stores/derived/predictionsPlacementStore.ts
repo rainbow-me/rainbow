@@ -137,7 +137,7 @@ export function usePredictionEventSubscription(eventIds: readonly string[]): voi
 }
 
 /**
- * A card's Polymarket event, with whether its fallback request is loading or failed.
+ * Reads a card's Polymarket event and its loading and error state.
  */
 export function usePredictionEvent(eventId: string): PredictionEventResult {
   const enabled = usePredictionsEnabled();
@@ -146,7 +146,7 @@ export function usePredictionEvent(eventId: string): PredictionEventResult {
 }
 
 /**
- * An event from the loaded predictions. Its request status applies only while a list requests it as a fallback.
+ * Returns a stored Polymarket event with its loading and error state.
  */
 export function selectPredictionEvent(state: ReturnType<typeof usePredictionEventsStore.getState>, eventId: string): PredictionEventResult {
   const data = state.getData();

@@ -10,13 +10,20 @@ type SportsNavigationState = {
   destination: SportsDestination;
   /** `null` while Search is closed, `''` while it is open and empty. */
   query: string | null;
-  /** Selects a destination as its own category: tabs, section headings, and links. */
+  /**
+   * Opens a destination, selects its category tab, and closes Search.
+   */
   select: (destination: SportsDestination) => void;
-  /** Opens a destination within the current category: directory rows and Back. */
+  /**
+   * Opens a destination within the selected category. From Search, closes Search and selects the destination's category.
+   */
   open: (destination: SportsDestination) => void;
   search: (query: string | null) => void;
 };
 
+/**
+ * Navigation state for Sports and Predictions, kept separately for each screen.
+ */
 export const sportsNavigationStores: Record<SportsHost, Store<SportsNavigationState>> = {
   main: createSportsNavigationStore(),
   predictions: createSportsNavigationStore(),

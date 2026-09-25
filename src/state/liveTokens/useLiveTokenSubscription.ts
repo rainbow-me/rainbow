@@ -5,7 +5,10 @@ import { useStableValue } from '@/hooks/useStableValue';
 import { useRoute } from '@/navigation/RouteContext';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 
-/** Replaces this consumer's quote demand and releases it on unmount. */
+/**
+ * Subscribes a component to live token prices. The returned function replaces its token list.
+ * Unsubscribes when the component unmounts.
+ */
 export function useLiveTokenSubscription(): (tokenIds: string[]) => void {
   const { name: route } = useRoute();
   const owner = useStableValue(() => Symbol('liveTokens'));

@@ -52,18 +52,19 @@ type SportsSearchResponse = SearchRequest & SearchGamesResponse & { gameIds: str
 
 type SportsParams = { request: SportsRequest | null };
 
-/** Owns its query-cache entry until replaced. `scope` preserves the window used to select its sections. */
+/** The game IDs and sections kept from a page response. Its query-cache entry stays until the result is replaced. */
 type SportsResult = {
   queryKey: string;
-  /** Response membership survives a Game temporarily leaving its sections. */
+  /** Games retained from the response, including any that later leave the displayed sections. */
   gameIds: ReadonlySet<string>;
   sections: SportsSection[];
+  /** The sport or competition and date range used to group these sections; absent for Live. */
   scope: SportsGamesScope | undefined;
 };
 
 type SearchResult = {
   queryKey: string;
-  /** Minimum result count requested, including a pending or failed load-more. */
+  /** Minimum number of results to load, including a pending or failed load-more request. */
   requestedCount: number;
   gameIds: string[];
   nextCursor?: string;
@@ -72,9 +73,9 @@ type SearchResult = {
 type SportsState = {
   catalog: SportsCatalog | undefined;
   games: Partial<Record<string, Game>>;
-  /** Explicit event resolutions; `null` means the event is not a sports game. */
+  /** Each looked-up event's game ID, or `null` if the lookup found no game. */
   eventGameIds: Partial<Record<string, string | null>>;
-  /** Last successful lookup of an event, or delivery of the Game with that event's ID. */
+  /** When each event was last looked up successfully. A returned game also updates its primary event's timestamp. */
   answeredAt: Map<string, number>;
   /** Results for Live and visited scopes. */
   results: Partial<Record<SportsDestination, SportsResult>>;
@@ -93,8 +94,8 @@ const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
 // ============ Sports Store =================================================== //
 
 /**
- * Games, page results, and event resolutions shared by Sports and Discover, fresh for a minute.
- * Keeps Games referenced by page or Search results, mounted Discover lists, or the selected event.
+ * Games, page results, and event lookups shared by Sports and Discover.
+ * While the app is active, the current page refreshes every minute. Event lookups stay fresh for a minute.
  */
 export const useSportsStore = createQueryStore<SportsResponse | null, SportsParams, SportsState, SportsResponse | null>(
   {
@@ -123,7 +124,7 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
 );
 
 /**
- * The cache key of a page request, built as the store builds it.
+ * The query-cache key for a Sports page request.
  */
 export function getPageQueryKey(request: SportsPageRequest): string {
   return getQueryKey({ request: getRequestKey(request) });
@@ -132,8 +133,8 @@ export function getPageQueryKey(request: SportsPageRequest): string {
 // ============ Reads ========================================================== //
 
 /**
- * An event's game ID: `null` when the event is not a sports game, and `undefined` until known. A game's ID is
- * its primary event's ID.
+ * An event's stored game ID: `null` if a lookup found no game, or `undefined` until known.
+ * A game shares its ID with its primary event.
  */
 export function getGameId(state: Pick<SportsState, 'games' | 'eventGameIds'>, eventId: string): string | null | undefined {
   const gameId = state.eventGameIds[eventId];
@@ -142,7 +143,7 @@ export function getGameId(state: Pick<SportsState, 'games' | 'eventGameIds'>, ev
 }
 
 /**
- * The stored game an event resolves to: `undefined` until it resolves, and for an event that is not a sports game.
+ * The stored game for an event, or `undefined` if no game is known.
  */
 export function getGame(state: Pick<SportsState, 'games' | 'eventGameIds'>, eventId: string): Game | undefined {
   const gameId = getGameId(state, eventId);
@@ -150,7 +151,7 @@ export function getGame(state: Pick<SportsState, 'games' | 'eventGameIds'>, even
 }
 
 /**
- * Selects stored Games by their primary IDs.
+ * Returns the stored games for the given game IDs, in order, skipping any that are missing.
  */
 export function getGames(games: SportsState['games'], gameIds: Iterable<string>): Game[] {
   const selected: Game[] = [];
@@ -166,7 +167,7 @@ export function getGames(games: SportsState['games'], gameIds: Iterable<string>)
 // ============ Page Actions =================================================== //
 
 /**
- * Fetches a host's page again, even while another request is active.
+ * Refetches the Sports or Predictions page, even while another request is active.
  */
 export async function refreshSportsPage(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -174,7 +175,7 @@ export async function refreshSportsPage(host: SportsHost): Promise<void> {
 }
 
 /**
- * Refreshes the active events, including answers that are still fresh.
+ * Looks up the active events again, even if their stored data is still fresh.
  */
 export async function refreshSportsEvents(): Promise<void> {
   const request = sportsRequestStore.getState();
@@ -194,7 +195,7 @@ export async function refreshSportsEvents(): Promise<void> {
 }
 
 /**
- * Loads the next page of a host's Search. Only the result for the current query and week continues.
+ * Loads more Search results for Sports or Predictions. Continues only the current query and date range.
  */
 export async function loadMoreSportsGames(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -208,7 +209,8 @@ export async function loadMoreSportsGames(host: SportsHost): Promise<void> {
 }
 
 /**
- * Retries a host's failed page, preserving its requested Search range. A removed scope returns to Live.
+ * Retries a failed page request, preserving the number of Search results requested.
+ * Returns to Live if the sport or competition no longer exists.
  */
 export async function retrySportsPage(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -313,7 +315,7 @@ function getRequestKey(request: SportsRequest | null): SportsPageRequest | Omit<
 // ============ Event Freshness ================================================ //
 
 /**
- * The events the store holds no answer for, or whose answer is a minute old.
+ * The requested events with missing or expired lookup data.
  */
 function getDueEventIds(answeredAt: Map<string, number>, eventIds: readonly string[]): string[] {
   const now = Date.now();
@@ -327,7 +329,7 @@ function getEventsDueAt(answeredAt: Map<string, number>, eventIds: readonly stri
 }
 
 /**
- * When an event needs asking again: at once without an answer, then a minute after the server last answered for it.
+ * When an event's lookup expires. Events without a stored timestamp are already due.
  */
 function getEventDueAt(answeredAt: Map<string, number>, eventId: string): number {
   return (answeredAt.get(eventId) ?? 0) + FRESH_FOR;
@@ -336,8 +338,7 @@ function getEventDueAt(answeredAt: Map<string, number>, eventId: string): number
 // ============ Storing Responses ============================================== //
 
 /**
- * Stores a response. A response from a new catalog revision replaces everything stored before it, along with
- * its freshness.
+ * Stores a response, clearing previous data and query-cache entries when a newer catalog revision arrives.
  */
 function setSportsData({ data: response, queryKey, set }: SetDataParams<SportsResponse | null, SportsParams, SportsState>): void {
   if (!response) return;
@@ -466,11 +467,11 @@ function mergeSportsResponse(
 
 // ============ Retention ====================================================== //
 
-/** External owners last checked by retention; response-owned membership is compared in the merge. */
+/** Discover's mounted event IDs and the selected event at the last cleanup of unused data. */
 let retainedRoots: { listIds: ReadonlySet<string>; selectedId: string | null } | undefined;
 
 /**
- * Collects unreferenced games and answers after page results, event resolutions, mounted lists, or the selected event change.
+ * Removes games and event lookups no longer needed by cached pages, mounted Discover lists, or the selected event.
  */
 function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
   const listIds = discoverEventListsStore.getState().mountedEventIds;
@@ -516,9 +517,15 @@ function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
 
 // ============ Query Cache ==================================================== //
 
-/** A hidden page's failed key can change while the active request stays the same, so its ownership must be rechecked. */
+/**
+ * The last cache cleanup. A retained page failure is rechecked on each fetch because its date range can change at midnight.
+ */
 let lastPrune: { request: SportsRequest; keptPageFailure: boolean } | undefined;
 
+/**
+ * Removes unused query-cache entries, keeping the current request, catalog, and stored page results.
+ * Pending or failed requests for the pages' current destinations and date ranges are also kept.
+ */
 function pruneQueryCache(request: SportsRequest): void {
   if (lastPrune?.request === request && !lastPrune.keptPageFailure) return;
 
@@ -572,7 +579,7 @@ function getPageQueryKeys(): Set<string> {
 }
 
 /**
- * Keeps the current catalog unless the response carries a newer revision. An older revision fails the response.
+ * Keeps the current catalog unless the response carries a newer revision. Throws if the revision is older.
  */
 function updateCatalog(catalog: SportsCatalog | undefined, incoming: CatalogResponse | undefined): SportsCatalog | undefined {
   if (!incoming || incoming.revision === catalog?.revision) return catalog;
@@ -581,8 +588,7 @@ function updateCatalog(catalog: SportsCatalog | undefined, incoming: CatalogResp
 }
 
 /**
- * Sets `key` in `record`, copying `original` on its first change so an unchanged record keeps its identity.
- * `undefined` removes the key.
+ * Sets or deletes a record entry, copying the original record before the first write. `undefined` deletes the entry.
  */
 function setEntry<T>(
   record: Partial<Record<string, T>>,
@@ -597,7 +603,7 @@ function setEntry<T>(
 }
 
 /**
- * Sets `key` in `map`, copying `original` on its first change. `undefined` removes the key.
+ * Sets or deletes a map entry, copying the original map before the first write. `undefined` deletes the entry.
  */
 function setMapEntry<T>(map: Map<string, T>, original: Map<string, T>, key: string, value: T | undefined): Map<string, T> {
   const next = map === original ? new Map(original) : map;

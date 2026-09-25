@@ -18,7 +18,7 @@ type DiscoverEventListsState = {
 const NO_IDS: readonly string[] = [];
 
 /**
- * Lookup membership for each Discover page and retention across mounted pages. Card order does not affect either.
+ * The event IDs in Discover's mounted lists, grouped by page and combined across pages. Card order is ignored.
  */
 export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>((set, get) => ({
   sections: {},

@@ -29,7 +29,7 @@ export type ScopeRequest = SportsGamesScope & { type: 'scope' };
 /** A Search query over the week its page shows, so a new day starts it over. */
 export type SearchRequest = { type: 'search'; query: string; window: SportsWindow };
 
-/** The events a route shows. Only the route identifies it, so each event's freshness decides what is fetched. */
+/** An event lookup for a route. The cache key uses the route; each event's last update determines whether it needs fetching. */
 export type EventsRequest = { type: 'events'; route: Route; eventIds: readonly string[] };
 
 export type SportsPageRequest = LiveRequest | CatalogRequest | ScopeRequest | SearchRequest;
@@ -38,7 +38,7 @@ export type SportsRequest = SportsPageRequest | EventsRequest;
 // ============ Page Requests ================================================== //
 
 /**
- * What each host's page requests: its destination, or its Search query once one is entered.
+ * The browse or Search request for Sports and Predictions, kept separately for each screen.
  */
 export const sportsPageRequestStores: Record<SportsHost, DerivedStore<SportsPageRequest | null>> = {
   main: createPageRequestStore('main'),
@@ -68,7 +68,7 @@ export function getRequestDestination(request: LiveRequest | ScopeRequest): Spor
 // ============ Active Request ================================================= //
 
 /**
- * What the active route shows: a host's page, the selected event, or the events of Discover's active section.
+ * The sports request for the active screen: a page, the selected event, or the events in Discover's active section.
  */
 export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => {
   const route = $(useNavigationStore, state => state.activeRoute);

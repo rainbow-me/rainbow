@@ -40,14 +40,16 @@ const LAST = Number.MAX_SAFE_INTEGER;
 // ============ Sections ======================================================= //
 
 /**
- * Groups an eligible browse response in its supplied order, capped at thirty Games per section.
- * Live groups follow catalog order; scope pages show live, today, then upcoming.
+ * Groups a browse response into sections of at most thirty games, preserving the server's order within each section.
+ * Live groups follow catalog order; sport and competition pages show live, today, then upcoming.
  */
 export function groupSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): GameSelection {
   return scope ? groupScopeGames(games, scope.window) : groupLiveGames(catalog, games);
 }
 
-/** Reselects stored Games after their section inputs or calendar window change. */
+/**
+ * Filters stored games for a page, sorts by promotion, start time, then ID, and groups the results into sections.
+ */
 export function selectSportsGames(catalog: SportsCatalog | undefined, games: readonly Game[], scope?: SportsGamesScope): GameSelection {
   const showsSchedule = scope && !catalog?.scopes[scope.scopeId]?.directoryIds;
   const from = scope ? Date.parse(scope.window.from) : 0;
@@ -126,7 +128,9 @@ export function reuseSections(previous: SportsSection[] | undefined, next: Sport
 
 // ============ Section Inputs ================================================= //
 
-/** Compares a Game’s status, start time, and competitions. */
+/**
+ * Compares the status, start time, and competitions of two games.
+ */
 export function areSectionFieldsEqual(first: Game | undefined, second: Game | undefined): boolean {
   if (first === second) return true;
   if (!first || !second) return false;
@@ -136,7 +140,9 @@ export function areSectionFieldsEqual(first: Game | undefined, second: Game | un
   );
 }
 
-/** Compares section placement for the specified Game IDs. */
+/**
+ * Compares status, start time, and competitions for the given game IDs in two sets of stored games.
+ */
 export function areSectionInputsEqual(
   previous: Partial<Record<string, Game>>,
   next: Partial<Record<string, Game>>,
