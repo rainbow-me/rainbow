@@ -35,7 +35,7 @@ type PredictionEventsParams = {
 };
 
 type PredictionEventsData = {
-  activeEventIds: string[];
+  activeEventIds: ReadonlySet<string>;
   eventsById: EventsById;
 };
 
@@ -57,6 +57,7 @@ type PredictionEventResult = {
 
 const DISABLED_EVENT: PredictionEventResult = { event: undefined, error: null, isLoading: false };
 const EMPTY_EVENT_IDS: readonly string[] = [];
+const EMPTY_EVENTS: PredictionEventsData = { activeEventIds: new Set<string>(), eventsById: {} };
 
 // ============ Stores ========================================================= //
 
@@ -110,7 +111,7 @@ async function fetchPredictionEvents(
   { eventIds }: PredictionEventsParams,
   abortController: AbortController | null
 ): Promise<PredictionEventsData> {
-  if (!eventIds.length) return { activeEventIds: [], eventsById: {} };
+  if (!eventIds.length) return EMPTY_EVENTS;
   const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
   const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
 
@@ -150,7 +151,7 @@ export function usePredictionEvent(eventId: string): PredictionEventResult {
  */
 export function selectPredictionEvent(state: ReturnType<typeof usePredictionEventsStore.getState>, eventId: string): PredictionEventResult {
   const data = state.getData();
-  const event = data?.activeEventIds.includes(eventId) ? data.eventsById[eventId] : undefined;
+  const event = data?.activeEventIds.has(eventId) ? data.eventsById[eventId] : undefined;
   const requested = !event && Object.values(state.fallbackEventIds).some(eventIds => eventIds?.includes(eventId));
   // An empty params override reads the current request, even while getData retains the previous result.
   const entry = requested ? state.getCacheEntry({}) : null;
@@ -172,10 +173,9 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
   const eventsLoading = usePredictionEventsStore(
     state => placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'))
   );
-  const activeEventIds = useMemo(() => (events ? new Set(events.activeEventIds) : undefined), [events]);
   const items = useMemo(
-    () => (events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : []),
-    [activeEventIds, events, placementItems]
+    () => (events ? parsePredictionItems(placementItems, events.eventsById, events.activeEventIds) : []),
+    [events, placementItems]
   );
 
   return useMemo(
@@ -207,12 +207,12 @@ function parsePredictionItems(
 }
 
 function normalizePredictionEvents(events: PolymarketEvent[]): PredictionEventsData {
-  const activeEventIds: string[] = [];
+  const activeEventIds = new Set<string>();
   const eventsById: EventsById = {};
 
   for (const event of events) {
     eventsById[event.id] = event;
-    if (isActivePredictionEvent(event)) activeEventIds.push(event.id);
+    if (isActivePredictionEvent(event)) activeEventIds.add(event.id);
   }
 
   return { activeEventIds, eventsById };
