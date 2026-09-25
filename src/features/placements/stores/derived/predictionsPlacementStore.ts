@@ -18,6 +18,7 @@ import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymar
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { useCleanup } from '@/hooks/useCleanup';
@@ -55,6 +56,7 @@ type PredictionEventResult = {
 // ============ Constants ====================================================== //
 
 const DISABLED_EVENT: PredictionEventResult = { event: undefined, error: null, isLoading: false };
+const EMPTY_EVENT_IDS: readonly string[] = [];
 
 // ============ Stores ========================================================= //
 
@@ -92,7 +94,7 @@ export const usePredictionEventsStore = createQueryStore<PredictionEventsData, P
     fallbackEventIds: {},
     setFallbackEventIds: (owner, eventIds) =>
       set(state => {
-        if (shallowEqual(state.fallbackEventIds[owner] ?? [], eventIds)) return state;
+        if (areArraysEqual(state.fallbackEventIds[owner] ?? EMPTY_EVENT_IDS, eventIds)) return state;
 
         const fallbackEventIds = { ...state.fallbackEventIds };
         if (eventIds.length) fallbackEventIds[owner] = eventIds;
@@ -131,7 +133,7 @@ export function usePredictionEventSubscription(eventIds: readonly string[]): voi
   const owner = useId();
 
   useEffect(() => usePredictionEventsStore.getState().setFallbackEventIds(owner, eventIds), [eventIds, owner]);
-  useCleanup(() => usePredictionEventsStore.getState().setFallbackEventIds(owner, []), [owner]);
+  useCleanup(() => usePredictionEventsStore.getState().setFallbackEventIds(owner, EMPTY_EVENT_IDS), [owner]);
 }
 
 /**

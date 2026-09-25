@@ -11,7 +11,7 @@ import {
   type ViewToken,
 } from 'react-native';
 
-import { shallowEqual, useListen } from '@storesjs/stores';
+import { useListen } from '@storesjs/stores';
 
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { type SportsHost } from '@/features/sports/core/browse';
@@ -94,12 +94,12 @@ export function SportsGamesList({
 
   useListen(
     sportsNavigationStores[host],
-    s => [s.destination, s.query],
+    state => state,
     () => {
       listRef.current?.scrollToOffset({ offset: 0, animated: false });
       setExpanded(EMPTY_EXPANDED_SET);
     },
-    { equalityFn: shallowEqual }
+    { equalityFn: (previous, next) => previous.destination === next.destination && previous.query === next.query }
   );
 
   const renderItem = useCallback(
