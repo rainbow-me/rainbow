@@ -1,6 +1,7 @@
-import { createBaseStore } from '@storesjs/stores';
+import { createBaseStore, createDerivedStore } from '@storesjs/stores';
 
-import { type DiscoverSection } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverNavigationStore, type DiscoverSection } from '@/features/discover/stores/discoverNavigationStore';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 
 type EventLists = {
@@ -59,6 +60,16 @@ export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>(
 
   removeList: (section, listId) => get().setList(section, listId, NO_IDS),
 }));
+
+/**
+ * The selected Discover page's rendered events, or no events while Search is open.
+ */
+export const displayedDiscoverEventIdsStore = createDerivedStore($ => {
+  if ($(useDiscoverSearchQueryStore, state => state.isSearching)) return NO_IDS;
+
+  const section = $(useDiscoverNavigationStore, state => state.activeSection);
+  return $(discoverEventListsStore, state => state.sections[section]?.eventIds ?? NO_IDS);
+});
 
 function collectEventIds(lists: readonly (readonly string[] | undefined)[]): Set<string> {
   const eventIds = new Set<string>();

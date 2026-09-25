@@ -61,7 +61,7 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
-import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
+import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import { SendSheet } from '@/features/transfer/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';

@@ -7,7 +7,8 @@ jest.mock('@/features/perps/stores/hyperliquidMarketsStore', () => ({
   useHyperliquidMarketsStore: { getState: () => ({ fetch: mockPerpsFetch }) },
 }));
 jest.mock('@/features/placements/stores/derived/predictionsPlacementStore', () => ({
-  usePredictionEventsStore: { getState: () => mockPredictions },
+  predictionTileEventsStore: { getState: () => mockTiles },
+  predictionCardEventsStore: { getState: () => mockCards },
 }));
 jest.mock('@/features/placements/stores/derived/tokensPlacementStore', () => ({
   clearTokenRefCache: () => mockClearTokenRefCache(),
@@ -32,20 +33,22 @@ const mockClearTokenRefCache = jest.fn();
 const mockPlacementsFetch = jest.fn();
 const mockSurfaceFetch = jest.fn();
 const mockSurfaceStore = jest.fn().mockReturnValue({ getState: () => ({ fetch: mockSurfaceFetch }) });
-const mockPredictions = { enabled: false, fetch: jest.fn() };
+const mockTiles = { enabled: false, fetch: jest.fn() };
+const mockCards = { enabled: false, fetch: jest.fn() };
 const mockRefreshSportsEvents = jest.fn();
 let mockPerpsEnabled = false;
 let mockRefs: { hyperliquid: string[]; rainbow: string[]; polymarket: string[] } = { hyperliquid: [], rainbow: [], polymarket: [] };
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockPredictions.enabled = false;
+  mockTiles.enabled = false;
+  mockCards.enabled = false;
   mockPerpsEnabled = false;
   mockRefs = { hyperliquid: [], rainbow: [], polymarket: [] };
 });
 
-test('refreshes visible Sports lookups and generic fallbacks without static Polymarket refs', async () => {
-  mockPredictions.enabled = true;
+test('refreshes Sports and Polymarket cards without tile references', async () => {
+  mockCards.enabled = true;
 
   await refreshDiscoverSurface('discover');
 
@@ -53,7 +56,7 @@ test('refreshes visible Sports lookups and generic fallbacks without static Poly
   expect(mockSurfaceFetch).toHaveBeenCalledWith(undefined, { force: true });
   expect(mockPlacementsFetch).toHaveBeenCalledWith(undefined, { force: true });
   expect(mockRefreshSportsEvents).toHaveBeenCalledTimes(1);
-  expect(mockPredictions.fetch).toHaveBeenCalledWith(undefined, { force: true });
+  expect(mockCards.fetch).toHaveBeenCalledWith(undefined, { force: true });
 });
 
 test('leaves disabled generic predictions idle while refreshing the other providers', async () => {
@@ -62,8 +65,18 @@ test('leaves disabled generic predictions idle while refreshing the other provid
 
   await refreshDiscoverSurface('discover');
 
-  expect(mockPredictions.fetch).not.toHaveBeenCalled();
+  expect(mockCards.fetch).not.toHaveBeenCalled();
+  expect(mockTiles.fetch).not.toHaveBeenCalled();
   expect(mockPerpsFetch).toHaveBeenCalledWith(undefined, { force: true });
   expect(mockClearTokenRefCache).toHaveBeenCalledTimes(1);
   expect(mockTokensFetch).toHaveBeenCalledWith(undefined, { force: true });
+});
+
+test('refreshes tile and card requests independently when both are enabled', async () => {
+  mockCards.enabled = true;
+  mockTiles.enabled = true;
+  await refreshDiscoverSurface('discover');
+
+  expect(mockCards.fetch).toHaveBeenCalledTimes(1);
+  expect(mockTiles.fetch).toHaveBeenCalledTimes(1);
 });

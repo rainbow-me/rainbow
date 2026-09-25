@@ -5,25 +5,29 @@ import { useListen } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
+import { Text } from '@/design-system/components/Text/Text';
+import { DiscoverEventPriceSubscription } from '@/features/discover/components/DiscoverEventPriceSubscription';
 import { DiscoverRefreshControl } from '@/features/discover/components/DiscoverRefreshControl';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
-import { DiscoverSectionDisplayedContext } from '@/features/discover/components/DiscoverSectionDisplayedContext';
+import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import {
   DiscoverPagerNavigation,
   DiscoverSectionNavigation,
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
+import { refreshSportsEvents, useSportsStore } from '@/features/sports/data/sportsStore';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
+import * as i18n from '@/languages';
 import { clamp } from '@/worklets/numbers';
 
 type DiscoverSectionsPagerProps = {
@@ -37,7 +41,6 @@ const FALLBACK_TILE_COUNT = 2;
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
-  const searching = useDiscoverSearchQueryStore(state => state.isSearching);
   const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
   const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
   const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
@@ -68,6 +71,7 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
 
   return (
     <Box style={styles.container} testID="discover-sections-pager">
+      <DiscoverEventPriceSubscription />
       <SmoothPager
         enableSwipeToGoBack={false}
         enableSwipeToGoForward={false}
@@ -84,16 +88,14 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
 
           return (
             <SmoothPager.Page id={section.id} key={section.id} lazy>
-              <DiscoverSectionDisplayedContext value={isActive && !searching}>
-                <DiscoverSectionScrollView
-                  isActive={isActive}
-                  scrollOffset={scrollOffset}
-                  section={section}
-                  sectionIndex={index}
-                  sectionScrollOffsets={sectionScrollOffsets}
-                  surfaceId={surface.id}
-                />
-              </DiscoverSectionDisplayedContext>
+              <DiscoverSectionScrollView
+                isActive={isActive}
+                scrollOffset={scrollOffset}
+                section={section}
+                sectionIndex={index}
+                sectionScrollOffsets={sectionScrollOffsets}
+                surfaceId={surface.id}
+              />
             </SmoothPager.Page>
           );
         })}
@@ -212,10 +214,25 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     >
       <Box testID={`discover-section-${section.id}`}>
         <DiscoverSections items={section.sections} sectionId={section.id} surfaceId={surfaceId} />
+        {isActive && <SportsEventsError />}
       </Box>
     </SectionScrollView>
   );
 });
+
+function SportsEventsError() {
+  const hasEvents = displayedDiscoverEventIdsStore(ids => ids.length > 0);
+  const error = useSportsStore(state => state.error);
+  if (!hasEvents || !error) return null;
+
+  return (
+    <ButtonPressAnimation onPress={refreshSportsEvents} scaleTo={0.98}>
+      <Text color="labelTertiary" align="center" size="15pt" weight="bold">
+        {i18n.t(i18n.l.sports.error)} · {i18n.t(i18n.l.sports.retry)}
+      </Text>
+    </ButtonPressAnimation>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {

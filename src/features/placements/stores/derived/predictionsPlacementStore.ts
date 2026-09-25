@@ -1,20 +1,17 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, type DeriveGetter } from '@storesjs/stores';
 
-import { POLYMARKET } from '@/features/config/constants/experimental';
-import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
-import { useDiscoverNavigationStore } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
+import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
+import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
@@ -26,65 +23,87 @@ export type PredictionPlacementItem = PlacementItem & {
 };
 
 type PredictionEventsParams = {
-  eventIds: string[];
+  eventIds: readonly string[];
 };
 
-type EventsById = Partial<Record<string, PolymarketEvent>>;
+/** A requested event is null when it is missing or no longer active. */
+type EventsById = Partial<Record<string, PolymarketEvent | null>>;
 
 // ============ Constants ====================================================== //
 
-const EMPTY_EVENT_IDS: readonly string[] = [];
-const EMPTY_EVENTS: EventsById = {};
 const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 
-// ============ Requested Events =============================================== //
+// ============ Displayed Events =============================================== //
 
-const predictionEventIdsStore = createDerivedStore(
+/**
+ * Displayed event cards with no matching Sports game.
+ */
+export const displayedPolymarketEventIdsStore = createDerivedStore(
   $ => {
-    const tileIds = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket);
-    if ($(useDiscoverSearchQueryStore, state => state.isSearching)) return tileIds;
-
-    const section = $(useDiscoverNavigationStore, state => state.activeSection);
-    const displayedIds = $(discoverEventListsStore, state => state.sections[section]?.eventIds ?? EMPTY_EVENT_IDS);
-    if (!displayedIds.length) return tileIds;
+    const eventIds = $(displayedDiscoverEventIdsStore);
+    if (!eventIds.length) return eventIds;
 
     const eventGameIds = $(useSportsStore, state => state.eventGameIds);
-    const eventIds = new Set(tileIds);
-
-    for (const id of displayedIds) {
-      if (eventGameIds[id] === null) eventIds.add(id);
-    }
-
-    return [...eventIds].sort();
+    return eventIds.filter(id => eventGameIds[id] === null).sort();
   },
   { equalityFn: areArraysEqual }
 );
 
-// ============ Events Store =================================================== //
+// ============ Events Stores ================================================== //
 
 /**
- * Polymarket data for Discover's tiles and event cards that have no Sports game.
+ * Polymarket events used by Discover's tiles and widgets.
  */
-export const usePredictionEventsStore = createQueryStore<EventsById, PredictionEventsParams>({
-  fetcher: fetchPredictionEvents,
-  enabled: $ => {
-    const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
-    const locallyEnabled = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
-    const hasEvents = $(predictionEventIdsStore, ids => ids.length > 0);
-    return (remoteEnabled || locallyEnabled) && hasEvents;
-  },
-  params: { eventIds: $ => $(predictionEventIdsStore, ids => ids) },
-  keepPreviousData: true,
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(15),
+export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket));
+
+/**
+ * Polymarket events for displayed cards that have no Sports game and are not already requested by tiles.
+ */
+export const predictionCardEventsStore = createPredictionEventsStore($ => {
+  const eventIds = $(displayedPolymarketEventIdsStore);
+  if (!eventIds.length) return eventIds;
+
+  const tileIds = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket);
+  const tileEvents = new Set(tileIds);
+  return eventIds.filter(id => !tileEvents.has(id));
 });
+
+/**
+ * Reads events loaded by either Discover request. Both queries retain their own data and status.
+ */
+export const usePredictionEventsStore = createDerivedStore($ => {
+  const tileEvents = $(predictionTileEventsStore, state => state.getData());
+  const cardEvents = $(predictionCardEventsStore, state => state.getData());
+
+  return (eventId: string): PolymarketEvent | undefined =>
+    (tileEvents && eventId in tileEvents ? tileEvents[eventId] : cardEvents?.[eventId]) ?? undefined;
+});
+
+function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]) {
+  const eventIds = createDerivedStore(getEventIds, { equalityFn: areArraysEqual });
+
+  return createQueryStore<EventsById, PredictionEventsParams>({
+    fetcher: fetchPredictionEvents,
+    enabled: $ => {
+      const enabled = $(useSportsEnabled);
+      const hasEvents = $(eventIds, ids => ids.length > 0);
+      return enabled && hasEvents;
+    },
+    params: { eventIds: $ => $(eventIds) },
+    keepPreviousData: true,
+    staleTime: time.minutes(2),
+    cacheTime: time.minutes(15),
+  });
+}
 
 // ============ Fetcher ======================================================== //
 
 async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abortController: AbortController | null): Promise<EventsById> {
-  if (!eventIds.length) return EMPTY_EVENTS;
+  const eventsById: EventsById = {};
+  for (const id of eventIds) eventsById[id] = null;
+
   const rawEvents = (await fetchPolymarketEventsByIds(eventIds, abortController)).filter(isActivePredictionEvent);
-  if (!rawEvents.length) return EMPTY_EVENTS;
+  if (!rawEvents.length) return eventsById;
 
   const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
   const events = await Promise.all(
@@ -94,7 +113,6 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
     })
   );
 
-  const eventsById: EventsById = {};
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
 }
@@ -109,25 +127,24 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
     const placement = state.getPlacement(placementId);
     return placement?.source === 'polymarket' ? placement : undefined;
   });
-  const events = usePredictionEventsStore(state => state.getData());
-  const items = useMemo(() => (placement && events ? parsePredictionItems(placement.items, events) : EMPTY_ITEMS), [events, placement]);
-  const isLoading = usePredictionEventsStore(state => state.getStatus('isInitialLoad'));
+  const events = predictionTileEventsStore(state => state.getData());
+  const items = useMemo(
+    () =>
+      placement && events
+        ? pairPlacementItems(
+            placement.items,
+            id => events[id] ?? undefined,
+            (item, event) => ({ ...item, event })
+          )
+        : EMPTY_ITEMS,
+    [events, placement]
+  );
+  const isLoading = predictionTileEventsStore(state => state.getStatus('isInitialLoad'));
 
   return { isLoading, items, placement: items.length ? placement : undefined };
 }
 
 // ============ Helpers ======================================================== //
-
-function parsePredictionItems(placementItems: PlacementItem[], eventsById: EventsById): PredictionPlacementItem[] {
-  const items: PredictionPlacementItem[] = [];
-
-  for (const item of placementItems) {
-    const event = eventsById[item.id];
-    if (event) items.push({ ...item, event });
-  }
-
-  return items.length ? items : EMPTY_ITEMS;
-}
 
 function isActivePredictionEvent(event: RawPolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;

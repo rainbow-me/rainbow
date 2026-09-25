@@ -1,6 +1,6 @@
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { predictionCardEventsStore, predictionTileEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
@@ -29,9 +29,9 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
   }
 
-  const predictionEvents = usePredictionEventsStore.getState();
-  if (predictionEvents.enabled) {
-    refreshes.push(predictionEvents.fetch(undefined, { force: true }));
+  for (const store of [predictionTileEventsStore, predictionCardEventsStore]) {
+    const state = store.getState();
+    if (state.enabled) refreshes.push(state.fetch(undefined, { force: true }));
   }
 
   refreshes.push(refreshSportsEvents());

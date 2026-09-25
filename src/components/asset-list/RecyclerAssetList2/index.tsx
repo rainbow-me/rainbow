@@ -11,7 +11,7 @@ import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/Navba
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
+import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';

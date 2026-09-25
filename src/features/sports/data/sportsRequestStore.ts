@@ -1,8 +1,6 @@
 import { createDerivedStore, type DerivedStore } from '@storesjs/stores';
 
-import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
-import { useDiscoverNavigationStore } from '@/features/discover/stores/discoverNavigationStore';
-import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
+import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { type SportsDestination, type SportsHost, type SportsWindow } from '@/features/sports/core/browse';
@@ -88,11 +86,8 @@ export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => 
     }
 
     case Routes.DISCOVER_SCREEN: {
-      if ($(useDiscoverSearchQueryStore, state => state.isSearching)) return null;
-
-      const section = $(useDiscoverNavigationStore, state => state.activeSection);
-      const eventIds = $(discoverEventListsStore, state => state.sections[section]?.eventIds);
-      return eventIds?.length ? { type: 'events', route, eventIds } : null;
+      const eventIds = $(displayedDiscoverEventIdsStore);
+      return eventIds.length ? { type: 'events', route, eventIds } : null;
     }
 
     default:

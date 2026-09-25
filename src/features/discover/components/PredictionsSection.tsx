@@ -33,7 +33,7 @@ import {
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { useSportsEnabled } from '@/features/sports/ui/useSportsEnabled';
+import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { logger } from '@/logger';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
