@@ -6,9 +6,10 @@ beforeEach(() => {
 
 it('publishes membership only when the effective set of events changes', () => {
   const { setList, removeList } = discoverEventListsStore.getState();
-  setList('sports', 'games', ['1', '2']);
+  setList('sports', 'games', ['2', '1']);
 
   const { sections, mountedEventIds } = discoverEventListsStore.getState();
+  expect(sections.sports?.eventIds).toEqual(['1', '2']);
   setList('sports', 'games', ['2', '1', '2']);
   removeList('sports', 'unmounted');
   expect(discoverEventListsStore.getState().sections).toBe(sections);

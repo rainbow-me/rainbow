@@ -1031,7 +1031,7 @@ it('looks up the events that the active Discover section’s lists show', async 
 
   showDiscover();
   await settle();
-  expect(lookedUpEventIds()).toEqual([['unsupported', 'child']]);
+  expect(lookedUpEventIds()).toEqual([['child', 'unsupported']]);
 
   const state = useSportsStore.getState();
   expect(getGameId(state, 'child')).toBe('1');
@@ -1042,7 +1042,7 @@ it('looks up the events that the active Discover section’s lists show', async 
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
   useDiscoverNavigationStore.getState().navigate('crypto');
   await settle();
-  expect(lookedUpEventIds()).toEqual([['unsupported', 'child'], ['other']]);
+  expect(lookedUpEventIds()).toEqual([['child', 'unsupported'], ['other']]);
 });
 
 it('ignores the lists of Discover sections that are not active', async () => {

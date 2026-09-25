@@ -29,12 +29,21 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
   }
 
+  refreshes.push(refreshDiscoverEvents());
+
+  await Promise.allSettled(refreshes);
+}
+
+/**
+ * Refreshes Discover's games and enabled Polymarket requests.
+ */
+export async function refreshDiscoverEvents(): Promise<void> {
+  const refreshes: Promise<unknown>[] = [refreshSportsEvents()];
+
   for (const store of [predictionTileEventsStore, predictionCardEventsStore]) {
     const state = store.getState();
     if (state.enabled) refreshes.push(state.fetch(undefined, { force: true }));
   }
-
-  refreshes.push(refreshSportsEvents());
 
   await Promise.allSettled(refreshes);
 }

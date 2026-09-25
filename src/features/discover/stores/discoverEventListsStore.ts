@@ -44,7 +44,7 @@ export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>(
       const sections = { ...state.sections };
 
       if (pageIds.size) {
-        sections[section] = { lists, eventIds: pageUnchanged ? previousPageIds : [...pageIds] };
+        sections[section] = { lists, eventIds: pageUnchanged ? previousPageIds : [...pageIds].sort() };
       } else {
         delete sections[section];
       }

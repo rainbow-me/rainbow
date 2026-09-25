@@ -5,14 +5,14 @@ import { createDerivedStore, createQueryStore, type DeriveGetter } from '@stores
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type PlacementId, type PlacementItem } from '@/features/placements/types';
+import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
 
@@ -26,11 +26,11 @@ type PredictionEventsParams = {
   eventIds: readonly string[];
 };
 
-/** A requested event is null when it is missing or no longer active. */
-type EventsById = Partial<Record<string, PolymarketEvent | null>>;
+type EventsById = Partial<Record<string, PolymarketEvent>>;
 
 // ============ Constants ====================================================== //
 
+const EMPTY_EVENTS: EventsById = {};
 const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 
 // ============ Displayed Events =============================================== //
@@ -44,12 +44,17 @@ export const displayedPolymarketEventIdsStore = createDerivedStore(
     if (!eventIds.length) return eventIds;
 
     const eventGameIds = $(useSportsStore, state => state.eventGameIds);
-    return eventIds.filter(id => eventGameIds[id] === null).sort();
+    return eventIds.filter(id => eventGameIds[id] === null);
   },
   { equalityFn: areArraysEqual }
 );
 
-// ============ Events Stores ================================================== //
+// ============ Event Stores =================================================== //
+
+const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
+  $ => new Set($(useDiscoverSurfacePlacementRefs, refs => refs.polymarket, areArraysEqual)),
+  { lockDependencies: true }
+);
 
 /**
  * Polymarket events used by Discover's tiles and widgets.
@@ -63,21 +68,104 @@ export const predictionCardEventsStore = createPredictionEventsStore($ => {
   const eventIds = $(displayedPolymarketEventIdsStore);
   if (!eventIds.length) return eventIds;
 
-  const tileIds = $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket);
-  const tileEvents = new Set(tileIds);
-  return eventIds.filter(id => !tileEvents.has(id));
+  const tileIds = $(predictionTileEventIdsStore);
+  return eventIds.filter(id => !tileIds.has(id));
 });
 
 /**
  * Reads events loaded by either Discover request. Both queries retain their own data and status.
  */
-export const usePredictionEventsStore = createDerivedStore($ => {
-  const tileEvents = $(predictionTileEventsStore, state => state.getData());
-  const cardEvents = $(predictionCardEventsStore, state => state.getData());
+export const usePredictionEventsStore = createDerivedStore(
+  $ => {
+    const tileIds = $(predictionTileEventIdsStore);
+    const tileEvents = $(predictionTileEventsStore, state => state.getData());
+    const cardEvents = $(predictionCardEventsStore, state => state.getData());
 
-  return (eventId: string): PolymarketEvent | undefined =>
-    (tileEvents && eventId in tileEvents ? tileEvents[eventId] : cardEvents?.[eventId]) ?? undefined;
-});
+    return (eventId: string): PolymarketEvent | undefined => (tileIds.has(eventId) ? tileEvents?.[eventId] : cardEvents?.[eventId]);
+  },
+
+  { lockDependencies: true }
+);
+
+// ============ Card Projections =============================================== //
+
+/**
+ * Reads a card's game ID or Polymarket event. Undefined means loading; null means unavailable.
+ */
+export const usePredictionCardsStore = createDerivedStore(
+  $ => {
+    const games = $(useSportsStore, state => state.games);
+    const eventGameIds = $(useSportsStore, state => state.eventGameIds);
+    const getEvent = $(usePredictionEventsStore);
+    const tileIds = $(predictionTileEventIdsStore);
+    const tilesLoading = $(predictionTileEventsStore, state => state.getStatus('isInitialLoad'));
+    const cardsLoading = $(predictionCardEventsStore, state => state.getStatus('isInitialLoad'));
+    const sports = { games, eventGameIds };
+
+    return (eventId: string) => {
+      const gameId = getGameId(sports, eventId);
+      if (gameId !== null) return gameId;
+
+      const isLoading = tileIds.has(eventId) ? tilesLoading : cardsLoading;
+      return getEvent(eventId) ?? (isLoading ? undefined : null);
+    };
+  },
+
+  { lockDependencies: true }
+);
+
+/**
+ * The first error from Discover's game or Polymarket requests.
+ */
+export const useDiscoverEventsErrorStore = createDerivedStore(
+  $ => {
+    const gameError = $(useSportsStore, state => (state.enabled ? state.error : null));
+    const tileError = $(predictionTileEventsStore, state => (state.enabled ? state.error : null));
+    const cardError = $(predictionCardEventsStore, state => (state.enabled ? state.error : null));
+
+    return gameError ?? tileError ?? cardError;
+  },
+
+  { lockDependencies: true }
+);
+
+// ============ Placement ====================================================== //
+
+/**
+ * Reads a prediction placement. Undefined means initial loading; null means no matching placement.
+ */
+export function getPredictionPlacement(
+  state: ReturnType<typeof usePlacementsStore.getState>,
+  placementId: PlacementId
+): Placement | null | undefined {
+  const placement = state.getPlacement(placementId);
+  if (placement) return placement.source === 'polymarket' ? placement : null;
+  return state.getStatus('isInitialLoad') ? undefined : null;
+}
+
+/**
+ * A placement's active events in placement order, with loading state while its events are first fetched.
+ */
+export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
+  const placement = usePlacementsStore(state => getPredictionPlacement(state, placementId) ?? undefined);
+  const events = predictionTileEventsStore(state => state.getData());
+  const items = useMemo(
+    () =>
+      placement && events
+        ? pairPlacementItems(
+            placement.items,
+            id => events[id],
+            (item, event) => ({ ...item, event })
+          )
+        : EMPTY_ITEMS,
+    [events, placement]
+  );
+  const isLoading = predictionTileEventsStore(state => state.getStatus('isInitialLoad'));
+
+  return { isLoading, items, placement: items.length ? placement : undefined };
+}
+
+// ============ Fetching ======================================================= //
 
 function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]) {
   const eventIds = createDerivedStore(getEventIds, { equalityFn: areArraysEqual });
@@ -96,14 +184,9 @@ function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly 
   });
 }
 
-// ============ Fetcher ======================================================== //
-
 async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abortController: AbortController | null): Promise<EventsById> {
-  const eventsById: EventsById = {};
-  for (const id of eventIds) eventsById[id] = null;
-
   const rawEvents = (await fetchPolymarketEventsByIds(eventIds, abortController)).filter(isActivePredictionEvent);
-  if (!rawEvents.length) return eventsById;
+  if (!rawEvents.length) return EMPTY_EVENTS;
 
   const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
   const events = await Promise.all(
@@ -113,35 +196,9 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
     })
   );
 
+  const eventsById: EventsById = {};
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
-}
-
-// ============ Placement ====================================================== //
-
-/**
- * A placement's active events in placement order, with loading state while its events are first fetched.
- */
-export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
-  const placement = usePlacementsStore(state => {
-    const placement = state.getPlacement(placementId);
-    return placement?.source === 'polymarket' ? placement : undefined;
-  });
-  const events = predictionTileEventsStore(state => state.getData());
-  const items = useMemo(
-    () =>
-      placement && events
-        ? pairPlacementItems(
-            placement.items,
-            id => events[id] ?? undefined,
-            (item, event) => ({ ...item, event })
-          )
-        : EMPTY_ITEMS,
-    [events, placement]
-  );
-  const isLoading = predictionTileEventsStore(state => state.getStatus('isInitialLoad'));
-
-  return { isLoading, items, placement: items.length ? placement : undefined };
 }
 
 // ============ Helpers ======================================================== //

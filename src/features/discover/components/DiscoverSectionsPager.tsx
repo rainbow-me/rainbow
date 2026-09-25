@@ -22,10 +22,11 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
+import { refreshDiscoverEvents } from '@/features/discover/utils/refreshDiscoverSurface';
+import { useDiscoverEventsErrorStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
-import { refreshSportsEvents, useSportsStore } from '@/features/sports/data/sportsStore';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import * as i18n from '@/languages';
 import { clamp } from '@/worklets/numbers';
@@ -214,19 +215,19 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     >
       <Box testID={`discover-section-${section.id}`}>
         <DiscoverSections items={section.sections} sectionId={section.id} surfaceId={surfaceId} />
-        {isActive && <SportsEventsError />}
+        {isActive && <DiscoverEventsError />}
       </Box>
     </SectionScrollView>
   );
 });
 
-function SportsEventsError() {
+function DiscoverEventsError() {
   const hasEvents = displayedDiscoverEventIdsStore(ids => ids.length > 0);
-  const error = useSportsStore(state => state.error);
+  const error = useDiscoverEventsErrorStore();
   if (!hasEvents || !error) return null;
 
   return (
-    <ButtonPressAnimation onPress={refreshSportsEvents} scaleTo={0.98}>
+    <ButtonPressAnimation onPress={refreshDiscoverEvents} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">
         {i18n.t(i18n.l.sports.error)} · {i18n.t(i18n.l.sports.retry)}
       </Text>

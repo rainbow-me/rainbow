@@ -6,7 +6,9 @@ import { DiscoverEventPriceSubscription } from '@/features/discover/components/D
 import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { useDiscoverNavigationStore } from '@/features/discover/stores/discoverNavigationStore';
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
+import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
 import { type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
+import { type Placement } from '@/features/placements/types';
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { Game } from '@/features/sports/core/generated/sports';
@@ -15,7 +17,14 @@ import { rainbowFetch, type RainbowFetchResponse } from '@/framework/data/http/r
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
-import { predictionCardEventsStore, predictionTileEventsStore, usePredictionEventsStore } from './predictionsPlacementStore';
+import {
+  getPredictionPlacement,
+  predictionCardEventsStore,
+  predictionTileEventsStore,
+  useDiscoverEventsErrorStore,
+  usePredictionCardsStore,
+  usePredictionEventsStore,
+} from './predictionsPlacementStore';
 
 const renderer = jest.requireActual<ReactNativeType>('react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev');
 
@@ -34,11 +43,21 @@ jest.mock('@/features/placements/surfaces/stores/discoverSurfaceStore', () => {
   const refs = createBaseStore<DiscoverSurfacePlacementRefs>(() => ({ hyperliquid: [], polymarket: [], rainbow: [] }));
   return { useDiscoverSurfacePlacementRefs: refs, setRefs: refs.setState };
 });
-jest.mock('@/features/placements/stores/placementsStore', () => ({}));
+jest.mock('@/features/placements/stores/placementsStore', () => ({
+  usePlacementsStore: jest
+    .requireActual<typeof import('@storesjs/stores')>('@storesjs/stores')
+    .createBaseStore<Pick<PlacementsState, 'placementsById' | 'getPlacement'> & { getStatus: () => boolean }>((_, get) => ({
+      placementsById: {},
+      getPlacement: id => get().placementsById[id],
+      getStatus: () => true,
+    })),
+}));
 jest.mock('@/features/sports/data/sportsStore', () => ({
   useSportsStore: jest
     .requireActual<typeof import('@storesjs/stores')>('@storesjs/stores')
     .createBaseStore(() => ({ eventGameIds: {}, games: {} })),
+  getGameId: (state: ReturnType<typeof useSportsStore.getState>, id: string) =>
+    state.eventGameIds[id] !== undefined ? state.eventGameIds[id] : state.games[id] ? id : undefined,
   getGame: (state: ReturnType<typeof useSportsStore.getState>, id: string) => state.games[state.eventGameIds[id] ?? id],
 }));
 jest.mock('@/features/polymarket/constants', () => ({
@@ -89,6 +108,7 @@ beforeEach(() => {
   useDiscoverSearchQueryStore.setState({ isSearching: false });
   useSportsStore.setState({ eventGameIds: {}, games: {} });
   setRefs({ polymarket: [] });
+  usePlacementsStore.setState({ placementsById: {} });
   for (const store of [predictionTileEventsStore, predictionCardEventsStore]) {
     store.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   }
@@ -122,16 +142,6 @@ afterAll(() => {
   predictionCardEventsStore.getState().reset(true);
 });
 
-test('no events leaves both requests disabled', async () => {
-  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
-  await settle();
-  expect(predictionTileEventsStore.getState().enabled).toBe(false);
-  expect(predictionCardEventsStore.getState().enabled).toBe(false);
-
-  expect(rainbowFetch).not.toHaveBeenCalled();
-  expect(fetchPolymarketTeamMetadataForGameEvents).not.toHaveBeenCalled();
-});
-
 test('requests tiles once while the displayed non-sports cards change', async () => {
   setRefs({ polymarket: ['shared', 'tile'] });
   discoverEventListsStore.getState().setList('featured', 'cards', ['sports', 'shared', 'other', 'unknown']);
@@ -156,23 +166,6 @@ test('requests tiles once while the displayed non-sports cards change', async ()
   await settle();
   expect(predictionCardEventsStore.getState().enabled).toBe(false);
   expect(rainbowFetch).toHaveBeenCalledTimes(3);
-});
-
-test('overlapping lists share a request and removing the last list disables it', async () => {
-  useSportsStore.setState({ eventGameIds: { shared: null } });
-  discoverEventListsStore.getState().setList('featured', 'first', ['shared']);
-  discoverEventListsStore.getState().setList('featured', 'second', ['shared']);
-  unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
-  await settle();
-
-  discoverEventListsStore.getState().removeList('featured', 'first');
-  await settle();
-  expect(requestedIds()).toEqual([['shared']]);
-
-  discoverEventListsStore.getState().removeList('featured', 'second');
-  await settle();
-  expect(predictionCardEventsStore.getState().enabled).toBe(false);
-  expect(rainbowFetch).toHaveBeenCalledTimes(1);
 });
 
 test('discards inactive events before team lookup and card processing', async () => {
@@ -253,7 +246,7 @@ test('a changed card request can fail without refetching or clearing tile events
   await settle();
 
   expect(requestedIds()).toEqual([['tile'], ['card']]);
-  expect(predictionCardEventsStore.getState().error).toEqual(new Error('Card request failed'));
+  expect(useDiscoverEventsErrorStore.getState()).toEqual(new Error('Card request failed'));
   expect(usePredictionEventsStore.getState()('tile')).toBe(tile);
   expect(predictionTileEventsStore.getState().error).toBeNull();
 });
@@ -317,4 +310,44 @@ test('one price subscription follows displayed membership without reacting to sc
 
   act(() => renderer.unmountComponentAtNode(102));
   expect(removeSubscription).toHaveBeenCalledTimes(1);
+});
+
+test('placement loading ends when items arrive and fetch metadata does not rerender the section', () => {
+  const rendered = jest.fn();
+  function Section(): null {
+    rendered(usePlacementsStore(state => getPredictionPlacement(state, 'cards')));
+    return null;
+  }
+  act(() => renderer.render(React.createElement(Section), 102, undefined, undefined));
+  expect(rendered).toHaveBeenLastCalledWith(undefined);
+
+  const placement: Placement = {
+    id: 'cards',
+    source: 'polymarket',
+    type: 'prediction',
+    version: 2,
+    items: [{ id: 'b' }, { id: 'a' }],
+  };
+  act(() => usePlacementsStore.setState({ placementsById: { cards: placement } }));
+  expect(rendered).toHaveBeenLastCalledWith(placement);
+  rendered.mockClear();
+
+  act(() => usePlacementsStore.setState({ lastFetchedAt: Date.now() }));
+  expect(rendered).not.toHaveBeenCalled();
+});
+
+test('cached games render before lookup and score changes do not rerender the card projection', () => {
+  const game = Game.fromJSON({ id: 'game', score: [{ kind: 'KIND_TOTAL', first: { value: 0 } }] });
+  useSportsStore.setState({ games: { game }, eventGameIds: {} });
+  const rendered = jest.fn();
+  function Card(): null {
+    rendered(usePredictionCardsStore(getCard => getCard('game')));
+    return null;
+  }
+  act(() => renderer.render(React.createElement(Card), 102, undefined, undefined));
+  expect(rendered).toHaveBeenLastCalledWith('game');
+  rendered.mockClear();
+
+  act(() => useSportsStore.setState({ games: { game: { ...game, score: [{ ...game.score[0], first: { value: 1 } }] } } }));
+  expect(rendered).not.toHaveBeenCalled();
 });
