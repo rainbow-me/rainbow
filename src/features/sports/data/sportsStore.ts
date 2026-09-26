@@ -74,8 +74,7 @@ type SearchResult = {
   nextCursor?: string;
 };
 
-type SportsState = {
-  catalog: SportsCatalog | undefined;
+type SportsData = {
   games: Partial<Record<string, Game>>;
   /** Each looked-up event's game ID, or `null` if the lookup found no game. */
   eventGameIds: Partial<Record<string, string | null>>;
@@ -86,7 +85,10 @@ type SportsState = {
   search: SearchResult | undefined;
 };
 
-type SportsData = Omit<SportsState, 'catalog'>;
+type SportsState = SportsData & {
+  catalog: SportsCatalog | undefined;
+  getGame: (eventId: string) => Game | undefined;
+};
 
 // ============ Constants ====================================================== //
 
@@ -124,7 +126,16 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
     },
   },
 
-  () => ({ catalog: undefined, ...getEmptyData() })
+  (_, get) => ({
+    catalog: undefined,
+    ...getEmptyData(),
+
+    getGame: eventId => {
+      const state = get();
+      const gameId = getGameId(state, eventId);
+      return gameId ? state.games[gameId] : undefined;
+    },
+  })
 );
 
 /**
@@ -144,14 +155,6 @@ export function getGameId(state: Pick<SportsState, 'games' | 'eventGameIds'>, ev
   const gameId = state.eventGameIds[eventId];
   if (gameId !== undefined) return gameId;
   return state.games[eventId] ? eventId : undefined;
-}
-
-/**
- * The stored game for an event, or `undefined` if no game is known.
- */
-export function getGame(state: Pick<SportsState, 'games' | 'eventGameIds'>, eventId: string): Game | undefined {
-  const gameId = getGameId(state, eventId);
-  return gameId ? state.games[gameId] : undefined;
 }
 
 /**

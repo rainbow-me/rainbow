@@ -19,7 +19,6 @@ import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationS
 import { sportsPageStatusStores, sportsPageStores } from '@/features/sports/data/sportsPageStore';
 import { sportsRequestStore } from '@/features/sports/data/sportsRequestStore';
 import {
-  getGame,
   getGameId,
   getPageQueryKey,
   loadMoreSportsGames,
@@ -1247,7 +1246,7 @@ it('looks up the selected event while the event screen is active', async () => {
   await settle();
 
   expect(lookedUpEventIds()).toEqual([['child']]);
-  expect(getGame(useSportsStore.getState(), 'child')?.id).toBe('1');
+  expect(useSportsStore.getState().getGame('child')?.id).toBe('1');
 });
 
 it('opens a game a page just returned without looking it up', async () => {
@@ -1257,7 +1256,7 @@ it('opens a game a page just returned without looking it up', async () => {
   await settle();
 
   expect(sportsClient.lookupGames).not.toHaveBeenCalled();
-  expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
+  expect(useSportsStore.getState().getGame('1')?.id).toBe('1');
 });
 
 it('opens a game Search just returned without looking it up', async () => {
@@ -1434,7 +1433,7 @@ it('resolves an event reported unavailable once its game arrives, and keeps the 
   jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [second] });
   await refreshSportsPage('main');
   expect(page().sections[0]?.gameIds).toEqual(['2']);
-  expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
+  expect(useSportsStore.getState().getGame('1')?.id).toBe('1');
 });
 
 it('pauses while the app is inactive and resumes on return', async () => {

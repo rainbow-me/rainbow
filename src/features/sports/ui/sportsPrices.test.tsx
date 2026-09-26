@@ -3,7 +3,6 @@ import React, { act, type ReactElement } from 'react';
 import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 
 import { Game } from '@/features/sports/core/generated/sports';
-import * as sportsStore from '@/features/sports/data/sportsStore';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
@@ -22,7 +21,7 @@ jest.mock('@/state/liveTokens/polymarketAdapter', () => ({ getPolymarketTokenId:
 
 const setSubscription = jest.mocked(useLiveTokensStore.getState().setSubscription);
 const removeSubscription = jest.mocked(useLiveTokensStore.getState().removeSubscription);
-let setPrices: (ids: readonly string[], otherTokenIds?: readonly string[]) => void;
+let setPrices: (gameIds: readonly string[]) => void;
 
 function Prices(): null {
   setPrices = useSportsPriceSubscription();
@@ -56,7 +55,7 @@ function scoreGame(current: Game): Game {
 }
 
 beforeEach(() => {
-  useSportsStore.setState({ games: { a: game('a'), b: game('b') }, eventGameIds: { child: 'a', other: null } });
+  useSportsStore.setState({ games: { a: game('a'), b: game('b') }, eventGameIds: {} });
   jest.clearAllMocks();
 });
 
@@ -75,22 +74,21 @@ it('prices the listed Games and follows token changes', () => {
 
   act(() => setPrices(['b']));
   expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', ['mid:b-win', 'mid:b-spread']);
-});
 
-it('prices the games behind event IDs with the list’s other tokens', () => {
-  render(<Prices />);
-  act(() => setPrices(['child', 'other', 'unknown'], ['fallback']));
-
-  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', ['mid:a-win', 'fallback']);
+  act(() => setPrices([]));
+  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', []);
 });
 
 it('formats and registers nothing for unchanged input', () => {
   render(<Prices />);
-  act(() => setPrices(['a'], ['fallback']));
+  act(() => setPrices(['a']));
   const registrations = setSubscription.mock.calls.length;
   const formats = jest.mocked(getPolymarketTokenId).mock.calls.length;
 
-  act(() => setPrices(['a'], ['fallback']));
+  const update = setPrices;
+  render(<Prices />);
+  expect(setPrices).toBe(update);
+  act(() => setPrices(['a']));
   updateGame('a', scoreGame);
   updateGame('a', current => ({
     ...current,
@@ -101,7 +99,7 @@ it('formats and registers nothing for unchanged input', () => {
   expect(getPolymarketTokenId).toHaveBeenCalledTimes(formats);
 });
 
-it('does not update prices when a removed Game changes', () => {
+it('follows only the listed Games as data changes', () => {
   render(<Prices />);
   act(() => setPrices(['a']));
   updateGame('b', () => game('b', 'b-spread'));
@@ -110,6 +108,12 @@ it('does not update prices when a removed Game changes', () => {
 
   updateGame('a', () => game('a', 'a-spread'));
   expect(setSubscription).toHaveBeenCalledTimes(registrations);
+
+  act(() => useSportsStore.setState({ games: {} }));
+  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', []);
+
+  act(() => useSportsStore.setState({ games: { b: game('b') } }));
+  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', ['mid:b-win']);
 });
 
 it('releases prices on unmount and stops following game changes', () => {
@@ -122,13 +126,21 @@ it('releases prices on unmount and stops following game changes', () => {
   expect(setSubscription).toHaveBeenCalledTimes(1);
 });
 
-it('does not revisit games when query metadata changes', () => {
+it('does not revisit Games when query metadata or event aliases change', () => {
+  const games = useSportsStore.getState().games;
+  const a = games.a;
+  const readGame = jest.fn(() => a);
+  Object.defineProperty(games, 'a', { enumerable: true, get: readGame });
+  useSportsStore.setState({ eventGameIds: { a: null } });
   render(<Prices />);
   act(() => setPrices(['a', 'b']));
-  const getGame = jest.spyOn(sportsStore, 'getGame');
+  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'SportsScreen', ['mid:a-win', 'mid:b-win']);
+  readGame.mockClear();
 
   act(() => useSportsStore.setState({ lastFetchedAt: Date.now() }));
-  expect(getGame).not.toHaveBeenCalled();
+  act(() => useSportsStore.setState({ eventGameIds: { a: 'a' } }));
+  expect(readGame).not.toHaveBeenCalled();
+  expect(setSubscription).toHaveBeenCalledTimes(1);
 });
 
 it('does not recheck a Game after its unchanged tokens have been compared', () => {
@@ -152,20 +164,4 @@ it('does not recheck a Game after its unchanged tokens have been compared', () =
   expect(readParticipants).not.toHaveBeenCalled();
   expect(setSubscription).toHaveBeenCalledTimes(registrations);
   expect(getPolymarketTokenId).toHaveBeenCalledTimes(formats);
-});
-
-it('compares equivalent ID arrays without enumerating their keys', () => {
-  render(<Prices />);
-  act(() => setPrices(['a'], ['fallback']));
-  const registrations = setSubscription.mock.calls.length;
-  const ids = ['a'];
-  const otherTokenIds = ['fallback'];
-  const keys = jest.spyOn(Object, 'keys');
-
-  act(() => setPrices(ids, otherTokenIds));
-  const enumeratedIds = keys.mock.calls.some(([value]) => value === ids || value === otherTokenIds);
-  keys.mockRestore();
-
-  expect(enumeratedIds).toBe(false);
-  expect(setSubscription).toHaveBeenCalledTimes(registrations);
 });

@@ -1,18 +1,18 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useListen } from '@storesjs/stores';
 
 import { type Game } from '@/features/sports/core/generated/sports';
-import { getGame, useSportsStore } from '@/features/sports/data/sportsStore';
+import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
+import { useStableValue } from '@/hooks/useStableValue';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 
 // ============ Types ========================================================== //
 
 type PricedList = {
-  ids: readonly string[];
-  otherTokenIds: readonly string[];
+  gameIds: readonly string[];
   games: (Game | undefined)[];
 };
 
@@ -31,39 +31,37 @@ const OUTCOME_SELECTORS: readonly ((game: Game) => { tokenId: string } | undefin
 // ============ Price Subscription ============================================= //
 
 /**
- * Subscribes to live prices for a list of games. The returned function replaces the game or event IDs
- * and any additional token IDs. Updates subscriptions when a game's tokens change and removes them on unmount.
+ * Subscribes visible Games to live prices, following token changes until unmount.
  */
-export function useSportsPriceSubscription(): (ids: readonly string[], otherTokenIds?: readonly string[]) => void {
+export function useSportsPriceSubscription(): (gameIds: readonly string[]) => void {
   const subscribe = useLiveTokenSubscription();
-  const priced = useRef<PricedList>({ ids: NO_IDS, otherTokenIds: NO_IDS, games: [] });
+  const priced = useStableValue<PricedList>(() => ({ gameIds: NO_IDS, games: [] }));
 
   const update = useCallback(
-    (ids: readonly string[], otherTokenIds: readonly string[] = NO_IDS) => {
+    (gameIds: readonly string[]) => {
       const state = useSportsStore.getState();
-      const previous = priced.current;
-      const games = areArraysEqual(previous.ids, ids) ? previous.games : [];
-      let tokensChanged = games !== previous.games || !areArraysEqual(previous.otherTokenIds, otherTokenIds);
+      const games = areArraysEqual(priced.gameIds, gameIds) ? priced.games : [];
+      let tokensChanged = games !== priced.games;
 
-      for (let i = 0; i < ids.length; i++) {
-        const game = getGame(state, ids[i]);
+      for (let i = 0; i < gameIds.length; i++) {
+        const game = state.games[gameIds[i]];
         tokensChanged ||= !areGameTokensEqual(games[i], game);
         games[i] = game;
       }
 
       if (!tokensChanged) return;
 
-      priced.current = { ids, otherTokenIds, games };
-      subscribe(getTokenIds(games, otherTokenIds));
+      priced.gameIds = gameIds;
+      priced.games = games;
+      subscribe(getTokenIds(games));
     },
-    [subscribe]
+    [priced, subscribe]
   );
 
   useListen(
     useSportsStore,
-    state => state,
-    () => update(priced.current.ids, priced.current.otherTokenIds),
-    { equalityFn: (previous, next) => previous.games === next.games && previous.eventGameIds === next.eventGameIds }
+    state => state.games,
+    () => update(priced.gameIds)
   );
 
   return update;
@@ -71,7 +69,7 @@ export function useSportsPriceSubscription(): (ids: readonly string[], otherToke
 
 // ============ Helpers ======================================================== //
 
-function getTokenIds(games: readonly (Game | undefined)[], otherTokenIds: readonly string[]): string[] {
+function getTokenIds(games: readonly (Game | undefined)[]): string[] {
   const tokenIds: string[] = [];
 
   for (const game of games) {
@@ -83,7 +81,6 @@ function getTokenIds(games: readonly (Game | undefined)[], otherTokenIds: readon
     }
   }
 
-  tokenIds.push(...otherTokenIds);
   return tokenIds;
 }
 
