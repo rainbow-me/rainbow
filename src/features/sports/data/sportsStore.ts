@@ -1,4 +1,4 @@
-import { createQueryStore, getQueryKey, queryParam, type SetDataParams } from '@storesjs/stores';
+import { createQueryStore, getQueryKey, queryParam, type QueryStoreState, type SetDataParams } from '@storesjs/stores';
 import { replaceEqualDeep } from '@tanstack/query-core';
 
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
@@ -35,6 +35,8 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { useAppStateStore } from '@/state/appState/appStateStore';
 
 // ============ Types ========================================================== //
+
+export type SportsQueryState = QueryStoreState<SportsResponse | null, SportsParams, SportsState>;
 
 type SportsResponse =
   | ({ type: 'live' } & GetGamesResponse)
@@ -87,7 +89,7 @@ type SportsState = SportsData & {
 
 // ============ Constants ====================================================== //
 
-const FRESH_FOR = time.seconds(60);
+const STALE_TIME = time.seconds(60);
 const RPC_NOT_FOUND = 5;
 const RPC_FAILED_PRECONDITION = 9;
 const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
@@ -113,7 +115,7 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
       const fetchedAt = $(store, state => state.queryCache[state.queryKey]?.lastFetchedAt);
       const answeredAt = $(store, state => state.answeredAt);
 
-      if (request?.type !== 'event' || !fetchedAt) return FRESH_FOR;
+      if (request?.type !== 'event' || !fetchedAt) return STALE_TIME;
       return getEventDueAt(answeredAt, request.eventId) - fetchedAt;
     },
     params: {
@@ -255,7 +257,7 @@ async function fetchSearch(
   const canContinue =
     previous &&
     previous.requestedCount > previous.gameIds.length &&
-    Date.now() - (entry?.lastFetchedAt ?? 0) < FRESH_FOR &&
+    Date.now() - (entry?.lastFetchedAt ?? 0) < STALE_TIME &&
     getErrorCode(entry?.errorInfo?.error) !== RPC_FAILED_PRECONDITION;
 
   let requestedCount = Math.max(previous?.gameIds.length ?? 0, previous?.requestedCount ?? 1);
@@ -322,7 +324,7 @@ function getRequestKey(request: SportsRequest | null): SportsRequest | null {
 }
 
 function getEventDueAt(answeredAt: SportsData['answeredAt'], eventId: string): number {
-  return (answeredAt[eventId] ?? 0) + FRESH_FOR;
+  return (answeredAt[eventId] ?? 0) + STALE_TIME;
 }
 
 // ============ Storing Responses ============================================== //

@@ -15,8 +15,9 @@ export const useSportsTimeStore = createTimeStore(time => getNextMidnight(new Da
  */
 export const sportsWindowStore = createDerivedStore(
   $ => {
-    $(useSportsTimeStore, state => state.currentTime);
-    $(useAppStateStore, state => state === 'active');
+    $(useSportsTimeStore, s => s.currentTime);
+    $(useAppStateStore, s => s === 'active');
+
     return getSportsWindow();
   },
   { equalityFn: shallowEqual, lockDependencies: true }

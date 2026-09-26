@@ -5,11 +5,12 @@ import { type SportsCatalog, type SportsScope } from '@/features/sports/core/cat
 import { areSectionInputsEqual, selectSportsGames, type SportsSection } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { getRequestDestination, sportsPageRequestStores, type SportsPageRequest } from '@/features/sports/data/sportsRequestStore';
-import { getGames, getPageQueryKey, useSportsStore } from '@/features/sports/data/sportsStore';
+import { getGames, getPageQueryKey, useSportsStore, type SportsQueryState } from '@/features/sports/data/sportsStore';
 
 // ============ Types ========================================================== //
 
 export type SportsPage = 'live' | 'sports' | 'competitions' | 'games' | 'search';
+
 type SportsPageStatus = 'none' | 'loading' | 'error' | 'empty' | 'search-empty' | 'more';
 
 type SportsPageState = {
@@ -21,7 +22,7 @@ type SportsPageState = {
   categories: SportsDestination[];
   directoryIds: string[];
   sections: SportsSection[];
-  getStatus: (state: ReturnType<typeof useSportsStore.getState>) => SportsPageStatus;
+  getStatus: (state: SportsQueryState) => SportsPageStatus;
 };
 
 // ============ Constants ====================================================== //
@@ -41,45 +42,70 @@ export const sportsPageStores: Record<SportsHost, DerivedStore<SportsPageState>>
 };
 
 function createSportsPageStore(host: SportsHost): DerivedStore<SportsPageState> {
-  return createDerivedStore($ => {
-    const { category, destination, query } = $(sportsNavigationStores[host]);
-    const request = $(sportsPageRequestStores[host], current => current);
-    const catalog = $(useSportsStore, state => state.catalog);
-    const scope = catalog?.scopes[destination];
+  const context = createDerivedStore(
+    $ => {
+      const { category, destination, query } = $(sportsNavigationStores[host], s => s);
+      const request = $(sportsPageRequestStores[host], s => s);
+      const catalog = $(useSportsStore, s => s.catalog);
 
-    const page = getPage(destination, query, scope);
-    const queryKey = request ? getPageQueryKey(request) : undefined;
+      const scope = catalog?.scopes[destination];
+
+      return {
+        catalog,
+        request,
+        queryKey: request ? getPageQueryKey(request) : undefined,
+        navigation: {
+          page: getPage(destination, query, scope),
+          scope,
+          parent: scope?.parentId ? catalog?.scopes[scope.parentId] : undefined,
+          back: getSportsBackDestination(catalog, destination, category),
+          selectedCategory: getSportsCategory(catalog, category),
+          categories: catalog?.categories ?? DEFAULT_CATEGORIES,
+          directoryIds: getDirectoryIds(catalog, destination, query),
+        },
+      };
+    },
+    { lockDependencies: true }
+  );
+
+  return createDerivedStore($ => {
+    const { catalog, request, queryKey, navigation } = $(context, s => s);
     const sections = request && queryKey ? getPageSections($, request, queryKey, catalog) : EMPTY_SECTIONS;
 
     return {
-      page,
-      scope,
-      parent: scope?.parentId ? catalog?.scopes[scope.parentId] : undefined,
-      back: getSportsBackDestination(catalog, destination, category),
-      selectedCategory: getSportsCategory(catalog, category),
-      categories: catalog?.categories ?? DEFAULT_CATEGORIES,
-      directoryIds: getDirectoryIds(catalog, destination, query),
+      ...navigation,
       sections,
-      getStatus: state => {
-        if (!request || !queryKey) return 'none';
-        if (state.queryCache[queryKey]?.errorInfo) return 'error';
-
-        if (request.type === 'search') {
-          const result = state.search?.queryKey === queryKey ? state.search : undefined;
-          if (!result) return 'loading';
-          if (result.nextCursor) return 'more';
-          return result.gameIds.length ? 'none' : 'search-empty';
-        }
-
-        if (request.type === 'catalog') return state.catalog ? 'none' : 'loading';
-        if (sections.length || page === 'competitions') return 'none';
-        return state.results[getRequestDestination(request)]?.queryKey === queryKey ? 'empty' : 'loading';
-      },
+      getStatus: s => determineStatus(s, request, queryKey, navigation.page, sections.length > 0),
     };
   });
 }
 
 // ============ Helpers ======================================================== //
+
+function determineStatus(
+  state: SportsQueryState,
+  request: SportsPageRequest | null,
+  queryKey: string | undefined,
+  page: SportsPage,
+  hasSections: boolean
+): SportsPageStatus {
+  if (!request || !queryKey) return 'none';
+
+  if (state.queryCache[queryKey]?.errorInfo) return 'error';
+
+  if (request.type === 'search') {
+    const result = state.search?.queryKey === queryKey ? state.search : undefined;
+    if (!result) return 'loading';
+    if (result.nextCursor) return 'more';
+
+    return result.gameIds.length ? 'none' : 'search-empty';
+  }
+
+  if (request.type === 'catalog') return state.catalog ? 'none' : 'loading';
+  if (hasSections || page === 'competitions') return 'none';
+
+  return state.results[getRequestDestination(request)]?.queryKey === queryKey ? 'empty' : 'loading';
+}
 
 function getPageSections(
   $: DeriveGetter,
@@ -91,20 +117,22 @@ function getPageSections(
     case 'live':
     case 'scope': {
       const destination = getRequestDestination(request);
-      const result = $(useSportsStore, state => state.results[destination]);
+      const result = $(useSportsStore, s => s.results[destination]);
       if (!result) return EMPTY_SECTIONS;
+
       if (request.type === 'live' || result.queryKey === queryKey) return result.sections;
 
       const games = $(
         useSportsStore,
-        state => state.games,
+        s => s.games,
         (previous, next) => areSectionInputsEqual(previous, next, result.gameIds)
       );
+
       return selectSportsGames(catalog, getGames(games, result.gameIds), request);
     }
 
     case 'search': {
-      const gameIds = $(useSportsStore, state => (state.search?.queryKey === queryKey ? state.search.gameIds : undefined));
+      const gameIds = $(useSportsStore, s => (s.search?.queryKey === queryKey ? s.search.gameIds : undefined));
       return gameIds?.length ? [{ type: 'search', gameIds }] : EMPTY_SECTIONS;
     }
 
@@ -128,6 +156,5 @@ function getDirectoryIds(catalog: SportsCatalog | undefined, destination: Sports
     return text ? catalog.scopeIds.filter(id => catalog.scopes[id]?.searchName.includes(text)) : EMPTY_IDS;
   }
 
-  if (destination === 'all') return catalog.sportIds;
-  return catalog.scopes[destination]?.directoryIds ?? EMPTY_IDS;
+  return destination === 'all' ? catalog.sportIds : (catalog.scopes[destination]?.directoryIds ?? EMPTY_IDS);
 }
