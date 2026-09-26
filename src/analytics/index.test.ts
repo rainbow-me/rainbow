@@ -74,6 +74,20 @@ describe('@/analytics', () => {
     await flushPromises();
 
     analytics.setWalletContext({ walletAddressHash: 'hash', walletType: 'owned' });
+    analytics.track(analytics.event.pressedButton);
+
+    expect(analytics.client?.capture).toHaveBeenCalledWith(analytics.event.pressedButton, {
+      walletAddressHash: 'hash',
+      walletType: 'owned',
+    });
+  });
+
+  test('track forwards event properties and overrides stored wallet context', async () => {
+    const analytics = new Analytics();
+    analytics.init({ deviceId: 'test-device' });
+    await flushPromises();
+
+    analytics.setWalletContext({ walletAddressHash: 'hash', walletType: 'owned' });
     analytics.track(analytics.event.perpsWithdrew, { amount: 12.34 }, { walletAddressHash: 'override', walletType: 'hardware' });
 
     expect(analytics.client?.capture).toHaveBeenCalledWith('perps.withdrew', {
