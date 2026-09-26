@@ -2,6 +2,7 @@ import { createDerivedStore, type DerivedStore, type DeriveGetter } from '@store
 
 import { getSportsBackDestination, getSportsCategory, type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
+import { type Game } from '@/features/sports/core/generated/sports';
 import { areSectionInputsEqual, selectSportsGames, type SportsSection } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { getRequestDestination, sportsPageRequestStores, type SportsPageRequest } from '@/features/sports/data/sportsRequestStore';
@@ -75,7 +76,7 @@ function createSportsPageStore(host: SportsHost): DerivedStore<SportsPageState> 
     return {
       ...navigation,
       sections,
-      getStatus: s => determineStatus(s, request, queryKey, navigation.page, sections.length > 0),
+      getStatus: s => determineStatus(s, request, queryKey, navigation.page, sections),
     };
   });
 }
@@ -87,7 +88,7 @@ function determineStatus(
   request: SportsPageRequest | null,
   queryKey: string | undefined,
   page: SportsPage,
-  hasSections: boolean
+  sections: readonly SportsSection[]
 ): SportsPageStatus {
   if (!request || !queryKey) return 'none';
 
@@ -102,9 +103,13 @@ function determineStatus(
   }
 
   if (request.type === 'catalog') return state.catalog ? 'none' : 'loading';
-  if (hasSections || page === 'competitions') return 'none';
+  if (page === 'competitions') return 'none';
 
-  return state.results[getRequestDestination(request)]?.queryKey === queryKey ? 'empty' : 'loading';
+  const result = state.results[getRequestDestination(request)];
+  if (result && sections.length) return 'none';
+  if (sections.some(section => section.type === 'today' || section.type === 'upcoming')) return 'none';
+
+  return result?.queryKey === queryKey ? 'empty' : 'loading';
 }
 
 function getPageSections(
@@ -115,20 +120,27 @@ function getPageSections(
 ): SportsSection[] {
   switch (request.type) {
     case 'live':
-    case 'scope': {
-      const destination = getRequestDestination(request);
-      const result = $(useSportsStore, s => s.results[destination]);
-      if (!result) return EMPTY_SECTIONS;
+      return $(useSportsStore, s => s.results.live?.sections) ?? EMPTY_SECTIONS;
 
-      if (request.type === 'live' || result.queryKey === queryKey) return result.sections;
+    case 'scope': {
+      const result = $(useSportsStore, s => s.results[request.scopeId]);
+      if (result?.queryKey === queryKey) return result.sections;
 
       const games = $(
         useSportsStore,
         s => s.games,
-        (previous, next) => areSectionInputsEqual(previous, next, result.gameIds)
+        (previous, next) => areSectionInputsEqual(previous, next, result?.gameIds)
       );
 
-      return selectSportsGames(catalog, getGames(games, result.gameIds), request);
+      if (result) return selectSportsGames(catalog, getGames(games, result.gameIds), request);
+
+      const knownGames: Game[] = [];
+      for (const id in games) {
+        const game = games[id];
+        if (game) knownGames.push(game);
+      }
+
+      return knownGames.length ? selectSportsGames(catalog, knownGames, request) : EMPTY_SECTIONS;
     }
 
     case 'search': {

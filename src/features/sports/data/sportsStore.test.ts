@@ -249,6 +249,71 @@ it('stores bounded browse responses without repeating eligibility or ranking', a
   expect(Object.keys(useSportsStore.getState().games)).toHaveLength(30);
 });
 
+it('shows cached live Games until a category response takes ownership, including failure and an empty result', async () => {
+  showMain();
+  await settle();
+  const cachedGames = useSportsStore.getState().games;
+  const response = Promise.withResolvers<GetGamesResponse>();
+  jest.mocked(sportsClient.getGames).mockReturnValueOnce(response.promise);
+
+  navigation().select('nba');
+  await settle();
+
+  expect(page().sections).toEqual([{ type: 'live', gameIds: ['1'] }]);
+  expect(useSportsStore.getState().games).toBe(cachedGames);
+  expect(useSportsStore.getState().results.nba).toBeUndefined();
+  expect(useSportsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  expect(status()).toBe('loading');
+
+  const displayed = page().sections;
+  const pageListener = jest.fn();
+  const selectGames = jest.spyOn(sections, 'selectSportsGames');
+  unsubscribes.push(sportsPageStores.main.subscribe(pageListener));
+  useSportsStore.setState(state => ({ games: { ...state.games, '1': { ...first, clock: '12:00' } } }));
+  expect(page().sections).toBe(displayed);
+  expect(pageListener).not.toHaveBeenCalled();
+  expect(selectGames).not.toHaveBeenCalled();
+
+  response.reject(new Error('Category unavailable'));
+  await settle();
+  expect(page().sections).toBe(displayed);
+  expect(pageListener).not.toHaveBeenCalled();
+  expect(status()).toBe('error');
+
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [] });
+  await retrySportsPage('main');
+  expect(useSportsStore.getState().games['1']).toBeDefined();
+  expect(page().sections).toEqual([]);
+  expect(status()).toBe('empty');
+
+  jest.mocked(sportsClient.getGames).mockImplementation(pending);
+  void refreshSportsPage('main');
+  await settle();
+  expect(useSportsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(page().sections).toEqual([]);
+  expect(status()).toBe('empty');
+});
+
+it('shows a schedule loaded through another category without replacing it with skeletons', async () => {
+  const scheduled = game('scheduled', { status: Game_Status.STATUS_SCHEDULED, startsAt: getSportsWindow().from });
+  jest.mocked(sportsClient.getGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, scheduled] });
+  navigation().select('basketball');
+  showMain();
+  await settle();
+
+  jest.mocked(sportsClient.getGames).mockImplementation(pending);
+  navigation().open('nba');
+  await settle();
+
+  expect(page().sections).toEqual([
+    { type: 'live', gameIds: ['1'] },
+    { type: 'today', gameIds: ['scheduled'] },
+  ]);
+  expect(useSportsStore.getState().results.nba).toBeUndefined();
+  expect(useSportsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  expect(status()).toBe('none');
+});
+
 it('keeps the page’s query-cache identity through score updates', async () => {
   showMain();
   await settle();

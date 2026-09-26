@@ -139,14 +139,24 @@ export function areSectionFieldsEqual(first: Game | undefined, second: Game | un
 }
 
 /**
- * Compares status, start time, and competitions for the given game IDs in two sets of stored games.
+ * Compares section fields for the given game IDs, or all stored games when IDs are omitted.
  */
 export function areSectionInputsEqual(
   previous: Partial<Record<string, Game>>,
   next: Partial<Record<string, Game>>,
-  gameIds: Iterable<string>
+  gameIds?: Iterable<string>
 ): boolean {
   if (previous === next) return true;
+
+  if (!gameIds) {
+    for (const id in next) {
+      if (!areSectionFieldsEqual(previous[id], next[id])) return false;
+    }
+    for (const id in previous) {
+      if (previous[id] && !next[id]) return false;
+    }
+    return true;
+  }
 
   for (const id of gameIds) {
     if (!areSectionFieldsEqual(previous[id], next[id])) return false;

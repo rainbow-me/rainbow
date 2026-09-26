@@ -205,6 +205,11 @@ describe('Sports sections', () => {
     expect(areSectionInputsEqual(games, moved, gameIds)).toBe(false);
     expect(areSectionInputsEqual(games, { live }, gameIds)).toBe(false);
     expect(areSectionInputsEqual(games, started, ['live'])).toBe(true);
+
+    expect(areSectionInputsEqual(games, scored)).toBe(true);
+    expect(areSectionInputsEqual(games, started)).toBe(false);
+    expect(areSectionInputsEqual(games, { live })).toBe(false);
+    expect(areSectionInputsEqual({ live }, games)).toBe(false);
   });
 });
 
