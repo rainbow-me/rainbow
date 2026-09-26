@@ -9,7 +9,7 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
  * Subscribes a component to live token prices. The returned function replaces its token list.
  * Unsubscribes when the component unmounts.
  */
-export function useLiveTokenSubscription(): (tokenIds: string[]) => void {
+export function useLiveTokenSubscription(): (tokenIds: readonly string[]) => void {
   const { name: route } = useRoute();
   const owner = useStableValue(() => Symbol('liveTokens'));
 

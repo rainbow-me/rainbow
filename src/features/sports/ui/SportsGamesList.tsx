@@ -29,6 +29,7 @@ import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
 import { SportsReadStatus } from '@/features/sports/ui/SportsReadStatus';
 import { SportsSearch } from '@/features/sports/ui/SportsSearch';
 import { SportsSectionHeading, SportsSectionToggle } from '@/features/sports/ui/SportsSection';
+import { useViewabilityTracker, type ViewabilitySelectors } from '@/framework/ui/hooks/useViewabilityTracker';
 import useDimensions from '@/hooks/useDimensions';
 import { useLazyRef } from '@/hooks/useLazyRef';
 
@@ -49,6 +50,10 @@ type Row =
 const COLLAPSED_GAME_COUNT = 2;
 const EMPTY_EXPANDED_SET = new Set<string>();
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
+const VIEWABILITY_SELECTORS: ViewabilitySelectors<ViewToken<Row>> = {
+  getId: ({ item }) => (item.type === 'game' ? item.gameId : undefined),
+  getChildKey: ({ item, key }) => (item.type === 'carousel' ? key : undefined),
+};
 
 // ============ Components ===================================================== //
 
@@ -79,7 +84,11 @@ export function SportsGamesList({
 
   const isSearching = page === 'search';
   const rows = useMemo(() => buildRows(sections, page, expanded, scope?.id, directoryIds), [directoryIds, sections, expanded, page, scope]);
-  const { onViewableItemsChanged, onCarouselVisibleGamesChanged } = useGameVisibility();
+  const setVisibleGames = useSportsPriceSubscription();
+  const { onViewableItemsChanged, onChildViewableItemsChanged: onCarouselVisibleGamesChanged } = useViewabilityTracker(
+    VIEWABILITY_SELECTORS,
+    setVisibleGames
+  );
 
   const toggleSection = useCallback((sectionKey: string) => {
     setExpanded(previous => {
@@ -240,44 +249,6 @@ function SportsRefreshControl({
       {children}
     </RefreshControl>
   );
-}
-
-// ============ Visibility ===================================================== //
-
-function useGameVisibility(): {
-  onViewableItemsChanged: (info: { viewableItems: ViewToken<Row>[] }) => void;
-  onCarouselVisibleGamesChanged: (rowKey: string, gameIds: string[]) => void;
-} {
-  const visibleRowsRef = useLazyRef<ViewToken<Row>[]>(() => []);
-  const carouselGamesRef = useLazyRef(() => new Map<string, string[]>());
-  const setVisibleGames = useSportsPriceSubscription();
-
-  return useMemo(() => {
-    function updateVisibleGames(): void {
-      const visibleGameIds: string[] = [];
-      for (const { item } of visibleRowsRef.current) {
-        if (item.type === 'game') visibleGameIds.push(item.gameId);
-        else if (item.type === 'carousel') {
-          const games = carouselGamesRef.current.get(item.key);
-          if (games) visibleGameIds.push(...games);
-        }
-      }
-      setVisibleGames(visibleGameIds);
-    }
-
-    return {
-      onViewableItemsChanged: ({ viewableItems }) => {
-        visibleRowsRef.current = viewableItems;
-        updateVisibleGames();
-      },
-      onCarouselVisibleGamesChanged: (rowKey, gameIds) => {
-        if (gameIds.length) carouselGamesRef.current.set(rowKey, gameIds);
-        else carouselGamesRef.current.delete(rowKey);
-
-        if (visibleRowsRef.current.some(({ item }) => item.key === rowKey)) updateVisibleGames();
-      },
-    };
-  }, [carouselGamesRef, setVisibleGames, visibleRowsRef]);
 }
 
 // ============ Helpers ======================================================== //

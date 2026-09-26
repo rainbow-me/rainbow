@@ -11,6 +11,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useShouldRevokeDelegation } from '@/features/delegation/hooks/useShouldRevokeDelegation';
+import { useViewabilityTracker, type ViewabilitySelectors } from '@/framework/ui/hooks/useViewabilityTracker';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -57,9 +58,9 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   return null;
 });
 
-function extractTokenRowIds(items: CellTypes[]) {
-  return items.filter(item => item.type === 'COIN').map(item => item.uid.replace('coin-', ''));
-}
+const VIEWABILITY_SELECTORS: ViewabilitySelectors<CellTypes> = {
+  getId: item => (item.type === 'COIN' ? item.uid.replace('coin-', '') : undefined),
+};
 
 function WalletScreen() {
   const insets = useSafeAreaInsets();
@@ -80,10 +81,7 @@ function WalletScreen() {
     });
   }, []);
 
-  const handleViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: CellTypes[] }) => setSubscribedTokens(extractTokenRowIds(viewableItems)),
-    [setSubscribedTokens]
-  );
+  const { onViewableItemsChanged } = useViewabilityTracker(VIEWABILITY_SELECTORS, setSubscribedTokens);
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
@@ -92,7 +90,7 @@ function WalletScreen() {
           accentColor={highContrastAccentColor}
           onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
-          onViewableItemsChanged={handleViewableItemsChanged}
+          onViewableItemsChanged={onViewableItemsChanged}
         />
         <ToastComponent />
         <UtilityComponents />

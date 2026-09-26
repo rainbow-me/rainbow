@@ -1,17 +1,18 @@
-import React, { act, type ReactElement } from 'react';
+import React, { act, useLayoutEffect, type ReactElement } from 'react';
 
 import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 
 import { Game } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
+import { useRoute } from '@/navigation/RouteContext';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 
 const renderer = jest.requireActual<ReactNativeType>('react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev');
 
 jest.mock('@/features/sports/data/api/client', () => ({ sportsClient: {} }));
-jest.mock('@/navigation/RouteContext', () => ({ useRoute: () => ({ name: 'SportsScreen' }) }));
+jest.mock('@/navigation/RouteContext', () => ({ useRoute: jest.fn(() => ({ name: 'SportsScreen' })) }));
 jest.mock('@/features/polymarket/stores/usePolymarketCategoryStore', () => ({ usePolymarketCategoryStore: {} }));
 jest.mock('@/state/liveTokens/liveTokensStore', () => {
   const state = { setSubscription: jest.fn(), removeSubscription: jest.fn() };
@@ -57,6 +58,7 @@ function scoreGame(current: Game): Game {
 beforeEach(() => {
   useSportsStore.setState({ games: { a: game('a'), b: game('b') }, eventGameIds: {} });
   jest.clearAllMocks();
+  jest.mocked(useRoute).mockReturnValue({ key: 'sports', name: 'SportsScreen' });
 });
 
 afterEach(() => {
@@ -164,4 +166,40 @@ it('does not recheck a Game after its unchanged tokens have been compared', () =
   expect(readParticipants).not.toHaveBeenCalled();
   expect(setSubscription).toHaveBeenCalledTimes(registrations);
   expect(getPolymarketTokenId).toHaveBeenCalledTimes(formats);
+});
+
+it('restores the selected Games after the subscription route changes', () => {
+  render(<Prices />);
+  act(() => setPrices(['a']));
+  const owner = setSubscription.mock.calls[0][0];
+
+  jest.mocked(useRoute).mockReturnValue({ key: 'discover', name: 'DiscoverScreen' });
+  render(<Prices />);
+
+  expect(removeSubscription).toHaveBeenLastCalledWith(owner);
+  expect(setSubscription).toHaveBeenLastCalledWith(owner, 'DiscoverScreen', ['mid:a-win']);
+  expect(removeSubscription.mock.invocationCallOrder.at(-1)).toBeLessThan(setSubscription.mock.invocationCallOrder.at(-1) ?? 0);
+});
+
+it('restores prices after a layout update during subscription rebinding', () => {
+  function LayoutUpdate({ version }: { version: number }): null {
+    useLayoutEffect(() => {
+      if (version) useSportsStore.setState({ games: { a: game('a', 'a-spread') } });
+    }, [version]);
+    return null;
+  }
+  const screen = (version: number) => (
+    <>
+      <Prices />
+      <LayoutUpdate version={version} />
+    </>
+  );
+
+  render(screen(0));
+  act(() => setPrices(['a']));
+  jest.mocked(useRoute).mockReturnValue({ key: 'discover', name: 'DiscoverScreen' });
+  render(screen(1));
+
+  expect(setSubscription).toHaveBeenLastCalledWith(expect.any(Symbol), 'DiscoverScreen', ['mid:a-win', 'mid:a-spread']);
+  expect(removeSubscription.mock.invocationCallOrder.at(-1)).toBeLessThan(setSubscription.mock.invocationCallOrder.at(-1) ?? 0);
 });

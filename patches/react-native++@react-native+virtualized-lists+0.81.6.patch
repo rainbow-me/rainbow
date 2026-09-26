@@ -1,0 +1,79 @@
+diff --git a/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js b/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
+index b494557..650119b 100644
+--- a/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
++++ b/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
+@@ -83,7 +83,7 @@
+   _config: ViewabilityConfig;
+   _hasInteracted: boolean = false;
+   _timers: Set<number> = new Set();
+-  _viewableIndices: Array<number> = [];
++  _viewableIndices: ?Array<number> = null;
+   _viewableItems: Map<string, ViewToken> = new Map();
+
+   constructor(
+@@ -199,25 +199,31 @@
+     },
+   ): void {
+     const itemCount = props.getItemCount(props.data);
++    // Empty data clears visibility even before layout or interaction.
++    if (itemCount === 0) {
++      this._timers.forEach(clearTimeout);
++      this._timers.clear();
++      this._viewableIndices = [];
++      if (this._viewableItems.size) {
++        this._onUpdateSync(props, [], onViewableItemsChanged, createViewToken);
++      }
++      return;
++    }
+     if (
+       (this._config.waitForInteraction && !this._hasInteracted) ||
+-      itemCount === 0 ||
+       !listMetrics.getCellMetrics(0, props)
+     ) {
+       return;
+     }
+-    let viewableIndices: Array<number> = [];
+-    if (itemCount) {
+-      viewableIndices = this.computeViewableItems(
+-        props,
+-        scrollOffset,
+-        viewportHeight,
+-        listMetrics,
+-        renderRange,
+-      );
+-    }
++    const viewableIndices = this.computeViewableItems(
++      props,
++      scrollOffset,
++      viewportHeight,
++      listMetrics,
++      renderRange,
++    );
+     if (
+-      this._viewableIndices.length === viewableIndices.length &&
++      this._viewableIndices?.length === viewableIndices.length &&
+       this._viewableIndices.every((v, ii) => v === viewableIndices[ii])
+     ) {
+       // We might get a lot of scroll events where visibility doesn't change and we don't want to do
+@@ -253,10 +259,10 @@
+   }
+
+   /**
+-   * clean-up cached _viewableIndices to evaluate changed items on next update
++   * Invalidate the cached indices so an empty viewport is recomputed too.
+    */
+   resetViewableIndices() {
+-    this._viewableIndices = [];
++    this._viewableIndices = null;
+   }
+
+   /**
+@@ -282,7 +288,7 @@
+   ) {
+     // Filter out indices that have gone out of view since this call was scheduled.
+     viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>
+-      this._viewableIndices.includes(ii),
++      this._viewableIndices?.includes(ii),
+     );
+     const prevItems = this._viewableItems;
+     const nextItems = new Map(

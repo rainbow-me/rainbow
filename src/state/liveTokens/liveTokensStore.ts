@@ -60,7 +60,7 @@ type LiveTokensParams = {
 type LiveTokensStore = {
   subscriptions: Map<symbol, TokenSubscription>;
   tokens: LiveTokensData;
-  setSubscription: (owner: symbol, route: Route, tokenIds: string[]) => void;
+  setSubscription: (owner: symbol, route: Route, tokenIds: readonly string[]) => void;
   removeSubscription: (owner: symbol) => void;
   clear: () => void;
 };

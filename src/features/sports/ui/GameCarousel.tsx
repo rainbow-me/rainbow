@@ -22,16 +22,12 @@ export const GameCarousel = memo(function GameCarousel({
   width: number;
   isDarkMode: boolean;
   rowKey: string;
-  onVisibleGamesChanged: (rowKey: string, gameIds: string[]) => void;
+  onVisibleGamesChanged: (rowKey: string, items: readonly ViewToken<string>[]) => void;
   onGamePress: SportsGamePress;
 }): ReactElement {
   const cardWidth = width - (section.gameIds.length === 1 ? 24 : 30);
   const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken<string>[] }) =>
-      onVisibleGamesChanged(
-        rowKey,
-        viewableItems.map(({ item }) => item)
-      ),
+    ({ viewableItems }: { viewableItems: ViewToken<string>[] }) => onVisibleGamesChanged(rowKey, viewableItems),
     [onVisibleGamesChanged, rowKey]
   );
   const renderItem = useCallback(

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useListen } from '@storesjs/stores';
 
@@ -63,6 +63,14 @@ export function useSportsPriceSubscription(): (gameIds: readonly string[]) => vo
     state => state.games,
     () => update(priced.gameIds)
   );
+
+  useEffect(() => {
+    update(priced.gameIds);
+    return () => {
+      // Releasing the subscription invalidates the token comparison cache.
+      priced.games = [];
+    };
+  }, [priced, update]);
 
   return update;
 }
