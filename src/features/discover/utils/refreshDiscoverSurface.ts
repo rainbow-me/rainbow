@@ -5,7 +5,6 @@ import { clearTokenRefCache, useTokenRefsStore } from '@/features/placements/sto
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
-import { refreshSportsEvents } from '@/features/sports/data/sportsStore';
 
 export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
   await Promise.allSettled([
@@ -35,10 +34,10 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
 }
 
 /**
- * Refreshes Discover's games and enabled Polymarket requests.
+ * Refreshes Discover's enabled Polymarket requests.
  */
 export async function refreshDiscoverEvents(): Promise<void> {
-  const refreshes: Promise<unknown>[] = [refreshSportsEvents()];
+  const refreshes: Promise<unknown>[] = [];
 
   for (const store of [predictionTileEventsStore, predictionCardEventsStore]) {
     const state = store.getState();

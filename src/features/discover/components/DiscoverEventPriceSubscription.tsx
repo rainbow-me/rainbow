@@ -1,30 +1,33 @@
-import { useEffect, useMemo } from 'react';
+import { createDerivedStore, useListen } from '@storesjs/stores';
 
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
-import { displayedPolymarketEventIdsStore, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { getPolymarketEventsListTokenIds } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
+import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 
-/**
- * Subscribes Discover's displayed event cards to live prices without rerendering their lists.
- */
-export function DiscoverEventPriceSubscription(): null {
-  const eventIds = displayedDiscoverEventIdsStore();
-  const polymarketEventIds = displayedPolymarketEventIdsStore();
-  const getEvent = usePredictionEventsStore();
-  const tokenIds = useMemo(() => {
+const tokenIdsStore = createDerivedStore(
+  $ => {
+    const eventIds = $(displayedDiscoverEventIdsStore);
+    const getEvent = $(usePredictionEventsStore);
     const tokenIds: string[] = [];
 
-    for (const id of polymarketEventIds) {
+    for (const id of eventIds) {
       const event = getEvent(id);
       if (event) tokenIds.push(...getPolymarketEventsListTokenIds(event));
     }
 
     return tokenIds;
-  }, [getEvent, polymarketEventIds]);
-  const setPrices = useSportsPriceSubscription();
+  },
+  { equalityFn: areArraysEqual, lockDependencies: true }
+);
 
-  useEffect(() => setPrices(eventIds, tokenIds), [eventIds, setPrices, tokenIds]);
+/**
+ * Subscribes Discover's displayed event cards to live prices without rerendering their lists.
+ */
+export function DiscoverEventPriceSubscription(): null {
+  const subscribe = useLiveTokenSubscription();
+  useListen(tokenIdsStore, state => state, subscribe, { fireImmediately: true });
 
   return null;
 }

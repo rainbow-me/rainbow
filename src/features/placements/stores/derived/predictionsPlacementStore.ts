@@ -11,7 +11,6 @@ import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymar
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
-import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
 
@@ -32,22 +31,6 @@ type EventsById = Partial<Record<string, PolymarketEvent>>;
 const EMPTY_EVENTS: EventsById = {};
 const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 
-// ============ Displayed Events =============================================== //
-
-/**
- * Displayed event cards with no matching Sports game.
- */
-export const displayedPolymarketEventIdsStore = createDerivedStore(
-  $ => {
-    const eventIds = $(displayedDiscoverEventIdsStore);
-    if (!eventIds.length) return eventIds;
-
-    const eventGameIds = $(useSportsStore, state => state.eventGameIds);
-    return eventIds.filter(id => eventGameIds[id] === null);
-  },
-  { equalityFn: areArraysEqual }
-);
-
 // ============ Event Stores =================================================== //
 
 const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
@@ -61,10 +44,10 @@ const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
 export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket));
 
 /**
- * Polymarket events for displayed cards that have no Sports game and are not already requested by tiles.
+ * Polymarket events for displayed cards that are not already requested by tiles.
  */
 export const predictionCardEventsStore = createPredictionEventsStore($ => {
-  const eventIds = $(displayedPolymarketEventIdsStore);
+  const eventIds = $(displayedDiscoverEventIdsStore);
   if (!eventIds.length) return eventIds;
 
   const tileIds = $(predictionTileEventIdsStore);
@@ -89,24 +72,18 @@ export const usePredictionEventsStore = createDerivedStore(
 // ============ Card Projections =============================================== //
 
 /**
- * Reads a card's game ID or Polymarket event. Undefined means loading; null means unavailable.
+ * Reads a card's event. Undefined means pending; null means unavailable.
  */
 export const usePredictionCardsStore = createDerivedStore(
   $ => {
-    const games = $(useSportsStore, state => state.games);
-    const eventGameIds = $(useSportsStore, state => state.eventGameIds);
     const getEvent = $(usePredictionEventsStore);
     const tileIds = $(predictionTileEventIdsStore);
-    const tilesLoading = $(predictionTileEventsStore, state => state.getStatus('isInitialLoad'));
-    const cardsLoading = $(predictionCardEventsStore, state => state.getStatus('isInitialLoad'));
-    const sports = { games, eventGameIds };
+    const tilesPending = $(predictionTileEventsStore, state => !state.enabled || state.getStatus('isInitialLoad'));
+    const cardsPending = $(predictionCardEventsStore, state => !state.enabled || state.getStatus('isInitialLoad'));
 
     return (eventId: string) => {
-      const gameId = getGameId(sports, eventId);
-      if (gameId !== null) return gameId;
-
-      const isLoading = tileIds.has(eventId) ? tilesLoading : cardsLoading;
-      return getEvent(eventId) ?? (isLoading ? undefined : null);
+      const isPending = tileIds.has(eventId) ? tilesPending : cardsPending;
+      return getEvent(eventId) ?? (isPending ? undefined : null);
     };
   },
 
@@ -114,15 +91,14 @@ export const usePredictionCardsStore = createDerivedStore(
 );
 
 /**
- * The first error from Discover's game or Polymarket requests.
+ * The first error from Discover's enabled Polymarket requests.
  */
 export const useDiscoverEventsErrorStore = createDerivedStore(
   $ => {
-    const gameError = $(useSportsStore, state => (state.enabled ? state.error : null));
     const tileError = $(predictionTileEventsStore, state => (state.enabled ? state.error : null));
     const cardError = $(predictionCardEventsStore, state => (state.enabled ? state.error : null));
 
-    return gameError ?? tileError ?? cardError;
+    return tileError ?? cardError;
   },
 
   { lockDependencies: true }

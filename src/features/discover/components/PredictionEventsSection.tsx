@@ -4,7 +4,6 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { analytics } from '@/analytics';
 import { event as analyticsEvent } from '@/analytics/event';
 import { Skeleton } from '@/components/Skeleton';
-import { useColorMode } from '@/design-system/color/ColorMode';
 import { Text } from '@/design-system/components/Text/Text';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { ShowMoreButton } from '@/features/discover/components/markets/layouts/ShowMoreButton';
@@ -17,11 +16,7 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import { PolymarketEventsListItem } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
-import { useSportsGamePress } from '@/features/polymarket/hooks/useSportsGamePress';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { type SportsCatalog } from '@/features/sports/core/catalog';
-import { useSportsStore } from '@/features/sports/data/sportsStore';
-import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { useCleanup } from '@/hooks/useCleanup';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -41,9 +36,6 @@ export function PredictionEventsSection({
 }): ReactElement | null {
   const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
-  const { isDarkMode } = useColorMode();
-  const catalog = useSportsStore(s => s.catalog);
-  const openGame = useSportsGamePress();
 
   const placement = usePlacementsStore(state => getPredictionPlacement(state, surface.placement));
   const allItems = placement?.items ?? EMPTY_ITEMS;
@@ -80,21 +72,11 @@ export function PredictionEventsSection({
   const renderCard = useCallback(
     ({ item }: { item: PlacementItem }) => {
       const eventId = item.id;
-      const card = (
-        <PredictionEventCard
-          key={eventId}
-          catalog={catalog}
-          isDarkMode={isDarkMode}
-          eventId={eventId}
-          width={cardWidth}
-          onPress={recordPress}
-          openGame={openGame}
-        />
-      );
+      const card = <PredictionEventCard key={eventId} eventId={eventId} onPress={recordPress} />;
 
       return carousel ? <View style={{ width: cardWidth }}>{card}</View> : card;
     },
-    [cardWidth, carousel, catalog, isDarkMode, openGame, recordPress]
+    [cardWidth, carousel, recordPress]
   );
 
   if (!allItems.length && !isLoading) return null;
@@ -147,53 +129,29 @@ export function PredictionEventsSection({
 // ============ Event Cards ==================================================== //
 
 const PredictionEventCard = memo(function PredictionEventCard({
-  catalog,
-  isDarkMode,
   eventId,
-  width,
   onPress,
-  openGame,
 }: {
   eventId: string;
-  width: number;
-  catalog?: SportsCatalog;
-  isDarkMode: boolean;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
-  openGame: SportsGamePress;
 }): ReactElement {
-  const card = usePredictionCardsStore(getCard => getCard(eventId));
+  const event = usePredictionCardsStore(getCard => getCard(eventId));
 
-  if (typeof card === 'string') {
-    return (
-      <GameCard
-        catalog={catalog}
-        isDarkMode={isDarkMode}
-        gameId={card}
-        width={width}
-        onPress={(id, selection) => {
-          const game = useSportsStore.getState().games[id];
-          if (game) onPress(eventId, game.participants.map(participant => participant.name).join(' vs. '));
-          openGame(id, selection);
-        }}
-      />
-    );
-  }
-
-  if (card) {
+  if (event) {
     return (
       <PolymarketEventsListItem
-        event={card}
+        event={event}
         onPress={() => {
-          onPress(eventId, card.title, card.slug);
-          navigateToPolymarketEvent({ eventId, event: card });
+          onPress(eventId, event.title, event.slug);
+          navigateToPolymarketEvent({ eventId, event });
         }}
         shouldActivateOnStart={false}
-        style={styles.genericCard}
+        style={styles.card}
       />
     );
   }
 
-  if (card === undefined) return <Skeleton borderRadius={24} height={166} width="100%" />;
+  if (event === undefined) return <Skeleton borderRadius={24} height={166} width="100%" />;
 
   return (
     <View style={styles.unavailable}>
@@ -210,6 +168,6 @@ const styles = StyleSheet.create({
   section: { gap: 20 },
   list: { marginHorizontal: 12, gap: 8 },
   carousel: { paddingHorizontal: 12, gap: 8 },
-  genericCard: { width: '100%', height: 166 },
+  card: { width: '100%', height: 166 },
   unavailable: { height: 166, alignItems: 'center', justifyContent: 'center', padding: 24 },
 });
