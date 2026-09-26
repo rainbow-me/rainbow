@@ -11,7 +11,7 @@ import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/Navba
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -111,7 +111,7 @@ function handleNavigateToActivity(): void {
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const showSportsTab = useSportsEnabled();
+  const showSportsTab = usePolymarketEnabled();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
   const { language } = useAccountSettings();

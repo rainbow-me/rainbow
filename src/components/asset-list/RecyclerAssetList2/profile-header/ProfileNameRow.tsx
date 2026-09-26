@@ -10,7 +10,7 @@ import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -81,7 +81,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   // Spacings
 
   const { width: deviceWidth } = useDimensions();
-  const sportsEnabled = useSportsEnabled();
+  const sportsEnabled = usePolymarketEnabled();
 
   const activityButtonWidth = sportsEnabled && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
 

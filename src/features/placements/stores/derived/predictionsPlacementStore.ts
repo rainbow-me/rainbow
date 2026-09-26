@@ -7,10 +7,10 @@ import { usePlacementsStore, type PlacementResult } from '@/features/placements/
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
 
@@ -148,7 +148,7 @@ function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly 
   return createQueryStore<EventsById, PredictionEventsParams>({
     fetcher: fetchPredictionEvents,
     enabled: $ => {
-      const enabled = $(useSportsEnabled);
+      const enabled = $(usePolymarketEnabled);
       const hasEvents = $(eventIds, ids => ids.length > 0);
       return enabled && hasEvents;
     },

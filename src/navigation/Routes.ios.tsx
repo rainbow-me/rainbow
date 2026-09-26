@@ -52,6 +52,7 @@ import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-na
 import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
 import { PolymarketRedeemPositionSheet } from '@/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet';
 import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import { RnbwAirdropScreen } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
 import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
@@ -60,7 +61,6 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { SendFlowNavigator } from '@/features/transfer/navigation/SendFlowNavigator';
 import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
@@ -170,7 +170,7 @@ function MainNavigator() {
 
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const showSportsTab = useSportsEnabled();
+  const showSportsTab = usePolymarketEnabled();
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>

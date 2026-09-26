@@ -54,9 +54,9 @@ import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/features/dapp-browser/context/BrowserContext';
 import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { SportsScreen } from '@/features/sports/ui/SportsScreen';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -116,7 +116,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
-  const showSportsTab = useSportsEnabled();
+  const showSportsTab = usePolymarketEnabled();
 
   const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -623,7 +623,7 @@ function SwipeNavigatorScreens() {
   );
   const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showSportsTab = useSportsEnabled();
+  const showSportsTab = usePolymarketEnabled();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;

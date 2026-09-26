@@ -31,9 +31,9 @@ import {
   PolymarketEventsListItem,
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
 import { logger } from '@/logger';
 import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -97,7 +97,7 @@ export function PredictionsSection({
   surface: SurfaceLeafWithDisplay<PredictionsDisplay>;
   surfaceId: SurfaceId;
 }) {
-  const enabled = useSportsEnabled();
+  const enabled = usePolymarketEnabled();
   if (!enabled) return null;
   if (!hasPlacement(surface)) return unsupportedUnplacedPredictionSurface(surface, surfaceId);
   if (isEventCardDisplay(surface.display)) return <PredictionEventsSection sectionId={sectionId} surface={surface} surfaceId={surfaceId} />;
