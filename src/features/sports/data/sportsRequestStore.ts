@@ -3,7 +3,6 @@ import { createDerivedStore, type DerivedStore } from '@storesjs/stores';
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { type SportsDestination, type SportsHost, type SportsWindow } from '@/features/sports/core/browse';
-import { type SportsGamesScope } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { sportsWindowStore } from '@/features/sports/data/sportsWindowStore';
 import Routes from '@/navigation/routesNames';
@@ -11,33 +10,20 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 // ============ Types ========================================================== //
 
-/** Every sport's live games. It carries no week, so midnight does not request it again. */
-export type LiveRequest = { type: 'live' };
+export type SportsPageRequest =
+  | { type: 'live' }
+  | { type: 'catalog' }
+  | { type: 'scope'; scopeId: string; window: SportsWindow }
+  | { type: 'search'; query: string; window: Pick<SportsWindow, 'from' | 'until'> };
 
-/** The sports directory, which shows only the catalog. */
-export type CatalogRequest = { type: 'catalog' };
-
-/**
- * A scope's games in the week its page shows, so a new day requests it again. A sport browsed by competition shows
- * its live games instead.
- */
-export type ScopeRequest = SportsGamesScope & { type: 'scope' };
-
-/** A Search query over the week its page shows, so a new day starts it over. */
-export type SearchRequest = { type: 'search'; query: string; window: Pick<SportsWindow, 'from' | 'until'> };
-
-/** A lookup for the selected event. */
-export type EventRequest = { type: 'event'; eventId: string };
-
-export type SportsPageRequest = LiveRequest | CatalogRequest | ScopeRequest | SearchRequest;
-export type SportsRequest = SportsPageRequest | EventRequest;
+export type SportsRequest = SportsPageRequest | { type: 'event'; eventId: string };
 
 // ============ Page Requests ================================================== //
 
 /**
  * The browse or Search request for Sports and Predictions, kept separately for each screen.
  */
-export const sportsPageRequestStores: Record<SportsHost, DerivedStore<SportsPageRequest | null>> = {
+export const sportsPageRequestStores = {
   main: createPageRequestStore('main'),
   predictions: createPageRequestStore('predictions'),
 };
@@ -58,7 +44,7 @@ function createPageRequestStore(host: SportsHost): DerivedStore<SportsPageReques
 /**
  * The destination whose games a Live or scope request shows.
  */
-export function getRequestDestination(request: LiveRequest | ScopeRequest): SportsDestination {
+export function getRequestDestination(request: { type: 'live' } | { type: 'scope'; scopeId: string }): SportsDestination {
   return request.type === 'live' ? 'live' : request.scopeId;
 }
 

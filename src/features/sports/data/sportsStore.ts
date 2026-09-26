@@ -2,7 +2,7 @@ import { createQueryStore, getQueryKey, queryParam, type SetDataParams } from '@
 import { replaceEqualDeep } from '@tanstack/query-core';
 
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
-import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
+import { type SportsDestination, type SportsHost, type SportsWindow } from '@/features/sports/core/browse';
 import { buildSportsCatalog, type SportsCatalog } from '@/features/sports/core/catalog';
 import {
   type SportsCatalog as CatalogMessage,
@@ -27,11 +27,6 @@ import {
   getRequestDestination,
   sportsPageRequestStores,
   sportsRequestStore,
-  type CatalogRequest,
-  type EventRequest,
-  type LiveRequest,
-  type ScopeRequest,
-  type SearchRequest,
   type SportsPageRequest,
   type SportsRequest,
 } from '@/features/sports/data/sportsRequestStore';
@@ -42,17 +37,17 @@ import { useAppStateStore } from '@/state/appState/appStateStore';
 // ============ Types ========================================================== //
 
 type SportsResponse =
-  | (LiveRequest & GetGamesResponse)
-  | (CatalogRequest & GetCatalogResponse)
-  | (ScopeRequest & GetGamesResponse)
+  | ({ type: 'live' } & GetGamesResponse)
+  | ({ type: 'catalog' } & GetCatalogResponse)
+  | ({ type: 'scope'; scopeId: string; window: SportsWindow } & GetGamesResponse)
   | SportsSearchResponse
-  | (EventRequest & LookupGamesResponse);
+  | ({ type: 'event' } & LookupGamesResponse);
 
-type SportsSearchResponse = SearchRequest &
-  SearchGamesResponse & {
-    gameIds: string[];
-    requestedCount: number;
-  };
+type SportsSearchResponse = SearchGamesResponse & {
+  type: 'search';
+  gameIds: string[];
+  requestedCount: number;
+};
 
 type SportsParams = { request: SportsRequest | null };
 
@@ -240,14 +235,17 @@ async function fetchSports({ request }: SportsParams, abortController: AbortCont
       if (getEventDueAt(useSportsStore.getState().answeredAt, request.eventId) > Date.now()) return null;
 
       return {
-        ...request,
+        type: 'event',
         ...(await sportsClient.lookupGames({ eventIds: [request.eventId], knownCatalogRevision }, abortController)),
       };
     }
   }
 }
 
-async function fetchSearch(request: SearchRequest, abortController: AbortController | null): Promise<SportsSearchResponse> {
+async function fetchSearch(
+  request: Extract<SportsPageRequest, { type: 'search' }>,
+  abortController: AbortController | null
+): Promise<SportsSearchResponse> {
   const state = useSportsStore.getState();
   const { from, until } = request.window;
   const queryKey = getPageQueryKey(request);
@@ -306,7 +304,7 @@ async function fetchSearch(request: SearchRequest, abortController: AbortControl
     if (cursor && gameIds.size < requestedCount) continue;
 
     return {
-      ...request,
+      type: 'search',
       catalogRevision: response.catalogRevision,
       catalog,
       gameIds: [...gameIds],
