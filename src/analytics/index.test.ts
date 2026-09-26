@@ -198,7 +198,7 @@ describe('@/analytics', () => {
     expect(options.before_send?.({ event: 'Application Opened', properties: {} })).toBeNull();
   });
 
-  test('preserves foreground event names and avoids counting migrating users as new installs', async () => {
+  test('preserves PostHog lifecycle names and properties and avoids counting migrating users as new installs', async () => {
     mockDeviceGet.mockImplementation(([key]) => key === 'isReturningUser');
     const analytics = new Analytics();
     analytics.init({ deviceId: 'test-device' });
@@ -208,11 +208,12 @@ describe('@/analytics', () => {
     if (typeof options.before_send !== 'function') throw new Error('Expected a before_send callback');
     const event = { event: 'Application Installed', properties: {} };
     expect(options.before_send?.(event)).toBeNull();
-    expect(options.before_send?.({ ...event, event: 'Application Became Active' })).toEqual({
-      ...event,
-      event: 'Application Opened',
-      properties: { from_background: true, version: null },
-    });
+    for (const name of ['Application Opened', 'Application Became Active', 'Application Updated']) {
+      expect(options.before_send({ event: name, properties: { $app_version: '2.0.47', $app_build: '1' } })).toEqual({
+        event: name,
+        properties: { $app_version: '2.0.47', $app_build: '1' },
+      });
+    }
   });
 
   test('missing PostHog configuration leaves AppsFlyer initialization intact without retrying on every event', async () => {

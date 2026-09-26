@@ -198,24 +198,6 @@ export class Analytics {
             if (this.disabled || !event) return null;
             // The first PostHog launch is not a new install for existing Rainbow users.
             if (event.event === 'Application Installed' && isReturningUser) return null;
-            // Keep RudderStack's foreground event name for existing funnels.
-            if (event.event === 'Application Became Active') {
-              event.event = 'Application Opened';
-              event.properties = { ...event.properties, from_background: true };
-            }
-            if (event.event === 'Application Opened') {
-              event.properties = {
-                from_background: false,
-                version: event.properties?.$app_version ?? null,
-                ...event.properties,
-              };
-            } else if (event.event === 'Application Installed' || event.event === 'Application Updated') {
-              event.properties = {
-                version: event.properties?.$app_version ?? null,
-                build: event.properties?.$app_build ?? null,
-                ...event.properties,
-              };
-            }
             return event;
           },
         });
