@@ -5,6 +5,9 @@ export type Device = {
   id: string;
   doNotTrack: boolean;
 
+  /** Last app version/build observed by direct PostHog analytics. */
+  analyticsAppVersion: { version: string; build: string };
+
   /**
    * Undefined on first load of the app, meaning they're a new user. We set
    * this to `true` immediately, so that on subsequent loads we knew they've

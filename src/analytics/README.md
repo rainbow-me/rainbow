@@ -77,3 +77,16 @@ Also consider if we might just double-emit during a transition period. In this
 case, we continue to send the old events, but also send new events with new
 payloads. After a sufficient period of time has passed, we can remove the old
 event and rely entirely on the new one.
+
+## Direct PostHog analytics
+
+The existing `analytics.track`, `identify`, and `screen` calls use `posthog-react-native` directly. Event names, wallet metadata, and typed call sites remain unchanged. `track` becomes `capture`; `identify` updates person properties; `screen` emits PostHog's `$screen` event.
+
+### Configuration
+
+Set both values in the app's `.env` and the Bitrise environment that generates it:
+
+```dotenv
+POSTHOG_API_KEY=phc_your_project_key
+POSTHOG_HOST=
+```
