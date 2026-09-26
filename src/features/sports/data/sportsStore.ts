@@ -74,7 +74,7 @@ type SportsData = {
   /** Each looked-up event's game ID, or `null` if the lookup found no game. */
   eventGameIds: Partial<Record<string, string | null>>;
   /** When each event was last looked up successfully. A returned game also updates its primary event's timestamp. */
-  answeredAt: Map<string, number>;
+  answeredAt: Partial<Record<string, number>>;
   /** Results for Live and visited scopes. */
   results: Partial<Record<SportsDestination, SportsResult>>;
   search: SearchResult | undefined;
@@ -321,8 +321,8 @@ function getRequestKey(request: SportsRequest | null): SportsRequest | null {
   return request;
 }
 
-function getEventDueAt(answeredAt: Map<string, number>, eventId: string): number {
-  return (answeredAt.get(eventId) ?? 0) + FRESH_FOR;
+function getEventDueAt(answeredAt: SportsData['answeredAt'], eventId: string): number {
+  return (answeredAt[eventId] ?? 0) + FRESH_FOR;
 }
 
 // ============ Storing Responses ============================================== //
@@ -404,7 +404,7 @@ function mergeSportsResponse(
 
     case 'event': {
       const resolve = (eventId: string, gameId: string | null): void => {
-        answeredAt = setMapEntry(answeredAt, data.answeredAt, eventId, now);
+        answeredAt = setEntry(answeredAt, data.answeredAt, eventId, now);
 
         const previous = eventGameIds[eventId];
         if (previous === gameId) return;
@@ -430,7 +430,7 @@ function mergeSportsResponse(
       if (previous && !areSectionFieldsEqual(previous, stored)) (sectionChanges ??= []).push(game.id);
     }
     if (eventGameIds[game.id] === null) eventGameIds = setEntry(eventGameIds, data.eventGameIds, game.id, game.id);
-    answeredAt = setMapEntry(answeredAt, data.answeredAt, game.id, now);
+    answeredAt = setEntry(answeredAt, data.answeredAt, game.id, now);
   }
 
   if (sectionChanges) {
@@ -477,14 +477,14 @@ function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
     if (eventId === selectedId) continue;
 
     eventGameIds = setEntry(eventGameIds, data.eventGameIds, eventId, undefined);
-    if (!gameIds.has(eventId)) answeredAt = setMapEntry(answeredAt, data.answeredAt, eventId, undefined);
+    if (!gameIds.has(eventId)) answeredAt = setEntry(answeredAt, data.answeredAt, eventId, undefined);
   }
 
   for (const gameId of Object.keys(games)) {
     if (gameIds.has(gameId)) continue;
 
     games = setEntry(games, data.games, gameId, undefined);
-    if (eventGameIds[gameId] === undefined) answeredAt = setMapEntry(answeredAt, data.answeredAt, gameId, undefined);
+    if (eventGameIds[gameId] === undefined) answeredAt = setEntry(answeredAt, data.answeredAt, gameId, undefined);
   }
 
   return { games, eventGameIds, answeredAt, results, search };
@@ -539,7 +539,7 @@ function pruneQueryCache(request: SportsRequest): void {
 // ============ Helpers ======================================================== //
 
 function getEmptyData(): SportsData {
-  return { games: {}, eventGameIds: {}, answeredAt: new Map(), results: {}, search: undefined };
+  return { games: {}, eventGameIds: {}, answeredAt: {}, results: {}, search: undefined };
 }
 
 function getPageQueryKeys(): Set<string> {
@@ -576,16 +576,6 @@ function setEntry<T>(
   const next = record === original ? { ...original } : record;
   if (value === undefined) delete next[key];
   else next[key] = value;
-  return next;
-}
-
-/**
- * Sets or deletes a map entry, copying the original map before the first write. `undefined` deletes the entry.
- */
-function setMapEntry<T>(map: Map<string, T>, original: Map<string, T>, key: string, value: T | undefined): Map<string, T> {
-  const next = map === original ? new Map(original) : map;
-  if (value === undefined) next.delete(key);
-  else next.set(key, value);
   return next;
 }
 

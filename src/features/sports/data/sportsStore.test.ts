@@ -150,7 +150,7 @@ beforeEach(async () => {
   useSportsStore.setState({
     catalog: undefined,
     games: {},
-    answeredAt: new Map(),
+    answeredAt: {},
     results: {},
     search: undefined,
     eventGameIds: {},
@@ -795,7 +795,7 @@ it('accumulates Search to thirty and refreshes from the first page', async () =>
   navigation().search('team');
   showMain();
   await settle();
-  const fetchedAt = useSportsStore.getState().answeredAt.get('0');
+  const fetchedAt = useSportsStore.getState().answeredAt['0'];
   jest.advanceTimersByTime(time.seconds(10));
   await loadMoreSportsGames('main');
 
@@ -803,8 +803,8 @@ it('accumulates Search to thirty and refreshes from the first page', async () =>
   expect(page().sections[0]?.gameIds).toHaveLength(30);
   expect(Object.keys(useSportsStore.getState().games)).toHaveLength(30);
   expect(status()).toBe('none');
-  expect(useSportsStore.getState().answeredAt.get('0')).toBe(fetchedAt);
-  expect(useSportsStore.getState().answeredAt.get('15')).toBe(Date.now());
+  expect(useSportsStore.getState().answeredAt['0']).toBe(fetchedAt);
+  expect(useSportsStore.getState().answeredAt['15']).toBe(Date.now());
 
   await loadMoreSportsGames('main');
   expect(sportsClient.searchGames).toHaveBeenCalledTimes(2);
@@ -1275,7 +1275,7 @@ it('releases an unselected event’s game, answer, and timestamp with the next r
   const { answeredAt, eventGameIds, games } = useSportsStore.getState();
   expect(Object.keys(games)).toEqual(['1']);
   expect(eventGameIds).toEqual({});
-  expect([...answeredAt.keys()]).toEqual(['1']);
+  expect(Object.keys(answeredAt)).toEqual(['1']);
 });
 
 it('looks up an event again once its answer was released', async () => {
@@ -1321,8 +1321,8 @@ it('preserves unchanged Game and resolution identities through event polling', a
   expect(after.games).toBe(before.games);
   expect(after.eventGameIds).toBe(before.eventGameIds);
   expect(after.results).toBe(before.results);
-  expect(after.answeredAt.get('1')).toBe(Date.now());
-  expect(after.answeredAt.get('1')).toBeGreaterThan(before.answeredAt.get('1') ?? 0);
+  expect(after.answeredAt['1']).toBe(Date.now());
+  expect(after.answeredAt['1']).toBeGreaterThan(before.answeredAt['1'] ?? 0);
 });
 
 it('releases a formerly selected event’s answer with the next response', async () => {
