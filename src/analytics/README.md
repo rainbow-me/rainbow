@@ -88,7 +88,7 @@ Set both values in the app's `.env` and the Bitrise environment that generates i
 
 ```dotenv
 POSTHOG_API_KEY=phc_your_project_key
-POSTHOG_HOST=https://us.i.posthog.com
+POSTHOG_HOST=
 ```
 
 Use the **same project** as the interim RudderStack destination to retain existing people and reports. For EU Cloud, use `https://eu.i.posthog.com`; for self-hosting or a proxy, use that project's ingestion host. This is the public project key, not a personal API key. Missing configuration logs a warning and skips PostHog initialization.
