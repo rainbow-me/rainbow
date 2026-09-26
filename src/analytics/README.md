@@ -90,24 +90,3 @@ Set both values in the app's `.env` and the Bitrise environment that generates i
 POSTHOG_API_KEY=phc_your_project_key
 POSTHOG_HOST=
 ```
-
-Use the **same project** as the interim RudderStack destination to retain existing people and reports. For EU Cloud, use `https://eu.i.posthog.com`; for self-hosting or a proxy, use that project's ingestion host. This is the public project key, not a personal API key. Missing configuration logs a warning and skips PostHog initialization.
-
-The persisted Rainbow `deviceId` bootstraps PostHog's `distinct_id` before lifecycle events are emitted. Events queued before app initialization wait for that ID. Existing privacy settings control SDK initialization and opt-in/opt-out. SDK persistence and batching handle offline events. No PostHog provider, touch autocapture, replay, surveys, feature flags, or automatic error capture is enabled.
-
-### AppsFlyer
-
-`appsflyer.ts`, its native SDK, and its initialization/stop calls are retained. When the cached real UID is available, tracking attaches it as `properties.appsflyer_id`; `$os` remains available alongside PostHog's `$os_name` and `$os_version`. Missing UIDs are not fabricated or repaired by this change.
-
-RudderStack no longer receives events from this app version, so its AppsFlyer conversion gate, S3 destination, and other destinations no longer run for these events. The replacement AppsFlyer conversion route is separate work; the retained SDK still owns native attribution/install/session reporting.
-
-### Rollout and rollback
-
-1. Configure the project key and ingestion host, then run `yarn install` and `bundle exec pod install` in `ios` before a native build. RudderStack's native pods and resource references have been removed; PostHog adds no native module in this configuration.
-2. On an internal build, verify a track event, `$screen`, and a person-property update in PostHog. Confirm `distinct_id` matches the existing Rainbow device ID and check wallet metadata and `appsflyer_id` when available. Toggle analytics off/on and test offline delivery after reconnecting.
-3. Keep the interim RudderStack destination active for older app versions. This version sends each event only through the direct SDK. Complete the separate AppsFlyer route and S3-consumer review before retiring shared RudderStack infrastructure.
-4. Roll back by reverting this migration and rebuilding with the previous RudderStack build configuration. Rainbow's persisted identity and privacy settings are unchanged; old SDK storage is not deleted.
-
-PostHog has its own lifecycle history. The first direct-SDK launch suppresses `Application Installed` for returning users; it cannot reconstruct the prior RudderStack build for that migration's `Application Updated` event. Later installs/updates use PostHog's persisted build history. The wrapper also persists the last observed version/build and emits one `Application Updated` when the version changes without a build change, as iOS releases can reuse build numbers. Build changes remain handled by the SDK to avoid duplicate update events.
-
-Lifecycle events keep PostHog's native names and properties: cold starts emit `Application Opened`, active transitions emit `Application Became Active`, and version/build metadata uses `$app_version` / `$app_build`. Update funnels to use those names and properties; the wrapper does not add the legacy `from_background`, `version`, or `build` fields. Session IDs and SDK/device enrichment also come from PostHog, so session boundaries can differ from RudderStack.
