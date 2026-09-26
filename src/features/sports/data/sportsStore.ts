@@ -1,4 +1,4 @@
-import { createQueryStore, getQueryKey, queryParam, type QueryStoreState, type SetDataParams } from '@storesjs/stores';
+import { createQueryStore, getQueryKey, type QueryStoreState, type SetDataParams } from '@storesjs/stores';
 import { replaceEqualDeep } from '@tanstack/query-core';
 
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
@@ -100,7 +100,7 @@ const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
  * Games, page results, and event lookups shared by Sports and Predictions.
  * While the app is active, the current page refreshes every minute. Event lookups stay fresh for a minute.
  */
-export const useSportsStore = createQueryStore<SportsResponse | null, SportsParams, SportsState, SportsResponse | null>(
+export const useSportsStore = createQueryStore<SportsResponse | null, SportsParams, SportsState>(
   {
     fetcher: fetchSports,
     setData: setSportsData,
@@ -118,9 +118,7 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
       if (request?.type !== 'event' || !fetchedAt) return STALE_TIME;
       return getEventDueAt(answeredAt, request.eventId) - fetchedAt;
     },
-    params: {
-      request: queryParam($ => $(sportsRequestStore, request => request), { key: getRequestKey }),
-    },
+    params: { request: $ => $(sportsRequestStore, request => request) },
   },
 
   (_, get) => ({
@@ -139,7 +137,7 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
  * The query-cache key for a Sports page request.
  */
 export function getPageQueryKey(request: SportsPageRequest): string {
-  return getQueryKey({ request: getRequestKey(request) });
+  return getQueryKey({ request });
 }
 
 // ============ Reads ========================================================== //
@@ -312,15 +310,6 @@ async function fetchSearch(
       };
     }
   }
-}
-
-function getRequestKey(request: SportsRequest | null): SportsRequest | null {
-  if (request?.type === 'search') {
-    const { from, until } = request.window;
-    return { type: 'search', query: request.query, window: { from, until } };
-  }
-
-  return request;
 }
 
 function getEventDueAt(answeredAt: SportsData['answeredAt'], eventId: string): number {
@@ -510,7 +499,7 @@ function pruneQueryCache(request: SportsRequest): void {
 
   useSportsStore.setState(state => {
     const { results, search, queryCache } = state;
-    const ownedKeys = new Set([getQueryKey({ request: getRequestKey(request) }), CATALOG_QUERY_KEY]);
+    const ownedKeys = new Set([getQueryKey({ request }), CATALOG_QUERY_KEY]);
     if (search) ownedKeys.add(search.queryKey);
 
     for (const result of Object.values(results)) {

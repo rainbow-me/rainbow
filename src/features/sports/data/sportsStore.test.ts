@@ -559,15 +559,12 @@ it('admits catalogs and Games together, retaining equal revisions and rejecting 
 
 // ============ Days =========================================================== //
 
-it('keys scheduled reads by all three boundaries and Search by its week alone', () => {
+it('keys scheduled reads by all three boundaries', () => {
   const window = getSportsWindow(new Date(2026, 8, 20));
   const changed = { ...window, todayUntil: new Date(Date.parse(window.todayUntil) + time.hours(1)).toISOString() };
 
   expect(getPageQueryKey({ type: 'scope', scopeId: 'nba', window })).not.toBe(
     getPageQueryKey({ type: 'scope', scopeId: 'nba', window: changed })
-  );
-  expect(getPageQueryKey({ type: 'search', query: 'team', window })).toBe(
-    getPageQueryKey({ type: 'search', query: 'team', window: changed })
   );
 });
 

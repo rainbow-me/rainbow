@@ -30,13 +30,18 @@ export const sportsPageRequestStores = {
 
 function createPageRequestStore(host: SportsHost): DerivedStore<SportsPageRequest | null> {
   return createDerivedStore($ => {
-    const query = $(sportsNavigationStores[host], state => state.query);
+    const query = $(sportsNavigationStores[host], s => s.query);
     if (query === '') return null;
-    if (query !== null) return { type: 'search', query, window: $(sportsWindowStore, window => window) };
 
-    const destination = $(sportsNavigationStores[host], state => state.destination);
+    if (query) {
+      const window = $(sportsWindowStore, s => s);
+      return { type: 'search', query, window: { from: window.from, until: window.until } };
+    }
+
+    const destination = $(sportsNavigationStores[host], s => s.destination);
     if (destination === 'live') return { type: 'live' };
     if (destination === 'all') return { type: 'catalog' };
+
     return { type: 'scope', scopeId: destination, window: $(sportsWindowStore, window => window) };
   });
 }
@@ -54,19 +59,19 @@ export function getRequestDestination(request: { type: 'live' } | { type: 'scope
  * The Sports page or selected event for the active screen.
  */
 export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => {
-  const route = $(useNavigationStore, state => state.activeRoute);
+  const route = $(useNavigationStore, s => s.activeRoute);
 
   switch (route) {
     case Routes.SPORTS_SCREEN:
-      return $(sportsPageRequestStores.main, request => request);
+      return $(sportsPageRequestStores.main, s => s);
 
     case Routes.POLYMARKET_BROWSE_EVENTS_SCREEN: {
-      const showsSports = $(usePolymarketCategoryStore, state => state.tagId === 'sports');
-      return showsSports ? $(sportsPageRequestStores.predictions, request => request) : null;
+      const showsSports = $(usePolymarketCategoryStore, s => s.tagId === 'sports');
+      return showsSports ? $(sportsPageRequestStores.predictions, s => s) : null;
     }
 
     case Routes.POLYMARKET_EVENT_SCREEN: {
-      const eventId = $(polymarketEventIdStore, state => state.eventId);
+      const eventId = $(polymarketEventIdStore, s => s.eventId);
       return eventId ? { type: 'event', eventId } : null;
     }
 
