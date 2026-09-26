@@ -9,7 +9,6 @@ import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discover
 import { usePlacementsStore, type PlacementsState } from '@/features/placements/stores/placementsStore';
 import { type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type Placement } from '@/features/placements/types';
-import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { Game } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
@@ -65,7 +64,6 @@ jest.mock('@/features/polymarket/constants', () => ({
   DEFAULT_CATEGORY_KEY: 'trending',
   POLYMARKET_GAMMA_API_URL: 'https://gamma.test',
 }));
-jest.mock('@/features/polymarket/stores/polymarketTeamMetadataStore', () => ({ fetchPolymarketTeamMetadataForGameEvents: jest.fn() }));
 jest.mock('@/features/polymarket/utils/transforms', () => ({ processRawPolymarketEvent: jest.fn() }));
 jest.mock('@/framework/data/http/rainbowFetch', () => ({ rainbowFetch: jest.fn() }));
 jest.mock('@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem', () => ({
@@ -114,7 +112,6 @@ beforeEach(() => {
   }
   jest.clearAllMocks();
   jest.mocked(rainbowFetch).mockResolvedValue(response([]));
-  jest.mocked(fetchPolymarketTeamMetadataForGameEvents).mockResolvedValue(new Map());
   jest.mocked(processRawPolymarketEvent).mockImplementation(async event => ({
     ...event,
     color,
@@ -168,7 +165,7 @@ test('requests tiles once while the displayed non-sports cards change', async ()
   expect(rainbowFetch).toHaveBeenCalledTimes(3);
 });
 
-test('discards inactive events before team lookup and card processing', async () => {
+test('discards inactive events before card processing', async () => {
   const active = event('active');
   setRefs({ polymarket: ['active', 'closed', 'ended', 'resolved', 'inactive'] });
   jest
@@ -185,7 +182,6 @@ test('discards inactive events before team lookup and card processing', async ()
   unsubscribe = usePredictionEventsStore.subscribe(() => undefined);
   await settle();
 
-  expect(fetchPolymarketTeamMetadataForGameEvents).toHaveBeenCalledWith([active], expect.anything());
   expect(processRawPolymarketEvent).toHaveBeenCalledTimes(1);
   const getEvent = usePredictionEventsStore.getState();
   expect(getEvent('active')?.id).toBe('active');

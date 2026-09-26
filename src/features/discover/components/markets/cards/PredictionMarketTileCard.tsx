@@ -259,7 +259,6 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
     outcome: row.market.outcomes[row.outcomeIndex] ?? row.title,
     outcomeIndex: row.outcomeIndex,
     isDarkMode,
-    teams: event.teams,
   });
 
   const onPress = useCallback(() => {

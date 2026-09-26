@@ -8,7 +8,6 @@ import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
-import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { useSportsEnabled } from '@/features/sports/data/sportsEnabledStore';
@@ -188,13 +187,7 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
   const rawEvents = (await fetchPolymarketEventsByIds(eventIds, abortController)).filter(isActivePredictionEvent);
   if (!rawEvents.length) return EMPTY_EVENTS;
 
-  const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
-  const events = await Promise.all(
-    rawEvents.map(event => {
-      const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
-      return processRawPolymarketEvent(event, teamMetadata?.teams);
-    })
-  );
+  const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
 
   const eventsById: EventsById = {};
   for (const event of events) eventsById[event.id] = event;
