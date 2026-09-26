@@ -178,7 +178,6 @@ describe('@/analytics', () => {
       expect.objectContaining({
         host: 'https://us.i.posthog.com',
         bootstrap: { distinctId: 'existing-rainbow-id', isIdentifiedId: true },
-        enableSessionReplay: false,
         disableRemoteFeatureFlags: true,
       })
     );

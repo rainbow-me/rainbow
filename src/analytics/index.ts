@@ -191,9 +191,6 @@ export class Analytics {
         this.client = new PostHog(POSTHOG_API_KEY, {
           host: POSTHOG_HOST,
           bootstrap: { distinctId: deviceId, isIdentifiedId: true },
-          captureAppLifecycleEvents: true,
-          enableSessionReplay: false,
-          errorTracking: { autocapture: false },
           disableSurveys: true,
           disableRemoteFeatureFlags: true,
           customAppProperties: properties => ({ ...properties, $os: properties.$os_name }),
