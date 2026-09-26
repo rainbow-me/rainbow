@@ -17,10 +17,15 @@ export type SportsWindow = {
  * The local week, from today's midnight, in which scheduled games are shown.
  */
 export function getSportsWindow(now = new Date()): SportsWindow {
-  const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const todayUntil = new Date(getNextMidnight(from));
-  const until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
-  return { from: from.toISOString(), todayUntil: todayUntil.toISOString(), until: until.toISOString() };
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate();
+
+  return {
+    from: new Date(year, month, day).toISOString(),
+    todayUntil: new Date(year, month, day + 1).toISOString(),
+    until: new Date(year, month, day + 7).toISOString(),
+  };
 }
 
 /**
@@ -46,8 +51,10 @@ export function getSportsBackDestination(
   destination: SportsDestination,
   category: SportsDestination
 ): SportsDestination | undefined {
+  if (!isSportsScope(destination)) return undefined;
+
   const root = getSportsCategory(catalog, category);
-  if (!isSportsScope(destination) || destination === root) return undefined;
+  if (destination === root) return undefined;
   return catalog?.scopes[destination]?.parentId ?? root;
 }
 

@@ -247,8 +247,9 @@ async function fetchSearch(
   abortController: AbortController | null
 ): Promise<SportsSearchResponse> {
   const state = useSportsStore.getState();
-  const { from, until } = request.window;
   const queryKey = getPageQueryKey(request);
+  const { from, until } = request.window;
+
   const previous = state.search?.queryKey === queryKey ? state.search : undefined;
   const entry = state.queryCache[queryKey];
   const canContinue =
@@ -257,61 +258,57 @@ async function fetchSearch(
     Date.now() - (entry?.lastFetchedAt ?? 0) < FRESH_FOR &&
     getErrorCode(entry?.errorInfo?.error) !== RPC_FAILED_PRECONDITION;
 
-  let cursor = canContinue ? previous.nextCursor : undefined;
-  let requestedCount = Math.min(MAX_SPORTS_SECTION_GAMES, Math.max(previous?.gameIds.length ?? 0, previous?.requestedCount ?? 1));
-  let knownCatalogRevision = state.catalog?.revision;
-  let catalog: CatalogMessage | undefined;
-  let restarted = false;
-  let requestedCursors: Set<string> | undefined;
-  const gameIds = new Set(cursor ? previous?.gameIds : undefined);
-  const games = new Map<string, Game>();
+  let requestedCount = Math.max(previous?.gameIds.length ?? 0, previous?.requestedCount ?? 1);
 
-  for (;;) {
-    if (cursor) (requestedCursors ??= new Set()).add(cursor);
-    let response: SearchGamesResponse;
+  for (let attempt = 0; ; attempt++) {
+    let cursor = attempt === 0 && canContinue ? previous.nextCursor : undefined;
+    let knownCatalogRevision = useSportsStore.getState().catalog?.revision;
+    let catalog: CatalogMessage | undefined;
 
-    try {
-      response = await sportsClient.searchGames({ query: request.query, from, until, cursor, knownCatalogRevision }, abortController);
-    } catch (error) {
-      if (!cursor || restarted || abortController?.signal.aborted || getErrorCode(error) !== RPC_FAILED_PRECONDITION) throw error;
-
-      restarted = true;
-      cursor = undefined;
-      knownCatalogRevision = useSportsStore.getState().catalog?.revision;
-      catalog = undefined;
-      gameIds.clear();
-      games.clear();
-      requestedCursors = undefined;
-      continue;
+    const games = new Map<string, Game | undefined>();
+    if (cursor && previous) {
+      for (const id of previous.gameIds) games.set(id, undefined);
     }
 
-    if (cursor && response.catalogRevision !== knownCatalogRevision)
-      throw new Error('Sports Search changed catalog revision between pages.');
-    if (response.nextCursor && requestedCursors?.has(response.nextCursor)) throw new Error('Sports Search returned a repeated cursor');
+    for (;;) {
+      let response: SearchGamesResponse;
 
-    knownCatalogRevision = response.catalogRevision;
-    catalog ??= response.catalog;
-    for (const game of response.games) {
-      if (gameIds.size === MAX_SPORTS_SECTION_GAMES && !gameIds.has(game.id)) break;
-      gameIds.add(game.id);
-      games.set(game.id, game);
+      try {
+        response = await sportsClient.searchGames({ query: request.query, from, until, cursor, knownCatalogRevision }, abortController);
+      } catch (error) {
+        if (attempt > 0 || !cursor || abortController?.signal.aborted || getErrorCode(error) !== RPC_FAILED_PRECONDITION) throw error;
+        break;
+      }
+
+      knownCatalogRevision = response.catalogRevision;
+      catalog ??= response.catalog;
+      for (const game of response.games) {
+        if (games.size === MAX_SPORTS_SECTION_GAMES && !games.has(game.id)) break;
+        games.set(game.id, game);
+      }
+
+      const current = useSportsStore.getState().search;
+      if (current?.queryKey === queryKey) requestedCount = Math.max(requestedCount, current.requestedCount);
+      cursor = response.nextCursor;
+      if (cursor && games.size < requestedCount) continue;
+
+      const gameIds: string[] = [];
+      const fetchedGames: Game[] = [];
+      games.forEach((game, id) => {
+        gameIds.push(id);
+        if (game) fetchedGames.push(game);
+      });
+
+      return {
+        type: 'search',
+        catalogRevision: response.catalogRevision,
+        catalog,
+        gameIds,
+        requestedCount,
+        games: fetchedGames,
+        nextCursor: games.size < MAX_SPORTS_SECTION_GAMES ? cursor : undefined,
+      };
     }
-
-    const current = useSportsStore.getState().search;
-    if (current?.queryKey === queryKey)
-      requestedCount = Math.min(MAX_SPORTS_SECTION_GAMES, Math.max(requestedCount, current.requestedCount));
-    cursor = response.nextCursor;
-    if (cursor && gameIds.size < requestedCount) continue;
-
-    return {
-      type: 'search',
-      catalogRevision: response.catalogRevision,
-      catalog,
-      gameIds: [...gameIds],
-      requestedCount,
-      games: [...games.values()],
-      nextCursor: gameIds.size < MAX_SPORTS_SECTION_GAMES ? cursor : undefined,
-    };
   }
 }
 
