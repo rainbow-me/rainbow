@@ -16,7 +16,7 @@ import {
 import * as sections from '@/features/sports/core/sections';
 import { sportsClient } from '@/features/sports/data/api/client';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
-import { sportsPageStatusStores, sportsPageStores } from '@/features/sports/data/sportsPageStore';
+import { sportsPageStores } from '@/features/sports/data/sportsPageStore';
 import { sportsRequestStore } from '@/features/sports/data/sportsRequestStore';
 import {
   getGameId,
@@ -87,8 +87,8 @@ function page(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsPa
   return sportsPageStores[host].getState();
 }
 
-function status(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsPageStatusStores.main.getState> {
-  return sportsPageStatusStores[host].getState();
+function status(host: 'main' | 'predictions' = 'main') {
+  return page(host).getStatus(useSportsStore.getState());
 }
 
 function navigation(host: 'main' | 'predictions' = 'main'): ReturnType<typeof sportsNavigationStores.main.getState> {
@@ -193,8 +193,7 @@ beforeEach(async () => {
   unsubscribes.push(
     useSportsStore.subscribe(() => undefined),
     sportsPageStores.main.subscribe(() => undefined),
-    sportsPageStores.predictions.subscribe(() => undefined),
-    sportsPageStatusStores.main.subscribe(() => undefined)
+    sportsPageStores.predictions.subscribe(() => undefined)
   );
 });
 
@@ -1083,7 +1082,7 @@ it('restarts one rejected continuation without publishing abandoned data or an e
   await loadMoreSportsGames('main');
   const before = useSportsStore.getState();
   const footer = jest.fn();
-  unsubscribes.push(sportsPageStatusStores.main.subscribe(footer));
+  unsubscribes.push(useSportsStore.subscribe(page().getStatus, footer));
 
   const refresh = refreshSportsPage('main');
   await settle();

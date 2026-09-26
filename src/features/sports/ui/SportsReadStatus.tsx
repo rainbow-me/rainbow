@@ -6,8 +6,8 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsHost } from '@/features/sports/core/browse';
-import { sportsPageStatusStores, type SportsPage } from '@/features/sports/data/sportsPageStore';
-import { loadMoreSportsGames, retrySportsPage } from '@/features/sports/data/sportsStore';
+import { sportsPageStores, type SportsPage } from '@/features/sports/data/sportsPageStore';
+import { loadMoreSportsGames, retrySportsPage, useSportsStore } from '@/features/sports/data/sportsStore';
 import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
 import * as i18n from '@/languages';
 
@@ -22,7 +22,9 @@ export function SportsReadStatus({
   width: number;
   isDarkMode: boolean;
 }): ReactElement | null {
-  const status = sportsPageStatusStores[host]();
+  const getStatus = sportsPageStores[host](state => state.getStatus);
+  const status = useSportsStore(getStatus);
+
   switch (status) {
     case 'none':
       return null;
