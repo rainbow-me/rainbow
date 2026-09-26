@@ -90,7 +90,7 @@ function settle(): Promise<void> {
 }
 
 beforeEach(() => {
-  discoverEventListsStore.setState({ sections: {}, mountedEventIds: new Set() });
+  discoverEventListsStore.setState({ sections: {} });
   useDiscoverNavigationStore.getState().navigate('featured');
   useDiscoverSearchQueryStore.setState({ isSearching: false });
   setRefs({ polymarket: [] });

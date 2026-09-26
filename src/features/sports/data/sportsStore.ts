@@ -1,7 +1,6 @@
 import { createQueryStore, getQueryKey, queryParam, type SetDataParams } from '@storesjs/stores';
 import { replaceEqualDeep } from '@tanstack/query-core';
 
-import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { buildSportsCatalog, type SportsCatalog } from '@/features/sports/core/catalog';
@@ -99,7 +98,7 @@ const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
 // ============ Sports Store =================================================== //
 
 /**
- * Games, page results, and event lookups shared by Sports and Discover.
+ * Games, page results, and event lookups shared by Sports and Predictions.
  * While the app is active, the current page refreshes every minute. Event lookups stay fresh for a minute.
  */
 export const useSportsStore = createQueryStore<SportsResponse | null, SportsParams, SportsState, SportsResponse | null>(
@@ -177,26 +176,6 @@ export function getGames(games: SportsState['games'], gameIds: Iterable<string>)
 export async function refreshSportsPage(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
   if (request) await useSportsStore.getState().fetch({ request }, { force: true });
-}
-
-/**
- * Looks up the active events again, even if their stored data is still fresh.
- */
-export async function refreshSportsEvents(): Promise<void> {
-  const request = sportsRequestStore.getState();
-  if (request?.type !== 'events' || !useSportsStore.getState().enabled) return;
-
-  useSportsStore.setState(state => {
-    let answeredAt = state.answeredAt;
-
-    for (const id of request.eventIds) {
-      if (answeredAt.has(id)) answeredAt = setMapEntry(answeredAt, state.answeredAt, id, undefined);
-    }
-
-    return answeredAt === state.answeredAt ? state : { answeredAt };
-  });
-
-  await useSportsStore.getState().fetch({ request }, { force: true });
 }
 
 /**
@@ -487,28 +466,22 @@ function mergeSportsResponse(
 
 // ============ Retention ====================================================== //
 
-/** Discover's mounted event IDs and the selected event at the last cleanup of unused data. */
-let retainedRoots: { listIds: ReadonlySet<string>; selectedId: string | null } | undefined;
+/** The selected event at the last cleanup of unused data. */
+let retainedEventId: string | null | undefined;
 
 /**
- * Removes games and event lookups no longer needed by cached pages, mounted Discover lists, or the selected event.
+ * Removes games and event lookups no longer needed by cached pages, Search, or the selected event.
  */
 function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
-  const listIds = discoverEventListsStore.getState().mountedEventIds;
   const selectedId = polymarketEventIdStore.getState().eventId;
-  if (!rootsChanged && retainedRoots?.listIds === listIds && retainedRoots.selectedId === selectedId) return data;
+  if (!rootsChanged && retainedEventId === selectedId) return data;
 
-  retainedRoots = { listIds, selectedId };
+  retainedEventId = selectedId;
   const { results, search } = data;
 
   const gameIds = new Set(search?.gameIds);
   for (const result of Object.values(results)) {
     for (const id of result?.gameIds ?? []) gameIds.add(id);
-  }
-
-  for (const eventId of listIds) {
-    const gameId = getGameId(data, eventId);
-    if (gameId) gameIds.add(gameId);
   }
 
   if (selectedId) {
@@ -519,7 +492,7 @@ function retainSportsData(data: SportsData, rootsChanged: boolean): SportsData {
   let { games, eventGameIds, answeredAt } = data;
 
   for (const eventId of Object.keys(eventGameIds)) {
-    if (eventId === selectedId || listIds.has(eventId)) continue;
+    if (eventId === selectedId) continue;
 
     eventGameIds = setEntry(eventGameIds, data.eventGameIds, eventId, undefined);
     if (!gameIds.has(eventId)) answeredAt = setMapEntry(answeredAt, data.answeredAt, eventId, undefined);

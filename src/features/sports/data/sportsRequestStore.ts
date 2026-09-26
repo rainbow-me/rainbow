@@ -1,6 +1,5 @@
 import { createDerivedStore, type DerivedStore } from '@storesjs/stores';
 
-import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { type SportsDestination, type SportsHost, type SportsWindow } from '@/features/sports/core/browse';
@@ -66,7 +65,7 @@ export function getRequestDestination(request: LiveRequest | ScopeRequest): Spor
 // ============ Active Request ================================================= //
 
 /**
- * The sports request for the active screen: a page, the selected event, or the events in Discover's active section.
+ * The Sports page or selected event for the active screen.
  */
 export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => {
   const route = $(useNavigationStore, state => state.activeRoute);
@@ -83,11 +82,6 @@ export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => 
     case Routes.POLYMARKET_EVENT_SCREEN: {
       const eventId = $(polymarketEventIdStore, state => state.eventId);
       return eventId ? { type: 'events', route, eventIds: [eventId] } : null;
-    }
-
-    case Routes.DISCOVER_SCREEN: {
-      const eventIds = $(displayedDiscoverEventIdsStore);
-      return eventIds.length ? { type: 'events', route, eventIds } : null;
     }
 
     default:

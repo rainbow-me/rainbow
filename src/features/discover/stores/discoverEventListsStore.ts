@@ -11,7 +11,6 @@ type EventLists = {
 
 type DiscoverEventListsState = {
   sections: Partial<Record<DiscoverSection, EventLists>>;
-  mountedEventIds: ReadonlySet<string>;
   setList: (section: DiscoverSection, listId: string, eventIds: readonly string[]) => void;
   removeList: (section: DiscoverSection, listId: string) => void;
 };
@@ -19,11 +18,10 @@ type DiscoverEventListsState = {
 const NO_IDS: readonly string[] = [];
 
 /**
- * The event IDs in Discover's mounted lists, grouped by page and combined across pages. Card order is ignored.
+ * The event IDs in Discover's mounted lists, grouped by page. Card order is ignored.
  */
 export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>((set, get) => ({
   sections: {},
-  mountedEventIds: new Set(),
 
   setList: (section, listId, ids) =>
     set(state => {
@@ -49,13 +47,7 @@ export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>(
         delete sections[section];
       }
 
-      if (pageUnchanged) return { sections };
-
-      const mountedEventIds = collectEventIds(Object.values(sections).map(page => page?.eventIds));
-      return {
-        sections,
-        mountedEventIds: areEventSetsEqual(state.mountedEventIds, mountedEventIds) ? state.mountedEventIds : mountedEventIds,
-      };
+      return { sections };
     }),
 
   removeList: (section, listId) => get().setList(section, listId, NO_IDS),
@@ -79,14 +71,4 @@ function collectEventIds(lists: readonly (readonly string[] | undefined)[]): Set
   }
 
   return eventIds;
-}
-
-function areEventSetsEqual(first: ReadonlySet<string>, second: ReadonlySet<string>): boolean {
-  if (first.size !== second.size) return false;
-
-  for (const id of first) {
-    if (!second.has(id)) return false;
-  }
-
-  return true;
 }

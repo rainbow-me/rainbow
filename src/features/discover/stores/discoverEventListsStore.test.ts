@@ -6,53 +6,46 @@ beforeEach(() => {
 
 it('publishes membership only when the effective set of events changes', () => {
   const { setList, removeList } = discoverEventListsStore.getState();
-  setList('sports', 'games', ['2', '1']);
+  setList('featured', 'cards', ['2', '1']);
 
-  const { sections, mountedEventIds } = discoverEventListsStore.getState();
-  expect(sections.sports?.eventIds).toEqual(['1', '2']);
-  setList('sports', 'games', ['2', '1', '2']);
-  removeList('sports', 'unmounted');
+  const { sections } = discoverEventListsStore.getState();
+  expect(sections.featured?.eventIds).toEqual(['1', '2']);
+  setList('featured', 'cards', ['2', '1', '2']);
+  removeList('featured', 'unmounted');
   expect(discoverEventListsStore.getState().sections).toBe(sections);
 
-  setList('sports', 'futures', ['2']);
-  expect(discoverEventListsStore.getState().sections.sports?.eventIds).toBe(sections.sports?.eventIds);
-  expect(discoverEventListsStore.getState().mountedEventIds).toBe(mountedEventIds);
+  setList('featured', 'more-cards', ['2']);
+  expect(discoverEventListsStore.getState().sections.featured?.eventIds).toBe(sections.featured?.eventIds);
 
-  removeList('sports', 'games');
-  expect(discoverEventListsStore.getState().sections.sports?.eventIds).toEqual(['2']);
-  expect(discoverEventListsStore.getState().mountedEventIds).toEqual(new Set(['2']));
+  removeList('featured', 'cards');
+  expect(discoverEventListsStore.getState().sections.featured?.eventIds).toEqual(['2']);
 
-  setList('sports', 'futures', []);
+  setList('featured', 'more-cards', []);
   expect(discoverEventListsStore.getState().sections).toEqual({});
-  expect(discoverEventListsStore.getState().mountedEventIds.size).toBe(0);
 });
 
-it('retains shared events until their last page releases them', () => {
+it('keeps each page’s membership independent', () => {
   const { setList, removeList } = discoverEventListsStore.getState();
-  setList('sports', 'games', ['1']);
-  const mountedEventIds = discoverEventListsStore.getState().mountedEventIds;
+  setList('featured', 'cards', ['1']);
 
   setList('crypto', 'predictions', ['1']);
-  removeList('sports', 'games');
-  expect(discoverEventListsStore.getState().mountedEventIds).toBe(mountedEventIds);
-  expect(discoverEventListsStore.getState().sections.sports).toBeUndefined();
+  const crypto = discoverEventListsStore.getState().sections.crypto;
+  removeList('featured', 'cards');
+  expect(discoverEventListsStore.getState().sections.featured).toBeUndefined();
+  expect(discoverEventListsStore.getState().sections.crypto).toBe(crypto);
 
   removeList('crypto', 'predictions');
-  expect(discoverEventListsStore.getState().mountedEventIds.size).toBe(0);
+  expect(discoverEventListsStore.getState().sections).toEqual({});
 });
 
 it('skips collection construction for unchanged list IDs', () => {
-  discoverEventListsStore.getState().setList('sports', 'games', ['1', '2']);
+  discoverEventListsStore.getState().setList('featured', 'cards', ['1', '2']);
   const ids = ['1', '2'];
   const iterate = jest.spyOn(ids, Symbol.iterator);
   const previous = discoverEventListsStore.getState();
 
-  const keys = jest.spyOn(Object, 'keys');
-  previous.setList('sports', 'games', ids);
-  const keyReads = keys.mock.calls.length;
-  keys.mockRestore();
+  previous.setList('featured', 'cards', ids);
 
-  expect(keyReads).toBe(0);
   expect(iterate).not.toHaveBeenCalled();
   expect(discoverEventListsStore.getState()).toBe(previous);
   iterate.mockRestore();

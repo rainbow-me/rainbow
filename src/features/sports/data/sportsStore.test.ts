@@ -23,7 +23,6 @@ import {
   getGameId,
   getPageQueryKey,
   loadMoreSportsGames,
-  refreshSportsEvents,
   refreshSportsPage,
   retrySportsPage,
   useSportsStore,
@@ -131,17 +130,6 @@ function showMain(): void {
 function showPredictions(): void {
   usePolymarketCategoryStore.setState({ tagId: 'sports' });
   useNavigationStore.setState({ activeRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN });
-}
-
-function showDiscover(): void {
-  useNavigationStore.setState({ activeRoute: Routes.DISCOVER_SCREEN });
-}
-
-/**
- * Sets the events a list in a Discover section shows, in the active section unless another is given.
- */
-function setList(eventIds: string[], section = useDiscoverNavigationStore.getState().activeSection, listId = 'list'): void {
-  discoverEventListsStore.getState().setList(section, listId, eventIds);
 }
 
 function openEvent(eventId: string): void {
@@ -407,6 +395,7 @@ it('moves a game between sections as its status changes in any response', async 
 });
 
 it('regroups only cached pages affected by a lookup’s section-field changes', async () => {
+  await startClock(new Date(2026, 8, 20, 12));
   jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, second] });
   jest
     .mocked(sportsClient.getGames)
@@ -425,7 +414,8 @@ it('regroups only cached pages affected by a lookup’s section-field changes', 
   jest
     .mocked(sportsClient.lookupGames)
     .mockResolvedValue(lookupResponse([{ ...first, status: Game_Status.STATUS_POSTPONED }], [{ eventId: 'child', gameId: '1' }]));
-  await refreshSportsEvents();
+  jest.advanceTimersByTime(time.minutes(1));
+  await settle();
 
   expect(selectGames).toHaveBeenCalledTimes(2);
   expect(useSportsStore.getState().results.nba?.sections).toEqual([]);
@@ -434,22 +424,28 @@ it('regroups only cached pages affected by a lookup’s section-field changes', 
 });
 
 it('keeps score polls off page Game comparisons after a status change', async () => {
+  await startClock(new Date(2026, 8, 20, 12));
   jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, second] });
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([first, second]));
   showMain();
   await settle();
-  setList(['1', '2']);
-  showDiscover();
+  openEvent('child');
   await settle();
 
   const finished = { ...first, status: Game_Status.STATUS_ENDED };
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([finished, second]));
-  await refreshSportsEvents();
+  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([finished], [{ eventId: 'child', gameId: '1' }]));
+  jest.advanceTimersByTime(time.minutes(1));
+  await settle();
+
+  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([second]));
+  openEvent('2');
+  await settle();
   const compareGames = jest.spyOn(sections, 'areSectionInputsEqual');
 
   const scored = game('2', { competitionIds: ['atp'], score: [{ ...second.score[0], first: { value: 1 } }] });
-  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([finished, scored]));
-  await refreshSportsEvents();
+  jest.mocked(sportsClient.lookupGames).mockResolvedValue(lookupResponse([scored]));
+  jest.advanceTimersByTime(time.minutes(1));
+  await settle();
+  expect(useSportsStore.getState().games['2']).toEqual(scored);
   expect(compareGames).not.toHaveBeenCalled();
 });
 
@@ -641,8 +637,7 @@ it('requests only the current week when the app returns on a later day', async (
 
 it('keeps event resolutions and Live across midnight', async () => {
   await startClock(new Date(2026, 8, 20, 23, 59));
-  setList(['child']);
-  showDiscover();
+  openEvent('child');
   await settle();
   showMain();
   await settle();
@@ -713,8 +708,7 @@ it('releases a hidden page’s failure once midnight changes its request', async
   navigation().select('nba');
   await settle();
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['1']);
-  showDiscover();
+  openEvent('1');
   await settle();
 
   await jest.advanceTimersByTimeAsync(time.minutes(4));
@@ -1217,88 +1211,33 @@ it('rejects a Search continuation with a different revision instead of mixing it
 
 // ============ Events ========================================================= //
 
-it('looks up the events that the active Discover section’s lists show', async () => {
+it('does not fetch or poll Sports for Discover', async () => {
+  await startClock(new Date(2026, 8, 20, 12));
   showMain();
   await settle();
-  setList(['unsupported', 'child']);
-  setList(['child', 'other'], 'crypto');
+
+  const { setList } = discoverEventListsStore.getState();
+  setList('for_you', 'cards', ['child']);
+  setList('crypto', 'cards', ['unsupported']);
+  useNavigationStore.setState({ activeRoute: Routes.DISCOVER_SCREEN });
   await settle();
-  expect(sportsClient.lookupGames).not.toHaveBeenCalled();
 
-  showDiscover();
-  await settle();
-  expect(lookedUpEventIds()).toEqual([['child', 'unsupported']]);
-
-  const state = useSportsStore.getState();
-  expect(getGameId(state, 'child')).toBe('1');
-  expect(getGameId(state, 'unsupported')).toBeNull();
-  expect(getGameId(state, '1')).toBe('1');
-  expect(getGameId(state, 'unknown')).toBeUndefined();
-
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
   useDiscoverNavigationStore.getState().navigate('crypto');
+  setList('crypto', 'cards', ['unsupported', 'child']);
   await settle();
-  expect(lookedUpEventIds()).toEqual([['child', 'unsupported'], ['other']]);
-});
-
-it('ignores the lists of Discover sections that are not active', async () => {
-  setList(['child']);
-  showDiscover();
-  await settle();
-
-  const listener = jest.fn();
-  unsubscribes.push(sportsRequestStore.subscribe(listener));
-  setList(['other'], 'crypto');
-  setList(['another'], 'crypto', 'second-list');
-  await settle();
-
-  expect(listener).not.toHaveBeenCalled();
-  expect(lookedUpEventIds()).toEqual([['child']]);
-});
-
-it('does not publish a request for overlapping lists or card reordering', async () => {
-  setList(['1', '2']);
-  showDiscover();
-  await settle();
-
-  const listener = jest.fn();
-  unsubscribes.push(sportsRequestStore.subscribe(listener));
-  setList(['2', '1']);
-  setList(['2'], undefined, 'overlap');
-  await settle();
-  expect(listener).not.toHaveBeenCalled();
-
-  setList([], undefined, 'list');
-  await settle();
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(sportsRequestStore.getState()).toEqual({ type: 'events', route: Routes.DISCOVER_SCREEN, eventIds: ['2'] });
-});
-
-it('suspends Discover lookups behind Search without dropping retained games', async () => {
-  await startClock(new Date(2026, 8, 20, 12));
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['1']);
-  showDiscover();
-  await settle();
-
   useDiscoverSearchQueryStore.setState({ isSearching: true });
   await settle();
+  useDiscoverSearchQueryStore.setState({ isSearching: false });
+  await settle();
+  await jest.advanceTimersByTimeAsync(time.minutes(2));
+
   expect(sportsRequestStore.getState()).toBeNull();
-  expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
-
-  await jest.advanceTimersByTimeAsync(time.seconds(30));
-  useDiscoverSearchQueryStore.setState({ isSearching: false });
-  await settle();
-  expect(lookedUpEventIds()).toEqual([['1']]);
-
-  useDiscoverSearchQueryStore.setState({ isSearching: true });
-  await settle();
-  await jest.advanceTimersByTimeAsync(time.seconds(40));
-  expect(lookedUpEventIds()).toEqual([['1']]);
-
-  useDiscoverSearchQueryStore.setState({ isSearching: false });
-  await settle();
-  expect(lookedUpEventIds()).toEqual([['1'], ['1']]);
+  expect(useSportsStore.getState().enabled).toBe(false);
+  expect(sportsClient.getLiveGames).toHaveBeenCalledTimes(1);
+  expect(sportsClient.getCatalog).not.toHaveBeenCalled();
+  expect(sportsClient.getGames).not.toHaveBeenCalled();
+  expect(sportsClient.searchGames).not.toHaveBeenCalled();
+  expect(sportsClient.lookupGames).not.toHaveBeenCalled();
 });
 
 it('looks up the selected event while the event screen is active', async () => {
@@ -1359,24 +1298,12 @@ it('dates a game’s answer by its latest delivery, and a resolved event’s by 
   expect(lookedUpEventIds()).toEqual([['child'], ['child']]);
 });
 
-it('looks up only the events a changed list adds', async () => {
+it('releases an unselected event’s game, answer, and timestamp with the next response', async () => {
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['1', '2']);
-  showDiscover();
-  await settle();
-  setList(['2', '3']);
+  openEvent('2');
   await settle();
 
-  expect(lookedUpEventIds()).toEqual([['1', '2'], ['3']]);
-});
-
-it('releases the games, answers, and answer times of events nothing shows with the next response', async () => {
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['2', '3']);
-  showDiscover();
-  await settle();
-
-  discoverEventListsStore.getState().removeList('for_you', 'list');
+  polymarketEventIdStore.setState({ eventId: null });
   showMain();
   await settle();
 
@@ -1387,45 +1314,41 @@ it('releases the games, answers, and answer times of events nothing shows with t
 });
 
 it('looks up an event again once its answer was released', async () => {
-  setList(['child']);
-  showDiscover();
+  openEvent('child');
   await settle();
-  discoverEventListsStore.getState().removeList('for_you', 'list');
+  polymarketEventIdStore.setState({ eventId: null });
   showMain();
   await settle();
 
-  setList(['child']);
-  showDiscover();
+  openEvent('child');
   await settle();
   expect(lookedUpEventIds()).toEqual([['child'], ['child']]);
 });
 
-it('keeps the games of lists in other Discover sections and of the selected event', async () => {
+it('retains the selected event’s Game without retaining Games for Discover lists', async () => {
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [second] });
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['2']);
-  showDiscover();
+  showMain();
   await settle();
+  discoverEventListsStore.getState().setList('for_you', 'cards', ['2']);
   openEvent('3');
   await settle();
 
-  useDiscoverNavigationStore.getState().navigate('crypto');
-  showMain();
-  await settle();
+  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
+  await refreshSportsPage('main');
 
-  expect(Object.keys(useSportsStore.getState().games).sort()).toEqual(['1', '2', '3']);
+  expect(Object.keys(useSportsStore.getState().games).sort()).toEqual(['1', '3']);
 });
 
 it('preserves unchanged Game and resolution identities through event polling', async () => {
   await startClock(new Date(2026, 8, 20, 12));
   jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['1', '2']);
-  showDiscover();
+  openEvent('1');
   await settle();
   const before = useSportsStore.getState();
 
   for (let poll = 0; poll < 3; poll++) {
-    jest.setSystemTime(Date.now() + time.seconds(60));
-    await useSportsStore.getState().fetch(undefined, { force: true });
+    jest.advanceTimersByTime(time.minutes(1));
     await settle();
   }
 
@@ -1453,24 +1376,6 @@ it('releases a formerly selected event’s answer with the next response', async
   expect(lookedUpEventIds()).toEqual([['child']]);
 });
 
-it('releases a page-origin game after its last mounted list releases it', async () => {
-  showMain();
-  await settle();
-  setList(['1']);
-  showDiscover();
-  await settle();
-  expect(sportsClient.lookupGames).not.toHaveBeenCalled();
-
-  jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [] });
-  await refreshSportsPage('main');
-  expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
-
-  setList([]);
-  await refreshSportsPage('main');
-  expect(useSportsStore.getState().games).toEqual({});
-  expect(useSportsStore.getState().answeredAt.size).toBe(0);
-});
-
 it('releases a game with the page response that no longer shows it', async () => {
   jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first, game('3')] });
   showMain();
@@ -1480,81 +1385,6 @@ it('releases a game with the page response that no longer shows it', async () =>
   jest.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog, games: [first] });
   await refreshSportsPage('main');
   expect(Object.keys(useSportsStore.getState().games)).toEqual(['1']);
-});
-
-it('releases an event’s game once the event stops being a game', async () => {
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  openEvent('1');
-  await settle();
-  expect(getGame(useSportsStore.getState(), '1')?.id).toBe('1');
-
-  jest
-    .mocked(sportsClient.lookupGames)
-    .mockResolvedValue({ catalogRevision: 1, catalog, games: [], resolved: [], unavailableEventIds: ['1'] });
-  await refreshSportsEvents();
-  expect(useSportsStore.getState().games).toEqual({});
-});
-
-it('leaves event refresh idle outside an active event request', async () => {
-  showMain();
-  await settle();
-  await refreshSportsEvents();
-  expect(sportsClient.lookupGames).not.toHaveBeenCalled();
-
-  openEvent('child');
-  await settle();
-  useAppStateStore.setState('background');
-  await settle();
-  await refreshSportsEvents();
-  expect(sportsClient.lookupGames).toHaveBeenCalledTimes(1);
-});
-
-it('refreshes fresh events once and preserves unrelated receipts and the next poll', async () => {
-  await startClock(new Date(2026, 8, 20, 12));
-  showMain();
-  await settle();
-  const pageReceipt = useSportsStore.getState().answeredAt.get('1');
-
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['2', '3']);
-  showDiscover();
-  await settle();
-  await jest.advanceTimersByTimeAsync(time.seconds(10));
-  await refreshSportsEvents();
-  await settle();
-  expect(lookedUpEventIds()).toEqual([
-    ['2', '3'],
-    ['2', '3'],
-  ]);
-  expect(useSportsStore.getState().answeredAt.get('1')).toBe(pageReceipt);
-
-  await jest.advanceTimersByTimeAsync(time.seconds(59));
-  expect(lookedUpEventIds()).toHaveLength(2);
-  await jest.advanceTimersByTimeAsync(time.seconds(1));
-  expect(lookedUpEventIds()).toEqual([
-    ['2', '3'],
-    ['2', '3'],
-    ['2', '3'],
-  ]);
-});
-
-it('refreshes each event a minute after the server last answered for it', async () => {
-  await startClock(new Date(2026, 8, 20, 12));
-  jest.mocked(sportsClient.lookupGames).mockImplementation(lookupEvents);
-  setList(['1', '2']);
-  showDiscover();
-  await settle();
-
-  jest.advanceTimersByTime(time.seconds(30));
-  setList(['1', '2', '3']);
-  await settle();
-
-  for (let step = 0; step < 2; step++) {
-    jest.advanceTimersByTime(time.seconds(30));
-    await settle();
-  }
-
-  expect(lookedUpEventIds()).toEqual([['1', '2'], ['3'], ['1', '2'], ['3']]);
 });
 
 it('asks again about a resolved event a minute after each answer, even when the answer is unchanged', async () => {
@@ -1582,6 +1412,7 @@ it('waits a minute before asking again about an event that stopped being a game'
   jest.advanceTimersByTime(time.minutes(1));
   await settle();
   expect(getGameId(useSportsStore.getState(), '1')).toBeNull();
+  expect(useSportsStore.getState().games).toEqual({});
 
   jest.advanceTimersByTime(time.minutes(1) - 1);
   await settle();
