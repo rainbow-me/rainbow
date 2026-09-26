@@ -121,73 +121,33 @@ export async function fetchTeamsForEvent(
   }
 }
 
-export type GameTeamsSource = {
-  gameId?: number;
+type GameTeamsSource = {
   ticker?: string;
-  slug: string;
   homeTeamName?: string;
   awayTeamName?: string;
 };
 
-export type GameTeamsMetadata = {
-  teams?: PolymarketTeamInfo[];
-  homeTeamName?: string;
-  awayTeamName?: string;
-};
+const TEAM_FETCH_CONCURRENCY = 4;
 
-export async function fetchTeamMetadataForGameEvent(
-  event: GameTeamsSource,
-  abortController?: AbortController | null
-): Promise<GameTeamsMetadata | null> {
-  const teams = await fetchTeamsForEvent(event, abortController);
-  return { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName };
-}
+export async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
+  const eventsByTicker = new Map<string, GameTeamsSource>();
 
-// Bounds Gamma fan-out (each event triggers up to 3 sequential lookups across hundreds of events).
-const TEAM_METADATA_FETCH_CONCURRENCY = 4;
-
-export async function fetchTeamsForGameEvents(
-  events: GameTeamsSource[],
-  abortController?: AbortController | null,
-  fetchMetadata: (
-    event: GameTeamsSource,
-    abortController?: AbortController | null
-  ) => Promise<GameTeamsMetadata | null> = fetchTeamMetadataForGameEvent
-): Promise<Map<string, GameTeamsMetadata>> {
-  const teamsMap = new Map<string, GameTeamsMetadata>();
-  const gameEventsByTicker = new Map<string, GameTeamsSource>();
-
-  for (const event of events) {
-    if (event.gameId && event.ticker && !gameEventsByTicker.has(event.ticker)) {
-      gameEventsByTicker.set(event.ticker, event);
+  for (const market of markets) {
+    const event = market.events[0];
+    if (event?.gameId && event.ticker && !eventsByTicker.has(event.ticker)) {
+      eventsByTicker.set(event.ticker, event);
     }
   }
 
-  const gameEvents = Array.from(gameEventsByTicker.values());
-  const results = await mapWithConcurrency(gameEvents, TEAM_METADATA_FETCH_CONCURRENCY, event => fetchMetadata(event, abortController));
+  const entries = Array.from(eventsByTicker);
+  const results = await mapWithConcurrency(entries, TEAM_FETCH_CONCURRENCY, ([, event]) => fetchTeamsForEvent(event));
+  const teamsByTicker = new Map<string, PolymarketTeamInfo[]>();
 
   results.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) {
-      const { ticker } = gameEvents[index];
-      if (ticker) teamsMap.set(ticker, result.value);
-    }
+    if (result.status === 'fulfilled' && result.value) teamsByTicker.set(entries[index][0], result.value);
   });
 
-  return teamsMap;
-}
-
-export async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
-  const marketEvents = markets.map(market => market.events[0]).filter(event => Boolean(event));
-  const teamsMetadataMap = await fetchTeamsForGameEvents(marketEvents);
-  const teamsMap = new Map<string, PolymarketTeamInfo[]>();
-
-  teamsMetadataMap.forEach((metadata, ticker) => {
-    if (metadata.teams) {
-      teamsMap.set(ticker, metadata.teams);
-    }
-  });
-
-  return teamsMap;
+  return teamsByTicker;
 }
 
 export function parseTeamAbbreviationsFromTicker(ticker: string): { away: string; home: string } | null {
