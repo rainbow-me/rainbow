@@ -28,7 +28,7 @@ import {
   sportsPageRequestStores,
   sportsRequestStore,
   type CatalogRequest,
-  type EventsRequest,
+  type EventRequest,
   type LiveRequest,
   type ScopeRequest,
   type SearchRequest,
@@ -46,7 +46,7 @@ type SportsResponse =
   | (CatalogRequest & GetCatalogResponse)
   | (ScopeRequest & GetGamesResponse)
   | SportsSearchResponse
-  | (EventsRequest & LookupGamesResponse);
+  | (EventRequest & LookupGamesResponse);
 
 type SportsSearchResponse = SearchRequest &
   SearchGamesResponse & {
@@ -118,8 +118,8 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
       const fetchedAt = $(store, state => state.queryCache[state.queryKey]?.lastFetchedAt);
       const answeredAt = $(store, state => state.answeredAt);
 
-      if (request?.type !== 'events' || !fetchedAt) return FRESH_FOR;
-      return getEventsDueAt(answeredAt, request.eventIds) - fetchedAt;
+      if (request?.type !== 'event' || !fetchedAt) return FRESH_FOR;
+      return getEventDueAt(answeredAt, request.eventId) - fetchedAt;
     },
     params: {
       request: queryParam($ => $(sportsRequestStore, request => request), { key: getRequestKey }),
@@ -236,11 +236,13 @@ async function fetchSports({ request }: SportsParams, abortController: AbortCont
     case 'search':
       return fetchSearch(request, abortController);
 
-    case 'events': {
-      const eventIds = getDueEventIds(useSportsStore.getState().answeredAt, request.eventIds);
-      return eventIds.length
-        ? { ...request, ...(await sportsClient.lookupGames({ eventIds, knownCatalogRevision }, abortController)) }
-        : null;
+    case 'event': {
+      if (getEventDueAt(useSportsStore.getState().answeredAt, request.eventId) > Date.now()) return null;
+
+      return {
+        ...request,
+        ...(await sportsClient.lookupGames({ eventIds: [request.eventId], knownCatalogRevision }, abortController)),
+      };
     }
   }
 }
@@ -315,33 +317,15 @@ async function fetchSearch(request: SearchRequest, abortController: AbortControl
   }
 }
 
-function getRequestKey(request: SportsRequest | null): SportsPageRequest | Omit<EventsRequest, 'eventIds'> | null {
+function getRequestKey(request: SportsRequest | null): SportsRequest | null {
   if (request?.type === 'search') {
     const { from, until } = request.window;
     return { type: 'search', query: request.query, window: { from, until } };
   }
-  return request?.type === 'events' ? { type: 'events', route: request.route } : request;
+
+  return request;
 }
 
-// ============ Event Freshness ================================================ //
-
-/**
- * The requested events with missing or expired lookup data.
- */
-function getDueEventIds(answeredAt: Map<string, number>, eventIds: readonly string[]): string[] {
-  const now = Date.now();
-  return eventIds.filter(id => getEventDueAt(answeredAt, id) <= now);
-}
-
-function getEventsDueAt(answeredAt: Map<string, number>, eventIds: readonly string[]): number {
-  let dueAt = Infinity;
-  for (const id of eventIds) dueAt = Math.min(dueAt, getEventDueAt(answeredAt, id));
-  return dueAt;
-}
-
-/**
- * When an event's lookup expires. Events without a stored timestamp are already due.
- */
 function getEventDueAt(answeredAt: Map<string, number>, eventId: string): number {
   return (answeredAt.get(eventId) ?? 0) + FRESH_FOR;
 }
@@ -423,7 +407,7 @@ function mergeSportsResponse(
       break;
     }
 
-    case 'events': {
+    case 'event': {
       const resolve = (eventId: string, gameId: string | null): void => {
         answeredAt = setMapEntry(answeredAt, data.answeredAt, eventId, now);
 

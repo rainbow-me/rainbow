@@ -1239,14 +1239,24 @@ it('does not fetch or poll Sports for Discover', async () => {
   expect(sportsClient.lookupGames).not.toHaveBeenCalled();
 });
 
-it('looks up the selected event while the event screen is active', async () => {
+it('follows the selected event while a previous lookup is still pending', async () => {
+  const previous = Promise.withResolvers<LookupGamesResponse>();
+  jest.mocked(sportsClient.lookupGames).mockReturnValueOnce(previous.promise);
   showMain();
+  await settle();
+  openEvent('previous');
   await settle();
   openEvent('child');
   await settle();
 
-  expect(lookedUpEventIds()).toEqual([['child']]);
+  expect(lookedUpEventIds()).toEqual([['previous'], ['child']]);
   expect(useSportsStore.getState().getGame('child')?.id).toBe('1');
+
+  const queryKey = useSportsStore.getState().queryKey;
+  previous.resolve(lookupResponse([second]));
+  await settle();
+  expect(useSportsStore.getState().queryKey).toBe(queryKey);
+  expect(useSportsStore.getState().games['2']).toBeUndefined();
 });
 
 it('opens a game a page just returned without looking it up', async () => {

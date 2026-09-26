@@ -6,7 +6,7 @@ import { type SportsDestination, type SportsHost, type SportsWindow } from '@/fe
 import { type SportsGamesScope } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { sportsWindowStore } from '@/features/sports/data/sportsWindowStore';
-import Routes, { type Route } from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 // ============ Types ========================================================== //
@@ -26,11 +26,11 @@ export type ScopeRequest = SportsGamesScope & { type: 'scope' };
 /** A Search query over the week its page shows, so a new day starts it over. */
 export type SearchRequest = { type: 'search'; query: string; window: Pick<SportsWindow, 'from' | 'until'> };
 
-/** An event lookup for a route. The cache key uses the route; each event's last update determines whether it needs fetching. */
-export type EventsRequest = { type: 'events'; route: Route; eventIds: readonly string[] };
+/** A lookup for the selected event. */
+export type EventRequest = { type: 'event'; eventId: string };
 
 export type SportsPageRequest = LiveRequest | CatalogRequest | ScopeRequest | SearchRequest;
-export type SportsRequest = SportsPageRequest | EventsRequest;
+export type SportsRequest = SportsPageRequest | EventRequest;
 
 // ============ Page Requests ================================================== //
 
@@ -81,7 +81,7 @@ export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => 
 
     case Routes.POLYMARKET_EVENT_SCREEN: {
       const eventId = $(polymarketEventIdStore, state => state.eventId);
-      return eventId ? { type: 'events', route, eventIds: [eventId] } : null;
+      return eventId ? { type: 'event', eventId } : null;
     }
 
     default:
