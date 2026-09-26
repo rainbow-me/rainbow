@@ -11,11 +11,22 @@ import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
 
+type GameTeamsSource = {
+  ticker?: string;
+  homeTeamName?: string;
+  awayTeamName?: string;
+};
+
+const TEAM_FETCH_CONCURRENCY = 4;
+
 export async function fetchGameMetadata(eventTicker: string, abortController?: AbortController | null) {
   try {
     const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
     url.searchParams.set('ticker', eventTicker);
-    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { abortController, timeout: time.seconds(15) });
+    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), {
+      signal: abortController?.signal,
+      timeout: time.seconds(15),
+    });
     return data;
   } catch (e) {
     // For some game types this information is not available and returns an error
@@ -38,7 +49,7 @@ async function fetchTeamsByAbbreviations(
       url.searchParams.append('abbreviation', abbr);
     });
     const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
-      abortController,
+      signal: abortController?.signal,
       timeout: time.seconds(15),
     });
     if (!rawTeams) return undefined;
@@ -63,7 +74,7 @@ async function fetchTeamsByNames(
       url.searchParams.append('name', name);
     });
     const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
-      abortController,
+      signal: abortController?.signal,
       timeout: time.seconds(15),
     });
     if (!rawTeams) return undefined;
@@ -73,7 +84,7 @@ async function fetchTeamsByNames(
     }
     return sortTeamsByRequestedNames(teams, names);
   } catch (e) {
-    logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
+    if (!abortController?.signal.aborted) logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
     return undefined;
   }
 }
@@ -121,33 +132,25 @@ export async function fetchTeamsForEvent(
   }
 }
 
-type GameTeamsSource = {
-  ticker?: string;
-  homeTeamName?: string;
-  awayTeamName?: string;
-};
-
-const TEAM_FETCH_CONCURRENCY = 4;
-
-export async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
-  const eventsByTicker = new Map<string, GameTeamsSource>();
+export async function fetchTeamsForGameMarkets(
+  markets: RawPolymarketMarket[],
+  abortController: AbortController | null
+): Promise<Partial<Record<string, PolymarketTeamInfo[]>>> {
+  const events: Record<string, GameTeamsSource> = {};
+  const teams: Partial<Record<string, PolymarketTeamInfo[]>> = {};
 
   for (const market of markets) {
     const event = market.events[0];
-    if (event?.gameId && event.ticker && !eventsByTicker.has(event.ticker)) {
-      eventsByTicker.set(event.ticker, event);
-    }
+    if (event?.gameId && event.ticker) events[event.ticker] ??= event;
   }
 
-  const entries = Array.from(eventsByTicker);
-  const results = await mapWithConcurrency(entries, TEAM_FETCH_CONCURRENCY, ([, event]) => fetchTeamsForEvent(event));
-  const teamsByTicker = new Map<string, PolymarketTeamInfo[]>();
-
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) teamsByTicker.set(entries[index][0], result.value);
+  await mapWithConcurrency(Object.keys(events), TEAM_FETCH_CONCURRENCY, async ticker => {
+    if (abortController?.signal.aborted) return;
+    const result = await fetchTeamsForEvent(events[ticker], abortController);
+    if (result) teams[ticker] = result;
   });
 
-  return teamsByTicker;
+  return teams;
 }
 
 export function parseTeamAbbreviationsFromTicker(ticker: string): { away: string; home: string } | null {
