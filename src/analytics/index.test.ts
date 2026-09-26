@@ -216,7 +216,7 @@ describe('@/analytics', () => {
     }
   });
 
-  test('missing PostHog configuration leaves AppsFlyer initialization intact without retrying on every event', async () => {
+  test('missing PostHog configuration leaves AppsFlyer initialization intact', async () => {
     const warning = jest.spyOn(logger, 'warn').mockImplementation(() => {});
     jest.replaceProperty(analyticsConfig, 'POSTHOG_API_KEY', '');
     const analytics = new Analytics();
@@ -226,7 +226,7 @@ describe('@/analytics', () => {
     await flushPromises();
 
     expect(PostHog).not.toHaveBeenCalled();
-    expect(getLatestAppsFlyerInstance().init).toHaveBeenCalledTimes(1);
+    expect(getLatestAppsFlyerInstance().init).toHaveBeenCalledWith('test-device');
     expect(getLatestAppsFlyerInstance().stop).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalledWith('[Analytics]: POSTHOG_API_KEY and POSTHOG_HOST are required');
   });

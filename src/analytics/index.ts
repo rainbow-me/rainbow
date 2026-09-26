@@ -217,7 +217,7 @@ export class Analytics {
   }
 
   private enqueue(fn: () => void): void {
-    if (this.disabled || !POSTHOG_API_KEY || !POSTHOG_HOST) return;
+    if (this.disabled) return;
 
     if (this.ready) {
       fn();
