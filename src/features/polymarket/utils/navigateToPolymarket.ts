@@ -15,10 +15,9 @@ export function navigateToPolymarketEvent(params: RootStackParamList[typeof Rout
 }
 
 export function navigateToPolymarketCategory(tagId: string): void {
-  const categoryKey = parseCategoryKey(tagId);
-  if (!categoryKey) return;
+  if (!isCategoryKey(tagId)) return navigateToPolymarket();
 
-  usePolymarketCategoryStore.getState().setTagId(categoryKey);
+  usePolymarketCategoryStore.getState().setTagId(tagId);
 
   navigateToPolymarketBrowse();
 }
@@ -42,10 +41,6 @@ function navigateToPolymarketBrowse(): void {
     initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
     routeRequestKey: polymarketRouteRequestKey,
   });
-}
-
-function parseCategoryKey(tagId: string): CategoryKey | undefined {
-  return isCategoryKey(tagId) ? tagId : undefined;
 }
 
 function isCategoryKey(tagId: string): tagId is CategoryKey {

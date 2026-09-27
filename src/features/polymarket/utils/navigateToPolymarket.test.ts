@@ -48,9 +48,9 @@ test('category navigation preserves the separate Sports destination', () => {
   expect(sportsNavigationStores.predictions.getState().destination).toBe('live');
 });
 
-test('ignores unknown categories', () => {
-  navigateToPolymarketCategory('missing');
+test('opens Predictions without selecting an unsupported category', () => {
+  navigateToPolymarketCategory('tradfi');
 
   expect(mockSetTagId).not.toHaveBeenCalled();
-  expect(Navigation.handleAction).not.toHaveBeenCalled();
+  expect(Navigation.handleAction).toHaveBeenCalledWith(Routes.POLYMARKET_NAVIGATOR, undefined);
 });
