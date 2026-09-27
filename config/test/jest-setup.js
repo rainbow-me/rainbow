@@ -16,7 +16,16 @@ jest.mock('react-native-device-info', () => ({
   setup: () => null,
 }));
 
-jest.mock('posthog-react-native', () => ({ PostHog: jest.fn() }));
+jest.mock('posthog-react-native', () => ({
+  PostHog: jest.fn().mockImplementation(() => ({
+    ready: jest.fn().mockResolvedValue(undefined),
+    capture: jest.fn(),
+    identify: jest.fn(),
+    screen: jest.fn(),
+    optIn: jest.fn().mockResolvedValue(undefined),
+    optOut: jest.fn().mockResolvedValue(undefined),
+  })),
+}));
 
 jest.mock('react-native-appsflyer', () => ({
   __esModule: true,

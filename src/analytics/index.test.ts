@@ -39,17 +39,6 @@ jest.mock('react-native-dotenv', () => ({
   POSTHOG_HOST: 'https://us.i.posthog.com',
 }));
 
-jest.mock('posthog-react-native', () => ({
-  PostHog: jest.fn().mockImplementation(() => ({
-    ready: jest.fn().mockResolvedValue(undefined),
-    capture: jest.fn(),
-    identify: jest.fn(),
-    screen: jest.fn(),
-    optIn: jest.fn().mockResolvedValue(undefined),
-    optOut: jest.fn().mockResolvedValue(undefined),
-  })),
-}));
-
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
 const mockAppsFlyerClass = AppsFlyer as jest.MockedClass<typeof AppsFlyer>;
 const mockDeviceGet = device.get as jest.Mock;
