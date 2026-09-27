@@ -156,7 +156,7 @@ function TabBarFadeMask({
   width: number;
 }): ReactElement {
   const showLeft = useDerivedValue(() => scrollOffset.value > 0);
-  const showRight = useDerivedValue(() => scrollOffset.value < Math.max(0, contentWidth.value - width));
+  const showRight = useDerivedValue(() => contentWidth.value === 0 || scrollOffset.value < Math.max(0, contentWidth.value - width));
 
   const leftCover = useAnimatedStyle(() => ({ opacity: withTiming(showLeft.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig) }));
   const rightCover = useAnimatedStyle(() => ({ opacity: withTiming(showRight.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig) }));
