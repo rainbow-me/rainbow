@@ -2,7 +2,6 @@ import { memo, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
@@ -12,6 +11,9 @@ import { type SportsPage } from '@/features/sports/data/sportsPageStore';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
+
+const HEADER_HEIGHT = 44;
+const BACK_BUTTON_INSET = 4;
 
 export const SportsHeader = memo(function SportsHeader({
   host,
@@ -43,13 +45,7 @@ export const SportsHeader = memo(function SportsHeader({
         </View>
       ) : null}
 
-      {scope ? (
-        <SportsBadge isDarkMode={isDarkMode} scope={scope} size={44} />
-      ) : page === 'live' ? (
-        <Bleed vertical="8px">
-          <LiveIndicator />
-        </Bleed>
-      ) : null}
+      {scope ? <SportsBadge isDarkMode={isDarkMode} scope={scope} size={HEADER_HEIGHT} /> : page === 'live' ? <LiveIndicator /> : null}
 
       <View style={styles.headerText}>
         {parent ? (
@@ -68,21 +64,21 @@ export const SportsHeader = memo(function SportsHeader({
 
 const styles = StyleSheet.create({
   header: {
+    height: HEADER_HEIGHT,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
-  nestedHeader: { paddingLeft: 48 },
+  nestedHeader: { paddingLeft: HEADER_HEIGHT + BACK_BUTTON_INSET },
   back: {
     position: 'absolute',
-    left: 4,
-    top: '50%',
-    marginTop: -22,
+    left: BACK_BUTTON_INSET,
+    top: 0,
   },
   backButton: {
-    width: 44,
-    height: 44,
+    width: HEADER_HEIGHT,
+    height: HEADER_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
   },

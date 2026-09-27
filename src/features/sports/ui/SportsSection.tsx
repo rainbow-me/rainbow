@@ -5,7 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { globalColors } from '@/design-system/color/palettes';
-import { Bleed } from '@/design-system/components/Bleed/Bleed';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
@@ -28,6 +27,7 @@ const SECTION_LABELS = {
 };
 
 const LIGHT_BADGE_GRADIENT = [white(0.54), white(0.81)] as const;
+const HEADING_TEXT_SIZE = '22pt';
 
 // ============ Components ===================================================== //
 
@@ -54,16 +54,16 @@ export function SportsSectionHeading({
     >
       <View style={styles.heading}>
         {section.type === 'live' && !scopeId ? (
-          <View style={styles.liveIndicator}>
+          <View style={[styles.accessory, styles.liveIndicator]}>
             <LiveIndicator />
           </View>
         ) : null}
 
-        <Text color="label" size="22pt" weight="heavy">
+        <Text color="label" size={HEADING_TEXT_SIZE} weight="heavy">
           {title}
         </Text>
 
-        <Bleed vertical="8px">
+        <View style={styles.accessory}>
           <View style={isDarkMode ? undefined : [styles.badgeShadow, styles.countCorners]}>
             <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
               {isDarkMode ? null : (
@@ -84,12 +84,14 @@ export function SportsSectionHeading({
               />
             </View>
           </View>
-        </Bleed>
+        </View>
 
         {scopeId ? (
-          <TextIcon color={{ custom: (isDarkMode ? white : black)(0.3) }} size="icon 15px" weight="heavy" containerSize={16}>
-            {'􀯻'}
-          </TextIcon>
+          <View style={styles.accessory}>
+            <TextIcon color={{ custom: (isDarkMode ? white : black)(0.3) }} size="icon 15px" weight="heavy">
+              {'􀯻'}
+            </TextIcon>
+          </View>
         ) : null}
       </View>
     </ButtonPressAnimation>
@@ -99,10 +101,14 @@ export function SportsSectionHeading({
 export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundColor: string }): ReactElement {
   return (
     <View style={styles.heading}>
-      <View style={[styles.skeletonTitle, { backgroundColor }]} />
-      <Bleed vertical="8px">
+      <View style={[styles.skeletonTitle, { backgroundColor }]}>
+        <Text color={{ custom: 'transparent' }} size={HEADING_TEXT_SIZE} weight="heavy">
+          {' '}
+        </Text>
+      </View>
+      <View style={styles.accessory}>
         <View style={[styles.skeletonCount, { backgroundColor }]} />
-      </Bleed>
+      </View>
     </View>
   );
 }
@@ -154,7 +160,8 @@ export function SportsSectionToggle({
 // ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
-  skeletonTitle: { width: 92, height: 16, borderRadius: 8 },
+  accessory: { height: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  skeletonTitle: { width: 92, borderRadius: 8 },
   skeletonCount: { width: 24, height: 24, borderRadius: 9, borderCurve: 'continuous' },
   heading: {
     flexDirection: 'row',
@@ -175,10 +182,7 @@ const styles = StyleSheet.create({
   countText: { width: '100%' },
   darkCount: { backgroundColor: white(0.03) },
   liveIndicator: {
-    alignItems: 'center',
-    justifyContent: 'center',
     width: 16,
-    height: 16,
     marginRight: 10,
   },
   expand: {

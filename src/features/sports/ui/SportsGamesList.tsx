@@ -189,7 +189,7 @@ export function SportsGamesList({
           windowSize={3}
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[styles.content, { paddingTop: topInset + 24, paddingBottom: bottomInset + 80 }]}
+          contentContainerStyle={[styles.content, { paddingTop: topInset + 16, paddingBottom: bottomInset + 80 }]}
           scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
           onScroll={onScroll}
           refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
