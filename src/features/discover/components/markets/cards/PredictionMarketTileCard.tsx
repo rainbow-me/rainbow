@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { memo, useCallback, useMemo, type ReactElement } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -7,15 +7,14 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { type CardPressHandler, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
 import { getPriceChangeColor } from '@/features/market/ui/utils/priceChangeColors';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { BetButton } from '@/features/polymarket/components/BetButton';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { formatOdds } from '@/features/polymarket/utils/formatOdds';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
@@ -51,7 +50,6 @@ const OUTCOME_ROW_GRADIENT_CONFIG = {
   start: { x: 0, y: 0.5 },
 };
 const OUTCOME_ROW_WIDTH = PREDICTION_MARKET_TILE_CARD_WIDTH - 24;
-const ODDS_PILL_BORDER_RADIUS = 15;
 const ASSET_ACCENT_COLORS = [
   { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
   { color: '#9CA4AD', pattern: /\b(ethereum|eth)\b/i },
@@ -59,20 +57,6 @@ const ASSET_ACCENT_COLORS = [
   { color: '#D6A438', pattern: /\b(gold|xauusd|xau)\b/i },
   { color: '#7A70FF', pattern: /\b(solana|sol)\b/i },
 ] as const;
-
-// ============ Android Odds-Pill Overlay Geometry ============================= //
-
-const ODDS_PILL_WIDTH = 62;
-const ODDS_PILL_HEIGHT = 42;
-const BORDER_WIDTH = 2;
-const CONTENT_PADDING_BOTTOM = 12;
-const OUTCOME_ROW_HEIGHT = 58;
-const OUTCOME_ROW_GAP = 4;
-const OUTCOME_ROW_CONTENT_LEFT_PADDING = 8;
-const OUTCOME_ROW_PITCH = OUTCOME_ROW_HEIGHT + OUTCOME_ROW_GAP;
-const ODDS_PILL_OVERLAY_LEFT =
-  (PREDICTION_MARKET_TILE_CARD_WIDTH - OUTCOME_ROW_WIDTH) / 2 + BORDER_WIDTH + OUTCOME_ROW_CONTENT_LEFT_PADDING;
-const ODDS_PILL_OVERLAY_BOTTOM = 2 * BORDER_WIDTH + CONTENT_PADDING_BOTTOM + (OUTCOME_ROW_HEIGHT - 2 * BORDER_WIDTH - ODDS_PILL_HEIGHT) / 2;
 
 type PredictionMarketTileCardProps = {
   event: PolymarketEvent;
@@ -126,9 +110,6 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
 
   return (
     <View style={styles.container}>
-      {Platform.OS === 'android' ? (
-        <AndroidOddsPillsOverlay event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} rows={rows} />
-      ) : null}
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
         <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
           <GradientBorderView
@@ -228,11 +209,7 @@ const OutcomeRow = memo(function OutcomeRow({
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.outcomeRowContent}>
-        {Platform.OS === 'android' ? (
-          <View style={styles.oddsButton} />
-        ) : (
-          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} row={row} />
-        )}
+        <OutcomeBetButton event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} row={row} />
         <Text align="left" color="label" numberOfLines={1} size="17pt" style={styles.outcomeTitle} weight="bold">
           {row.title}
         </Text>
@@ -241,7 +218,7 @@ const OutcomeRow = memo(function OutcomeRow({
   );
 });
 
-const OutcomeOddsPill = memo(function OutcomeOddsPill({
+const OutcomeBetButton = memo(function OutcomeBetButton({
   event,
   eventColor,
   isDarkMode,
@@ -253,7 +230,7 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
   isDarkMode: boolean;
   onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
   row: OutcomeRowData;
-}) {
+}): ReactElement {
   const outcomeColor = getOutcomeColor({
     market: row.market,
     outcome: row.market.outcomes[row.outcomeIndex] ?? row.title,
@@ -278,69 +255,19 @@ const OutcomeOddsPill = memo(function OutcomeOddsPill({
   }, [event, onOrderPress, outcomeColor, row.market, row.outcomeIndex, row.title]);
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={styles.oddsButton}>
-      <View
-        style={[
-          styles.oddsPill,
-          {
-            backgroundColor: eventColor,
-            borderColor: opacity(isDarkMode ? globalColors.white100 : globalColors.grey100, 0.1),
-            shadowColor: isDarkMode ? eventColor : globalColors.grey100,
-            shadowOpacity: isDarkMode ? 0.3 : 0.06,
-          },
-        ]}
-      >
-        <View
-          style={[styles.oddsPillOverlay, { backgroundColor: opacity(globalColors.grey100, isDarkMode ? 0.3 : 0.1) }]}
-          pointerEvents="none"
-        />
-        <LiveTokenText
-          align="center"
-          autoSubscriptionEnabled={false}
-          color={{ custom: globalColors.white100 }}
-          initialValue={formatOdds(row.initialPrice)}
-          numberOfLines={1}
-          selector={token => formatOdds(token.price)}
-          size="17pt"
-          tokenId={row.tokenId}
-          weight="heavy"
-        />
-      </View>
-    </ButtonPressAnimation>
-  );
-});
-
-const AndroidOddsPillsOverlay = memo(function AndroidOddsPillsOverlay({
-  event,
-  eventColor,
-  isDarkMode,
-  onOrderPress,
-  rows,
-}: {
-  event: PolymarketEvent;
-  eventColor: string;
-  isDarkMode: boolean;
-  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
-  rows: OutcomeRowData[];
-}) {
-  return (
-    <View pointerEvents="box-none" style={styles.oddsPillsOverlay}>
-      {rows.map((row, index) => (
-        <View
-          key={`${row.market.id}:${row.outcomeIndex}`}
-          pointerEvents="box-none"
-          style={[styles.oddsPillSlot, { bottom: ODDS_PILL_OVERLAY_BOTTOM + (rows.length - 1 - index) * OUTCOME_ROW_PITCH }]}
-        >
-          <OutcomeOddsPill event={event} eventColor={eventColor} isDarkMode={isDarkMode} onOrderPress={onOrderPress} row={row} />
-        </View>
-      ))}
-    </View>
+    <BetButton
+      key={row.tokenId}
+      liveTokenId={row.tokenId}
+      fallbackPrice={row.initialPrice}
+      color={eventColor}
+      isDarkMode={isDarkMode}
+      onPress={onPress}
+    />
   );
 });
 
 /**
- * Token ids for the outcome pills this tile-widget renders. Derived from the SAME
- * getOutcomeRows resolution the card uses, so subscribed == rendered by construction.
+ * Live-token IDs for the outcomes displayed by this card.
  */
 export function getTileWidgetTokenIds(event: PolymarketEvent): string[] {
   const tokenIds = getOutcomeRows(event).map(row => row.tokenId);
@@ -483,37 +410,6 @@ const styles = StyleSheet.create({
     height: 42,
     marginBottom: 14,
     width: 42,
-  },
-  oddsPill: {
-    alignItems: 'center',
-    borderRadius: ODDS_PILL_BORDER_RADIUS,
-    borderWidth: 2,
-    height: ODDS_PILL_HEIGHT,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    paddingHorizontal: 8,
-    shadowOffset: { height: 0, width: 0 },
-    shadowRadius: 24,
-    width: ODDS_PILL_WIDTH,
-  },
-  oddsButton: {
-    borderRadius: ODDS_PILL_BORDER_RADIUS,
-    height: ODDS_PILL_HEIGHT,
-    width: ODDS_PILL_WIDTH,
-  },
-  oddsPillOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: ODDS_PILL_BORDER_RADIUS,
-  },
-  oddsPillsOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-  },
-  oddsPillSlot: {
-    height: ODDS_PILL_HEIGHT,
-    left: ODDS_PILL_OVERLAY_LEFT,
-    position: 'absolute',
-    width: ODDS_PILL_WIDTH,
   },
   outcomeTitle: {
     flex: 1,

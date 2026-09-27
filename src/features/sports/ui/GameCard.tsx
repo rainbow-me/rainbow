@@ -9,6 +9,7 @@ import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { getSquirclePath } from '@/design-system/layout/shapes';
+import { BetButton } from '@/features/polymarket/components/BetButton';
 import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
 import {
   Game_Interruption,
@@ -20,10 +21,10 @@ import {
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
-import { GameBetButton } from '@/features/sports/ui/GameBetButton';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
+import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, white } from '@/worklets/colors';
 
@@ -111,7 +112,6 @@ export const GameCard = memo(function GameCard({
                     spread={game.spread}
                     winner={participant.winner}
                     color={participant.color}
-                    glow={sportId === 'tennis' || sportId === 'esports'}
                     isDarkMode={isDarkMode}
                     onPress={onPress}
                   />
@@ -396,7 +396,6 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   spread,
   winner,
   color,
-  glow,
   onPress,
 }: {
   gameId: string;
@@ -404,7 +403,6 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   spread?: Spread;
   winner?: Selection;
   color?: string;
-  glow: boolean;
   isDarkMode: boolean;
   onPress: SportsGamePress;
 }): ReactElement {
@@ -413,10 +411,10 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   return (
     <View style={styles.betButtons}>
       {spread && outcome ? (
-        <GameBetButton
+        <BetButton
           isDarkMode={isDarkMode}
           key={outcome.tokenId}
-          tokenId={outcome.tokenId}
+          liveTokenId={getPolymarketTokenId(outcome.tokenId, 'midpoint')}
           color={color}
           line={outcome.line}
           onPress={outcomeColor =>
@@ -434,12 +432,11 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
       ) : null}
 
       {winner ? (
-        <GameBetButton
+        <BetButton
           isDarkMode={isDarkMode}
           key={winner.tokenId}
-          tokenId={winner.tokenId}
+          liveTokenId={getPolymarketTokenId(winner.tokenId, 'midpoint')}
           color={color}
-          glow={glow}
           onPress={outcomeColor => onPress(gameId, { selection: winner, outcomeColor })}
         />
       ) : (
@@ -470,10 +467,10 @@ const GameDrawRow = memo(function GameDrawRow({
         {i18n.t(i18n.l.sports.draw)}
       </Text>
       {selection ? (
-        <GameBetButton
+        <BetButton
           isDarkMode={isDarkMode}
           key={selection.tokenId}
-          tokenId={selection.tokenId}
+          liveTokenId={getPolymarketTokenId(selection.tokenId, 'midpoint')}
           onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
         />
       ) : null}
