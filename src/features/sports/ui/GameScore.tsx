@@ -4,6 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from '@/design-system/components/Text/Text';
 import { ScoreColumn_Kind, ScoreColumn_Winner, type ScoreColumn } from '@/features/sports/core/generated/sports';
 
+const TIE_BREAK_WIDTH = 16;
+
 export const GameScore = memo(function GameScore({
   score,
   participantIndex,
@@ -36,11 +38,16 @@ export const GameScore = memo(function GameScore({
             </Text>
 
             {value?.tieBreak === undefined ? null : (
-              <View style={styles.tieBreak}>
-                <Text color={column.winner === otherWinner ? 'labelQuaternary' : 'label'} size="11pt" tabularNumbers weight="heavy">
-                  {value.tieBreak}
-                </Text>
-              </View>
+              <Text
+                color={column.winner === otherWinner ? 'labelQuaternary' : 'label'}
+                numberOfLines={1}
+                size="11pt"
+                style={styles.tieBreak}
+                tabularNumbers
+                weight="heavy"
+              >
+                {value.tieBreak}
+              </Text>
             )}
           </View>
         );
@@ -57,9 +64,10 @@ const styles = StyleSheet.create({
   },
   column: { minWidth: 10 },
   wideColumn: { minWidth: 24 },
-  tieBreakColumn: { minWidth: 22, paddingRight: 12 },
+  tieBreakColumn: { paddingRight: TIE_BREAK_WIDTH + 4 },
   tieBreak: {
     position: 'absolute',
+    width: TIE_BREAK_WIDTH,
     right: 0,
     top: -5,
   },
