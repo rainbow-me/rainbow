@@ -64,7 +64,7 @@ export const BetButton = memo(function BetButton({
         event?.stopPropagation();
         onPress(color);
       }}
-      scaleTo={0.96}
+      scaleTo={0.925}
     >
       {line === undefined ? (
         <PrimaryBet color={color} isDarkMode={isDarkMode} price={price} fallbackPrice={fallbackPrice} />

@@ -7,26 +7,42 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { globalColors, Text, useColorMode } from '@/design-system';
+import { globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { type CardPressHandler, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
-import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
-import { getPriceChangeColor } from '@/features/market/ui/utils/priceChangeColors';
-import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { DOWN_ARROW, UP_ARROW } from '@/features/market/ui/utils/formatPriceChange';
 import { BetButton } from '@/features/polymarket/components/BetButton';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
-import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { createOpacityPalette } from '@/worklets/colors';
 
-export const PREDICTION_MARKET_TILE_CARD_WIDTH = Math.min(300, DEVICE_WIDTH - 40);
-export const PREDICTION_MARKET_TILE_CARD_HEIGHT = Math.round(PREDICTION_MARKET_TILE_CARD_WIDTH * (16 / 15));
-export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 24;
+// ============ Types ========================================================== //
+
+type PredictionMarketTileCardProps = {
+  event: PolymarketEvent;
+  onOrderPress: OrderPressHandler;
+  onPress: CardPressHandler;
+};
+
+type OutcomeRowData = {
+  market: PolymarketMarket;
+  outcomeIndex: number;
+  title: string;
+  initialPrice: string | number;
+  tokenId: string;
+};
+
+// ============ Constants ====================================================== //
+
+export const PREDICTION_MARKET_TILE_CARD_WIDTH = Math.min(280, DEVICE_WIDTH - 40);
+export const PREDICTION_MARKET_TILE_CARD_HEIGHT = 280;
+export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 30;
 
 const OUTCOME_ROW_COUNT = 2;
 const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
@@ -49,7 +65,6 @@ const OUTCOME_ROW_GRADIENT_CONFIG = {
   locations: [0, 1] as const,
   start: { x: 0, y: 0.5 },
 };
-const OUTCOME_ROW_WIDTH = PREDICTION_MARKET_TILE_CARD_WIDTH - 24;
 const ASSET_ACCENT_COLORS = [
   { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
   { color: '#9CA4AD', pattern: /\b(ethereum|eth)\b/i },
@@ -58,36 +73,22 @@ const ASSET_ACCENT_COLORS = [
   { color: '#7A70FF', pattern: /\b(solana|sol)\b/i },
 ] as const;
 
-type PredictionMarketTileCardProps = {
-  event: PolymarketEvent;
-  onOrderPress: OrderPressHandler;
-  onPress: CardPressHandler;
-};
-
-type OutcomeRowData = {
-  market: PolymarketMarket;
-  outcomeIndex: number;
-  title: string;
-  initialPrice: string | number;
-  tokenId: string;
-};
+// ============ Prediction Card ================================================ //
 
 export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   event,
   onOrderPress,
   onPress,
-}: PredictionMarketTileCardProps) {
+}: PredictionMarketTileCardProps): ReactElement {
   const { isDarkMode } = useColorMode();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
-  const volumeText = useMemo(() => formatNumber(String(event.volume), { useOrderSuffix: true, decimals: 1, style: '$' }), [event.volume]);
+  const volumeText = useMemo(() => formatNumber(event.volume, { useOrderSuffix: true, style: '$' }), [event.volume]);
   const priceChange = rows[0]?.market.oneDayPriceChange;
-  const priceChangeText = useMemo(() => formatPriceChange(priceChange), [priceChange]);
+  const priceChangeText = formatPriceChange(priceChange);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
-  const priceChangeColors = usePriceChangeColors();
-  const priceChangeColor =
-    priceChange === undefined ? priceChangeColors.neutral : getPriceChangeColor(String(priceChange), priceChangeColors);
+  const priceChangeColor = priceChangeIsPositive ? 'green' : 'red';
   const colorPalette = useMemo(() => createOpacityPalette(eventColor, [0, 8, 10, 16, 24]), [eventColor]);
   const cardBorderGradientColors = useMemo(
     () =>
@@ -109,68 +110,70 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   }, [event, onPress]);
 
   return (
-    <View style={styles.container}>
-      <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.flex} wrapperStyle={styles.flex}>
-        <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
-          <GradientBorderView
-            backgroundColor={isDarkMode ? globalColors.grey100 : opacity(globalColors.white100, 0.92)}
-            borderGradientColors={cardBorderGradientColors}
-            borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
-            borderWidth={2}
-            end={CARD_BORDER_GRADIENT_CONFIG.end}
-            locations={isDarkMode ? CARD_BORDER_GRADIENT_CONFIG.locations : undefined}
-            start={CARD_BORDER_GRADIENT_CONFIG.start}
-            style={styles.card}
-          >
-            <LinearGradient
-              colors={cardGradientColors}
-              pointerEvents="none"
-              start={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.start : CARD_FILL_LIGHT_GRADIENT_CONFIG.start}
-              end={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.end : CARD_FILL_LIGHT_GRADIENT_CONFIG.end}
-              locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
-              style={StyleSheet.absoluteFill}
-            />
-            <View style={styles.content}>
-              <ImgixImage enableFasterImage source={iconSource} size={42} style={styles.icon} />
+    <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} style={styles.container}>
+      <View style={[styles.cardShadow, !isDarkMode && styles.cardShadowLight]}>
+        <GradientBorderView
+          backgroundColor={isDarkMode ? globalColors.grey100 : opacity(globalColors.white100, 0.92)}
+          borderGradientColors={cardBorderGradientColors}
+          borderRadius={PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS}
+          borderWidth={2}
+          end={CARD_BORDER_GRADIENT_CONFIG.end}
+          locations={isDarkMode ? CARD_BORDER_GRADIENT_CONFIG.locations : undefined}
+          start={CARD_BORDER_GRADIENT_CONFIG.start}
+          style={styles.card}
+        >
+          <LinearGradient
+            colors={cardGradientColors}
+            pointerEvents="none"
+            start={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.start : CARD_FILL_LIGHT_GRADIENT_CONFIG.start}
+            end={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.end : CARD_FILL_LIGHT_GRADIENT_CONFIG.end}
+            locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <ImgixImage enableFasterImage source={iconSource} size={40} style={styles.icon} />
               <View style={styles.headerText}>
-                <Text align="left" color="label" numberOfLines={2} size="20pt / 135%" style={styles.title} weight="heavy">
+                <Text color="label" numberOfLines={2} size="20pt / 135%" style={styles.title} weight="heavy">
                   {event.title}
                 </Text>
                 <View style={styles.statsRow}>
-                  <Text align="left" color="labelTertiary" size="15pt" weight="bold">
-                    {`VOL ${volumeText}`}
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    {volumeText} {i18n.t(i18n.l.market_data.vol)}
                   </Text>
                   {priceChangeText ? (
                     <View style={styles.priceChangeRow}>
-                      <Text align="left" color={{ custom: priceChangeColor }} size="icon 11px" weight="heavy">
+                      <TextIcon color={priceChangeColor} height={9} size="icon 10px" weight="heavy" width={11}>
                         {priceChangeIsPositive ? UP_ARROW : DOWN_ARROW}
-                      </Text>
-                      <Text align="left" color={{ custom: priceChangeColor }} size="15pt" weight="bold">
+                      </TextIcon>
+                      <Text color={priceChangeColor} size="13pt" weight="bold">
                         {priceChangeText}
                       </Text>
                     </View>
                   ) : null}
                 </View>
               </View>
-              <View style={styles.outcomes}>
-                {rows.map(row => (
-                  <OutcomeRow
-                    event={event}
-                    eventColor={eventColor}
-                    isDarkMode={isDarkMode}
-                    key={`${row.market.id}:${row.outcomeIndex}`}
-                    row={row}
-                    onOrderPress={onOrderPress}
-                  />
-                ))}
-              </View>
             </View>
-          </GradientBorderView>
-        </View>
-      </ButtonPressAnimation>
-    </View>
+            <View style={styles.outcomes}>
+              {rows.map(row => (
+                <OutcomeRow
+                  event={event}
+                  eventColor={eventColor}
+                  isDarkMode={isDarkMode}
+                  key={`${row.market.id}:${row.outcomeIndex}`}
+                  row={row}
+                  onOrderPress={onOrderPress}
+                />
+              ))}
+            </View>
+          </View>
+        </GradientBorderView>
+      </View>
+    </ButtonPressAnimation>
   );
 });
+
+// ============ Outcomes ======================================================= //
 
 const OutcomeRow = memo(function OutcomeRow({
   event,
@@ -183,17 +186,14 @@ const OutcomeRow = memo(function OutcomeRow({
   eventColor: string;
   isDarkMode: boolean;
   row: OutcomeRowData;
-  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
-}) {
+  onOrderPress: OrderPressHandler;
+}): ReactElement {
   return (
     <GradientBorderView
       borderGradientColors={
         isDarkMode ? ([opacity(eventColor, 0.08), opacity(eventColor, 0)] as const) : ([eventColor, eventColor] as const)
       }
-      borderBottomLeftRadius={22}
-      borderBottomRightRadius={20}
-      borderTopLeftRadius={22}
-      borderTopRightRadius={20}
+      borderRadius={20}
       borderWidth={2}
       end={OUTCOME_ROW_GRADIENT_CONFIG.end}
       locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
@@ -228,7 +228,7 @@ const OutcomeBetButton = memo(function OutcomeBetButton({
   event: PolymarketEvent;
   eventColor: string;
   isDarkMode: boolean;
-  onOrderPress: PredictionMarketTileCardProps['onOrderPress'];
+  onOrderPress: OrderPressHandler;
   row: OutcomeRowData;
 }): ReactElement {
   const outcomeColor = getOutcomeColor({
@@ -239,12 +239,8 @@ const OutcomeBetButton = memo(function OutcomeBetButton({
   });
 
   const onPress = useCallback(() => {
-    onOrderPress({
-      marketId: row.market.id,
-      marketName: row.market.question,
-      marketSlug: row.market.slug,
-      outcome: row.title,
-    });
+    onOrderPress({ marketId: row.market.id, marketName: row.market.question, marketSlug: row.market.slug, outcome: row.title });
+
     Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
       market: row.market,
       event,
@@ -265,6 +261,8 @@ const OutcomeBetButton = memo(function OutcomeBetButton({
     />
   );
 });
+
+// ============ Helpers ======================================================== //
 
 /**
  * Live-token IDs for the outcomes displayed by this card.
@@ -358,9 +356,9 @@ function formatOutcomeTitle(title: string): string {
 }
 
 function formatPriceChange(priceChange: number | undefined): string {
-  if (priceChange === undefined || Math.abs(priceChange) < 0.01) return '';
-  const roundedPriceChange = Math.round(priceChange * 100) / 100;
-  return `${toPercentageWorklet(Math.abs(roundedPriceChange))}%`;
+  if (priceChange === undefined) return '';
+  const percentage = Math.round(Math.abs(priceChange) * 1000) / 10;
+  return percentage ? `${percentage}%` : '';
 }
 
 function getTileAccentColor(event: PolymarketEvent, isDarkMode: boolean): string {
@@ -368,6 +366,8 @@ function getTileAccentColor(event: PolymarketEvent, isDarkMode: boolean): string
   const semanticAccentColor = ASSET_ACCENT_COLORS.find(({ pattern }) => pattern.test(semanticMatchTarget))?.color;
   return semanticAccentColor ?? getColorValueForThemeWorklet(event.color, isDarkMode);
 }
+
+// ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   container: {
@@ -394,54 +394,51 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingBottom: 12,
-    paddingHorizontal: 12,
-    paddingTop: 22,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    paddingTop: 20,
   },
-  flex: {
-    flex: 1,
-  },
-  headerText: {
-    gap: 12,
+  header: {
+    gap: 16,
     paddingHorizontal: 10,
   },
+  headerText: {
+    gap: 16,
+  },
   icon: {
-    borderRadius: 14,
-    height: 42,
-    marginBottom: 14,
-    width: 42,
+    borderRadius: 10,
+    height: 40,
+    width: 40,
   },
   outcomeTitle: {
     flex: 1,
   },
   outcomes: {
-    alignItems: 'center',
     gap: 4,
   },
   outcomeRowContent: {
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    gap: 12,
-    paddingLeft: 8,
+    gap: 10,
+    paddingLeft: 6,
     paddingRight: 12,
   },
   outcomeRowFrame: {
-    height: 58,
+    height: 52,
     overflow: 'hidden',
-    width: OUTCOME_ROW_WIDTH,
-  },
-  priceChangeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 2,
   },
   statsRow: {
-    alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    gap: 4,
+  },
+  priceChangeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
   title: {
-    height: 54,
+    maxWidth: 236,
   },
 });

@@ -76,6 +76,7 @@ const PREDICTIONS_SECTION_DESCRIPTORS = {
   },
   'prediction_tile_widget.carousel': {
     layout: 'carousel',
+    itemHorizontalBleed: 12,
     itemHeight: PREDICTION_MARKET_TILE_CARD_HEIGHT,
     itemVerticalBleed: 28,
     itemWidth: PREDICTION_MARKET_TILE_CARD_WIDTH,
