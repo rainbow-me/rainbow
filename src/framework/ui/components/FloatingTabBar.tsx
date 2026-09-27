@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, type ReactElement, type ReactNode } from 'react';
-import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { PixelRatio, Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   tab: { height: 46, justifyContent: 'center' },
   scrollMask: { flex: 1 },
   mask: { flex: 1, flexDirection: 'row' },
-  maskEdge: { width: 36 },
+  maskEdge: { width: PixelRatio.roundToNearestPixel(36) },
   maskCenter: { flex: 1, backgroundColor: globalColors.grey100 },
   maskCover: { ...StyleSheet.absoluteFillObject, backgroundColor: globalColors.grey100 },
   searchButton: {
