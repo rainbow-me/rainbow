@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 
-import { defineConfig } from 'vitest/config';
+import { reactNative } from 'vitest-native';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 import tsconfig from './tsconfig.json';
 
@@ -19,9 +20,29 @@ export default defineConfig({
     environment: 'node',
     isolate: true,
     clearMocks: false,
-    include: ['config/test/**/*.test.ts', 'src/**/*.{test,spec}.{ts,tsx,js,jsx}', 'tools/**/*.{test,spec}.{ts,tsx,js,jsx}'],
     server: { deps: { inline: ['@storesjs/stores', 'react-native-mmkv'] } },
-    setupFiles: ['config/test/setup.ts'],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['config/test/**/*.test.ts', 'src/**/*.{test,spec}.{ts,tsx,js,jsx}', 'tools/**/*.{test,spec}.{ts,tsx,js,jsx}'],
+          exclude: [...configDefaults.exclude, '**/*.native.test.tsx'],
+          setupFiles: ['config/test/node.ts'],
+        },
+      },
+      {
+        extends: true,
+        plugins: [
+          reactNative({ engine: 'native', presets: [] }),
+          {
+            name: 'native-test-setup',
+            config: () => ({ test: { setupFiles: ['config/test/nativeSetup.ts'] } }),
+          },
+        ],
+        test: { name: 'native', include: ['src/**/*.native.test.tsx'], sequence: { setupFiles: 'list' } },
+      },
+    ],
     pool: 'threads',
     maxWorkers: '50%',
   },
