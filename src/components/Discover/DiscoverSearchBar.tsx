@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { DiscoverSearchInput } from '@/components/Discover/DiscoverSearchInput';
 import { Box, Inline, Text } from '@/design-system';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
