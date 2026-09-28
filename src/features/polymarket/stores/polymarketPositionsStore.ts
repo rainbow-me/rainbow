@@ -3,12 +3,17 @@ import { createQueryStore, createStoreActions } from '@storesjs/stores';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
-import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/processRawPolymarketPosition';
 import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
+import { processRawPolymarketMarket } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { RainbowError } from '@/logger';
+
+// ============ Types ========================================================== //
 
 type PolymarketPositionsStoreActions = {
   getPositions: () => PolymarketPosition[] | undefined;
@@ -23,6 +28,8 @@ type PolymarketPositionsParams = {
 type FetchPolymarketPositionsResponse = {
   positions: PolymarketPosition[];
 };
+
+// ============ Store ========================================================== //
 
 export const usePolymarketPositionsStore = createQueryStore<
   FetchPolymarketPositionsResponse,
@@ -54,6 +61,8 @@ export const usePolymarketPositionsStore = createQueryStore<
 
 export const polymarketPositionsActions = createStoreActions(usePolymarketPositionsStore);
 
+// ============ Fetching ======================================================= //
+
 async function fetchPolymarketPositions(
   { address }: PolymarketPositionsParams,
   abortController: AbortController | null
@@ -70,41 +79,67 @@ async function fetchPolymarketPositions(
     timeout: time.seconds(15),
   });
 
-  const openSlugs = new Set<string>();
-  const closedSlugs = new Set<string>();
+  if (!rawPositions.length) return { positions: [] };
+
+  const rawMarkets = await fetchPolymarketMarkets(rawPositions, abortController);
+  const [markets, teams] = await Promise.all([preparePolymarketMarkets(rawMarkets), fetchTeamsForGameMarkets(rawMarkets, abortController)]);
+
+  const positions: PolymarketPosition[] = [];
   for (const position of rawPositions) {
-    if (position.redeemable) {
-      closedSlugs.add(position.slug);
-    } else {
-      openSlugs.add(position.slug);
-    }
+    const market = markets[position.slug];
+    if (!market) continue;
+    const ticker = market.events[0]?.ticker;
+    positions.push(processRawPolymarketPosition(position, market, ticker ? teams[ticker] : undefined));
   }
-
-  const [openMarkets, closedMarkets] = await Promise.all([
-    openSlugs.size ? fetchPolymarketMarkets({ marketSlugs: [...openSlugs], abortController }) : [],
-    closedSlugs.size ? fetchPolymarketMarkets({ marketSlugs: [...closedSlugs], abortController, closed: true }) : [],
-  ]);
-
-  const markets = [...openMarkets, ...closedMarkets];
-  const teamsMap = await fetchTeamsForGameMarkets(markets);
-
-  const positions =
-    (
-      await Promise.all(
-        rawPositions.map((position: RawPolymarketPosition) => {
-          const market = markets.find(market => market.slug === position.slug);
-          if (!market) return null;
-          const eventTicker = market.events[0]?.ticker;
-          const teams = eventTicker ? teamsMap.get(eventTicker) : undefined;
-          return processRawPolymarketPosition(position, market, teams);
-        })
-      )
-    ).filter((p): p is PolymarketPosition => p !== null) ?? [];
 
   return {
     positions: sortPositions(positions),
   };
 }
+
+async function fetchPolymarketMarkets(
+  positions: RawPolymarketPosition[],
+  abortController: AbortController | null
+): Promise<RawPolymarketMarket[]> {
+  const slugsByStatus: Partial<Record<'open' | 'closed', Set<string>>> = {};
+  for (const { slug, redeemable } of positions) {
+    const status = redeemable ? 'closed' : 'open';
+    (slugsByStatus[status] ??= new Set()).add(slug);
+  }
+
+  const responses = await Promise.all(
+    Object.entries(slugsByStatus).map(async ([status, slugs]) => {
+      const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
+      url.searchParams.set('closed', String(status === 'closed'));
+      url.searchParams.set('limit', String(slugs.size));
+      for (const slug of slugs) url.searchParams.append('slug', slug);
+
+      const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
+        abortController,
+        timeout: time.seconds(15),
+      });
+
+      return data;
+    })
+  );
+
+  return responses.flat();
+}
+
+async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Promise<Partial<Record<string, PolymarketMarket>>> {
+  const markets: Partial<Record<string, PolymarketMarket>> = {};
+
+  await Promise.all(
+    rawMarkets.map(async market => {
+      const rawColor = await getImagePrimaryColor(market.events[0].icon);
+      const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
+      markets[market.slug] = processRawPolymarketMarket(market, color);
+    })
+  );
+
+  return markets;
+}
+
 function getPositionSortPriority(position: PolymarketPosition): number {
   if (!position.redeemable) return 0;
   if (position.size === position.currentValue) return 1;
@@ -117,45 +152,4 @@ function sortPositions(positions: PolymarketPosition[]): PolymarketPosition[] {
     if (priorityDiff !== 0) return priorityDiff;
     return b.currentValue - a.currentValue;
   });
-}
-
-// API limit is 20 markets per request
-const MAX_MARKETS_PER_REQUEST = 20;
-
-async function fetchPolymarketMarkets({
-  marketSlugs,
-  abortController,
-  closed,
-}: {
-  marketSlugs: string[];
-  abortController: AbortController | null;
-  closed?: boolean;
-}): Promise<RawPolymarketMarket[]> {
-  const chunkSize = MAX_MARKETS_PER_REQUEST;
-  const chunks: string[][] = [];
-
-  for (let i = 0; i < marketSlugs.length; i += chunkSize) {
-    chunks.push(marketSlugs.slice(i, i + chunkSize));
-  }
-
-  const responses = await Promise.all(
-    chunks.map(async slugs => {
-      const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
-      slugs.forEach(slug => {
-        url.searchParams.append('slug', slug);
-      });
-      if (closed) {
-        url.searchParams.set('closed', 'true');
-      }
-
-      const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
-        abortController,
-        timeout: time.seconds(15),
-      });
-
-      return data;
-    })
-  );
-
-  return responses.flat();
 }
