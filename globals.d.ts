@@ -1,4 +1,7 @@
-declare module '*.png';
+declare module '*.png' {
+  const source: import('react-native').ImageRequireSource;
+  export = source;
+}
 declare module '*.svg';
 declare module '*.jpeg';
 declare module '*.jpg';
