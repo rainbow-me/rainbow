@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, type ReactElement } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -13,15 +13,18 @@ import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
+import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
-import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
+import { POLYMARKET_OUTCOME_CARD_MIN_HEIGHT, PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { usePolymarketOrderDetailsStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { type Selection } from '@/features/sports/core/generated/sports';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -31,12 +34,100 @@ import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
-export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
-  const {
-    params: { market, event, outcomeIndex, outcomeColor, fromRoute },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
-  const { isDarkMode } = useColorMode();
+type FromRoute = RootStackParamList[typeof Routes.POLYMARKET_NEW_POSITION_SHEET]['fromRoute'];
+
+export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet(): ReactElement {
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
+  const { isDarkMode } = useColorMode();
+  const outcomeColor = params.outcomeColor;
+
+  return (
+    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
+        <LinearGradient
+          colors={
+            isDarkMode ? [opacity(outcomeColor, 0.22), opacity(outcomeColor, 0)] : [opacity(outcomeColor, 0), opacity(outcomeColor, 0.06)]
+          }
+          style={StyleSheet.absoluteFill}
+          start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
+          end={isDarkMode ? { x: 0, y: 1 } : { x: 0, y: 0.82 }}
+        />
+      </View>
+      <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>
+        <Box gap={28}>
+          <Text size="26pt" weight="heavy" color="label">
+            {i18n.t(i18n.l.predictions.new_position.title)}
+          </Text>
+          {'selection' in params ? (
+            <SelectedPosition selection={params.selection} outcomeColor={params.outcomeColor} fromRoute={params.fromRoute} />
+          ) : (
+            <NewPositionForm
+              event={params.event}
+              market={params.market}
+              outcomeIndex={params.outcomeIndex}
+              outcomeColor={params.outcomeColor}
+              fromRoute={params.fromRoute}
+            />
+          )}
+        </Box>
+      </Box>
+    </PanelSheet>
+  );
+});
+
+function SelectedPosition({
+  selection,
+  outcomeColor,
+  fromRoute,
+}: {
+  selection: Selection;
+  outcomeColor: string;
+  fromRoute: FromRoute;
+}): ReactElement {
+  const entry = usePolymarketOrderDetailsStore(state => state.getCacheEntry({ selection }));
+  const loading = usePolymarketOrderDetailsStore(state => state.status === 'loading');
+  const details = entry?.data;
+
+  if (!details) {
+    return !entry || loading ? (
+      <NewPositionSkeleton outcomeColor={outcomeColor} />
+    ) : (
+      <Box alignItems="center" gap={20} paddingVertical="28px">
+        <Text align="center" color="labelSecondary" size="17pt" weight="bold">
+          {i18n.t(i18n.l.sports.entry_error)}
+        </Text>
+        <ButtonPressAnimation onPress={() => usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true })}>
+          <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
+            <Text color="accent" size="17pt" weight="bold">
+              {i18n.t(i18n.l.sports.retry)}
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
+      </Box>
+    );
+  }
+
+  return (
+    <NewPositionForm
+      key={selection.tokenId}
+      event={details.event}
+      market={details.market}
+      outcomeIndex={details.outcomeIndex}
+      outcomeColor={outcomeColor}
+      fromRoute={fromRoute}
+    />
+  );
+}
+
+function NewPositionForm({
+  market,
+  event,
+  outcomeIndex,
+  outcomeColor,
+  fromRoute,
+}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: FromRoute }): ReactElement {
+  const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,11 +136,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
   const accentColor = outcomeColor;
-  const buttonColor = getSolidColorEquivalent({
-    background: opacity(accentColor, 0.7),
-    foreground: '#000000',
-    opacity: 0.4,
-  });
+  const buttonColor = getButtonColor(accentColor);
 
   const {
     availableBalance,
@@ -72,6 +159,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
+
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.new_position.no_liquidity_title)
     : i18n.t(i18n.l.predictions.new_position.insufficient_liquidity_title);
@@ -86,14 +174,12 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
     outcomeIndex,
   });
 
-  const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
-  const formattedSpread = `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
-
   const handleMarketBuyPosition = useCallback(async () => {
-    if (!canSubmit) return;
-    if (checkIfReadOnlyWallet(getAccountAddress())) return;
+    if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
+
     setIsProcessing(true);
     setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
+
     try {
       await executePolymarketBuyPosition({
         tokenId,
@@ -112,8 +198,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
         },
         onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
       });
+
       setProcessingLabel(getBuyPositionProcessingLabel('confirming_order'));
       await waitForPositionSizeUpdate(tokenId);
+
       if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
         Navigation.goBack();
         Navigation.goBack();
@@ -162,110 +250,175 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   }, []);
 
   return (
-    <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
-        <LinearGradient
-          colors={
-            isDarkMode ? [opacity(accentColor, 0.22), opacity(accentColor, 0)] : [opacity(accentColor, 0), opacity(accentColor, 0.06)]
-          }
-          style={StyleSheet.absoluteFill}
-          start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
-          end={isDarkMode ? { x: 0, y: 1 } : { x: 0, y: 0.82 }}
+    <>
+      <Box gap={12}>
+        <PolymarketOutcomeCard
+          accentColor={accentColor}
+          icon={market.icon}
+          outcomeTitle={outcomeTitle}
+          outcomeSubtitle={outcomeSubtitle}
+          groupItemTitle={market.groupItemTitle}
+          outcome={outcome}
+          outcomeIndex={outcomeIndex}
         />
-      </View>
-      <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>
-        <Box gap={28}>
-          <Text size="26pt" weight="heavy" color="label">
-            {i18n.t(i18n.l.predictions.new_position.title)}
+        <AmountInputCard
+          availableBalance={availableBalance}
+          accentColor={accentColor}
+          backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
+          onAmountChange={setBuyAmount}
+          title={i18n.t(i18n.l.predictions.new_position.amount)}
+          validation={validation}
+        />
+      </Box>
+      <OrderSummary
+        averagePrice={isQuoteReady ? averagePrice : undefined}
+        spread={isQuoteReady ? spread : undefined}
+        amountToWin={isQuoteReady ? amountToWin : undefined}
+      />
+      {hasBlockedLiquidity ? <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} /> : null}
+      {hasBalance ? (
+        <HoldToActivateButton
+          onLongPress={handleMarketBuyPosition}
+          label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
+          processingLabel={processingLabel}
+          isProcessing={isProcessing}
+          showBiometryIcon={false}
+          backgroundColor={buttonColor}
+          disabledBackgroundColor={buttonColor}
+          disabled={!canSubmit}
+          height={48}
+          borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+          borderWidth={2}
+          color={canSubmit ? 'white' : { custom: globalColors.white50 }}
+          progressColor="white"
+        />
+      ) : (
+        <ButtonPressAnimation onPress={handleDepositFunds} scaleTo={0.96}>
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            height={48}
+            borderRadius={24}
+            backgroundColor={buttonColor}
+            borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+            borderWidth={2}
+          >
+            <Text color="white" size="20pt" weight="black">
+              {i18n.t(i18n.l.predictions.new_position.deposit_funds)}
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
+      )}
+    </>
+  );
+}
+
+function OrderSummary({
+  averagePrice,
+  spread,
+  amountToWin,
+}: {
+  averagePrice?: string;
+  spread?: string;
+  amountToWin?: string;
+}): ReactElement {
+  const formattedAveragePrice =
+    averagePrice === undefined ? '—' : `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
+  const formattedSpread = spread === undefined ? '—' : `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
+
+  return (
+    <Box gap={24}>
+      <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+        <Text size="15pt" weight="semibold" color="labelTertiary">
+          {i18n.t(i18n.l.predictions.new_position.spread)}
+        </Text>
+        <Text size="17pt" weight="bold" color={'label'}>
+          {formattedSpread}
+        </Text>
+      </Box>
+
+      <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+        <Text size="15pt" weight="semibold" color="labelTertiary">
+          {i18n.t(i18n.l.predictions.new_position.average_price)}
+        </Text>
+        <Text size="17pt" weight="bold" color="label">
+          {formattedAveragePrice}
+        </Text>
+      </Box>
+
+      <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
+        <Text size="15pt" weight="semibold" color="labelTertiary">
+          {i18n.t(i18n.l.predictions.new_position.to_win)}
+        </Text>
+        <TextShadow blur={6} shadowOpacity={0.24}>
+          <Text size="17pt" weight="heavy" color="green">
+            {amountToWin === undefined ? '—' : formatUsd(amountToWin)}
           </Text>
-          <Box gap={12}>
-            <PolymarketOutcomeCard
-              accentColor={accentColor}
-              icon={market.icon}
-              outcomeTitle={outcomeTitle}
-              outcomeSubtitle={outcomeSubtitle}
-              groupItemTitle={market.groupItemTitle}
-              outcome={outcome}
-              outcomeIndex={outcomeIndex}
-            />
-            <AmountInputCard
-              availableBalance={availableBalance}
-              accentColor={accentColor}
-              backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
-              onAmountChange={setBuyAmount}
-              title={i18n.t(i18n.l.predictions.new_position.amount)}
-              validation={validation}
-            />
-          </Box>
-          <Box gap={24}>
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.predictions.new_position.spread)}
-              </Text>
-              <Text size="17pt" weight="bold" color={'label'}>
-                {formattedSpread}
-              </Text>
-            </Box>
+        </TextShadow>
+      </Box>
+    </Box>
+  );
+}
 
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.predictions.new_position.average_price)}
-              </Text>
-              <Text size="17pt" weight="bold" color="label">
-                {formattedAveragePrice}
-              </Text>
-            </Box>
+function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }): ReactElement {
+  const { isDarkMode } = useColorMode();
+  const cardColor = isDarkMode ? opacity(outcomeColor, 0.08) : opacity(globalColors.white100, 0.9);
 
-            <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="16px">
-              <Text size="15pt" weight="semibold" color="labelTertiary">
-                {i18n.t(i18n.l.predictions.new_position.to_win)}
-              </Text>
-              <TextShadow blur={6} shadowOpacity={0.24}>
-                <Text size="17pt" weight="heavy" color="green">
-                  {formatUsd(amountToWin)}
-                </Text>
-              </TextShadow>
-            </Box>
+  return (
+    <>
+      <Box gap={12}>
+        <Box
+          height={POLYMARKET_OUTCOME_CARD_MIN_HEIGHT}
+          backgroundColor={cardColor}
+          borderRadius={26}
+          padding="20px"
+          flexDirection="row"
+          alignItems="center"
+          gap={12}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <Box width={38} height={38} borderRadius={10} background="fillTertiary" />
+          <Box gap={12} style={styles.flex}>
+            <Box width="full" height={10} borderRadius={4} background="fillTertiary" />
+            <Box style={styles.skeletonSubtitle} height={12} borderRadius={4} background="fillTertiary" />
           </Box>
-          {hasBlockedLiquidity && <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} />}
-          {hasBalance ? (
-            <HoldToActivateButton
-              onLongPress={handleMarketBuyPosition}
-              label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-              processingLabel={processingLabel}
-              isProcessing={isProcessing}
-              showBiometryIcon={false}
-              backgroundColor={buttonColor}
-              disabledBackgroundColor={opacity(buttonColor, 0.02)}
-              disabled={!canSubmit}
-              height={48}
-              borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
-              borderWidth={2}
-              color={canSubmit ? 'white' : 'labelQuaternary'}
-              progressColor="white"
-            />
-          ) : (
-            <ButtonPressAnimation onPress={handleDepositFunds} scaleTo={0.96}>
-              <Box
-                alignItems="center"
-                justifyContent="center"
-                height={48}
-                borderRadius={24}
-                backgroundColor={buttonColor}
-                borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
-                borderWidth={2}
-              >
-                <Text color="white" size="20pt" weight="black">
-                  {i18n.t(i18n.l.predictions.new_position.deposit_funds)}
-                </Text>
-              </Box>
-            </ButtonPressAnimation>
-          )}
+        </Box>
+        <Box height={INPUT_CARD_HEIGHT} backgroundColor={cardColor} borderRadius={28} padding="20px" gap={20}>
+          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+            <Box gap={12}>
+              <Text size="20pt" weight="heavy" color={{ custom: outcomeColor }}>
+                {i18n.t(i18n.l.predictions.new_position.amount)}
+              </Text>
+              <Box width={96} height={12} borderRadius={4} background="fillTertiary" />
+            </Box>
+            <Box width={110} height={30} borderRadius={8} background="fillTertiary" />
+          </Box>
+          <Box width="full" height={10} borderRadius={10} background="fillTertiary" />
         </Box>
       </Box>
-    </PanelSheet>
+      <OrderSummary />
+      <Box
+        height={48}
+        borderRadius={24}
+        backgroundColor={getButtonColor(outcomeColor)}
+        borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+        borderWidth={2}
+        alignItems="center"
+        justifyContent="center"
+        accessibilityState={{ disabled: true, busy: true }}
+      >
+        <Text size="20pt" weight="heavy" color={{ custom: globalColors.white50 }}>
+          {i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
+        </Text>
+      </Box>
+    </>
   );
-});
+}
+
+function getButtonColor(outcomeColor: string): string {
+  return getSolidColorEquivalent({ background: opacity(outcomeColor, 0.7), foreground: '#000000', opacity: 0.4 });
+}
 
 function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
   switch (step) {
@@ -277,7 +430,7 @@ function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string 
   }
 }
 
-function presentErrorAlert(error: Error) {
+function presentErrorAlert(error: Error): void {
   const clobOrderErrorReason = getPolymarketClobOrderErrorReason(error);
 
   if (clobOrderErrorReason) {
@@ -312,3 +465,8 @@ function presentErrorAlert(error: Error) {
 
   Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
 }
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  skeletonSubtitle: { width: '75%' },
+});

@@ -7,7 +7,7 @@ export function getOutcomeDescriptions({
   outcomeIndex,
 }: {
   eventTitle: string;
-  market: PolymarketMarket;
+  market: Pick<PolymarketMarket, 'question' | 'line' | 'groupItemTitle'>;
   outcome: string;
   outcomeIndex: number;
 }) {
