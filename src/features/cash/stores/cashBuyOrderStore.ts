@@ -132,25 +132,24 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       }
     }
 
-    // The same spec can be in flight more than once (a reopen probes it while the original POST
-    // still runs), so a result only lands while the store is still on the step that issued it —
-    // whichever settles first wins, the straggler is dropped.
-    function isCurrent({ step, spec }: Extract<CashBuyStatus, UnresolvedSubmission>): boolean {
-      const current = get().status;
-      return current.step === step && 'spec' in current && current.spec.id === spec.id;
-    }
+    let pendingProbe: { spec: BuyOrderSpec; promise: Promise<CashBuyResumeResult> } | null = null;
 
-    async function probeOrder(probing: Extract<CashBuyStatus, { step: 'probing' }>): Promise<CashBuyResumeResult> {
+    async function runProbe(probing: Extract<CashBuyStatus, { step: 'probing' }>): Promise<CashBuyResumeResult> {
       const { spec, submittedAt } = probing;
       set({ status: probing });
       try {
         const result = await getOrderWithCachedAuth(spec.id);
-        if (!isCurrent(probing)) return 'completed';
-        if (result.kind === 'authRequired') return 'authRequired';
+        const current = get().status;
+        if (result.kind === 'authRequired') return current === probing ? 'authRequired' : 'completed';
+        if (current.step === 'polling') {
+          if (current.orderId !== spec.id || (!isTerminalBuyOrder(result.data) && current.order !== null)) return 'completed';
+        } else if (!('spec' in current) || current.spec !== spec) {
+          return 'completed';
+        }
         if (isTerminalBuyOrder(result.data)) applyTerminalOrder(result.data);
         else set({ status: { step: 'polling', orderId: spec.id, order: result.data, submittedAt } });
       } catch (error) {
-        if (!isCurrent(probing)) return 'completed';
+        if (get().status !== probing) return 'completed';
         if (isNotFoundError(error)) {
           set({ status: { step: 'notPlaced', spec } });
         } else {
@@ -161,18 +160,30 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
       return 'completed';
     }
 
+    function probeOrder(probing: Extract<CashBuyStatus, { step: 'probing' }>): Promise<CashBuyResumeResult> {
+      if (pendingProbe?.spec === probing.spec) return pendingProbe.promise;
+
+      const promise = runProbe(probing).finally(() => {
+        if (pendingProbe?.promise === promise) pendingProbe = null;
+      });
+      pendingProbe = { spec: probing.spec, promise };
+      return promise;
+    }
+
     async function submitBuyOrderSpec(submitting: Extract<CashBuyStatus, { step: 'submitting' }>): Promise<void> {
       const { spec, submittedAt } = submitting;
       for (let replay = 0; replay <= ORDER_SUBMISSION_MAX_REPLAYS; replay++) {
         if (replay > 0) {
           await delay(ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS * replay);
-          if (!isCurrent(submitting)) return;
+          if (get().status !== submitting) return;
         }
         try {
           const params = { ...spec, cryptoAsset: CASH_BUY_DESTINATION_ASSET };
           const result = await createBuyOrder(replay === 0 ? 'interactive' : 'cachedOnly', params);
-          if (!isCurrent(submitting)) return;
+          const current = get().status;
+          if (!('spec' in current) || current.spec !== spec) return;
           if (result.kind === 'authRequired') {
+            if (current !== submitting) return;
             set({ status: { step: 'probing', spec, submittedAt } });
             parkForReauth();
             return;
@@ -180,7 +191,8 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
           return;
         } catch (error) {
-          if (!isCurrent(submitting)) return;
+          const current = get().status;
+          if (!('spec' in current) || current.spec !== spec) return;
           if (replay === 0 && isPasskeyCancellation(error)) {
             set({ status: { step: 'idle' } });
             return;
@@ -190,6 +202,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
             return;
           }
           if (isDefinitiveRejection(error)) {
+            if (replay > 0 && current !== submitting) return;
             logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
             analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
             set({ status: { step: 'error', errorCode: 'GENERIC', order: null } });
@@ -200,6 +213,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
             if (isNotFoundError(error)) useCashWalletStore.getState().clear();
             return;
           }
+          if (current !== submitting) return;
           logger.warn('[cashBuyOrderStore] createBuyOrder failed ambiguously', { orderId: spec.id, replay });
         }
       }
@@ -225,7 +239,8 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
             : null;
         const submitting = {
           step: 'submitting',
-          spec: retained ?? { cardId, depositAmount, walletAddress, id: uuidv4() },
+          // A same-ID retry is a new attempt; results from the earlier spec must not settle it.
+          spec: { cardId, depositAmount, walletAddress, id: retained?.id ?? uuidv4() },
           submittedAt: Date.now(),
         } as const;
         set({ status: submitting });

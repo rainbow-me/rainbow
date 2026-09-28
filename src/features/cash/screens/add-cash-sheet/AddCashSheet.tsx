@@ -17,6 +17,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { ORDER_FAST_POLL_DURATION_MS, ORDER_FAST_POLL_INTERVAL_MS, ORDER_SLOW_POLL_INTERVAL_MS } from '@/features/cash/constants';
 import { openCashAuthGate } from '@/features/cash/services/cashAuthGateService';
 import { isHandledCashError } from '@/features/cash/services/cashHandledError';
+import { OrderStatus } from '@/features/cash/services/rampClient';
 import { checkWalletLink } from '@/features/cash/services/walletLinkService';
 import { useCashAuthGateStore } from '@/features/cash/stores/cashAuthGateStore';
 import {
@@ -63,9 +64,9 @@ type AddCashAmount = ReturnType<typeof useAddCashAmount>;
 type AddCashStore = AddCashAmount['useAddCashStore'];
 type BuyOrderAlert = CashBuyErrorCode | 'NOT_PLACED';
 
-function getPendingOrderVariant(step: CashBuyStatus['step'], isRecoveredSubmission: boolean): PendingOrderVariant {
+function getPendingOrderVariant(step: CashBuyStatus['step'], isRecoveredSubmission: boolean, paymentSettled: boolean): PendingOrderVariant {
   if (step === 'probing' || (step === 'submitting' && isRecoveredSubmission)) return 'probing';
-  if (step === 'polling' && isRecoveredSubmission) return 'placed';
+  if (step === 'polling' && isRecoveredSubmission && paymentSettled) return 'placed';
   return 'pending';
 }
 
@@ -396,6 +397,9 @@ export const AddCashSheet = memo(function AddCashSheet() {
   const phase = useCashBuyPhase();
   const previousPhase = usePrevious(phase);
   const step = useCashBuyOrderStore(state => state.status.step);
+  const paymentSettled = useCashBuyOrderStore(
+    state => state.status.step === 'polling' && state.status.order?.status === OrderStatus.Processing
+  );
   const alertKey = useCashBuyOrderStore<BuyOrderAlert | null>(state =>
     state.status.step === 'error' ? state.status.errorCode : state.status.step === 'notPlaced' ? 'NOT_PLACED' : null
   );
@@ -521,7 +525,7 @@ export const AddCashSheet = memo(function AddCashSheet() {
 
   const view = openGate ? 'reauth' : step === 'paused' ? 'paused' : showPendingView ? 'pending' : mode;
   const isKeypad = view === 'keypad';
-  const pendingVariant = getPendingOrderVariant(step, isRecoveredSubmission);
+  const pendingVariant = getPendingOrderVariant(step, isRecoveredSubmission, paymentSettled);
 
   return (
     <PanelSheet
