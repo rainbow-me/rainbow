@@ -7,13 +7,13 @@ import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type Share
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
+import { RefreshControl } from '@/components/RefreshControl';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { Text } from '@/design-system/components/Text/Text';
 import { DiscoverEventPriceSubscription } from '@/features/discover/components/DiscoverEventPriceSubscription';
-import { DiscoverRefreshControl } from '@/features/discover/components/DiscoverRefreshControl';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import {
@@ -22,7 +22,7 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { refreshDiscoverEvents } from '@/features/discover/utils/refreshDiscoverSurface';
+import { refreshDiscoverEvents, refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useDiscoverEventsErrorStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
@@ -39,6 +39,8 @@ type SectionScrollOffsets = Partial<Record<DiscoverSection, number>>;
 
 const FALLBACK_SECTION_COUNT = 3;
 const FALLBACK_TILE_COUNT = 2;
+
+const DISCOVER_REFRESH_CONTROL = <RefreshControl onRefresh={() => refreshDiscoverSurface('discover')} />;
 
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
@@ -113,7 +115,7 @@ const DiscoverSectionsFallback = memo(function DiscoverSectionsFallback() {
     <ScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}
       contentContainerStyle={[styles.fallbackContent, Platform.OS === 'android' && { paddingBottom: bottomInset }]}
-      refreshControl={<DiscoverRefreshControl />}
+      refreshControl={DISCOVER_REFRESH_CONTROL}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}
       style={styles.scrollView}
@@ -206,7 +208,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
       onScroll={sectionScrollHandler}
       pointerEvents={isActive ? 'auto' : 'none'}
       ref={setScrollViewRef}
-      refreshControl={<DiscoverRefreshControl />}
+      refreshControl={DISCOVER_REFRESH_CONTROL}
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       contentInset={{ bottom: bottomInset }}

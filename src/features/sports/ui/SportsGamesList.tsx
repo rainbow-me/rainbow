@@ -1,9 +1,10 @@
 import { useCallback, useImperativeHandle, useMemo, useRef, useState, type ReactElement, type Ref } from 'react';
-import { RefreshControl, StyleSheet, View, type RefreshControlProps, type ViewStyle, type ViewToken } from 'react-native';
+import { StyleSheet, View, type ViewStyle, type ViewToken } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
 import Animated, { type SharedValue } from 'react-native-reanimated';
 
+import { RefreshControl } from '@/components/RefreshControl';
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { useColorMode } from '@/design-system/color/ColorMode';
@@ -75,7 +76,10 @@ export function SportsGamesList({
   const listRef = useRef<Animated.FlatList<Row>>(null);
   const cardPathsRef = useLazyRef(() => new Map<string, string>());
 
-  const rows = useMemo(() => buildRows(sections, page, expanded, scope?.id, directoryIds), [directoryIds, sections, expanded, page, scope]);
+  const rows = useMemo(
+    () => buildRows(sections, page, expanded, scope?.id, directoryIds),
+    [directoryIds, sections, expanded, page, scope?.id]
+  );
 
   const setVisibleGames = useSportsPriceSubscription();
   const { onViewableItemsChanged, onChildViewableItemsChanged: onCarouselVisibleGamesChanged } = useViewabilityTracker(
@@ -172,25 +176,53 @@ export function SportsGamesList({
 
   const isSearching = page === 'search';
   const isMainScreen = host === 'main';
-  const backgroundColor = isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
+  const hasDirectory = directoryIds.length > 0;
 
-  let contentPaddingTop = 0;
-  if (isSearching) contentPaddingTop = directoryIds.length ? 12 : 20;
-  else if (page === 'sports') contentPaddingTop = 5;
+  const refreshControl = useMemo(() => <RefreshControl onRefresh={() => refreshSportsPage(host)} />, [host]);
 
-  const header = (
-    <View style={styles.header}>
-      {isSearching ? (
-        <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
-      ) : (
-        <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
-      )}
-    </View>
-  );
+  const { backgroundColor, containerStyle, contentContainerStyle, scrollIndicatorInsets, headerStyle, header, footer } = useMemo(() => {
+    const backgroundColor = isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
+
+    let contentPaddingTop = 0;
+    if (isSearching) contentPaddingTop = hasDirectory ? 12 : 20;
+    else if (page === 'sports') contentPaddingTop = 5;
+
+    return {
+      backgroundColor,
+      containerStyle: [styles.container, { backgroundColor, paddingTop: topInset }],
+      contentContainerStyle: [styles.content, { paddingTop: isMainScreen ? contentPaddingTop : 0, paddingBottom: bottomInset + 80 }],
+      scrollIndicatorInsets: { bottom: bottomInset + 64 },
+      headerStyle: isMainScreen ? undefined : { paddingBottom: contentPaddingTop },
+      header: (
+        <View style={styles.header}>
+          {isSearching ? (
+            <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+          ) : (
+            <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
+          )}
+        </View>
+      ),
+      footer: <SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />,
+    };
+  }, [
+    back,
+    bottomInset,
+    foregroundColors,
+    hasDirectory,
+    host,
+    isDarkMode,
+    isMainScreen,
+    isSearching,
+    page,
+    parent,
+    scope,
+    topInset,
+    width,
+  ]);
 
   return (
     <GameCardPathsContext value={cardPathsRef.current}>
-      <View style={[styles.container, { backgroundColor, paddingTop: topInset }]}>
+      <View style={containerStyle}>
         {isMainScreen ? (
           <>
             {header}
@@ -201,7 +233,7 @@ export function SportsGamesList({
         <Animated.FlatList
           ref={listRef}
           data={rows}
-          keyExtractor={row => row.key}
+          keyExtractor={getRowKey}
           renderItem={renderItem}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={VIEWABILITY_CONFIG}
@@ -209,13 +241,13 @@ export function SportsGamesList({
           windowSize={3}
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[styles.content, { paddingTop: isMainScreen ? contentPaddingTop : 0, paddingBottom: bottomInset + 80 }]}
-          scrollIndicatorInsets={{ bottom: bottomInset + 64 }}
+          contentContainerStyle={contentContainerStyle}
+          scrollIndicatorInsets={scrollIndicatorInsets}
           onScroll={onScroll}
-          refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
+          refreshControl={refreshControl}
           ListHeaderComponent={isMainScreen ? null : header}
-          ListHeaderComponentStyle={isMainScreen ? undefined : { paddingBottom: contentPaddingTop }}
-          ListFooterComponent={<SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />}
+          ListHeaderComponentStyle={headerStyle}
+          ListFooterComponent={footer}
           ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
         />
 
@@ -235,31 +267,11 @@ export function SportsGamesList({
   );
 }
 
-function SportsRefreshControl({
-  host,
-  color,
-  children,
-  style,
-}: { host: SportsHost; color: string } & Pick<RefreshControlProps, 'children' | 'style'>): ReactElement {
-  const [refreshing, setRefreshing] = useState(false);
-
-  return (
-    <RefreshControl
-      colors={[color]}
-      onRefresh={() => {
-        setRefreshing(true);
-        void refreshSportsPage(host).finally(() => setRefreshing(false));
-      }}
-      refreshing={refreshing}
-      style={style}
-      tintColor={color}
-    >
-      {children}
-    </RefreshControl>
-  );
-}
-
 // ============ Helpers ======================================================== //
+
+function getRowKey(row: Row): string {
+  return row.key;
+}
 
 function buildRows(
   sections: SportsSection[],
