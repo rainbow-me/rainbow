@@ -67,6 +67,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
       totalValueAmount,
     };
   } catch (e) {
+    if (abortController?.signal.aborted) return STABLE_CLAIMABLES;
     logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (client error)', e), {
       message: (e as Error)?.message,
     });

@@ -28,8 +28,6 @@ import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegist
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillExplainSheet } from '@/features/king-of-the-hill/screens/KingOfTheHillExplainSheet';
 import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
 import { NotificationPermissionScreen } from '@/features/notifications/screens/NotificationPermissionScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
@@ -46,7 +44,6 @@ import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 import { PolymarketDepositScreen } from '@/features/polymarket/funding/screens/PolymarketDepositScreen';
 import { PolymarketWithdrawalScreen } from '@/features/polymarket/funding/screens/PolymarketWithdrawalScreen';
 import { PolymarketAccountScreen } from '@/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen';
-import { PolymarketBrowseEventsScreen } from '@/features/polymarket/screens/polymarket-browse-events-screen/PolymarketBrowseEventsScreen';
 import { PolymarketEventScreen } from '@/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen';
 import { PolymarketExplainSheet } from '@/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet';
 import { PolymarketMarketDescriptionSheet } from '@/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet';
@@ -55,6 +52,7 @@ import { PolymarketNavigator } from '@/features/polymarket/screens/polymarket-na
 import { PolymarketNewPositionSheet } from '@/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet';
 import { PolymarketRedeemPositionSheet } from '@/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet';
 import { PolymarketSellPositionSheet } from '@/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { PositionSheet } from '@/features/positions/screens/PositionSheet';
 import { RnbwAirdropScreen } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen';
 import { RnbwMembershipTiersSheet } from '@/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet';
@@ -172,7 +170,7 @@ function MainNavigator() {
 
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = usePolymarketEnabled();
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -252,7 +250,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
       <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
-      {showKingOfTheHillTab && <NativeStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} {...activitySheetConfig} />}
+      {showSportsTab && <NativeStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} {...activitySheetConfig} />}
       {profilesEnabled && (
         <>
           <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />
@@ -312,7 +310,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen component={PerpsAddToPositionSheet} name={Routes.PERPS_ADD_TO_POSITION_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
       <NativeStack.Screen component={PerpsAboutSheet} name={Routes.PERPS_ABOUT_SHEET} {...panelConfig} />
       <NativeStack.Screen component={CashDepositIntroPanel} name={Routes.CASH_DEPOSIT_INTRO_PANEL} {...panelConfig} />
@@ -345,11 +342,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={RnbwStakingLearnScreen} name={Routes.RNBW_STAKING_LEARN_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={RnbwStakingScreen} name={Routes.RNBW_STAKING_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} {...panelConfig} />
-      <NativeStack.Screen
-        component={PolymarketBrowseEventsScreen}
-        name={Routes.POLYMARKET_BROWSE_EVENTS_SCREEN}
-        {...expandedAssetSheetV2Config}
-      />
       <NativeStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} {...walletErrorSheetConfig} />
       <NativeStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} {...learnSheetConfig} />
     </NativeStack.Navigator>
