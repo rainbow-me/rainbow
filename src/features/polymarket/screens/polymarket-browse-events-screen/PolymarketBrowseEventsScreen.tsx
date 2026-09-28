@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
@@ -40,7 +40,6 @@ const PolymarketBrowseEventsList = () => {
   const scrollOffset = useSharedValue(0);
 
   const onGamePress = useSportsGamePress();
-  const onScroll = useScrollFadeHandler(scrollOffset);
 
   useListen(usePolymarketCategoryStore, s => s.tagId, scrollBrowseToTop);
 
@@ -54,17 +53,18 @@ const PolymarketBrowseEventsList = () => {
           host="predictions"
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}
-          onScroll={onScroll}
+          scrollOffset={scrollOffset}
         />
       ) : (
-        <EventsList onScroll={onScroll} />
+        <EventsList scrollOffset={scrollOffset} />
       )}
       <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} />
     </View>
   );
 };
 
-const EventsList = ({ onScroll }: { onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void }) => {
+const EventsList = ({ scrollOffset }: { scrollOffset: SharedValue<number> }) => {
+  const onScroll = useScrollFadeHandler(scrollOffset);
   const { eventsListRef } = usePolymarketContext();
   const events = usePolymarketEventsStore(state => state.getEvents());
 

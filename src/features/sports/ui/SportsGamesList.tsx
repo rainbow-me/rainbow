@@ -1,18 +1,11 @@
 import { useCallback, useImperativeHandle, useMemo, useRef, useState, type ReactElement, type Ref } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  View,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  type RefreshControlProps,
-  type ViewStyle,
-  type ViewToken,
-} from 'react-native';
+import { RefreshControl, StyleSheet, View, type RefreshControlProps, type ViewStyle, type ViewToken } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
+import Animated, { type SharedValue } from 'react-native-reanimated';
 
+import { ScrollHeaderFade } from '@/components/scroll-header-fade/ScrollHeaderFade';
+import { useScrollFadeHandler } from '@/components/scroll-header-fade/useScrollFadeHandler';
 import { useColorMode } from '@/design-system/color/ColorMode';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsSection } from '@/features/sports/core/sections';
@@ -62,14 +55,14 @@ export function SportsGamesList({
   topInset = 0,
   bottomInset,
   onGamePress,
-  onScroll,
+  scrollOffset,
   ref,
 }: {
   host: SportsHost;
   topInset?: number;
   bottomInset: number;
   onGamePress: SportsGamePress;
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  scrollOffset: SharedValue<number>;
   ref?: Ref<SportsGamesListHandle>;
 }): ReactElement {
   const { width } = useDimensions();
@@ -79,11 +72,11 @@ export function SportsGamesList({
   const { page, scope, parent, back, selectedCategory, categories, directoryIds, sections } = sportsPageStores[host]();
   const catalog = useSportsStore(s => s.catalog);
 
-  const listRef = useRef<FlatList<Row>>(null);
+  const listRef = useRef<Animated.FlatList<Row>>(null);
   const cardPathsRef = useLazyRef(() => new Map<string, string>());
 
-  const isSearching = page === 'search';
   const rows = useMemo(() => buildRows(sections, page, expanded, scope?.id, directoryIds), [directoryIds, sections, expanded, page, scope]);
+
   const setVisibleGames = useSportsPriceSubscription();
   const { onViewableItemsChanged, onChildViewableItemsChanged: onCarouselVisibleGamesChanged } = useViewabilityTracker(
     VIEWABILITY_SELECTORS,
@@ -98,6 +91,8 @@ export function SportsGamesList({
       return next;
     });
   }, []);
+
+  const onScroll = useScrollFadeHandler(scrollOffset);
 
   useImperativeHandle(ref, () => ({ scrollToTop: () => listRef.current?.scrollToOffset({ offset: 0, animated: true }) }), []);
 
@@ -175,10 +170,35 @@ export function SportsGamesList({
     [catalog, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
   );
 
+  const isSearching = page === 'search';
+  const isMainScreen = host === 'main';
+  const backgroundColor = isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
+
+  let contentPaddingTop = 0;
+  if (isSearching) contentPaddingTop = directoryIds.length ? 12 : 20;
+  else if (page === 'sports') contentPaddingTop = 5;
+
+  const header = (
+    <View style={styles.header}>
+      {isSearching ? (
+        <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+      ) : (
+        <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
+      )}
+    </View>
+  );
+
   return (
     <GameCardPathsContext value={cardPathsRef.current}>
-      <View style={[styles.container, { backgroundColor: isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT }]}>
-        <FlatList
+      <View style={[styles.container, { backgroundColor, paddingTop: topInset }]}>
+        {isMainScreen ? (
+          <>
+            {header}
+            <ScrollHeaderFade color={backgroundColor} scrollOffset={scrollOffset} style={styles.headerFade} />
+          </>
+        ) : null}
+
+        <Animated.FlatList
           ref={listRef}
           data={rows}
           keyExtractor={row => row.key}
@@ -189,24 +209,12 @@ export function SportsGamesList({
           windowSize={3}
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={[styles.content, { paddingTop: topInset + 16, paddingBottom: bottomInset + 80 }]}
-          scrollIndicatorInsets={{ top: topInset, bottom: bottomInset + 64 }}
+          contentContainerStyle={[styles.content, { paddingTop: isMainScreen ? contentPaddingTop : 0, paddingBottom: bottomInset + 80 }]}
+          scrollIndicatorInsets={{ bottom: bottomInset + 64 }}
           onScroll={onScroll}
           refreshControl={<SportsRefreshControl host={host} color={foregroundColors.labelTertiary} />}
-          ListHeaderComponent={
-            <View
-              style={[
-                isSearching && directoryIds.length ? undefined : styles.header,
-                page === 'sports' ? styles.directoryHeader : undefined,
-              ]}
-            >
-              {isSearching ? (
-                <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
-              ) : (
-                <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
-              )}
-            </View>
-          }
+          ListHeaderComponent={isMainScreen ? null : header}
+          ListHeaderComponentStyle={isMainScreen ? undefined : { paddingBottom: contentPaddingTop }}
           ListFooterComponent={<SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />}
           ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
         />
@@ -323,8 +331,8 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { flexGrow: 1 },
   footer: { flexGrow: 1 },
-  header: { paddingBottom: 8 },
-  directoryHeader: { paddingBottom: 13 },
+  header: { paddingTop: 16, paddingBottom: 8 },
+  headerFade: { position: 'relative', height: 0 },
   searchDirectoryEnd: { marginBottom: 8 },
   card: { marginHorizontal: 12, marginBottom: 8 },
 });

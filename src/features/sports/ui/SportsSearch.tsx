@@ -59,7 +59,6 @@ export function SportsSearch({ host, color, backgroundColor }: { host: SportsHos
 const styles = StyleSheet.create({
   row: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
