@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
+import { type AppStateStatus } from 'react-native';
+
+import { useAppStateStore } from '@/state/appState/appStateStore';
 
 import usePrevious from './usePrevious';
 
@@ -9,18 +10,13 @@ const AppStateTypes = {
   inactive: 'inactive',
 };
 
-export default function useAppState() {
-  const [appState, setAppState] = useState(AppState.currentState);
+/**
+ * Returns the native app state and whether it became active since the preceding render.
+ * `justBecameActive` may be undefined on the first render, before a previous state exists.
+ */
+export default function useAppState(): { appState: AppStateStatus; justBecameActive: boolean | undefined } {
+  const appState = useAppStateStore();
   const prevAppState = usePrevious(appState);
-
-  function onChange(newState: AppStateStatus) {
-    setAppState(newState);
-  }
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onChange);
-    return () => subscription.remove();
-  }, []);
 
   return {
     appState,
