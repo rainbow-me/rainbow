@@ -1,6 +1,8 @@
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
+import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume, type CreateUserWithPhoneResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
@@ -190,6 +192,20 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
+  it('keeps the entered phone and suppresses the generic error for a network policy response', async () => {
+    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    mockCreateUserWithPhone.mockRejectedValue(error);
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(false);
+
+    expect(flow().state).toBe('entry');
+    expect(flow().digits).toBe(DIGITS);
+    expect(session().status).toBe('empty');
+    expect(track).not.toHaveBeenCalledWith('cash.phone_submit_failed', expect.anything());
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
   it('returns to entry when the digits are edited after an error', async () => {
     mockCreateUserWithPhone.mockRejectedValue(new Error('network down'));
     flow().setDigits(DIGITS);
@@ -216,6 +232,31 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(session()).toBe(pending);
     expect(track).not.toHaveBeenCalled();
     expect(useVerifyPhoneFlowStore.getState().state).toBe('entry');
+  });
+
+  it('preserves an accepted resume credential when returning to the same challenge', async () => {
+    const resumeChallenge = { kind: 'resume', resumeId: 'rcv_1' } as const;
+    const credential = { bootstrapToken: 'bst_1', expiresAt: 2_000_000_000_000 };
+    useCashSetupSessionStore.getState().setPhoneSubmitted({
+      challenge: resumeChallenge,
+      phoneNationalNumber: DIGITS,
+      resendAfter: RESPONSE.resendAfter,
+    });
+    useVerifyPhoneFlowStore.setState({
+      code: '123456',
+      pendingResumeStatus: { challenge: resumeChallenge, credential },
+      state: 'entry',
+    });
+    flow().setDigits(DIGITS);
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockCreateUserWithPhone).not.toHaveBeenCalled();
+    expect(useVerifyPhoneFlowStore.getState()).toMatchObject({
+      code: '123456',
+      pendingResumeStatus: { challenge: resumeChallenge, credential },
+      state: 'entry',
+    });
   });
 
   it('sends a new code when the number is edited after a submit', async () => {

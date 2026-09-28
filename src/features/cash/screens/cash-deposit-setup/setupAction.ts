@@ -8,7 +8,7 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import { CardBrand } from '../../services/rampClient';
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
-import { selectCanSubmitReview, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { selectCanSubmitReview, selectIsPhoneVerified, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { useKycReturnFlowStore, type KycReturnResult } from '../../stores/kycReturnFlowStore';
 import { NATIONAL_NUMBER_LENGTH } from '../../utils/phoneNumber';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
@@ -117,9 +117,13 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
         return { disabled: $(useCashSetupSessionStore, s => s.getGovernmentId() === null), label, onPress: completeSetupStep };
 
       case Routes.CASH_SETUP_REVIEW: {
+        const kycSubmitted = $(useSubmitReviewFlowStore, s => s.kycSubmitted);
         const isReady = $(
           useCashSetupSessionStore,
-          s => selectCanSubmitReview(s) && s.getIdentity() !== null && s.getGovernmentId() !== null
+          s =>
+            (selectCanSubmitReview(s) || (kycSubmitted && selectIsPhoneVerified(s))) &&
+            s.getIdentity() !== null &&
+            s.getGovernmentId() !== null
         );
         const state = $(useSubmitReviewFlowStore, s => s.state);
         const checking = $(useKycReturnFlowStore, s => s.state === 'checking');

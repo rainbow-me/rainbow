@@ -2,7 +2,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { useCashAuthGateStore, type CashAuthIntent } from '../stores/cashAuthGateStore';
 import { loadLinkedCards } from './cardListService';
-import { isPasskeyCancellation } from './cashPasskeyService';
+import { isHandledCashError } from './cashHandledError';
 import { ensureAccessToken } from './cashSignInService';
 
 type CashAuthGateResumeResult = 'completed' | 'authRequired';
@@ -27,8 +27,8 @@ export async function reauthenticateCashGate(): Promise<void> {
   try {
     await ensureAccessToken('addCash');
   } catch (error) {
-    // A cancelled sign-in is a deliberate dismissal, not a failure: stay parked, silently.
-    if (isPasskeyCancellation(error)) return;
+    // A cancelled sign-in or policy block is a deliberate stop, not a failure: stay parked, silently.
+    if (isHandledCashError(error)) return;
     logger.error(new RainbowError('[cashAuthGateService]: Failed to re-authenticate', error));
     if (isCurrent()) gate.fail(parked.intent);
     return;

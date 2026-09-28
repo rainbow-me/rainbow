@@ -1,9 +1,11 @@
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { cancelPasskeyRequest, getPasskeyAssertion } from './cashPasskeyService';
 import { ensureAccessToken, signInWithPhone } from './cashSignInService';
+import { CashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
 jest.mock('@/analytics', () => ({
@@ -128,6 +130,16 @@ describe('ensureAccessToken', () => {
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
       ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'unknown' }],
     ]);
+  });
+
+  it('propagates a network policy response without tracking a generic failure', async () => {
+    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    mockStartLogin.mockRejectedValue(error);
+
+    await expect(ensureAccessToken('cardLink')).rejects.toBe(error);
+
+    expect(tokenStore().token).toBeNull();
+    expect(track.mock.calls).toEqual([['cash.sign_in_submitted', { trigger: 'cardLink' }]]);
   });
 
   it('runs a fresh ceremony after a failure', async () => {

@@ -13,6 +13,13 @@ const BIVO_SUBMIT_TIMEOUT = time.seconds(30);
 
 type BivoSubmitResult = { success: boolean; data?: { identifier?: string } };
 
+export type CardLinkProgress = { cardBrand: CardBrand; providerCardId: string };
+
+type CardLinkOptions = {
+  onProgress?: (progress: CardLinkProgress) => void;
+  progress?: CardLinkProgress | null;
+};
+
 function isBivoSubmitResult(value: unknown): value is BivoSubmitResult {
   return typeof value === 'object' && value !== null && typeof (value as { success?: unknown }).success === 'boolean';
 }
@@ -28,21 +35,28 @@ function throwIfAborted(abortController: AbortController | null | undefined): vo
 export async function linkCardWithVault(
   bivoStore: BivoSecureStore,
   cardBrand: CardBrand,
-  abortController?: AbortController | null
+  abortController?: AbortController | null,
+  options: CardLinkOptions = {}
 ): Promise<LinkedCard> {
   if (IS_TESTING === 'true') {
     await Promise.all([ensureAccessToken('cardLink'), delay(time.seconds(3))]);
     return MOCK_LINKED_CARD;
   }
 
-  const session = await startCardLinkSession(abortController);
-  const result = await withTimeout(bivoStore.submit(session.token), BIVO_SUBMIT_TIMEOUT, 'Bivo vault submit timed out');
-  // bivo SDK does not have a way to pass abort controller, so we check here manually
-  throwIfAborted(abortController);
-  if (!isBivoSubmitResult(result)) throw new Error('Bivo vault returned an unexpected response');
-  if (!result.success) throw new Error('Bivo vault submit failed');
-  const providerCardId = result.data?.identifier;
-  if (!providerCardId) throw new Error('Bivo vault response is missing the provider card id');
-  const card = await completeCardLinkSession({ brand: cardBrand, providerCardId }, abortController);
+  let progress = options.progress;
+  if (!progress) {
+    const session = await startCardLinkSession(abortController);
+    const result = await withTimeout(bivoStore.submit(session.token), BIVO_SUBMIT_TIMEOUT, 'Bivo vault submit timed out');
+    // bivo SDK does not have a way to pass abort controller, so we check here manually
+    throwIfAborted(abortController);
+    if (!isBivoSubmitResult(result)) throw new Error('Bivo vault returned an unexpected response');
+    if (!result.success) throw new Error('Bivo vault submit failed');
+    const providerCardId = result.data?.identifier;
+    if (!providerCardId) throw new Error('Bivo vault response is missing the provider card id');
+    progress = { cardBrand, providerCardId };
+    options.onProgress?.(progress);
+  }
+
+  const card = await completeCardLinkSession({ brand: progress.cardBrand, providerCardId: progress.providerCardId }, abortController);
   return card;
 }

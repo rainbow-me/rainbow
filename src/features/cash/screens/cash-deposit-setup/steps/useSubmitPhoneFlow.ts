@@ -3,6 +3,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
+import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
 import {
   useCashSetupSessionStore,
@@ -58,7 +59,8 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     // Re-submitting would send a second one, which the resend cooldown forbids.
     const { session } = useCashSetupSessionStore.getState();
     if (session.status === 'phoneSubmitted' && session.phoneNationalNumber === digits) {
-      useVerifyPhoneFlowStore.getState().reset();
+      const verifyFlow = useVerifyPhoneFlowStore.getState();
+      if (verifyFlow.pendingResumeStatus?.challenge !== session.challenge) verifyFlow.reset();
       return true;
     }
 
@@ -90,6 +92,10 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       set({ state: 'entry' });
       return true;
     } catch (e) {
+      if (isCashUserServiceNetworkPolicyError(e)) {
+        set({ state: 'entry' });
+        return false;
+      }
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });

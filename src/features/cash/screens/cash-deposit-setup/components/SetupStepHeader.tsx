@@ -12,6 +12,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { useCashDepositSetupNavigationStore } from '../cashDepositSetupNavigator';
 import { useSetupContext } from '../setupContext';
 import { cancelSetup, goBackInSetup } from '../setupNavigation';
+import { useSubmitReviewFlowStore } from '../steps/useSubmitReviewFlow';
 import { SetupCancelButton } from './SetupCancelButton';
 import { SetupProgressIndicator } from './SetupProgressIndicator';
 
@@ -19,6 +20,7 @@ export const SetupStepHeader = memo(function SetupStepHeader() {
   const { useActionStore } = useSetupContext();
   const insets = useSafeAreaInsets();
   const submitting = useActionStore(s => s.loading === true);
+  const kycSubmitted = useSubmitReviewFlowStore(state => state.kycSubmitted);
 
   const hasHistory = useStoreSharedValue(useCashDepositSetupNavigationStore, s => s.history.length > 0);
   const visible = useStoreSharedValue(useCashDepositSetupNavigationStore, s => !s.isRouteActive(Routes.CASH_SETUP_CARD_ADDED));
@@ -36,7 +38,7 @@ export const SetupStepHeader = memo(function SetupStepHeader() {
   return (
     <Animated.View style={[styles.header, { top: insets.top + 24 }, headerStyle]}>
       <Animated.View style={backStyle}>
-        <ButtonPressAnimation disabled={submitting} onPress={goBackInSetup} scaleTo={0.8} testID="cash-setup-back">
+        <ButtonPressAnimation disabled={submitting || kycSubmitted} onPress={goBackInSetup} scaleTo={0.8} testID="cash-setup-back">
           <Box alignItems="center" background="fillTertiary" borderRadius={18} height={36} justifyContent="center" width={36}>
             <Text align="center" color="label" size="17pt" weight="heavy">
               {'􀆉'}
