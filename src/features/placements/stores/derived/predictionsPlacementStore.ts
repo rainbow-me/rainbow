@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore, type DeriveGetter } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, type DeriveGetter, type QueryStore } from '@storesjs/stores';
 
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
@@ -142,7 +142,7 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
 
 // ============ Fetching ======================================================= //
 
-function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]) {
+function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]): QueryStore<EventsById, PredictionEventsParams> {
   const eventIds = createDerivedStore(getEventIds, { equalityFn: areArraysEqual });
 
   return createQueryStore<EventsById, PredictionEventsParams>({

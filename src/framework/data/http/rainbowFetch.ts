@@ -31,7 +31,7 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
   const { abortController: userAbortController, body, headers, params, signal, ...otherOpts } = opts;
 
   const abortController = userAbortController ?? new AbortController();
-  const abort = () => abortController.abort();
+  const abort = (): void => abortController.abort();
   const timeoutId = setTimeout(abort, opts.timeout);
   const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 

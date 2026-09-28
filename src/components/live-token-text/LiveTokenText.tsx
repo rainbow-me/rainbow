@@ -73,7 +73,7 @@ function useTokenValueSelector(
   initialValue: string,
   initialValueLastUpdated: number,
   selector: LiveTokenValueParams['selector']
-) {
+): ({ tokens }: { tokens: LiveTokensData }) => string {
   return useMemo(() => {
     let previousToken: TokenData | undefined;
     let value = initialValue;

@@ -54,7 +54,7 @@ function EmptyGames({ message }: { message: string }): ReactElement {
 function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; isDarkMode: boolean }): ReactElement {
   const fill = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   const [pending, setPending] = useState(false);
-  const onPress = async () => {
+  const onPress = async (): Promise<void> => {
     setPending(true);
     try {
       await retry();
@@ -87,7 +87,7 @@ function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; is
 
 function LoadMoreGames({ host }: { host: SportsHost }): ReactElement {
   const [pending, setPending] = useState(false);
-  const onPress = async () => {
+  const onPress = async (): Promise<void> => {
     setPending(true);
     try {
       await loadMoreSportsGames(host);
