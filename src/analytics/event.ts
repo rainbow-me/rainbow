@@ -132,6 +132,7 @@ export const event = {
   cashPhoneSubmitFailed: 'cash.phone_submit_failed',
   cashPhoneResendFailed: 'cash.phone_resend_failed',
   cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+  cashExistingAccountRecoverySelected: 'cash.existing_account_recovery_selected',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
   cashKycSubmitted: 'cash.kyc_submitted',
@@ -570,8 +571,9 @@ export type EventProperties = {
     mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneAlreadyRegistered]: {
-    outcome: 'alreadyRegistered';
+    outcome: 'alreadyRegistered' | 'registeredWithPasskey';
   };
+  [event.cashExistingAccountRecoverySelected]: undefined;
   [event.cashPhoneVerified]: {
     mode: 'signup' | 'resume' | 'recovery';
   };
