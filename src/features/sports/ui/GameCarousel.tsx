@@ -11,6 +11,7 @@ const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 export const GameCarousel = memo(function GameCarousel({
   section,
   catalog,
+  currentDay,
   width,
   isDarkMode,
   rowKey,
@@ -19,6 +20,7 @@ export const GameCarousel = memo(function GameCarousel({
 }: {
   section: SportsSection;
   catalog?: SportsCatalog;
+  currentDay: string;
   width: number;
   isDarkMode: boolean;
   rowKey: string;
@@ -35,6 +37,7 @@ export const GameCarousel = memo(function GameCarousel({
       <View style={{ width: cardWidth }}>
         <GameCard
           catalog={catalog}
+          currentDay={currentDay}
           isDarkMode={isDarkMode}
           gameId={item}
           scopeId={section.scopeId}
@@ -43,7 +46,7 @@ export const GameCarousel = memo(function GameCarousel({
         />
       </View>
     ),
-    [cardWidth, catalog, isDarkMode, onGamePress, section.scopeId]
+    [cardWidth, catalog, currentDay, isDarkMode, onGamePress, section.scopeId]
   );
 
   useCleanup(() => onVisibleGamesChanged(rowKey, []), [onVisibleGamesChanged, rowKey]);

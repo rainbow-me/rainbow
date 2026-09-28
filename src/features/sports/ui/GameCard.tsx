@@ -59,6 +59,7 @@ export const GameCard = memo(function GameCard({
   gameId,
   scopeId,
   catalog,
+  currentDay,
   isDarkMode,
   width,
   onPress,
@@ -67,6 +68,7 @@ export const GameCard = memo(function GameCard({
   gameId: string;
   scopeId?: string;
   catalog?: SportsCatalog;
+  currentDay: string;
   isDarkMode: boolean;
   width: number;
   onPress: SportsGamePress;
@@ -87,6 +89,7 @@ export const GameCard = memo(function GameCard({
         <View style={styles.header}>
           <GameCompetition competition={competition} isDarkMode={isDarkMode} />
           <GameTime
+            currentDay={currentDay}
             isDarkMode={isDarkMode}
             status={game.status}
             interruption={game.interruption}
@@ -280,13 +283,14 @@ const GameCompetition = memo(function GameCompetition({
 });
 
 const GameTime = memo(function GameTime({
+  currentDay,
   isDarkMode,
   status,
   interruption,
   clock,
   period,
   startsAt,
-}: Pick<Game, 'status' | 'interruption' | 'clock' | 'period' | 'startsAt'> & { isDarkMode: boolean }): ReactElement {
+}: Pick<Game, 'status' | 'interruption' | 'clock' | 'period' | 'startsAt'> & { currentDay: string; isDarkMode: boolean }): ReactElement {
   const label =
     STATUS_LABELS[
       interruption === Game_Interruption.INTERRUPTION_DELAYED || interruption === Game_Interruption.INTERRUPTION_SUSPENDED
@@ -322,7 +326,7 @@ const GameTime = memo(function GameTime({
         </>
       ) : startsAt ? (
         <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-          {formatStart(startsAt)}
+          {formatStart(startsAt, currentDay)}
         </Text>
       ) : null}
     </View>
@@ -499,13 +503,11 @@ const GameDrawRow = memo(function GameDrawRow({
 
 // ============ Utilities ====================================================== //
 
-function formatStart(value: string): string {
+function formatStart(value: string, currentDay: string): string {
   const date = new Date(value);
   const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 
-  return date.toDateString() === new Date().toDateString()
-    ? time
-    : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
+  return date.toDateString() === currentDay ? time : `${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · ${time}`;
 }
 
 // ============ Styles ========================================================= //

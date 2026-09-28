@@ -7,6 +7,7 @@ import { areSectionInputsEqual, selectSportsGames, type SportsSection } from '@/
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { getRequestDestination, sportsPageRequestStores, type SportsPageRequest } from '@/features/sports/data/sportsRequestStore';
 import { getGames, getPageQueryKey, useSportsStore, type SportsQueryState } from '@/features/sports/data/sportsStore';
+import { sportsWindowStore } from '@/features/sports/data/sportsWindowStore';
 
 // ============ Types ========================================================== //
 
@@ -22,6 +23,7 @@ type SportsPageState = {
   selectedCategory: SportsDestination;
   categories: SportsDestination[];
   directoryIds: string[];
+  currentDay: string;
   sections: SportsSection[];
   getStatus: (state: SportsQueryState) => SportsPageStatus;
 };
@@ -71,10 +73,12 @@ function createSportsPageStore(host: SportsHost): DerivedStore<SportsPageState> 
 
   return createDerivedStore($ => {
     const { catalog, request, queryKey, navigation } = $(context, s => s);
+    const currentDay = $(sportsWindowStore, state => new Date(state.from).toDateString());
     const sections = request && queryKey ? getPageSections($, request, queryKey, catalog) : EMPTY_SECTIONS;
 
     return {
       ...navigation,
+      currentDay,
       sections,
       getStatus: s => determineStatus(s, request, queryKey, navigation.page, sections),
     };

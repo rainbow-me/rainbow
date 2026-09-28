@@ -70,7 +70,7 @@ export function SportsGamesList({
   const { isDarkMode, foregroundColors } = useColorMode();
 
   const [expanded, setExpanded] = useState(() => EMPTY_EXPANDED_SET);
-  const { page, scope, parent, back, selectedCategory, categories, directoryIds, sections } = sportsPageStores[host]();
+  const { page, scope, parent, back, selectedCategory, categories, directoryIds, sections, currentDay } = sportsPageStores[host]();
   const catalog = useSportsStore(s => s.catalog);
 
   const listRef = useRef<Animated.FlatList<Row>>(null);
@@ -131,6 +131,7 @@ export function SportsGamesList({
           return (
             <GameCard
               catalog={catalog}
+              currentDay={currentDay}
               isDarkMode={isDarkMode}
               gameId={item.gameId}
               scopeId={item.scopeId}
@@ -152,6 +153,7 @@ export function SportsGamesList({
           return (
             <GameCarousel
               catalog={catalog}
+              currentDay={currentDay}
               width={width}
               isDarkMode={isDarkMode}
               section={item.section}
@@ -171,7 +173,7 @@ export function SportsGamesList({
           );
       }
     },
-    [catalog, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
+    [catalog, currentDay, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
   );
 
   const isSearching = page === 'search';
