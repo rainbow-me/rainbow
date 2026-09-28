@@ -3,9 +3,10 @@ import { type LayoutRectangle } from 'react-native';
 
 import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
+
 import { useDndContext } from '../../../DndContext';
 import type { UniqueIdentifier } from '../../../types/common';
-import { arraysEqual } from '../../../utils/array';
 import { doesOverlapOnAxis } from '../../../utils/collision';
 import { applyOffset, type Direction, type Rectangle } from '../../../utils/geometry';
 import { moveArrayIndex } from '../../../utils/reanimated';
@@ -164,7 +165,7 @@ export const useDraggableSort = ({
       if (prevPlaceholderIndex !== -1 && nextPlaceholderIndex === -1) {
         // Notify the parent component of the order change
         if (nextActiveId === null && onOrderChange) {
-          if (!arraysEqual(prevOrder, draggableLastOrder.value)) {
+          if (!areArraysEqual(prevOrder, draggableLastOrder.value)) {
             runOnJS(onOrderChange)(prevOrder);
           }
           draggableLastOrder.value = prevOrder;
