@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,12 +37,15 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private int mMinLongPressDuration = 500;
 
         private boolean mIsActive = false;
-        private boolean mIsTaskScheduled = false;
         private boolean didLongPressFire = false;
-        private boolean mIsLongTaskScheduled = false;
 
         private final Handler mHandler = new Handler(Looper.getMainLooper());
-        private Runnable mLongPressRunnable;
+        private final Runnable mLongPressRunnable = () -> {
+            onLongPress();
+            if (!shouldLongPressHoldPress) {
+                setPressed(false);
+            }
+        };
 
         public ZoomableButtonViewGroup(Context context) {
             super(context);
@@ -68,90 +70,69 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
             this.startAnimation(anim);
         }
 
-        @SuppressLint("ClickableViewAccessibility")
         @Override
-        public boolean onTouchEvent(@NonNull MotionEvent event) {
-            int action = event.getActionMasked();
-
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                    animate(true);
-                    startLongPressTimer();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    mIsTaskScheduled = false;
-                    cancelLongPress();
-                    if (didLongPressFire && shouldLongPressHoldPress) {
-                        didLongPressFire = false;
-                        onLongPressEnded();
-                        return true;
-                    }
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    cancelLongPress();
-                    if (didLongPressFire) {
-                        didLongPressFire = false;
-                    }
-                    break;
+        public boolean canBegin(@NonNull MotionEvent event) {
+            if (!super.canBegin(event)) {
+                return false;
             }
+            animate(true);
+            didLongPressFire = false;
+            if (isLongPress) {
+                mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+            }
+            return true;
+        }
 
-            return super.onTouchEvent(event);
+        @Override
+        public void afterGestureEnd(@NonNull MotionEvent event) {
+            cancelLongPress();
+            super.afterGestureEnd(event);
+            if (didLongPressFire) {
+                cancelPendingInputEvents();
+                setPressed(false);
+                if (shouldLongPressHoldPress) {
+                    onLongPressEnded();
+                }
+                didLongPressFire = false;
+            }
         }
 
         @Override
         public void setPressed(boolean pressed) {
-            animate(pressed);
             super.setPressed(pressed);
+            animate(isPressed());
+            if (!isPressed()) {
+                cancelLongPress();
+            }
         }
 
         @Override
         public void cancelLongPress() {
-            if (mLongPressRunnable != null) {
-                mHandler.removeCallbacks(mLongPressRunnable);
-            }
-            mIsLongTaskScheduled = false;
-            mIsTaskScheduled = false;
+            super.cancelLongPress();
+            mHandler.removeCallbacks(mLongPressRunnable);
         }
 
-        private void startLongPressTimer() {
-            if (!mIsTaskScheduled) {
-                mIsTaskScheduled = true;
-                mIsLongTaskScheduled = false;
-                if (isLongPress) {
-                    mLongPressRunnable = () -> {
-                        mIsTaskScheduled = false;
-                        mIsLongTaskScheduled = true;
-                        onLongPress();
-                        if (!shouldLongPressHoldPress) {
-                            animate(false);
-                            setPressed(false);
-                            didLongPressFire = false;
-                        }
-                    };
-                    mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
-                }
-            }
+        @Override
+        protected void onDetachedFromWindow() {
+            cancelLongPress();
+            super.onDetachedFromWindow();
         }
 
         @Override
         public boolean performClick() {
-            if (!mIsTaskScheduled && !mIsLongTaskScheduled && !didLongPressFire) {
-                boolean result = super.performClick();
-                ReactContext reactContext = (ReactContext) getContext();
-                WritableMap event = Arguments.createMap();
-                event.putString("type", "press");
-                reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                        getId(),
-                        "topPress",
-                        event);
-                return result;
-            }
-            return false;
+            boolean result = super.performClick();
+            ReactContext reactContext = (ReactContext) getContext();
+            WritableMap event = Arguments.createMap();
+            event.putString("type", "press");
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                    getId(),
+                    "topPress",
+                    event);
+            return result;
         }
 
         private void onLongPress() {
             didLongPressFire = true;
-            mIsLongTaskScheduled = false;
             ReactContext reactContext = (ReactContext) getContext();
             WritableMap event = Arguments.createMap();
             event.putString("type", "longPress");
@@ -173,14 +154,8 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
     }
 
     @Override
-    public Map getExportedCustomBubblingEventTypeConstants() {
-        return MapBuilder.builder()
-                .put(
-                        "topPress",
-                        MapBuilder.of(
-                                "phasedRegistrationNames",
-                                MapBuilder.of("bubbled", "onPress")))
-                .build();
+    public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+        return MapBuilder.of("topPress", MapBuilder.of("registrationName", "onPress"));
     }
 
     @NonNull
