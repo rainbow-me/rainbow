@@ -1,56 +1,45 @@
 import { rainbowFetch, RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+const fetchMock = jest.spyOn(global, 'fetch');
 
-beforeEach(() => {
-  mockFetch.mockReset();
+beforeEach(() => fetchMock.mockReset());
+afterAll(() => fetchMock.mockRestore());
+
+test.each([404, 500])('includes the response in HTTP %i errors', async status => {
+  fetchMock.mockResolvedValueOnce(new Response('{"error":"Request failed"}', { status, headers: { 'Content-Type': 'application/json' } }));
+  await expect(rainbowFetch('https://example.test', {})).rejects.toMatchObject({
+    name: 'RainbowFetchError',
+    response: { status },
+  });
 });
 
-describe('rainbowFetch', () => {
-  test('throws RainbowFetchError with response for 5xx responses', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-        status: 500,
-        statusText: 'Internal Server Error',
-        headers: { 'Content-Type': 'application/json' },
-      })
-    );
+test('reports network failures without a response', async () => {
+  fetchMock.mockRejectedValueOnce(new TypeError('Network request failed'));
+  await expect(rainbowFetch('https://example.test', {})).rejects.toMatchObject({
+    name: 'RainbowFetchError',
+    message: 'Network request failed',
+    response: undefined,
+  });
+});
 
-    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
-    expect(error).toBeInstanceOf(RainbowFetchError);
-    expect(error.response?.status).toBe(500);
+test.each(['abort', 'timeout', 'already aborted'])('preserves AbortError from %s', async reason => {
+  const controller = new AbortController();
+  const abortError = new Error('The operation was aborted.');
+  abortError.name = 'AbortError';
+  if (reason === 'already aborted') controller.abort();
+
+  fetchMock.mockImplementationOnce(async (_, options) => {
+    if (reason === 'timeout')
+      await new Promise(resolve => {
+        setTimeout(resolve, 0);
+      });
+    else controller.abort();
+    expect(options?.signal?.aborted).toBe(true);
+    expect(controller.signal.aborted).toBe(reason !== 'timeout');
+    throw abortError;
   });
 
-  test('throws RainbowFetchError with response for 4xx responses', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ error: 'Not Found' }), {
-        status: 404,
-        statusText: 'Not Found',
-        headers: { 'Content-Type': 'application/json' },
-      })
-    );
-
-    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
-    expect(error).toBeInstanceOf(RainbowFetchError);
-    expect(error.response?.status).toBe(404);
-  });
-
-  test('throws RainbowFetchError without response for network errors', async () => {
-    mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
-
-    const error = await rainbowFetch('https://example.com', {}).catch(e => e);
-    expect(error).toBeInstanceOf(RainbowFetchError);
-    expect(error.response).toBeUndefined();
-  });
-
-  test('re-throws AbortError without wrapping', async () => {
-    const abortError = new Error('The operation was aborted.');
-    abortError.name = 'AbortError';
-    mockFetch.mockRejectedValueOnce(abortError);
-
-    const promise = rainbowFetch('https://example.com', {});
-    await expect(promise).rejects.toThrow(abortError);
-    await expect(promise).rejects.not.toBeInstanceOf(RainbowFetchError);
-  });
+  const request = rainbowFetch('https://example.test', { signal: controller.signal, timeout: 0 });
+  await expect(request).rejects.toBe(abortError);
+  await expect(request).rejects.not.toBeInstanceOf(RainbowFetchError);
 });
