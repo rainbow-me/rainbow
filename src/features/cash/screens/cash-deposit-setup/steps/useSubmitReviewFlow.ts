@@ -41,6 +41,7 @@ type SubmitReviewResult =
 type SubmitReviewFlowStore = {
   state: SubmitReviewState;
   kycSubmitted: boolean;
+  kycRejectionReason: KycRejectionReason | undefined;
   // Identifies one submission so an abandoned request or poll cannot write
   // into a later one. This module-level store outlives the setup screen.
   run: object | null;
@@ -51,9 +52,10 @@ type SubmitReviewFlowStore = {
 export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((set, get) => ({
   state: 'entry',
   kycSubmitted: false,
+  kycRejectionReason: undefined,
   run: null,
 
-  reset: () => set({ kycSubmitted: false, run: null, state: 'entry' }),
+  reset: () => set({ kycSubmitted: false, run: null, state: 'entry', kycRejectionReason: undefined }),
 
   submit: async () => {
     const { kycSubmitted, state } = get();
@@ -67,7 +69,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
     if (!identity || !governmentId) return 'skipped';
 
     const run = {};
-    set({ run, state: 'submitting' });
+    set({ run, state: 'submitting', kycRejectionReason: undefined });
 
     if (session.status === 'recovery') {
       const code = useVerifyPhoneFlowStore.getState().code;
@@ -227,7 +229,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         return kycOutcome;
       case 'unsupportedState':
         analytics.track(analytics.event.cashKycFailed, { reason: 'state_not_supported' });
-        set({ state: kycOutcome });
+        set({ state: kycOutcome, kycRejectionReason });
         return kycOutcome;
       default:
         analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });

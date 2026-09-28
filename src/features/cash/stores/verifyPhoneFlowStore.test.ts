@@ -7,7 +7,7 @@ import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNe
 import {
   finishSignupResume,
   getUserStatus,
-  KycRejectionReason,
+  KycRejectionReasonCode,
   KycStatus,
   resendPhoneCode,
   startRecovery,
@@ -132,7 +132,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     { kycStatus: KycStatus.Pending, kycRejectionReason: undefined, expected: 'reviewing' },
     { kycStatus: KycStatus.Review, kycRejectionReason: undefined, expected: 'reviewing' },
     { kycStatus: KycStatus.Rejected, kycRejectionReason: undefined, expected: 'rejected' },
-    { kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported, expected: 'unsupportedState' },
+    { kycStatus: KycStatus.Rejected, kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported }, expected: 'unsupportedState' },
   ])('surfaces $expected for a resumed account whose KYC is $kycStatus', async ({ kycStatus, kycRejectionReason, expected }) => {
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
     mockGetUserStatus.mockResolvedValue({ kycStatus, kycRejectionReason });
@@ -167,7 +167,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     },
     {
       kycStatus: KycStatus.Rejected,
-      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported },
       event: 'cash.kyc_failed',
       payload: { reason: 'state_not_supported' },
     },
@@ -179,6 +179,26 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     await flow().submit();
 
     expect(track).toHaveBeenCalledWith(event, ...(payload ? [payload] : []));
+  });
+
+  it.each([
+    { countryCode: 'US', regionCode: 'NY', regionName: 'New York' },
+    { countryCode: 'US', regionCode: 'CA', regionName: 'California' },
+    undefined,
+  ])('retains resumed location %j and clears it when dismissed', async unsupportedLocation => {
+    submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
+    mockGetUserStatus.mockResolvedValue({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation },
+    });
+    flow().setCode(CODE);
+
+    await expect(flow().submit()).resolves.toBe('verifiedKycOutcome');
+
+    expect(flow().kycOutcome).toBe('unsupportedState');
+    expect(flow().kycRejectionReason).toEqual({ code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation });
+    flow().clearKycOutcome();
+    expect(flow().kycRejectionReason).toBeUndefined();
   });
 
   it('sends a resumed account that never submitted KYC through the KYC steps', async () => {

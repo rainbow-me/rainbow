@@ -3,12 +3,14 @@ import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 
 import { isCashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
-import { getUserStatus, toKycOutcome, type KycOutcome } from './userClient';
+import { getUserStatus, toKycOutcome, type KycOutcome, type KycRejectionReason } from './userClient';
 
-export async function readKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
+export async function readKycOutcome(
+  bootstrapToken: string
+): Promise<{ outcome: KycOutcome | null; kycRejectionReason?: KycRejectionReason }> {
   const check = async () => {
     const { kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken });
-    return toKycOutcome(kycStatus, kycRejectionReason);
+    return { outcome: toKycOutcome(kycStatus, kycRejectionReason), kycRejectionReason };
   };
   return check().catch(error => {
     if (isCashUserServiceNetworkPolicyError(error)) throw error;

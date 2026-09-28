@@ -5,7 +5,7 @@ import { createStoreActions } from '@storesjs/stores';
 import { time } from '@/framework/core/utils/time';
 import Routes from '@/navigation/routesNames';
 
-import { type KycOutcome } from '../../../services/userClient';
+import { type KycOutcome, type KycRejectionReason } from '../../../services/userClient';
 import { selectResendAfter, useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore, type VerifyPhoneState } from '../../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation } from '../cashDepositSetupNavigator';
@@ -17,6 +17,7 @@ export function useVerifyPhoneFlow(): {
   state: VerifyPhoneState;
   code: string;
   kycOutcome: KycOutcome | null;
+  kycRejectionReason: KycRejectionReason | undefined;
   continueAfterKyc: () => void;
   setCode: (code: string) => void;
   submit: () => Promise<void>;
@@ -27,6 +28,7 @@ export function useVerifyPhoneFlow(): {
   const state = useVerifyPhoneFlowStore(s => s.state);
   const code = useVerifyPhoneFlowStore(s => s.code);
   const kycOutcome = useVerifyPhoneFlowStore(s => s.kycOutcome);
+  const kycRejectionReason = useVerifyPhoneFlowStore(s => s.kycRejectionReason);
   const resending = useVerifyPhoneFlowStore(s => s.resending !== null);
   const resendAfter = useCashSetupSessionStore(selectResendAfter);
   const [resendCooldownSeconds, setResendCooldownSeconds] = useState(0);
@@ -56,6 +58,7 @@ export function useVerifyPhoneFlow(): {
     state,
     code,
     kycOutcome,
+    kycRejectionReason,
     continueAfterKyc,
     setCode: verifyPhoneFlowActions.setCode,
     submit: submitPhoneCode,

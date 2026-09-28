@@ -19,6 +19,7 @@ export const KycReturnCheck = memo(function KycReturnCheck({ children }: { child
   const check = useRef<Promise<KycReturnResult> | null>(null);
   const active = useRef(false);
   const state = useKycReturnFlowStore(store => store.state);
+  const kycRejectionReason = useKycReturnFlowStore(store => store.kycRejectionReason);
 
   useLayoutEffect(() => {
     if (!isChecking) return;
@@ -46,7 +47,9 @@ export const KycReturnCheck = memo(function KycReturnCheck({ children }: { child
   return (
     <>
       {children}
-      {state !== 'idle' && state !== 'checking' ? <KycOutcomeSheet onContinue={continueAfterKyc} outcome={state} /> : null}
+      {state !== 'idle' && state !== 'checking' ? (
+        <KycOutcomeSheet onContinue={continueAfterKyc} outcome={state} kycRejectionReason={kycRejectionReason} />
+      ) : null}
     </>
   );
 });
