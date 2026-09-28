@@ -49,8 +49,8 @@ declare module 'react-native-dotenv' {
   export const RPC_PROXY_BASE_URL_DEV: string;
   export const RPC_PROXY_API_KEY_PROD: string;
   export const RPC_PROXY_API_KEY_DEV: string;
-  export const REACT_NATIVE_RUDDERSTACK_WRITE_KEY: string;
-  export const RUDDERSTACK_DATA_PLANE_URL: string;
+  export const POSTHOG_API_KEY: string;
+  export const POSTHOG_HOST: string;
   export const APPSFLYER_DEV_KEY: string;
   export const SILENCE_EMOJI_WARNINGS: boolean;
   export const MWP_ENCRYPTION_KEY: string;
