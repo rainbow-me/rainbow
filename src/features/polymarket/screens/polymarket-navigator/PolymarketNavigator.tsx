@@ -28,7 +28,7 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
 
 const PolymarketNavigatorContent = () => {
   const { isDarkMode } = useColorMode();
-  const { categorySelectorRef, eventsListRef } = usePolymarketContext();
+  const { categorySelectorRef, scrollBrowseToTop } = usePolymarketContext();
 
   const screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
@@ -45,10 +45,8 @@ const PolymarketNavigatorContent = () => {
     if (!requestedRoute) return;
     PolymarketNavigation.resetNavigationState();
     PolymarketNavigation.navigate(requestedRoute);
-    // Reset list scroll too: a repeated deep link to the same league leaves
-    // selectedLeagueId unchanged, so the value-based useListen won't fire.
-    eventsListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [eventsListRef, requestedRoute, routeRequestKey]);
+    scrollBrowseToTop();
+  }, [requestedRoute, routeRequestKey, scrollBrowseToTop]);
 
   return (
     <>
