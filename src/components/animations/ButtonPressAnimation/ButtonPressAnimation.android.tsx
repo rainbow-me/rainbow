@@ -291,7 +291,7 @@ export default forwardRef(function ButtonPressAnimation(
       disallowInterruption={disallowInterruption}
       ref={ref}
     >
-      <View onLayout={onLayout} pointerEvents="box-only" style={[sx.overflow, style]}>
+      <View onLayout={onLayout} style={[sx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
