@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 
 import { useListen } from '@storesjs/stores';
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import usePrevious from '@/hooks/usePrevious';
-import { useRoute } from '@/navigation/RouteContext';
-import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
 
@@ -26,50 +26,26 @@ export function useLiveTokenSharedValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): SharedValue<string> {
-  const prevTokenId = usePrevious(tokenId);
-  const { name: routeName } = useRoute();
-  const liveValue = useSharedValue(initialValue);
-  // prevValue and liveValue will always be equal, but there is a cost to reading shared values
-  const prevValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      liveValue.value = initialValue;
-      prevValue.current = initialValue;
-    }
-  }, [initialValue, liveValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) >= initialValueLastUpdated && newValue !== prevValue.current) {
-        liveValue.value = newValue;
-        prevValue.current = newValue;
-      }
+  const setSubscribedTokens = useLiveTokenSubscription();
+  const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
+  const initial = useStableValue(() => selectValue(useLiveTokensStore.getState()));
+  const liveValue = useSharedValue(initial);
+  const updateValue = useCallback(
+    (value: string) => {
+      liveValue.value = value;
     },
-    [initialValueLastUpdated, liveValue, selector]
+    [liveValue]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
+  useListen(useLiveTokensStore, selectValue, updateValue);
 
-  // Immediately update value when selector changes
+  useLayoutEffect(() => {
+    updateValue(selectValue(useLiveTokensStore.getState()));
+  }, [selectValue, updateValue]);
+
   useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
-
-  useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
-
-    addSubscribedToken({ route: routeName, tokenId });
-
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
-    };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
+    setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
+  }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
 
   return liveValue;
 }
@@ -81,52 +57,36 @@ export function useLiveTokenValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): string {
-  const prevTokenId = usePrevious(tokenId);
-  const { name: routeName } = useRoute();
-  const [liveValue, setLiveValue] = useState(initialValue);
-  // prevLiveValue and liveValue will always be equal, but state is async
-  const prevLiveValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      setLiveValue(initialValue);
-      prevLiveValue.current = initialValue;
-    }
-  }, [initialValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
-        setLiveValue(newValue);
-        prevLiveValue.current = newValue;
-      }
-    },
-    [initialValueLastUpdated, selector]
-  );
-
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
-
-  // Immediately update value when selector changes
-  useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
+  const setSubscribedTokens = useLiveTokenSubscription();
+  const selectValue = useTokenValueSelector(tokenId, initialValue, initialValueLastUpdated, selector);
+  const liveValue = useLiveTokensStore(selectValue);
 
   useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
-
-    addSubscribedToken({ route: routeName, tokenId });
-
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
-    };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
+    setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
+  }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
 
   return liveValue;
+}
+
+function useTokenValueSelector(
+  tokenId: string,
+  initialValue: string,
+  initialValueLastUpdated: number,
+  selector: LiveTokenValueParams['selector']
+): ({ tokens }: { tokens: LiveTokensData }) => string {
+  return useMemo(() => {
+    let previousToken: TokenData | undefined;
+    let value = initialValue;
+
+    return ({ tokens }: { tokens: LiveTokensData }) => {
+      const token = tokens[tokenId];
+      if (token !== previousToken) {
+        previousToken = token;
+        value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
+      }
+      return value;
+    };
+  }, [initialValue, initialValueLastUpdated, selector, tokenId]);
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
