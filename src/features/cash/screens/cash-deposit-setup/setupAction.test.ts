@@ -9,6 +9,7 @@ import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from '
 import { checkKycOnReturn, createSetupActionStore, signInToExistingAccount } from './setupAction';
 import { completeSetup, completeSetupStep } from './setupNavigation';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 jest.mock('../../services/cashSignInService', () => ({
   signInWithPhone: jest.fn(),
@@ -30,7 +31,7 @@ jest.mock('./steps/useAddPasskeyFlow', () => ({
 
 jest.mock('./steps/useSubmitReviewFlow', () => {
   const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
-  return { useSubmitReviewFlowStore: createBaseStore(() => ({ state: 'entry' })) };
+  return { useSubmitReviewFlowStore: createBaseStore(() => ({ state: 'entry', kycSubmitted: false })) };
 });
 
 jest.mock('../../stores/kycReturnFlowStore', () => {
@@ -48,6 +49,7 @@ const useActionStore = createSetupActionStore(
 
 beforeEach(() => {
   jest.clearAllMocks();
+  useSubmitReviewFlowStore.setState({ kycSubmitted: false });
   CashDepositSetupNavigation.resetNavigationState();
   useCashSetupSessionStore.getState().reset();
   useSubmitPhoneFlowStore.setState({ state: 'entry', digits: DIGITS });
@@ -150,5 +152,16 @@ describe('Review action while the return check runs', () => {
     useKycReturnFlowStore.setState({ state: 'idle' });
 
     expect(useActionStore.getState()).toMatchObject({ disabled: false, loading: false });
+  });
+
+  it('enables a status-only retry after KYC was submitted in the current flow', () => {
+    const session = useCashSetupSessionStore.getState();
+    session.markKycSubmitted('bst_1');
+
+    expect(useActionStore.getState()).toMatchObject({ disabled: true });
+
+    useSubmitReviewFlowStore.setState({ kycSubmitted: true });
+
+    expect(useActionStore.getState()).toMatchObject({ disabled: false });
   });
 });

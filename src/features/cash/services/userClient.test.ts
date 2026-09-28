@@ -1,6 +1,8 @@
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
+import { useCashUserServiceNetworkPolicyStore } from '../stores/cashUserServiceNetworkPolicyStore';
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from './cashSetupIdentityService';
+import { CashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import {
   createUserWithPhone,
   finishRecovery,
@@ -39,6 +41,7 @@ function governmentId() {
 beforeEach(() => {
   post.mockReset();
   get.mockReset();
+  useCashUserServiceNetworkPolicyStore.getState().dismiss();
 });
 
 afterEach(() => {
@@ -52,6 +55,28 @@ function platformError(code: unknown, httpStatus?: number) {
     responseBody: { code, message: 'phone already registered' },
   });
 }
+
+describe('network policy errors', () => {
+  const submit = () => createUserWithPhone({ nationalNumber: '5869132511' });
+
+  it.each([600, 601, 602])('shows the warning for HTTP 403 response code %s', async code => {
+    post.mockRejectedValue(platformError(code, 403));
+
+    await expect(submit()).rejects.toBeInstanceOf(CashUserServiceNetworkPolicyError);
+    expect(useCashUserServiceNetworkPolicyStore.getState().visible).toBe(true);
+  });
+
+  it.each([
+    { code: 603, httpStatus: 403 },
+    { code: 600, httpStatus: 500 },
+  ])('preserves existing handling for HTTP $httpStatus response code $code', async ({ code, httpStatus }) => {
+    const error = platformError(code, httpStatus);
+    post.mockRejectedValue(error);
+
+    await expect(submit()).rejects.toBe(error);
+    expect(useCashUserServiceNetworkPolicyStore.getState().visible).toBe(false);
+  });
+});
 
 describe('createUserWithPhone', () => {
   const submit = () => createUserWithPhone({ nationalNumber: '5869132511' });

@@ -1,9 +1,11 @@
 import type { BivoSecureStore } from '@bivoglobal/payment-react-native';
 
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-import { linkCardWithVault } from '../services/cardLinkService';
+import { linkCardWithVault, type CardLinkProgress } from '../services/cardLinkService';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
+import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
 import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
@@ -81,6 +83,32 @@ describe('cardLinkFlowStore', () => {
     expect(flow().state).toBe('entry');
     expect(linkedCard()).toBeNull();
     expect(track).not.toHaveBeenCalled();
+  });
+
+  it('retries only card-link completion after a network policy response', async () => {
+    const progress: CardLinkProgress = { cardBrand: CARD_BRAND, providerCardId: 'provider-card-1' };
+    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    mockLinkCardWithVault
+      .mockImplementationOnce(async (_store, _brand, _controller, options) => {
+        options.onProgress(progress);
+        throw error;
+      })
+      .mockResolvedValueOnce(CARD);
+
+    await flow().submit(BIVO_STORE, CARD_BRAND);
+
+    expect(flow().state).toBe('entry');
+    expect(flow().pendingProgress).toEqual(progress);
+    expect(linkedCard()).toBeNull();
+    expect(track).not.toHaveBeenCalled();
+
+    await flow().submit(BIVO_STORE, CARD_BRAND);
+
+    expect(mockLinkCardWithVault).toHaveBeenCalledTimes(2);
+    expect(mockLinkCardWithVault.mock.calls[1][3]).toMatchObject({ progress });
+    expect(flow().pendingProgress).toBeNull();
+    expect(flow().state).toBe('success');
+    expect(linkedCard()).toEqual(CARD);
   });
 
   it('reports a failure without storing a card', async () => {

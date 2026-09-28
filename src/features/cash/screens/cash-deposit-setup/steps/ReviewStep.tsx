@@ -84,6 +84,7 @@ export const ReviewStep = memo(function ReviewStep() {
   const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
   const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
   const state = useSubmitReviewFlowStore(store => store.state);
+  const kycSubmitted = useSubmitReviewFlowStore(store => store.kycSubmitted);
   const submitting = state === 'submitting';
 
   return (
@@ -93,7 +94,7 @@ export const ReviewStep = memo(function ReviewStep() {
           <Box paddingTop="24px">
             <Box background="fillTertiary" borderRadius={20} paddingHorizontal="16px" paddingVertical="4px">
               <ReviewRow
-                disabled={submitting}
+                disabled={submitting || kycSubmitted}
                 label={i18n.t(l.name)}
                 onEdit={editIdentity}
                 testID="cash-setup-review-edit-identity"
@@ -101,7 +102,7 @@ export const ReviewStep = memo(function ReviewStep() {
               />
               <Separator color="separatorTertiary" />
               <ReviewRow
-                disabled={submitting}
+                disabled={submitting || kycSubmitted}
                 label={i18n.t(l.date_of_birth)}
                 onEdit={editIdentity}
                 testID="cash-setup-review-edit-dob"
@@ -109,7 +110,7 @@ export const ReviewStep = memo(function ReviewStep() {
               />
               <Separator color="separatorTertiary" />
               <ReviewRow
-                disabled={submitting}
+                disabled={submitting || kycSubmitted}
                 label={i18n.t(l.ssn)}
                 onEdit={editSsn}
                 testID="cash-setup-review-edit-ssn"

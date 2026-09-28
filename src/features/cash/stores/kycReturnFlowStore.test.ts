@@ -1,6 +1,8 @@
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
+import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import { getUserStatus, KycRejectionReason, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
@@ -154,6 +156,20 @@ describe('useKycReturnFlowStore.check', () => {
     expect(flow().state).toBe('reviewing');
     expect(logger.warn).toHaveBeenCalled();
     expect(track).toHaveBeenCalledWith('cash.kyc_awaiting_decision', { source: 'return' });
+  });
+
+  it('keeps submitted progress without surfacing a KYC outcome when the network policy blocks the return check', async () => {
+    verifyPhone();
+    useCashSetupSessionStore.getState().markKycSubmitted(BOOTSTRAP_TOKEN);
+    mockGetUserStatus.mockRejectedValue(new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' })));
+
+    await expect(flow().check()).resolves.toBe('blocked');
+
+    expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
+    expect(session()).toMatchObject({ status: 'phoneVerified', bootstrapToken: BOOTSTRAP_TOKEN, kycSubmission: 'submitted' });
+    expect(flow().state).toBe('idle');
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalled();
   });
 
   it('drops an expired session without reading its status', async () => {

@@ -5,6 +5,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { isPasskeyCancellation } from '../../../services/cashPasskeyService';
 import { signInWithPhone } from '../../../services/cashSignInService';
+import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
 import {
   useCashSetupSessionStore,
@@ -93,7 +94,8 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     // Re-submitting would send a second one, which the resend cooldown forbids.
     const { session } = useCashSetupSessionStore.getState();
     if (session.status === 'phoneSubmitted' && session.phoneNationalNumber === digits) {
-      useVerifyPhoneFlowStore.getState().reset();
+      const verifyFlow = useVerifyPhoneFlowStore.getState();
+      if (verifyFlow.pendingResumeStatus?.challenge !== session.challenge) verifyFlow.reset();
       return true;
     }
 
@@ -129,6 +131,10 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return await advanceToChallenge(startChallenge, digits, isStale, set);
     } catch (e) {
       if (isStale()) return false;
+      if (isCashUserServiceNetworkPolicyError(e)) {
+        set({ state: 'entry' });
+        return false;
+      }
       logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to create user with phone', e));
       analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
       set({ state: 'error' });

@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-import { isPasskeyCancellation } from '../../services/cashPasskeyService';
+import { isHandledCashError } from '../../services/cashHandledError';
 import { signInWithPhone } from '../../services/cashSignInService';
 import { extractNationalDigits, formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../utils/phoneNumber';
 
@@ -36,7 +36,7 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
     try {
       await signInWithPhone(digits);
     } catch (e) {
-      if (isPasskeyCancellation(e)) {
+      if (isHandledCashError(e)) {
         setState('entry');
         return;
       }
