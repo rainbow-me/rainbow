@@ -685,10 +685,7 @@ type ParamsByRoute = {
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };
-  [Routes.POLYMARKET_EVENT_SCREEN]: {
-    eventId: string;
-    event: PolymarketMarketEvent | PolymarketEvent;
-  };
+  [Routes.POLYMARKET_EVENT_SCREEN]: { gameId: string } | { eventId: string; event: PolymarketMarketEvent | PolymarketEvent };
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;
   };

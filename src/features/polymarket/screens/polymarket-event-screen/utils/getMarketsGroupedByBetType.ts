@@ -1,8 +1,6 @@
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarket, type SportsMarketType } from '@/features/polymarket/types/polymarket-event';
-import { BET_TYPE, getBetType, isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
-
-export { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
+import { getBetType, isThreeWayMoneyline, type BetType } from '@/features/polymarket/utils/marketClassification';
 
 const SUPPORTED_SPORTS_MARKET_TYPES = new Set(Object.values(POLYMARKET_SPORTS_MARKET_TYPE));
 
@@ -93,7 +91,7 @@ export type GroupedSportsMarkets = {
   other: MoneylineGroup[];
 };
 
-const sportsMarketTypeOrder: SportsMarketType[] = [
+const SPORTS_MARKET_TYPE_ORDER: SportsMarketType[] = [
   POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE,
   POLYMARKET_SPORTS_MARKET_TYPE.TENNIS_FIRST_SET_WINNER,
   POLYMARKET_SPORTS_MARKET_TYPE.FIRST_HALF_MONEYLINE,
@@ -110,75 +108,51 @@ const sportsMarketTypeOrder: SportsMarketType[] = [
 ];
 
 export function getMarketsGroupedByBetType(event: PolymarketEvent): GroupedSportsMarkets {
-  const { markets: rawMarkets } = event;
+  const groups: Record<BetType, Map<SportsMarketType, PolymarketMarket[]>> = {
+    moneyline: new Map(),
+    spreads: new Map(),
+    totals: new Map(),
+    other: new Map(),
+  };
 
-  const markets = filterUnsupportedMarkets(rawMarkets);
+  for (const market of event.markets) {
+    if (!SUPPORTED_SPORTS_MARKET_TYPES.has(market.sportsMarketType)) continue;
 
-  const moneylineByType = new Map<SportsMarketType, PolymarketMarket[]>();
-  const spreadsByType = new Map<SportsMarketType, PolymarketMarket[]>();
-  const totalsByType = new Map<SportsMarketType, PolymarketMarket[]>();
-  const otherByType = new Map<SportsMarketType, PolymarketMarket[]>();
-
-  for (const market of markets) {
-    const betType = getBetType(market.sportsMarketType);
-    let targetMap;
-    switch (betType) {
-      case BET_TYPE.MONEYLINE:
-        targetMap = moneylineByType;
-        break;
-      case BET_TYPE.SPREADS:
-        targetMap = spreadsByType;
-        break;
-      case BET_TYPE.TOTALS:
-        targetMap = totalsByType;
-        break;
-      default:
-        targetMap = otherByType;
-        break;
-    }
-
-    const existing = targetMap.get(market.sportsMarketType) ?? [];
-    targetMap.set(market.sportsMarketType, [...existing, market]);
+    const group = groups[getBetType(market.sportsMarketType)];
+    const markets = group.get(market.sportsMarketType);
+    if (markets) markets.push(market);
+    else group.set(market.sportsMarketType, [market]);
   }
 
   return {
-    moneyline: buildMoneylineGroups(moneylineByType),
-    spreads: buildLineBasedGroups(spreadsByType, event),
-    totals: buildLineBasedGroups(totalsByType, event),
-    other: buildOtherGroups(otherByType),
-  };
-}
-
-function getSportsMarketTypeLabels(sportsMarketType: SportsMarketType) {
-  return {
-    label: SPORTS_MARKET_TYPE_LABELS[sportsMarketType]?.title ?? sportsMarketType,
-    icon: SPORTS_MARKET_TYPE_LABELS[sportsMarketType]?.icon,
+    moneyline: buildMoneylineGroups(groups.moneyline),
+    spreads: buildLineBasedGroups(groups.spreads, event),
+    totals: buildLineBasedGroups(groups.totals, event),
+    other: buildOtherGroups(groups.other),
   };
 }
 
 function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, event: PolymarketEvent): LineBasedGroup[] {
   return Array.from(map.entries())
-    .sort(([a], [b]) => sportsMarketTypeOrder.indexOf(a) - sportsMarketTypeOrder.indexOf(b))
+    .sort(([a], [b]) => SPORTS_MARKET_TYPE_ORDER.indexOf(a) - SPORTS_MARKET_TYPE_ORDER.indexOf(b))
     .map(([sportsMarketType, groupMarkets]) => {
       const sortedMarkets = groupMarkets.sort((a, b) => Math.abs(a.line) - Math.abs(b.line));
 
-      // Determine main line for this specific market type
       let mainLine: number;
       if (sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.SPREADS && event.spreadsMainLine != null) {
         mainLine = event.spreadsMainLine;
       } else if (sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.TOTALS && event.totalsMainLine != null) {
         mainLine = event.totalsMainLine;
       } else {
-        // For other market types (first half, team totals, etc.), use the first available line
         mainLine = sortedMarkets[0]?.line ?? 0;
       }
 
-      const labels = getSportsMarketTypeLabels(sportsMarketType);
+      const labels = SPORTS_MARKET_TYPE_LABELS[sportsMarketType];
       return {
         id: sportsMarketType,
         sportsMarketType,
-        label: labels.label,
-        icon: labels.icon,
+        label: labels?.title ?? sportsMarketType,
+        icon: labels?.icon,
         lines: sortedMarkets.map(market => ({
           value: market.line,
           market,
@@ -190,15 +164,15 @@ function buildLineBasedGroups(map: Map<SportsMarketType, PolymarketMarket[]>, ev
 
 function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): MoneylineGroup[] {
   return Array.from(map.entries())
-    .sort(([a], [b]) => sportsMarketTypeOrder.indexOf(a) - sportsMarketTypeOrder.indexOf(b))
+    .sort(([a], [b]) => SPORTS_MARKET_TYPE_ORDER.indexOf(a) - SPORTS_MARKET_TYPE_ORDER.indexOf(b))
     .map(([sportsMarketType, groupMarkets]) => {
-      const labels = getSportsMarketTypeLabels(sportsMarketType);
+      const labels = SPORTS_MARKET_TYPE_LABELS[sportsMarketType];
 
       return {
         id: sportsMarketType,
         sportsMarketType,
-        label: labels.label,
-        icon: labels.icon,
+        label: labels?.title ?? sportsMarketType,
+        icon: labels?.icon,
         isThreeWay: isThreeWayMoneyline(groupMarkets),
         markets: groupMarkets,
       };
@@ -207,25 +181,14 @@ function buildMoneylineGroups(map: Map<SportsMarketType, PolymarketMarket[]>): M
 
 function buildOtherGroups(map: Map<SportsMarketType, PolymarketMarket[]>): MoneylineGroup[] {
   return Array.from(map.entries())
-    .sort(([a], [b]) => sportsMarketTypeOrder.indexOf(a) - sportsMarketTypeOrder.indexOf(b))
-    .map(([sportsMarketType, groupMarkets]) => {
-      return groupMarkets.map(market => {
-        const labels = {
-          label: market.groupItemTitle || market.question,
-          icon: '',
-        };
-        return {
-          id: market.id,
-          sportsMarketType,
-          label: labels.label,
-          icon: labels.icon,
-          markets: [market],
-        };
-      });
-    })
-    .flat();
-}
-
-function filterUnsupportedMarkets(markets: PolymarketMarket[]): PolymarketMarket[] {
-  return markets.filter(market => SUPPORTED_SPORTS_MARKET_TYPES.has(market.sportsMarketType));
+    .sort(([a], [b]) => SPORTS_MARKET_TYPE_ORDER.indexOf(a) - SPORTS_MARKET_TYPE_ORDER.indexOf(b))
+    .flatMap(([sportsMarketType, markets]) =>
+      markets.map(market => ({
+        id: market.id,
+        sportsMarketType,
+        label: market.groupItemTitle || market.question,
+        icon: '',
+        markets: [market],
+      }))
+    );
 }
