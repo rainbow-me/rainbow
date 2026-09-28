@@ -373,6 +373,35 @@ describe('submitBuyOrder', () => {
     expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
   });
 
+  it('does not let an earlier submit settle a newer retry with the same order id', async () => {
+    let resolveOriginal: () => void = () => undefined;
+    let resolveRetry: () => void = () => undefined;
+    createBuyOrder
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveOriginal = () => resolve(CREATE_SUCCESS);
+        })
+      )
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveRetry = () => resolve(CREATE_SUCCESS);
+        })
+      );
+    getOrder.mockRejectedValueOnce(fetchError(404));
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumeOrder();
+    const retry = getState().submitBuyOrder(SUBMIT_INPUT);
+
+    resolveOriginal();
+    await original;
+    expect(getState().status).toMatchObject({ step: 'submitting', spec: { id: SPEC.id } });
+
+    resolveRetry();
+    await retry;
+    expect(getState().status).toMatchObject({ step: 'polling', orderId: SPEC.id });
+  });
+
   it('generates a fresh order id when the retried inputs differ from the unplaced spec', async () => {
     store.setState({ status: { step: 'notPlaced', spec: { ...SPEC, id: 'order-stale' } } });
 
@@ -741,10 +770,162 @@ describe('resumeOrder', () => {
   });
 });
 
-// A dismiss/reopen probes the persisted spec while the original POST may still be in flight, so
-// two requests for the same order id can settle in either order. The first result wins; the
-// straggler must not clobber it.
+// A dismiss/reopen probes the persisted spec while the original POST may still be in flight.
 describe('concurrent submission and probe of the same spec', () => {
+  it('keeps a late create acknowledgement after the sheet is dismissed', async () => {
+    let resolveOriginal: () => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveOriginal = () => resolve(CREATE_SUCCESS);
+      })
+    );
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    getState().suspendSubmission();
+    resolveOriginal();
+    await original;
+
+    expect(getState().status).toMatchObject({ step: 'polling', orderId: SPEC.id, order: null });
+  });
+
+  it('applies a terminal lookup even when a late create acknowledgement arrives first', async () => {
+    let resolveOriginal: () => void = () => undefined;
+    let resolveProbe: (result: unknown) => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveOriginal = () => resolve(CREATE_SUCCESS);
+      })
+    );
+    getOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveProbe = resolve;
+      })
+    );
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    getState().suspendSubmission();
+    const probing = getState().resumeOrder();
+    resolveOriginal();
+    await original;
+    expect(getState().status).toMatchObject({ step: 'polling', order: null });
+
+    resolveProbe(orderResult(COMPLETED_ORDER));
+    await probing;
+    expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
+    expect(addPendingTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not pause an acknowledged order when the overlapping probe fails', async () => {
+    let resolveOriginal: () => void = () => undefined;
+    let rejectProbe: (error: Error) => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveOriginal = () => resolve(CREATE_SUCCESS);
+      })
+    );
+    getOrder.mockReturnValueOnce(
+      new Promise((_resolve, reject) => {
+        rejectProbe = reject;
+      })
+    );
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    const probing = getState().resumeOrder();
+    resolveOriginal();
+    await original;
+    rejectProbe(new Error('timeout'));
+    await probing;
+
+    expect(getState().status).toMatchObject({ step: 'polling', orderId: SPEC.id, order: null });
+  });
+
+  it('honors a late first-attempt cancellation after the sheet is dismissed', async () => {
+    let rejectOriginal: (error: Error) => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise((_resolve, reject) => {
+        rejectOriginal = reject;
+      })
+    );
+    mockIsPasskeyCancellation.mockReturnValue(true);
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    getState().suspendSubmission();
+    rejectOriginal(new Error('UserCancelled'));
+    await original;
+
+    expect(getState().status).toEqual({ step: 'idle' });
+    expect(getOrder).not.toHaveBeenCalled();
+  });
+
+  it('honors a late direct rejection after the sheet is dismissed', async () => {
+    let rejectOriginal: (error: Error) => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise((_resolve, reject) => {
+        rejectOriginal = reject;
+      })
+    );
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    getState().suspendSubmission();
+    rejectOriginal(fetchError(422));
+    await original;
+
+    expect(getState().status).toEqual({ step: 'error', errorCode: 'GENERIC', order: null });
+    expect(track).toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, { orderId: SPEC.id, failureReason: null, errorCode: 'GENERIC' });
+  });
+
+  it('does not park the gate for a stale replay that needs authentication after recovery', async () => {
+    let markReplayStarted: () => void = () => undefined;
+    const replayStarted = new Promise<void>(resolve => {
+      markReplayStarted = resolve;
+    });
+    let resolveReplay: (result: typeof AUTH_REQUIRED) => void = () => undefined;
+    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          resolveReplay = resolve;
+          markReplayStarted();
+        })
+    );
+    getOrder.mockRejectedValueOnce(fetchError(404));
+
+    const submission = getState().submitBuyOrder(SUBMIT_INPUT);
+    await replayStarted;
+    getState().suspendSubmission();
+    await getState().resumeOrder();
+    resolveReplay(AUTH_REQUIRED);
+    await submission;
+
+    expect(getState().status).toEqual({ step: 'notPlaced', spec: SPEC });
+    expect(gate()).toEqual({ step: 'closed' });
+  });
+
+  it('does not treat a late replay rejection as the outcome of an already recovered attempt', async () => {
+    let markReplayStarted: () => void = () => undefined;
+    const replayStarted = new Promise<void>(resolve => {
+      markReplayStarted = resolve;
+    });
+    let rejectReplay: (error: Error) => void = () => undefined;
+    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectReplay = reject;
+          markReplayStarted();
+        })
+    );
+    getOrder.mockRejectedValueOnce(fetchError(404));
+
+    const submission = getState().submitBuyOrder(SUBMIT_INPUT);
+    await replayStarted;
+    getState().suspendSubmission();
+    await getState().resumeOrder();
+    rejectReplay(fetchError(422));
+    await submission;
+
+    expect(getState().status).toEqual({ step: 'notPlaced', spec: SPEC });
+    expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
+  });
+
   it('drops a late submit failure once the probe has already reached polling', async () => {
     let rejectOriginal: (error: Error) => void = () => undefined;
     createBuyOrder.mockReturnValueOnce(
@@ -785,25 +966,38 @@ describe('concurrent submission and probe of the same spec', () => {
     expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: PENDING_ORDER, submittedAt: expect.any(Number) });
   });
 
-  it('drops a late probe result once a newer probe has settled the order', async () => {
+  it('shares an in-flight probe and applies its terminal result once', async () => {
     store.setState({ status: PROBING });
-    let resolveStale: (result: unknown) => void = () => undefined;
-    getOrder
-      .mockReturnValueOnce(
-        new Promise(resolve => {
-          resolveStale = resolve;
-        })
-      )
-      .mockResolvedValueOnce(orderResult(COMPLETED_ORDER));
+    let resolveProbe: (result: unknown) => void = () => undefined;
+    getOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveProbe = resolve;
+      })
+    );
 
-    const stale = getState().resumeOrder();
-    await getState().resumeOrder();
+    const first = getState().resumeOrder();
+    const second = getState().resumeOrder();
+    expect(getOrder).toHaveBeenCalledTimes(1);
+
+    resolveProbe(orderResult(COMPLETED_ORDER));
+    await Promise.all([first, second]);
+
     expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
-
-    resolveStale(orderResult(COMPLETED_ORDER));
-    await stale;
-
     expect(addPendingTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows a fresh probe once the shared lookup settles', async () => {
+    store.setState({ status: PROBING });
+    getOrder.mockResolvedValueOnce(AUTH_REQUIRED).mockResolvedValueOnce(orderResult(PENDING_ORDER));
+
+    const first = getState().resumeOrder();
+    const second = getState().resumeOrder();
+    await expect(Promise.all([first, second])).resolves.toEqual(['authRequired', 'authRequired']);
+    expect(getOrder).toHaveBeenCalledTimes(1);
+
+    await expect(getState().resumeOrder()).resolves.toBe('completed');
+    expect(getOrder).toHaveBeenCalledTimes(2);
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: PENDING_ORDER, submittedAt: SUBMITTED_AT });
   });
 });
 
