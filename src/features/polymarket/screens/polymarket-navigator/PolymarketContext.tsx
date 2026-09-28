@@ -3,11 +3,14 @@ import { createContext, useContext, useMemo, useRef, type ReactNode, type RefObj
 import { type ScrollView } from 'react-native-gesture-handler';
 import type Animated from 'react-native-reanimated';
 
+import { type SportsGamesListHandle } from '@/features/sports/ui/SportsGamesList';
+
 type PolymarketContextType = {
   accountScrollRef: RefObject<Animated.ScrollView | null>;
   categorySelectorRef: RefObject<ScrollView | null>;
-  leagueSelectorRef: RefObject<ScrollView | null>;
   eventsListRef: RefObject<Animated.FlatList<unknown> | null>;
+  sportsGamesListRef: RefObject<SportsGamesListHandle | null>;
+  scrollBrowseToTop: () => void;
 };
 
 const PolymarketContext = createContext<PolymarketContextType | null>(null);
@@ -15,10 +18,22 @@ const PolymarketContext = createContext<PolymarketContextType | null>(null);
 export function PolymarketProvider({ children }: { children: ReactNode }) {
   const accountScrollRef = useRef<Animated.ScrollView>(null);
   const categorySelectorRef = useRef<ScrollView>(null);
-  const leagueSelectorRef = useRef<ScrollView>(null);
   const eventsListRef = useRef<Animated.FlatList<unknown>>(null);
+  const sportsGamesListRef = useRef<SportsGamesListHandle>(null);
 
-  const value = useMemo(() => ({ accountScrollRef, categorySelectorRef, leagueSelectorRef, eventsListRef }), []);
+  const value = useMemo(
+    () => ({
+      accountScrollRef,
+      categorySelectorRef,
+      eventsListRef,
+      sportsGamesListRef,
+      scrollBrowseToTop: () => {
+        sportsGamesListRef.current?.scrollToTop();
+        eventsListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      },
+    }),
+    []
+  );
 
   return <PolymarketContext.Provider value={value}>{children}</PolymarketContext.Provider>;
 }

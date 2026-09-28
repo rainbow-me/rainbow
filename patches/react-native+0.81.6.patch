@@ -180,3 +180,18 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
 +  [self updateNativeCornerRadii:clippingRadii];
    layer.mask = mask;
  }
+diff --git a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
+# Replay stops skipped while the Paper refresh control was detached.
+# Remove with Paper or when upstream reconciles state on reattachment.
+--- a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
++++ b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
+@@ -64,6 +64,9 @@
+
+   if (self.window) {
+     _hasMovedToWindow = YES;
++    if (!_currentRefreshingState && self.refreshing) {
++      [self endRefreshingProgrammatically];
++    }
+   } else {
+     _hasMovedToWindow = NO;
+   }

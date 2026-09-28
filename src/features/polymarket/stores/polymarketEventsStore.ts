@@ -225,7 +225,7 @@ function mergeEventsById(existingEvents: PolymarketEvent[], nextEvents: Polymark
 }
 
 export async function fetchPolymarketEventsByIds(
-  eventIds: string[],
+  eventIds: readonly string[],
   abortController: AbortController | null
 ): Promise<RawPolymarketEvent[]> {
   if (eventIds.length === 0) return [];
