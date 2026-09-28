@@ -1,5 +1,5 @@
 import { type usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { DISPLAY_VALUES, isEventCardDisplay } from '@/features/placements/surfaces/constants';
 import {
   type DiscoverSurface,
   type DiscoverSurfacePlacementRefs,
@@ -12,6 +12,13 @@ import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { logger } from '@/logger';
 
 type PlacementsById = ReturnType<typeof usePlacementsStore.getState>['placementsById'];
+
+export function removeDiscoverSportsTab(surface: SurfaceDocument | null | undefined): SurfaceDocument | undefined {
+  if (!surface) return undefined;
+  const items = surface.items.filter(item => item.id !== 'sports');
+  if (!items.length) return undefined;
+  return items.length === surface.items.length ? surface : { ...surface, items };
+}
 
 export function isSurfaceWaitingForPlacements(
   surface: SurfaceDocument,
@@ -79,11 +86,9 @@ function collectDiscoverSurfacePlacementRefs(
   if (!surface.placement) return;
 
   const placement = placementsById[surface.placement];
-  if (!placement) return;
+  if (!placement || (placement.source === 'polymarket' && isEventCardDisplay(surface.display))) return;
 
-  for (const item of placement.items) {
-    refIdsBySource[placement.source].push(item.id);
-  }
+  for (const item of placement.items) refIdsBySource[placement.source].push(item.id);
 }
 
 export function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undefined {
