@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
@@ -25,6 +25,7 @@ export type ScrollHeaderFadeProps = {
   scrollOffset: SharedValue<number>;
   /** Top offset for positioning (default: 0) */
   topInset?: number;
+  style?: StyleProp<ViewStyle>;
 };
 
 // ============ Component ======================================================= //
@@ -35,6 +36,7 @@ export const ScrollHeaderFade = memo(function ScrollHeaderFade({
   height = DEFAULT_HEIGHT,
   scrollOffset,
   topInset = 0,
+  style,
 }: ScrollHeaderFadeProps) {
   const { isDarkMode } = useColorMode();
   const gradientColor = color ?? (isDarkMode ? globalColors.grey100 : globalColors.white100);
@@ -44,7 +46,7 @@ export const ScrollHeaderFade = memo(function ScrollHeaderFade({
   }));
 
   return (
-    <Animated.View style={[styles.container, { top: topInset }, fadeStyle]}>
+    <Animated.View style={[styles.container, { top: topInset }, fadeStyle, style]}>
       <EasingGradient
         endColor={gradientColor}
         endOpacity={0}
