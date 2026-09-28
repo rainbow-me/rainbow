@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { analytics } from '@/analytics';
 import Spinner from '@/assets/chartSpinner.png';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -13,6 +13,7 @@ import { ClearInputDecorator, Input } from '@/components/inputs';
 import { Row } from '@/components/layout';
 import { TextIcon } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';

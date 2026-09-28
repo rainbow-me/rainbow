@@ -26,7 +26,6 @@ export const LAZY_TABS = 'Lazy Tabs';
 export const SIDE_DRAWER = 'Side Drawer';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
 export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
-export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 export const RAINBOW_TOASTS = 'Rainbow Toasts';
 export const PERPS = 'Perps';
 export const POLYMARKET = 'Polymarket';
@@ -68,7 +67,6 @@ const config = {
   [SIDE_DRAWER]: { needsRestart: true, settings: true, value: false },
   [CANDLESTICK_CHARTS]: { settings: true, value: !IS_STORE_INSTALL },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
-  [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },
   [PERPS]: { settings: true, value: false },
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
