@@ -29,7 +29,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
+import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FlexItem } from '@/components/layout';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
@@ -55,18 +55,16 @@ import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/features/dapp-browser/context/BrowserContext';
 import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
+import { SportsScreen } from '@/features/sports/ui/SportsScreen';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
-import {
-  RecyclerListViewScrollToTopProvider,
-  useRecyclerListViewScrollToTopContext,
-} from '@/navigation/RecyclerListViewScrollToTopContext';
+import { tabReselectEvents } from '@/navigation/tabEvents';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -76,7 +74,6 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { MainListProvider, useMainList } from './MainListContext';
 import { MainSideDrawer } from './MainSideDrawer';
 import Routes, { type Route } from './routesNames';
 
@@ -88,7 +85,7 @@ const TAB_BAR_ICONS = {
   [Routes.DISCOVER_SCREEN]: 'tabDiscover',
   [Routes.DAPP_BROWSER_SCREEN]: 'tabDappBrowser',
   [Routes.PROFILE_SCREEN]: 'tabActivity',
-  [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
+  [Routes.SPORTS_SCREEN]: 'tabSports',
   [Routes.RNBW_MEMBERSHIP_SCREEN]: 'tabMembership',
   [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
@@ -111,8 +108,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { extraWebViewHeight, tabViewProgress } = useBrowserTabBarContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  const recyclerList = useRecyclerListViewScrollToTopContext();
-  const mainList = useMainList();
 
   const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
@@ -125,7 +120,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = usePolymarketEnabled();
 
   const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -138,12 +133,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     const routes: Route[] = [Routes.WALLET_SCREEN];
     if (showDiscoverTab) routes.push(Routes.DISCOVER_SCREEN);
     if (showDappBrowserTab) routes.push(Routes.DAPP_BROWSER_SCREEN);
-    routes.push(showKingOfTheHillTab ? Routes.KING_OF_THE_HILL : Routes.PROFILE_SCREEN);
+    routes.push(showSportsTab ? Routes.SPORTS_SCREEN : Routes.PROFILE_SCREEN);
     if (showRnbwRewardsOrMembershipTab) {
       routes.push(showRnbwMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN);
     }
     return routes;
-  }, [showDappBrowserTab, showDiscoverTab, showKingOfTheHillTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
+  }, [showDappBrowserTab, showDiscoverTab, showSportsTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
 
   const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
@@ -208,7 +203,10 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const onPress = useCallback(
-    ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: string }) => {
+    ({ route, index }: { route: { key: string; name: string }; index: number }): void => {
+      const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+      if (event.defaultPrevented) return;
+
       const isFocused = getIsFocused(index);
       const time = new Date().getTime();
       const delta = time - (lastPressRef.current || 0);
@@ -217,33 +215,16 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         reanimatedPosition.value = index;
         jumpTo(route.key);
         setActiveRoute(route.name as Route);
+      } else if (route.name === Routes.DISCOVER_SCREEN && delta < DOUBLE_PRESS_DELAY) {
+        discoverOpenSearchFnRef?.();
+        return;
       } else {
-        switch (tabBarIcon) {
-          case TAB_BAR_ICONS[Routes.WALLET_SCREEN]:
-            recyclerList.scrollToTop?.();
-            break;
-          case TAB_BAR_ICONS[Routes.DISCOVER_SCREEN]:
-            if (delta < DOUBLE_PRESS_DELAY) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            if (discoverScrollToTopFnRef?.() === 0) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            break;
-          case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
-            mainList?.scrollToTop();
-            break;
-          case TAB_BAR_ICONS[Routes.KING_OF_THE_HILL]:
-            mainList?.scrollToTop();
-            break;
-        }
+        tabReselectEvents.emit(route.key);
       }
 
       lastPressRef.current = time;
     },
-    [getIsFocused, jumpTo, mainList, reanimatedPosition, recyclerList]
+    [getIsFocused, jumpTo, navigation, reanimatedPosition]
   );
 
   const onLongPress = useCallback(
@@ -452,7 +433,7 @@ type BaseTabIconProps = {
   activeIndex: SharedValue<number>;
   index: number;
   onLongPress: ({ route, tabBarIcon }: { route: { key: string; name: string }; tabBarIcon: TabIconKey }) => void;
-  onPress: ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: TabIconKey }) => void;
+  onPress: ({ route, index }: { route: { key: string; name: string }; index: number }) => void;
   route: { key: string; name: string };
   tabBarIcon: TabIconKey;
 };
@@ -479,7 +460,7 @@ export const BaseTabIcon = memo(function BaseTabIcon({
         enableHapticFeedback
         scaleTo={0.75}
         onLongPress={() => onLongPress({ route, tabBarIcon })}
-        onPress={() => onPress({ route, index, tabBarIcon })}
+        onPress={() => onPress({ route, index })}
       >
         <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center">
           {tabBarIcon === TAB_BAR_ICONS[Routes.PROFILE_SCREEN] ? (
@@ -543,7 +524,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
           <ButtonPressAnimation
             disallowInterruption
             enableHapticFeedback={!showBrowserButtons}
-            onPress={() => onPress({ route, index, tabBarIcon })}
+            onPress={() => onPress({ route, index })}
             scaleTo={showBrowserButtons ? 1 : 0.75}
             style={{ pointerEvents: showBrowserButtons ? 'box-none' : 'auto' }}
           >
@@ -573,6 +554,8 @@ function getDefaultTabBackgroundColor(isDarkMode: boolean): string {
 function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], isDarkMode: boolean): string {
   'worklet';
   switch (route) {
+    case Routes.SPORTS_SCREEN:
+      return isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.RNBW_REWARDS_SCREEN:
@@ -649,7 +632,7 @@ function SwipeNavigatorScreens() {
   );
   const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = usePolymarketEnabled();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
@@ -671,8 +654,8 @@ function SwipeNavigatorScreens() {
 
   const key = useMemo(() => {
     let key = 'swipe-navigator';
-    if (showKingOfTheHillTab) {
-      key += '-koth';
+    if (showSportsTab) {
+      key += '-sports';
     }
     if (showDiscoverTab) {
       key += '-discover';
@@ -687,11 +670,11 @@ function SwipeNavigatorScreens() {
       key += `-${language}`;
     }
     return key;
-  }, [showKingOfTheHillTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
+  }, [showSportsTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
 
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab or language changes
+      // required to force re-render when showSportsTab, showRnbwRewardsTab or language changes
       key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
@@ -707,12 +690,8 @@ function SwipeNavigatorScreens() {
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
-      {showKingOfTheHillTab ? (
-        <Swipe.Screen
-          component={KingOfTheHillScreen}
-          name={Routes.KING_OF_THE_HILL}
-          options={{ title: TAB_BAR_ICONS[Routes.KING_OF_THE_HILL] }}
-        />
+      {showSportsTab ? (
+        <Swipe.Screen component={SportsScreen} name={Routes.SPORTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.SPORTS_SCREEN] }} />
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}
@@ -741,11 +720,7 @@ export function SwipeNavigator() {
     <SwipeNavigatorContainer>
       <FlexItem backgroundColor={getDefaultTabBackgroundColor(isDarkMode)}>
         <BrowserTabBarContextProvider>
-          <MainListProvider>
-            <RecyclerListViewScrollToTopProvider>
-              <SwipeNavigatorScreens />
-            </RecyclerListViewScrollToTopProvider>
-          </MainListProvider>
+          <SwipeNavigatorScreens />
         </BrowserTabBarContextProvider>
 
         <PendingTransactionWatcher />
