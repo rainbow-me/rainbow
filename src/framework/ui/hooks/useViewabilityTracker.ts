@@ -32,6 +32,7 @@ type CollectedIds = number | string | Set<string>;
 
 // ============ Constants ====================================================== //
 
+const DEFAULT_MAX_WAIT = Object.freeze({ maxWait: time.ms(500) });
 const EMPTY_IDS: readonly string[] = Object.freeze([]);
 
 // ============ Hook =========================================================== //
@@ -60,12 +61,13 @@ export function useViewabilityTracker<Item>(selectors: ViewabilitySelectors<Item
 function createViewabilityTracker<Item>(initialSelectors: ViewabilitySelectors<Item>): ViewabilityTracker<Item> {
   let selectors = initialSelectors;
   let onChange: OnChange | undefined;
+
   let visibleItems: readonly Item[] = [];
   let childReports: Map<string, readonly { item: string }[]> | undefined;
   let publishedIds = EMPTY_IDS;
   let isTracking = true;
 
-  const schedule = debounce(publish, time.ms(250), { maxWait: time.seconds(1) });
+  const schedule = debounce(publish, time.ms(250), DEFAULT_MAX_WAIT);
 
   function publish(notifyUnchanged = false): void {
     schedule.cancel();
@@ -99,6 +101,7 @@ function createViewabilityTracker<Item>(initialSelectors: ViewabilitySelectors<I
         if (viewableItems.length) schedule();
         else publish();
       },
+
       onChildViewableItemsChanged: (parentKey, items) => {
         if (!isTracking) return;
         if (items.length) (childReports ??= new Map()).set(parentKey, items);
@@ -113,12 +116,14 @@ function createViewabilityTracker<Item>(initialSelectors: ViewabilitySelectors<I
         }
       },
     },
+
     update(nextSelectors, nextOnChange): void {
-      const notifyUnchanged = onChange !== nextOnChange;
+      const isOnChangeEqual = onChange === nextOnChange;
       selectors = nextSelectors;
       onChange = nextOnChange;
-      publish(notifyUnchanged);
+      publish(!isOnChangeEqual);
     },
+
     start(): () => void {
       isTracking = true;
       return () => {
@@ -134,6 +139,7 @@ function createViewabilityTracker<Item>(initialSelectors: ViewabilitySelectors<I
 
 function collectId(collected: CollectedIds, id: string, previous: readonly string[]): CollectedIds {
   let ids: Set<string>;
+
   if (typeof collected === 'number') {
     if (previous[collected] === id) return collected + 1;
     if (collected === 0) return id;
@@ -149,6 +155,7 @@ function collectId(collected: CollectedIds, id: string, previous: readonly strin
   } else {
     ids = collected;
   }
+
   ids.add(id);
   return ids;
 }
