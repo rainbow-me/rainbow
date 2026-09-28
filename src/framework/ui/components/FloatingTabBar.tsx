@@ -24,13 +24,20 @@ import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { getSquirclePath } from '@/design-system/layout/shapes';
+import { opacity } from '@/design-system/utils/opacity';
+import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
 import { useLazyRef } from '@/hooks/useLazyRef';
 import { THICK_BORDER_WIDTH, THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { black, white } from '@/worklets/colors';
+import { white } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
 export type FloatingTab = { key: string; label: string; onPress: () => void };
+
+// ============ Constants ====================================================== //
+
+const TAB_BAR_COLOR_DARK = '#070707';
+const TAB_BAR_COLOR_LIGHT = globalColors.white100;
 
 // ============ FloatingTabBar ================================================= //
 
@@ -70,7 +77,8 @@ export const FloatingTabBar = memo(function FloatingTabBar({
       runOnUI((itemX: number, itemWidth: number, animated: boolean) => {
         const maxOffset = Math.max(0, contentWidth.value - railWidth);
         const x = Math.max(0, Math.min(maxOffset, itemX - (railWidth - itemWidth) / 2));
-        if (x !== scrollOffset.value) scrollTo(scroll, x, 0, animated);
+        if (x === scrollOffset.value) return;
+        scrollTo(scroll, x, 0, animated);
       })(position.x, position.width, animated);
     },
     [contentWidth, positionsRef, railWidth, scroll, scrollOffset, selectedKey]
@@ -108,7 +116,6 @@ export const FloatingTabBar = memo(function FloatingTabBar({
           >
             {tabs.map(tab => {
               const selected = tab.key === selectedKey;
-
               return (
                 <View
                   key={tab.key}
@@ -117,7 +124,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
                     if (selected) revealSelected(false);
                   }}
                 >
-                  <ButtonPressAnimation onPress={tab.onPress} scaleTo={0.94} style={styles.tab}>
+                  <ButtonPressAnimation onPress={tab.onPress} scaleTo={0.88} style={styles.tab}>
                     <Text color="label" size="20pt" weight="heavy" style={selected ? undefined : { opacity: isDarkMode ? 0.4 : 0.3 }}>
                       {tab.label}
                     </Text>
@@ -130,7 +137,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
       </TabBarSurface>
 
       {onSearch ? (
-        <ButtonPressAnimation onPress={onSearch} scaleTo={0.92}>
+        <ButtonPressAnimation onPress={onSearch}>
           <TabBarSurface shadowColor={shadowColor} isDarkMode={isDarkMode} width={46}>
             <View style={styles.searchButton}>
               <TextIcon color="label" size="icon 19px" weight="bold" containerSize={24}>
@@ -205,27 +212,45 @@ function TabBarSurface({
   isDarkMode: boolean;
   shadowColor: string;
 }): ReactElement {
-  const backgroundColor = Platform.OS === 'android' ? (isDarkMode ? '#070707' : globalColors.white100) : (isDarkMode ? black : white)(0.8);
-
   return (
-    <View style={[styles.shadow, isDarkMode ? styles.darkShadow : styles.lightShadow, { shadowColor }]}>
-      <View style={[styles.surface, { width }, isDarkMode ? undefined : styles.tightShadow]}>
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip]}>
-          {Platform.OS === 'ios' ? (
-            <BlurView blurStyle={isDarkMode ? 'dark' : 'light'} blurIntensity={isDarkMode ? 9 : 7} style={StyleSheet.absoluteFill} />
-          ) : null}
-          <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
-          {isDarkMode ? <TabBarInnerShadow width={width} /> : null}
-        </View>
-
-        <View style={[styles.content, styles.clip]}>{children}</View>
-        <Border
-          borderRadius={32}
-          borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : THICK_BORDER_WIDTH}
-          borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }}
-          enableInLightMode
-        />
+    <View style={[styles.surface, { elevation: isDarkMode ? 10 : 3, shadowColor, width }]}>
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip]}>
+        {Platform.OS === 'ios' ? (
+          <BlurView blurStyle={isDarkMode ? 'dark' : 'light'} blurIntensity={isDarkMode ? 9 : 7} style={StyleSheet.absoluteFill} />
+        ) : (
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? TAB_BAR_COLOR_DARK : TAB_BAR_COLOR_LIGHT }]} />
+        )}
       </View>
+
+      <SurfaceShadow
+        backdropColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
+        borderRadius={32}
+        color={opacity(shadowColor, isDarkMode ? 1 : 0.04)}
+        opacity={0.8}
+        radius={isDarkMode ? 15 : 6}
+        y={isDarkMode ? 10 : 4}
+      />
+
+      {isDarkMode ? (
+        <TabBarInnerShadow width={width} />
+      ) : (
+        <SurfaceShadow
+          backdropColor={globalColors.white100}
+          borderRadius={32}
+          color={globalColors.grey100}
+          opacity={0.02}
+          radius={3}
+          y={2}
+        />
+      )}
+
+      <View style={[styles.content, styles.clip]}>{children}</View>
+      <Border
+        borderRadius={32}
+        borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : THICK_BORDER_WIDTH}
+        borderColor={{ custom: white(isDarkMode ? 0.04 : 1) }}
+        enableInLightMode
+      />
     </View>
   );
 }
@@ -233,7 +258,7 @@ function TabBarSurface({
 function TabBarInnerShadow({ width }: { width: number }): ReactElement {
   const path = useMemo(() => getSquirclePath({ width, height: 46, borderRadius: 32 }), [width]);
   return (
-    <Canvas style={{ width, height: 46 }}>
+    <Canvas style={StyleSheet.absoluteFill}>
       <Path path={path}>
         <Shadow color={white(0.15)} blur={19.5} dx={0} dy={0} inner shadowOnly />
       </Path>
@@ -259,28 +284,6 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     borderCurve: 'continuous',
     overflow: 'hidden',
-  },
-  shadow: {
-    borderRadius: 32,
-    borderCurve: 'continuous',
-  },
-  darkShadow: {
-    shadowOpacity: 1,
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  lightShadow: {
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  tightShadow: {
-    shadowColor: globalColors.grey100,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
   },
   items: {
     alignItems: 'center',

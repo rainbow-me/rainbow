@@ -8,7 +8,9 @@ import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
+import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
+import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
 import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
 const BADGE_HIGHLIGHT = [white(0.18), white(0)] as const;
@@ -60,47 +62,49 @@ export function SportsBadge({
     ? getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
     : foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
 
+  const backdropColor = color ? backgroundColor : isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
   const borderRadius = size === 28 ? 10 : size === 40 ? 12 : 14;
   const corners = { borderRadius, borderCurve: 'continuous' as const };
 
   return (
-    <View style={isDarkMode && color ? [styles.glow, corners, { shadowColor: color }] : undefined}>
-      <View
-        style={[
-          styles.image,
-          styles.shadow,
-          corners,
-          { width: size, height: size, backgroundColor },
-          size === 44 && !isDarkMode ? styles.headerShadow : undefined,
-        ]}
-      >
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip, corners]}>
-          <LinearGradient colors={BADGE_HIGHLIGHT} style={styles.highlight} />
-        </View>
-
-        {icon ? (
-          <ImgixImage
-            enableFasterImage
-            source={icon.source}
-            resizeMode="contain"
-            size={imageSize}
-            style={{
-              width: imageSize,
-              height: imageSize,
-              transform: [{ translateX: icon.offset?.[0] ?? 0 }, { translateY: icon.offset?.[1] ?? 0 }],
-            }}
-          />
-        ) : (
-          <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
-        )}
-
-        <Border
-          borderRadius={borderRadius}
-          borderWidth={2}
-          borderColor={{ custom: isDarkMode ? white(0.1) : black(size === 44 ? 0.12 : 0.06) }}
-          enableInLightMode
-        />
+    <View style={[styles.image, styles.shadow, corners, { width: size, height: size, backgroundColor }]}>
+      {isDarkMode && color ? (
+        <SurfaceShadow backdropColor={backdropColor} borderRadius={borderRadius} color={color} opacity={0.2} radius={12} />
+      ) : null}
+      <SurfaceShadow
+        backdropColor={backdropColor}
+        borderRadius={borderRadius}
+        color={globalColors.grey100}
+        opacity={0.06}
+        radius={size === 44 && !isDarkMode ? 3 : 6}
+        y={4}
+      />
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip, corners]}>
+        <LinearGradient colors={BADGE_HIGHLIGHT} style={styles.highlight} />
       </View>
+
+      {icon ? (
+        <ImgixImage
+          enableFasterImage
+          source={icon.source}
+          resizeMode="contain"
+          size={imageSize}
+          style={{
+            width: imageSize,
+            height: imageSize,
+            transform: [{ translateX: icon.offset?.[0] ?? 0 }, { translateY: icon.offset?.[1] ?? 0 }],
+          }}
+        />
+      ) : (
+        <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
+      )}
+
+      <Border
+        borderRadius={borderRadius}
+        borderWidth={2}
+        borderColor={{ custom: isDarkMode ? white(0.1) : black(size === 44 ? 0.12 : 0.06) }}
+        enableInLightMode
+      />
     </View>
   );
 }
@@ -162,17 +166,5 @@ const styles = StyleSheet.create({
     right: 0,
     height: 6,
   },
-  shadow: {
-    shadowColor: globalColors.grey100,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  headerShadow: { shadowRadius: 3 },
-  glow: {
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-  },
+  shadow: { elevation: 3 },
 });

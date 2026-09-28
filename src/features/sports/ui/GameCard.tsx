@@ -21,8 +21,10 @@ import {
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
+import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
 import * as i18n from '@/languages';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -33,6 +35,8 @@ import { black, white } from '@/worklets/colors';
 export type SportsGamePress = (gameId: string, offer?: { selection: Selection; outcomeColor: string }) => void;
 
 // ============ Constants ====================================================== //
+
+export const GameCardPathsContext = createContext<Map<string, string> | undefined>(undefined);
 
 const PARTICIPANT_INDICES: readonly (0 | 1)[] = [0, 1];
 
@@ -48,8 +52,6 @@ const STATUS_LABELS: Partial<
 
 const LIGHT_CARD_FILL = [white(0.68), white(0.96)] as const;
 const LIGHT_BADGE_FILL = [white(0.54), white(0.81)] as const;
-
-export const GameCardPathsContext = createContext<Map<string, string> | undefined>(undefined);
 
 // ============ GameCard ======================================================= //
 
@@ -149,25 +151,31 @@ function GameCardSurface({
   const rows = threeWay ? 3 : 2;
   const height = styles.header.height + rows * (styles.row.height + styles.divider.height) + styles.surface.paddingBottom;
 
+  const backgroundColor = isDarkMode ? globalColors.grey100 : undefined;
+  const backdropColor = backgroundColor ?? SPORTS_BACKGROUND_COLOR_LIGHT;
+
   return (
-    <View style={[styles.cardShadow, { shadowOffset: { width: 0, height: isDarkMode ? 4 : 2 } }]} testID={testID}>
-      <View
-        style={[
-          styles.surface,
-          { width, height, backgroundColor: isDarkMode ? globalColors.grey100 : undefined },
-          isDarkMode ? undefined : styles.tightShadow,
-        ]}
-      >
-        <View pointerEvents="none" style={styles.cardBackground}>
-          {isDarkMode ? (
-            <CardInnerShadow width={width} height={height} />
-          ) : (
-            <LinearGradient colors={LIGHT_CARD_FILL} style={StyleSheet.absoluteFill} />
-          )}
-        </View>
-        {children}
-        <Border borderRadius={24} borderWidth={2} borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }} enableInLightMode />
+    <View style={[styles.surface, { width, height, backgroundColor }]} testID={testID}>
+      <SurfaceShadow
+        backdropColor={backdropColor}
+        borderRadius={24}
+        color={globalColors.grey100}
+        opacity={0.06}
+        radius={12}
+        y={isDarkMode ? 4 : 2}
+      />
+      {isDarkMode ? null : (
+        <SurfaceShadow backdropColor={backdropColor} borderRadius={24} color={globalColors.grey100} opacity={0.02} radius={3} y={2} />
+      )}
+      <View pointerEvents="none" style={styles.cardBackground}>
+        {isDarkMode ? (
+          <CardInnerShadow width={width} height={height} />
+        ) : (
+          <LinearGradient colors={LIGHT_CARD_FILL} style={StyleSheet.absoluteFill} />
+        )}
       </View>
+      {children}
+      <Border borderRadius={24} borderWidth={2} borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }} enableInLightMode />
     </View>
   );
 }
@@ -289,13 +297,13 @@ const GameTime = memo(function GameTime({
   return (
     <View style={styles.gameTime}>
       {label ? (
-        <Text color="labelTertiary" size="13pt" weight="bold">
+        <Text align="center" color="labelTertiary" size="13pt" weight="bold">
           {i18n.t(label)}
         </Text>
       ) : status === Game_Status.STATUS_LIVE ? (
         <>
           {clock ? (
-            <Text color="labelTertiary" size="13pt" weight="bold" tabularNumbers>
+            <Text align="center" color="labelTertiary" size="13pt" weight="bold">
               {clock}
             </Text>
           ) : null}
@@ -303,17 +311,17 @@ const GameTime = memo(function GameTime({
           {period ? <GamePeriod isDarkMode={isDarkMode} period={period} /> : null}
 
           {clock || period ? (
-            <Text color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
+            <Text align="center" color="labelTertiary" size="15pt" weight="bold" style={styles.dot}>
               ·
             </Text>
           ) : null}
 
-          <Text color="red" size="13pt" weight="heavy" uppercase>
+          <Text align="center" color="red" size="13pt" weight="heavy" uppercase>
             {i18n.t(i18n.l.sports.live)}
           </Text>
         </>
       ) : startsAt ? (
-        <Text color="labelTertiary" size="13pt" weight="bold">
+        <Text align="center" color="labelTertiary" size="13pt" weight="bold">
           {formatStart(startsAt)}
         </Text>
       ) : null}
@@ -323,24 +331,35 @@ const GameTime = memo(function GameTime({
 
 const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: string; isDarkMode: boolean }): ReactElement {
   return (
-    <View style={isDarkMode ? undefined : styles.periodShadow}>
-      <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.tightShadow]}>
-        {isDarkMode ? null : (
+    <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.lightPeriod]}>
+      {isDarkMode ? null : (
+        <>
+          <SurfaceShadow
+            backdropColor={globalColors.white100}
+            borderRadius={8}
+            color={globalColors.grey100}
+            opacity={0.06}
+            radius={8}
+            y={2}
+          />
+          <SurfaceShadow
+            backdropColor={globalColors.white100}
+            borderRadius={8}
+            color={globalColors.grey100}
+            opacity={0.02}
+            radius={3}
+            y={2}
+          />
           <View pointerEvents="none" style={styles.periodBackground}>
             <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
           </View>
-        )}
+        </>
+      )}
 
-        <Text color="labelTertiary" size="13pt" weight="bold">
-          {period}
-        </Text>
-        <Border
-          borderRadius={8}
-          borderWidth={THICK_BORDER_WIDTH}
-          borderColor={{ custom: white(isDarkMode ? 0.06 : 1) }}
-          enableInLightMode
-        />
-      </View>
+      <Text align="center" color="labelTertiary" size="13pt" weight="bold">
+        {period}
+      </Text>
+      <Border borderRadius={8} borderWidth={THICK_BORDER_WIDTH} borderColor={{ custom: white(isDarkMode ? 0.06 : 1) }} enableInLightMode />
     </View>
   );
 });
@@ -496,26 +515,13 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     borderRadius: 24,
     borderCurve: 'continuous',
+    elevation: 6,
   },
   cardBackground: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 24,
     borderCurve: 'continuous',
     overflow: 'hidden',
-  },
-  cardShadow: {
-    borderRadius: 24,
-    borderCurve: 'continuous',
-    shadowColor: globalColors.grey100,
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  tightShadow: {
-    shadowColor: globalColors.grey100,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 3,
   },
   header: {
     height: 48,
@@ -553,15 +559,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   darkPeriod: { backgroundColor: white(0.07) },
-  periodShadow: {
-    borderRadius: 8,
-    borderCurve: 'continuous',
-    shadowColor: globalColors.grey100,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 4,
-  },
+  lightPeriod: { elevation: 4 },
   dot: { opacity: 0.7 },
   row: {
     height: 52,

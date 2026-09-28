@@ -106,8 +106,9 @@ function determineStatus(
   if (page === 'competitions') return 'none';
 
   const result = state.results[getRequestDestination(request)];
-  if (result && sections.length) return 'none';
-  if (sections.some(section => section.type === 'today' || section.type === 'upcoming')) return 'none';
+  if ((result && sections.length) || sections.some(section => section.type === 'today' || section.type === 'upcoming')) {
+    return 'none';
+  }
 
   return result?.queryKey === queryKey ? 'empty' : 'loading';
 }

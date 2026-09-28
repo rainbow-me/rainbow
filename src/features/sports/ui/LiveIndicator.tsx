@@ -1,4 +1,4 @@
-import { useEffect, type ReactElement } from 'react';
+import { memo, useEffect, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -13,7 +13,7 @@ const PULSE_CONFIG = { duration: time.seconds(1.8), easing: easing.inOut.ease };
 /**
  * Live dot indicator with an optional animated, pulsing ring.
  */
-export function LiveIndicator({ animated = true }: { animated?: boolean }): ReactElement {
+export const LiveIndicator = memo(function LiveIndicator({ animated = true }: { animated?: boolean }): ReactElement {
   const red = useForegroundColor('red');
   const ringColor = opacity(red, 0.3);
 
@@ -23,14 +23,14 @@ export function LiveIndicator({ animated = true }: { animated?: boolean }): Reac
       <View style={[styles.dot, { backgroundColor: red }]} />
     </View>
   );
-}
+});
 
 function AnimatedRing({ color }: { color: string }): ReactElement {
   const pulse = useSharedValue(0);
 
   const ringStyle = useAnimatedStyle(() => ({
-    opacity: 1 - pulse.value * 0.3,
-    transform: [{ scale: 1 + pulse.value * 0.1025 }],
+    opacity: 1 - pulse.value * 0.44,
+    transform: [{ scale: 1 + pulse.value * 0.10825 }],
   }));
 
   useEffect(() => {

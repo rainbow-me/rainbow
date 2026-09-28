@@ -56,5 +56,9 @@ function getCategoryLabel(catalog: SportsCatalog | undefined, destination: Sport
 }
 
 const styles = StyleSheet.create({
-  bar: { position: 'absolute', left: 20, right: 20 },
+  bar: {
+    position: 'absolute',
+    left: 20,
+    right: 20,
+  },
 });
