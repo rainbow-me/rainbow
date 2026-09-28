@@ -20,9 +20,13 @@ const prefetchRegistry: PrefetchRegistry = {
     usePerpAnnotationsStore.getState().setSymbol(market.symbol);
   },
 
-  [Routes.POLYMARKET_EVENT_SCREEN]: ({ eventId, event }) => {
-    prefetchPolymarketEvent(eventId);
-    if (event?.slug) polymarketChartsActions.setSelectedEventSlug(event.slug);
+  [Routes.POLYMARKET_EVENT_SCREEN]: params => {
+    if ('gameId' in params) {
+      prefetchPolymarketEvent(params.gameId);
+      return;
+    }
+    prefetchPolymarketEvent(params.eventId);
+    polymarketChartsActions.setSelectedEventSlug(params.event.slug);
   },
 
   [Routes.POLYMARKET_MARKET_SHEET]: ({ market }) => {
