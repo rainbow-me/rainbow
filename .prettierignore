@@ -18,3 +18,4 @@ src/languages/*.json
 !src/languages/en_US.json
 **/__fixtures__/*.json
 .deps-check-baseline.*.json
+**/generated/**
