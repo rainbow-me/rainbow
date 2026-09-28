@@ -111,22 +111,23 @@ function buildPlacementsById(placements: PlacementDocumentSnapshot[]): Placement
   const placementsById: PlacementsById = {};
 
   for (const doc of placements) {
-    const placementDocument = doc.data();
-    if (!isPlacementDocument(doc.id, placementDocument)) continue;
+    const placement = doc.data();
+    if (!isPlacementDocument(doc.id, placement)) continue;
 
-    const placement = buildPlacement(doc.id, placementDocument);
-    placementsById[placement.id] = placement;
+    const items: PlacementItem[] = [];
+    const itemIds = new Set<string>();
+
+    for (const item of placement.items) {
+      if (!isPlacementItem(item) || itemIds.has(item.id)) continue;
+
+      itemIds.add(item.id);
+      items.push(item);
+    }
+
+    placementsById[placement.id] = { ...placement, items };
   }
 
   return placementsById;
-}
-
-function buildPlacement(id: PlacementId, placement: Placement): Placement {
-  return {
-    ...placement,
-    id,
-    items: placement.items.filter(isPlacementItem),
-  };
 }
 
 function getItems(placement: Placement | undefined): PlacementItem[] {

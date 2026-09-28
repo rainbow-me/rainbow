@@ -11,11 +11,22 @@ import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
 
+type GameTeamsSource = {
+  ticker?: string;
+  homeTeamName?: string;
+  awayTeamName?: string;
+};
+
+const TEAM_FETCH_CONCURRENCY = 4;
+
 export async function fetchGameMetadata(eventTicker: string, abortController?: AbortController | null) {
   try {
     const url = new URL(`${POLYMARKET_GAMMA_API_URL}/games`);
     url.searchParams.set('ticker', eventTicker);
-    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), { abortController, timeout: time.seconds(15) });
+    const { data } = await rainbowFetch<PolymarketGameMetadata>(url.toString(), {
+      signal: abortController?.signal,
+      timeout: time.seconds(15),
+    });
     return data;
   } catch (e) {
     // For some game types this information is not available and returns an error
@@ -38,7 +49,7 @@ async function fetchTeamsByAbbreviations(
       url.searchParams.append('abbreviation', abbr);
     });
     const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
-      abortController,
+      signal: abortController?.signal,
       timeout: time.seconds(15),
     });
     if (!rawTeams) return undefined;
@@ -63,7 +74,7 @@ async function fetchTeamsByNames(
       url.searchParams.append('name', name);
     });
     const { data: rawTeams } = await rainbowFetch<RawPolymarketTeamInfo[]>(url.toString(), {
-      abortController,
+      signal: abortController?.signal,
       timeout: time.seconds(15),
     });
     if (!rawTeams) return undefined;
@@ -73,7 +84,7 @@ async function fetchTeamsByNames(
     }
     return sortTeamsByRequestedNames(teams, names);
   } catch (e) {
-    logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
+    if (!abortController?.signal.aborted) logger.error(new RainbowError('[Polymarket] Error fetching teams info', e));
     return undefined;
   }
 }
@@ -121,73 +132,25 @@ export async function fetchTeamsForEvent(
   }
 }
 
-export type GameTeamsSource = {
-  gameId?: number;
-  ticker?: string;
-  slug: string;
-  homeTeamName?: string;
-  awayTeamName?: string;
-};
+export async function fetchTeamsForGameMarkets(
+  markets: RawPolymarketMarket[],
+  abortController: AbortController | null
+): Promise<Partial<Record<string, PolymarketTeamInfo[]>>> {
+  const events: Record<string, GameTeamsSource> = {};
+  const teams: Partial<Record<string, PolymarketTeamInfo[]>> = {};
 
-export type GameTeamsMetadata = {
-  teams?: PolymarketTeamInfo[];
-  homeTeamName?: string;
-  awayTeamName?: string;
-};
-
-export async function fetchTeamMetadataForGameEvent(
-  event: GameTeamsSource,
-  abortController?: AbortController | null
-): Promise<GameTeamsMetadata | null> {
-  const teams = await fetchTeamsForEvent(event, abortController);
-  return { teams, homeTeamName: event.homeTeamName, awayTeamName: event.awayTeamName };
-}
-
-// Bounds Gamma fan-out (each event triggers up to 3 sequential lookups across hundreds of events).
-const TEAM_METADATA_FETCH_CONCURRENCY = 4;
-
-export async function fetchTeamsForGameEvents(
-  events: GameTeamsSource[],
-  abortController?: AbortController | null,
-  fetchMetadata: (
-    event: GameTeamsSource,
-    abortController?: AbortController | null
-  ) => Promise<GameTeamsMetadata | null> = fetchTeamMetadataForGameEvent
-): Promise<Map<string, GameTeamsMetadata>> {
-  const teamsMap = new Map<string, GameTeamsMetadata>();
-  const gameEventsByTicker = new Map<string, GameTeamsSource>();
-
-  for (const event of events) {
-    if (event.gameId && event.ticker && !gameEventsByTicker.has(event.ticker)) {
-      gameEventsByTicker.set(event.ticker, event);
-    }
+  for (const market of markets) {
+    const event = market.events[0];
+    if (event?.gameId && event.ticker) events[event.ticker] ??= event;
   }
 
-  const gameEvents = Array.from(gameEventsByTicker.values());
-  const results = await mapWithConcurrency(gameEvents, TEAM_METADATA_FETCH_CONCURRENCY, event => fetchMetadata(event, abortController));
-
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) {
-      const { ticker } = gameEvents[index];
-      if (ticker) teamsMap.set(ticker, result.value);
-    }
+  await mapWithConcurrency(Object.keys(events), TEAM_FETCH_CONCURRENCY, async ticker => {
+    if (abortController?.signal.aborted) return;
+    const result = await fetchTeamsForEvent(events[ticker], abortController);
+    if (result) teams[ticker] = result;
   });
 
-  return teamsMap;
-}
-
-export async function fetchTeamsForGameMarkets(markets: RawPolymarketMarket[]): Promise<Map<string, PolymarketTeamInfo[]>> {
-  const marketEvents = markets.map(market => market.events[0]).filter(event => Boolean(event));
-  const teamsMetadataMap = await fetchTeamsForGameEvents(marketEvents);
-  const teamsMap = new Map<string, PolymarketTeamInfo[]>();
-
-  teamsMetadataMap.forEach((metadata, ticker) => {
-    if (metadata.teams) {
-      teamsMap.set(ticker, metadata.teams);
-    }
-  });
-
-  return teamsMap;
+  return teams;
 }
 
 export function parseTeamAbbreviationsFromTicker(ticker: string): { away: string; home: string } | null {
@@ -258,100 +221,6 @@ function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInf
       color,
     };
   });
-}
-
-export type PolymarketEventGameInfo = {
-  live: boolean;
-  ended: boolean;
-  score: string;
-  period: string;
-  elapsed: string;
-  teams?: PolymarketTeamInfo[];
-  startTime?: string;
-};
-
-type GameInfoSource = {
-  live?: boolean;
-  ended?: boolean;
-  score?: string;
-  period?: string;
-  elapsed?: string;
-  teams?: PolymarketTeamInfo[];
-  startTime?: string;
-};
-
-type LiveGameSource = {
-  live?: boolean;
-  ended?: boolean;
-  score?: string;
-  period?: string;
-  elapsed?: string;
-};
-
-export function selectGameInfo({ event, liveGame }: { event: GameInfoSource; liveGame?: LiveGameSource }): PolymarketEventGameInfo {
-  return {
-    live: liveGame?.live ?? event.live ?? false,
-    ended: liveGame?.ended ?? event.ended ?? false,
-    score: liveGame?.score ?? event.score ?? '',
-    period: liveGame?.period ?? event.period ?? '',
-    elapsed: liveGame?.elapsed ?? event.elapsed ?? '',
-    teams: event.teams,
-    startTime: event.startTime,
-  };
-}
-
-export function parsePeriod(value: string) {
-  const [currentPeriod, totalPeriods] = value.split('/');
-  return {
-    currentPeriod,
-    totalPeriods,
-  };
-}
-
-export function parseScore(value: string): { teamAScore?: string; teamBScore?: string; bestOf?: number } {
-  if (value.includes('|')) {
-    return parseBestOfScore(value);
-  }
-  if (value.includes(',')) {
-    return { teamAScore: '', teamBScore: '' };
-    // return parseTennisScore(value);
-  }
-  return parseRegularScore(value);
-}
-
-function parseRegularScore(value: string) {
-  const [teamAScore, teamBScore] = value.split('-').map(part => part.trim());
-  return { teamAScore, teamBScore };
-}
-
-// TODO: This has other considerations, current implementation is not correct
-// function parseTennisScore(value: string) {
-//   const setScores = value
-//     .split(',')
-//     .map(setScore => setScore.trim())
-//     .filter(Boolean);
-//   const teamAScores: string[] = [];
-//   const teamBScores: string[] = [];
-
-//   for (const setScore of setScores) {
-//     const [teamAScore, teamBScore] = setScore.split('-').map(part => part.trim());
-//     if (teamAScore) teamAScores.push(teamAScore);
-//     if (teamBScore) teamBScores.push(teamBScore);
-//   }
-
-//   return {
-//     teamAScore: teamAScores.join(', '),
-//     teamBScore: teamBScores.join(', '),
-//   };
-// }
-
-// Example: "000-000|1-1|Bo3"
-// TODO: Handle UFC format "0-1|KO/TKO"
-function parseBestOfScore(value: string) {
-  const [, scorePart, bestOfPart] = value.split('|');
-  const [teamAScore, teamBScore] = (scorePart ?? '').split('-');
-  const bestOf = bestOfPart ? parseInt(bestOfPart.split('Bo')[1], 10) : undefined;
-  return { teamAScore, teamBScore, bestOf };
 }
 
 export function isDrawMarket(market: PolymarketMarket | GammaMarket): boolean {
