@@ -46,7 +46,7 @@ export function onHandleStatusBar(currentState, prevState) {
     }
 
     // Full light screens - dark status bar and navigation bar.
-    case Routes.KING_OF_THE_HILL:
+    case Routes.SPORTS_SCREEN:
     case Routes.RNBW_MEMBERSHIP_SCREEN:
     case Routes.EXPANDED_ASSET_SHEET_V2:
     case Routes.PROFILE_SCREEN:

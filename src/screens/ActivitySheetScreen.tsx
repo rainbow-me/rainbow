@@ -32,7 +32,7 @@ export function ActivitySheetScreen() {
           overflow: 'hidden',
         }),
       }}
-      testID="king-of-the-hill-profile-screen"
+      testID="activity-sheet-screen"
     >
       <Navbar
         floating
