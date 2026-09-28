@@ -198,12 +198,20 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
-  it('keeps the entered phone and suppresses the generic error for a network policy response', async () => {
+  it.each(['submit', 'resume', 'recovery'])('preserves the phone without a generic error for a %s network policy response', async phase => {
     const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
-    mockCreateUserWithPhone.mockRejectedValue(error);
     flow().setDigits(DIGITS);
+    if (phase === 'submit') {
+      mockCreateUserWithPhone.mockRejectedValueOnce(error);
+    } else if (phase === 'resume') {
+      mockCreateUserWithPhone.mockResolvedValueOnce({ outcome: 'registeredWithoutPasskey' });
+      mockStartSignupResume.mockRejectedValueOnce(error);
+    } else {
+      useSubmitPhoneFlowStore.setState({ state: 'existingAccount' });
+      mockStartRecovery.mockRejectedValueOnce(error);
+    }
 
-    await expect(flow().submit()).resolves.toBe(false);
+    await expect(phase === 'recovery' ? flow().chooseRecovery() : flow().submit()).resolves.toBe(false);
 
     expect(flow().state).toBe('entry');
     expect(flow().digits).toBe(DIGITS);
@@ -427,6 +435,16 @@ describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
     expect(mockStartRecovery).not.toHaveBeenCalled();
     expect(flow().state).toBe('existingAccount');
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('returns to the prompt without logging an error when sign-in is blocked by network policy', async () => {
+    mockSignInWithPhone.mockRejectedValueOnce(new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' })));
+
+    await expect(flow().signInWithExistingPasskey()).resolves.toBe('cancelled');
+
+    expect(flow().state).toBe('existingAccount');
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it.each(['success', 'failure'])('ignores late sign-in %s after setup resets and reopens', async outcome => {

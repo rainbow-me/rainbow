@@ -3,7 +3,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { isPasskeyCancellation } from '../../../services/cashPasskeyService';
+import { isHandledCashError } from '../../../services/cashHandledError';
 import { signInWithPhone } from '../../../services/cashSignInService';
 import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
@@ -67,6 +67,10 @@ async function advanceToChallenge(
     return true;
   } catch (e) {
     if (isStale()) return false;
+    if (isCashUserServiceNetworkPolicyError(e)) {
+      set({ state: 'entry' });
+      return false;
+    }
     logger.error(new RainbowError('[useSubmitPhoneFlow]: Failed to start phone verification challenge', e));
     analytics.track(analytics.event.cashPhoneSubmitFailed, { reason: getTelemetryErrorReason(e) });
     set({ state: 'error' });
@@ -157,7 +161,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return 'signedIn';
     } catch (e) {
       if (get().run !== run) return 'cancelled';
-      if (isPasskeyCancellation(e)) {
+      if (isHandledCashError(e)) {
         set({ state: 'existingAccount' });
         return 'cancelled';
       }
