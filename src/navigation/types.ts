@@ -28,6 +28,7 @@ import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSou
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { type RainbowPosition } from '@/features/positions/types';
+import { type Selection } from '@/features/sports/core/generated/sports';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
 import { type RainbowWallet } from '@/features/wallet/types';
@@ -699,15 +700,16 @@ type ParamsByRoute = {
     event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
-    market: PolymarketMarket;
-    outcomeIndex: number;
+    fromRoute: Route;
     outcomeColor: string;
-    event: PolymarketMarketEvent | PolymarketEvent;
-    fromRoute:
-      | typeof Routes.POLYMARKET_EVENT_SCREEN
-      | typeof Routes.POLYMARKET_MARKET_SHEET
-      | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN;
-  };
+  } & (
+    | { selection: Selection }
+    | {
+        market: PolymarketMarket;
+        outcomeIndex: number;
+        event: PolymarketMarketEvent | PolymarketEvent;
+      }
+  );
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;
   };
