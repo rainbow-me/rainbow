@@ -1,5 +1,33 @@
 {
   "translation": {
+    "sports": {
+      "title": "Sports",
+      "all_sports": "All Sports",
+      "live": "Live",
+      "today": "Today",
+      "upcoming": "This Week",
+      "competitions": "Leagues",
+      "search": "Search sports",
+      "search_results": "Games",
+      "search_empty": "No games found",
+      "empty": "No games available",
+      "error": "Unable to load games",
+      "event_error": "Unable to load event",
+      "event_unavailable": "Event unavailable",
+      "retry": "Try again",
+      "load_more": "Load more",
+      "show_more": "Show %{count} more",
+      "show_less": "Show less",
+      "cancel": "Cancel",
+      "more": "More",
+      "draw": "Draw",
+      "final": "Final",
+      "delayed": "Delayed",
+      "suspended": "Suspended",
+      "postponed": "Postponed",
+      "cancelled": "Cancelled",
+      "entry_error": "This game or offer is no longer available. Please try again."
+    },
     "account": {
       "tab_tokens": "Tokens",
       "tab_claimables": "Claimables",
