@@ -2,11 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.12.4
 //   protoc               unknown
-// source: apiproxy/sports/sports.proto
+// source: sports/sports.proto
 
 /* eslint-disable */
 
-export const protobufPackage = "apiproxy.sports";
+export const protobufPackage = "sports";
 
 /** SportsCatalog describes editorial navigation. Its revision belongs to the enclosing response. */
 export interface SportsCatalog {
@@ -377,8 +377,8 @@ export interface SearchGamesRequest {
  * per Live/Today/Upcoming scope section. Directory sports have one Live section.
  * Global Live assigns each game to the first applicable catalog live_group_ids entry,
  * or its first competition_ids entry when no curated group applies.
- * Games are returned as a flat list ordered by promotion rank (unlisted last), start time ascending,
- * then canonical game ID lexicographically. All relevant source pages are traversed before returning;
+ * Games are returned as a flat list ordered by the service's ranking policy.
+ * All relevant source pages are traversed before returning;
  * a source failure never returns a successful prefix.
  */
 export interface GetGamesResponse {
