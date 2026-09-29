@@ -1540,6 +1540,11 @@
         "description": "Turn off your VPN or proxy and try again.",
         "continue": "Continue"
       },
+      "access_unavailable": {
+        "title": "Unavailable",
+        "description": "Sorry, this feature is unavailable at the moment.",
+        "got_it": "Got it"
+      },
       "deposit_intro": {
         "introducing": "Introducing",
         "title": "Cash Deposits",

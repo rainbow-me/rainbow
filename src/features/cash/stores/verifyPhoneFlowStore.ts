@@ -3,7 +3,7 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
-import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { isCashAccessRefusedError } from '../services/cashAccessRefusal';
 import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
 import {
   finishSignupResume,
@@ -112,7 +112,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       if (challenge.kind === 'resume') resumeCredential = result;
       const kycResult = resumeCredential
         ? await readKycOutcome(resumeCredential.bootstrapToken).catch(error => {
-            if (isCashUserServiceNetworkPolicyError(error)) throw error;
+            if (isCashAccessRefusedError(error)) throw error;
             return null;
           })
         : null;
@@ -144,7 +144,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
         return 'failed';
       }
-      if (isCashUserServiceNetworkPolicyError(e)) {
+      if (isCashAccessRefusedError(e)) {
         set({
           pendingResumeStatus: challenge.kind === 'resume' && resumeCredential ? { challenge, credential: resumeCredential } : null,
           state: 'entry',
@@ -189,7 +189,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
       set({ code: '', pendingResumeStatus: null });
     } catch (e) {
       if (!sessionStore.getIsCurrentChallenge(challenge)) return;
-      if (isCashUserServiceNetworkPolicyError(e)) return;
+      if (isCashAccessRefusedError(e)) return;
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to resend code', e));
       analytics.track(analytics.event.cashPhoneResendFailed, { reason: getTelemetryErrorReason(e), mode: challenge.kind });
     } finally {

@@ -26,7 +26,7 @@ export const useCardRemovalFlowStore = createBaseStore<CardRemovalFlowStore>((se
       useCashPaymentMethodStore.getState().removeCard(card.id);
       return 'removed';
     } catch (error) {
-      // A cancelled sign-in or policy block is a deliberate stop, not a failure.
+      // A cancelled sign-in or access refusal is a deliberate stop, not a failure.
       if (isHandledCashError(error)) return 'cancelled';
       logger.error(new RainbowError('[cardRemovalFlowStore]: Failed to remove card', error));
       return 'failed';

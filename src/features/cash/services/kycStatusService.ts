@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
 
-import { isCashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
+import { isCashAccessRefusedError } from './cashAccessRefusal';
 import { getUserStatus, toKycOutcome, type KycOutcome, type KycRejectionReason } from './userClient';
 
 export async function readKycOutcome(
@@ -13,7 +13,7 @@ export async function readKycOutcome(
     return { outcome: toKycOutcome(kycStatus, kycRejectionReason), kycRejectionReason };
   };
   return check().catch(error => {
-    if (isCashUserServiceNetworkPolicyError(error)) throw error;
+    if (isCashAccessRefusedError(error)) throw error;
     return delay(time.seconds(2)).then(check);
   });
 }

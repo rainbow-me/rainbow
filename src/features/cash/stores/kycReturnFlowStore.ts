@@ -2,7 +2,7 @@ import { createBaseStore } from '@storesjs/stores';
 
 import { logger } from '@/logger';
 
-import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { isCashAccessRefusedError } from '../services/cashAccessRefusal';
 import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
 import { type KycOutcome, type KycRejectionReason } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
@@ -68,7 +68,7 @@ export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, g
       }
 
       if (!read.ok) {
-        if (isCashUserServiceNetworkPolicyError(read.error)) return finish('blocked');
+        if (isCashAccessRefusedError(read.error)) return finish('blocked');
         logger.warn('[kycReturnFlowStore]: KYC status check failed', { error: read.error });
       }
       const outcome = resolveReturnOutcome(read.ok ? read.verdict : null, after.kycSubmission);

@@ -3,7 +3,7 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
-import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import {
   finishSignupResume,
   getUserStatus,
@@ -253,7 +253,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
   });
 
   it('keeps a resumed signup credential for a manual status retry after a network policy response', async () => {
-    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const policyError = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
     mockGetUserStatus.mockRejectedValueOnce(policyError).mockResolvedValueOnce({ kycStatus: KycStatus.Unspecified });
     flow().setCode(CODE);
@@ -280,7 +280,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
     const dateNow = jest.spyOn(Date, 'now').mockReturnValue(now);
     const expiringToken = { bootstrapToken: 'bst_expiring', expiresAt: now + 1 };
     const refreshedToken = { bootstrapToken: 'bst_refreshed', expiresAt: now + 60_000 };
-    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const policyError = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     submitPhone({ kind: 'resume', resumeId: 'rcv_1' });
     mockFinishSignupResume
       .mockResolvedValueOnce({ outcome: 'verified', ...expiringToken })

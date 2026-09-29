@@ -394,13 +394,13 @@ export const AddCashSheet = memo(function AddCashSheet() {
     };
   }, []);
 
-  // On open, replay an interrupted submit and retain any id parked by the network-policy warning;
+  // On open, replay an interrupted submit and retain any id parked by an access-refusal notice;
   // otherwise clear the settled previous run so the sheet starts fresh.
   useEffect(() => {
     const { status } = useCashBuyOrderStore.getState();
     if (selectCashBuyPhase({ status }) === 'pending') {
       cashBuyOrderActions.resumePendingSubmission();
-    } else if (status.step !== 'networkPolicy') {
+    } else if (status.step !== 'accessRefused') {
       cashBuyOrderActions.reset();
     }
   }, []);

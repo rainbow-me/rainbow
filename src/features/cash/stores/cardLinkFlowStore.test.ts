@@ -4,8 +4,8 @@ import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { linkCardWithVault, type CardLinkProgress } from '../services/cardLinkService';
+import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
-import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
 import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
@@ -87,7 +87,7 @@ describe('cardLinkFlowStore', () => {
 
   it('retries only card-link completion after a network policy response', async () => {
     const progress: CardLinkProgress = { cardBrand: CARD_BRAND, providerCardId: 'provider-card-1' };
-    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const error = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     mockLinkCardWithVault
       .mockImplementationOnce(async (_store, _brand, _controller, options) => {
         options.onProgress(progress);
