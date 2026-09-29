@@ -8,6 +8,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 import { BetButton } from '@/features/polymarket/components/BetButton';
 import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
@@ -21,6 +22,7 @@ import {
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
+import { badgeShadows } from '@/features/sports/ui/badgeShadows';
 import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
@@ -107,7 +109,7 @@ export const GameCard = memo(function GameCard({
               {participant ? (
                 <View style={styles.row}>
                   <View style={styles.participant}>
-                    <ParticipantIdentity participant={participant} sportId={sportId} isDarkMode={isDarkMode} />
+                    <GameRowIdentity identity={participant} sportId={sportId} isDarkMode={isDarkMode} />
                     <GameScore score={game.score} participantIndex={index} />
                   </View>
 
@@ -128,7 +130,7 @@ export const GameCard = memo(function GameCard({
         {threeWay ? (
           <>
             <GameDivider isDarkMode={isDarkMode} />
-            <GameDrawRow isDarkMode={isDarkMode} gameId={gameId} selection={game.winner?.draw} onPress={onPress} />
+            <GameDrawRow isDarkMode={isDarkMode} gameId={gameId} sportId={sportId} selection={game.winner?.draw} onPress={onPress} />
           </>
         ) : null}
       </GameCardSurface>
@@ -370,16 +372,18 @@ const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: st
 
 // ============ Game Rows ====================================================== //
 
-const ParticipantIdentity = memo(function ParticipantIdentity({
+const GameRowIdentity = memo(function GameRowIdentity({
   isDarkMode,
-  participant,
+  identity,
   sportId,
 }: {
   isDarkMode: boolean;
-  participant: Participant;
+  identity: Participant | 'draw';
   sportId?: string;
 }): ReactElement {
-  const { name, shortName, imageUrl } = participant;
+  const draw = identity === 'draw';
+  const name = draw ? i18n.t(i18n.l.sports.draw) : identity.name;
+  const shortName = draw ? undefined : identity.shortName;
   const compact = sportId === 'tennis' || sportId === 'esports';
   const imageSize = sportId === 'tennis' ? 24 : sportId === 'esports' ? 32 : 36;
   const hasPrefix = shortName && name.endsWith(` ${shortName}`);
@@ -388,13 +392,17 @@ const ParticipantIdentity = memo(function ParticipantIdentity({
   return (
     <>
       <View style={[styles.logo, compact ? styles.compactLogo : undefined]}>
-        <SportsImage
-          isDarkMode={isDarkMode}
-          imageUrl={imageUrl}
-          name={name}
-          size={imageSize}
-          width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
-        />
+        {draw ? (
+          <DrawIcon isDarkMode={isDarkMode} />
+        ) : (
+          <SportsImage
+            isDarkMode={isDarkMode}
+            imageUrl={identity.imageUrl}
+            name={name}
+            size={imageSize}
+            width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
+          />
+        )}
       </View>
 
       <View style={styles.name}>
@@ -404,7 +412,7 @@ const ParticipantIdentity = memo(function ParticipantIdentity({
           </Text>
         ) : null}
 
-        <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
+        <Text color={draw ? 'labelSecondary' : 'label'} size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
           {hasPrefix ? shortName : name}
         </Text>
       </View>
@@ -476,30 +484,48 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
 const GameDrawRow = memo(function GameDrawRow({
   isDarkMode,
   gameId,
+  sportId,
   selection,
   onPress,
 }: {
   gameId: string;
+  sportId?: string;
   selection?: Selection;
   isDarkMode: boolean;
   onPress: SportsGamePress;
 }): ReactElement {
   return (
-    <View style={[styles.row, styles.draw]}>
-      <Text color="labelSecondary" size="15pt" weight="bold">
-        {i18n.t(i18n.l.sports.draw)}
-      </Text>
+    <View style={styles.row}>
+      <View style={styles.participant}>
+        <GameRowIdentity identity="draw" sportId={sportId} isDarkMode={isDarkMode} />
+      </View>
       {selection ? (
         <BetButton
           isDarkMode={isDarkMode}
           key={selection.tokenId}
           liveTokenId={getPolymarketTokenId(selection.tokenId, 'midpoint')}
+          color={isDarkMode ? globalColors.blueGrey90 : globalColors.blueGrey70}
           onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
         />
       ) : null}
     </View>
   );
 });
+
+function DrawIcon({ isDarkMode }: { isDarkMode: boolean }) {
+  const backgroundColor = isDarkMode ? foregroundColors.fillTertiary.dark : globalColors.white100;
+
+  return (
+    <View style={[styles.drawIconCorners, isDarkMode ? undefined : badgeShadows.soft]}>
+      <View style={[styles.drawIcon, styles.drawIconCorners, { backgroundColor }, isDarkMode ? undefined : badgeShadows.tight]}>
+        <TextIcon color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="icon 17px" weight="semibold">
+          {'􀆄'}
+        </TextIcon>
+        {isDarkMode ? <Border borderRadius={10} borderWidth={THICK_BORDER_WIDTH} borderColor="separatorSecondary" /> : null}
+      </View>
+    </View>
+  );
+}
 
 // ============ Utilities ====================================================== //
 
@@ -597,7 +623,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  draw: { justifyContent: 'space-between' },
+  drawIcon: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  drawIconCorners: { borderRadius: 10, borderCurve: 'continuous' },
   divider: { height: 2, paddingLeft: 2 },
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },

@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
@@ -12,6 +11,7 @@ import { type SportsHost } from '@/features/sports/core/browse';
 import { type SportsScope } from '@/features/sports/core/catalog';
 import { type SportsSection } from '@/features/sports/core/sections';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
+import { badgeShadows } from '@/features/sports/ui/badgeShadows';
 import { LiveIndicator } from '@/features/sports/ui/LiveIndicator';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -64,8 +64,8 @@ export function SportsSectionHeading({
         </Text>
 
         <View style={styles.accessory}>
-          <View style={isDarkMode ? undefined : [styles.badgeShadow, styles.countCorners]}>
-            <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : styles.tightBadgeShadow]}>
+          <View style={isDarkMode ? undefined : [badgeShadows.soft, styles.countCorners]}>
+            <View style={[styles.count, styles.countCorners, isDarkMode ? styles.darkCount : badgeShadows.tight]}>
               {isDarkMode ? null : (
                 <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.countCorners, styles.clip]}>
                   <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
@@ -127,8 +127,8 @@ export function SportsSectionToggle({
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
       <View style={styles.expand}>
-        <View style={isDarkMode ? undefined : [styles.badgeShadow, styles.expandCorners]}>
-          <View style={[styles.expandIcon, styles.expandCorners, isDarkMode ? styles.darkExpandIcon : styles.tightBadgeShadow]}>
+        <View style={isDarkMode ? undefined : [badgeShadows.soft, styles.expandCorners]}>
+          <View style={[styles.expandIcon, styles.expandCorners, isDarkMode ? styles.darkExpandIcon : badgeShadows.tight]}>
             {isDarkMode ? null : (
               <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.expandCorners, styles.clip]}>
                 <LinearGradient colors={LIGHT_BADGE_GRADIENT} style={StyleSheet.absoluteFill} />
@@ -203,17 +203,4 @@ const styles = StyleSheet.create({
   expandCorners: { borderRadius: 10, borderCurve: 'continuous' },
   clip: { overflow: 'hidden' },
   darkExpandIcon: { backgroundColor: white(0.16) },
-  badgeShadow: {
-    shadowColor: globalColors.grey100,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  tightBadgeShadow: {
-    shadowColor: globalColors.grey100,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 3,
-  },
 });
