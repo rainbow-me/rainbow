@@ -53,6 +53,7 @@ const VIEWABILITY_SELECTORS: ViewabilitySelectors<ViewToken<Row>> = {
 
 export function SportsGamesList({
   host,
+  backgroundColor: customBackgroundColor,
   topInset = 0,
   bottomInset,
   onGamePress,
@@ -60,6 +61,7 @@ export function SportsGamesList({
   ref,
 }: {
   host: SportsHost;
+  backgroundColor?: string;
   topInset?: number;
   bottomInset: number;
   onGamePress: SportsGamePress;
@@ -183,7 +185,7 @@ export function SportsGamesList({
   const refreshControl = useMemo(() => <RefreshControl onRefresh={() => refreshSportsPage(host)} />, [host]);
 
   const { backgroundColor, containerStyle, contentContainerStyle, scrollIndicatorInsets, headerStyle, header, footer } = useMemo(() => {
-    const backgroundColor = isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
+    const backgroundColor = customBackgroundColor ?? (isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT);
 
     let contentPaddingTop = 0;
     if (isSearching) contentPaddingTop = hasDirectory ? 12 : 20;
@@ -209,6 +211,7 @@ export function SportsGamesList({
   }, [
     back,
     bottomInset,
+    customBackgroundColor,
     foregroundColors,
     hasDirectory,
     host,

@@ -51,6 +51,7 @@ const PolymarketBrowseEventsList = () => {
         <SportsGamesList
           ref={sportsGamesListRef}
           host="predictions"
+          backgroundColor={backgroundColor}
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}
           scrollOffset={scrollOffset}
