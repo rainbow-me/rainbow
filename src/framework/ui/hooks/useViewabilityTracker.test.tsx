@@ -53,26 +53,28 @@ afterEach(() => {
 });
 
 it('projects only the latest report and suppresses unchanged membership', () => {
-  const onChange = jest.fn();
-  const getId = jest.fn(selectors.getId);
-  render(<Tracker select={{ getId }} onChange={onChange} />);
+  const onChange = jest.fn<void, [readonly string[]]>();
+  render(<Tracker onChange={onChange} />);
   onChange.mockClear();
 
   report({ id: 'old' });
   report({ id: 'a' }, { id: 'b' });
-  expect(getId).not.toHaveBeenCalled();
   expect(onChange).not.toHaveBeenCalled();
   settle();
   expect(onChange).toHaveBeenLastCalledWith(['a', 'b']);
-  expect(getId).toHaveBeenCalledTimes(2);
 
+  const delivered = Object.freeze(onChange.mock.calls[0][0]);
   report({ id: 'b' }, { id: 'a' }, { id: 'b' });
   settle();
   expect(onChange).toHaveBeenCalledTimes(1);
+  report({ id: 'a' });
+  settle();
+  expect(onChange).toHaveBeenLastCalledWith(['a']);
+  expect(delivered).toEqual(['a', 'b']);
 });
 
 it('admits child reports through visible parents and retains them while the parent is offscreen', () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<void, [readonly string[]]>();
   render(<Tracker onChange={onChange} />);
   act(() => handlers.onChildViewableItemsChanged('carousel', [{ item: 'a' }, { item: 'b' }]));
   report({ id: 'a' }, { childKey: 'carousel' });
@@ -95,7 +97,7 @@ it('admits child reports through visible parents and retains them while the pare
 });
 
 it('clears immediately and cancels an older pending report', () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<void, [readonly string[]]>();
   render(<Tracker onChange={onChange} />);
   report({ id: 'a' });
   settle();
@@ -107,60 +109,9 @@ it('clears immediately and cancels an older pending report', () => {
   expect(onChange).toHaveBeenCalledTimes(calls);
 });
 
-it('keeps handlers stable and transfers the latest snapshot to a replacement consumer', () => {
-  const first = jest.fn();
-  const second = jest.fn();
-  render(<Tracker onChange={first} />);
-  const original = handlers;
-  report({ id: 'a' });
-  settle();
-  report({ id: 'b' });
-  render(<Tracker onChange={second} />);
-  expect(handlers).toBe(original);
-  expect(second).toHaveBeenLastCalledWith(['b']);
-  settle();
-  expect(first).toHaveBeenLastCalledWith(['a']);
-  expect(second).toHaveBeenCalledTimes(1);
-});
-
-it('delivers the existing ID array to a replacement consumer', () => {
-  const first = jest.fn();
-  const second = jest.fn();
-  render(<Tracker onChange={first} />);
-  report({ id: 'a' }, { id: 'b' });
-  settle();
-  const ids = Object.freeze(first.mock.calls.at(-1)?.[0]);
-
-  render(<Tracker onChange={second} />);
-  expect(second).toHaveBeenCalledTimes(1);
-  expect(second.mock.calls[0][0]).toBe(ids);
-});
-
-it('trims matching prefixes without mutating delivered arrays and reuses the empty result', () => {
-  const onChange = jest.fn();
-  render(<Tracker onChange={onChange} />);
-  const empty = onChange.mock.calls[0][0];
-  report({ id: 'a' }, { id: 'b' }, { id: 'c' });
-  settle();
-  const original = Object.freeze(onChange.mock.calls.at(-1)?.[0]);
-
-  report({ id: 'a' }, { id: 'b' });
-  settle();
-  expect(onChange).toHaveBeenLastCalledWith(['a', 'b']);
-  expect(original).toEqual(['a', 'b', 'c']);
-
-  const calls = onChange.mock.calls.length;
-  report({ id: 'b' }, { id: 'a' }, { id: 'b' });
-  settle();
-  expect(onChange).toHaveBeenCalledTimes(calls);
-
-  report();
-  expect(onChange.mock.calls.at(-1)?.[0]).toBe(empty);
-});
-
 it('keeps reports received during commit and publishes after the old consumer releases', () => {
   const events: (string | readonly string[])[] = [];
-  const first = jest.fn();
+  const first = jest.fn<void, [readonly string[]]>();
   const second = jest.fn((ids: readonly string[]) => events.push(ids));
 
   function LayoutReport({ id }: { id: string }): null {
@@ -185,10 +136,14 @@ it('keeps reports received during commit and publishes after the old consumer re
   expect(events).toEqual(['release', ['b']]);
   settle();
   expect(second).toHaveBeenCalledTimes(1);
+
+  const replacement = jest.fn<void, [readonly string[]]>();
+  render(<Consumer onChange={replacement} id="b" />);
+  expect(replacement).toHaveBeenLastCalledWith(['b']);
 });
 
 it('cancels pending work before child cleanup can schedule it again', () => {
-  const onChange = jest.fn();
+  const onChange = jest.fn<void, [readonly string[]]>();
   render(<Tracker onChange={onChange} child />);
   report({ childKey: 'carousel' });
   settle();

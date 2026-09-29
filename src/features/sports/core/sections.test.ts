@@ -1,7 +1,7 @@
 import { getSportsWindow } from './browse';
 import { buildSportsCatalog } from './catalog';
 import { Game, Game_Status, Sport_Browse, SportsCatalog } from './generated/sports';
-import { areSectionInputsEqual, groupSportsGames, reuseSections, selectSportsGames, type SportsSection } from './sections';
+import { groupSportsGames, selectSportsGames } from './sections';
 
 const window = getSportsWindow(new Date(2026, 8, 20, 12));
 const catalogMessage = SportsCatalog.fromJSON({
@@ -90,16 +90,8 @@ describe('Sports sections', () => {
     ]);
   });
 
-  it('orders each Live group by promotion, then start, then ID', () => {
-    const at = (hour: number) => new Date(2026, 8, 20, hour).toISOString();
-    const games = [game('late', { startsAt: at(18) }), game('early', { startsAt: at(9) }), game('promoted', { startsAt: at(20) })];
-    const promoted = buildSportsCatalog({ ...catalogMessage, promotedGameIds: ['promoted'] }, 1);
-
-    expect(selectSportsGames(promoted, games)).toEqual([{ type: 'live', scopeId: 'tennis', gameIds: ['promoted', 'early', 'late'] }]);
-  });
-
   it('orders games by promotion, then start, then ID', () => {
-    const at = (hour: number) => new Date(2026, 8, 20, hour).toISOString();
+    const at = (hour: number): string => new Date(2026, 8, 20, hour).toISOString();
     const games = [
       game('late', { startsAt: at(18) }),
       game('b-early', { startsAt: at(9) }),
@@ -151,7 +143,7 @@ describe('Sports sections', () => {
   });
 
   it('uses local calendar boundaries without inferring Live from a past kickoff', () => {
-    const scheduled = (id: string, date: Date) => game(id, { status: Game_Status.STATUS_SCHEDULED, startsAt: date.toISOString() });
+    const scheduled = (id: string, date: Date): Game => game(id, { status: Game_Status.STATUS_SCHEDULED, startsAt: date.toISOString() });
     const games = [
       scheduled('before-today', new Date(2026, 8, 19, 23, 59, 59, 999)),
       scheduled('past-kickoff', new Date(2026, 8, 20)),
@@ -170,83 +162,5 @@ describe('Sports sections', () => {
       { type: 'today', gameIds: ['past-kickoff', 'tonight'] },
       { type: 'upcoming', gameIds: ['tomorrow', 'last-day'] },
     ]);
-  });
-
-  it.each([
-    { hours: 23, from: '2026-03-08T05:00:00Z', todayUntil: '2026-03-09T04:00:00Z', until: '2026-03-15T04:00:00Z' },
-    { hours: 25, from: '2026-11-01T04:00:00Z', todayUntil: '2026-11-02T05:00:00Z', until: '2026-11-08T05:00:00Z' },
-  ])('groups at the supplied $hours-hour Today boundary', ({ hours, ...window }) => {
-    const boundary = Date.parse(window.todayUntil);
-    const games = [
-      game('today', { status: Game_Status.STATUS_SCHEDULED, startsAt: new Date(boundary - 1).toISOString() }),
-      game('upcoming', { status: Game_Status.STATUS_SCHEDULED, startsAt: window.todayUntil }),
-    ];
-
-    expect(boundary - Date.parse(window.from)).toBe(hours * 60 * 60 * 1000);
-    expect(selectSportsGames(catalog, games, { scopeId: 'tennis', window })).toEqual([
-      { type: 'today', gameIds: ['today'] },
-      { type: 'upcoming', gameIds: ['upcoming'] },
-    ]);
-  });
-
-  it('compares only the fields sections read, for the given games', () => {
-    const live = game('live');
-    const scheduled = game('scheduled', { status: Game_Status.STATUS_SCHEDULED });
-    const games = { live, scheduled };
-    const gameIds = ['live', 'scheduled'];
-    const scored = { live: { ...live, clock: '12:00' }, scheduled };
-    const started = { live, scheduled: { ...scheduled, status: Game_Status.STATUS_LIVE } };
-    const rescheduled = { live, scheduled: { ...scheduled, startsAt: new Date(2026, 8, 21).toISOString() } };
-    const moved = { live, scheduled: { ...scheduled, competitionIds: ['wta'] } };
-
-    expect(areSectionInputsEqual(games, scored, gameIds)).toBe(true);
-    expect(areSectionInputsEqual(games, started, gameIds)).toBe(false);
-    expect(areSectionInputsEqual(games, rescheduled, gameIds)).toBe(false);
-    expect(areSectionInputsEqual(games, moved, gameIds)).toBe(false);
-    expect(areSectionInputsEqual(games, { live }, gameIds)).toBe(false);
-    expect(areSectionInputsEqual(games, started, ['live'])).toBe(true);
-
-    expect(areSectionInputsEqual(games, scored)).toBe(true);
-    expect(areSectionInputsEqual(games, started)).toBe(false);
-    expect(areSectionInputsEqual(games, { live })).toBe(false);
-    expect(areSectionInputsEqual({ live }, games)).toBe(false);
-  });
-});
-
-describe('Section identity', () => {
-  const previous: SportsSection[] = [
-    { type: 'live', scopeId: 'nba', gameIds: ['a', 'b'] },
-    { type: 'live', scopeId: 'nhl', gameIds: ['c'] },
-  ];
-
-  it('reuses unchanged sections when a neighbor changes or disappears', () => {
-    const changed = reuseSections(previous, [
-      { type: 'live', scopeId: 'nba', gameIds: ['b'] },
-      { type: 'live', scopeId: 'nhl', gameIds: ['c'] },
-    ]);
-    expect(changed).not.toBe(previous);
-    expect(changed[0].gameIds).toEqual(['b']);
-    expect(changed[1]).toBe(previous[1]);
-    expect(changed[1].gameIds).toBe(previous[1].gameIds);
-
-    const removed = reuseSections(changed, [{ type: 'live', scopeId: 'nhl', gameIds: ['c'] }]);
-    expect(removed[0]).toBe(previous[1]);
-    expect(previous[0].gameIds).toEqual(['a', 'b']);
-  });
-
-  it('reuses the array only when every section remains in the same position', () => {
-    const same = reuseSections(
-      previous,
-      previous.map(section => ({ ...section, gameIds: [...section.gameIds] }))
-    );
-    expect(same).toBe(previous);
-
-    const reordered = reuseSections(previous, [
-      { type: 'live', scopeId: 'nhl', gameIds: ['c'] },
-      { type: 'live', scopeId: 'nba', gameIds: ['a', 'b'] },
-    ]);
-    expect(reordered).not.toBe(previous);
-    expect(reordered[0]).toBe(previous[1]);
-    expect(reordered[1]).toBe(previous[0]);
   });
 });

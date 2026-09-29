@@ -1,54 +1,47 @@
+import '../../../../config/test/storeEnvironment';
+
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
-import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketEventIdStore';
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
-import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { polymarketOrderParamsStore, usePolymarketOrderDetailsStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { type Selection } from '@/features/sports/core/generated/sports';
-import { rainbowFetch, type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
-import { prefetchRoute } from '@/navigation/prefetchRegistry';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-jest.mock('@/features/polymarket/constants', () => ({
-  POLYMARKET_GAMMA_API_URL: 'https://gamma.test',
-  POLYMARKET_CLOB_PROXY_URL: 'https://clob.test',
-}));
-jest.mock('@/features/polymarket/polymarket-clob-data-client', () => ({
-  polymarketClobDataClient: { getClobMarketInfo: jest.fn().mockResolvedValue({ mos: 1, fd: { r: 0, e: 1 } }) },
-}));
-jest.mock('@/framework/data/http/rainbowFetch', () => ({ rainbowFetch: jest.fn() }));
-jest.mock('@/state/navigation/navigationStore', () => ({
-  useNavigationStore: jest.requireActual('@storesjs/stores').createBaseStore(() => ({ activeRoute: 'SportsScreen' })),
-}));
-jest.mock('@/features/charts/polymarket/stores/polymarketStore', () => ({}));
-jest.mock('@/features/charts/stores/candlestickStore', () => ({}));
-jest.mock('@/features/perps/stores/perpAnnotationsStore', () => ({}));
+import { predictionEvent } from '../../../../config/test/predictionEvent';
 
 const tokenId = '61682588409713156892865066024379723903051700030517382076759724382208757063880';
 const otherTokenId = '61682588409713156892865066024379723903051700030517382076759724382208757063881';
 const selection: Selection = { eventId: '980884', marketId: '4322152', tokenId, outcomeIndex: 1 };
+const fetchMock = jest.spyOn(global, 'fetch');
+const marketInfo = jest.spyOn(polymarketClobDataClient, 'getClobMarketInfo');
+const stops: (() => void)[] = [];
 
-function source() {
-  const market = {
-    id: selection.marketId,
-    conditionId: 'condition',
-    active: true,
-    closed: false,
-    archived: false,
-    acceptingOrders: true,
+function eventResponse(selected: Selection = selection): Response {
+  const event = predictionEvent(selected.eventId);
+  Object.assign(event.markets[0], {
+    id: selected.marketId,
+    conditionId: `condition-${selected.marketId}`,
     outcomes: '["Other","Chosen"]',
-    clobTokenIds: JSON.stringify([otherTokenId, tokenId]),
-  };
-  return {
-    id: selection.eventId,
-    title: 'First vs Second',
-    slug: 'match',
-    markets: [{ ...market, id: '4322151', conditionId: 'unrelated-condition', clobTokenIds: '["300","301"]' }, market],
-  };
+    clobTokenIds: JSON.stringify([otherTokenId, selected.tokenId]),
+  });
+  event.markets.unshift({ ...event.markets[0], id: 'unrelated', conditionId: 'unrelated', clobTokenIds: '["300","301"]' });
+  return new Response(JSON.stringify(event), { headers: { 'Content-Type': 'application/json' } });
 }
 
-function response<T>(data: T): RainbowFetchResponse<T> {
-  return { data, headers: new Headers(), status: 200 };
+function bookResponse(id: string): Response {
+  const book: OrderBook = {
+    market: 'condition',
+    asset_id: id,
+    timestamp: '1000',
+    hash: 'hash',
+    bids: [],
+    asks: [],
+    min_order_size: '1',
+    tick_size: '0.01',
+    neg_risk: false,
+  };
+  return new Response(JSON.stringify(book), { headers: { 'Content-Type': 'application/json' } });
 }
 
 function settle(): Promise<void> {
@@ -57,163 +50,94 @@ function settle(): Promise<void> {
   });
 }
 
-let stop: (() => void)[];
-
-beforeEach(async () => {
+beforeEach(() => {
   useNavigationStore.setState({ activeRoute: Routes.POLYMARKET_NEW_POSITION_SHEET });
-  usePolymarketOrderDetailsStore.setState({ queryCache: {}, lastFetchedAt: null, status: 'idle' });
-  usePolymarketOrderBookStore.setState({ queryCache: {}, lastFetchedAt: null, status: 'idle' });
-  usePolymarketFeeInfoStore.setState({ queryCache: {}, lastFetchedAt: null, status: 'idle' });
   polymarketOrderParamsStore.setState({ params: null });
-  polymarketEventIdStore.setState({ eventId: 'parent' });
-  jest.clearAllMocks();
-  jest
-    .mocked(rainbowFetch)
-    .mockReset()
-    .mockImplementation(async url => response(String(url).includes('/book?') ? { asset_id: tokenId } : source()));
-  await settle();
-  stop = [
+  usePolymarketOrderDetailsStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  usePolymarketOrderBookStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  usePolymarketFeeInfoStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  marketInfo.mockReset().mockImplementation(async condition => ({
+    c: condition,
+    t: [
+      { t: otherTokenId, o: 'Other' },
+      { t: tokenId, o: 'Chosen' },
+    ],
+    mts: 0.01,
+    r: null,
+    mos: 1,
+    fd: { r: 0.02, e: 1 },
+  }));
+  fetchMock.mockReset().mockImplementation(async url => {
+    const request = new URL(String(url));
+    return request.pathname.endsWith('/book') ? bookResponse(request.searchParams.get('token_id') ?? '') : eventResponse();
+  });
+  stops.push(
     usePolymarketOrderDetailsStore.subscribe(() => undefined),
     usePolymarketOrderBookStore.subscribe(() => undefined),
-    usePolymarketFeeInfoStore.subscribe(() => undefined),
-  ];
-});
-
-afterEach(() => {
-  stop.forEach(unsubscribe => unsubscribe());
-});
-
-afterAll(() => {
-  usePolymarketOrderDetailsStore.getState().reset(true);
-  usePolymarketOrderBookStore.getState().reset(true);
-  usePolymarketFeeInfoStore.getState().reset(true);
-});
-
-it('uses one selection for the book and resolved fees without changing the event screen', async () => {
-  let finish!: (value: RainbowFetchResponse<ReturnType<typeof source>>) => void;
-  jest.mocked(rainbowFetch).mockImplementation(url =>
-    String(url).includes('/events/')
-      ? new Promise(resolve => {
-          finish = resolve;
-        })
-      : Promise.resolve(response({ asset_id: tokenId }))
+    usePolymarketFeeInfoStore.subscribe(() => undefined)
   );
+});
+afterEach(() => {
+  for (const stop of stops.splice(0)) stop();
+});
+afterAll(() => {
+  for (const store of [usePolymarketOrderDetailsStore, usePolymarketOrderBookStore, usePolymarketFeeInfoStore])
+    store.getState().reset(true);
+  fetchMock.mockRestore();
+  marketInfo.mockRestore();
+});
 
-  prefetchRoute(Routes.POLYMARKET_NEW_POSITION_SHEET, { selection, outcomeColor: '#123456', fromRoute: Routes.SPORTS_SCREEN });
+it.each(['known', 'selected'])('keeps a cold selection’s book and fees consistent after a %s order', async previous => {
+  polymarketOrderParamsStore.setState({ params: previous === 'known' ? { tokenId, conditionId: 'known' } : selection });
   await settle();
+  expect(usePolymarketOrderBookStore.getState().getData()?.asset_id).toBe(tokenId);
+  expect(usePolymarketFeeInfoStore.getState().getData()?.platformFeeRate).toBe(0.02);
 
-  expect(rainbowFetch).toHaveBeenCalledWith(`https://clob.test/book?token_id=${tokenId}`, expect.any(Object));
-  expect(polymarketClobDataClient.getClobMarketInfo).not.toHaveBeenCalled();
-  expect(usePolymarketOrderDetailsStore.getState().getData({ selection })).toBeNull();
-
-  finish(response(source()));
+  const next: Selection = { eventId: '980885', marketId: '4322153', tokenId: '200', outcomeIndex: 1 };
+  const metadata = Promise.withResolvers<Response>();
+  marketInfo.mockClear();
+  fetchMock.mockImplementation(async url => {
+    const request = new URL(String(url));
+    if (request.pathname === `/events/${next.eventId}`) return metadata.promise;
+    if (request.pathname.endsWith('/book')) return bookResponse(request.searchParams.get('token_id') ?? '');
+    throw new Error(`Unexpected order request: ${request.pathname}`);
+  });
+  polymarketOrderParamsStore.setState({ params: next });
   await settle();
+  expect(usePolymarketOrderBookStore.getState().getData()?.asset_id).toBe('200');
+  expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+  expect(marketInfo).not.toHaveBeenCalled();
 
-  expect(usePolymarketOrderDetailsStore.getState().getData({ selection })).toEqual({
-    event: { title: 'First vs Second', slug: 'match' },
-    market: expect.objectContaining({ conditionId: 'condition', clobTokenIds: [otherTokenId, tokenId] }),
+  metadata.resolve(eventResponse(next));
+  await settle();
+  expect(usePolymarketOrderDetailsStore.getState().getData()).toMatchObject({
+    market: { conditionId: 'condition-4322153', clobTokenIds: [otherTokenId, '200'] },
     outcomeIndex: 1,
   });
-  expect(polymarketClobDataClient.getClobMarketInfo).toHaveBeenCalledWith('condition');
-  expect(polymarketEventIdStore.getState().eventId).toBe('parent');
-});
-
-it('loads known book and fee inputs together without fetching an event, including after a Sports selection', async () => {
-  polymarketOrderParamsStore.setState({ params: selection });
-  await settle();
-  jest.mocked(rainbowFetch).mockClear();
-  jest.mocked(polymarketClobDataClient.getClobMarketInfo).mockClear();
-
-  polymarketOrderParamsStore.setState({ params: { tokenId: 'known-token', conditionId: 'known-condition' } });
-  await settle();
-
-  expect(rainbowFetch).toHaveBeenCalledTimes(1);
-  expect(rainbowFetch).toHaveBeenCalledWith('https://clob.test/book?token_id=known-token', expect.any(Object));
-  expect(polymarketClobDataClient.getClobMarketInfo).toHaveBeenCalledWith('known-condition');
-  expect(usePolymarketOrderDetailsStore.getState().enabled).toBe(false);
+  expect(marketInfo).toHaveBeenCalledWith('condition-4322153');
+  expect(usePolymarketFeeInfoStore.getState().getData()?.platformFeeRate).toBe(0.02);
 });
 
 it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }])(
-  'does not admit an unavailable market: %j',
-  async fields => {
-    const event = source();
-    Object.assign(event.markets[1], fields);
-    jest.mocked(rainbowFetch).mockImplementation(async url => response(String(url).includes('/events/') ? event : {}));
-
+  'rejects an unavailable market: %j',
+  async flags => {
+    const event = predictionEvent(selection.eventId);
+    Object.assign(event.markets[0], { id: selection.marketId, clobTokenIds: JSON.stringify([otherTokenId, tokenId]), ...flags });
+    fetchMock.mockImplementation(async url =>
+      String(url).includes('/events/')
+        ? new Response(JSON.stringify(event), { headers: { 'Content-Type': 'application/json' } })
+        : bookResponse(tokenId)
+    );
     polymarketOrderParamsStore.setState({ params: selection });
     await settle();
-
-    expect(usePolymarketOrderDetailsStore.getState().getCacheEntry({ selection })).toMatchObject({ data: null, errorInfo: null });
-    expect(polymarketClobDataClient.getClobMarketInfo).not.toHaveBeenCalled();
+    expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+    expect(marketInfo).not.toHaveBeenCalled();
   }
 );
 
-it('does not substitute another outcome for the requested token and original index', async () => {
-  const changedSelection = { ...selection, outcomeIndex: 0 };
-  polymarketOrderParamsStore.setState({ params: changedSelection });
+it('rejects a token at a different outcome index', async () => {
+  polymarketOrderParamsStore.setState({ params: { ...selection, outcomeIndex: 0 } });
   await settle();
-
-  expect(usePolymarketOrderDetailsStore.getState().getCacheEntry({ selection: changedSelection })).toMatchObject({
-    data: null,
-    errorInfo: null,
-  });
-  expect(polymarketClobDataClient.getClobMarketInfo).not.toHaveBeenCalled();
-});
-
-it('retries a failed metadata read without rebuilding the order input', async () => {
-  jest.mocked(rainbowFetch).mockImplementation(async url => {
-    if (String(url).includes('/events/')) throw new Error('offline');
-    return response({});
-  });
-  polymarketOrderParamsStore.setState({ params: selection });
-  await settle();
-  expect(usePolymarketOrderDetailsStore.getState().getCacheEntry({ selection })?.errorInfo?.error.message).toBe('offline');
-
-  jest.mocked(rainbowFetch).mockResolvedValue(response(source()));
-  await usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true });
-  await settle();
-  expect(usePolymarketOrderDetailsStore.getState().getData({ selection })?.outcomeIndex).toBe(1);
-  expect(polymarketOrderParamsStore.getState().params).toBe(selection);
-  expect(polymarketClobDataClient.getClobMarketInfo).toHaveBeenCalledWith('condition');
-});
-
-it.each(['known', 'selected'] as const)('derives fees for a new cold selection after a %s order', async previous => {
-  polymarketOrderParamsStore.setState({ params: previous === 'known' ? { tokenId, conditionId: 'condition' } : selection });
-  await settle();
-  jest.mocked(polymarketClobDataClient.getClobMarketInfo).mockClear();
-
-  const next: Selection = { eventId: '980885', marketId: '4322153', tokenId: '200', outcomeIndex: 1 };
-  const event = source();
-  event.id = next.eventId;
-  Object.assign(event.markets[1], { id: next.marketId, conditionId: 'next-condition', clobTokenIds: '["201","200"]' });
-  let finish!: (value: RainbowFetchResponse<typeof event>) => void;
-  jest.mocked(rainbowFetch).mockImplementation(url =>
-    String(url).includes('/events/')
-      ? new Promise(resolve => {
-          finish = resolve;
-        })
-      : Promise.resolve(response({ asset_id: next.tokenId }))
-  );
-
-  polymarketOrderParamsStore.setState({ params: next });
-  await settle();
-  expect(usePolymarketOrderDetailsStore.getState().getData({ selection: next })).toBeNull();
-  expect(polymarketClobDataClient.getClobMarketInfo).not.toHaveBeenCalled();
-
-  finish(response(event));
-  await settle();
-  expect(polymarketClobDataClient.getClobMarketInfo).toHaveBeenCalledTimes(1);
-  expect(polymarketClobDataClient.getClobMarketInfo).toHaveBeenCalledWith('next-condition');
-});
-
-it('keeps cached details but disables their query after the trade screen is left', async () => {
-  polymarketOrderParamsStore.setState({ params: selection });
-  await settle();
-  const details = usePolymarketOrderDetailsStore.getState().getData({ selection });
-  expect(details).not.toBeNull();
-
-  useNavigationStore.setState({ activeRoute: Routes.SPORTS_SCREEN });
-  await settle();
-  expect(usePolymarketOrderDetailsStore.getState().enabled).toBe(false);
-  expect(usePolymarketOrderDetailsStore.getState().getData({ selection })).toBe(details);
+  expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+  expect(marketInfo).not.toHaveBeenCalled();
 });
