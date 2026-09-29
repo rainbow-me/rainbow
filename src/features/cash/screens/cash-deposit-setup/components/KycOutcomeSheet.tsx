@@ -7,7 +7,7 @@ import Routes from '@/navigation/routesNames';
 import { RAINBOW_SUPPORT_URL } from '@/references/constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import { type KycOutcome } from '../../../services/userClient';
+import { type KycOutcome, type KycRejectionReason } from '../../../services/userClient';
 
 const l = i18n.l.cash.deposit_setup.kyc;
 const IDENTITY_VERIFIED_ICON = '􀯧';
@@ -21,7 +21,15 @@ function otherDepositMethods() {
   navigate(Routes.FIAT_ON_RAMP_SHEET);
 }
 
-export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outcome }: { onContinue: () => void; outcome: KycOutcome }) {
+export const KycOutcomeSheet = memo(function KycOutcomeSheet({
+  onContinue,
+  outcome,
+  kycRejectionReason,
+}: {
+  onContinue: () => void;
+  outcome: KycOutcome;
+  kycRejectionReason?: KycRejectionReason;
+}) {
   // Never `cancel()`: its warning sheet claims the user loses all progress, which
   // is untrue once the submission is with the provider.
   switch (outcome) {
@@ -57,10 +65,14 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
           title={i18n.t(l.rejected_title)}
         />
       );
-    case 'unsupportedState':
+    case 'unsupportedState': {
+      const regionName = kycRejectionReason?.unsupportedLocation?.regionName;
+      const regionCode = kycRejectionReason?.unsupportedLocation?.regionCode;
       return (
         <CashStatusHalfSheet
-          description={i18n.t(l.state_not_supported_description)}
+          description={
+            regionCode ? i18n.t(l.state_not_supported_description, { regionCode }) : i18n.t(l.state_not_supported_description_fallback)
+          }
           primaryAction={{
             label: i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods),
             onPress: otherDepositMethods,
@@ -75,8 +87,9 @@ export const KycOutcomeSheet = memo(function KycOutcomeSheet({ onContinue, outco
           }}
           status="info"
           testID="cash-setup-kyc-state-not-supported"
-          title={i18n.t(l.state_not_supported_title)}
+          title={regionName ? i18n.t(l.state_not_supported_title, { regionName }) : i18n.t(l.state_not_supported_title_fallback)}
         />
       );
+    }
   }
 });

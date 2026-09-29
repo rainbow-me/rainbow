@@ -3,7 +3,7 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
 import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
-import { getUserStatus, KycRejectionReason, KycStatus } from '../services/userClient';
+import { getUserStatus, KycRejectionReasonCode, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 import { getShouldCheckKycOnReturn, useKycReturnFlowStore } from './kycReturnFlowStore';
@@ -70,7 +70,7 @@ describe('useKycReturnFlowStore.check', () => {
     { kycStatus: KycStatus.Rejected, kycRejectionReason: undefined, expected: 'rejected' },
     {
       kycStatus: KycStatus.Rejected,
-      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported },
       expected: 'unsupportedState',
     },
   ])('surfaces $expected when the retained token reports $kycStatus', async ({ kycStatus, kycRejectionReason, expected }) => {
@@ -86,6 +86,25 @@ describe('useKycReturnFlowStore.check', () => {
       bootstrapToken: BOOTSTRAP_TOKEN,
       kycSubmission: 'submitted',
     });
+  });
+
+  it.each([
+    { countryCode: 'US', regionCode: 'NY', regionName: 'New York' },
+    { countryCode: 'US', regionCode: 'CA', regionName: 'California' },
+    undefined,
+  ])('retains returning location %j and clears it on reset', async unsupportedLocation => {
+    verifyPhone();
+    mockGetUserStatus.mockResolvedValue({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation },
+    });
+
+    await expect(flow().check()).resolves.toBe('outcome');
+
+    expect(flow().state).toBe('unsupportedState');
+    expect(flow().kycRejectionReason).toEqual({ code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation });
+    flow().reset();
+    expect(flow().kycRejectionReason).toBeUndefined();
   });
 
   it('leaves a never-submitted user on the KYC steps with the token intact', async () => {

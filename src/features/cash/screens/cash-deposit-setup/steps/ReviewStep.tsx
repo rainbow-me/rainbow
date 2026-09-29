@@ -84,6 +84,7 @@ export const ReviewStep = memo(function ReviewStep() {
   const identity = useCashSetupSessionStore(state => state.getIdentity(), shallowEqual);
   const governmentId = useCashSetupSessionStore(state => state.getGovernmentId(), shallowEqual);
   const state = useSubmitReviewFlowStore(store => store.state);
+  const kycRejectionReason = useSubmitReviewFlowStore(store => store.kycRejectionReason);
   const kycSubmitted = useSubmitReviewFlowStore(store => store.kycSubmitted);
   const submitting = state === 'submitting';
 
@@ -166,7 +167,7 @@ export const ReviewStep = memo(function ReviewStep() {
           title={i18n.t(l.submission_error_title)}
         />
       ) : state === 'entry' ? null : (
-        <KycOutcomeSheet onContinue={continueAfterVerification} outcome={state} />
+        <KycOutcomeSheet onContinue={continueAfterVerification} outcome={state} kycRejectionReason={kycRejectionReason} />
       )}
     </>
   );

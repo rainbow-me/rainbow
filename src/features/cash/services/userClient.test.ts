@@ -8,7 +8,7 @@ import {
   finishRecovery,
   finishSignupResume,
   getUserStatus,
-  KycRejectionReason,
+  KycRejectionReasonCode,
   KycStatus,
   startRecovery,
   startSignupResume,
@@ -250,16 +250,25 @@ describe('submitOnboarding', () => {
     await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Approved, kycRejectionReason: undefined });
   });
 
-  it('surfaces a state-not-supported rejection', async () => {
-    post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected, kycRejectionReason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED' } });
+  it.each([
+    { countryCode: 'US', regionCode: 'NY', regionName: 'New York' },
+    { countryCode: 'US', regionCode: 'CA', regionName: 'California' },
+    undefined,
+  ])('surfaces a state-not-supported rejection with %j', async unsupportedLocation => {
+    post.mockResolvedValue({
+      data: { kycStatus: KycStatus.Rejected, kycRejectionReason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED', unsupportedLocation },
+    });
 
-    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
+    await expect(submit()).resolves.toEqual({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation },
+    });
   });
 
-  it('omits the rejection reason for a plain rejection', async () => {
-    post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected } });
+  it.each([undefined, KycRejectionReasonCode.Unspecified])('preserves a plain rejection with reason %s', async code => {
+    post.mockResolvedValue({ data: { kycStatus: KycStatus.Rejected, kycRejectionReason: code } });
 
-    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+    await expect(submit()).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: code ? { code } : undefined });
   });
 });
 
@@ -272,20 +281,27 @@ describe('getUserStatus', () => {
     await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Approved, kycRejectionReason: undefined });
   });
 
-  it('surfaces a state-not-supported rejection', async () => {
+  it.each([
+    { countryCode: 'US', regionCode: 'NY', regionName: 'New York' },
+    { countryCode: 'US', regionCode: 'CA', regionName: 'California' },
+    undefined,
+  ])('surfaces a state-not-supported rejection with %j', async unsupportedLocation => {
     get.mockResolvedValue({
-      data: { status: { kyc: { status: KycStatus.Rejected, reason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED' } } },
+      data: { status: { kyc: { status: KycStatus.Rejected, reason: 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED', unsupportedLocation } } },
     });
 
     await expect(getUserStatus(params)).resolves.toEqual({
       kycStatus: KycStatus.Rejected,
-      kycRejectionReason: KycRejectionReason.StateNotSupported,
+      kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation },
     });
   });
 
-  it('omits the rejection reason for a plain rejection', async () => {
-    get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Rejected } } } });
+  it.each([undefined, KycRejectionReasonCode.Unspecified])('preserves a plain rejection with reason %s', async code => {
+    get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Rejected, reason: code } } } });
 
-    await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Rejected, kycRejectionReason: undefined });
+    await expect(getUserStatus(params)).resolves.toEqual({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: code ? { code } : undefined,
+    });
   });
 });

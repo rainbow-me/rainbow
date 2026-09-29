@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 
 import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
 import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
-import { type KycOutcome } from '../services/userClient';
+import { type KycOutcome, type KycRejectionReason } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { selectIsPhoneVerified, useCashSetupSessionStore } from './cashSetupSessionStore';
 
@@ -14,6 +14,7 @@ export type KycReturnResult = 'outcome' | 'notSubmitted' | 'blocked' | 'expired'
 
 type KycReturnFlowStore = {
   state: KycReturnState;
+  kycRejectionReason: KycRejectionReason | undefined;
   // Identifies one check so a result from a dismissed Setup cannot write into
   // a later one. This module-level store outlives the setup screen.
   run: object | null;
@@ -28,16 +29,17 @@ type CredentialStanding =
   | { kind: 'expired' }
   | { kind: 'absent' };
 
-type StatusRead = { ok: true; verdict: KycOutcome | null } | { ok: false; error: unknown };
+type StatusRead = { ok: true; verdict: KycOutcome | null; kycRejectionReason?: KycRejectionReason } | { ok: false; error: unknown };
 
 export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, get) => {
   function finish(result: KycReturnResult): KycReturnResult {
-    set({ run: null, state: 'idle' });
+    set({ run: null, state: 'idle', kycRejectionReason: undefined });
     return result;
   }
 
   return {
     state: 'idle',
+    kycRejectionReason: undefined,
     run: null,
 
     check: async () => {
@@ -74,11 +76,11 @@ export const useKycReturnFlowStore = createBaseStore<KycReturnFlowStore>((set, g
 
       useCashSetupSessionStore.getState().markKycSubmitted(after.credential.bootstrapToken);
       trackKycOutcome(outcome, 'return');
-      set({ state: outcome });
+      set({ state: outcome, kycRejectionReason: read.ok ? read.kycRejectionReason : undefined });
       return 'outcome';
     },
 
-    reset: () => set({ run: null, state: 'idle' }),
+    reset: () => set({ run: null, state: 'idle', kycRejectionReason: undefined }),
   };
 });
 
@@ -111,7 +113,8 @@ function getCredentialStanding(expected?: RetainedCredential): CredentialStandin
 // safe to consult once the read has landed and the check is still current.
 async function readStatus(bootstrapToken: string): Promise<StatusRead> {
   try {
-    return { ok: true, verdict: await readKycOutcome(bootstrapToken) };
+    const { outcome, kycRejectionReason } = await readKycOutcome(bootstrapToken);
+    return { ok: true, verdict: outcome, kycRejectionReason };
   } catch (error) {
     return { ok: false, error };
   }

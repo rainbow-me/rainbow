@@ -6,7 +6,7 @@ import { delay } from '@/utils/delay';
 
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
 import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
-import { getUserStatus, KycRejectionReason, KycStatus, submitOnboarding } from '../../../services/userClient';
+import { getUserStatus, KycRejectionReasonCode, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
@@ -178,14 +178,30 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     expect(flow().state).toBe('rejected');
   });
 
-  it('reports unsupportedState when rejected for an unsupported state', async () => {
-    mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Rejected, kycRejectionReason: KycRejectionReason.StateNotSupported });
+  describe.each(['submit', 'poll', 'retry'] as const)('unsupported location from %s', source => {
+    it.each([
+      { countryCode: 'US', regionCode: 'NY', regionName: 'New York' },
+      { countryCode: 'US', regionCode: 'CA', regionName: 'California' },
+      undefined,
+    ])('retains %j for the sheet and clears it on reset', async unsupportedLocation => {
+      const result = {
+        kycStatus: KycStatus.Rejected,
+        kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation },
+      };
+      mockSubmitOnboarding.mockResolvedValue(source === 'submit' ? result : { kycStatus: KycStatus.Pending });
+      mockGetUserStatus.mockResolvedValue(result);
+      if (source === 'retry') useSubmitReviewFlowStore.setState({ kycSubmitted: true });
 
-    await expect(flow().submit()).resolves.toBe('unsupportedState');
+      await expect(flow().submit()).resolves.toBe('unsupportedState');
 
-    expect(mockGetUserStatus).not.toHaveBeenCalled();
-    expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'state_not_supported' });
-    expect(flow().state).toBe('unsupportedState');
+      expect(flow().kycRejectionReason).toEqual({ code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation });
+      expect(track).toHaveBeenCalledWith('cash.kyc_failed', { reason: 'state_not_supported' });
+      expect(flow().state).toBe('unsupportedState');
+      expect(mockGetUserStatus).toHaveBeenCalledTimes(source === 'submit' ? 0 : 1);
+      expect(mockSubmitOnboarding).toHaveBeenCalledTimes(source === 'retry' ? 0 : 1);
+      flow().reset();
+      expect(flow().kycRejectionReason).toBeUndefined();
+    });
   });
 
   it.each([KycStatus.Unspecified, KycStatus.Review])('keeps polling on %s instead of failing', async kycStatus => {
@@ -228,7 +244,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('ignores an active status poll after the flow is reset', async () => {
-    const poll = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
+    const poll = Promise.withResolvers<Awaited<ReturnType<typeof getUserStatus>>>();
     const pollStarted = Promise.withResolvers<void>();
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockImplementationOnce(() => {
@@ -239,14 +255,21 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
     const submission = flow().submit();
     await pollStarted.promise;
     flow().reset();
-    poll.resolve({ kycStatus: KycStatus.Approved });
+    poll.resolve({
+      kycStatus: KycStatus.Rejected,
+      kycRejectionReason: {
+        code: KycRejectionReasonCode.StateNotSupported,
+        unsupportedLocation: { regionCode: 'CA', regionName: 'California' },
+      },
+    });
 
     await expect(submission).resolves.toBe('cancelled');
 
     expect(mockGetUserStatus).toHaveBeenCalledTimes(1);
     expect(flow().state).toBe('entry');
+    expect(flow().kycRejectionReason).toBeUndefined();
     expect(session().session).toMatchObject({ status: 'phoneVerified', kycSubmission: 'submitted' });
-    expect(track).not.toHaveBeenCalledWith('cash.kyc_approved');
+    expect(track).not.toHaveBeenCalledWith('cash.kyc_failed', expect.anything());
   });
 
   it('fails and reports the failure when the submission throws', async () => {
@@ -261,7 +284,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('skips a second submit while one is in flight', async () => {
-    const submit = Promise.withResolvers<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }>();
+    const submit = Promise.withResolvers<Awaited<ReturnType<typeof submitOnboarding>>>();
     mockSubmitOnboarding.mockReturnValue(submit.promise);
 
     const first = flow().submit();

@@ -93,9 +93,32 @@ export enum KycStatus {
 }
 
 // Set only when kycStatus is Rejected.
-export enum KycRejectionReason {
+export enum KycRejectionReasonCode {
   Unspecified = 'KYC_REJECTION_REASON_UNSPECIFIED',
   StateNotSupported = 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
+}
+
+export type UnsupportedLocation = {
+  countryCode?: string;
+  regionCode?: string;
+  regionName?: string;
+};
+
+export type KycRejectionReason = {
+  code: KycRejectionReasonCode;
+  unsupportedLocation?: UnsupportedLocation;
+};
+
+type KycStatusResult = {
+  kycStatus: KycStatus;
+  kycRejectionReason?: KycRejectionReason;
+};
+
+function toKycRejectionReason(
+  code: KycRejectionReasonCode | undefined,
+  unsupportedLocation: UnsupportedLocation | undefined
+): KycRejectionReason | undefined {
+  return code ? { code, unsupportedLocation } : undefined;
 }
 
 // Pending and Review are one state to the app: the provider has not decided yet.
@@ -106,7 +129,7 @@ export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | und
     case KycStatus.Approved:
       return 'approved';
     case KycStatus.Rejected:
-      return reason === KycRejectionReason.StateNotSupported ? 'unsupportedState' : 'rejected';
+      return reason?.code === KycRejectionReasonCode.StateNotSupported ? 'unsupportedState' : 'rejected';
     case KycStatus.Pending:
     case KycStatus.Review:
       return 'reviewing';
@@ -147,7 +170,8 @@ type SubmitOnboardingRequest = {
 
 type SubmitOnboardingResponse = {
   kycStatus: KycStatus;
-  kycRejectionReason?: KycRejectionReason;
+  kycRejectionReason?: KycRejectionReasonCode;
+  unsupportedLocation?: UnsupportedLocation;
 };
 
 type GetUserStatusParams = {
@@ -203,7 +227,8 @@ type GetUserStatusResponse = {
   status: {
     kyc: {
       status: KycStatus;
-      reason?: KycRejectionReason;
+      reason?: KycRejectionReasonCode;
+      unsupportedLocation?: UnsupportedLocation;
     };
   };
 };
@@ -274,7 +299,7 @@ export async function submitOnboarding({
   countryCode,
   identity,
   governmentId,
-}: SubmitOnboardingParams): Promise<SubmitOnboardingResponse> {
+}: SubmitOnboardingParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: KycStatus.Approved };
@@ -291,7 +316,10 @@ export async function submitOnboarding({
       headers: buildAuthenticatedHeader(bootstrapToken),
     })
   );
-  return data;
+  return {
+    kycStatus: data.kycStatus,
+    kycRejectionReason: toKycRejectionReason(data.kycRejectionReason, data.unsupportedLocation),
+  };
 }
 
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
@@ -373,9 +401,7 @@ export async function finalizeAuth({
   return parseAccessCredential(data);
 }
 
-export async function getUserStatus({
-  bootstrapToken,
-}: GetUserStatusParams): Promise<{ kycStatus: KycStatus; kycRejectionReason?: KycRejectionReason }> {
+export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
@@ -386,7 +412,10 @@ export async function getUserStatus({
       headers: buildAuthenticatedHeader(bootstrapToken),
     })
   );
-  return { kycStatus: data.status.kyc.status, kycRejectionReason: data.status.kyc.reason };
+  return {
+    kycStatus: data.status.kyc.status,
+    kycRejectionReason: toKycRejectionReason(data.status.kyc.reason, data.status.kyc.unsupportedLocation),
+  };
 }
 
 export async function startSignupResume({

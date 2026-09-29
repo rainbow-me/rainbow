@@ -14,7 +14,8 @@ import { useVerifyPhoneFlow } from './useVerifyPhoneFlow';
 const l = i18n.l.cash.deposit_setup.confirm_phone;
 
 export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
-  const { state, code, kycOutcome, continueAfterKyc, setCode, submit, resend, resending, resendCooldownSeconds } = useVerifyPhoneFlow();
+  const { state, code, kycOutcome, kycRejectionReason, continueAfterKyc, setCode, submit, resend, resending, resendCooldownSeconds } =
+    useVerifyPhoneFlow();
   // Keep the retained OTP input disabled after advancing.
   const submitted = state === 'verifying' || state === 'submitted';
   const inputRef = useSetupInputRef();
@@ -48,7 +49,7 @@ export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
         </Box>
       </SetupStepLayout>
 
-      {kycOutcome && <KycOutcomeSheet onContinue={continueAfterKyc} outcome={kycOutcome} />}
+      {kycOutcome && <KycOutcomeSheet onContinue={continueAfterKyc} outcome={kycOutcome} kycRejectionReason={kycRejectionReason} />}
     </>
   );
 });

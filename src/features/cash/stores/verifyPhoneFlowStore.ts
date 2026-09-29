@@ -12,6 +12,7 @@ import {
   startSignupResume,
   verifyPhone,
   type KycOutcome,
+  type KycRejectionReason,
 } from '../services/userClient';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
@@ -32,6 +33,7 @@ type VerifyPhoneFlowStore = {
   state: VerifyPhoneState;
   code: string;
   kycOutcome: KycOutcome | null;
+  kycRejectionReason: KycRejectionReason | undefined;
   pendingResumeStatus: PendingResumeStatus | null;
   resending: PhoneChallenge | null;
   setCode: (code: string) => void;
@@ -48,6 +50,7 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   state: 'entry',
   code: '',
   kycOutcome: null,
+  kycRejectionReason: undefined,
   pendingResumeStatus: null,
   resending: null,
 
@@ -107,12 +110,13 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
       // A resumed account may have submitted KYC in an earlier signup attempt.
       if (challenge.kind === 'resume') resumeCredential = result;
-      const kycOutcome = resumeCredential
+      const kycResult = resumeCredential
         ? await readKycOutcome(resumeCredential.bootstrapToken).catch(error => {
             if (isCashUserServiceNetworkPolicyError(error)) throw error;
             return null;
           })
         : null;
+      const kycOutcome = kycResult?.outcome ?? null;
       if (activeKycCheck !== kycCheck) return 'failed';
       activeKycCheck = null;
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
@@ -126,7 +130,12 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
         trackKycOutcome(kycOutcome, 'resume');
       }
       // Keep the retained OTP input disabled without leaving setup controls loading.
-      set({ kycOutcome, pendingResumeStatus: null, state: 'submitted' });
+      set({
+        kycOutcome,
+        kycRejectionReason: kycResult?.kycRejectionReason,
+        pendingResumeStatus: null,
+        state: 'submitted',
+      });
       return kycOutcome ? 'verifiedKycOutcome' : 'verified';
     } catch (e) {
       if (activeKycCheck !== kycCheck) return 'failed';
@@ -191,10 +200,10 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
   rejectCode: () => set({ code: '', state: 'error' }),
 
   // Dismiss the outcome without undoing the session's completed phone verification.
-  clearKycOutcome: () => set({ kycOutcome: null }),
+  clearKycOutcome: () => set({ kycOutcome: null, kycRejectionReason: undefined }),
 
   reset: () => {
     activeKycCheck = null;
-    set({ code: '', kycOutcome: null, pendingResumeStatus: null, resending: null, state: 'entry' });
+    set({ code: '', kycOutcome: null, kycRejectionReason: undefined, pendingResumeStatus: null, resending: null, state: 'entry' });
   },
 }));
