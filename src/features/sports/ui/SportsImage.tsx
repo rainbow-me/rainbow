@@ -54,9 +54,8 @@ export function SportsBadge({
   size: 28 | 40 | 44;
   isDarkMode: boolean;
 }): ReactElement {
-  const icon = (size === 44 ? sportsIcons[`${scope.id}-header`] : undefined) ?? sportsIcons[scope.id];
+  const icon = sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
-  const imageSize = size * (icon?.scale ?? 20 / 28);
 
   const backgroundColor = color
     ? getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
@@ -84,19 +83,9 @@ export function SportsBadge({
       </View>
 
       {icon ? (
-        <ImgixImage
-          enableFasterImage
-          source={icon.source}
-          resizeMode="contain"
-          size={imageSize}
-          style={{
-            width: imageSize,
-            height: imageSize,
-            transform: [{ translateX: icon.offset?.[0] ?? 0 }, { translateY: icon.offset?.[1] ?? 0 }],
-          }}
-        />
+        <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={size} style={{ width: size, height: size }} />
       ) : (
-        <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={imageSize} borderRadius={0} />
+        <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={size * (20 / 28)} borderRadius={0} />
       )}
 
       <Border
