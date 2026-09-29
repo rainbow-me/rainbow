@@ -1,5 +1,6 @@
 import { createQueryStore, createStoreActions } from '@storesjs/stores';
 
+import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
@@ -10,7 +11,6 @@ import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketMarket } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { RainbowError } from '@/logger';
 
 // ============ Types ========================================================== //
@@ -132,7 +132,7 @@ async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Prom
   await Promise.all(
     rawMarkets.map(async market => {
       const rawColor = await getImagePrimaryColor(market.events[0].icon);
-      const color = { dark: getHighContrastColor(rawColor, true), light: getHighContrastColor(rawColor, false) };
+      const color = getHighContrastColor(rawColor);
       markets[market.slug] = processRawPolymarketMarket(market, color);
     })
   );

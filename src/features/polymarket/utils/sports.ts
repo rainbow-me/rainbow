@@ -1,3 +1,4 @@
+import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
 import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
@@ -8,7 +9,6 @@ import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { logger, RainbowError } from '@/logger';
 
 type GameTeamsSource = {
@@ -210,12 +210,7 @@ function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): P
 
 function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInfo[] {
   return teams.map(team => {
-    const color = team.color
-      ? {
-          light: getHighContrastColor(team.color, false),
-          dark: getHighContrastColor(team.color, true),
-        }
-      : getColorBySeed(String(team.id));
+    const color = team.color ? getHighContrastColor(team.color) : getColorBySeed(String(team.id));
     return {
       ...team,
       color,

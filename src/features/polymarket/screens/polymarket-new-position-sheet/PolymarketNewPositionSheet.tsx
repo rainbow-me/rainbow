@@ -5,6 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -40,7 +41,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
-  const outcomeColor = params.outcomeColor;
+  // Sports selections carry raw badge colors; market routes already provide a themed accent.
+  const outcomeColor =
+    'selection' in params ? getColorValueForThemeWorklet(getHighContrastColor(params.outcomeColor), isDarkMode) : params.outcomeColor;
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
@@ -60,13 +63,13 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
           {'selection' in params ? (
-            <SelectedPosition selection={params.selection} outcomeColor={params.outcomeColor} fromRoute={params.fromRoute} />
+            <SelectedPosition selection={params.selection} outcomeColor={outcomeColor} fromRoute={params.fromRoute} />
           ) : (
             <NewPositionForm
               event={params.event}
               market={params.market}
               outcomeIndex={params.outcomeIndex}
-              outcomeColor={params.outcomeColor}
+              outcomeColor={outcomeColor}
               fromRoute={params.fromRoute}
             />
           )}

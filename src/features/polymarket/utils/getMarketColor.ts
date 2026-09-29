@@ -1,4 +1,4 @@
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { palettes } from '@/design-system/color/palettes';
 import { type PolymarketPosition, type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
@@ -6,7 +6,6 @@ import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { type ResponseByTheme } from '@/theme/types';
 
 type MarketColors = {
@@ -18,8 +17,8 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: Respons
   if (market.seriesColor) {
     const [primary, secondary] = market.seriesColor.split(',');
     return {
-      color: getHighContrastColorTheme(primary),
-      secondaryColor: secondary ? getHighContrastColorTheme(secondary) : undefined,
+      color: getHighContrastColor(primary),
+      secondaryColor: secondary ? getHighContrastColor(secondary) : undefined,
     };
   }
 
@@ -71,11 +70,4 @@ export function getOutcomeColor({
   const teamAccentColor = getColorValueForThemeWorklet(teamColorTheme, isDarkMode);
   const drawAccentColor = getColorValueForThemeWorklet(drawColor, isDarkMode);
   return isDraw ? drawAccentColor : teamAccentColor;
-}
-
-function getHighContrastColorTheme(color: string): ResponseByTheme<string> {
-  return {
-    light: getHighContrastColor(color, false),
-    dark: getHighContrastColor(color, true),
-  };
 }
