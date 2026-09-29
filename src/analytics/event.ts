@@ -123,6 +123,7 @@ export const event = {
   pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
   rewardsViewedSheet: 'rewards.viewed_sheet',
   cashDepositIntroViewed: 'cash.deposit_intro_viewed',
+  cashDepositSignupPausedViewed: 'cash.deposit_signup_paused_viewed',
   cashAmountEntered: 'cash.amount_entered',
   cashBuyOrderSubmitted: 'cash.buy_submitted',
   cashBuyOrderCompleted: 'cash.buy_completed',
@@ -534,6 +535,7 @@ export type EventProperties = {
   };
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
+  [event.cashDepositSignupPausedViewed]: undefined;
   [event.cashAmountEntered]: {
     /** The USD amount confirmed with Hold to Add. */
     amount: number | undefined;

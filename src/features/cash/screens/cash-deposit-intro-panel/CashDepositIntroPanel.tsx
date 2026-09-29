@@ -37,8 +37,8 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
 
   useFocusEffect(
     useCallback(() => {
-      analytics.track(analytics.event.cashDepositIntroViewed);
-    }, [])
+      analytics.track(cash_signup_enabled ? analytics.event.cashDepositIntroViewed : analytics.event.cashDepositSignupPausedViewed);
+    }, [cash_signup_enabled])
   );
 
   // Set Up Account → close the intro panel, then open the Cash Deposit Setup wizard.
