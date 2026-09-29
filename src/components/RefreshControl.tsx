@@ -4,12 +4,20 @@ import { RefreshControl as NativeRefreshControl, type RefreshControlProps as Nat
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { useColorMode } from '@/design-system/color/ColorMode';
+import { delay } from '@/utils/delay';
 
 type RefreshControlProps = Pick<NativeRefreshControlProps, 'children' | 'style'> & {
   onRefresh: () => Promise<void>;
+  /** Minimum refresh duration in milliseconds. Default `600`. */
+  minDuration?: number;
 };
 
-export const RefreshControl = memo(function RefreshControl({ onRefresh, children, style }: RefreshControlProps): ReactElement {
+export const RefreshControl = memo(function RefreshControl({
+  children,
+  onRefresh,
+  minDuration = 600,
+  style,
+}: RefreshControlProps): ReactElement {
   const [refreshing, setRefreshing] = useState(false);
   const { foregroundColors, backgroundColors } = useColorMode();
 
@@ -18,13 +26,15 @@ export const RefreshControl = memo(function RefreshControl({ onRefresh, children
   const handleRefresh = useCallback(async (): Promise<void> => {
     triggerHaptics('impactLight');
     setRefreshing(true);
+    const minimumDelay = delay(minDuration);
 
     try {
       await onRefresh();
     } finally {
+      await minimumDelay;
       setRefreshing(false);
     }
-  }, [onRefresh]);
+  }, [minDuration, onRefresh]);
 
   return (
     <NativeRefreshControl
