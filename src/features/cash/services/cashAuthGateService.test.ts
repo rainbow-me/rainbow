@@ -1,6 +1,7 @@
 import { logger } from '@/logger';
 
 import { useCashAuthGateStore } from '../stores/cashAuthGateStore';
+import { cashBuyOrderActions, useCashBuyOrderStore, type CashBuyStatus } from '../stores/cashBuyOrderStore';
 import { loadLinkedCards } from './cardListService';
 import { openCashAuthGate, reauthenticateCashGate } from './cashAuthGateService';
 import { isPasskeyCancellation } from './cashPasskeyService';
@@ -11,9 +12,22 @@ jest.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
+jest.mock('@/features/local-auth/legacyKeychain', () => ({}));
+
+jest.mock('uuid', () => ({ v4: jest.fn() }));
+
 jest.mock('./cardListService', () => ({
   loadLinkedCards: jest.fn(),
 }));
+
+jest.mock('../stores/cashBuyOrderStore', () => {
+  const actual = jest.requireActual<typeof import('../stores/cashBuyOrderStore')>('../stores/cashBuyOrderStore');
+  return {
+    ...actual,
+    cashBuyOrderActions: { resumeOrder: jest.fn() },
+    useCashBuyOrderStore: { getState: jest.fn() },
+  };
+});
 
 jest.mock('./cashPasskeyService', () => ({
   isPasskeyCancellation: jest.fn(),
@@ -24,10 +38,16 @@ jest.mock('./cashSignInService', () => ({
 }));
 
 const mockLoadLinkedCards = jest.mocked(loadLinkedCards);
+const mockResumeOrder = jest.mocked(cashBuyOrderActions.resumeOrder);
+const mockBuyOrderState = jest.mocked(useCashBuyOrderStore.getState);
 const mockEnsureAccessToken = jest.mocked(ensureAccessToken);
 const mockIsPasskeyCancellation = jest.mocked(isPasskeyCancellation);
 
 const LOAD_CARDS = { kind: 'loadCards' } as const;
+const RESUME_ORDER = { kind: 'resumeOrder' } as const;
+
+const SPEC = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: '0xabc' };
+const PROBING: CashBuyStatus = { step: 'probing', spec: SPEC, submittedAt: 1750789885000 };
 
 const gate = () => useCashAuthGateStore.getState().status;
 
@@ -60,8 +80,10 @@ function deferCeremony() {
 beforeEach(() => {
   jest.clearAllMocks();
   useCashAuthGateStore.getState().clear();
+  mockBuyOrderState.mockReturnValue({ status: { step: 'idle' } } as ReturnType<typeof useCashBuyOrderStore.getState>);
   mockEnsureAccessToken.mockResolvedValue('token');
   mockLoadLinkedCards.mockResolvedValue('completed');
+  mockResumeOrder.mockResolvedValue('completed');
   mockIsPasskeyCancellation.mockReturnValue(false);
 });
 
@@ -92,6 +114,35 @@ describe('openCashAuthGate', () => {
 
     expect(gate()).toEqual({ step: 'error', intent: LOAD_CARDS });
     expect(logger.error).toHaveBeenCalled();
+  });
+
+  it.each([
+    ['idle', 'cards'],
+    ['submitting', 'order'],
+    ['probing', 'order'],
+    ['paused', 'order'],
+    ['polling', 'order'],
+    ['success', 'cards'],
+    ['notPlaced', 'cards'],
+    ['error', 'cards'],
+  ] satisfies [CashBuyStatus['step'], 'cards' | 'order'][])('routes %s through the %s continuation', async (step, intent) => {
+    mockBuyOrderState.mockReturnValue({ status: { step } } as ReturnType<typeof useCashBuyOrderStore.getState>);
+
+    await openCashAuthGate();
+
+    expect(mockResumeOrder).toHaveBeenCalledTimes(intent === 'order' ? 1 : 0);
+    expect(mockLoadLinkedCards).toHaveBeenCalledTimes(intent === 'cards' ? 1 : 0);
+    expect(gate()).toEqual({ step: 'closed' });
+  });
+
+  it('parks the order intent when the probe needs a fresh sign-in', async () => {
+    mockBuyOrderState.mockReturnValue({ status: PROBING } as ReturnType<typeof useCashBuyOrderStore.getState>);
+    mockResumeOrder.mockResolvedValue('authRequired');
+
+    await openCashAuthGate();
+
+    expect(gate()).toEqual({ step: 'authRequired', intent: RESUME_ORDER });
+    expect(mockEnsureAccessToken).not.toHaveBeenCalled();
   });
 
   it('leaves a gate that was cleared mid-run alone, whether the run parks or fails', async () => {
@@ -165,6 +216,17 @@ describe('reauthenticateCashGate', () => {
     await reauthenticateCashGate();
 
     expect(gate()).toEqual({ step: 'authRequired', intent: LOAD_CARDS });
+  });
+
+  it('re-runs the parked order intent after the ceremony', async () => {
+    useCashAuthGateStore.getState().park(RESUME_ORDER);
+
+    await reauthenticateCashGate();
+
+    expect(mockEnsureAccessToken).toHaveBeenCalledWith('addCash');
+    expect(mockResumeOrder).toHaveBeenCalledTimes(1);
+    expect(mockLoadLinkedCards).not.toHaveBeenCalled();
+    expect(gate()).toEqual({ step: 'closed' });
   });
 
   it('retries from the error state', async () => {

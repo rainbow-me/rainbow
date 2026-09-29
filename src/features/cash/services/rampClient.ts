@@ -338,24 +338,33 @@ export async function linkWallet(
 
 const getOrderResponseSchema = z.object({ order: buyOrderSchema });
 
-export async function createBuyOrder(params: CreateBuyOrderParams): Promise<void> {
-  if (IS_TESTING === 'true') return e2eCreateBuyOrder(params);
+export async function createBuyOrder(authMode: CashAuthMode['kind'], params: CreateBuyOrderParams): Promise<CashAuthResult<void>> {
+  if (IS_TESTING === 'true') {
+    if (authMode === 'cachedOnly' && !getCachedAccessToken()) return { kind: 'authRequired' };
+    e2eCreateBuyOrder(params);
+    return { kind: 'success', data: undefined };
+  }
 
-  await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
-    getCashPlatformClient().post('/ramp/orders/buy', params, { headers })
-  );
+  const send = async (headers: { Authorization: string }) => {
+    await getCashPlatformClient().post('/ramp/orders/buy', params, { headers });
+  };
+  if (authMode === 'cachedOnly') return authorizedRequest({ kind: 'cachedOnly' }, send);
+  await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, send);
+  return { kind: 'success', data: undefined };
 }
 
-export async function getOrder(orderId: string, abortController?: AbortController | null): Promise<BuyOrder> {
-  const data =
+export async function getOrderWithCachedAuth(orderId: string, abortController?: AbortController | null): Promise<CashAuthResult<BuyOrder>> {
+  const result: CashAuthResult<unknown> =
     IS_TESTING === 'true'
-      ? e2eGetOrderResponse(orderId)
-      : (
-          await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, headers =>
-            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
-          )
-        ).data;
-  return { ...parseResponse(getOrderResponseSchema, data, 'getOrder').order, id: orderId };
+      ? getCachedAccessToken()
+        ? { kind: 'success', data: e2eGetOrderResponse(orderId) }
+        : { kind: 'authRequired' }
+      : await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
+          const response = await getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers });
+          return response.data;
+        });
+  if (result.kind === 'authRequired') return result;
+  return { kind: 'success', data: { ...parseResponse(getOrderResponseSchema, result.data, 'getOrder').order, id: orderId } };
 }
 
 // ---- E2E buy orders ----------------------------------------------------------
