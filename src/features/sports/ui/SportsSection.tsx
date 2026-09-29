@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     paddingTop: 12,
-    paddingBottom: 4,
+    paddingBottom: 8,
   },
   expandChevron: { transform: [{ translateY: 0.5 }] },
   expandIcon: {
