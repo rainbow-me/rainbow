@@ -23,9 +23,18 @@ export const GameScore = memo(function GameScore({
         const value = participantIndex === 0 ? column.first : column.second;
         const wide = column.kind === ScoreColumn_Kind.KIND_ROUNDS || column.kind === ScoreColumn_Kind.KIND_SERIES;
         const hasTieBreak = column.first?.tieBreak !== undefined || column.second?.tieBreak !== undefined;
+        const hasTwoDigitTieBreak = (column.first?.tieBreak ?? 0) >= 10 || (column.second?.tieBreak ?? 0) >= 10;
 
         return (
-          <View key={index} style={[styles.column, wide ? styles.wideColumn : undefined, hasTieBreak ? styles.tieBreakColumn : undefined]}>
+          <View
+            key={index}
+            style={[
+              styles.column,
+              wide ? styles.wideColumn : undefined,
+              hasTieBreak ? styles.tieBreakColumn : undefined,
+              hasTwoDigitTieBreak ? styles.twoDigitTieBreakColumn : undefined,
+            ]}
+          >
             <Text
               align="center"
               color={column.winner === otherWinner ? 'labelQuaternary' : 'label'}
@@ -42,7 +51,7 @@ export const GameScore = memo(function GameScore({
                 color={column.winner === otherWinner ? 'labelQuaternary' : 'label'}
                 numberOfLines={1}
                 size="11pt"
-                style={styles.tieBreak}
+                style={[styles.tieBreak, hasTwoDigitTieBreak ? styles.twoDigitTieBreak : undefined]}
                 tabularNumbers
                 weight="heavy"
               >
@@ -64,11 +73,12 @@ const styles = StyleSheet.create({
   },
   column: { minWidth: 10 },
   wideColumn: { minWidth: 24 },
-  tieBreakColumn: { paddingRight: TIE_BREAK_WIDTH + 4 },
+  tieBreakColumn: { minWidth: 22, paddingRight: 12 },
+  twoDigitTieBreakColumn: { paddingRight: TIE_BREAK_WIDTH + 4 },
   tieBreak: {
     position: 'absolute',
-    width: TIE_BREAK_WIDTH,
     right: 0,
     top: -5,
   },
+  twoDigitTieBreak: { width: TIE_BREAK_WIDTH },
 });
