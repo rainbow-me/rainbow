@@ -106,7 +106,16 @@ async function readExitFeePercentage(): Promise<number> {
     const exitFeeBps = decodeFunctionResult({ abi: STAKING_ABI, functionName: 'exitFeeBps', data: result as Hex });
     return Number(exitFeeBps) / 100;
   } catch (e) {
-    logger.error(new RainbowError('[readExitFeePercentage]: Failed to read exit fee percentage', e));
+    // Ethers wraps transport failures in CALL_EXCEPTION too. Let the query store retry them.
+    const rpcError = e instanceof Error && 'code' in e && e.code === 'CALL_EXCEPTION' && 'error' in e ? e.error : undefined;
+    const isTransportError =
+      rpcError instanceof Error &&
+      'code' in rpcError &&
+      (rpcError.code === 'TIMEOUT' || (rpcError.code === 'SERVER_ERROR' && 'reason' in rpcError && rpcError.reason === 'missing response'));
+
+    if (!isTransportError) {
+      logger.error(new RainbowError('[readExitFeePercentage]: Failed to read exit fee percentage', e));
+    }
     throw e;
   }
 }
