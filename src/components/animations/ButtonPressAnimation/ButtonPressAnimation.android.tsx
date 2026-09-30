@@ -24,7 +24,7 @@ interface ButtonElementProps extends ButtonPressAnimationProps {
 }
 
 interface ZoomableButtonPressEvent {
-  nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' };
+  nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' | 'pressStart' };
 }
 
 type ButtonElementPropsWithDefaults = ButtonElementProps &
@@ -48,6 +48,7 @@ const ZoomableRawButton = requireNativeComponent<
     | 'onPress'
   > &
     Pick<RawButtonProps, 'rippleColor'> & {
+      hasPressStartHandler?: boolean;
       onPress?: (event: ZoomableButtonPressEvent) => void;
     }
 >('RNZoomableButton');
@@ -178,6 +179,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
     hapticType,
     enableHapticFeedback,
     onPress,
+    onPressStart,
     scaleTo,
     transformOrigin,
     wrapperStyle,
@@ -188,16 +190,23 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
 ) {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }: ZoomableButtonPressEvent) => {
-      if (type === 'longPress') {
-        onLongPress?.();
-      } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
-        onLongPressEnded?.();
-      } else {
-        onPress?.();
-        enableHapticFeedback && triggerHaptics(hapticType);
+      switch (type) {
+        case 'pressStart':
+          onPressStart?.();
+          break;
+        case 'longPress':
+          onLongPress?.();
+          break;
+        case 'longPressEnded':
+          onLongPressEnded?.();
+          break;
+        case 'press':
+          onPress?.();
+          enableHapticFeedback && triggerHaptics(hapticType);
+          break;
       }
     },
-    [enableHapticFeedback, hapticType, onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
+    [enableHapticFeedback, hapticType, onLongPress, onLongPressEnded, onPress, onPressStart]
   );
 
   return (
@@ -206,6 +215,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
       enableHapticFeedback={enableHapticFeedback}
       exclusive={exclusive}
       hapticType={hapticType}
+      hasPressStartHandler={!!onPressStart}
       isLongPress={isLongPress}
       minLongPressDuration={minLongPressDuration}
       onPress={onNativePress}
@@ -241,6 +251,7 @@ export default forwardRef(function ButtonPressAnimation(
     onLongPressEnded,
     shouldLongPressHoldPress,
     onPress,
+    onPressStart,
     overflowMargin = OVERFLOW_MARGIN,
     reanimatedButton,
     scaleTo = 0.86,
@@ -280,6 +291,7 @@ export default forwardRef(function ButtonPressAnimation(
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
+      onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       shouldActivateOnStart={shouldActivateOnStart}
