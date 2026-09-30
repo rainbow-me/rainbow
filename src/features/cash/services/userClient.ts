@@ -5,7 +5,7 @@ import { RainbowFetchError, type RainbowFetchResponse } from '@/framework/data/h
 import { delay } from '@/utils/delay';
 
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
-import { handleCashUserServiceError, refuseCashAccess } from './cashAccessRefusal';
+import { handleCashUserServiceError, refuseCashAccess, USER_ACCESS_BLOCKED } from './cashAccessRefusal';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
 import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from './cashSetupIdentityService';
 
@@ -16,7 +16,6 @@ const RECOVERY_SESSION_INVALID = 1320;
 const RECOVERY_CODE_INVALID = 1321;
 const SIGNUP_ALREADY_COMPLETE = 1322;
 const SIGNUP_INCOMPLETE = 1323;
-const ACCESS_BLOCKED = 1340;
 const IDENTITY_MISMATCH = 403;
 
 const ACCESS_STATUS_BLOCKED = 'ACCESS_STATUS_BLOCKED';
@@ -473,7 +472,7 @@ export async function finishRecovery({ recoveryId, code, identity, governmentId 
     return { outcome: 'recovered', bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
   }
 
-  // Called directly rather than through userServiceRequest: here ACCESS_BLOCKED is the recovery
+  // Called directly rather than through userServiceRequest: here USER_ACCESS_BLOCKED is the recovery
   // lockout, which this flow reports itself instead of the generic unavailable notice.
   try {
     const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/recovery/FinishRecovery', {
@@ -497,7 +496,7 @@ export async function finishRecovery({ recoveryId, code, identity, governmentId 
         return { outcome: 'codeInvalid' };
       case SIGNUP_INCOMPLETE:
         return { outcome: 'signupIncomplete' };
-      case ACCESS_BLOCKED:
+      case USER_ACCESS_BLOCKED:
         return { outcome: 'accessBlocked' };
       default:
         handleCashUserServiceError(e);

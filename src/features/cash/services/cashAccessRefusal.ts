@@ -3,7 +3,7 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { useCashAccessRefusalStore, type CashAccessRefusalReason } from '../stores/cashAccessRefusalStore';
 
 const NETWORK_POLICY_ERROR_CODES = new Set([600, 601, 602]);
-const USER_ACCESS_BLOCKED = 1340;
+export const USER_ACCESS_BLOCKED = 1340;
 
 export class CashAccessRefusedError extends Error {
   constructor(
