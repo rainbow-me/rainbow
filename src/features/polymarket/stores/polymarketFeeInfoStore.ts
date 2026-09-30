@@ -10,11 +10,14 @@ type FetchParams = {
   conditionId: string | null;
 };
 
+/**
+ * Fee information for the currently selected Polymarket market.
+ */
 export const usePolymarketFeeInfoStore = createQueryStore<PolymarketFeeInfo, FetchParams>({
   fetcher: fetchPolymarketFeeInfo,
   params: {
     conditionId: $ => {
-      const { params } = $(polymarketOrderParamsStore);
+      const params = $(polymarketOrderParamsStore, state => state.params);
       const conditionId = $(usePolymarketOrderDetailsStore, state => state.getData()?.market.conditionId ?? null);
       if (!params) return null;
       return 'conditionId' in params ? params.conditionId : conditionId;

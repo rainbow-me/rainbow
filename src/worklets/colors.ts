@@ -1,6 +1,6 @@
 import { convertToRGBA, type ParsedColorArray } from 'react-native-reanimated';
 
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 
 export interface HSV {
   h: number;
@@ -26,7 +26,7 @@ export interface RGBA extends RGB {
 }
 
 /**
- * Get RGBA black with the specified opacity.
+ * Returns black with the given opacity as an RGBA string.
  */
 export function black(opacity: number): string {
   'worklet';
@@ -34,7 +34,7 @@ export function black(opacity: number): string {
 }
 
 /**
- * Get RGBA white with the specified opacity.
+ * Returns white with the given opacity as an RGBA string.
  */
 export function white(opacity: number): string {
   'worklet';

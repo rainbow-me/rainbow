@@ -5,11 +5,13 @@ import { polymarketOrderParamsStore } from '@/features/polymarket/stores/polymar
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
+/** One price level in a Polymarket order book. */
 export type OrderBookLevel = {
   price: string;
   size: string;
 };
 
+/** A Polymarket order book. */
 export type OrderBook = {
   market: string;
   asset_id: string;
@@ -38,9 +40,12 @@ type FetchParams = {
   tokenId: string | null;
 };
 
+/**
+ * Order book for the selected Polymarket outcome.
+ */
 export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams>({
   fetcher: fetchPolymarketOrderBook,
-  params: { tokenId: $ => $(polymarketOrderParamsStore).params?.tokenId ?? null },
+  params: { tokenId: $ => $(polymarketOrderParamsStore, state => state.params?.tokenId ?? null) },
   cacheTime: time.minutes(1),
   staleTime: time.seconds(1),
 });
