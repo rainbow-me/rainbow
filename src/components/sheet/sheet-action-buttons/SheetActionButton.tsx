@@ -130,15 +130,10 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
   return (
     <Button
       as={ButtonPressAnimation}
-      contentContainerStyle={{
-        height: typeof size === 'number' ? size : size === 'big' ? 52 : 46,
-        width: isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
-      }}
       elevation={Platform.OS === 'android' ? elevation : null}
       isCharts={isCharts}
       isSquare={isSquare}
       onPress={disabled ? () => undefined : onPress}
-      overflowMargin={30}
       radiusAndroid={borderRadius}
       borderRadius={borderRadius}
       scaleTo={disabled ? 1 : scaleTo}

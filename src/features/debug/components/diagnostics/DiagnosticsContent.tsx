@@ -66,7 +66,7 @@ export function DiagnosticsContent({
         </Stack>
       </Box>
       <Box paddingBottom="36px" justifyContent="center" alignItems="center">
-        <ButtonPressAnimation onPress={copyUUID} overflowMargin={20}>
+        <ButtonPressAnimation onPress={copyUUID}>
           <Text color="label" size="20pt" weight="semibold">
             {uuid ?? i18n.t(i18n.l.wallet.diagnostics.loading)}
           </Text>

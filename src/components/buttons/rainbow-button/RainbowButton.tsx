@@ -100,8 +100,6 @@ type RainbowButtonProps = {
   strokeWidth?: number;
   type?: RainbowButtonTypes;
   width?: number;
-  overflowMargin?: number;
-  skipTopMargin?: boolean;
   testID?: string;
 };
 
@@ -113,8 +111,6 @@ export const RainbowButton = ({
   strokeWidth = 1,
   type,
   width,
-  overflowMargin = 35,
-  skipTopMargin = true,
   ...props
 }: RainbowButtonProps) => {
   const { isDarkMode } = useTheme();
@@ -131,14 +127,7 @@ export const RainbowButton = ({
   );
 
   return (
-    <ButtonPressAnimation
-      {...props}
-      disabled={disabled}
-      onPress={onPress}
-      overflowMargin={overflowMargin}
-      scaleTo={0.9}
-      skipTopMargin={skipTopMargin}
-    >
+    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress} scaleTo={0.9}>
       <Shadow disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={strokeWidth} width={width} />
       <ButtonContainer elevation={5} height={height} maskElement={outerButtonMask} width={width}>
         <RainbowButtonBackground disabled={disabled} height={height} strokeWidth={strokeWidth} type={type} width={width} />
