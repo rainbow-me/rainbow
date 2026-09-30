@@ -32,9 +32,16 @@ import { white } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
+/**
+ * A selectable tab in `FloatingTabBar`.
+ */
 export type FloatingTab = { key: string; label: string; onPress: () => void };
 
 // ============ Constants ====================================================== //
+
+const TAB_BAR_BORDER_RADIUS = 32;
+const TAB_BAR_GAP = 8;
+const TAB_BAR_HEIGHT = 46;
 
 const TAB_BAR_COLOR_DARK = '#070707';
 const TAB_BAR_COLOR_LIGHT = globalColors.white100;
@@ -62,12 +69,12 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   onSearch?: () => void;
 }): ReactElement {
   const positionsRef = useLazyRef(() => new Map<string, { x: number; width: number }>());
-  const scroll = useAnimatedRef<Animated.ScrollView>();
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
   const contentWidth = useSharedValue(0);
   const scrollOffset = useSharedValue(0);
 
-  const railWidth = width - (onSearch ? 54 : 0);
+  const railWidth = width - (onSearch ? TAB_BAR_HEIGHT + TAB_BAR_GAP : 0);
 
   const revealSelected = useCallback(
     (animated: boolean) => {
@@ -78,10 +85,10 @@ export const FloatingTabBar = memo(function FloatingTabBar({
         const maxOffset = Math.max(0, contentWidth.value - railWidth);
         const x = Math.max(0, Math.min(maxOffset, itemX - (railWidth - itemWidth) / 2));
         if (x === scrollOffset.value) return;
-        scrollTo(scroll, x, 0, animated);
+        scrollTo(scrollRef, x, 0, animated);
       })(position.x, position.width, animated);
     },
-    [contentWidth, positionsRef, railWidth, scroll, scrollOffset, selectedKey]
+    [contentWidth, positionsRef, railWidth, scrollRef, scrollOffset, selectedKey]
   );
 
   const onScroll = useAnimatedScrollHandler({
@@ -103,7 +110,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
           maskElement={<TabBarFadeMask contentWidth={contentWidth} scrollOffset={scrollOffset} width={railWidth} />}
         >
           <Animated.ScrollView
-            ref={scroll}
+            ref={scrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.items}
@@ -138,7 +145,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
 
       {onSearch ? (
         <ButtonPressAnimation onPress={onSearch}>
-          <TabBarSurface shadowColor={shadowColor} isDarkMode={isDarkMode} width={46}>
+          <TabBarSurface shadowColor={shadowColor} isDarkMode={isDarkMode} width={TAB_BAR_HEIGHT}>
             <View style={styles.searchButton}>
               <TextIcon color="label" size="icon 19px" weight="bold" containerSize={24}>
                 {'􀊫'}
@@ -224,7 +231,7 @@ function TabBarSurface({
 
       <SurfaceShadow
         backdropColor={isDarkMode ? globalColors.grey100 : globalColors.white100}
-        borderRadius={32}
+        borderRadius={TAB_BAR_BORDER_RADIUS}
         color={opacity(shadowColor, isDarkMode ? 1 : 0.04)}
         opacity={0.8}
         radius={isDarkMode ? 15 : 6}
@@ -236,7 +243,7 @@ function TabBarSurface({
       ) : (
         <SurfaceShadow
           backdropColor={globalColors.white100}
-          borderRadius={32}
+          borderRadius={TAB_BAR_BORDER_RADIUS}
           color={globalColors.grey100}
           opacity={0.02}
           radius={3}
@@ -246,7 +253,7 @@ function TabBarSurface({
 
       <View style={[styles.content, styles.clip]}>{children}</View>
       <Border
-        borderRadius={32}
+        borderRadius={TAB_BAR_BORDER_RADIUS}
         borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : THICK_BORDER_WIDTH}
         borderColor={{ custom: white(isDarkMode ? 0.04 : 1) }}
         enableInLightMode
@@ -256,7 +263,7 @@ function TabBarSurface({
 }
 
 function TabBarInnerShadow({ width }: { width: number }): ReactElement {
-  const path = useMemo(() => getSquirclePath({ width, height: 46, borderRadius: 32 }), [width]);
+  const path = useMemo(() => getSquirclePath({ width, height: TAB_BAR_HEIGHT, borderRadius: TAB_BAR_BORDER_RADIUS }), [width]);
   return (
     <Canvas style={StyleSheet.absoluteFill}>
       <Path path={path}>
@@ -270,18 +277,18 @@ function TabBarInnerShadow({ width }: { width: number }): ReactElement {
 
 const styles = StyleSheet.create({
   bar: {
-    height: 46,
+    height: TAB_BAR_HEIGHT,
     flexDirection: 'row',
-    gap: 8,
+    gap: TAB_BAR_GAP,
   },
   surface: {
-    height: 46,
-    borderRadius: 32,
+    height: TAB_BAR_HEIGHT,
+    borderRadius: TAB_BAR_BORDER_RADIUS,
     borderCurve: 'continuous',
   },
   content: { flex: 1 },
   clip: {
-    borderRadius: 32,
+    borderRadius: TAB_BAR_BORDER_RADIUS,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
@@ -290,7 +297,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 16,
   },
-  tab: { height: 46, justifyContent: 'center' },
+  tab: { height: TAB_BAR_HEIGHT, justifyContent: 'center' },
   scrollMask: { flex: 1 },
   mask: { flex: 1, flexDirection: 'row' },
   maskEdge: { width: PixelRatio.roundToNearestPixel(36) },
