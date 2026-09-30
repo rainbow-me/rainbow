@@ -4,6 +4,10 @@
 # - Reset iOS manual gestures when the app becomes inactive so the first touch
 #   after returning to the app is not lost.
 # - Type createNativeWrapper refs as instances of the wrapped component.
+# - Reset Android root interception before processing a new touch. An exclusive
+#   gesture can otherwise leave the next button press blocking native scrolling.
+#   Reset on the original ACTION_DOWN before recognizers run, preserving capture
+#   for additional fingers and through the current gesture's final event.
 
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 index d515011..813c69c 100644
@@ -74,3 +78,17 @@ diff --git a/node_modules/react-native-gesture-handler/lib/typescript/handlers/c
 +export default function createNativeWrapper<C extends React.ElementType>(Component: C, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<React.ComponentProps<C> & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentRef<C>>>;
  //# sourceMappingURL=createNativeWrapper.d.ts.map
 \ No newline at end of file
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
+@@ -112,6 +112,10 @@
+   }
+
+   fun dispatchTouchEvent(event: MotionEvent): Boolean {
++    // Reset before handlers activate, so a new touch cannot retain the previous stream's interception.
++    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
++      shouldIntercept = false
++    }
+     // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
+     // if `requestDisallow` has been called as a result of a normal gesture handling process or
+     // as a result of one of the gesture handlers activating
