@@ -44,7 +44,7 @@ export function normalizeTransformOrigin(transformOrigin: TransformOrigin | stri
     case 'right':
       return [1, 0.5];
     case 'top':
-      return [0.5, 1];
+      return [0.5, 0];
     default:
       return undefined;
   }
