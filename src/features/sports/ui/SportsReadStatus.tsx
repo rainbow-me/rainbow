@@ -11,6 +11,9 @@ import { loadMoreSportsGames, retrySportsPage, useSportsStore } from '@/features
 import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
 import * as i18n from '@/languages';
 
+/**
+ * Shows the current page's loading, error, empty or load-more state.
+ */
 export function SportsReadStatus({
   host,
   page,
