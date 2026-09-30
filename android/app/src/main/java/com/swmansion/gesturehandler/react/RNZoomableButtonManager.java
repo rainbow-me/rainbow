@@ -32,6 +32,8 @@ import java.util.Map;
 public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
     public static class ZoomableButtonViewGroup extends RNGestureHandlerButtonViewManager.ButtonViewGroup {
+        private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+
         private enum LongPressState { NONE, TRIGGERED, HOLDING }
 
         private float mScaleTo = 0.86f;
@@ -52,16 +54,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private float presentationScale = 1f;
         private final int touchSlop;
 
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
-        private final Runnable mLongPressRunnable = () -> {
-            if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
-                return;
-            }
-            onLongPress();
-            if (longPressState == LongPressState.TRIGGERED) {
-                setPressed(false);
-            }
-        };
+        private Runnable mLongPressRunnable;
 
         public ZoomableButtonViewGroup(Context context) {
             super(context);
@@ -135,7 +128,10 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                     sendPressEvent("pressStart");
                 }
                 if (isLongPress) {
-                    mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+                    if (mLongPressRunnable == null) {
+                        mLongPressRunnable = this::handleLongPressTimeout;
+                    }
+                    MAIN_HANDLER.postDelayed(mLongPressRunnable, mMinLongPressDuration);
                 }
                 return true;
             }
@@ -212,7 +208,19 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         @Override
         public void cancelLongPress() {
             super.cancelLongPress();
-            mHandler.removeCallbacks(mLongPressRunnable);
+            if (mLongPressRunnable != null) {
+                MAIN_HANDLER.removeCallbacks(mLongPressRunnable);
+            }
+        }
+
+        private void handleLongPressTimeout() {
+            if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
+                return;
+            }
+            onLongPress();
+            if (longPressState == LongPressState.TRIGGERED) {
+                setPressed(false);
+            }
         }
 
         private void cancelTouch() {
