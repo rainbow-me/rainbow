@@ -1,6 +1,6 @@
 import { useAppStateStore } from '@/state/appState/appStateStore';
 
 /**
- * Whether the app is in the foreground: React Native's `active` state, not `inactive` or `background`.
+ * Returns whether the app is active.
  */
 export const useIsForeground = (): boolean => useAppStateStore(state => state === 'active');

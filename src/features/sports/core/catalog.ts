@@ -2,37 +2,35 @@ import { type SportsDestination } from './browse';
 import { Sport_Browse, type SportsCatalog as CatalogMessage, type Competition } from './generated/sports';
 
 /**
- * A catalog sport or competition indexed for browsing. Competitions have a parent sport.
- * `directoryIds` is present for sports browsed by competition;
- * its absence means the scope is browsed as games.
+ * A sport or competition in the browse catalog.
  */
 export type SportsScope = Competition & {
   parentId?: string;
+  /** Child competitions for sports displayed as a directory. */
   directoryIds?: string[];
   searchName: string;
-  /** The category tab for this scope when opened directly or from Search. */
+  /** The category tab containing this scope. */
   category: SportsDestination;
-  /** The earliest curated Live group containing this competition; absent when the competition groups itself. */
+  /** The first curated Live group containing this competition. */
   liveGroup?: { id: string; rank: number };
 };
 
 /**
- * One service revision's browse policy and indexes. Scope IDs identify both sports and competitions.
- * Arrays preserve catalog order; `scopeIds` lists sports before competitions, and `liveGroupOrder`
- * places curated groups before the remaining competitions.
+ * The Sports catalog indexed for navigation and game grouping.
  */
 export type SportsCatalog = {
   revision: number;
   scopes: Partial<Record<string, SportsScope>>;
   sportIds: string[];
+  /** Sport IDs followed by competition IDs. */
   scopeIds: string[];
   categories: SportsDestination[];
+  /** Curated Live groups followed by the remaining competitions. */
   liveGroupOrder: string[];
 };
 
 /**
- * Builds the browse indexes for a service catalog and its response revision.
- * A competition belonging to several curated Live groups uses the earliest group in the policy.
+ * Indexes the service catalog for navigation and game grouping.
  */
 export function buildSportsCatalog(catalog: CatalogMessage, revision: number): SportsCatalog {
   const scopes: SportsCatalog['scopes'] = {};

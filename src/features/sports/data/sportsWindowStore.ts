@@ -5,13 +5,12 @@ import { useAppStateStore } from '@/state/appState/appStateStore';
 import { createTimeStore } from '@/state/time/createTimeStore';
 
 /**
- * A subscribed clock that wakes at local midnight so the Sports schedule can advance to the next day.
+ * A clock that updates at local midnight.
  */
 export const useSportsTimeStore = createTimeStore(time => getNextMidnight(new Date(time)));
 
 /**
- * The seven-day schedule window beginning today. Rechecks the local date at midnight and on app-state changes
- * so returning from the background picks up a new day. Preserves the window's identity within the same local day.
+ * The seven-day Sports schedule window, refreshed at local midnight and on app resume.
  */
 export const sportsWindowStore = createDerivedStore(
   $ => {

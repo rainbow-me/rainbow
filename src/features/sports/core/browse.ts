@@ -1,16 +1,18 @@
 import { type SportsCatalog } from './catalog';
 
-/** Screens with independent Sports navigation and a shared game cache. */
+/**
+ * The Sports screen or the Sports category in Predictions.
+ */
 export type SportsHost = 'main' | 'predictions';
 
 /**
- * A browse destination: global Live, the All sports directory, or a catalog sport or competition ID.
+ * A browse destination: `live`, `all`, or a sport or competition ID.
  */
 export type SportsDestination = string;
 
 /**
- * Local schedule bounds as Unix timestamps in milliseconds.
- * Today is `[from, todayUntil)` and Upcoming is `[todayUntil, until)`. Live games are eligible independently of these bounds.
+ * Local schedule boundaries as Unix timestamps in milliseconds.
+ * Today spans `[from, todayUntil)`; Upcoming spans `[todayUntil, until)`.
  */
 export type SportsWindow = {
   from: number;
@@ -19,7 +21,7 @@ export type SportsWindow = {
 };
 
 /**
- * Returns seven local calendar days beginning at today's midnight, with tomorrow's midnight separating Today and Upcoming.
+ * Returns a seven-day schedule window starting at today's local midnight.
  */
 export function getSportsWindow(now = new Date()): SportsWindow {
   const year = now.getFullYear();
@@ -34,15 +36,15 @@ export function getSportsWindow(now = new Date()): SportsWindow {
 }
 
 /**
- * The local midnight that ends the day containing `time`.
+ * Returns the next local midnight as a Unix timestamp in milliseconds.
  */
 export function getNextMidnight(time: Date): number {
   return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1).getTime();
 }
 
 /**
- * Resolves a browse origin to its category tab. Live and All are their own tabs.
- * Before the catalog arrives, preserves the origin; a scope absent from a loaded catalog resolves to All.
+ * Returns a destination's category tab, falling back to All for an unknown scope.
+ * Leaves the destination unchanged while the catalog is unavailable.
  */
 export function getSportsCategory(catalog: SportsCatalog | undefined, origin: SportsDestination): SportsDestination {
   if (!catalog || !isSportsScope(origin)) return origin;
@@ -50,8 +52,7 @@ export function getSportsCategory(catalog: SportsCatalog | undefined, origin: Sp
 }
 
 /**
- * Returns the parent scope, or the selected category's root when there is no parent.
- * The root itself, Live, and All have no Back destination.
+ * Returns the Back destination within the selected category, if one exists.
  */
 export function getSportsBackDestination(
   catalog: SportsCatalog | undefined,
