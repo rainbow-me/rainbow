@@ -4,7 +4,7 @@ import { processColor, requireNativeComponent, StyleSheet, View } from 'react-na
 import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { normalizeTransformOrigin } from './NativeButton';
+import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 import { type ButtonPressAnimationProps } from './types';
 
 interface ButtonElementProps extends ButtonPressAnimationProps {

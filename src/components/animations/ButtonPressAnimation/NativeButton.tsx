@@ -3,6 +3,7 @@ import { requireNativeComponent, View, type ViewStyle } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 
+import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 import { type ButtonPressAnimationProps, type TransformOrigin } from './types';
 
 interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {
@@ -30,25 +31,6 @@ const ButtonWithTransformOrigin = styled(RawNativeButton)(({ transformOrigin }: 
 
   return styles;
 });
-
-export function normalizeTransformOrigin(transformOrigin: TransformOrigin | string | undefined): TransformOrigin | undefined {
-  if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
-    return transformOrigin;
-  }
-
-  switch (transformOrigin) {
-    case 'bottom':
-      return [0.5, 1];
-    case 'left':
-      return [0, 0.5];
-    case 'right':
-      return [1, 0.5];
-    case 'top':
-      return [0.5, 0];
-    default:
-      return undefined;
-  }
-}
 
 export const NativeButton = React.forwardRef(
   (
