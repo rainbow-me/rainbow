@@ -12,6 +12,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
 import androidx.annotation.NonNull;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import com.facebook.react.bridge.Arguments;
@@ -48,6 +49,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private LongPressState longPressState = LongPressState.NONE;
         private int activePointerId = MotionEvent.INVALID_POINTER_ID;
         private long touchDownTime = -1;
+        private float presentationScale = 1f;
         private final int touchSlop;
 
         private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -72,15 +74,24 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
             }
             mIsActive = in;
             clearAnimation();
-            float fromScale = in ? 1f : mScaleTo;
+            float fromScale = presentationScale;
             float toScale = in ? mScaleTo : 1f;
+            if (fromScale == 1f && toScale == 1f) {
+                return;
+            }
             Animation anim = new ScaleAnimation(
                     fromScale, toScale,
                     fromScale, toScale,
                     Animation.RELATIVE_TO_SELF, pivotX,
-                    Animation.RELATIVE_TO_SELF, pivotY);
+                    Animation.RELATIVE_TO_SELF, pivotY) {
+                @Override
+                protected void applyTransformation(float time, Transformation transformation) {
+                    super.applyTransformation(time, transformation);
+                    presentationScale = fromScale + (toScale - fromScale) * time;
+                }
+            };
             anim.setFillAfter(true);
-            anim.setDuration(mDuration);
+            anim.setDuration(fromScale == toScale ? 0 : mDuration);
             anim.setInterpolator(bezierInterpolator);
             this.startAnimation(anim);
         }
@@ -233,6 +244,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
             cancelTouch();
             cancelLongPress();
             clearAnimation();
+            presentationScale = 1f;
             mIsActive = false;
             super.onDetachedFromWindow();
         }
