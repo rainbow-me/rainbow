@@ -34,12 +34,14 @@ import { black, white } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
+/**
+ * Callback provided to game card and bet badge press handlers.
+ */
 export type SportsGamePress = (gameId: string, offer?: { selection: Selection; outcomeColor: string }) => void;
 
 // ============ Constants ====================================================== //
 
-export const GameCardPathsContext = createContext<Map<string, string> | undefined>(undefined);
-
+const CARD_BORDER_RADIUS = 24;
 const PARTICIPANT_INDICES: readonly (0 | 1)[] = [0, 1];
 
 const STATUS_LABELS: Partial<
@@ -57,6 +59,14 @@ const LIGHT_BADGE_FILL = [white(0.54), white(0.81)] as const;
 
 // ============ GameCard ======================================================= //
 
+/**
+ * Shared cache of game card shadow paths.
+ */
+export const GameCardPathsContext = createContext<Map<string, string> | undefined>(undefined);
+
+/**
+ * Displays a game's participants, score and available bets.
+ */
 export const GameCard = memo(function GameCard({
   gameId,
   scopeId,
@@ -115,7 +125,7 @@ export const GameCard = memo(function GameCard({
 
                   <ParticipantBetButtons
                     gameId={gameId}
-                    index={index}
+                    participantIndex={index}
                     spread={game.spread}
                     winner={participant.winner}
                     color={participant.color}
@@ -163,14 +173,21 @@ function GameCardSurface({
     <View style={[styles.surface, { width, height, backgroundColor }]} testID={testID}>
       <SurfaceShadow
         backdropColor={backdropColor}
-        borderRadius={24}
+        borderRadius={CARD_BORDER_RADIUS}
         color={globalColors.grey100}
         opacity={0.06}
         radius={12}
         y={isDarkMode ? 4 : 2}
       />
       {isDarkMode ? null : (
-        <SurfaceShadow backdropColor={backdropColor} borderRadius={24} color={globalColors.grey100} opacity={0.02} radius={3} y={2} />
+        <SurfaceShadow
+          backdropColor={backdropColor}
+          borderRadius={CARD_BORDER_RADIUS}
+          color={globalColors.grey100}
+          opacity={0.02}
+          radius={3}
+          y={2}
+        />
       )}
       <View pointerEvents="none" style={styles.cardBackground}>
         {isDarkMode ? (
@@ -180,7 +197,7 @@ function GameCardSurface({
         )}
       </View>
       {children}
-      <Border borderRadius={24} borderWidth={2} borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }} enableInLightMode />
+      <Border borderRadius={CARD_BORDER_RADIUS} borderWidth={2} borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }} enableInLightMode />
     </View>
   );
 }
@@ -191,7 +208,7 @@ const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width
   let path = paths?.get(key);
 
   if (path === undefined) {
-    path = getSquirclePath({ width, height, borderRadius: 24 });
+    path = getSquirclePath({ width, height, borderRadius: CARD_BORDER_RADIUS });
     paths?.set(key, path);
   }
 
@@ -204,6 +221,9 @@ const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width
   );
 });
 
+/**
+ * A loading placeholder for a game card.
+ */
 export function GameCardSkeleton({ width, isDarkMode }: { width: number; isDarkMode: boolean }): ReactElement {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
@@ -328,7 +348,7 @@ const GameTime = memo(function GameTime({
         </>
       ) : startsAt ? (
         <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-          {formatStart(startsAt, currentDay)}
+          {formatStartTime(startsAt, currentDay)}
         </Text>
       ) : null}
     </View>
@@ -423,21 +443,21 @@ const GameRowIdentity = memo(function GameRowIdentity({
 const ParticipantBetButtons = memo(function ParticipantBetButtons({
   isDarkMode,
   gameId,
-  index,
+  participantIndex,
   spread,
   winner,
   color,
   onPress,
 }: {
   gameId: string;
-  index: 0 | 1;
+  participantIndex: 0 | 1;
   spread?: Spread;
   winner?: Selection;
   color?: string;
   isDarkMode: boolean;
   onPress: SportsGamePress;
 }): ReactElement {
-  const outcome = spread?.outcomes[index];
+  const outcome = spread?.outcomes[participantIndex];
 
   return (
     <View style={styles.betButtons}>
@@ -512,7 +532,7 @@ const GameDrawRow = memo(function GameDrawRow({
   );
 });
 
-function DrawIcon({ isDarkMode }: { isDarkMode: boolean }) {
+function DrawIcon({ isDarkMode }: { isDarkMode: boolean }): ReactElement {
   const backgroundColor = isDarkMode ? foregroundColors.fillTertiary.dark : globalColors.white100;
 
   return (
@@ -529,7 +549,7 @@ function DrawIcon({ isDarkMode }: { isDarkMode: boolean }) {
 
 // ============ Utilities ====================================================== //
 
-function formatStart(value: string, currentDay: string): string {
+function formatStartTime(value: string, currentDay: string): string {
   const date = new Date(value);
   const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 
@@ -541,13 +561,13 @@ function formatStart(value: string, currentDay: string): string {
 const styles = StyleSheet.create({
   surface: {
     paddingBottom: 6,
-    borderRadius: 24,
+    borderRadius: CARD_BORDER_RADIUS,
     borderCurve: 'continuous',
     elevation: 6,
   },
   cardBackground: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 24,
+    borderRadius: CARD_BORDER_RADIUS,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },

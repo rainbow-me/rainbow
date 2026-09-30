@@ -9,6 +9,9 @@ import { SPORTS_BACKGROUND_COLOR_DARK } from '@/features/sports/ui/colors';
 import { FloatingTabBar } from '@/framework/ui/components/FloatingTabBar';
 import * as i18n from '@/languages';
 
+/**
+ * Category tabs for Sports browsing.
+ */
 export const SportsCategoryBar = memo(function SportsCategoryBar({
   host,
   categories,

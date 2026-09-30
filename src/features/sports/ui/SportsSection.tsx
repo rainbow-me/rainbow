@@ -31,6 +31,9 @@ const HEADING_TEXT_SIZE = '22pt';
 
 // ============ Components ===================================================== //
 
+/**
+ * Title and game count for a Sports section.
+ */
 export function SportsSectionHeading({
   section,
   host,
@@ -98,6 +101,9 @@ export function SportsSectionHeading({
   );
 }
 
+/**
+ * A loading placeholder for a section's title and count badge.
+ */
 export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundColor: string }): ReactElement {
   return (
     <View style={styles.heading}>
@@ -113,6 +119,9 @@ export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundCo
   );
 }
 
+/**
+ * Button to expand or collapse a section's game list.
+ */
 export function SportsSectionToggle({
   expanded,
   remaining,

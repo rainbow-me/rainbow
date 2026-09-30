@@ -11,6 +11,9 @@ import { SportsBadge } from '@/features/sports/ui/SportsImage';
 import * as i18n from '@/languages';
 import { black, white } from '@/worklets/colors';
 
+/**
+ * A directory row for opening a sport or competition.
+ */
 export const SportsDirectoryRow = memo(function SportsDirectoryRow({
   scope,
   host,
@@ -45,6 +48,9 @@ export const SportsDirectoryRow = memo(function SportsDirectoryRow({
   );
 });
 
+/**
+ * Heading or separator above the competition directory.
+ */
 export function SportsDirectoryHeading({ showTitle, isDarkMode }: { showTitle: boolean; isDarkMode: boolean }): ReactElement {
   return (
     <View style={styles.directory}>
