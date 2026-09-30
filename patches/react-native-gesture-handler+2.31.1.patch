@@ -1,3 +1,10 @@
+# PATCH CONTEXT
+# - Allow RNZoomableButton to subclass RNGH's Android button.
+# - Keep iOS scroll views from delaying content touches.
+# - Reset iOS manual gestures when the app becomes inactive so the first touch
+#   after returning to the app is not lost.
+# - Type createNativeWrapper refs as instances of the wrapped component.
+
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 index d515011..813c69c 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
@@ -57,3 +64,13 @@ index 708172f..7f1d550 100644
  - (void)bindManualActivationToView:(RNGHUIView *)view
  {
    if (_manualActivationRecognizer != nil) {
+diff --git a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+--- a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
++++ b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+@@ -1,4 +1,4 @@
+ import * as React from 'react';
+ import { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
+-export default function createNativeWrapper<P>(Component: React.ComponentType<P>, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentType<any>>>;
++export default function createNativeWrapper<C extends React.ElementType>(Component: C, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<React.ComponentProps<C> & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentRef<C>>>;
+ //# sourceMappingURL=createNativeWrapper.d.ts.map
+\ No newline at end of file
