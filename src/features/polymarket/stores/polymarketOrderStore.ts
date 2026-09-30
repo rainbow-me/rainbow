@@ -10,12 +10,18 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 // ============ Order Parameters =============================================== //
 
+/**
+ * The outcome selected for a Polymarket buy or sell order.
+ */
 export const polymarketOrderParamsStore = createBaseStore<{
   params: { tokenId: string; conditionId: string } | Selection | null;
 }>(() => ({ params: null }));
 
-// ============ Selected Instrument ============================================ //
+// ============ Selected Outcome =============================================== //
 
+/**
+ * Details needed to open a Polymarket position.
+ */
 export type PolymarketOrderDetails = {
   event: Pick<PolymarketEvent, 'title' | 'slug'>;
   market: Pick<
@@ -27,18 +33,19 @@ export type PolymarketOrderDetails = {
 
 type FetchParams = { selection: Selection | null };
 
+/**
+ * Loads Polymarket order details for a Sports selection.
+ * Unavailable selections resolve to `null`.
+ */
 export const usePolymarketOrderDetailsStore = createQueryStore<PolymarketOrderDetails | null, FetchParams>({
   fetcher: fetchOrderDetails,
   enabled: $ => {
-    const { params } = $(polymarketOrderParamsStore);
-    const route = $(useNavigationStore, state => state.activeRoute);
-    return route === Routes.POLYMARKET_NEW_POSITION_SHEET && params !== null && 'marketId' in params;
+    const hasSelection = $(polymarketOrderParamsStore, state => state.params !== null && 'marketId' in state.params);
+    const activeRoute = $(useNavigationStore, state => state.activeRoute);
+    return activeRoute === Routes.POLYMARKET_NEW_POSITION_SHEET && hasSelection;
   },
   params: {
-    selection: $ => {
-      const { params } = $(polymarketOrderParamsStore);
-      return params && 'marketId' in params ? params : null;
-    },
+    selection: $ => $(polymarketOrderParamsStore, state => (state.params && 'marketId' in state.params ? state.params : null)),
   },
   staleTime: time.minutes(2),
   cacheTime: time.minutes(10),
