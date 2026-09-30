@@ -86,7 +86,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
               </Box>
             )}
           </Stack>
-          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8} overflowMargin={50}>
+          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
             <IconOrb color={accentColor} icon="􀖂" shadowColor="accent" loaded={accentColorLoaded} />
           </ButtonPressAnimation>
         </Inline>

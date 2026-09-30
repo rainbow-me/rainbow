@@ -1,22 +1,10 @@
-import React, { forwardRef, useCallback, useContext, useMemo, useRef, type PropsWithChildren } from 'react';
+import React, { forwardRef, useCallback, useMemo } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 
-import { createNativeWrapper, State, type RawButtonProps } from 'react-native-gesture-handler';
-import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-  type AnimatedProps,
-} from 'react-native-reanimated';
+import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import useLongPressEvents from '@/hooks/useLongPressEvents';
-
 import { normalizeTransformOrigin } from './NativeButton';
-import { ScaleButtonContext } from './ScaleButtonZoomable';
 import { type ButtonPressAnimationProps } from './types';
 
 interface ButtonElementProps extends ButtonPressAnimationProps {
@@ -31,21 +19,25 @@ type ButtonElementPropsWithDefaults = ButtonElementProps &
   Required<
     Pick<
       ButtonElementProps,
-      'duration' | 'minLongPressDuration' | 'overflowMargin' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
+      'duration' | 'minLongPressDuration' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
     >
   >;
 
 const ZoomableRawButton = requireNativeComponent<
-  Omit<
+  Pick<
     ButtonElementProps,
-    | 'contentContainerStyle'
-    | 'overflowMargin'
-    | 'backgroundColor'
-    | 'borderRadius'
-    | 'onLongPressEnded'
-    | 'wrapperStyle'
-    | 'onLongPress'
-    | 'onPress'
+    | 'children'
+    | 'disallowInterruption'
+    | 'duration'
+    | 'exclusive'
+    | 'isLongPress'
+    | 'minLongPressDuration'
+    | 'scaleTo'
+    | 'shouldActivateOnStart'
+    | 'shouldLongPressHoldPress'
+    | 'style'
+    | 'testID'
+    | 'transformOrigin'
   > &
     Pick<RawButtonProps, 'rippleColor'> & {
       hasPressStartHandler?: boolean;
@@ -55,117 +47,9 @@ const ZoomableRawButton = requireNativeComponent<
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper<AnimatedProps<PropsWithChildren<RawButtonProps>>>(
-  Animated.createAnimatedComponent(PureNativeButton),
-  {
-    shouldActivateOnStart: true,
-    shouldCancelWhenOutside: true,
-  }
-);
-
-const OVERFLOW_MARGIN = 5;
-
 const transparentColor = processColor('transparent');
 
-const ScaleButton = forwardRef(function ScaleButton(
-  {
-    children,
-    contentContainerStyle,
-    duration,
-    exclusive,
-    minLongPressDuration,
-    onLongPress,
-    onPress,
-    overflowMargin,
-    scaleTo,
-    shouldActivateOnStart,
-    wrapperStyle,
-    testID,
-  }: ButtonElementPropsWithDefaults,
-  ref
-) {
-  const parentScale = useContext(ScaleButtonContext);
-  const childScale = useSharedValue(1);
-  const scale = parentScale || childScale;
-  const scaleTraversed = useDerivedValue(() => {
-    const value = withTiming(scale.value, {
-      duration,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-    if (parentScale) {
-      return 1;
-    } else {
-      return value;
-    }
-  });
-  const sz = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scaleTraversed.value }],
-    };
-  });
-
-  const lastActiveRef = useRef(false);
-
-  const { handleCancel, handlePress, handleStartPress } = useLongPressEvents({
-    minLongPressDuration,
-    onLongPress,
-    onPress,
-  });
-
-  const handleEvent = useCallback(
-    ({ nativeEvent }: any) => {
-      const { state, oldState, pointerInside } = nativeEvent;
-      const active = pointerInside && state === State.ACTIVE;
-
-      // Scale animation on active state change
-      if (active !== lastActiveRef.current) {
-        scale.value = active ? scaleTo : 1;
-      }
-
-      // Start long press timer on BEGAN
-      if (!lastActiveRef.current && state === State.BEGAN && pointerInside) {
-        handleStartPress();
-      }
-
-      // Fire onPress when gesture ends successfully (handlePress checks if long press was detected)
-      if (oldState === State.ACTIVE && state !== State.CANCELLED && lastActiveRef.current) {
-        handlePress();
-      }
-
-      // Cancel if finger moved out or gesture was cancelled/failed
-      if ((state === State.ACTIVE && !pointerInside) || state === State.CANCELLED || state === State.FAILED) {
-        handleCancel();
-      }
-
-      lastActiveRef.current = active;
-    },
-    [handleCancel, handlePress, handleStartPress, scale, scaleTo]
-  );
-
-  return (
-    // @ts-expect-error ref type mismatch
-    <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
-      <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton
-          exclusive={exclusive}
-          hitSlop={-overflowMargin}
-          rippleColor={transparentColor}
-          onHandlerStateChange={handleEvent}
-          onGestureEvent={handleEvent}
-          shouldActivateOnStart={shouldActivateOnStart}
-        >
-          <View style={sx.transparentBackground}>
-            <View style={{ padding: overflowMargin }}>
-              <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
-            </View>
-          </View>
-        </AnimatedRawButton>
-      </View>
-    </View>
-  );
-});
-
-const SimpleScaleButton = forwardRef(function SimpleScaleButton(
+const NativeScaleButton = forwardRef(function NativeScaleButton(
   {
     children,
     duration,
@@ -187,7 +71,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
     disallowInterruption,
   }: ButtonElementPropsWithDefaults,
   ref
-) {
+): React.JSX.Element {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }: ZoomableButtonPressEvent) => {
       switch (type) {
@@ -238,10 +122,7 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
 
 export default forwardRef(function ButtonPressAnimation(
   {
-    backgroundColor = 'transparent',
-    borderRadius = 0,
     children,
-    contentContainerStyle,
     disabled,
     duration = 160,
     exclusive,
@@ -252,10 +133,7 @@ export default forwardRef(function ButtonPressAnimation(
     shouldLongPressHoldPress,
     onPress,
     onPressStart,
-    overflowMargin = OVERFLOW_MARGIN,
-    reanimatedButton,
     scaleTo = 0.86,
-    skipTopMargin,
     style,
     testID,
     transformOrigin,
@@ -269,7 +147,6 @@ export default forwardRef(function ButtonPressAnimation(
 ) {
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
-  const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -277,10 +154,7 @@ export default forwardRef(function ButtonPressAnimation(
       {children}
     </View>
   ) : (
-    <ButtonElement
-      backgroundColor={backgroundColor}
-      borderRadius={borderRadius}
-      contentContainerStyle={contentContainerStyle}
+    <NativeScaleButton
       duration={duration}
       enableHapticFeedback={enableHapticFeedback}
       exclusive={exclusive}
@@ -292,11 +166,9 @@ export default forwardRef(function ButtonPressAnimation(
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
       onPressStart={onPressStart}
-      overflowMargin={overflowMargin}
       scaleTo={scaleTo}
       shouldActivateOnStart={shouldActivateOnStart}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
-      skipTopMargin={skipTopMargin}
       testID={testID}
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
@@ -306,15 +178,12 @@ export default forwardRef(function ButtonPressAnimation(
       <View onLayout={onLayout} style={[sx.overflow, style]}>
         {children}
       </View>
-    </ButtonElement>
+    </NativeScaleButton>
   );
 });
 
 const sx = StyleSheet.create({
   overflow: {
     overflow: 'visible',
-  },
-  transparentBackground: {
-    backgroundColor: 'transparent',
   },
 });

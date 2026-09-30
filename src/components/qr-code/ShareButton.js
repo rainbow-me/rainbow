@@ -41,7 +41,7 @@ export default function ShareButton({ accountAddress, ...props }) {
   );
 
   return (
-    <ButtonPressAnimation onPress={handlePress} overflowMargin={20} radiusAndroid={28} {...props}>
+    <ButtonPressAnimation onPress={handlePress} radiusAndroid={28} {...props}>
       <ShadowStack backgroundColor={isDarkMode ? colors.white : colors.dark} borderRadius={28} height={56} shadows={shadows} width={200}>
         <Centered cover style={{ paddingHorizontal: 10 }}>
           <Label>{`􀈂 ${i18n.t(i18n.l.button.share)}`}</Label>

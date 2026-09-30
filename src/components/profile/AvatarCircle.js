@@ -90,7 +90,6 @@ export default function AvatarCircle({
         marginTop={2}
         onPress={disableChangeAvatar ? null : onAvatarPressProfile}
         onLongPress={() => null}
-        overflowMargin={30}
         pressOutDuration={200}
         scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
         {...props}
