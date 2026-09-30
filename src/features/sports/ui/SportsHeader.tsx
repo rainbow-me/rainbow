@@ -15,6 +15,9 @@ import * as i18n from '@/languages';
 const HEADER_HEIGHT = 44;
 const BACK_BUTTON_INSET = 4;
 
+/**
+ * Title and back navigation for a Sports browse page.
+ */
 export const SportsHeader = memo(function SportsHeader({
   host,
   isDarkMode,

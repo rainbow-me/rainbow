@@ -2,6 +2,9 @@ import { StyleSheet } from 'react-native';
 
 import { globalColors } from '@/design-system/color/palettes';
 
+/**
+ * Shared shadow styles for Sports badges.
+ */
 export const badgeShadows = StyleSheet.create({
   soft: {
     shadowColor: globalColors.grey100,
