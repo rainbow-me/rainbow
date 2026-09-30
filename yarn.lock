@@ -9260,7 +9260,7 @@ __metadata:
     react-native-animateable-text: "npm:0.17.1"
     react-native-appsflyer: "npm:6.18.0"
     react-native-ble-plx: "npm:3.4.0"
-    react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
+    react-native-blur-view: "christianbaroni/react-native-blur-view#bc7ab6b42796806130e75fb0708ba5f289f9ba35"
     react-native-bootsplash: "npm:6.3.7"
     react-native-branch: "npm:5.3.1"
     react-native-change-icon: "npm:5.0.0"
@@ -22041,13 +22041,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-blur-view@christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8":
+"react-native-blur-view@christianbaroni/react-native-blur-view#bc7ab6b42796806130e75fb0708ba5f289f9ba35":
   version: 1.0.0
-  resolution: "react-native-blur-view@https://github.com/christianbaroni/react-native-blur-view.git#commit=2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
+  resolution: "react-native-blur-view@https://github.com/christianbaroni/react-native-blur-view.git#commit=bc7ab6b42796806130e75fb0708ba5f289f9ba35"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/35a5a708ffb7cfb8a599f8b0329cf433e7958fa83d1c25affd76c234beb6bea420553c975cacf6743d089882914a0adfb8ad96346a4ac9a5f5acd4b5d407ce6a
+  checksum: 10c0/2c7d3e9457ad3aed6ec8b1fde3b5117524d64a9048ee28a2ac1d00fa6947169e03f85aec78043cea3b4bb078b091619ec9e092f8929dde8cf6c9b2af5b5afdaa
   languageName: node
   linkType: hard
 
