@@ -46,10 +46,11 @@ const ZoomableRawButton = requireNativeComponent<
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
+type ZoomableButtonRef = React.ComponentRef<typeof ZoomableButton>;
 
 const transparentColor = processColor('transparent');
 
-const NativeScaleButton = forwardRef(function NativeScaleButton(
+const NativeScaleButton = forwardRef<ZoomableButtonRef, ButtonElementPropsWithDefaults>(function NativeScaleButton(
   {
     children,
     duration,
@@ -96,9 +97,7 @@ const NativeScaleButton = forwardRef(function NativeScaleButton(
   return (
     <ZoomableButton
       duration={duration}
-      enableHapticFeedback={enableHapticFeedback}
       exclusive={exclusive}
-      hapticType={hapticType}
       hasPressStartHandler={!!onPressStart}
       isLongPress={isLongPress}
       minLongPressDuration={minLongPressDuration}
@@ -111,8 +110,6 @@ const NativeScaleButton = forwardRef(function NativeScaleButton(
       testID={testID}
       transformOrigin={transformOrigin}
       disallowInterruption={disallowInterruption}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       ref={ref}
     >
       {children}
@@ -120,7 +117,7 @@ const NativeScaleButton = forwardRef(function NativeScaleButton(
   );
 });
 
-export default forwardRef(function ButtonPressAnimation(
+export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function ButtonPressAnimation(
   {
     children,
     disabled,
@@ -148,8 +145,6 @@ export default forwardRef(function ButtonPressAnimation(
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
   return disabled ? (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
       {children}
     </View>
@@ -161,7 +156,6 @@ export default forwardRef(function ButtonPressAnimation(
       hapticType={hapticType}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
-      onLayout={onLayout}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
