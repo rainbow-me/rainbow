@@ -10,20 +10,19 @@ import { Border } from '@/design-system/components/Border/Border';
 import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { Text } from '@/design-system/components/Text/Text';
 import { textSizes } from '@/design-system/typography/typography';
-import { opacity } from '@/design-system/utils/opacity';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
+import { black, createOpacityPalette, getSolidColorEquivalent, white } from '@/worklets/colors';
 
 // ============ Types ========================================================== //
 
 type BetContentProps = {
   color: string;
+  fallbackPrice?: string | number;
   isDarkMode: boolean;
   price: ReadOnlySharedValue<string | undefined>;
-  fallbackPrice?: string | number;
 };
 
 // ============ Constants ====================================================== //
@@ -31,8 +30,12 @@ type BetContentProps = {
 const SMALL_PROBABILITY_STYLE = textSizes['15pt'];
 const PROBABILITY_STYLE = textSizes['17pt'];
 
-const SPREAD_VERTICAL_STOPS = [0, 4 / 40, 12 / 40, 28 / 40, 36 / 40, 1] as const;
-const SPREAD_HORIZONTAL_STOPS = [0, 4 / 60, 12 / 60, 48 / 60, 56 / 60, 1] as const;
+const BUTTON_WIDTH = 60;
+const BUTTON_HEIGHT = 40;
+const BUTTON_BORDER_RADIUS = 14;
+
+const SPREAD_VERTICAL_STOPS = [0, 4 / BUTTON_HEIGHT, 12 / BUTTON_HEIGHT, 28 / BUTTON_HEIGHT, 36 / BUTTON_HEIGHT, 1] as const;
+const SPREAD_HORIZONTAL_STOPS = [0, 4 / BUTTON_WIDTH, 12 / BUTTON_WIDTH, 48 / BUTTON_WIDTH, 56 / BUTTON_WIDTH, 1] as const;
 const PRIMARY_HIGHLIGHT_STOPS = [0, 0.25, 0.5, 0.75, 1] as const;
 
 const LIGHT_SPREAD_FILL = [white(0.54), white(0.81)] as const;
@@ -40,6 +43,9 @@ const PRIMARY_HIGHLIGHT = [white(0.12), white(0.055), white(0.018), white(0.004)
 
 // ============ Bet Button ===================================================== //
 
+/**
+ * A bet button displaying live odds and an optional spread.
+ */
 export const BetButton = memo(function BetButton({
   liveTokenId,
   fallbackPrice,
@@ -48,14 +54,16 @@ export const BetButton = memo(function BetButton({
   line,
   onPress,
 }: {
+  /** Live-token ID whose price feed is managed by the caller. */
   liveTokenId: string;
+  /** Price used when no live quote is available. */
   fallbackPrice?: string | number;
   isDarkMode: boolean;
   color?: string;
   line?: number;
   onPress: (color: string) => void;
 }): ReactElement {
-  const price = useStoreSharedValue(useLiveTokensStore, s => s.tokens[liveTokenId]?.price);
+  const price = useStoreSharedValue(useLiveTokensStore, state => state.tokens[liveTokenId]?.price);
 
   return (
     <ButtonPressAnimation
@@ -98,30 +106,35 @@ function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps
         </AnimatedText>
       </View>
 
-      <Border borderRadius={14} borderWidth={2} borderColor={{ custom: (isDarkMode ? white : black)(0.1) }} enableInLightMode />
+      <Border
+        borderRadius={BUTTON_BORDER_RADIUS}
+        borderWidth={2}
+        borderColor={{ custom: (isDarkMode ? white : black)(0.1) }}
+        enableInLightMode
+      />
     </View>
   );
 }
 
 function SpreadBet({ color, isDarkMode, price, fallbackPrice, line }: BetContentProps & { line: number }): ReactElement {
-  const gradient = useMemo(() => {
-    if (!isDarkMode) return LIGHT_SPREAD_FILL;
-    const outer = opacity(color, 0.18);
-    const middle = opacity(color, 0.08);
-    const inner = opacity(color, 0);
+  const { backgroundColor, borderColor, gradient } = useMemo(() => {
+    if (!isDarkMode) return { backgroundColor: undefined, borderColor: globalColors.white100, gradient: LIGHT_SPREAD_FILL };
 
-    return [outer, middle, inner, inner, middle, outer] as const;
+    const palette = createOpacityPalette(color, [0, 6, 8, 18, 20]);
+    const outer = palette.opacity18;
+    const middle = palette.opacity8;
+    const inner = palette.opacity0;
+
+    return {
+      backgroundColor: palette.opacity20,
+      borderColor: palette.opacity6,
+      gradient: [outer, middle, inner, inner, middle, outer] as const,
+    };
   }, [color, isDarkMode]);
 
   return (
     <View style={isDarkMode ? undefined : styles.spreadShadow}>
-      <View
-        style={[
-          styles.surface,
-          { backgroundColor: isDarkMode ? opacity(color, 0.2) : undefined },
-          isDarkMode ? undefined : styles.tightShadow,
-        ]}
-      >
+      <View style={[styles.surface, { backgroundColor }, isDarkMode ? undefined : styles.tightShadow]}>
         <View pointerEvents="none" style={styles.background}>
           <LinearGradient colors={gradient} locations={isDarkMode ? SPREAD_VERTICAL_STOPS : undefined} style={StyleSheet.absoluteFill} />
           {isDarkMode ? (
@@ -154,9 +167,9 @@ function SpreadBet({ color, isDarkMode, price, fallbackPrice, line }: BetContent
         </View>
 
         <Border
-          borderRadius={14}
+          borderRadius={BUTTON_BORDER_RADIUS}
           borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
-          borderColor={{ custom: isDarkMode ? opacity(color, 0.06) : globalColors.white100 }}
+          borderColor={{ custom: borderColor }}
           enableInLightMode
         />
       </View>
@@ -176,14 +189,14 @@ function formatProbability(price: ReadOnlySharedValue<string | undefined>, fallb
 
 const styles = StyleSheet.create({
   surface: {
-    width: 60,
-    height: 40,
-    borderRadius: 14,
+    width: BUTTON_WIDTH,
+    height: BUTTON_HEIGHT,
+    borderRadius: BUTTON_BORDER_RADIUS,
     borderCurve: 'continuous',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 14,
+    borderRadius: BUTTON_BORDER_RADIUS,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
@@ -202,7 +215,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   spreadShadow: {
-    borderRadius: 14,
+    borderRadius: BUTTON_BORDER_RADIUS,
     borderCurve: 'continuous',
     shadowColor: globalColors.grey100,
     shadowOffset: { width: 0, height: 2 },
