@@ -35,8 +35,7 @@ import { useAppStateStore } from '@/state/appState/appStateStore';
 // ============ Types ========================================================== //
 
 /**
- * Shared Sports data and query status. Page results identify their owning query-cache entry;
- * games are stored once by canonical ID, independently of the pages and event lookup retaining them.
+ * Shared Sports data and request status.
  */
 export type SportsQueryState = QueryStoreState<SportsResponse | null, SportsParams, SportsState>;
 
@@ -48,7 +47,9 @@ type SportsResponse =
   | SportsSearchResponse
   | ({ type: 'event'; eventId: string } & Pick<LookupGamesResponse, 'catalog' | 'catalogRevision' | 'games'>);
 
-/** A complete Search range: ordered IDs include retained games; `games` contains only newly fetched data. */
+/**
+ * The full Search result order and newly fetched game data.
+ */
 type SportsSearchResponse = SearchGamesResponse & {
   type: 'search';
   gameIds: string[];
@@ -57,22 +58,23 @@ type SportsSearchResponse = SearchGamesResponse & {
 
 type SportsParams = { request: SportsRequest | null };
 
-/** A browse response's retained order and current display sections, owned by its query-cache entry. */
+/**
+ * A browse query's game order and display sections.
+ */
 type BrowseResult = {
   queryKey: string;
   /**
-   * All response members in their last service-provided order, including games no longer eligible for display.
-   * Only a response for this query replaces the order. Canonical updates affect placement; catalog changes discard the result.
+   * Game IDs in response order, including games currently excluded from display.
    */
   gameIds: ReadonlySet<string>;
   sections: SportsSection[];
-  /** The sport or competition and date range used to group these sections; absent for Live. */
+  /** The browsed sport or competition; absent for global Live. */
   scope: SportsBrowseScope | undefined;
 };
 
 type SearchResult = {
   queryKey: string;
-  /** Minimum number of results to load, including a pending or failed load-more request. */
+  /** Minimum result count to request across refreshes and retries. */
   minimumGameCount: number;
   gameIds: string[];
   nextCursor?: string;
@@ -86,11 +88,11 @@ type EventLookup = {
 
 type SportsData = {
   games: Partial<Record<string, Game>>;
-  /** Latest delivery time for each retained canonical game. */
+  /** Last successful fetch time for each game, in Unix milliseconds. */
   gameFetchedAt: Partial<Record<string, number>>;
-  /** The selected child's resolution or an unavailable answer. Primary answers come from the canonical game cache. */
+  /** The selected event's lookup result; primary games are read from `games`. */
   lookup: EventLookup | undefined;
-  /** Results for Live and visited scopes. */
+  /** Browse results for Live and visited sports or competitions. */
   results: Partial<Record<SportsDestination, BrowseResult>>;
   search: SearchResult | undefined;
 };
@@ -109,9 +111,8 @@ const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
 // ============ Sports Store =================================================== //
 
 /**
- * Canonical games, browse results, and one Search range shared by Sports and Predictions.
- * Retains games referenced by those results or the selected event, and admits catalog revisions atomically with game data.
- * While subscribed and the app is active, refreshes the current read every minute; fresh event answers reuse cached data.
+ * Shares the Sports catalog, games, and page results across Sports and Predictions.
+ * Refreshes the active screen's data while the app is active.
  */
 export const useSportsStore = createQueryStore<SportsResponse | null, SportsParams, SportsState>(
   {
@@ -141,7 +142,7 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
 );
 
 /**
- * Returns the query-cache identity for a page, including its Search text or schedule bounds where applicable.
+ * Returns the cache key for a Sports page request.
  */
 export function getPageQueryKey(request: SportsPageRequest): string {
   return getQueryKey({ request });
@@ -150,8 +151,8 @@ export function getPageQueryKey(request: SportsPageRequest): string {
 // ============ Reads ========================================================== //
 
 /**
- * Resolves an event to a retained canonical game ID. Returns `null` for an unavailable lookup and `undefined` when unknown.
- * A primary event shares its game's ID; a child event needs the selected lookup's resolution.
+ * Finds a cached game ID for a primary or child event.
+ * Returns `null` if unavailable, or `undefined` if the event has not been resolved.
  */
 export function getGameId(state: Pick<SportsState, 'games' | 'lookup'>, eventId: string): string | null | undefined {
   if (state.lookup?.eventId === eventId) return state.lookup.gameId;
@@ -161,8 +162,7 @@ export function getGameId(state: Pick<SportsState, 'games' | 'lookup'>, eventId:
 // ============ Page Actions =================================================== //
 
 /**
- * Refetches a host's current page regardless of freshness or which screen is active.
- * Does nothing for open, empty Search, which has no page request.
+ * Forces a refresh of the screen's current Sports page.
  */
 export async function refreshSportsPage(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -170,8 +170,7 @@ export async function refreshSportsPage(host: SportsHost): Promise<void> {
 }
 
 /**
- * Requests at least one more distinct game for the host's current Search when a continuation is available.
- * Records that target before fetching so an in-flight refresh or a failed continuation preserves the requested range.
+ * Loads more results for the screen's current Search, if available.
  */
 export async function loadMoreSportsGames(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -185,7 +184,8 @@ export async function loadMoreSportsGames(host: SportsHost): Promise<void> {
 }
 
 /**
- * Retries the host's page, preserving its Search load target. A missing sport or competition returns that host to Live.
+ * Retries a Sports page.
+ * Returns to Live if the requested sport or competition isn't found.
  */
 export async function retrySportsPage(host: SportsHost): Promise<void> {
   const request = sportsPageRequestStores[host].getState();
@@ -236,7 +236,9 @@ async function fetchSports({ request }: SportsParams, abortController: AbortCont
   }
 }
 
-/** Loads or refreshes the requested Search range, committing nothing until the range is complete. */
+/**
+ * Loads or refreshes Search results, following continuation pages as needed.
+ */
 async function fetchSearchResult(
   request: Extract<SportsPageRequest, { type: 'search' }>,
   abortController: AbortController | null
@@ -321,7 +323,7 @@ function getEventDueAt(state: Pick<SportsData, 'gameFetchedAt' | 'lookup'>, even
 // ============ Storing Responses ============================================== //
 
 /**
- * Stores a response, clearing previous data and query-cache entries when a newer catalog revision arrives.
+ * Stores a response, clearing previous data when the catalog revision advances.
  */
 function setSportsData({ data: response, queryKey, set }: SetDataParams<SportsResponse | null, SportsParams, SportsState>): void {
   if (!response) return;
@@ -359,8 +361,8 @@ function setSportsData({ data: response, queryKey, set }: SetDataParams<SportsRe
 }
 
 /**
- * Keeps an equal revision's catalog and requires a catalog for the first or a newer revision.
- * Throws before storing any response data if its revision is older or its required catalog is missing.
+ * Reuses the current catalog or builds a newer revision.
+ * Rejects older revisions and responses missing a required catalog.
  */
 function updateCatalog(catalog: SportsCatalog | undefined, revision: number, incoming: CatalogMessage | undefined): SportsCatalog {
   if (catalog && revision < catalog.revision) throw new Error('Sports response uses an older catalog.');
@@ -443,7 +445,9 @@ function mergeSportsResponse(
   return retainSportsData(previous, { games, gameFetchedAt, lookup, results, search }, selectedEventId, retentionChanged);
 }
 
-/** Admits the service's order and membership, preserving unchanged result and section identities. */
+/**
+ * Updates a browse result, retaining unchanged section and result references.
+ */
 function updateBrowseResult(
   previous: BrowseResult | undefined,
   response: BrowseResponse,
@@ -466,12 +470,11 @@ function updateBrowseResult(
 
 // ============ Retention ====================================================== //
 
-/** The selection whose unreferenced game was kept by the last cleanup. */
+/** The selected event at the last cache cleanup. */
 let retainedEventId: string | null | undefined;
 
 /**
- * Retains page/Search members and the selected event's game. The original state is the copy boundary for the
- * whole response transaction: pruning may mutate records already copied during admission, but never published records.
+ * Removes games no longer referenced by page results or the selected event.
  */
 function retainSportsData(previous: SportsData, next: SportsData, selectedEventId: string | null, retentionChanged: boolean): SportsData {
   if (!retentionChanged && retainedEventId === selectedEventId) return next;
@@ -501,15 +504,11 @@ function retainSportsData(previous: SportsData, next: SportsData, selectedEventI
 
 // ============ Query Cache ==================================================== //
 
-/**
- * A request whose retained cache entries all have stable owners. Pending/failed page entries prevent reuse:
- * either host can leave that page or acquire a new date window without changing the active request.
- */
 let lastPrunedRequest: SportsRequest | undefined;
 
 /**
- * Removes unused query-cache entries, keeping the current request, catalog, and stored page results.
- * Pending or failed requests for the pages' current destinations and date ranges are also kept.
+ * Removes unused query entries while preserving the catalog, current requests,
+ * and stored page results.
  */
 function pruneQueryCache(request: SportsRequest): void {
   if (lastPrunedRequest === request) return;
@@ -560,7 +559,8 @@ function getPageQueryKeys(): Set<string> {
 // ============ Utilities ====================================================== //
 
 /**
- * Sets or deletes a record entry, copying the original record before the first write. `undefined` deletes the entry.
+ * Sets an entry, copying the original record on its first write.
+ * Deletes the entry when `value` is `undefined`.
  */
 function setEntry<T>(
   record: Partial<Record<string, T>>,

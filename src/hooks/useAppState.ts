@@ -11,8 +11,8 @@ const AppStateTypes = {
 };
 
 /**
- * Returns the native app state and whether it became active since the preceding render.
- * `justBecameActive` may be undefined on the first render, before a previous state exists.
+ * Returns the app state and whether it just became active.
+ * `justBecameActive` may be `undefined` on the first render.
  */
 export default function useAppState(): { appState: AppStateStatus; justBecameActive: boolean | undefined } {
   const appState = useAppStateStore();

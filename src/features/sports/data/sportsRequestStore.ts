@@ -11,8 +11,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 // ============ Types ========================================================== //
 
 /**
- * A host's browse or Search read. The All destination requests the catalog; scope reads include a schedule window.
- * Search is global and uses the window's outer bounds. Open, empty Search has no page request.
+ * A request for a Sports browse or Search page.
  */
 export type SportsPageRequest =
   | { type: 'live' }
@@ -20,14 +19,15 @@ export type SportsPageRequest =
   | { type: 'scope'; scopeId: string; window: SportsWindow }
   | { type: 'search'; query: string; window: Pick<SportsWindow, 'from' | 'until'> };
 
-/** A page read or a lookup of the single selected event, which may resolve to another event's canonical game ID. */
+/**
+ * A request for a Sports page or the selected event's game.
+ */
 export type SportsRequest = SportsPageRequest | { type: 'event'; eventId: string };
 
 // ============ Page Requests ================================================== //
 
 /**
- * Each host's current page request, independent of which screen is active.
- * A `null` request represents open, empty Search. Schedule and Search requests follow the local date window.
+ * Each screen's Sports page request, or `null` when Search is open and empty.
  */
 export const sportsPageRequestStores = {
   main: createPageRequestStore('main'),
@@ -53,7 +53,7 @@ function createPageRequestStore(host: SportsHost): DerivedStore<SportsPageReques
 }
 
 /**
- * Returns the browse destination identified by a Live or scope request.
+ * Returns the browse destination for a Live or scope request.
  */
 export function getRequestDestination(request: { type: 'live' } | { type: 'scope'; scopeId: string }): SportsDestination {
   return request.type === 'live' ? 'live' : request.scopeId;
@@ -62,8 +62,7 @@ export function getRequestDestination(request: { type: 'live' } | { type: 'scope
 // ============ Active Request ================================================= //
 
 /**
- * The read owned by the active screen: its Sports page or selected prediction event.
- * Returns `null` outside those screens, for other Predictions categories, or when there is no page/event to fetch.
+ * The Sports request for the active screen, or `null` when none is needed.
  */
 export const sportsRequestStore = createDerivedStore<SportsRequest | null>($ => {
   const route = $(useNavigationStore, s => s.activeRoute);

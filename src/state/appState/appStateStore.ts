@@ -3,7 +3,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import { createBaseStore } from '@storesjs/stores';
 
 /**
- * The native application state, observed for the lifetime of the app.
+ * The app's current React Native lifecycle state.
  */
 export const useAppStateStore = createBaseStore<AppStateStatus>(() => AppState.currentState);
 
