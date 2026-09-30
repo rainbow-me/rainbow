@@ -21,14 +21,20 @@ type SearchRequest = Pick<SearchGamesRequest, 'query' | 'scopeId' | 'pageToken' 
   window: Pick<SportsWindow, 'windowStartTime' | 'windowEndTime'>;
 };
 
+let localClient: RainbowFetchClient | undefined;
+
+function getFetchClient(): RainbowFetchClient {
+  if (!IS_DEV || !sportsApiBaseUrl) return getPlatformClient();
+  return (localClient ??= new RainbowFetchClient({ ...getPlatformClient().opts, baseURL: `${sportsApiBaseUrl}/v1` }));
+}
+
 /**
- * Sports service reads decoded with the generated protocol types. Uses the platform gateway, or the configured
- * local Sports endpoint in development. Requests share the caller's cancellation and propagate transport errors.
- * Schedule windows use epoch milliseconds and are serialized as ISO timestamps at this boundary.
- * Responses identify their catalog revision and include the catalog when it differs from `knownCatalogRevision`.
+ * Fetches Sports catalog and game data.
  */
 export const sportsClient = {
-  /** Reads the current catalog revision, omitting the catalog itself when the supplied revision is current. */
+  /**
+   * Fetches the catalog and its revision. An unchanged catalog is omitted.
+   */
   async getCatalog({ knownCatalogRevision }: GetCatalogRequest, abortController: AbortController | null): Promise<GetCatalogResponse> {
     const { data } = await getFetchClient().get<unknown>('/sports/catalog', {
       abortController,
@@ -38,7 +44,7 @@ export const sportsClient = {
   },
 
   /**
-   * At most thirty games per global Live group, in service-provided display order.
+   * Fetches live games across all sports.
    */
   async listLiveGames({ knownCatalogRevision }: ListLiveGamesRequest, abortController: AbortController | null): Promise<GamesResult> {
     const { data } = await getFetchClient().get<unknown>('/sports/live', {
@@ -49,9 +55,7 @@ export const sportsClient = {
   },
 
   /**
-   * A scope's live games and scheduled games in Today `[from, todayCutoffTime)` and Upcoming `[todayCutoffTime, until)`.
-   * Each section contains at most thirty games. Live games remain eligible outside the scheduled interval.
-   * Sports browsed by competition return only live games.
+   * Fetches live and scheduled games for a sport or competition.
    */
   async listGames({ scopeId, window, knownCatalogRevision }: BrowseRequest, abortController: AbortController | null): Promise<GamesResult> {
     const { data } = await getFetchClient().get<unknown>('/sports/games', {
@@ -68,8 +72,7 @@ export const sportsClient = {
   },
 
   /**
-   * Resolves event IDs to canonical games. Each requested ID is resolved or unavailable;
-   * several IDs may share a game, which appears only once in `games`.
+   * Finds games by their primary or child Polymarket event IDs.
    */
   async getGamesForEvents(
     { eventIds, knownCatalogRevision }: GetGamesForEventsRequest,
@@ -86,8 +89,7 @@ export const sportsClient = {
   },
 
   /**
-   * Searches by relevance within the given time bounds, globally unless `scopeId` is supplied.
-   * `nextPageToken` continues the same search; an expired or incompatible pageToken is rejected by the service.
+   * Searches games, returning a page of results in relevance order.
    */
   async searchGames(
     { query, scopeId, window, pageToken, knownCatalogRevision }: SearchRequest,
@@ -107,10 +109,3 @@ export const sportsClient = {
     return SearchGamesResponse.fromJSON(data);
   },
 };
-
-let localClient: RainbowFetchClient | undefined;
-
-function getFetchClient(): RainbowFetchClient {
-  if (!IS_DEV || !sportsApiBaseUrl) return getPlatformClient();
-  return (localClient ??= new RainbowFetchClient({ ...getPlatformClient().opts, baseURL: `${sportsApiBaseUrl}/v1` }));
-}

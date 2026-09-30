@@ -5,25 +5,26 @@ import { type SportsDestination, type SportsHost } from '@/features/sports/core/
 // ============ Navigation Store =============================================== //
 
 type SportsNavigationState = {
-  /** The browse origin whose category tab stays selected while opening child destinations. */
+  /** The browse destination that determines the selected category tab. */
   category: SportsDestination;
   destination: SportsDestination;
   /** `null` while Search is closed, `''` while it is open and empty. */
   query: string | null;
   /**
-   * Opens a destination, selects its category tab, and closes Search.
+   * Opens a destination in its category, closing Search.
    */
   select: (destination: SportsDestination) => void;
   /**
-   * Opens a destination within the selected category. From Search, closes Search and selects the destination's category.
+   * Opens a destination within the selected category.
+   * When leaving Search, selects the destination's category instead.
    */
   open: (destination: SportsDestination) => void;
-  /** Sets trimmed Search text. `null` closes Search; an empty string opens it without a game request. */
+  /** Sets trimmed Search text; `null` closes Search. */
   search: (query: string | null) => void;
 };
 
 /**
- * Independent navigation for the Sports and Predictions screens. Closing Search restores the browse destination.
+ * Independent browse and Search navigation for Sports and Predictions.
  */
 export const sportsNavigationStores: Record<SportsHost, Store<SportsNavigationState>> = {
   main: createSportsNavigationStore(),
