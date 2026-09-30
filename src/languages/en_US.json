@@ -26,7 +26,7 @@
       "suspended": "Suspended",
       "postponed": "Postponed",
       "cancelled": "Cancelled",
-      "entry_error": "This game or offer is no longer available. Please try again."
+      "entry_error": "Unable to load bet details. Please try again."
     },
     "account": {
       "tab_tokens": "Tokens",
