@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, Platform, View, type ViewStyle } from 'react-native';
 
-import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { type BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { isKeyboardOpen } from '../../../helpers';
 import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
+import { BottomSheetBackdrop } from './BottomSheetBackdrop';
 
 interface Props {
   routeKey: string;
@@ -48,13 +49,6 @@ export const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navi
       width: '100%',
     }),
     [height]
-  );
-
-  const backdropStyle = useMemo(
-    () => ({
-      backgroundColor: backdropColor,
-    }),
-    [backdropColor]
   );
 
   const handleSettingSnapPoints = useCallback(
@@ -123,17 +117,15 @@ export const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navi
   }, [removing]);
 
   const renderBackdropComponent = useCallback(
-    (props: BottomSheetBackdropProps) => (
+    ({ animatedIndex }: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
+        animatedIndex={animatedIndex}
+        color={backdropColor}
         opacity={backdropOpacity}
-        style={backdropStyle}
         pressBehavior={backdropPressBehavior}
-        {...props}
       />
     ),
-    [backdropOpacity, backdropStyle]
+    [backdropColor, backdropOpacity, backdropPressBehavior]
   );
 
   return (
