@@ -1,9 +1,14 @@
 package com.swmansion.gesturehandler.react;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
+import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
+import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
@@ -26,29 +31,39 @@ import java.util.Map;
 public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
     public static class ZoomableButtonViewGroup extends RNGestureHandlerButtonViewManager.ButtonViewGroup {
+        private enum LongPressState { NONE, TRIGGERED, HOLDING }
+
         private float mScaleTo = 0.86f;
         private int mDuration = 160;
         private float pivotX = 0.5f;
         private float pivotY = 0.5f;
         private static final Interpolator bezierInterpolator = PathInterpolatorCompat.create(0.25f, 0.46f, 0.45f, 0.94f);
 
+        private boolean hasPressStartHandler = false;
         private boolean isLongPress = false;
         private boolean shouldLongPressHoldPress = false;
         private int mMinLongPressDuration = 500;
 
         private boolean mIsActive = false;
-        private boolean didLongPressFire = false;
+        private LongPressState longPressState = LongPressState.NONE;
+        private int activePointerId = MotionEvent.INVALID_POINTER_ID;
+        private long touchDownTime = -1;
+        private final int touchSlop;
 
         private final Handler mHandler = new Handler(Looper.getMainLooper());
         private final Runnable mLongPressRunnable = () -> {
+            if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
+                return;
+            }
             onLongPress();
-            if (!shouldLongPressHoldPress) {
+            if (longPressState == LongPressState.TRIGGERED) {
                 setPressed(false);
             }
         };
 
         public ZoomableButtonViewGroup(Context context) {
             super(context);
+            touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         }
 
         private void animate(boolean in) {
@@ -72,28 +87,108 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
 
         @Override
         public boolean canBegin(@NonNull MotionEvent event) {
-            if (!super.canBegin(event)) {
+            return activePointerId != MotionEvent.INVALID_POINTER_ID;
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(@NonNull MotionEvent event) {
+            AccessibilityManager accessibility =
+                    (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            return !accessibility.isTouchExplorationEnabled() && super.onInterceptTouchEvent(event);
+        }
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouchEvent(@NonNull MotionEvent event) {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) {
+                if (activePointerId != MotionEvent.INVALID_POINTER_ID && touchDownTime == event.getDownTime()) {
+                    return true;
+                }
+                if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
+                    finishTouch(event, false);
+                }
+                if (!isEnabled() || !super.canBegin(event)) {
+                    return false;
+                }
+                if (event.isFromSource(InputDevice.SOURCE_MOUSE)
+                        && (event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
+                    super.afterGestureEnd(event);
+                    return showContextMenu(event.getX(), event.getY());
+                }
+                activePointerId = event.getPointerId(event.getActionIndex());
+                touchDownTime = event.getDownTime();
+                longPressState = LongPressState.NONE;
+                setPressed(true);
+                if (hasPressStartHandler) {
+                    sendPressEvent("pressStart");
+                }
+                if (isLongPress) {
+                    mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+                }
+                return true;
+            }
+
+            if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
                 return false;
             }
-            animate(true);
-            didLongPressFire = false;
-            if (isLongPress) {
-                mHandler.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+            switch (action) {
+                case MotionEvent.ACTION_MOVE:
+                    int index = event.findPointerIndex(activePointerId);
+                    if (index < 0 || !containsTouch(event.getX(index), event.getY(index))) {
+                        finishTouch(event, false);
+                    }
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    if (event.getPointerId(event.getActionIndex()) == activePointerId) {
+                        finishTouch(event, false);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    int pointerIndex = event.findPointerIndex(activePointerId);
+                    if (pointerIndex < 0 || !containsTouch(event.getX(pointerIndex), event.getY(pointerIndex))) {
+                        finishTouch(event, false);
+                    } else {
+                        cancelLongPress();
+                        AccessibilityManager accessibility = (AccessibilityManager)
+                                getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+                        // Touch exploration bypasses RNGH's end hook.
+                        if (accessibility.isTouchExplorationEnabled()) {
+                            finishTouch(event, true);
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    finishTouch(event, false);
+                    break;
             }
             return true;
         }
 
         @Override
         public void afterGestureEnd(@NonNull MotionEvent event) {
+            if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
+                finishTouch(event, true);
+            } else {
+                super.afterGestureEnd(event);
+            }
+        }
+
+        private boolean containsTouch(float x, float y) {
+            return x >= -touchSlop && y >= -touchSlop && x < getWidth() + touchSlop && y < getHeight() + touchSlop;
+        }
+
+        private void finishTouch(MotionEvent event, boolean releasedInside) {
+            LongPressState completedLongPress = longPressState;
+            activePointerId = MotionEvent.INVALID_POINTER_ID;
+            longPressState = LongPressState.NONE;
             cancelLongPress();
             super.afterGestureEnd(event);
-            if (didLongPressFire) {
-                cancelPendingInputEvents();
-                setPressed(false);
-                if (shouldLongPressHoldPress) {
-                    onLongPressEnded();
-                }
-                didLongPressFire = false;
+            setPressed(false);
+            if (completedLongPress == LongPressState.HOLDING) {
+                sendPressEvent("longPressEnded");
+            } else if (completedLongPress == LongPressState.NONE && releasedInside) {
+                performClick();
             }
         }
 
@@ -101,9 +196,6 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         public void setPressed(boolean pressed) {
             super.setPressed(pressed);
             animate(isPressed());
-            if (!isPressed()) {
-                cancelLongPress();
-            }
         }
 
         @Override
@@ -112,44 +204,56 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
             mHandler.removeCallbacks(mLongPressRunnable);
         }
 
+        private void cancelTouch() {
+            if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
+                return;
+            }
+            long now = SystemClock.uptimeMillis();
+            MotionEvent cancel = MotionEvent.obtain(touchDownTime, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+            finishTouch(cancel, false);
+            cancel.recycle();
+        }
+
+        @Override
+        public void onCancelPendingInputEvents() {
+            cancelTouch();
+            super.onCancelPendingInputEvents();
+        }
+
+        @Override
+        public void onWindowFocusChanged(boolean hasWindowFocus) {
+            if (!hasWindowFocus) {
+                cancelTouch();
+            }
+            super.onWindowFocusChanged(hasWindowFocus);
+        }
+
         @Override
         protected void onDetachedFromWindow() {
+            cancelTouch();
             cancelLongPress();
+            clearAnimation();
+            mIsActive = false;
             super.onDetachedFromWindow();
         }
 
         @Override
         public boolean performClick() {
-            boolean result = super.performClick();
-            ReactContext reactContext = (ReactContext) getContext();
-            WritableMap event = Arguments.createMap();
-            event.putString("type", "press");
-            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                    getId(),
-                    "topPress",
-                    event);
-            return result;
+            super.performClick();
+            sendPressEvent("press");
+            return true;
         }
 
         private void onLongPress() {
-            didLongPressFire = true;
-            ReactContext reactContext = (ReactContext) getContext();
-            WritableMap event = Arguments.createMap();
-            event.putString("type", "longPress");
-            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                    getId(),
-                    "topPress",
-                    event);
+            longPressState = shouldLongPressHoldPress ? LongPressState.HOLDING : LongPressState.TRIGGERED;
+            sendPressEvent("longPress");
         }
 
-        private void onLongPressEnded() {
-            WritableMap event = Arguments.createMap();
-            event.putString("type", "longPressEnded");
+        private void sendPressEvent(String type) {
             ReactContext reactContext = (ReactContext) getContext();
-            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                    getId(),
-                    "topPress",
-                    event);
+            WritableMap event = Arguments.createMap();
+            event.putString("type", type);
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), "topPress", event);
         }
     }
 
@@ -178,6 +282,11 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
     @ReactProp(name = "minLongPressDuration")
     public void setMinLongPressDuration(ZoomableButtonViewGroup view, Integer minLongPressDuration) {
         view.mMinLongPressDuration = minLongPressDuration;
+    }
+
+    @ReactProp(name = "hasPressStartHandler")
+    public void setHasPressStartHandler(ZoomableButtonViewGroup view, boolean hasPressStartHandler) {
+        view.hasPressStartHandler = hasPressStartHandler;
     }
 
     @ReactProp(name = "isLongPress")
