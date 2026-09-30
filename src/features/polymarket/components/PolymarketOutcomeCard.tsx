@@ -1,11 +1,16 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, type ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 import ImgixImage from '@/components/images/ImgixImage';
-import { Bleed, Box, globalColors, Text, useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { Bleed } from '@/design-system/components/Bleed/Bleed';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
 import { opacity } from '@/design-system/utils/opacity';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
+import { white } from '@/worklets/colors';
 
+/** Minimum height shared by an outcome card and its loading placeholder. */
 export const POLYMARKET_OUTCOME_CARD_MIN_HEIGHT = 78;
 
 type OutcomeCardProps = {
@@ -18,6 +23,9 @@ type OutcomeCardProps = {
   outcomeIndex: number;
 };
 
+/**
+ * Displays the selected outcome in a Polymarket buy or sell sheet.
+ */
 export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
   accentColor,
   outcomeTitle,
@@ -26,13 +34,13 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
   groupItemTitle,
   outcome,
   outcomeIndex,
-}: OutcomeCardProps) {
+}: OutcomeCardProps): ReactElement {
   const { isDarkMode } = useColorMode();
   const isOutcomeBadgeRepetitive = useMemo(() => outcomeSubtitle.toLowerCase().includes(outcome.toLowerCase()), [outcomeSubtitle, outcome]);
 
   return (
     <Box
-      backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
+      backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : white(0.9)}
       borderColor={{ custom: opacity(accentColor, 0.03) }}
       borderRadius={26}
       borderWidth={isDarkMode ? 2.5 : 0}

@@ -15,6 +15,7 @@ import {
   type TextColor,
 } from './palettes';
 
+/** A custom color, optionally varied by color mode. */
 export type CustomColor<Value extends string = string> = {
   custom: Value | ContextualColorValue<Value>;
 };
@@ -22,7 +23,7 @@ export type CustomColor<Value extends string = string> = {
 type ForegroundColorOrAccent = ForegroundColor | 'accent';
 
 /**
- * @description Given an array of colors, resolves the foreground color for the current color mode.
+ * Resolves foreground colors for the current color mode.
  */
 export function useForegroundColors(
   colors: (ForegroundColorOrAccent | ContextualColorValue<ForegroundColorOrAccent> | CustomColor)[]
@@ -52,34 +53,29 @@ export function useForegroundColors(
 }
 
 /**
- * @description Resolves the foreground color for the current color mode.
+ * Resolves a foreground color for the current color mode.
  */
 export function useForegroundColor(color: ForegroundColor | 'accent' | CustomColor): string {
   return useForegroundColors([color])[0];
 }
 
-function isForegroundColor(color: string | ForegroundColor): color is ForegroundColor {
+function isForegroundColor(color: string): color is ForegroundColor {
   'worklet';
   return color in foregroundColors;
 }
 
+/**
+ * Resolves a color for the given color mode.
+ */
 export function getColorForTheme(
-  color: ForegroundColor | TextColor | CustomColor | string | 'accent' | SharedValue<TextColor> | SharedValue<string>,
+  color: string | CustomColor | SharedValue<TextColor> | SharedValue<string>,
   colorMode: ColorMode,
   accentColor?: BackgroundColorValue | null
 ): string {
   'worklet';
-  const binaryColorMode = colorMode === 'dark' || colorMode === 'darkTinted' ? 'dark' : 'light';
   const colorValue = typeof color === 'object' && 'value' in color ? color.value : color;
 
-  switch (colorValue) {
-    case 'accent':
-      return accentColor?.color ?? getDefaultAccentColorForColorMode(binaryColorMode).color;
-    default:
-      if (typeof colorValue === 'object' && 'custom' in colorValue) {
-        return typeof colorValue.custom === 'string' ? colorValue.custom : colorValue.custom[binaryColorMode];
-      }
-      if (isForegroundColor(colorValue)) return foregroundColors[colorValue][binaryColorMode];
-      return colorValue;
-  }
+  if (colorValue === 'accent') return accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color;
+  if (typeof colorValue === 'object') return getValueForColorMode(colorValue.custom, colorMode);
+  return isForegroundColor(colorValue) ? getValueForColorMode(foregroundColors[colorValue], colorMode) : colorValue;
 }

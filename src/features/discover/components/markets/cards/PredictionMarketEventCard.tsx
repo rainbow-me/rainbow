@@ -17,7 +17,8 @@ import { useSportsEventBets, useSportsEventStatus, type SportsEventRows } from '
 import { getLeagueId, SPORT_LEAGUES, type LeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { formatOdds, type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
+import { formatOdds } from '@/features/polymarket/utils/formatOdds';
+import { type BetCellData } from '@/features/polymarket/utils/sportsEventBetData';
 import { getSportsEventOutcomeCellColor, type SportsEventOutcomeInfo } from '@/features/polymarket/utils/sportsEventOutcome';
 import { getDiscoverSportsEventTeamLabels } from '@/features/polymarket/utils/sportsEventTeamLabels';
 import { getTeamDisplayInfo } from '@/features/polymarket/utils/sportsEventTeams';

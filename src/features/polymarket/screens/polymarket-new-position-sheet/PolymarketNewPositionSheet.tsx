@@ -10,7 +10,11 @@ import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard'
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system/color/ColorMode';
+import { globalColors } from '@/design-system/color/palettes';
+import { Box } from '@/design-system/components/Box/Box';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextShadow } from '@/design-system/components/TextShadow/TextShadow';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
@@ -29,13 +33,16 @@ import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
+import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
-import { getSolidColorEquivalent } from '@/worklets/colors';
+import { getSolidColorEquivalent, white } from '@/worklets/colors';
 
-type FromRoute = RootStackParamList[typeof Routes.POLYMARKET_NEW_POSITION_SHEET]['fromRoute'];
+const BUTTON_BORDER_COLOR = { custom: white(0.08) };
 
+/**
+ * The sheet for opening a Polymarket position.
+ */
 export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet(): ReactElement {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
@@ -54,19 +61,19 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           end={isDarkMode ? { x: 0, y: 1 } : { x: 0, y: 0.82 }}
         />
       </View>
-      <Box paddingHorizontal="32px" paddingBottom={'24px'} paddingTop={{ custom: 43 }}>
+      <Box paddingHorizontal="32px" paddingBottom="24px" paddingTop={{ custom: 43 }}>
         <Box gap={28}>
           <Text size="26pt" weight="heavy" color="label">
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
           {'selection' in params ? (
-            <SelectedPosition selection={params.selection} outcomeColor={params.outcomeColor} fromRoute={params.fromRoute} />
+            <SelectedOutcomeForm selection={params.selection} outcomeColor={outcomeColor} fromRoute={params.fromRoute} />
           ) : (
             <NewPositionForm
               event={params.event}
               market={params.market}
               outcomeIndex={params.outcomeIndex}
-              outcomeColor={params.outcomeColor}
+              outcomeColor={outcomeColor}
               fromRoute={params.fromRoute}
             />
           )}
@@ -76,23 +83,25 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   );
 });
 
-function SelectedPosition({
+function SelectedOutcomeForm({
   selection,
   outcomeColor,
   fromRoute,
 }: {
   selection: Selection;
   outcomeColor: string;
-  fromRoute: FromRoute;
+  fromRoute: Route;
 }): ReactElement {
-  const entry = usePolymarketOrderDetailsStore(state => state.getCacheEntry({ selection }));
-  const loading = usePolymarketOrderDetailsStore(state => state.status === 'loading');
-  const details = entry?.data;
+  const details = usePolymarketOrderDetailsStore(state => {
+    const data = state.getData({ selection });
+    if (data) return data;
+    return state.getStatus('isInitialLoad') || state.getStatus('isLoading') ? undefined : null;
+  });
 
-  if (!details) {
-    return !entry || loading ? (
-      <NewPositionSkeleton outcomeColor={outcomeColor} />
-    ) : (
+  if (details === undefined) return <NewPositionSkeleton outcomeColor={outcomeColor} />;
+
+  if (details === null) {
+    return (
       <Box alignItems="center" gap={20} paddingVertical="28px">
         <Text align="center" color="labelSecondary" size="17pt" weight="bold">
           {i18n.t(i18n.l.sports.entry_error)}
@@ -126,17 +135,15 @@ function NewPositionForm({
   outcomeIndex,
   outcomeColor,
   fromRoute,
-}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: FromRoute }): ReactElement {
+}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: Route }): ReactElement {
   const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingLabel, setProcessingLabel] = useState(getBuyPositionProcessingLabel('preparing'));
+  const [processingStep, setProcessingStep] = useState<PolymarketBuyPositionStep | null>(null);
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
-  const accentColor = outcomeColor;
-  const buttonColor = getButtonColor(accentColor);
+  const buttonColor = getButtonColor(outcomeColor);
 
   const {
     availableBalance,
@@ -177,8 +184,7 @@ function NewPositionForm({
   const handleMarketBuyPosition = useCallback(async () => {
     if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
 
-    setIsProcessing(true);
-    setProcessingLabel(getBuyPositionProcessingLabel('preparing'));
+    setProcessingStep('preparing');
 
     try {
       await executePolymarketBuyPosition({
@@ -196,18 +202,14 @@ function NewPositionForm({
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
-        onStep: step => setProcessingLabel(getBuyPositionProcessingLabel(step)),
+        onStep: setProcessingStep,
       });
 
-      setProcessingLabel(getBuyPositionProcessingLabel('confirming_order'));
+      setProcessingStep('confirming_order');
       await waitForPositionSizeUpdate(tokenId);
 
-      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
-        Navigation.goBack();
-        Navigation.goBack();
-      } else {
-        Navigation.goBack();
-      }
+      Navigation.goBack();
+      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) Navigation.goBack();
     } catch (e) {
       const error = ensureError(e);
 
@@ -226,13 +228,15 @@ function NewPositionForm({
 
       presentErrorAlert(error);
     } finally {
-      setIsProcessing(false);
+      setProcessingStep(null);
     }
   }, [
     bestPrice,
     buyAmount,
+    canSubmit,
     event.slug,
     fee,
+    fromRoute,
     market.negRisk,
     market.slug,
     orderSpendCap,
@@ -241,8 +245,6 @@ function NewPositionForm({
     spread,
     tokenId,
     worstPrice,
-    fromRoute,
-    canSubmit,
   ]);
 
   const handleDepositFunds = useCallback(() => {
@@ -253,7 +255,7 @@ function NewPositionForm({
     <>
       <Box gap={12}>
         <PolymarketOutcomeCard
-          accentColor={accentColor}
+          accentColor={outcomeColor}
           icon={market.icon}
           outcomeTitle={outcomeTitle}
           outcomeSubtitle={outcomeSubtitle}
@@ -263,8 +265,8 @@ function NewPositionForm({
         />
         <AmountInputCard
           availableBalance={availableBalance}
-          accentColor={accentColor}
-          backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : opacity(globalColors.white100, 0.9)}
+          accentColor={outcomeColor}
+          backgroundColor={isDarkMode ? opacity(outcomeColor, 0.08) : white(0.9)}
           onAmountChange={setBuyAmount}
           title={i18n.t(i18n.l.predictions.new_position.amount)}
           validation={validation}
@@ -280,14 +282,14 @@ function NewPositionForm({
         <HoldToActivateButton
           onLongPress={handleMarketBuyPosition}
           label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-          processingLabel={processingLabel}
-          isProcessing={isProcessing}
+          processingLabel={processingStep === null ? '' : getBuyPositionProcessingLabel(processingStep)}
+          isProcessing={processingStep !== null}
           showBiometryIcon={false}
           backgroundColor={buttonColor}
           disabledBackgroundColor={buttonColor}
           disabled={!canSubmit}
           height={48}
-          borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+          borderColor={BUTTON_BORDER_COLOR}
           borderWidth={2}
           color={canSubmit ? 'white' : { custom: globalColors.white50 }}
           progressColor="white"
@@ -300,7 +302,7 @@ function NewPositionForm({
             height={48}
             borderRadius={24}
             backgroundColor={buttonColor}
-            borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+            borderColor={BUTTON_BORDER_COLOR}
             borderWidth={2}
           >
             <Text color="white" size="20pt" weight="black">
@@ -332,7 +334,7 @@ function OrderSummary({
         <Text size="15pt" weight="semibold" color="labelTertiary">
           {i18n.t(i18n.l.predictions.new_position.spread)}
         </Text>
-        <Text size="17pt" weight="bold" color={'label'}>
+        <Text size="17pt" weight="bold" color="label">
           {formattedSpread}
         </Text>
       </Box>
@@ -362,7 +364,7 @@ function OrderSummary({
 
 function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }): ReactElement {
   const { isDarkMode } = useColorMode();
-  const cardColor = isDarkMode ? opacity(outcomeColor, 0.08) : opacity(globalColors.white100, 0.9);
+  const cardColor = isDarkMode ? opacity(outcomeColor, 0.08) : white(0.9);
 
   return (
     <>
@@ -402,7 +404,7 @@ function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }): ReactE
         height={48}
         borderRadius={24}
         backgroundColor={getButtonColor(outcomeColor)}
-        borderColor={{ custom: opacity('#FFFFFF', 0.08) }}
+        borderColor={BUTTON_BORDER_COLOR}
         borderWidth={2}
         alignItems="center"
         justifyContent="center"
@@ -417,7 +419,7 @@ function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }): ReactE
 }
 
 function getButtonColor(outcomeColor: string): string {
-  return getSolidColorEquivalent({ background: opacity(outcomeColor, 0.7), foreground: '#000000', opacity: 0.4 });
+  return getSolidColorEquivalent({ background: outcomeColor, foreground: '#000000', opacity: 0.4 });
 }
 
 function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
