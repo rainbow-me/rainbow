@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactElement } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 
 import { debounce } from 'lodash';
@@ -11,14 +11,22 @@ import { fonts } from '@/design-system/typography/typography';
 import { type SportsHost } from '@/features/sports/core/browse';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import { useCleanup } from '@/hooks/useCleanup';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 
-export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }): ReactElement {
-  const navigation = sportsNavigationStores[host];
-  const [text, setText] = useState(() => navigation.getState().query ?? '');
-  const search = useMemo(() => debounce((query: string) => navigation.getState().search(query), 250), [navigation]);
+const SEARCH_DEBOUNCE_MS = 250;
 
-  useCleanup(() => search.cancel(), [search]);
+/**
+ * Search input for games, sports, and competitions.
+ */
+export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }): ReactElement {
+  const navigationStore = sportsNavigationStores[host];
+  const initialQuery = useStableValue(() => navigationStore.getState().query ?? '');
+
+  const setQuery = navigationStore.getState().search;
+  const search = useMemo(() => debounce(setQuery, SEARCH_DEBOUNCE_MS), [setQuery]);
+
+  useCleanup(search.cancel, [search.cancel]);
 
   return (
     <View style={styles.row}>
@@ -28,12 +36,9 @@ export function SportsSearch({ host, color, backgroundColor }: { host: SportsHos
         </TextIcon>
         <Input
           autoFocus
-          value={text}
-          onChangeText={value => {
-            setText(value);
-            search(value);
-          }}
-          onSubmitEditing={() => search.flush()}
+          defaultValue={initialQuery}
+          onChangeText={search}
+          onSubmitEditing={search.flush}
           placeholder={i18n.t(i18n.l.sports.search)}
           returnKeyType="search"
           style={[styles.input, { color }]}
@@ -44,7 +49,7 @@ export function SportsSearch({ host, color, backgroundColor }: { host: SportsHos
         onPress={() => {
           search.cancel();
           Keyboard.dismiss();
-          navigation.getState().search(null);
+          setQuery(null);
         }}
         scaleTo={0.96}
       >

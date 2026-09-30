@@ -6,6 +6,9 @@ import { type SportsPage } from '@/features/sports/data/sportsPageStore';
 import { GameCardSkeleton } from '@/features/sports/ui/GameCard';
 import { SportsSectionHeadingSkeleton } from '@/features/sports/ui/SportsSection';
 
+/**
+ * Loading placeholders for Sports browse pages.
+ */
 export function SportsSkeleton({ page, width, isDarkMode }: { page: SportsPage; width: number; isDarkMode: boolean }): ReactElement {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
 

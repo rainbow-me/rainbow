@@ -8,6 +8,9 @@ import { useCleanup } from '@/hooks/useCleanup';
 
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 
+/**
+ * A snapping carousel of game cards.
+ */
 export const GameCarousel = memo(function GameCarousel({
   section,
   catalog,
