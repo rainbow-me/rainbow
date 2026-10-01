@@ -8,6 +8,8 @@
 #   gesture can otherwise leave the next button press blocking native scrolling.
 #   Reset on the original ACTION_DOWN before recognizers run, preserving capture
 #   for additional fingers and through the current gesture's final event.
+# - Clear unfinished Android native touch targets before RNGH admits a new touch,
+#   so cleanup of the previous gesture cannot cancel the new button press.
 
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 index d515011..813c69c 100644
@@ -92,3 +94,43 @@ diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com
      // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
      // if `requestDisallow` has been called as a result of a normal gesture handling process or
      // as a result of one of the gesture handlers activating
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+@@ -14,6 +14,7 @@
+ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
+   private var rootViewEnabled = false
+   private var unstableForceActive = false
++  private var nativeTouchActive = false
+   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
+   override fun onAttachedToWindow() {
+@@ -34,10 +35,24 @@
+     rootHelper?.tearDown()
+   }
+
+-  override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
+-    true
+-  } else {
+-    super.dispatchTouchEvent(event)
++  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
++    if (event.actionMasked == MotionEvent.ACTION_DOWN && nativeTouchActive) {
++      val cancel = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
++      super.dispatchTouchEvent(cancel)
++      cancel.recycle()
++      nativeTouchActive = false
++    }
++
++    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
++      return true
++    }
++
++    val handled = super.dispatchTouchEvent(event)
++    when (event.actionMasked) {
++      MotionEvent.ACTION_DOWN -> nativeTouchActive = handled
++      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> nativeTouchActive = false
++    }
++    return handled
+   }
+
+   override fun dispatchGenericMotionEvent(ev: MotionEvent) =

@@ -2,14 +2,13 @@ import React, { useCallback, useMemo, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { ContextMenu } from '@/components/context-menu';
-import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import { weiToGwei } from '@/features/gas/utils/parseGas';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
@@ -17,6 +16,7 @@ import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 const GAS_BUTTON_HIT_SLOP = 16;
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
+/** Shows the deposit gas options and reports the selected speed. */
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
   const isGasSponsored = gasStores.useIsGasSponsored();
@@ -43,6 +43,10 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
     [handlePressSpeedOption, menuOptions]
   );
 
+  const handleOpenMenu = useCallback((): void => {
+    showActionSheetWithOptions({ options: menuOptions }, handlePressActionSheet);
+  }, [handlePressActionSheet, menuOptions]);
+
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
       const gasSettings = metereologySuggestions?.[gasOption];
@@ -59,6 +63,16 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
     return { menuItems, menuTitle: '' };
   }, [menuOptions, metereologySuggestions]);
 
+  const button = (
+    <ButtonPressAnimation
+      onPress={Platform.OS === 'android' ? handleOpenMenu : undefined}
+      scaleTo={0.825}
+      style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
+    >
+      {children}
+    </ButtonPressAnimation>
+  );
+
   return (
     <Box
       alignItems="center"
@@ -68,24 +82,10 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
       pointerEvents={isGasSponsored ? 'none' : 'auto'}
     >
       {Platform.OS === 'android' ? (
-        <ContextMenu
-          activeOpacity={0}
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={menuOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <Centered>
-            <ButtonPressAnimation scaleTo={0.825}>{children}</ButtonPressAnimation>
-          </Centered>
-        </ContextMenu>
+        button
       ) : (
         <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
-            {children}
-          </ButtonPressAnimation>
+          {button}
         </ContextMenuButton>
       )}
     </Box>
