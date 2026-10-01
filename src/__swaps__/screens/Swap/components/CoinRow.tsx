@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { type GestureResponderEvent } from 'react-native';
+import { Platform, type GestureResponderEvent } from 'react-native';
 
+import ConditionalWrap from 'conditional-wrap';
 import { startCase } from 'lodash';
-import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
@@ -11,7 +11,7 @@ import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__sw
 import { type CoinRowItem } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ContextMenuButton } from '@/components/context-menu';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
@@ -122,7 +122,7 @@ export function CoinRow({
     <Box testID={testID} style={{ height, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
+          <ButtonPressAnimation onPress={onPressHandler} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"
@@ -237,7 +237,7 @@ const InfoButton = ({
     return { options, menuConfig };
   }, [address, chainId, handleCopy, isSupportedChain, isVerified]);
 
-  const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+  const handlePressMenuItem = ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
     if (actionKey === 'copyAddress') {
       options.copy.action();
     } else if (actionKey === 'blockExplorer' && isSupportedChain) {
@@ -266,14 +266,21 @@ const InfoButton = ({
   };
 
   return (
-    <ContextMenuButton
-      menuItems={menuConfig.menuItems}
-      menuTitle={menuConfig.menuTitle}
-      onPressAndroid={onPressAndroid}
-      onPressMenuItem={handlePressMenuItem}
-      testID={`coin-row-info-button-${address}`}
+    <ConditionalWrap
+      condition={Platform.OS === 'ios'}
+      wrap={children => (
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+          {children}
+        </ContextMenuButton>
+      )}
     >
-      <CoinRowButton icon="􀅳" outline size="icon 14px" />
-    </ContextMenuButton>
+      <CoinRowButton
+        icon="􀅳"
+        onPress={Platform.OS === 'android' ? onPressAndroid : undefined}
+        outline
+        size="icon 14px"
+        testID={`coin-row-info-button-${address}`}
+      />
+    </ConditionalWrap>
   );
 };

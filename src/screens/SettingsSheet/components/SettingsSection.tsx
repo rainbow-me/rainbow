@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Platform, Share } from 'react-native';
 
+import ConditionalWrap from 'conditional-wrap';
 import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
 
 import BackupWarningIcon from '@/assets/BackupWarning.png';
@@ -216,27 +217,34 @@ export const SettingsSection = ({
           testID="currency-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.currency.title)} />}
         />
-        <ContextMenuButton
-          menuConfig={themeMenuConfig}
-          {...(Platform.OS === 'android' ? { onPress: onPressThemeAndroidActions } : {})}
-          isMenuPrimaryAction
-          // @ts-ignore
-          menuAlignmentOverride="right"
-          onPressMenuItem={handleSelectTheme}
-          useActionSheetFallback={false}
-          testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
-          key={`theme-menu-${language}`}
+        <ConditionalWrap
+          condition={Platform.OS === 'ios'}
+          wrap={children => (
+            <ContextMenuButton
+              menuConfig={themeMenuConfig}
+              isMenuPrimaryAction
+              // @ts-ignore
+              menuAlignmentOverride="right"
+              onPressMenuItem={handleSelectTheme}
+              useActionSheetFallback={false}
+              key={`theme-menu-${language}`}
+            >
+              {children}
+            </ContextMenuButton>
+          )}
         >
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
+            onPress={Platform.OS === 'android' ? onPressThemeAndroidActions : undefined}
             rightComponent={
               <MenuItem.Selection>{colorScheme ? i18n.t(i18n.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
             }
             size={60}
+            testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.theme)} />}
           />
-        </ContextMenuButton>
+        </ConditionalWrap>
 
         {!isReadOnlyWallet && (
           <MenuItem

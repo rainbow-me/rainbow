@@ -43,12 +43,11 @@ export function WatchButton({ address, ensName, avatarUrl }: { address?: string;
 
   return (
     <ConditionalWrap
-      condition={optimisticIsWatching}
+      condition={optimisticIsWatching && Platform.OS === 'ios'}
       wrap={children => (
         <ContextMenuButton
           enableContextMenu
           menuConfig={menuConfig}
-          {...(Platform.OS === 'android' ? { onPress: handlePressWatch } : {})}
           isMenuPrimaryAction
           onPressMenuItem={handlePressWatch}
           useActionSheetFallback={false}
@@ -59,7 +58,7 @@ export function WatchButton({ address, ensName, avatarUrl }: { address?: string;
     >
       <ActionButton
         color="action (Deprecated)"
-        onPress={!optimisticIsWatching ? handlePressWatch : () => null}
+        onPress={!optimisticIsWatching || Platform.OS === 'android' ? handlePressWatch : undefined}
         paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
         testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
