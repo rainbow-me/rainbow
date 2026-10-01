@@ -1,16 +1,14 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
-import ConditionalWrap from 'conditional-wrap';
 import { startCase } from 'lodash';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import useClipboard from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';
@@ -101,26 +99,6 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
     [setClipboard]
   );
 
-  const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId }))}`;
-    const androidContractActions = [i18n.t(i18n.l.wallet.action.copy_contract_address), blockExplorerText, i18n.t(i18n.l.button.cancel)];
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: 2,
-        options: androidContractActions,
-        title: `${item?.name}`,
-      },
-      idx => {
-        if (idx === 0) {
-          handleCopyAddress(item?.address);
-        }
-        if (idx === 1) {
-          ethereumUtils.openAddressInBlockExplorer({ address: item?.address, chainId });
-        }
-      }
-    );
-  }, [item?.name, item?.address, handleCopyAddress, chainId]);
-
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(chainId);
     return {
@@ -150,29 +128,15 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
 
   return (
     <Container>
-      <ConditionalWrap
-        condition={Platform.OS === 'ios'}
-        wrap={children => (
-          <ContextMenuButton
-            activeOpacity={0}
-            menuConfig={menuConfig}
-            isMenuPrimaryAction
-            onPressMenuItem={handlePressMenuItem}
-            useActionSheetFallback={false}
-            wrapNativeComponent={false}
-          >
-            {children}
-          </ContextMenuButton>
-        )}
-      >
-        <ButtonPressAnimation onPress={Platform.OS === 'android' ? onPressAndroid : undefined} scaleTo={scaleTo}>
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+        <ButtonPressAnimation scaleTo={scaleTo}>
           {children || (
             <Circle>
               <Icon>􀅳</Icon>
             </Circle>
           )}
         </ButtonPressAnimation>
-      </ConditionalWrap>
+      </ContextMenuButton>
     </Container>
   );
 };

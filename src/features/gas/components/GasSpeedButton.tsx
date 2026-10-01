@@ -19,7 +19,6 @@ import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -326,15 +325,6 @@ export const GasSpeedButton = ({
     return useBackendNetworksStore.getState().getChainsGasSpeeds()[chainId];
   }, [chainId, speeds]);
 
-  const handleOpenMenu = useCallback((): void => {
-    showActionSheetWithOptions({ options: speedOptions }, index => {
-      const speed = index == null ? undefined : speedOptions[index];
-      if (speed === undefined) return;
-
-      handlePressSpeedOption(speed);
-    });
-  }, [handlePressSpeedOption, speedOptions]);
-
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions?.map(gasOption => {
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
@@ -386,12 +376,11 @@ export const GasSpeedButton = ({
             : opacity(colors.blueGreyDark, 0.12)
         }
         dropdownEnabled={gasOptionsAvailable}
-        onPress={Platform.OS === 'android' && !gasIsNotReady ? handleOpenMenu : undefined}
         label={label}
         theme={theme}
       />
     );
-    if (Platform.OS === 'android' || !gasOptionsAvailable || gasIsNotReady) return pager;
+    if (!gasOptionsAvailable || gasIsNotReady) return pager;
 
     return (
       <ContextMenuButton
@@ -409,7 +398,6 @@ export const GasSpeedButton = ({
     colors,
     gasIsNotReady,
     gasOptionsAvailable,
-    handleOpenMenu,
     handlePressMenuItem,
     menuConfig,
     rawColorForAsset,

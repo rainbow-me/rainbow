@@ -5,11 +5,12 @@ import { type SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
 import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContextMenuButton } from '@/components/context-menu';
 import { Centered, ColumnWithMargins, Row } from '@/components/layout';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { TruncatedText } from '@/components/text';
 import { Box, Inline } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
@@ -17,7 +18,6 @@ import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isValidHex } from '@/handlers/web3';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
 import * as i18n from '@/languages';
@@ -104,30 +104,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     });
   }, [address, session, goBack, reload]);
 
-  const onPressAndroid = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: [i18n.t(i18n.l.walletconnect.switch_wallet), i18n.t(i18n.l.walletconnect.disconnect)],
-        title: dappName,
-      },
-      async index => {
-        if (index === 0) {
-          handlePressChangeWallet();
-        } else if (index === 1) {
-          await disconnectSession(session);
-          reload();
-          analytics.track(analytics.event.manuallyDisconnectedFromWalletConnectConnection, {
-            dappName,
-            dappUrl,
-          });
-        }
-      }
-    );
-  }, [dappName, handlePressChangeWallet, session, reload, dappUrl]);
-
   const handleOnPressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    async ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === 'disconnect') {
         await disconnectSession(session);
         reload();
@@ -145,94 +123,94 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   return (
     <ContextMenuButton
       testID="wallet_connect_v2_list_item"
-      menuItems={changeConnectionMenuItems({ isWalletConnectV2: true })}
-      menuTitle={dappName}
-      onPressAndroid={onPressAndroid}
+      menuConfig={{ menuItems: changeConnectionMenuItems(), menuTitle: dappName }}
       onPressMenuItem={handleOnPressMenuItem}
     >
-      <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
-        <Row align="center" flex={1} style={rowStyle}>
-          <RequestVendorLogoIcon
-            backgroundColor={colors.white}
-            chainId={undefined}
-            dappName={dappName}
-            imageUrl={dappLogo}
-            noShadow={false}
-            shouldPrioritizeImageLoading={false}
-            showLargeShadow={false}
-            size={VENDOR_LOGO_ICON_SIZE}
-          />
-          <ColumnWithMargins flex={1} margin={Platform.OS === 'android' ? -4 : 5} style={columnStyle}>
-            <Row width="95%">
-              <TruncatedText size="lmedium" weight="heavy">
-                {dappName || i18n.t(i18n.l.walletconnect.unknown_application)}
-              </TruncatedText>
-            </Row>
-
-            <SessionRow>
-              <Centered
-                style={{
-                  paddingLeft: 10,
-                }}
-              >
-                {accountInfo?.accountImage ? (
-                  <ImageAvatar image={accountInfo.accountImage} size="smaller" />
-                ) : (
-                  <ContactAvatar
-                    color={isNaN(accountInfo?.accountColor ?? 0) ? colors.skeleton : accountInfo?.accountColor}
-                    size="smaller"
-                    value={accountInfo?.accountSymbol}
-                  />
-                )}
-                <TruncatedText
-                  size="medium"
-                  style={{
-                    color: opacity(colors.blueGreyDark, 0.6),
-                    paddingLeft: 5,
-                    paddingRight: 19,
-                    width: '100%',
-                  }}
-                  weight="bold"
-                >
-                  {accountInfo?.accountName}
+      <ButtonPressAnimation>
+        <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
+          <Row align="center" flex={1} style={rowStyle}>
+            <RequestVendorLogoIcon
+              backgroundColor={colors.white}
+              chainId={undefined}
+              dappName={dappName}
+              imageUrl={dappLogo}
+              noShadow={false}
+              shouldPrioritizeImageLoading={false}
+              showLargeShadow={false}
+              size={VENDOR_LOGO_ICON_SIZE}
+            />
+            <ColumnWithMargins flex={1} margin={Platform.OS === 'android' ? -4 : 5} style={columnStyle}>
+              <Row width="95%">
+                <TruncatedText size="lmedium" weight="heavy">
+                  {dappName || i18n.t(i18n.l.walletconnect.unknown_application)}
                 </TruncatedText>
-              </Centered>
-            </SessionRow>
-          </ColumnWithMargins>
-          {!!availableNetworksChainIds?.length && (
-            <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
-              <RadialGradient
-                {...radialGradientProps}
-                // @ts-expect-error overloaded props RadialGradient
-                borderRadius={99}
-                radius={600}
-              />
-              <Inline alignVertical="center" alignHorizontal="justify">
-                <Inline alignVertical="center">
-                  <Box style={{ flexDirection: 'row' }}>
-                    {availableNetworksChainIds?.map((chainId, index) => {
-                      return (
-                        <Box
-                          background="body (Deprecated)"
-                          key={`availableNetwork-${chainId}`}
-                          marginLeft={{ custom: index > 0 ? -4 : 0 }}
-                          style={{
-                            backgroundColor: colors.transparent,
-                            zIndex: availableNetworksChainIds?.length - index,
-                            borderRadius: 30,
-                          }}
-                        >
-                          <ChainImage chainId={chainId} size={20} position="relative" />
-                        </Box>
-                      );
-                    })}
-                  </Box>
+              </Row>
+
+              <SessionRow>
+                <Centered
+                  style={{
+                    paddingLeft: 10,
+                  }}
+                >
+                  {accountInfo?.accountImage ? (
+                    <ImageAvatar image={accountInfo.accountImage} size="smaller" />
+                  ) : (
+                    <ContactAvatar
+                      color={isNaN(accountInfo?.accountColor ?? 0) ? colors.skeleton : accountInfo?.accountColor}
+                      size="smaller"
+                      value={accountInfo?.accountSymbol}
+                    />
+                  )}
+                  <TruncatedText
+                    size="medium"
+                    style={{
+                      color: opacity(colors.blueGreyDark, 0.6),
+                      paddingLeft: 5,
+                      paddingRight: 19,
+                      width: '100%',
+                    }}
+                    weight="bold"
+                  >
+                    {accountInfo?.accountName}
+                  </TruncatedText>
+                </Centered>
+              </SessionRow>
+            </ColumnWithMargins>
+            {!!availableNetworksChainIds?.length && (
+              <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
+                <RadialGradient
+                  {...radialGradientProps}
+                  // @ts-expect-error overloaded props RadialGradient
+                  borderRadius={99}
+                  radius={600}
+                />
+                <Inline alignVertical="center" alignHorizontal="justify">
+                  <Inline alignVertical="center">
+                    <Box style={{ flexDirection: 'row' }}>
+                      {availableNetworksChainIds?.map((chainId, index) => {
+                        return (
+                          <Box
+                            background="body (Deprecated)"
+                            key={`availableNetwork-${chainId}`}
+                            marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                            style={{
+                              backgroundColor: colors.transparent,
+                              zIndex: availableNetworksChainIds?.length - index,
+                              borderRadius: 30,
+                            }}
+                          >
+                            <ChainImage chainId={chainId} size={20} position="relative" />
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Inline>
                 </Inline>
-              </Inline>
-            </Box>
-          )}
+              </Box>
+            )}
+          </Row>
         </Row>
-      </Row>
+      </ButtonPressAnimation>
     </ContextMenuButton>
   );
 }

@@ -39,7 +39,7 @@ const GasSpeedLabel = styled(Text).attrs({
   ...padding.object(0, 3),
 });
 
-const GasSpeedLabelPager = ({ label, theme, onPress, colorForAsset, dropdownEnabled }) => {
+const GasSpeedLabelPager = ({ label, theme, onPress = undefined, colorForAsset, dropdownEnabled }) => {
   const { colors } = useTheme();
 
   return (

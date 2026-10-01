@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
-import { ContextMenuButton, type MenuConfig } from 'react-native-ios-context-menu';
 
+import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import useWatchWallet from '@/hooks/useWatchWallet';
 import * as i18n from '@/languages';
 
@@ -43,24 +42,18 @@ export function WatchButton({ address, ensName, avatarUrl }: { address?: string;
 
   return (
     <ConditionalWrap
-      condition={optimisticIsWatching && Platform.OS === 'ios'}
+      condition={optimisticIsWatching}
       wrap={children => (
-        <ContextMenuButton
-          enableContextMenu
-          menuConfig={menuConfig}
-          isMenuPrimaryAction
-          onPressMenuItem={handlePressWatch}
-          useActionSheetFallback={false}
-        >
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressWatch} testID="profile-sheet-watch-button">
           {children}
         </ContextMenuButton>
       )}
     >
       <ActionButton
         color="action (Deprecated)"
-        onPress={!optimisticIsWatching || Platform.OS === 'android' ? handlePressWatch : undefined}
+        onPress={!optimisticIsWatching ? handlePressWatch : undefined}
         paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
-        testID="profile-sheet-watch-button"
+        testID={optimisticIsWatching ? undefined : 'profile-sheet-watch-button'}
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
         {(optimisticIsWatching ? '' : '􀨭 ') +

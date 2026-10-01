@@ -1,9 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Platform, Share } from 'react-native';
 
-import ConditionalWrap from 'conditional-wrap';
-import { ContextMenuButton, type MenuActionConfig } from 'react-native-ios-context-menu';
-
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
@@ -21,19 +18,19 @@ import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { AppVersionStamp } from '@/components/AppVersionStamp';
 import { XIcon } from '@/components/icons/svg/XIcon';
+import ContextMenuButton, { type MenuActionConfig } from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { useTheme } from '@/theme/ThemeContext';
-import { Themes } from '@/theme/themes';
+import { Themes, type ThemesType } from '@/theme/themes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
@@ -134,36 +131,8 @@ export const SettingsSection = ({
     };
   }, [colorScheme, language]);
 
-  const androidActions = useMemo(() => {
-    return [
-      i18n.t(i18n.l.settings.theme_section.system),
-      i18n.t(i18n.l.settings.theme_section.light),
-      i18n.t(i18n.l.settings.theme_section.dark),
-    ];
-  }, [language]);
-  const onPressThemeAndroidActions = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: androidActions,
-        title: '',
-      },
-      idx => {
-        if (idx === 0) {
-          setTheme(Themes.SYSTEM);
-        } else if (idx === 1) {
-          setTheme(Themes.LIGHT);
-        } else if (idx === 2) {
-          setTheme(Themes.DARK);
-        }
-      }
-    );
-  }, [setTheme, androidActions]);
-
   const handleSelectTheme = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
-      setTheme(actionKey);
-    },
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: ThemesType } }) => setTheme(actionKey),
     [setTheme]
   );
 
@@ -217,34 +186,23 @@ export const SettingsSection = ({
           testID="currency-section"
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.currency.title)} />}
         />
-        <ConditionalWrap
-          condition={Platform.OS === 'ios'}
-          wrap={children => (
-            <ContextMenuButton
-              menuConfig={themeMenuConfig}
-              isMenuPrimaryAction
-              // @ts-ignore
-              menuAlignmentOverride="right"
-              onPressMenuItem={handleSelectTheme}
-              useActionSheetFallback={false}
-              key={`theme-menu-${language}`}
-            >
-              {children}
-            </ContextMenuButton>
-          )}
+        <ContextMenuButton
+          menuConfig={themeMenuConfig}
+          isAnchoredToRight
+          onPressMenuItem={handleSelectTheme}
+          key={`theme-menu-${language}`}
+          testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
         >
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
-            onPress={Platform.OS === 'android' ? onPressThemeAndroidActions : undefined}
             rightComponent={
               <MenuItem.Selection>{colorScheme ? i18n.t(i18n.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
             }
             size={60}
-            testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.theme)} />}
           />
-        </ConditionalWrap>
+        </ContextMenuButton>
 
         {!isReadOnlyWallet && (
           <MenuItem

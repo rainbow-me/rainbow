@@ -1,25 +1,46 @@
 import React, { useMemo, useRef, type PropsWithChildren } from 'react';
 import { View } from 'react-native';
 
-import { MenuView, type MenuComponentRef, type NativeActionEvent } from '@react-native-menu/menu';
+import { MenuView, type MenuAction, type MenuComponentRef, type NativeActionEvent } from '@react-native-menu/menu';
 import { type NativeMenuComponentProps } from '@react-native-menu/menu/lib/typescript/src/types';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation/ButtonPressAnimation';
+import { ButtonPressContext } from '@/components/animations/ButtonPressAnimation/ButtonPressContext';
 import useLatestCallback from '@/hooks/useLatestCallback';
 
-import { type MenuConfig } from './contextMenu';
+import { type MenuActionConfig, type MenuConfig } from './contextMenu';
 
+function toMenuAction(item: MenuActionConfig): MenuAction {
+  return {
+    id: item.actionKey,
+    title: item.actionTitle || item.menuTitle || '',
+    image: item.icon?.iconValue,
+    state: item.menuState === 'on' ? 'on' : item.menuState === 'off' ? 'off' : item.menuState === 'mixed' ? 'mixed' : undefined,
+    attributes: {
+      destructive: item.menuAttributes?.includes('destructive'),
+      disabled: item.menuAttributes?.includes('disabled'),
+      hidden: item.menuAttributes?.includes('hidden'),
+    },
+    ...(item.menuItems && { subactions: item.menuItems.map(toMenuAction) }),
+  };
+}
+
+/** Owns menu activation and accessibility while child buttons provide their press feedback. */
 export default function ContextMenuAndroid({
   children,
+  enableContextMenu = true,
   menuConfig: { menuItems, menuTitle },
   isAnchoredToRight,
+  isMenuPrimaryAction = true,
   onPressMenuItem,
-  shouldOpenOnLongPress,
+  shouldOpenOnLongPress = !isMenuPrimaryAction,
   style,
   testID,
 }: PropsWithChildren<{
+  enableContextMenu?: boolean;
   menuConfig: MenuConfig;
   isAnchoredToRight?: boolean;
+  isMenuPrimaryAction?: boolean;
   onPressMenuItem: (event: { nativeEvent: { actionKey: string } }) => void;
   shouldOpenOnLongPress?: boolean;
   style?: NativeMenuComponentProps['style'];
@@ -27,59 +48,52 @@ export default function ContextMenuAndroid({
 }>) {
   const menuRef = useRef<MenuComponentRef | null>(null);
   const actions = useMemo(() => {
-    const items = [];
-
-    if (menuTitle) {
-      items.push({
-        attributes: { disabled: true },
-        id: 'title',
-        title: menuTitle,
-      });
-    }
-
-    if (menuItems) {
-      items.push(
-        ...(menuItems || []).map(item => ({
-          id: item.actionKey,
-          image: item.icon?.iconValue,
-          title: item.actionTitle || item.menuTitle || '',
-          ...(item.menuTitle && {
-            titleColor: 'black',
-            subactions: item.menuItems.map(item => ({
-              id: item.actionKey,
-              image: item.icon?.iconValue,
-              title: item.actionTitle || '',
-            })),
-          }),
-        }))
-      );
-    }
-
+    const items = menuItems.map(toMenuAction);
+    if (menuTitle) items.unshift({ attributes: { disabled: true }, id: 'title', title: menuTitle });
     return items;
   }, [menuItems, menuTitle]);
 
   const onPressAction = useLatestCallback<({ nativeEvent }: NativeActionEvent) => void>(({ nativeEvent: { event } }) => {
-    return onPressMenuItem({ nativeEvent: { actionKey: event } });
+    onPressMenuItem({ nativeEvent: { actionKey: event } });
   });
+  const openMenu = useLatestCallback(() => {
+    if (enableContextMenu) menuRef.current?.show();
+  });
+  const buttonActions = useMemo(
+    () => ({
+      onPress: enableContextMenu && !shouldOpenOnLongPress ? openMenu : null,
+      onLongPress: enableContextMenu && shouldOpenOnLongPress ? openMenu : null,
+    }),
+    [enableContextMenu, openMenu, shouldOpenOnLongPress]
+  );
 
-  const gesture = (shouldOpenOnLongPress ? Gesture.LongPress() : Gesture.Tap()).runOnJS(true).onStart(() => {
-    menuRef.current?.show();
-  });
+  const content = <ButtonPressContext.Provider value={buttonActions}>{children}</ButtonPressContext.Provider>;
+  if (!enableContextMenu) {
+    return (
+      <View style={style} testID={testID}>
+        {content}
+      </View>
+    );
+  }
 
   return (
-    <GestureDetector gesture={gesture}>
-      <View style={style} testID={testID}>
-        <MenuView
-          ref={menuRef}
-          actions={actions}
-          isAnchoredToRight={isAnchoredToRight}
-          onPressAction={onPressAction}
-          shouldOpenOnLongPress={shouldOpenOnLongPress}
-          // Using the component for touch handling is not reliable, so use RNGH and open manually with the ref.
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}
-        />
-        {children}
-      </View>
-    </GestureDetector>
+    <ButtonPressAnimation
+      enableHapticFeedback={false}
+      onPress={buttonActions.onPress}
+      onLongPress={buttonActions.onLongPress}
+      scaleTo={1}
+      wrapperStyle={style}
+      testID={testID}
+    >
+      <MenuView
+        ref={menuRef}
+        actions={actions}
+        isAnchoredToRight={isAnchoredToRight}
+        onPressAction={onPressAction}
+        // MenuView intercepts child touches; the button owns activation instead.
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}
+      />
+      {content}
+    </ButtonPressAnimation>
   );
 }
