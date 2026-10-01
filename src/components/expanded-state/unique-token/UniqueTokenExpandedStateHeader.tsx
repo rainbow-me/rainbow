@@ -1,17 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import { startCase } from 'lodash';
 import URL from 'url-parse';
 
-import { ContextCircleButton } from '@/components/context-menu';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Stack, Text, type Space } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
@@ -362,49 +360,8 @@ const UniqueTokenExpandedStateHeader = ({
     [asset, rainbowWebUrl, setClipboard, isHiddenAsset, goBack, removeHiddenToken, addHiddenToken, isShowcaseAsset, removeShowcaseToken]
   );
 
-  const onPressAndroidFamily = useCallback(() => {
-    const hasCollection = !!asset.marketplaceUrl;
-    const hasWebsite = !!(asset.websiteUrl || asset.collectionUrl);
-    const hasTwitter = !!asset.twitterUrl;
-    const hasDiscord = !!asset.discordUrl;
-
-    const baseActions = [
-      ...(hasCollection ? [i18n.t(i18n.l.expanded_state.unique_expanded.view_collection)] : []),
-      ...(hasWebsite ? [i18n.t(i18n.l.expanded_state.unique_expanded.collection_website)] : []),
-      ...(hasTwitter ? [i18n.t(i18n.l.expanded_state.unique_expanded.twitter)] : []),
-      ...(hasDiscord ? [i18n.t(i18n.l.expanded_state.unique_expanded.discord)] : []),
-    ];
-
-    const collectionIndex = hasCollection ? 0 : -1;
-    const websiteIndex = hasWebsite ? collectionIndex + 1 : collectionIndex;
-    const twitterIndex = hasTwitter ? websiteIndex + 1 : websiteIndex;
-    const discordIndex = hasDiscord ? twitterIndex + 1 : twitterIndex;
-
-    showActionSheetWithOptions(
-      {
-        options: baseActions,
-        title: '',
-      },
-      idx => {
-        if (idx === collectionIndex && asset.marketplaceUrl) {
-          openInBrowser(asset.marketplaceUrl);
-        } else if (idx === websiteIndex) {
-          openInBrowser(asset.websiteUrl || asset.collectionUrl);
-        } else if (idx === twitterIndex) {
-          openInBrowser(asset.twitterUrl, false);
-        } else if (idx === discordIndex && asset.discordUrl) {
-          openInBrowser(asset.discordUrl, false);
-        }
-      }
-    );
-  }, [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceUrl, asset.collectionUrl]);
-
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
   const familyNameHitSlop: Space = '19px (Deprecated)';
-
-  const assetMenuOptions = useMemo(() => {
-    return assetMenuConfig?.menuItems?.filter(item => 'actionTitle' in item).map(item => item.actionTitle) ?? [];
-  }, [assetMenuConfig]);
 
   return (
     <Stack space="15px (Deprecated)">
@@ -419,46 +376,22 @@ const UniqueTokenExpandedStateHeader = ({
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
-            {/* NOTE: Necessary since other context menu overflows off screen on android */}
-            {Platform.OS === 'android' && (
-              <ContextCircleButton
-                testID="unique-token-expanded-state-context-menu-button"
-                options={assetMenuOptions}
-                onPressActionSheet={(index: number) => {
-                  const actionItems = (assetMenuConfig?.menuItems || []).filter(item => 'actionTitle' in item);
-                  const actionKey = actionItems[index];
-                  if (!actionKey) return;
-                  handlePressAssetMenuItem({
-                    nativeEvent: { actionKey: actionKey.actionKey },
-                  });
-                }}
-              >
-                <ButtonPressAnimation scaleTo={0.75}>
-                  <Inset space={overflowMenuHitSlop}>
-                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
-                      􀍡
-                    </Text>
-                  </Inset>
-                </ButtonPressAnimation>
-              </ContextCircleButton>
-            )}
-            {Platform.OS === 'ios' && (
-              <ContextMenuButton
-                menuConfig={assetMenuConfig}
-                isMenuPrimaryAction
-                onPressMenuItem={handlePressAssetMenuItem}
-                testID="unique-token-expanded-state-context-menu-button"
-                useActionSheetFallback={false}
-              >
-                <ButtonPressAnimation scaleTo={0.75}>
-                  <Inset space={overflowMenuHitSlop}>
-                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
-                      􀍡
-                    </Text>
-                  </Inset>
-                </ButtonPressAnimation>
-              </ContextMenuButton>
-            )}
+            <ContextMenuButton
+              isAnchoredToRight
+              menuConfig={assetMenuConfig}
+              isMenuPrimaryAction
+              onPressMenuItem={handlePressAssetMenuItem}
+              testID="unique-token-expanded-state-context-menu-button"
+              useActionSheetFallback={false}
+            >
+              <ButtonPressAnimation scaleTo={0.75}>
+                <Inset space={overflowMenuHitSlop}>
+                  <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
+                    􀍡
+                  </Text>
+                </Inset>
+              </ButtonPressAnimation>
+            </ContextMenuButton>
           </Bleed>
         </Column>
       </Columns>
@@ -466,7 +399,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(Platform.OS === 'android' ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
+            isAnchoredToRight
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
