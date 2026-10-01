@@ -108,7 +108,7 @@ export default function useSelectImageMenu({
   );
 
   const menuItems = useMemo(
-    () => [...initialMenuItems, showRemove ? 'remove' : undefined].filter(Boolean) as (Action | 'remove')[],
+    () => (showRemove ? [...initialMenuItems, 'remove' as const] : initialMenuItems),
     [initialMenuItems, showRemove]
   );
 
@@ -148,9 +148,8 @@ export default function useSelectImageMenu({
     });
   }, [navigate, onChangeImage]);
 
-  const handlePressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+  const handleSelectAction = useCallback(
+    (actionKey: string) => {
       if (actionKey === 'library') {
         isRemoved.current = false;
         handleSelectImage();
@@ -167,45 +166,45 @@ export default function useSelectImageMenu({
   );
 
   const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems.map(item => items[item]?.actionTitle).filter(Boolean);
-
     showActionSheetWithOptions(
       {
-        options: actionSheetOptions,
+        options: menuItems.map(item => items[item].actionTitle),
       },
-      async buttonIndex => {
-        if (buttonIndex === 0) {
-          isRemoved.current = false;
-          handleSelectImage();
-        } else if (buttonIndex === 1) {
-          handleSelectNFT();
-        } else if (buttonIndex === 2) {
-          isRemoved.current = true;
-          onRemoveImage?.();
-        }
+      buttonIndex => {
+        const action = buttonIndex === undefined ? undefined : menuItems[buttonIndex];
+        if (action !== undefined) handleSelectAction(action);
       }
     );
-  }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
+  }, [handleSelectAction, menuItems]);
 
   const ContextMenu = useCallback(
-    ({ children }: { children?: React.ReactNode }) => (
-      <ContextMenuButton
-        enableContextMenu
-        menuConfig={{
-          menuItems: menuItems.map(item => items[item]) as any,
-          menuTitle: '',
-        }}
-        {...(Platform.OS === 'android' ? { onPress: handleAndroidPress } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        testID={`use-select-image-${testID}`}
-        useActionSheetFallback={false}
-      >
-        {children}
-      </ContextMenuButton>
-    ),
-    [handleAndroidPress, handlePressMenuItem, menuItems, testID]
+    ({ children }: { children?: React.ReactNode }) => {
+      if (Platform.OS === 'android') return <>{children}</>;
+
+      return (
+        <ContextMenuButton
+          enableContextMenu
+          menuConfig={{
+            menuItems: menuItems.map(item => items[item]) as any,
+            menuTitle: '',
+          }}
+          isMenuPrimaryAction
+          onPressMenuItem={({ nativeEvent: { actionKey } }) => handleSelectAction(actionKey)}
+          testID={`use-select-image-${testID}`}
+          useActionSheetFallback={false}
+        >
+          {children}
+        </ContextMenuButton>
+      );
+    },
+    [handleSelectAction, menuItems, testID]
   );
 
-  return { ContextMenu, handleSelectImage, handleSelectNFT, isUploading };
+  return {
+    ContextMenu,
+    handleSelectImage,
+    handleSelectNFT,
+    isUploading,
+    onPressMenu: Platform.OS === 'android' ? handleAndroidPress : undefined,
+  };
 }

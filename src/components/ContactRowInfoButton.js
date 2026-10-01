@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform, View } from 'react-native';
 
+import ConditionalWrap from 'conditional-wrap';
 import { startCase } from 'lodash';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
@@ -149,23 +150,29 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
 
   return (
     <Container>
-      <ContextMenuButton
-        activeOpacity={0}
-        menuConfig={menuConfig}
-        {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
-        wrapNativeComponent={false}
+      <ConditionalWrap
+        condition={Platform.OS === 'ios'}
+        wrap={children => (
+          <ContextMenuButton
+            activeOpacity={0}
+            menuConfig={menuConfig}
+            isMenuPrimaryAction
+            onPressMenuItem={handlePressMenuItem}
+            useActionSheetFallback={false}
+            wrapNativeComponent={false}
+          >
+            {children}
+          </ContextMenuButton>
+        )}
       >
-        <ButtonPressAnimation scaleTo={scaleTo}>
+        <ButtonPressAnimation onPress={Platform.OS === 'android' ? onPressAndroid : undefined} scaleTo={scaleTo}>
           {children || (
             <Circle>
               <Icon>􀅳</Icon>
             </Circle>
           )}
         </ButtonPressAnimation>
-      </ContextMenuButton>
+      </ConditionalWrap>
     </Container>
   );
 };

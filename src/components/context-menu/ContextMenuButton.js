@@ -6,11 +6,23 @@ import { ContextMenuButton as IOSContextMenuButton } from 'react-native-ios-cont
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 
 export default function ContextMenuButton({ children, hitSlop = 0, menuItems, menuTitle, onPressAndroid, onPressMenuItem, testID }) {
+  const button = (
+    <ButtonPressAnimation
+      onPress={Platform.OS === 'android' ? onPressAndroid : undefined}
+      style={{ padding: hitSlop }}
+      wrapperStyle={Platform.OS === 'android' ? { margin: -hitSlop } : undefined}
+      testID={testID}
+    >
+      {children}
+    </ButtonPressAnimation>
+  );
+
+  if (Platform.OS === 'android') return button;
+
   return (
     <IOSContextMenuButton
       activeOpacity={0}
       isMenuPrimaryAction
-      {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
       menuConfig={{
         menuItems,
         menuTitle,
@@ -20,9 +32,7 @@ export default function ContextMenuButton({ children, hitSlop = 0, menuItems, me
       useActionSheetFallback={false}
       wrapNativeComponent={false}
     >
-      <ButtonPressAnimation style={{ padding: hitSlop }} testID={testID}>
-        {children}
-      </ButtonPressAnimation>
+      {button}
     </IOSContextMenuButton>
   );
 }

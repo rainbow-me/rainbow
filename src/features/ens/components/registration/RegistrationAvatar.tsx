@@ -92,7 +92,7 @@ const RegistrationAvatar = ({
     [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
   );
 
-  const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage, handleSelectNFT, onPressMenu } = useSelectImageMenu({
     imagePickerOptions: {
       allowsEditing: true,
       aspect: [1, 1],
@@ -125,6 +125,8 @@ const RegistrationAvatar = ({
     uploadToIPFS: true,
   });
 
+  const showMenu = hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl);
+
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
@@ -137,12 +139,9 @@ const RegistrationAvatar = ({
           <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
         </Skeleton>
       ) : (
-        <ConditionalWrap
-          condition={hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl)}
-          wrap={children => <ContextMenu>{children}</ContextMenu>}
-        >
+        <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
           <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : enableNFTs ? undefined : handleSelectImage}
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : showMenu ? onPressMenu : handleSelectImage}
             testID="use-select-image-avatar"
           >
             <AccentColorProvider color={accentColor + '10'}>

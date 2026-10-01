@@ -88,7 +88,7 @@ const RegistrationCover = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
-  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage, onPressMenu } = useSelectImageMenu({
     imagePickerOptions: {
       allowsEditing: true,
       aspect: [3, 1],
@@ -126,6 +126,8 @@ const RegistrationCover = ({
     uploadToIPFS: true,
   });
 
+  const showMenu = hasSeenExplainSheet && (enableNFTs || !!coverUrl);
+
   if (isLoading) {
     return (
       <Box height="126px">
@@ -136,8 +138,12 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalWrap condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)} wrap={children => <ContextMenu>{children}</ContextMenu>}>
-      <ButtonPressAnimation onPress={!hasSeenExplainSheet ? onShowExplainSheet : enableNFTs ? undefined : handleSelectImage} scaleTo={1}>
+    <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
+      <ButtonPressAnimation
+        onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? onPressMenu : handleSelectImage}
+        scaleTo={1}
+        testID="use-select-image-cover"
+      >
         <Box
           alignItems="center"
           as={Platform.OS === 'ios' ? RadialGradient : View}
