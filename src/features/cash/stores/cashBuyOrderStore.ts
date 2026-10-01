@@ -8,7 +8,7 @@ import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { CASH_BUY_DESTINATION_ASSET } from '../constants';
-import { isCashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { isCashAccessRefusedError } from '../services/cashAccessRefusal';
 import {
   createBuyOrder,
   getOrder,
@@ -29,7 +29,7 @@ export type CashBuyErrorCode = 'PAYMENT_REJECTED' | 'GENERIC';
 
 export type CashBuyStatus =
   | { step: 'idle' }
-  | { step: 'networkPolicy'; spec: BuyOrderSpec }
+  | { step: 'accessRefused'; spec: BuyOrderSpec }
   | {
       /** A submit is in flight: the spec has not (knowably) reached the backend yet. */
       step: 'submitting';
@@ -68,7 +68,7 @@ type CashBuyOrderState = {
 
 const PHASE_BY_STEP: Record<CashBuyStatus['step'], CashBuyPhase> = {
   idle: 'idle',
-  networkPolicy: 'idle',
+  accessRefused: 'idle',
   submitting: 'pending',
   polling: 'pending',
   success: 'success',
@@ -132,8 +132,8 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         set({ status: { step: 'polling', orderId: spec.id, order: null, submittedAt } });
       } catch (error) {
         if (!isCurrentSubmission(spec)) return;
-        if (isCashUserServiceNetworkPolicyError(error)) {
-          set({ status: { step: 'networkPolicy', spec } });
+        if (isCashAccessRefusedError(error)) {
+          set({ status: { step: 'accessRefused', spec } });
           return;
         }
         logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
@@ -159,7 +159,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         // decides whether the new submission should reuse the order id
         // from a previous failed attempt with not definitive rejection
         const retained =
-          (status.step === 'error' || status.step === 'networkPolicy') &&
+          (status.step === 'error' || status.step === 'accessRefused') &&
           status.spec?.cardId === cardId &&
           status.spec.depositAmount === depositAmount &&
           status.spec.walletAddress === walletAddress
@@ -197,6 +197,11 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           }
         } catch (error) {
           if (abortController?.signal.aborted) return;
+          // Ramp keeps refusing a blocked account, so polling could only re-show the notice every tick.
+          if (isCashAccessRefusedError(error)) {
+            set({ status: { step: 'idle' } });
+            return;
+          }
           throw error;
         } finally {
           abortController?.signal.removeEventListener('abort', propagateAbort);
@@ -222,11 +227,11 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     //   since we don't know whether the spec reached the backend.
     // - 'polling' resumes on the next Add Cash open, so the success status carrying a `transactionHash`
     //   is not lost.
-    // - 'networkPolicy' retains an ambiguous submission's id for the user's manual retry.
+    // - 'accessRefused' retains an ambiguous submission's id for the user's manual retry.
     // Terminal states collapse to idle: the sheet resets them on open anyway.
     partialize: state => ({
       status:
-        state.status.step === 'submitting' || state.status.step === 'polling' || state.status.step === 'networkPolicy'
+        state.status.step === 'submitting' || state.status.step === 'polling' || state.status.step === 'accessRefused'
           ? state.status
           : { step: 'idle' as const },
     }),

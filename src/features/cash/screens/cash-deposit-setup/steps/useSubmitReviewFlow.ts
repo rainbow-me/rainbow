@@ -6,8 +6,8 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
+import { isCashAccessRefusedError } from '../../../services/cashAccessRefusal';
 import { US_COUNTRY_CODE } from '../../../services/cashSetupIdentityService';
-import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import {
   finishRecovery,
   getUserStatus,
@@ -131,7 +131,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         return 'phoneCodeRequired';
       } catch (error) {
         if (isStale()) return 'cancelled';
-        if (isCashUserServiceNetworkPolicyError(error)) {
+        if (isCashAccessRefusedError(error)) {
           set({ run: null, state: 'entry' });
           return 'failed';
         }
@@ -164,7 +164,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         ({ kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken }));
       } catch (error) {
         if (isStale()) return 'cancelled';
-        if (isCashUserServiceNetworkPolicyError(error)) {
+        if (isCashAccessRefusedError(error)) {
           set({ run: null, state: 'entry' });
           return 'failed';
         }
@@ -183,7 +183,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         }));
       } catch (error) {
         if (isStale()) return 'cancelled';
-        if (isCashUserServiceNetworkPolicyError(error)) {
+        if (isCashAccessRefusedError(error)) {
           set({ run: null, state: 'entry' });
           return 'failed';
         }
@@ -208,7 +208,7 @@ export const useSubmitReviewFlowStore = createBaseStore<SubmitReviewFlowStore>((
         ({ kycStatus, kycRejectionReason } = await getUserStatus({ bootstrapToken }));
       } catch (error) {
         if (isStale()) return 'cancelled';
-        if (isCashUserServiceNetworkPolicyError(error)) {
+        if (isCashAccessRefusedError(error)) {
           set({ run: null, state: 'entry' });
           return 'failed';
         }

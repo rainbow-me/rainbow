@@ -8,6 +8,7 @@ import { logger } from '@/logger';
 
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { selectCashLinkedCards, useCashPaymentMethodStore, type LinkedCard } from '../stores/cashPaymentMethodStore';
+import { refuseCashAccess } from './cashAccessRefusal';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
 import { ensureAccessToken, getCachedAccessToken, type CashSignInTrigger } from './cashSignInService';
 
@@ -185,6 +186,8 @@ function toLinkedCard({ brand, id, lastFourDigits }: RampCard): LinkedCard {
   return { id, brand: CARD_BRAND_LABELS[brand], last4: lastFourDigits };
 }
 
+const GENERAL_FORBIDDEN = 403;
+
 function isUnauthorized(error: unknown): boolean {
   return error instanceof RainbowFetchError && error.response?.status === 401;
 }
@@ -197,6 +200,14 @@ export function isNotFoundError(error: unknown): boolean {
 export function isDefinitiveRejection(error: unknown): boolean {
   const status = error instanceof RainbowFetchError ? error.response?.status : undefined;
   return status !== undefined && status >= 400 && status < 500 && status !== 408 && status !== 429;
+}
+
+// Ramp answers 403 to any account that is not active, including one blocked for suspicious activity.
+function handleRampError(error: unknown): never {
+  if (error instanceof RainbowFetchError && error.response?.status === 403 && error.responseBody?.code === GENERAL_FORBIDDEN) {
+    refuseCashAccess('unavailable', error);
+  }
+  throw error;
 }
 
 export type CashAuthResult<T> = { kind: 'success'; data: T } | { kind: 'authRequired' };
@@ -213,8 +224,10 @@ async function authorizedRequest<T>(
 ): Promise<T>;
 async function authorizedRequest<T>(
   mode: CashAuthMode,
-  send: (headers: { Authorization: string }) => Promise<T>
+  sendRequest: (headers: { Authorization: string }) => Promise<T>
 ): Promise<T | CashAuthResult<T>> {
+  const send = (headers: { Authorization: string }) => sendRequest(headers).catch(handleRampError);
+
   if (mode.kind === 'cachedOnly') {
     const accessToken = getCachedAccessToken();
     if (!accessToken) return { kind: 'authRequired' };

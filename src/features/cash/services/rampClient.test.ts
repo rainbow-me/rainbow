@@ -2,6 +2,7 @@ import { ResponseParseError } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
+import { useCashAccessRefusalStore } from '../stores/cashAccessRefusalStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getCashPlatformClient } from './cashPlatformClient';
 import { ensureAccessToken, getCachedAccessToken } from './cashSignInService';
@@ -92,8 +93,12 @@ const FAILED_BUY_ORDER: Extract<BuyOrder, { status: OrderStatus.Failed }> = {
   failureReason: OrderFailureReason.PaymentRejected,
 };
 
-function fetchError(status: number, message: string) {
-  return new RainbowFetchError({ message, response: { status } as unknown as Response });
+function fetchError(status: number, message: string, code?: number) {
+  return new RainbowFetchError({
+    message,
+    response: { status } as unknown as Response,
+    responseBody: code === undefined ? undefined : { code },
+  });
 }
 
 beforeEach(() => {
@@ -103,6 +108,28 @@ beforeEach(() => {
   mockGetCachedAccessToken.mockReturnValue('jwt-1');
   useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-1', expiresAt: Date.now() + 60_000 });
   post.mockResolvedValue({ data: SESSION });
+  useCashAccessRefusalStore.getState().dismiss();
+});
+
+describe('access refusal', () => {
+  it('shows the unavailable notice when Ramp forbids an inactive account', async () => {
+    post.mockRejectedValue(fetchError(403, 'forbidden', 403));
+
+    await expect(startCardLinkSession()).rejects.toMatchObject({ name: 'CashAccessRefusedError', reason: 'unavailable' });
+    expect(useCashAccessRefusalStore.getState().reason).toBe('unavailable');
+  });
+
+  it.each([
+    { status: 403, code: 600 },
+    { status: 403, code: undefined },
+    { status: 400, code: 403 },
+  ])('propagates HTTP $status with code $code unchanged', async ({ status, code }) => {
+    const error = fetchError(status, 'refused', code);
+    post.mockRejectedValue(error);
+
+    await expect(startCardLinkSession()).rejects.toBe(error);
+    expect(useCashAccessRefusalStore.getState().reason).toBeNull();
+  });
 });
 
 describe('startCardLinkSession', () => {

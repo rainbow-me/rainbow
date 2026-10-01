@@ -2,8 +2,8 @@ import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
+import { CashAccessRefusedError } from '../../../services/cashAccessRefusal';
 import { signInWithPhone } from '../../../services/cashSignInService';
-import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume, type CreateUserWithPhoneResult } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
@@ -199,7 +199,7 @@ describe('useSubmitPhoneFlowStore.submit', () => {
   });
 
   it.each(['submit', 'resume', 'recovery'])('preserves the phone without a generic error for a %s network policy response', async phase => {
-    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const error = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     flow().setDigits(DIGITS);
     if (phase === 'submit') {
       mockCreateUserWithPhone.mockRejectedValueOnce(error);
@@ -438,7 +438,9 @@ describe('useSubmitPhoneFlowStore.signInWithExistingPasskey', () => {
   });
 
   it('returns to the prompt without logging an error when sign-in is blocked by network policy', async () => {
-    mockSignInWithPhone.mockRejectedValueOnce(new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' })));
+    mockSignInWithPhone.mockRejectedValueOnce(
+      new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }))
+    );
 
     await expect(flow().signInWithExistingPasskey()).resolves.toBe('cancelled');
 

@@ -27,7 +27,7 @@ export async function reauthenticateCashGate(): Promise<void> {
   try {
     await ensureAccessToken('addCash');
   } catch (error) {
-    // A cancelled sign-in or policy block is a deliberate stop, not a failure: stay parked, silently.
+    // A cancelled sign-in or access refusal is a deliberate stop, not a failure: stay parked, silently.
     if (isHandledCashError(error)) return;
     logger.error(new RainbowError('[cashAuthGateService]: Failed to re-authenticate', error));
     if (isCurrent()) gate.fail(parked.intent);
@@ -46,7 +46,7 @@ async function runIntent(intent: CashAuthIntent): Promise<void> {
     const result = await RESUME_BY_INTENT[intent.kind]();
     if (result === 'authRequired' && isCurrent()) gate.park(intent);
   } catch (error) {
-    logger.error(new RainbowError(`[cashAuthGateService]: ${intent.kind} failed`, error));
+    if (!isHandledCashError(error)) logger.error(new RainbowError(`[cashAuthGateService]: ${intent.kind} failed`, error));
     if (isCurrent()) gate.fail(intent);
   }
 }

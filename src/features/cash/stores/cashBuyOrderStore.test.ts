@@ -4,7 +4,7 @@ import { logger } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 
 import { CASH_BUY_DESTINATION_ASSET } from '../constants';
-import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import {
   OrderFailureReason,
   OrderStatus,
@@ -106,8 +106,8 @@ function fetchError(status: number): RainbowFetchError {
   return new RainbowFetchError({ message: 'not found', response: { status } as Response });
 }
 
-function networkPolicyError(): CashUserServiceNetworkPolicyError {
-  return new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+function networkPolicyError(): CashAccessRefusedError {
+  return new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
 }
 
 const store = useCashBuyOrderStore;
@@ -431,6 +431,15 @@ describe('syncActiveOrder', () => {
     expect(phase()).toBe('pending');
   });
 
+  it('stops polling once Ramp refuses access to the account', async () => {
+    startPolling(PENDING_ORDER);
+    getOrder.mockRejectedValue(new CashAccessRefusedError('unavailable'));
+
+    await expect(getState().syncActiveOrder()).resolves.toBeUndefined();
+
+    expect(getState().status).toEqual({ step: 'idle' });
+  });
+
   it('does nothing when there is no active order', async () => {
     await getState().syncActiveOrder(); // idle from beforeEach
     expect(getOrder).not.toHaveBeenCalled();
@@ -478,7 +487,7 @@ describe('resumePendingSubmission', () => {
 
     await getState().resumePendingSubmission();
 
-    expect(getState().status).toEqual({ step: 'networkPolicy', spec: SPEC });
+    expect(getState().status).toEqual({ step: 'accessRefused', spec: SPEC });
     expect(phase()).toBe('idle');
     expect(track).not.toHaveBeenCalledWith(analytics.event.cashBuyOrderFailed, expect.anything());
 
@@ -577,9 +586,9 @@ describe('persistence', () => {
   });
 
   it('keeps an order id retained after a network policy response on disk', async () => {
-    store.setState({ status: { step: 'networkPolicy', spec: SPEC } });
+    store.setState({ status: { step: 'accessRefused', spec: SPEC } });
 
-    await expect(readPersisted()).resolves.toEqual({ status: { step: 'networkPolicy', spec: SPEC } });
+    await expect(readPersisted()).resolves.toEqual({ status: { step: 'accessRefused', spec: SPEC } });
   });
 
   it('keeps a polled order on disk so polling can resume after a crash', async () => {

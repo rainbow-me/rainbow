@@ -2,6 +2,7 @@ import { logger, RainbowError } from '@/logger';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashPaymentMethodStore, type LinkedCard } from '../stores/cashPaymentMethodStore';
+import { isHandledCashError } from './cashHandledError';
 import { listCardsWithCachedAuth } from './rampClient';
 
 export type CardListResult = 'completed' | 'authRequired';
@@ -42,7 +43,7 @@ async function fetchCards(userIdAtRequest: string | null, cardsAtRequest: Linked
   } catch (error) {
     if (isStale()) return 'completed';
     if (cardsAtRequest === null) throw error;
-    logger.error(new RainbowError('[cardListService]: Failed to refresh cards', error));
+    if (!isHandledCashError(error)) logger.error(new RainbowError('[cardListService]: Failed to refresh cards', error));
     return 'completed';
   }
 }

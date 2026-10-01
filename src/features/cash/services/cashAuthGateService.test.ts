@@ -2,6 +2,7 @@ import { logger } from '@/logger';
 
 import { useCashAuthGateStore } from '../stores/cashAuthGateStore';
 import { loadLinkedCards } from './cardListService';
+import { CashAccessRefusedError } from './cashAccessRefusal';
 import { openCashAuthGate, reauthenticateCashGate } from './cashAuthGateService';
 import { isPasskeyCancellation } from './cashPasskeyService';
 import { ensureAccessToken } from './cashSignInService';
@@ -85,13 +86,16 @@ describe('openCashAuthGate', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it('fails the gate when the continuation fails', async () => {
-    mockLoadLinkedCards.mockRejectedValue(new Error('network down'));
+  it.each([
+    { error: new Error('network down'), logged: true },
+    { error: new CashAccessRefusedError('unavailable'), logged: false },
+  ])('fails the gate when the continuation fails with $error.name', async ({ error, logged }) => {
+    mockLoadLinkedCards.mockRejectedValue(error);
 
     await openCashAuthGate();
 
     expect(gate()).toEqual({ step: 'error', intent: LOAD_CARDS });
-    expect(logger.error).toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(logged ? 1 : 0);
   });
 
   it('leaves a gate that was cleared mid-run alone, whether the run parks or fails', async () => {

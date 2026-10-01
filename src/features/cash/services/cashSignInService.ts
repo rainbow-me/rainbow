@@ -6,8 +6,8 @@ import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
+import { isCashAccessRefusedError } from './cashAccessRefusal';
 import { cancelPasskeyRequest, getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
-import { isCashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
 export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'existingAccountPrompt';
@@ -68,7 +68,7 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
     }
     if (isPasskeyCancellation(error)) {
       analytics.track(analytics.event.cashSignInCancelled, { trigger });
-    } else if (!isCashUserServiceNetworkPolicyError(error)) {
+    } else if (!isCashAccessRefusedError(error)) {
       analytics.track(analytics.event.cashSignInFailed, {
         trigger,
         reason: isPasskeyAssertionTimeout ? 'timeout' : getTelemetryErrorReason(error),

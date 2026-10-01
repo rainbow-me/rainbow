@@ -37,7 +37,7 @@ export function useWalletLinkFlow({ onLinked, walletAddress }: { onLinked: () =>
       onLinked();
     } catch (e) {
       if (controller.signal.aborted) return;
-      // A cancelled passkey, the signature stage, and a network-policy block already spoke to the
+      // A cancelled passkey, the signature stage, and an access refusal already spoke to the
       // user; anything past them is ours to surface.
       if (e instanceof WalletSignatureError || isHandledCashError(e)) {
         setState('idle');

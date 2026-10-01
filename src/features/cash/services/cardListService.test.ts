@@ -3,6 +3,7 @@ import { logger } from '@/logger';
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashPaymentMethodStore, type LinkedCard } from '../stores/cashPaymentMethodStore';
 import { loadLinkedCards } from './cardListService';
+import { CashAccessRefusedError } from './cashAccessRefusal';
 import { listCardsWithCachedAuth } from './rampClient';
 
 jest.mock('@/logger', () => ({
@@ -114,14 +115,17 @@ describe('loadLinkedCards', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it('keeps the list fetched earlier this session when a refresh fails', async () => {
+  it.each([
+    { error: new Error('network down'), logged: true },
+    { error: new CashAccessRefusedError('unavailable'), logged: false },
+  ])('keeps the list fetched earlier this session when a refresh fails with $error.name', async ({ error, logged }) => {
     store().setCards([CARD]);
-    mockListCardsWithCachedAuth.mockRejectedValue(new Error('network down'));
+    mockListCardsWithCachedAuth.mockRejectedValue(error);
 
     await expect(loadLinkedCards()).resolves.toBe('completed');
 
     expect(cards()).toEqual([CARD]);
-    expect(logger.error).toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(logged ? 1 : 0);
   });
 
   it('rejects when the first load fails', async () => {

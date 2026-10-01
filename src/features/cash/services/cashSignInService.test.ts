@@ -3,9 +3,9 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
+import { CashAccessRefusedError } from './cashAccessRefusal';
 import { cancelPasskeyRequest, getPasskeyAssertion } from './cashPasskeyService';
 import { ensureAccessToken, signInWithPhone } from './cashSignInService';
-import { CashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
 jest.mock('@/analytics', () => ({
@@ -133,7 +133,7 @@ describe('ensureAccessToken', () => {
   });
 
   it('propagates a network policy response without tracking a generic failure', async () => {
-    const error = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const error = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     mockStartLogin.mockRejectedValue(error);
 
     await expect(ensureAccessToken('cardLink')).rejects.toBe(error);

@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 
-import { CashUserServiceNetworkPolicyError } from '../services/cashUserServiceNetworkPolicy';
+import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import { getUserStatus, KycRejectionReasonCode, KycStatus } from '../services/userClient';
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
@@ -180,7 +180,7 @@ describe('useKycReturnFlowStore.check', () => {
   it('keeps submitted progress without surfacing a KYC outcome when the network policy blocks the return check', async () => {
     verifyPhone();
     useCashSetupSessionStore.getState().markKycSubmitted(BOOTSTRAP_TOKEN);
-    mockGetUserStatus.mockRejectedValue(new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' })));
+    mockGetUserStatus.mockRejectedValue(new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' })));
 
     await expect(flow().check()).resolves.toBe('blocked');
 

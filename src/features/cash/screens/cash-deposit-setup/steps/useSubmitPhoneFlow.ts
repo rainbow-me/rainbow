@@ -3,9 +3,9 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
+import { isCashAccessRefusedError } from '../../../services/cashAccessRefusal';
 import { isHandledCashError } from '../../../services/cashHandledError';
 import { signInWithPhone } from '../../../services/cashSignInService';
-import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { createUserWithPhone, startRecovery, startSignupResume } from '../../../services/userClient';
 import {
   useCashSetupSessionStore,
@@ -67,7 +67,7 @@ async function advanceToChallenge(
     return true;
   } catch (e) {
     if (isStale()) return false;
-    if (isCashUserServiceNetworkPolicyError(e)) {
+    if (isCashAccessRefusedError(e)) {
       set({ state: 'entry' });
       return false;
     }
@@ -135,7 +135,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
       return await advanceToChallenge(startChallenge, digits, isStale, set);
     } catch (e) {
       if (isStale()) return false;
-      if (isCashUserServiceNetworkPolicyError(e)) {
+      if (isCashAccessRefusedError(e)) {
         set({ state: 'entry' });
         return false;
       }

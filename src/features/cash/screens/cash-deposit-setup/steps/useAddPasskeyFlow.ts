@@ -3,8 +3,8 @@ import { createBaseStore } from '@storesjs/stores';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 
+import { isCashAccessRefusedError } from '../../../services/cashAccessRefusal';
 import { createPasskeyCredential, getPasskeyName, isPasskeyCancellation } from '../../../services/cashPasskeyService';
-import { isCashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
@@ -45,7 +45,7 @@ export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set,
       set({ state: 'entry' });
       return recovering ? 'recovered' : 'completed';
     } catch (e) {
-      if (isCashUserServiceNetworkPolicyError(e)) {
+      if (isCashAccessRefusedError(e)) {
         set({ state: 'entry' });
         return 'failed';
       }

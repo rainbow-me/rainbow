@@ -1,8 +1,7 @@
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-import { useCashUserServiceNetworkPolicyStore } from '../stores/cashUserServiceNetworkPolicyStore';
+import { useCashAccessRefusalStore } from '../stores/cashAccessRefusalStore';
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from './cashSetupIdentityService';
-import { CashUserServiceNetworkPolicyError } from './cashUserServiceNetworkPolicy';
 import {
   createUserWithPhone,
   finishRecovery,
@@ -41,7 +40,7 @@ function governmentId() {
 beforeEach(() => {
   post.mockReset();
   get.mockReset();
-  useCashUserServiceNetworkPolicyStore.getState().dismiss();
+  useCashAccessRefusalStore.getState().dismiss();
 });
 
 afterEach(() => {
@@ -56,14 +55,20 @@ function platformError(code: unknown, httpStatus?: number) {
   });
 }
 
-describe('network policy errors', () => {
+describe('access refusals', () => {
   const submit = () => createUserWithPhone({ nationalNumber: '5869132511' });
 
-  it.each([600, 601, 602])('shows the warning for HTTP 403 response code %s', async code => {
-    post.mockRejectedValue(platformError(code, 403));
+  it.each([
+    { code: 600, httpStatus: 403, reason: 'networkPolicy' },
+    { code: 601, httpStatus: 403, reason: 'networkPolicy' },
+    { code: 602, httpStatus: 403, reason: 'networkPolicy' },
+    { code: 1340, httpStatus: 403, reason: 'unavailable' },
+    { code: 1340, httpStatus: 400, reason: 'unavailable' },
+  ])('shows the $reason notice for HTTP $httpStatus response code $code', async ({ code, httpStatus, reason }) => {
+    post.mockRejectedValue(platformError(code, httpStatus));
 
-    await expect(submit()).rejects.toBeInstanceOf(CashUserServiceNetworkPolicyError);
-    expect(useCashUserServiceNetworkPolicyStore.getState().visible).toBe(true);
+    await expect(submit()).rejects.toMatchObject({ name: 'CashAccessRefusedError', reason });
+    expect(useCashAccessRefusalStore.getState().reason).toBe(reason);
   });
 
   it.each([
@@ -74,7 +79,7 @@ describe('network policy errors', () => {
     post.mockRejectedValue(error);
 
     await expect(submit()).rejects.toBe(error);
-    expect(useCashUserServiceNetworkPolicyStore.getState().visible).toBe(false);
+    expect(useCashAccessRefusalStore.getState().reason).toBeNull();
   });
 });
 
@@ -230,6 +235,14 @@ describe('account recovery', () => {
     post.mockRejectedValue(platformError(code, httpStatus));
 
     await expect(finishRecovery(finishParams)).resolves.toEqual({ outcome });
+    expect(useCashAccessRefusalStore.getState().reason).toBeNull();
+  });
+
+  it('shows the network policy notice for a policy-blocked recovery', async () => {
+    post.mockRejectedValue(platformError(600, 403));
+
+    await expect(finishRecovery(finishParams)).rejects.toMatchObject({ reason: 'networkPolicy' });
+    expect(useCashAccessRefusalStore.getState().reason).toBe('networkPolicy');
   });
 
   it('rethrows an unrecognized HTTP 403 recovery error', async () => {
@@ -275,8 +288,15 @@ describe('submitOnboarding', () => {
 describe('getUserStatus', () => {
   const params = { bootstrapToken: 'bst_test' };
 
+  it('shows the unavailable notice instead of a KYC verdict for a blocked account', async () => {
+    get.mockResolvedValue({ data: { status: { access: { status: 'ACCESS_STATUS_BLOCKED' }, kyc: { status: KycStatus.Approved } } } });
+
+    await expect(getUserStatus(params)).rejects.toMatchObject({ name: 'CashAccessRefusedError', reason: 'unavailable' });
+    expect(useCashAccessRefusalStore.getState().reason).toBe('unavailable');
+  });
+
   it('omits the rejection reason when the provider approves', async () => {
-    get.mockResolvedValue({ data: { status: { kyc: { status: KycStatus.Approved } } } });
+    get.mockResolvedValue({ data: { status: { access: { status: 'ACCESS_STATUS_ACTIVE' }, kyc: { status: KycStatus.Approved } } } });
 
     await expect(getUserStatus(params)).resolves.toEqual({ kycStatus: KycStatus.Approved, kycRejectionReason: undefined });
   });

@@ -4,8 +4,8 @@ import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
 import { delay } from '@/utils/delay';
 
+import { CashAccessRefusedError } from '../../../services/cashAccessRefusal';
 import { createUsSsnLast4GovernmentId, isValidUsSsnLast4 } from '../../../services/cashSetupIdentityService';
-import { CashUserServiceNetworkPolicyError } from '../../../services/cashUserServiceNetworkPolicy';
 import { getUserStatus, KycRejectionReasonCode, KycStatus, submitOnboarding } from '../../../services/userClient';
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
@@ -227,7 +227,7 @@ describe('useSubmitReviewFlowStore.submit onboarding', () => {
   });
 
   it('manually retries only the status read after a network policy response during polling', async () => {
-    const policyError = new CashUserServiceNetworkPolicyError(new RainbowFetchError({ message: 'network policy' }));
+    const policyError = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
     mockSubmitOnboarding.mockResolvedValue({ kycStatus: KycStatus.Pending });
     mockGetUserStatus.mockRejectedValueOnce(policyError).mockResolvedValueOnce({ kycStatus: KycStatus.Approved });
 
