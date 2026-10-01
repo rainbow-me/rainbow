@@ -1,31 +1,53 @@
+import { describe, expect, it } from 'vitest';
+
 import { getSportsWindow } from './browse';
 import { buildSportsCatalog } from './catalog';
-import { Game, GameStatus, SportBrowseTarget, SportsCatalog } from './generated/external/sports/payload';
+import { GameInterruption, GameStatus, SportBrowseTarget, type Game, type SportsCatalog } from './generated/external/sports/payload';
 import { groupSportsGames } from './sections';
 
 const window = getSportsWindow(new Date(2026, 8, 20, 12));
-const catalogMessage = SportsCatalog.fromJSON({
+const catalogMessage: SportsCatalog = {
   sports: [
     {
       id: 'tennis',
+      name: 'Tennis',
       browseTarget: SportBrowseTarget.SPORT_BROWSE_TARGET_GAMES,
-      competitions: [{ id: 'atp' }, { id: 'us-open' }, { id: 'wta' }],
+      competitions: [
+        { id: 'atp', name: 'ATP' },
+        { id: 'us-open', name: 'US Open' },
+        { id: 'wta', name: 'WTA' },
+      ],
     },
-    { id: 'basketball', browseTarget: SportBrowseTarget.SPORT_BROWSE_TARGET_GAMES, competitions: [{ id: 'nba' }] },
-    { id: 'soccer', browseTarget: SportBrowseTarget.SPORT_BROWSE_TARGET_COMPETITIONS, competitions: [{ id: 'epl' }] },
+    {
+      id: 'basketball',
+      name: 'Basketball',
+      browseTarget: SportBrowseTarget.SPORT_BROWSE_TARGET_GAMES,
+      competitions: [{ id: 'nba', name: 'NBA' }],
+    },
+    {
+      id: 'soccer',
+      name: 'Soccer',
+      browseTarget: SportBrowseTarget.SPORT_BROWSE_TARGET_COMPETITIONS,
+      competitions: [{ id: 'epl', name: 'Premier League' }],
+    },
   ],
   liveGroupIds: ['tennis', 'us-open'],
-});
+  prominentScopeIds: [],
+  promotedGameIds: [],
+};
 const catalog = buildSportsCatalog(catalogMessage, 1);
 
 function game(id: string, fields: Partial<Game> = {}): Game {
-  return Game.fromJSON({
+  return {
     id,
     competitionIds: ['atp'],
     startTime: new Date(2026, 8, 20, 15).toISOString(),
     status: GameStatus.GAME_STATUS_LIVE,
+    interruption: GameInterruption.GAME_INTERRUPTION_UNSPECIFIED,
+    participants: [],
+    scoreColumns: [],
     ...fields,
-  });
+  };
 }
 
 function sectionInputs(...games: Game[]): [Partial<Record<string, Game>>, string[]] {
