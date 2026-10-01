@@ -75,12 +75,34 @@ describe('useSubmitPhoneFlowStore.setDigits', () => {
     { input: '+1 (415) 555-0100', expected: '4155550100' },
     { input: '14155550100', expected: '4155550100' },
     { input: '1234567890', expected: '1234567890' },
-    { input: '(415) 555-01004', expected: '4155550100' },
   ];
 
   it.each(cases)('normalizes $input to $expected', ({ input, expected }) => {
     flow().setDigits(input);
     expect(flow().digits).toBe(expected);
+  });
+
+  it.each(['(415) 555-01004', '(415) 555-00100', '+44 20 7946 0958'])(
+    'preserves the current phone and session when rejecting %s',
+    input => {
+      flow().setDigits(DIGITS);
+      useCashSetupSessionStore.getState().setPhoneAlreadyRegistered(DIGITS);
+      const previousFlow = flow();
+      const previousSession = session();
+
+      flow().setDigits(input);
+
+      expect(flow()).toBe(previousFlow);
+      expect(session()).toBe(previousSession);
+    }
+  );
+
+  it('allows clearing an existing number', () => {
+    flow().setDigits(DIGITS);
+
+    flow().setDigits('');
+
+    expect(flow().digits).toBe('');
   });
 });
 
