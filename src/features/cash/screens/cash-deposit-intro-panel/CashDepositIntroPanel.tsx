@@ -7,8 +7,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { Box, Separator, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { replace, useNavigation } from '@/navigation/Navigation';
@@ -17,6 +19,7 @@ import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 
 import { CashDepositIntroFeatureRow } from '../../components/CashDepositIntroFeatureRow';
+import { CashStatusPanel } from '../../components/CashStatusHalfSheet';
 
 const HERO_DOLLAR_COLOR = '#0086FF';
 
@@ -25,6 +28,7 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
   const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
   const isHardwareWallet = useIsHardwareWallet();
+  const { cash_signup_enabled } = useRemoteConfig('cash_signup_enabled');
 
   const backgroundGradientColors = isDarkMode
     ? ([opacity(HERO_DOLLAR_COLOR, 0.2), opacity(HERO_DOLLAR_COLOR, 0)] as const)
@@ -33,8 +37,8 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
 
   useFocusEffect(
     useCallback(() => {
-      analytics.track(analytics.event.cashDepositIntroViewed);
-    }, [])
+      analytics.track(cash_signup_enabled ? analytics.event.cashDepositIntroViewed : analytics.event.cashDepositSignupPausedViewed);
+    }, [cash_signup_enabled])
   );
 
   // Set Up Account → close the intro panel, then open the Cash Deposit Setup wizard.
@@ -58,6 +62,32 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
   const handleSignIn = useCallback(() => {
     replace(Routes.CASH_SIGN_IN_SCREEN);
   }, []);
+
+  if (!cash_signup_enabled) {
+    return (
+      <>
+        <CashStatusPanel
+          content={{
+            description: i18n.t(i18n.l.cash.deposit_intro.signup_paused_description),
+            primaryAction: {
+              label: i18n.t(i18n.l.cash.deposit_intro.sign_in),
+              onPress: handleSignIn,
+              testID: 'cash-deposit-intro-sign-in',
+            },
+            secondaryAction: {
+              label: i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods),
+              onPress: handleOtherDepositMethods,
+              testID: 'cash-deposit-intro-other-deposit-methods',
+            },
+            status: 'error',
+            testID: 'cash-deposit-intro-signup-paused',
+            title: i18n.t(i18n.l.cash.deposit_intro.signup_paused_title),
+          }}
+        />
+        <TapToDismiss />
+      </>
+    );
+  }
 
   return (
     <PanelSheet>

@@ -94,6 +94,7 @@ export interface RainbowConfig extends Record<
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   cash_enabled: boolean;
+  cash_signup_enabled: boolean;
   cash_balance_enabled: boolean;
   rnbw_rewards_enabled: boolean;
   rnbw_membership_enabled: boolean;
@@ -232,6 +233,7 @@ export const DEFAULT_CONFIG = {
   perps_enabled: true,
   polymarket_enabled: true,
   cash_enabled: false,
+  cash_signup_enabled: true,
   cash_balance_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
