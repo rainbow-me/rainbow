@@ -45,8 +45,14 @@ diff --git a/node_modules/@candlefinance/faster-image/android/src/main/java/com/
              }
            )
            .crossfade(transitionDuration.toInt() ?: 100)
-@@ -186,13 +189,25 @@
+@@ -186,13 +189,31 @@
        private fun setViewBorderRadius(view: AppCompatImageView, borderRadii: BorderRadii) {
++        if (borderRadii.sum() == 0.0) {
++          view.clipToOutline = false
++          view.outlineProvider = ViewOutlineProvider.BACKGROUND
++          return
++        }
++
          view.clipToOutline = true
          view.outlineProvider = object : ViewOutlineProvider() {
 -          override fun getOutline(view: View, outline: Outline) {
@@ -73,7 +79,7 @@ diff --git a/node_modules/@candlefinance/faster-image/android/src/main/java/com/
                return
              }
 
-@@ -202,8 +217,6 @@
+@@ -202,8 +223,6 @@
                borderRadii.bottomRight.toFloat(), borderRadii.bottomRight.toFloat(),
                borderRadii.bottomLeft.toFloat(), borderRadii.bottomLeft.toFloat(),
              )
