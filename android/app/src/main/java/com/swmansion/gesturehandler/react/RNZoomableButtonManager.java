@@ -118,30 +118,42 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         }
 
         @Override
+        public boolean wantsToHandleEventBeforeActivation() {
+            return true;
+        }
+
+        @Override
+        public void handleEventBeforeActivation(@NonNull MotionEvent event) {
+            handleTouchEvent(event);
+        }
+
+        @Override
         public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
-            // Let child buttons receive the native touch before this button claims it.
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                AccessibilityManager accessibility = (AccessibilityManager)
+                        getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+                touchExploration = accessibility.isTouchExplorationEnabled();
+            }
             boolean handled = super.dispatchTouchEvent(event);
-            return onTouchEvent(event) || handled;
+            return touchExploration ? onTouchEvent(event) || handled : handled;
         }
 
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouchEvent(@NonNull MotionEvent event) {
             int action = event.getActionMasked();
-            // Normal movement and release use RNGH's local pointer IDs.
-            if (touchExploration
-                    || action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_CANCEL) {
-                return handleTouchEvent(event, false);
+            if (touchExploration || action == MotionEvent.ACTION_CANCEL) {
+                return handleTouchEvent(event);
             }
             return true;
         }
 
         @Override
         public Boolean sendTouchEvent(@Nullable View view, @NonNull MotionEvent event) {
-            return handleTouchEvent(event, true);
+            return handleTouchEvent(event);
         }
 
-        private boolean handleTouchEvent(MotionEvent event, boolean fromGestureHandler) {
+        private boolean handleTouchEvent(MotionEvent event) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_DOWN) {
                 if (activePointerId != MotionEvent.INVALID_POINTER_ID && touchDownTime == event.getDownTime()) {
@@ -154,15 +166,6 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                         getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
                 touchExploration = accessibility.isTouchExplorationEnabled();
                 int pointerId = event.getPointerId(event.getActionIndex());
-                if (!fromGestureHandler && !touchExploration) {
-                    if (gestureHandler == null) {
-                        return false;
-                    }
-                    pointerId = gestureHandler.getLocalPointerId(pointerId);
-                    if (pointerId == MotionEvent.INVALID_POINTER_ID) {
-                        return false;
-                    }
-                }
                 if (!isEnabled() || !super.canBegin(event)) {
                     return false;
                 }
@@ -174,6 +177,12 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                 activePointerId = pointerId;
                 touchDownTime = event.getDownTime();
                 longPressState = LongPressState.NONE;
+                if (!touchExploration) {
+                    gestureHandler.activate();
+                    if (activePointerId == MotionEvent.INVALID_POINTER_ID) {
+                        return false;
+                    }
+                }
                 setPressed(true);
                 if (hasPressStartHandler) {
                     sendPressEvent("pressStart");
@@ -183,9 +192,6 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                         mLongPressRunnable = this::handleLongPressTimeout;
                     }
                     MAIN_HANDLER.postDelayed(mLongPressRunnable, mMinLongPressDuration);
-                }
-                if (!fromGestureHandler && !touchExploration) {
-                    gestureHandler.activate();
                 }
                 return true;
             }
@@ -234,6 +240,9 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         }
 
         private boolean containsTouch(float x, float y) {
+            if (!touchExploration) {
+                return gestureHandler != null && gestureHandler.isWithinBounds(this, x, y);
+            }
             return x >= -touchSlop && y >= -touchSlop && x < getWidth() + touchSlop && y < getHeight() + touchSlop;
         }
 

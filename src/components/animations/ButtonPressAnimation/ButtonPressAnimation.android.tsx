@@ -64,6 +64,7 @@ const NativeScaleButton = forwardRef<ZoomableButtonRef, NativeScaleButtonProps>(
     isLongPress,
     importantForAccessibility,
     hapticType,
+    hitSlop,
     enableHapticFeedback,
     onPress,
     onPressStart,
@@ -101,6 +102,7 @@ const NativeScaleButton = forwardRef<ZoomableButtonRef, NativeScaleButtonProps>(
       duration={duration}
       exclusive={exclusive}
       hasPressStartHandler={!!onPressStart}
+      hitSlop={hitSlop ?? undefined}
       isLongPress={isLongPress}
       importantForAccessibility={importantForAccessibility}
       minLongPressDuration={minLongPressDuration}
@@ -140,6 +142,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
     transformOrigin,
     wrapperStyle,
     hapticType = 'selection',
+    hitSlop,
     enableHapticFeedback = true,
     disallowInterruption = false,
     shouldActivateOnStart,
@@ -164,6 +167,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       enableHapticFeedback={enableHapticFeedback}
       exclusive={exclusive}
       hapticType={hapticType}
+      hitSlop={hitSlop}
       isLongPress={!!handleLongPress}
       importantForAccessibility={importantForAccessibility}
       minLongPressDuration={minLongPressDuration}
