@@ -23,12 +23,19 @@ tags:
     id: cash-deposit-intro-set-up-account
 - assertVisible:
     text: 'Connect your phone number'
-# Mock 5550001303 starts account recovery instead of the already-registered dead end.
+# Mock 5550001303 belongs to an existing account with a passkey.
 - tapOn:
     id: cash-setup-phone-input
 - inputText: '5550001303'
 - tapOn:
     id: cash-setup-next
+- extendedWaitUntil:
+    visible:
+      id: cash-setup-existing-account-recover
+    timeout: 10000
+- waitForAnimationToEnd
+- tapOn:
+    id: cash-setup-existing-account-recover
 - extendedWaitUntil:
     visible:
       text: 'Confirm your phone'
