@@ -1,4 +1,3 @@
-import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import {
   getMarketsGroupedByBetType,
   type LineBasedGroup,
@@ -43,10 +42,10 @@ type TeamReference = {
 };
 
 export function buildEventBetGrid(event: PolymarketEvent): EventBetGrid {
-  const grouped = getMarketsGroupedByBetType({
-    ...event,
-    markets: event.markets.filter(market => market.active && !market.closed),
-  });
+  const grouped = getMarketsGroupedByBetType(
+    event.markets.filter(market => market.active && !market.closed),
+    event
+  );
 
   const eventTeams = getEventTeams(event);
   const teamReferences: Record<TeamSide, TeamReference> = {
@@ -54,26 +53,21 @@ export function buildEventBetGrid(event: PolymarketEvent): EventBetGrid {
     home: { team: eventTeams.home, label: eventTeams.names[1] },
   };
 
-  const spreadGroup = grouped.spreads.find(group => group.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.SPREADS) ?? grouped.spreads[0];
-  const totalsGroup = grouped.totals.find(group => group.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.TOTALS) ?? grouped.totals[0];
-  const moneylineGroup =
-    grouped.moneyline.find(group => group.sportsMarketType === POLYMARKET_SPORTS_MARKET_TYPE.MONEYLINE) ?? grouped.moneyline[0];
+  const spreadMarket = getPrimaryMarket(grouped.spreads[0]);
+  const totalsMarket = getPrimaryMarket(grouped.totals[0]);
+  const moneyline = getMoneylineData(grouped.moneyline[0], teamReferences);
 
-  const spreadLine = getPrimaryLine(spreadGroup);
-  const totalsLine = getPrimaryLine(totalsGroup);
-  const moneyline = getMoneylineData(moneylineGroup, teamReferences);
-
-  const spreadLineValue = spreadLine?.value;
-  const totalsLineValue = totalsLine?.value;
-  const spreadOutcomeIndexes = getTeamOutcomeIndexes(spreadLine?.market, teamReferences);
-  const spreadAwayOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.away);
-  const spreadHomeOdds = getOutcomePrice(spreadLine?.market, spreadOutcomeIndexes.home);
-  const totalsOverOdds = getOutcomePrice(totalsLine?.market, 0);
-  const totalsUnderOdds = getOutcomePrice(totalsLine?.market, 1);
-  const spreadAwayTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.away);
-  const spreadHomeTokenId = getOutcomeTokenId(spreadLine?.market, spreadOutcomeIndexes.home);
-  const totalsOverTokenId = getOutcomeTokenId(totalsLine?.market, 0);
-  const totalsUnderTokenId = getOutcomeTokenId(totalsLine?.market, 1);
+  const spreadLineValue = spreadMarket?.line;
+  const totalsLineValue = totalsMarket?.line;
+  const spreadOutcomeIndexes = getTeamOutcomeIndexes(spreadMarket, teamReferences);
+  const spreadAwayOdds = getOutcomePrice(spreadMarket, spreadOutcomeIndexes.away);
+  const spreadHomeOdds = getOutcomePrice(spreadMarket, spreadOutcomeIndexes.home);
+  const totalsOverOdds = getOutcomePrice(totalsMarket, 0);
+  const totalsUnderOdds = getOutcomePrice(totalsMarket, 1);
+  const spreadAwayTokenId = getOutcomeTokenId(spreadMarket, spreadOutcomeIndexes.away);
+  const spreadHomeTokenId = getOutcomeTokenId(spreadMarket, spreadOutcomeIndexes.home);
+  const totalsOverTokenId = getOutcomeTokenId(totalsMarket, 0);
+  const totalsUnderTokenId = getOutcomeTokenId(totalsMarket, 1);
 
   const teamBets: TeamBetRow = { away: {}, home: {} };
   const totals: TotalsRow = {};
@@ -141,10 +135,10 @@ export function getSportsEventTokenIds(event: PolymarketEvent): string[] {
   return Array.from(new Set(tokenIds));
 }
 
-function getPrimaryLine(group?: LineBasedGroup) {
-  if (!group?.lines.length) return null;
+function getPrimaryMarket(group?: LineBasedGroup): PolymarketMarket | undefined {
+  if (!group) return undefined;
   const targetLine = Math.abs(group.mainLine);
-  return group.lines.find(line => Math.abs(line.value) === targetLine) ?? group.lines[0];
+  return group.markets.find(market => Math.abs(market.line) === targetLine) ?? group.markets[0];
 }
 
 function getTeamOutcomeIndexes(
