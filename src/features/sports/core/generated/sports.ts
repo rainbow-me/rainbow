@@ -29,25 +29,6 @@ export enum Sport_Browse {
   BROWSE_UNSPECIFIED = "BROWSE_UNSPECIFIED",
   BROWSE_GAMES = "BROWSE_GAMES",
   BROWSE_COMPETITIONS = "BROWSE_COMPETITIONS",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function sport_BrowseFromJSON(object: any): Sport_Browse {
-  switch (object) {
-    case 0:
-    case "BROWSE_UNSPECIFIED":
-      return Sport_Browse.BROWSE_UNSPECIFIED;
-    case 1:
-    case "BROWSE_GAMES":
-      return Sport_Browse.BROWSE_GAMES;
-    case 2:
-    case "BROWSE_COMPETITIONS":
-      return Sport_Browse.BROWSE_COMPETITIONS;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return Sport_Browse.UNRECOGNIZED;
-  }
 }
 
 export interface Competition {
@@ -66,13 +47,13 @@ export interface Game {
   id: string;
   /** Current catalog memberships, preferred badge first. Empty is valid for lookup. */
   competitionIds: string[];
-  startsAt:
+  startsAt?:
     | string
     | undefined;
   /** Exactly two distinct participants in the original source order used by scores. */
   participants: Participant[];
-  winner: Winner | undefined;
-  spread: Spread | undefined;
+  winner?: Winner | undefined;
+  spread?: Spread | undefined;
   status: Game_Status;
   interruption: Game_Interruption;
   period?: string | undefined;
@@ -91,34 +72,6 @@ export enum Game_Status {
   STATUS_ENDED = "STATUS_ENDED",
   STATUS_POSTPONED = "STATUS_POSTPONED",
   STATUS_CANCELLED = "STATUS_CANCELLED",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function game_StatusFromJSON(object: any): Game_Status {
-  switch (object) {
-    case 0:
-    case "STATUS_UNSPECIFIED":
-      return Game_Status.STATUS_UNSPECIFIED;
-    case 1:
-    case "STATUS_SCHEDULED":
-      return Game_Status.STATUS_SCHEDULED;
-    case 2:
-    case "STATUS_LIVE":
-      return Game_Status.STATUS_LIVE;
-    case 3:
-    case "STATUS_ENDED":
-      return Game_Status.STATUS_ENDED;
-    case 4:
-    case "STATUS_POSTPONED":
-      return Game_Status.STATUS_POSTPONED;
-    case 5:
-    case "STATUS_CANCELLED":
-      return Game_Status.STATUS_CANCELLED;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return Game_Status.UNRECOGNIZED;
-  }
 }
 
 export enum Game_Interruption {
@@ -126,25 +79,6 @@ export enum Game_Interruption {
   INTERRUPTION_UNSPECIFIED = "INTERRUPTION_UNSPECIFIED",
   INTERRUPTION_DELAYED = "INTERRUPTION_DELAYED",
   INTERRUPTION_SUSPENDED = "INTERRUPTION_SUSPENDED",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function game_InterruptionFromJSON(object: any): Game_Interruption {
-  switch (object) {
-    case 0:
-    case "INTERRUPTION_UNSPECIFIED":
-      return Game_Interruption.INTERRUPTION_UNSPECIFIED;
-    case 1:
-    case "INTERRUPTION_DELAYED":
-      return Game_Interruption.INTERRUPTION_DELAYED;
-    case 2:
-    case "INTERRUPTION_SUSPENDED":
-      return Game_Interruption.INTERRUPTION_SUSPENDED;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return Game_Interruption.UNRECOGNIZED;
-  }
 }
 
 export interface Participant {
@@ -158,64 +92,26 @@ export interface Participant {
     | Participant_Role
     | undefined;
   /** Absent when this participant's full-match winner offer cannot be admitted. */
-  winner: Selection | undefined;
+  winner?: Selection | undefined;
 }
 
 export enum Participant_Role {
   ROLE_UNSPECIFIED = "ROLE_UNSPECIFIED",
   ROLE_HOME = "ROLE_HOME",
   ROLE_AWAY = "ROLE_AWAY",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function participant_RoleFromJSON(object: any): Participant_Role {
-  switch (object) {
-    case 0:
-    case "ROLE_UNSPECIFIED":
-      return Participant_Role.ROLE_UNSPECIFIED;
-    case 1:
-    case "ROLE_HOME":
-      return Participant_Role.ROLE_HOME;
-    case 2:
-    case "ROLE_AWAY":
-      return Participant_Role.ROLE_AWAY;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return Participant_Role.UNRECOGNIZED;
-  }
 }
 
 export interface Winner {
   /** Market structure is preserved even when an individual offer is unavailable. */
   kind: Winner_Kind;
   /** Only a three-way winner can contain a draw selection. */
-  draw: Selection | undefined;
+  draw?: Selection | undefined;
 }
 
 export enum Winner_Kind {
   KIND_UNSPECIFIED = "KIND_UNSPECIFIED",
   KIND_TWO_WAY = "KIND_TWO_WAY",
   KIND_THREE_WAY = "KIND_THREE_WAY",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function winner_KindFromJSON(object: any): Winner_Kind {
-  switch (object) {
-    case 0:
-    case "KIND_UNSPECIFIED":
-      return Winner_Kind.KIND_UNSPECIFIED;
-    case 1:
-    case "KIND_TWO_WAY":
-      return Winner_Kind.KIND_TWO_WAY;
-    case 2:
-    case "KIND_THREE_WAY":
-      return Winner_Kind.KIND_THREE_WAY;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return Winner_Kind.UNRECOGNIZED;
-  }
 }
 
 export interface Selection {
@@ -253,8 +149,8 @@ export interface SpreadOutcome {
 /** ScoreColumn contains one score for each participant in Game.participants order. */
 export interface ScoreColumn {
   kind: ScoreColumn_Kind;
-  first: ScoreValue | undefined;
-  second: ScoreValue | undefined;
+  first?: ScoreValue | undefined;
+  second?: ScoreValue | undefined;
   winner: ScoreColumn_Winner;
 }
 
@@ -264,31 +160,6 @@ export enum ScoreColumn_Kind {
   KIND_SET = "KIND_SET",
   KIND_ROUNDS = "KIND_ROUNDS",
   KIND_SERIES = "KIND_SERIES",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function scoreColumn_KindFromJSON(object: any): ScoreColumn_Kind {
-  switch (object) {
-    case 0:
-    case "KIND_UNSPECIFIED":
-      return ScoreColumn_Kind.KIND_UNSPECIFIED;
-    case 1:
-    case "KIND_TOTAL":
-      return ScoreColumn_Kind.KIND_TOTAL;
-    case 2:
-    case "KIND_SET":
-      return ScoreColumn_Kind.KIND_SET;
-    case 3:
-    case "KIND_ROUNDS":
-      return ScoreColumn_Kind.KIND_ROUNDS;
-    case 4:
-    case "KIND_SERIES":
-      return ScoreColumn_Kind.KIND_SERIES;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return ScoreColumn_Kind.UNRECOGNIZED;
-  }
 }
 
 export enum ScoreColumn_Winner {
@@ -296,25 +167,6 @@ export enum ScoreColumn_Winner {
   WINNER_UNSPECIFIED = "WINNER_UNSPECIFIED",
   WINNER_FIRST = "WINNER_FIRST",
   WINNER_SECOND = "WINNER_SECOND",
-  UNRECOGNIZED = "UNRECOGNIZED",
-}
-
-export function scoreColumn_WinnerFromJSON(object: any): ScoreColumn_Winner {
-  switch (object) {
-    case 0:
-    case "WINNER_UNSPECIFIED":
-      return ScoreColumn_Winner.WINNER_UNSPECIFIED;
-    case 1:
-    case "WINNER_FIRST":
-      return ScoreColumn_Winner.WINNER_FIRST;
-    case 2:
-    case "WINNER_SECOND":
-      return ScoreColumn_Winner.WINNER_SECOND;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return ScoreColumn_Winner.UNRECOGNIZED;
-  }
 }
 
 export interface ScoreValue {
@@ -331,7 +183,7 @@ export interface GetCatalogRequest {
 export interface GetCatalogResponse {
   catalogRevision: number;
   /** Included when the request omits its known revision or supplies a different one. */
-  catalog: SportsCatalog | undefined;
+  catalog?: SportsCatalog | undefined;
 }
 
 export interface GetLiveGamesRequest {
@@ -345,9 +197,9 @@ export interface GetGamesRequest {
    * Today selects scheduled starts in [from, today_until); Upcoming selects [today_until, until).
    * Live games remain eligible outside these intervals. Directory sports select only live games.
    */
-  from: string | undefined;
-  todayUntil: string | undefined;
-  until: string | undefined;
+  from?: string | undefined;
+  todayUntil?: string | undefined;
+  until?: string | undefined;
   knownCatalogRevision?: number | undefined;
 }
 
@@ -363,8 +215,8 @@ export interface SearchGamesRequest {
     | string
     | undefined;
   /** Inclusive and exclusive scheduled-start boundaries. Live games remain eligible outside them. */
-  from: string | undefined;
-  until:
+  from?: string | undefined;
+  until?:
     | string
     | undefined;
   /** Opaque continuation bound to the query, scope, interval and policy revision. */
@@ -385,14 +237,14 @@ export interface GetGamesResponse {
   /** Identifies the editorial policy used for both the catalog and games. */
   catalogRevision: number;
   /** Omitted when the request already knows this revision. */
-  catalog: SportsCatalog | undefined;
+  catalog?: SportsCatalog | undefined;
   games: Game[];
 }
 
 export interface LookupGamesResponse {
   catalogRevision: number;
   /** Omitted when the request already knows this revision. */
-  catalog:
+  catalog?:
     | SportsCatalog
     | undefined;
   /** Canonical games deduplicated across requested primary and child event IDs. */
@@ -411,402 +263,8 @@ export interface EventResolution {
 export interface SearchGamesResponse {
   catalogRevision: number;
   /** Omitted when the request already knows this revision. */
-  catalog: SportsCatalog | undefined;
+  catalog?: SportsCatalog | undefined;
   games: Game[];
   /** Continuation for the next relevance page; absent at source exhaustion. */
   nextCursor?: string | undefined;
-}
-
-export const SportsCatalog: MessageFns<SportsCatalog> = {
-  fromJSON(object: any): SportsCatalog {
-    return {
-      sports: globalThis.Array.isArray(object?.sports) ? object.sports.map((e: any) => Sport.fromJSON(e)) : [],
-      prominentScopeIds: globalThis.Array.isArray(object?.prominentScopeIds)
-        ? object.prominentScopeIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.prominent_scope_ids)
-        ? object.prominent_scope_ids.map((e: any) => globalThis.String(e))
-        : [],
-      liveGroupIds: globalThis.Array.isArray(object?.liveGroupIds)
-        ? object.liveGroupIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.live_group_ids)
-        ? object.live_group_ids.map((e: any) => globalThis.String(e))
-        : [],
-      promotedGameIds: globalThis.Array.isArray(object?.promotedGameIds)
-        ? object.promotedGameIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.promoted_game_ids)
-        ? object.promoted_game_ids.map((e: any) => globalThis.String(e))
-        : [],
-    };
-  },
-};
-
-export const Sport: MessageFns<Sport> = {
-  fromJSON(object: any): Sport {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      imageUrl: isSet(object.imageUrl)
-        ? globalThis.String(object.imageUrl)
-        : isSet(object.image_url)
-        ? globalThis.String(object.image_url)
-        : undefined,
-      color: isSet(object.color) ? globalThis.String(object.color) : undefined,
-      browse: isSet(object.browse) ? sport_BrowseFromJSON(object.browse) : Sport_Browse.BROWSE_UNSPECIFIED,
-      competitions: globalThis.Array.isArray(object?.competitions)
-        ? object.competitions.map((e: any) => Competition.fromJSON(e))
-        : [],
-    };
-  },
-};
-
-export const Competition: MessageFns<Competition> = {
-  fromJSON(object: any): Competition {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      imageUrl: isSet(object.imageUrl)
-        ? globalThis.String(object.imageUrl)
-        : isSet(object.image_url)
-        ? globalThis.String(object.image_url)
-        : undefined,
-      color: isSet(object.color) ? globalThis.String(object.color) : undefined,
-    };
-  },
-};
-
-export const Game: MessageFns<Game> = {
-  fromJSON(object: any): Game {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      competitionIds: globalThis.Array.isArray(object?.competitionIds)
-        ? object.competitionIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.competition_ids)
-        ? object.competition_ids.map((e: any) => globalThis.String(e))
-        : [],
-      startsAt: isSet(object.startsAt)
-        ? globalThis.String(object.startsAt)
-        : isSet(object.starts_at)
-        ? globalThis.String(object.starts_at)
-        : undefined,
-      participants: globalThis.Array.isArray(object?.participants)
-        ? object.participants.map((e: any) => Participant.fromJSON(e))
-        : [],
-      winner: isSet(object.winner) ? Winner.fromJSON(object.winner) : undefined,
-      spread: isSet(object.spread) ? Spread.fromJSON(object.spread) : undefined,
-      status: isSet(object.status) ? game_StatusFromJSON(object.status) : Game_Status.STATUS_UNSPECIFIED,
-      interruption: isSet(object.interruption)
-        ? game_InterruptionFromJSON(object.interruption)
-        : Game_Interruption.INTERRUPTION_UNSPECIFIED,
-      period: isSet(object.period) ? globalThis.String(object.period) : undefined,
-      clock: isSet(object.clock) ? globalThis.String(object.clock) : undefined,
-      score: globalThis.Array.isArray(object?.score)
-        ? object.score.map((e: any) => ScoreColumn.fromJSON(e))
-        : [],
-    };
-  },
-};
-
-export const Participant: MessageFns<Participant> = {
-  fromJSON(object: any): Participant {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
-      shortName: isSet(object.shortName)
-        ? globalThis.String(object.shortName)
-        : isSet(object.short_name)
-        ? globalThis.String(object.short_name)
-        : undefined,
-      imageUrl: isSet(object.imageUrl)
-        ? globalThis.String(object.imageUrl)
-        : isSet(object.image_url)
-        ? globalThis.String(object.image_url)
-        : undefined,
-      color: isSet(object.color) ? globalThis.String(object.color) : undefined,
-      role: isSet(object.role) ? participant_RoleFromJSON(object.role) : undefined,
-      winner: isSet(object.winner) ? Selection.fromJSON(object.winner) : undefined,
-    };
-  },
-};
-
-export const Winner: MessageFns<Winner> = {
-  fromJSON(object: any): Winner {
-    return {
-      kind: isSet(object.kind) ? winner_KindFromJSON(object.kind) : Winner_Kind.KIND_UNSPECIFIED,
-      draw: isSet(object.draw) ? Selection.fromJSON(object.draw) : undefined,
-    };
-  },
-};
-
-export const Selection: MessageFns<Selection> = {
-  fromJSON(object: any): Selection {
-    return {
-      eventId: isSet(object.eventId)
-        ? globalThis.String(object.eventId)
-        : isSet(object.event_id)
-        ? globalThis.String(object.event_id)
-        : "",
-      marketId: isSet(object.marketId)
-        ? globalThis.String(object.marketId)
-        : isSet(object.market_id)
-        ? globalThis.String(object.market_id)
-        : "",
-      tokenId: isSet(object.tokenId)
-        ? globalThis.String(object.tokenId)
-        : isSet(object.token_id)
-        ? globalThis.String(object.token_id)
-        : "",
-      outcomeIndex: isSet(object.outcomeIndex)
-        ? globalThis.Number(object.outcomeIndex)
-        : isSet(object.outcome_index)
-        ? globalThis.Number(object.outcome_index)
-        : 0,
-    };
-  },
-};
-
-export const Spread: MessageFns<Spread> = {
-  fromJSON(object: any): Spread {
-    return {
-      eventId: isSet(object.eventId)
-        ? globalThis.String(object.eventId)
-        : isSet(object.event_id)
-        ? globalThis.String(object.event_id)
-        : "",
-      marketId: isSet(object.marketId)
-        ? globalThis.String(object.marketId)
-        : isSet(object.market_id)
-        ? globalThis.String(object.market_id)
-        : "",
-      outcomes: globalThis.Array.isArray(object?.outcomes)
-        ? object.outcomes.map((e: any) => SpreadOutcome.fromJSON(e))
-        : [],
-    };
-  },
-};
-
-export const SpreadOutcome: MessageFns<SpreadOutcome> = {
-  fromJSON(object: any): SpreadOutcome {
-    return {
-      tokenId: isSet(object.tokenId)
-        ? globalThis.String(object.tokenId)
-        : isSet(object.token_id)
-        ? globalThis.String(object.token_id)
-        : "",
-      outcomeIndex: isSet(object.outcomeIndex)
-        ? globalThis.Number(object.outcomeIndex)
-        : isSet(object.outcome_index)
-        ? globalThis.Number(object.outcome_index)
-        : 0,
-      line: isSet(object.line) ? globalThis.Number(object.line) : 0,
-    };
-  },
-};
-
-export const ScoreColumn: MessageFns<ScoreColumn> = {
-  fromJSON(object: any): ScoreColumn {
-    return {
-      kind: isSet(object.kind) ? scoreColumn_KindFromJSON(object.kind) : ScoreColumn_Kind.KIND_UNSPECIFIED,
-      first: isSet(object.first) ? ScoreValue.fromJSON(object.first) : undefined,
-      second: isSet(object.second) ? ScoreValue.fromJSON(object.second) : undefined,
-      winner: isSet(object.winner) ? scoreColumn_WinnerFromJSON(object.winner) : ScoreColumn_Winner.WINNER_UNSPECIFIED,
-    };
-  },
-};
-
-export const ScoreValue: MessageFns<ScoreValue> = {
-  fromJSON(object: any): ScoreValue {
-    return {
-      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
-      tieBreak: isSet(object.tieBreak)
-        ? globalThis.Number(object.tieBreak)
-        : isSet(object.tie_break)
-        ? globalThis.Number(object.tie_break)
-        : undefined,
-    };
-  },
-};
-
-export const GetCatalogRequest: MessageFns<GetCatalogRequest> = {
-  fromJSON(object: any): GetCatalogRequest {
-    return {
-      knownCatalogRevision: isSet(object.knownCatalogRevision)
-        ? globalThis.Number(object.knownCatalogRevision)
-        : isSet(object.known_catalog_revision)
-        ? globalThis.Number(object.known_catalog_revision)
-        : undefined,
-    };
-  },
-};
-
-export const GetCatalogResponse: MessageFns<GetCatalogResponse> = {
-  fromJSON(object: any): GetCatalogResponse {
-    return {
-      catalogRevision: isSet(object.catalogRevision)
-        ? globalThis.Number(object.catalogRevision)
-        : isSet(object.catalog_revision)
-        ? globalThis.Number(object.catalog_revision)
-        : 0,
-      catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-    };
-  },
-};
-
-export const GetLiveGamesRequest: MessageFns<GetLiveGamesRequest> = {
-  fromJSON(object: any): GetLiveGamesRequest {
-    return {
-      knownCatalogRevision: isSet(object.knownCatalogRevision)
-        ? globalThis.Number(object.knownCatalogRevision)
-        : isSet(object.known_catalog_revision)
-        ? globalThis.Number(object.known_catalog_revision)
-        : undefined,
-    };
-  },
-};
-
-export const GetGamesRequest: MessageFns<GetGamesRequest> = {
-  fromJSON(object: any): GetGamesRequest {
-    return {
-      scopeId: isSet(object.scopeId)
-        ? globalThis.String(object.scopeId)
-        : isSet(object.scope_id)
-        ? globalThis.String(object.scope_id)
-        : "",
-      from: isSet(object.from) ? globalThis.String(object.from) : undefined,
-      todayUntil: isSet(object.todayUntil)
-        ? globalThis.String(object.todayUntil)
-        : isSet(object.today_until)
-        ? globalThis.String(object.today_until)
-        : undefined,
-      until: isSet(object.until) ? globalThis.String(object.until) : undefined,
-      knownCatalogRevision: isSet(object.knownCatalogRevision)
-        ? globalThis.Number(object.knownCatalogRevision)
-        : isSet(object.known_catalog_revision)
-        ? globalThis.Number(object.known_catalog_revision)
-        : undefined,
-    };
-  },
-};
-
-export const LookupGamesRequest: MessageFns<LookupGamesRequest> = {
-  fromJSON(object: any): LookupGamesRequest {
-    return {
-      eventIds: globalThis.Array.isArray(object?.eventIds)
-        ? object.eventIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.event_ids)
-        ? object.event_ids.map((e: any) => globalThis.String(e))
-        : [],
-      knownCatalogRevision: isSet(object.knownCatalogRevision)
-        ? globalThis.Number(object.knownCatalogRevision)
-        : isSet(object.known_catalog_revision)
-        ? globalThis.Number(object.known_catalog_revision)
-        : undefined,
-    };
-  },
-};
-
-export const SearchGamesRequest: MessageFns<SearchGamesRequest> = {
-  fromJSON(object: any): SearchGamesRequest {
-    return {
-      query: isSet(object.query) ? globalThis.String(object.query) : "",
-      scopeId: isSet(object.scopeId)
-        ? globalThis.String(object.scopeId)
-        : isSet(object.scope_id)
-        ? globalThis.String(object.scope_id)
-        : undefined,
-      from: isSet(object.from) ? globalThis.String(object.from) : undefined,
-      until: isSet(object.until) ? globalThis.String(object.until) : undefined,
-      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : undefined,
-      knownCatalogRevision: isSet(object.knownCatalogRevision)
-        ? globalThis.Number(object.knownCatalogRevision)
-        : isSet(object.known_catalog_revision)
-        ? globalThis.Number(object.known_catalog_revision)
-        : undefined,
-    };
-  },
-};
-
-export const GetGamesResponse: MessageFns<GetGamesResponse> = {
-  fromJSON(object: any): GetGamesResponse {
-    return {
-      catalogRevision: isSet(object.catalogRevision)
-        ? globalThis.Number(object.catalogRevision)
-        : isSet(object.catalog_revision)
-        ? globalThis.Number(object.catalog_revision)
-        : 0,
-      catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games)
-        ? object.games.map((e: any) => Game.fromJSON(e))
-        : [],
-    };
-  },
-};
-
-export const LookupGamesResponse: MessageFns<LookupGamesResponse> = {
-  fromJSON(object: any): LookupGamesResponse {
-    return {
-      catalogRevision: isSet(object.catalogRevision)
-        ? globalThis.Number(object.catalogRevision)
-        : isSet(object.catalog_revision)
-        ? globalThis.Number(object.catalog_revision)
-        : 0,
-      catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games)
-        ? object.games.map((e: any) => Game.fromJSON(e))
-        : [],
-      resolved: globalThis.Array.isArray(object?.resolved)
-        ? object.resolved.map((e: any) => EventResolution.fromJSON(e))
-        : [],
-      unavailableEventIds: globalThis.Array.isArray(object?.unavailableEventIds)
-        ? object.unavailableEventIds.map((e: any) => globalThis.String(e))
-        : globalThis.Array.isArray(object?.unavailable_event_ids)
-        ? object.unavailable_event_ids.map((e: any) => globalThis.String(e))
-        : [],
-    };
-  },
-};
-
-export const EventResolution: MessageFns<EventResolution> = {
-  fromJSON(object: any): EventResolution {
-    return {
-      eventId: isSet(object.eventId)
-        ? globalThis.String(object.eventId)
-        : isSet(object.event_id)
-        ? globalThis.String(object.event_id)
-        : "",
-      gameId: isSet(object.gameId)
-        ? globalThis.String(object.gameId)
-        : isSet(object.game_id)
-        ? globalThis.String(object.game_id)
-        : "",
-    };
-  },
-};
-
-export const SearchGamesResponse: MessageFns<SearchGamesResponse> = {
-  fromJSON(object: any): SearchGamesResponse {
-    return {
-      catalogRevision: isSet(object.catalogRevision)
-        ? globalThis.Number(object.catalogRevision)
-        : isSet(object.catalog_revision)
-        ? globalThis.Number(object.catalog_revision)
-        : 0,
-      catalog: isSet(object.catalog) ? SportsCatalog.fromJSON(object.catalog) : undefined,
-      games: globalThis.Array.isArray(object?.games)
-        ? object.games.map((e: any) => Game.fromJSON(e))
-        : [],
-      nextCursor: isSet(object.nextCursor)
-        ? globalThis.String(object.nextCursor)
-        : isSet(object.next_cursor)
-        ? globalThis.String(object.next_cursor)
-        : undefined,
-    };
-  },
-};
-
-function isSet(value: any): boolean {
-  return value !== null && value !== undefined;
-}
-
-export interface MessageFns<T> {
-  fromJSON(object: any): T;
 }
