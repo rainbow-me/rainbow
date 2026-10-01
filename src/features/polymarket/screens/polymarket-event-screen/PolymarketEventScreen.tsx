@@ -37,13 +37,15 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 
 // ============ Screen ========================================================= //
 
+/**
+ * Displays event details and markets, with live Sports scores when available.
+ */
 export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_EVENT_SCREEN>>();
   const eventId = 'gameId' in params ? params.gameId : params.eventId;
   const initialEvent = 'event' in params ? params.event : undefined;
   const { isDarkMode } = useColorMode();
-  const eventData = usePolymarketEventStore(state => state.getData({ eventId }));
-  const event = eventData ?? initialEvent;
+  const event = usePolymarketEventStore(state => state.getData({ eventId })) ?? initialEvent;
   const gameId = useSportsStore(state => ('gameId' in params ? params.gameId : getGameId(state, eventId)));
   const eventColor = getColorValueForThemeWorklet(event?.color, isDarkMode);
   let screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
@@ -53,12 +55,12 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
   return (
     <EventSheet backgroundColor={screenBackgroundColor}>
-      {event?.closed && <ResolvedEventHeader resolvedAt={event.closedTime} />}
+      {event?.closed ? <ResolvedEventHeader resolvedAt={event.closedTime} /> : null}
       {gameId ? (
         <SportsGameOverview isDarkMode={isDarkMode} gameId={gameId} event={event} />
-      ) : (
-        event && <EventHeaderSection event={event} />
-      )}
+      ) : event ? (
+        <EventHeaderSection event={event} />
+      ) : null}
       {event ? (
         <EventContent event={event} gameId={gameId} eventColor={eventColor} backgroundColor={screenBackgroundColor} />
       ) : (
@@ -81,17 +83,15 @@ function EventContent({
   eventColor: string;
   backgroundColor: string;
 }) {
-  const financialEvent = 'markets' in event ? event : null;
-
   return (
     <>
-      {!event.closed && !gameId && <ChartSection event={event} backgroundColor={backgroundColor} />}
+      {!event.closed && !gameId ? <ChartSection event={event} backgroundColor={backgroundColor} /> : null}
       <OpenPositionsSection eventId={event.id} eventColor={eventColor} />
-      {financialEvent ? (
+      {'markets' in event ? (
         gameId ? (
-          <SportsEventMarkets event={financialEvent} />
+          <SportsEventMarkets event={event} />
         ) : (
-          <MarketsSection event={financialEvent} />
+          <MarketsSection event={event} />
         )
       ) : (
         <EventDetailsStatus eventId={event.id} />
@@ -168,11 +168,11 @@ function SportsGameOverview({
               {competition.name}
             </Text>
           </Box>
-          {event && <EventVolume volume={event.volume} />}
+          {event ? <EventVolume volume={event.volume} /> : null}
         </Box>
-      ) : (
-        event && <EventHeaderSection event={event} />
-      )}
+      ) : event ? (
+        <EventHeaderSection event={event} />
+      ) : null}
       <GameBoxScore gameId={gameId} isDarkMode={isDarkMode} />
     </>
   );
@@ -230,14 +230,14 @@ const ChartSection = memo(function ChartSection({
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
-function EventSheet({ backgroundColor: screenBackgroundColor, children }: { backgroundColor: string; children: ReactNode }) {
+function EventSheet({ backgroundColor, children }: { backgroundColor: string; children: ReactNode }) {
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
     <>
       <SlackSheet
-        backgroundColor={screenBackgroundColor}
+        backgroundColor={backgroundColor}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...(Platform.OS === 'ios' ? { height: '100%' } : {})}
         scrollEnabled
@@ -261,7 +261,7 @@ function EventSheet({ backgroundColor: screenBackgroundColor, children }: { back
         </Box>
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={screenBackgroundColor} height={safeAreaInsets.top + (Platform.OS === 'android' ? 24 : 12)} width="full">
+        <Box backgroundColor={backgroundColor} height={safeAreaInsets.top + (Platform.OS === 'android' ? 24 : 12)} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}
@@ -271,8 +271,8 @@ function EventSheet({ backgroundColor: screenBackgroundColor, children }: { back
           />
         </Box>
         <EasingGradient
-          endColor={screenBackgroundColor}
-          startColor={screenBackgroundColor}
+          endColor={backgroundColor}
+          startColor={backgroundColor}
           endOpacity={0}
           startOpacity={1}
           style={{ height: 32, width: '100%', pointerEvents: 'none' }}

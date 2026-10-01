@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react';
+import { memo, useState, type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,7 +7,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
 import { Text } from '@/design-system/components/Text/Text';
-import { type Competition, type Sport } from '@/features/sports/core/generated/sports';
+import { type SportsScope } from '@/features/sports/core/catalog';
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
@@ -15,7 +15,10 @@ import { black, getSolidColorEquivalent, white } from '@/worklets/colors';
 
 const BADGE_HIGHLIGHT = [white(0.18), white(0)] as const;
 
-export function SportsImage({
+/**
+ * Displays a Sports image, falling back to the first two characters of its name.
+ */
+export const SportsImage = memo(function SportsImage({
   isDarkMode,
   imageUrl,
   name,
@@ -26,6 +29,7 @@ export function SportsImage({
   isDarkMode: boolean;
   imageUrl?: string;
   name: string;
+  /** Sets the image height and default width. */
   size: number;
   width?: number;
   borderRadius?: number;
@@ -43,17 +47,12 @@ export function SportsImage({
   ) : (
     <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, size)} />
   );
-}
+});
 
-export function SportsBadge({
-  scope,
-  size,
-  isDarkMode,
-}: {
-  scope: Sport | Competition;
-  size: 28 | 40 | 44;
-  isDarkMode: boolean;
-}): ReactElement {
+/**
+ * Displays a sport or competition badge with bundled or catalog artwork.
+ */
+export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; size: 28 | 40 | 44; isDarkMode: boolean }): ReactElement {
   const icon = sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
 

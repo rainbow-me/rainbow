@@ -6,11 +6,15 @@ import { ScoreColumn_Kind, ScoreColumn_Winner, type ScoreColumn } from '@/featur
 
 const TIE_BREAK_WIDTH = 16;
 
+/**
+ * Displays a participant's scores and tie breaks in the supplied column order.
+ */
 export const GameScore = memo(function GameScore({
   score,
   participantIndex,
 }: {
   score?: ScoreColumn[];
+  /** Index of the participant in `Game.participants`. */
   participantIndex: 0 | 1;
 }): ReactElement | null {
   if (!score?.length) return null;

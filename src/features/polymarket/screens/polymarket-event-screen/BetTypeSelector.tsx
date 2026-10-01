@@ -14,8 +14,6 @@ import { ItemSelector, type Item, type RenderItemProps } from './ItemSelector';
 const PILL_HEIGHT = 64;
 const PILL_GAP = 8;
 
-const BET_TYPE_ORDER: BetType[] = [BET_TYPE.MONEYLINE, BET_TYPE.SPREADS, BET_TYPE.TOTALS, BET_TYPE.OTHER];
-
 const BET_TYPE_CONFIG: Record<BetType, { labelKey: string; icon: string }> = {
   [BET_TYPE.MONEYLINE]: { labelKey: i18n.l.predictions.bet_types.winner, icon: '􀢊' },
   [BET_TYPE.SPREADS]: { labelKey: i18n.l.predictions.bet_types.spreads, icon: '􀄭' },
@@ -36,6 +34,7 @@ type BetTypeSelectorProps = {
 
 // ============ Main Component ================================================= //
 
+/** Displays bet type options in the supplied order. */
 export const BetTypeSelector = memo(function BetTypeSelector({
   availableBetTypes,
   backgroundColor,
@@ -46,9 +45,9 @@ export const BetTypeSelector = memo(function BetTypeSelector({
 }: BetTypeSelectorProps) {
   const items: Item[] = useMemo(
     () =>
-      BET_TYPE_ORDER.filter(type => availableBetTypes.includes(type)).map(type => ({
-        value: type,
-        label: i18n.t(BET_TYPE_CONFIG[type].labelKey),
+      availableBetTypes.map(betType => ({
+        value: betType,
+        label: i18n.t(BET_TYPE_CONFIG[betType].labelKey),
       })),
     [availableBetTypes]
   );
