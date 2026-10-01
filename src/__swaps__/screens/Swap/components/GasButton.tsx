@@ -16,7 +16,6 @@ import gasUtils from '@/features/gas/utils/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/features/gas/utils/meteorology';
 import { weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
@@ -161,18 +160,6 @@ const GasMenu = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number | undefined) => {
-      if (buttonIndex == null || buttonIndex < 0) return;
-      handlePressSpeedOption(menuOptions[buttonIndex]);
-    },
-    [handlePressSpeedOption, menuOptions]
-  );
-
-  const handleOpenMenu = useCallback((): void => {
-    showActionSheetWithOptions({ options: menuOptions }, handlePressActionSheet);
-  }, [handlePressActionSheet, menuOptions]);
-
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
@@ -193,7 +180,6 @@ const GasMenu = ({
 
   const button = (
     <ButtonPressAnimation
-      onPress={Platform.OS === 'android' ? handleOpenMenu : undefined}
       scaleTo={0.825}
       style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
       testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
@@ -209,19 +195,15 @@ const GasMenu = ({
       style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      {Platform.OS === 'android' ? (
-        button
-      ) : (
-        <ContextMenuButton
-          enableContextMenu
-          isMenuPrimaryAction
-          menuConfig={menuConfig}
-          onPressMenuItem={handlePressMenuItem}
-          useActionSheetFallback={false}
-        >
-          {button}
-        </ContextMenuButton>
-      )}
+      <ContextMenuButton
+        enableContextMenu
+        isMenuPrimaryAction
+        menuConfig={menuConfig}
+        onPressMenuItem={handlePressMenuItem}
+        useActionSheetFallback={false}
+      >
+        {button}
+      </ContextMenuButton>
     </Box>
   );
 };

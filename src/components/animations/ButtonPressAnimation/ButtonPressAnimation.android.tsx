@@ -1,9 +1,10 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { forwardRef, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 
 import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import { ButtonPressContext } from './ButtonPressContext';
 import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 import { type ButtonPressAnimationProps } from './types';
 
@@ -15,13 +16,13 @@ interface ZoomableButtonPressEvent {
   nativeEvent: { type: 'longPress' | 'longPressEnded' | 'press' | 'pressStart' };
 }
 
-type ButtonElementPropsWithDefaults = ButtonElementProps &
+type NativeScaleButtonProps = ButtonElementProps &
   Required<
     Pick<
       ButtonElementProps,
       'duration' | 'minLongPressDuration' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
     >
-  >;
+  > & { importantForAccessibility: 'auto' | 'no' };
 
 const ZoomableRawButton = requireNativeComponent<
   Pick<
@@ -39,7 +40,7 @@ const ZoomableRawButton = requireNativeComponent<
     | 'testID'
     | 'transformOrigin'
   > &
-    Pick<RawButtonProps, 'rippleColor'> & {
+    Pick<RawButtonProps, 'rippleColor' | 'importantForAccessibility'> & {
       hasPressStartHandler?: boolean;
       onPress?: (event: ZoomableButtonPressEvent) => void;
     }
@@ -50,7 +51,7 @@ type ZoomableButtonRef = React.ComponentRef<typeof ZoomableButton>;
 
 const transparentColor = processColor('transparent');
 
-const NativeScaleButton = forwardRef<ZoomableButtonRef, ButtonElementPropsWithDefaults>(function NativeScaleButton(
+const NativeScaleButton = forwardRef<ZoomableButtonRef, NativeScaleButtonProps>(function NativeScaleButton(
   {
     children,
     duration,
@@ -61,6 +62,7 @@ const NativeScaleButton = forwardRef<ZoomableButtonRef, ButtonElementPropsWithDe
     shouldActivateOnStart,
     shouldLongPressHoldPress,
     isLongPress,
+    importantForAccessibility,
     hapticType,
     enableHapticFeedback,
     onPress,
@@ -70,7 +72,7 @@ const NativeScaleButton = forwardRef<ZoomableButtonRef, ButtonElementPropsWithDe
     wrapperStyle,
     testID,
     disallowInterruption,
-  }: ButtonElementPropsWithDefaults,
+  }: NativeScaleButtonProps,
   ref
 ) {
   const onNativePress = useCallback(
@@ -100,6 +102,7 @@ const NativeScaleButton = forwardRef<ZoomableButtonRef, ButtonElementPropsWithDe
       exclusive={exclusive}
       hasPressStartHandler={!!onPressStart}
       isLongPress={isLongPress}
+      importantForAccessibility={importantForAccessibility}
       minLongPressDuration={minLongPressDuration}
       onPress={onNativePress}
       scaleTo={scaleTo}
@@ -142,11 +145,18 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
   }: ButtonElementProps,
   ref
 ) {
+  const defaultActions = useContext(ButtonPressContext);
+  const handlePress = onPress === undefined ? defaultActions?.onPress : onPress;
+  const handleLongPress = onLongPress === undefined ? defaultActions?.onLongPress : onLongPress;
+  const inheritsPress = onPress === undefined && !!defaultActions?.onPress;
+  const hasOwnAction = onPress !== undefined || onLongPress !== undefined;
+  const content =
+    defaultActions && hasOwnAction ? <ButtonPressContext.Provider value={null}>{children}</ButtonPressContext.Provider> : children;
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
   return disabled ? (
     <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
-      {children}
+      {content}
     </View>
   ) : (
     <NativeScaleButton
@@ -154,11 +164,12 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       enableHapticFeedback={enableHapticFeedback}
       exclusive={exclusive}
       hapticType={hapticType}
-      isLongPress={!!onLongPress}
+      isLongPress={!!handleLongPress}
+      importantForAccessibility={inheritsPress && !onLongPress ? 'no' : 'auto'}
       minLongPressDuration={minLongPressDuration}
-      onLongPress={onLongPress}
+      onLongPress={handleLongPress}
       onLongPressEnded={onLongPressEnded}
-      onPress={onPress}
+      onPress={handlePress}
       onPressStart={onPressStart}
       scaleTo={scaleTo}
       shouldActivateOnStart={shouldActivateOnStart}
@@ -170,7 +181,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       ref={ref}
     >
       <View onLayout={onLayout} style={[sx.overflow, style]}>
-        {children}
+        {content}
       </View>
     </NativeScaleButton>
   );

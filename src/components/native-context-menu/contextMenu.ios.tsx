@@ -26,7 +26,7 @@ export type MenuActionConfig = Readonly<
     actionSubtitle?: string;
     // eslint-disable-next-line @typescript-eslint/ban-types
     menuState?: MenuState | (string & {});
-    menuAttributes?: Array<MenuAttributes>;
+    menuAttributes?: ReadonlyArray<MenuAttributes>;
     discoverabilityTitle?: string;
     icon?: IconConfig;
   } & (

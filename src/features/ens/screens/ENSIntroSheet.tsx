@@ -11,7 +11,6 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -78,45 +77,18 @@ const ChooseAnotherNameButton = ({ handleSelectExistingName, handleNavigateToSea
     [handleNavigateToSearch, handleSelectExistingName]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number | undefined) => {
-      switch (buttonIndex) {
-        case 0:
-          handleSelectExistingName();
-          break;
-        case 1:
-          handleNavigateToSearch();
-          break;
-      }
-    },
-    [handleNavigateToSearch, handleSelectExistingName]
-  );
-
-  const handleOpenMenu = useCallback((): void => {
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: menuConfig.menuItems.length - 1,
-        options: menuConfig.menuItems.map(item => item.actionTitle),
-      },
-      handlePressActionSheet
-    );
-  }, [handlePressActionSheet, menuConfig]);
-
   const button = (
     <SheetActionButton
       color={colors.transparent}
       isTransparent
       label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
-      onPress={Platform.OS === 'android' ? handleOpenMenu : undefined}
       textColor={colors.appleBlue}
       textSize="lmedium"
       weight="bold"
     />
   );
 
-  return Platform.OS === 'android' ? (
-    button
-  ) : (
+  return (
     <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
       {button}
     </ContextMenuButton>

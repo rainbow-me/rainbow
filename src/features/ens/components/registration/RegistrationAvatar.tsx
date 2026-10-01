@@ -92,7 +92,7 @@ const RegistrationAvatar = ({
     [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
   );
 
-  const { ContextMenu, handleSelectImage, handleSelectNFT, onPressMenu } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({
     imagePickerOptions: {
       allowsEditing: true,
       aspect: [1, 1],
@@ -141,8 +141,8 @@ const RegistrationAvatar = ({
       ) : (
         <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
           <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : showMenu ? onPressMenu : handleSelectImage}
-            testID="use-select-image-avatar"
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : showMenu ? undefined : handleSelectImage}
+            testID={showMenu ? undefined : 'use-select-image-avatar'}
           >
             <AccentColorProvider color={accentColor + '10'}>
               <Box

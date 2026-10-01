@@ -88,7 +88,7 @@ const RegistrationCover = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
-  const { ContextMenu, handleSelectImage, onPressMenu } = useSelectImageMenu({
+  const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
       allowsEditing: true,
       aspect: [3, 1],
@@ -140,9 +140,9 @@ const RegistrationCover = ({
   return (
     <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
       <ButtonPressAnimation
-        onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? onPressMenu : handleSelectImage}
+        onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? undefined : handleSelectImage}
         scaleTo={1}
-        testID="use-select-image-cover"
+        testID={showMenu ? undefined : 'use-select-image-cover'}
       >
         <Box
           alignItems="center"

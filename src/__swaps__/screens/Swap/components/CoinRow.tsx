@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { Platform, type GestureResponderEvent } from 'react-native';
+import { type GestureResponderEvent } from 'react-native';
 
-import ConditionalWrap from 'conditional-wrap';
 import { startCase } from 'lodash';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
@@ -14,7 +13,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references/constants';
@@ -190,97 +188,42 @@ const InfoButton = ({
     setClipboard(address);
   }, [address]);
 
-  const { options, menuConfig } = useMemo(() => {
-    const options = {
-      copy: {
-        title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
-        action: handleCopy,
-      },
-      ...(isSupportedChain
-        ? {
-            blockExplorer: {
-              title: i18n.t(i18n.l.exchange.coin_row.view_on, {
-                blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
-              }),
-              action: () => ethereumUtils.openAddressInBlockExplorer({ address, chainId }),
-            },
-          }
-        : {}),
-    };
-
-    const menuConfig = {
+  const menuConfig = useMemo(
+    () => ({
       menuItems: [
         {
           actionKey: 'copyAddress',
-          actionTitle: options.copy.title,
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'doc.on.doc',
-          },
+          actionTitle: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
+          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
         },
         ...(isSupportedChain
           ? [
               {
                 actionKey: 'blockExplorer',
-                actionTitle: options.blockExplorer?.title,
-                icon: {
-                  iconType: 'SYSTEM',
-                  iconValue: 'link',
-                },
+                actionTitle: i18n.t(i18n.l.exchange.coin_row.view_on, {
+                  blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
+                }),
+                icon: { iconType: 'SYSTEM', iconValue: 'link' },
               },
             ]
           : []),
       ],
       menuTitle: `${isVerified ? i18n.t(i18n.l.token_search.section_header.verified) : i18n.t(i18n.l.token_search.section_header.unverified)} ${i18n.t(i18n.l.exchange.coin_row.token)}`,
-    };
+    }),
+    [chainId, isSupportedChain, isVerified]
+  );
 
-    return { options, menuConfig };
-  }, [address, chainId, handleCopy, isSupportedChain, isVerified]);
-
-  const handlePressMenuItem = ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+  const handlePressMenuItem = ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }): void => {
     if (actionKey === 'copyAddress') {
-      options.copy.action();
+      handleCopy();
     } else if (actionKey === 'blockExplorer' && isSupportedChain) {
-      options.blockExplorer?.action();
+      ethereumUtils.openAddressInBlockExplorer({ address, chainId });
     }
   };
 
-  const onPressAndroid = () => {
-    const androidOptions = [
-      options.copy.title,
-      ...(isSupportedChain && options.blockExplorer?.title ? [options.blockExplorer?.title] : []),
-    ];
-    showActionSheetWithOptions(
-      {
-        options: androidOptions,
-      },
-      idx => {
-        if (idx === 0) {
-          options.copy.action();
-        }
-        if (idx === 1 && isSupportedChain) {
-          options.blockExplorer?.action();
-        }
-      }
-    );
-  };
-
   return (
-    <ConditionalWrap
-      condition={Platform.OS === 'ios'}
-      wrap={children => (
-        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-          {children}
-        </ContextMenuButton>
-      )}
-    >
-      <CoinRowButton
-        icon="􀅳"
-        onPress={Platform.OS === 'android' ? onPressAndroid : undefined}
-        outline
-        size="icon 14px"
-        testID={`coin-row-info-button-${address}`}
-      />
-    </ConditionalWrap>
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} testID={`coin-row-info-button-${address}`}>
+      <CoinRowButton icon="􀅳" outline size="icon 14px" />
+    </ContextMenuButton>
   );
 };
