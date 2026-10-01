@@ -10,6 +10,7 @@ type PolymarketContextType = {
   categorySelectorRef: RefObject<ScrollView | null>;
   eventsListRef: RefObject<Animated.FlatList<unknown> | null>;
   sportsGamesListRef: RefObject<SportsGamesListHandle | null>;
+  /** Animates the mounted Sports or event browse list back to the top. */
   scrollBrowseToTop: () => void;
 };
 

@@ -14,6 +14,7 @@ export function navigateToPolymarketEvent(params: RootStackParamList[typeof Rout
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, params);
 }
 
+/** Opens a Predictions category; unknown tags open the navigator without changing its category. */
 export function navigateToPolymarketCategory(tagId: string): void {
   if (!isCategoryKey(tagId)) return navigateToPolymarket();
 
@@ -22,6 +23,7 @@ export function navigateToPolymarketCategory(tagId: string): void {
   navigateToPolymarketBrowse();
 }
 
+/** Opens a Sports scope in the Predictions browse tab. */
 export function navigateToPolymarketSportsLeague(scopeId: string): void {
   sportsNavigationStores.predictions.getState().select(scopeId);
   usePolymarketCategoryStore.getState().setTagId('sports');
