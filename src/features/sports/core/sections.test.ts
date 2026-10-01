@@ -1,31 +1,43 @@
+import { describe, expect, it } from 'vitest';
+
 import { getSportsWindow } from './browse';
 import { buildSportsCatalog } from './catalog';
-import { Game, Game_Status, Sport_Browse, SportsCatalog } from './generated/sports';
+import { Game_Interruption, Game_Status, Sport_Browse, type Game, type SportsCatalog } from './generated/sports';
 import { groupSportsGames } from './sections';
 
 const window = getSportsWindow(new Date(2026, 8, 20, 12));
-const catalogMessage = SportsCatalog.fromJSON({
+const catalogMessage: SportsCatalog = {
   sports: [
     {
       id: 'tennis',
+      name: 'Tennis',
       browse: Sport_Browse.BROWSE_GAMES,
-      competitions: [{ id: 'atp' }, { id: 'us-open' }, { id: 'wta' }],
+      competitions: [
+        { id: 'atp', name: 'ATP' },
+        { id: 'us-open', name: 'US Open' },
+        { id: 'wta', name: 'WTA' },
+      ],
     },
-    { id: 'basketball', browse: Sport_Browse.BROWSE_GAMES, competitions: [{ id: 'nba' }] },
-    { id: 'soccer', browse: Sport_Browse.BROWSE_COMPETITIONS, competitions: [{ id: 'epl' }] },
+    { id: 'basketball', name: 'Basketball', browse: Sport_Browse.BROWSE_GAMES, competitions: [{ id: 'nba', name: 'NBA' }] },
+    { id: 'soccer', name: 'Soccer', browse: Sport_Browse.BROWSE_COMPETITIONS, competitions: [{ id: 'epl', name: 'Premier League' }] },
   ],
   liveGroupIds: ['tennis', 'us-open'],
-});
+  prominentScopeIds: [],
+  promotedGameIds: [],
+};
 const catalog = buildSportsCatalog(catalogMessage, 1);
 
 function game(id: string, fields: Partial<Game> = {}): Game {
-  return Game.fromJSON({
+  return {
     id,
     competitionIds: ['atp'],
     startsAt: new Date(2026, 8, 20, 15).toISOString(),
     status: Game_Status.STATUS_LIVE,
+    interruption: Game_Interruption.INTERRUPTION_UNSPECIFIED,
+    participants: [],
+    score: [],
     ...fields,
-  });
+  };
 }
 
 function sectionInputs(...games: Game[]): [Partial<Record<string, Game>>, string[]] {

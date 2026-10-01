@@ -1,25 +1,41 @@
-import { Game_Status, ScoreColumn_Kind, ScoreColumn_Winner } from '@/features/sports/core/generated/sports';
+import { afterAll, beforeEach, expect, test, vi } from 'vitest';
+
+import {
+  Game_Interruption,
+  Game_Status,
+  ScoreColumn_Kind,
+  ScoreColumn_Winner,
+  type GetGamesResponse,
+} from '@/features/sports/core/generated/sports';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 
 import { sportsClient } from './client';
 
-jest.mock('@/resources/platform/client', () => ({ getPlatformClient: jest.fn() }));
+vi.mock('@/resources/platform/client', () => ({ getPlatformClient: vi.fn() }));
 
 // New York's fall-back week begins with a 25-hour local day.
 const window = { from: Date.UTC(2026, 10, 1, 4), todayUntil: Date.UTC(2026, 10, 2, 5), until: Date.UTC(2026, 10, 8, 5) };
-const mockFetch = jest.spyOn(global, 'fetch');
-afterAll(() => mockFetch.mockRestore());
+const mockFetch = vi.spyOn(global, 'fetch');
+afterAll(() => {
+  mockFetch.mockRestore();
+});
 
 beforeEach(() => {
   mockFetch.mockReset();
-  mockFetch.mockImplementation(async () => new Response('{}', { headers: { 'Content-Type': 'application/json' } }));
-  jest
-    .mocked(getPlatformClient)
-    .mockReturnValue(new RainbowFetchClient({ baseURL: 'https://platform.test/v1', headers: { Authorization: 'Bearer test-key' } }));
+  vi.mocked(getPlatformClient).mockReturnValue(
+    new RainbowFetchClient({ baseURL: 'https://platform.test/v1', headers: { Authorization: 'Bearer test-key' } })
+  );
 });
 
 test('encodes repeated event IDs and search values without changing authentication', async () => {
+  mockFetch
+    .mockResolvedValueOnce(
+      new Response('{"catalogRevision":3,"games":[],"resolved":[],"unavailableEventIds":[]}', {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
+    .mockResolvedValueOnce(new Response('{"catalogRevision":3,"games":[]}', { headers: { 'Content-Type': 'application/json' } }));
   await sportsClient.lookupGames({ eventIds: ['980512', '980884'], knownCatalogRevision: 3 }, null);
   await sportsClient.searchGames({ query: 'Fulham & Manchester', window, cursor: 'next +/=' }, null);
 
@@ -37,33 +53,41 @@ test('encodes repeated event IDs and search values without changing authenticati
   expect(mockFetch.mock.calls[1][1]?.headers).toMatchObject({ Authorization: 'Bearer test-key' });
 });
 
-test('decodes structured scores and omitted protobuf zero values directly', async () => {
+test('preserves score presence and selection identity in the JSON response', async () => {
   const tokenId = '61682588409713156892865066024379723903051700030517382076759724382208757063880';
-  mockFetch.mockResolvedValueOnce(
-    new Response(
-      JSON.stringify({
-        catalogRevision: 3,
-        catalog: {},
-        games: [
+  const body: GetGamesResponse = {
+    catalogRevision: 3,
+    catalog: { sports: [], prominentScopeIds: [], liveGroupIds: [], promotedGameIds: [] },
+    games: [
+      {
+        id: '980512',
+        competitionIds: [],
+        status: Game_Status.STATUS_LIVE,
+        interruption: Game_Interruption.INTERRUPTION_UNSPECIFIED,
+        period: 'SET 3',
+        clock: '54:09',
+        participants: [
+          { id: '1', name: 'First', winner: { eventId: '980884', marketId: '4322152', tokenId, outcomeIndex: 0 } },
+          { id: '2', name: 'Second' },
+        ],
+        score: [
           {
-            id: '980512',
-            status: 'STATUS_LIVE',
-            period: 'SET 3',
-            clock: '54:09',
-            participants: [
-              { id: '1', name: 'First', winner: { eventId: '980884', marketId: '4322152', tokenId } },
-              { id: '2', name: 'Second' },
-            ],
-            score: [
-              { kind: 'KIND_SET', first: { value: 7, tieBreak: 8 }, second: { value: 6, tieBreak: 6 }, winner: 'WINNER_FIRST' },
-              { kind: 'KIND_SET', first: {}, second: { value: 1 } },
-            ],
+            kind: ScoreColumn_Kind.KIND_SET,
+            first: { value: 7, tieBreak: 8 },
+            second: { value: 6, tieBreak: 6 },
+            winner: ScoreColumn_Winner.WINNER_FIRST,
+          },
+          {
+            kind: ScoreColumn_Kind.KIND_SET,
+            first: { value: 0, tieBreak: 0 },
+            second: { value: 1 },
+            winner: ScoreColumn_Winner.WINNER_UNSPECIFIED,
           },
         ],
-      }),
-      { headers: { 'Content-Type': 'application/json' } }
-    )
-  );
+      },
+    ],
+  };
+  mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } }));
 
   const response = await sportsClient.getGames({ scopeId: 'tennis', window }, null);
   const url = new URL(String(mockFetch.mock.calls[0][0]));
@@ -73,21 +97,6 @@ test('decodes structured scores and omitted protobuf zero values directly', asyn
     todayUntil: '2026-11-02T05:00:00.000Z',
     until: '2026-11-08T05:00:00.000Z',
   });
-  expect(response.catalogRevision).toBe(3);
-  expect(response.games[0]).toMatchObject({ id: '980512', status: Game_Status.STATUS_LIVE, period: 'SET 3', clock: '54:09' });
-  expect(response.games[0].score).toEqual([
-    {
-      kind: ScoreColumn_Kind.KIND_SET,
-      first: { value: 7, tieBreak: 8 },
-      second: { value: 6, tieBreak: 6 },
-      winner: ScoreColumn_Winner.WINNER_FIRST,
-    },
-    {
-      kind: ScoreColumn_Kind.KIND_SET,
-      first: { value: 0, tieBreak: undefined },
-      second: { value: 1, tieBreak: undefined },
-      winner: ScoreColumn_Winner.WINNER_UNSPECIFIED,
-    },
-  ]);
-  expect(response.games[0].participants[0].winner).toEqual({ eventId: '980884', marketId: '4322152', tokenId, outcomeIndex: 0 });
+  expect(response).toEqual(body);
+  expect(response.games[0].score[1].second).not.toHaveProperty('tieBreak');
 });
