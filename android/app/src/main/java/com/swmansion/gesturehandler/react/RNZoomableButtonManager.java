@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
@@ -104,6 +105,24 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouchEvent(@NonNull MotionEvent event) {
+            AccessibilityManager accessibility =
+                    (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            int action = event.getActionMasked();
+            // RNGH owns movement and release using its remapped pointer IDs. Raw DOWN
+            // admits the button during interception; raw CANCEL preserves parent takeover.
+            if (accessibility.isTouchExplorationEnabled()
+                    || action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_CANCEL) {
+                return handleTouchEvent(event);
+            }
+            return true;
+        }
+
+        @Override
+        public Boolean sendTouchEvent(@Nullable View view, @NonNull MotionEvent event) {
+            return handleTouchEvent(event);
+        }
+
+        private boolean handleTouchEvent(MotionEvent event) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_DOWN) {
                 if (activePointerId != MotionEvent.INVALID_POINTER_ID && touchDownTime == event.getDownTime()) {
