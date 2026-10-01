@@ -7,8 +7,11 @@ import { useStableValue } from '@/hooks/useStableValue';
 
 // ============ Types ========================================================== //
 
+/** Identifies visible items and rows containing child lists. */
 export type ViewabilitySelectors<Item> = {
+  /** Returns the item's own ID, or `undefined` when it contributes none. */
   getId: (item: Item) => string | undefined;
+  /** Returns the row key used by its child list's reports. */
   getChildKey?: (item: Item) => string | undefined;
 };
 
@@ -38,11 +41,10 @@ const EMPTY_IDS: readonly string[] = Object.freeze([]);
 // ============ Hook =========================================================== //
 
 /**
- * Combines complete viewport reports, including child lists whose parent is visible.
- * Projects unique IDs after scrolling settles, at least once per second during continuous
- * changes. An empty outer report clears immediately. Unmount cancels pending publication.
+ * Reports unique visible IDs across a list and its visible child lists.
  *
- * Keep selectors stable. Lists must report changes to visible identities, including empty viewports.
+ * Pass complete viewport reports, including empty ones. Viewport changes are debounced
+ * for 250 ms, with a 500 ms maximum wait. An empty outer viewport clears immediately.
  */
 export function useViewabilityTracker<Item>(selectors: ViewabilitySelectors<Item>, onChange: OnChange): ViewabilityHandlers<Item> {
   const tracker = useStableValue(() => createViewabilityTracker(selectors));

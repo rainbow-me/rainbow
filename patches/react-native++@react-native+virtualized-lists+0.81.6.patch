@@ -1,5 +1,7 @@
 diff --git a/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js b/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
-index b494557..1058490 100644
+# Clear visibility when data becomes empty.
+# Invalidate cached indices and pending reports when data changes.
+index b494557..9a840b9 100644
 --- a/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
 +++ b/node_modules/react-native/node_modules/@react-native/virtualized-lists/Lists/ViewabilityHelper.js
 @@ -83,7 +83,7 @@
@@ -55,18 +57,7 @@ index b494557..1058490 100644
        this._viewableIndices.every((v, ii) => v === viewableIndices[ii])
      ) {
        // We might get a lot of scroll events where visibility doesn't change and we don't want to do
-@@ -231,6 +237,10 @@
-          * comment suppresses an error found when Flow v0.63 was deployed. To
-          * see the error delete this comment and run Flow. */
-         this._timers.delete(handle);
-+        // Ignore reports scheduled before the data or visible rows changed.
-+        if (this._viewableIndices !== viewableIndices) {
-+          return;
-+        }
-         this._onUpdateSync(
-           props,
-           viewableIndices,
-@@ -253,10 +263,10 @@
+@@ -253,10 +259,12 @@
    }
 
    /**
@@ -75,11 +66,13 @@ index b494557..1058490 100644
     */
    resetViewableIndices() {
 -    this._viewableIndices = [];
++    this._timers.forEach(clearTimeout);
++    this._timers.clear();
 +    this._viewableIndices = null;
    }
 
    /**
-@@ -282,7 +292,7 @@
+@@ -282,7 +290,7 @@
    ) {
      // Filter out indices that have gone out of view since this call was scheduled.
      viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>

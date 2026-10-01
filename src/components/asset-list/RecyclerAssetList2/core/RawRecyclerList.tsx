@@ -56,6 +56,7 @@ export type ExtendedState = {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
+/** Receives the complete visible row set, including identity changes at unchanged indices. */
 export type ViewableItemsChangedCallback = ({ viewableItems }: { viewableItems: BaseCellType[] }) => void;
 
 export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
