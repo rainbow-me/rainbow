@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -53,6 +54,8 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private LongPressState longPressState = LongPressState.NONE;
         private int activePointerId = MotionEvent.INVALID_POINTER_ID;
         private long touchDownTime = -1;
+        private NativeViewGestureHandler gestureHandler;
+        private boolean touchExploration;
         private float presentationScale = 1f;
         private final int touchSlop;
 
@@ -93,38 +96,52 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         }
 
         @Override
+        public void onPrepare(NativeViewGestureHandler handler) {
+            gestureHandler = handler;
+        }
+
+        @Override
+        public void onReset(NativeViewGestureHandler handler) {
+            if (gestureHandler == handler) {
+                gestureHandler = null;
+            }
+        }
+
+        @Override
         public boolean canBegin(@NonNull MotionEvent event) {
             return activePointerId != MotionEvent.INVALID_POINTER_ID;
         }
 
         @Override
         public boolean onInterceptTouchEvent(@NonNull MotionEvent event) {
-            AccessibilityManager accessibility =
-                    (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-            return !accessibility.isTouchExplorationEnabled() && super.onInterceptTouchEvent(event);
+            return !touchExploration && isPressed();
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
+            // Let child buttons receive the native touch before this button claims it.
+            boolean handled = super.dispatchTouchEvent(event);
+            return onTouchEvent(event) || handled;
         }
 
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouchEvent(@NonNull MotionEvent event) {
-            AccessibilityManager accessibility =
-                    (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
             int action = event.getActionMasked();
-            // RNGH owns movement and release using its remapped pointer IDs. Raw DOWN
-            // admits the button during interception; raw CANCEL preserves parent takeover.
-            if (accessibility.isTouchExplorationEnabled()
+            // Normal movement and release use RNGH's local pointer IDs.
+            if (touchExploration
                     || action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_CANCEL) {
-                return handleTouchEvent(event);
+                return handleTouchEvent(event, false);
             }
             return true;
         }
 
         @Override
         public Boolean sendTouchEvent(@Nullable View view, @NonNull MotionEvent event) {
-            return handleTouchEvent(event);
+            return handleTouchEvent(event, true);
         }
 
-        private boolean handleTouchEvent(MotionEvent event) {
+        private boolean handleTouchEvent(MotionEvent event, boolean fromGestureHandler) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_DOWN) {
                 if (activePointerId != MotionEvent.INVALID_POINTER_ID && touchDownTime == event.getDownTime()) {
@@ -132,6 +149,19 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                 }
                 if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
                     finishTouch(event, false);
+                }
+                AccessibilityManager accessibility = (AccessibilityManager)
+                        getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+                touchExploration = accessibility.isTouchExplorationEnabled();
+                int pointerId = event.getPointerId(event.getActionIndex());
+                if (!fromGestureHandler && !touchExploration) {
+                    if (gestureHandler == null) {
+                        return false;
+                    }
+                    pointerId = gestureHandler.getLocalPointerId(pointerId);
+                    if (pointerId == MotionEvent.INVALID_POINTER_ID) {
+                        return false;
+                    }
                 }
                 if (!isEnabled() || !super.canBegin(event)) {
                     return false;
@@ -141,7 +171,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                     super.afterGestureEnd(event);
                     return showContextMenu(event.getX(), event.getY());
                 }
-                activePointerId = event.getPointerId(event.getActionIndex());
+                activePointerId = pointerId;
                 touchDownTime = event.getDownTime();
                 longPressState = LongPressState.NONE;
                 setPressed(true);
@@ -153,6 +183,9 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                         mLongPressRunnable = this::handleLongPressTimeout;
                     }
                     MAIN_HANDLER.postDelayed(mLongPressRunnable, mMinLongPressDuration);
+                }
+                if (!fromGestureHandler && !touchExploration) {
+                    gestureHandler.activate();
                 }
                 return true;
             }
@@ -178,10 +211,8 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                         finishTouch(event, false);
                     } else {
                         cancelLongPress();
-                        AccessibilityManager accessibility = (AccessibilityManager)
-                                getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
                         // Touch exploration bypasses RNGH's end hook.
-                        if (accessibility.isTouchExplorationEnabled()) {
+                        if (touchExploration) {
                             finishTouch(event, true);
                         }
                     }
