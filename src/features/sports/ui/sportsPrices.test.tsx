@@ -5,13 +5,17 @@ import React, { act } from 'react';
 import { NavigationRouteContext } from '@react-navigation/native';
 import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 
-import { Game, Winner_Kind } from '@/features/sports/core/generated/sports';
+import { Game_Interruption, Game_Status, Winner_Kind, type Game } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { useSportsPriceSubscription } from '@/features/sports/ui/sportsPrices';
 import Routes from '@/navigation/routesNames';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import * as priceAdapter from '@/state/liveTokens/polymarketAdapter';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 const renderer = jest.requireActual<ReactNativeType>('react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev');
+const fetchPrices = jest.spyOn(priceAdapter, 'fetchPolymarketPrices').mockResolvedValue({});
 let setPrices: (gameIds: readonly string[]) => void;
 
 function Prices(): null {
@@ -19,28 +23,51 @@ function Prices(): null {
   return null;
 }
 
-const game = Game.fromJSON({
+const game: Game = {
   id: 'game',
+  competitionIds: [],
+  status: Game_Status.STATUS_LIVE,
+  interruption: Game_Interruption.INTERRUPTION_UNSPECIFIED,
+  score: [],
   participants: [
-    { name: 'First', winner: { tokenId: '11' } },
-    { name: 'Second', winner: { tokenId: '12' } },
+    { id: 'first', name: 'First', winner: { eventId: 'game', marketId: 'winner', tokenId: '11', outcomeIndex: 0 } },
+    { id: 'second', name: 'Second', winner: { eventId: 'game', marketId: 'winner', tokenId: '12', outcomeIndex: 1 } },
   ],
   spread: {
+    eventId: 'game',
+    marketId: 'spread',
     outcomes: [
-      { tokenId: '13', line: 1.5 },
-      { tokenId: '14', line: -1.5 },
+      { tokenId: '13', outcomeIndex: 0, line: 1.5 },
+      { tokenId: '14', outcomeIndex: 1, line: -1.5 },
     ],
   },
-  winner: { kind: Winner_Kind.KIND_THREE_WAY, draw: { tokenId: '15' } },
-});
+  winner: { kind: Winner_Kind.KIND_THREE_WAY, draw: { eventId: 'game', marketId: 'draw', tokenId: '15', outcomeIndex: 0 } },
+};
 
 beforeEach(() => {
+  useAppStateStore.setState('background');
+  useNavigationStore.setState({ activeRoute: Routes.SPORTS_SCREEN });
   useSportsStore.setState({ games: { game }, lookup: undefined });
-  useLiveTokensStore.getState().clear();
+  useLiveTokensStore.setState({ tokens: {} });
 });
 afterEach(() => act(() => renderer.unmountComponentAtNode(101)));
+afterAll(() => {
+  useLiveTokensStore.getState().reset(true);
+  fetchPrices.mockRestore();
+});
 
-it('subscribes visible outcomes, follows changed tokens, and releases demand', () => {
+async function expectRequestedTokens(...tokenIds: string[]): Promise<void> {
+  fetchPrices.mockClear();
+  await useLiveTokensStore.getState().fetch(undefined, { force: true });
+  if (tokenIds.length) {
+    expect(fetchPrices).toHaveBeenCalledTimes(1);
+    expect(fetchPrices).toHaveBeenCalledWith(tokenIds);
+  } else {
+    expect(fetchPrices).not.toHaveBeenCalled();
+  }
+}
+
+it('subscribes visible outcomes, follows changed tokens, and releases demand', async () => {
   act(() =>
     renderer.render(
       <NavigationRouteContext.Provider value={{ key: 'sports', name: Routes.SPORTS_SCREEN }}>
@@ -52,28 +79,28 @@ it('subscribes visible outcomes, follows changed tokens, and releases demand', (
     )
   );
   act(() => setPrices(['game']));
-  expect([...useLiveTokensStore.getState().subscriptions.values()]).toEqual([
-    {
-      route: Routes.SPORTS_SCREEN,
-      tokenIds: [
-        '11:polymarket:midpoint',
-        '12:polymarket:midpoint',
-        '13:polymarket:midpoint',
-        '14:polymarket:midpoint',
-        '15:polymarket:midpoint',
-      ],
-    },
-  ]);
+  await expectRequestedTokens(
+    '11:polymarket:midpoint',
+    '12:polymarket:midpoint',
+    '13:polymarket:midpoint',
+    '14:polymarket:midpoint',
+    '15:polymarket:midpoint'
+  );
 
-  const replacement = Game.fromJSON({ id: 'next', participants: [{ winner: { tokenId: '21' } }] });
+  const replacement: Game = {
+    id: 'next',
+    competitionIds: [],
+    status: Game_Status.STATUS_LIVE,
+    interruption: Game_Interruption.INTERRUPTION_UNSPECIFIED,
+    score: [],
+    participants: [
+      { id: 'first', name: 'First', winner: { eventId: 'next', marketId: 'winner', tokenId: '21', outcomeIndex: 0 } },
+      { id: 'second', name: 'Second' },
+    ],
+  };
   act(() => useSportsStore.setState({ games: { game, next: replacement } }));
   act(() => setPrices(['next']));
-  expect([...useLiveTokensStore.getState().subscriptions.values()]).toEqual([
-    {
-      route: Routes.SPORTS_SCREEN,
-      tokenIds: ['21:polymarket:midpoint'],
-    },
-  ]);
+  await expectRequestedTokens('21:polymarket:midpoint');
 
   act(() =>
     useSportsStore.setState({
@@ -85,23 +112,13 @@ it('subscribes visible outcomes, follows changed tokens, and releases demand', (
       },
     })
   );
-  expect([...useLiveTokensStore.getState().subscriptions.values()]).toEqual([
-    {
-      route: Routes.SPORTS_SCREEN,
-      tokenIds: ['21:polymarket:midpoint', '22:polymarket:midpoint'],
-    },
-  ]);
+  await expectRequestedTokens('21:polymarket:midpoint', '22:polymarket:midpoint');
 
   act(() => useSportsStore.setState({ games: {} }));
-  expect(useLiveTokensStore.getState().subscriptions.size).toBe(0);
+  await expectRequestedTokens();
   act(() => useSportsStore.setState({ games: { next: replacement } }));
-  expect([...useLiveTokensStore.getState().subscriptions.values()]).toEqual([
-    {
-      route: Routes.SPORTS_SCREEN,
-      tokenIds: ['21:polymarket:midpoint'],
-    },
-  ]);
+  await expectRequestedTokens('21:polymarket:midpoint');
   act(() => renderer.unmountComponentAtNode(101));
   act(() => useSportsStore.setState({ games: { next: game } }));
-  expect(useLiveTokensStore.getState().subscriptions.size).toBe(0);
+  await expectRequestedTokens();
 });

@@ -4,13 +4,16 @@ import { polymarketEventIdStore } from '@/features/polymarket/stores/polymarketE
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { getSportsWindow } from '@/features/sports/core/browse';
 import {
-  Game,
+  Game_Interruption,
   Game_Status,
+  ScoreColumn_Kind,
+  ScoreColumn_Winner,
   Sport_Browse,
-  SportsCatalog,
+  type Game,
   type GetGamesResponse,
   type LookupGamesResponse,
   type SearchGamesResponse,
+  type SportsCatalog,
 } from '@/features/sports/core/generated/sports';
 import { sportsClient } from '@/features/sports/data/api/client';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
@@ -27,26 +30,35 @@ jest.mock('@/features/sports/data/api/client', () => ({
   sportsClient: { getCatalog: jest.fn(), getLiveGames: jest.fn(), getGames: jest.fn(), lookupGames: jest.fn(), searchGames: jest.fn() },
 }));
 
-const catalog = SportsCatalog.fromJSON({
+const catalog: SportsCatalog = {
   sports: [
-    { id: 'basketball', name: 'Basketball', browse: 'BROWSE_GAMES', competitions: [{ id: 'nba', name: 'NBA' }] },
-    { id: 'tennis', name: 'Tennis', browse: 'BROWSE_GAMES', competitions: [{ id: 'atp', name: 'ATP' }] },
+    { id: 'basketball', name: 'Basketball', browse: Sport_Browse.BROWSE_GAMES, competitions: [{ id: 'nba', name: 'NBA' }] },
+    { id: 'tennis', name: 'Tennis', browse: Sport_Browse.BROWSE_GAMES, competitions: [{ id: 'atp', name: 'ATP' }] },
     { id: 'soccer', name: 'Soccer', browse: Sport_Browse.BROWSE_COMPETITIONS, competitions: [{ id: 'epl', name: 'Premier League' }] },
   ],
-});
+  prominentScopeIds: [],
+  liveGroupIds: [],
+  promotedGameIds: [],
+};
 const first = game('1');
 const second = game('2', { competitionIds: ['atp'] });
 
 function game(id: string, fields: Partial<Game> = {}): Game {
-  return Game.fromJSON({
+  return {
     id,
     competitionIds: ['nba'],
     startsAt: '2026-09-20T12:00:00.000Z',
     status: Game_Status.STATUS_LIVE,
-    participants: [{ name: 'First', winner: { eventId: id, marketId: 'market', tokenId: `${id}-a` } }, { name: 'Second' }],
-    score: [{ kind: 'KIND_TOTAL', first: { value: 0 }, second: { value: 0 } }],
+    interruption: Game_Interruption.INTERRUPTION_UNSPECIFIED,
+    participants: [
+      { id: 'first', name: 'First', winner: { eventId: id, marketId: 'market', tokenId: `${id}-a`, outcomeIndex: 0 } },
+      { id: 'second', name: 'Second' },
+    ],
+    score: [
+      { kind: ScoreColumn_Kind.KIND_TOTAL, first: { value: 0 }, second: { value: 0 }, winner: ScoreColumn_Winner.WINNER_UNSPECIFIED },
+    ],
     ...fields,
-  });
+  };
 }
 
 function lookupEvents({ eventIds }: { eventIds: string[] }): Promise<LookupGamesResponse> {
