@@ -181,8 +181,8 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
    layer.mask = mask;
  }
 diff --git a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
-# Replay stops skipped while the Paper refresh control was detached.
-# Remove with Paper or when upstream reconciles state on reattachment.
+# A refresh stop is skipped while Paper's control is detached.
+# Apply that stop when the control is reattached.
 --- a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
 +++ b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
 @@ -64,6 +64,9 @@

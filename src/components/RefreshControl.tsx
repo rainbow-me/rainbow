@@ -12,6 +12,9 @@ type RefreshControlProps = Pick<NativeRefreshControlProps, 'children' | 'style'>
   minDuration?: number;
 };
 
+/**
+ * A themed pull-to-refresh control with a minimum refresh duration.
+ */
 export const RefreshControl = memo(function RefreshControl({
   children,
   onRefresh,

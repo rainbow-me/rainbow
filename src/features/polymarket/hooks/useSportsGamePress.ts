@@ -5,6 +5,7 @@ import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 
+/** Returns a handler for opening a Sports game or selected bet. */
 export function useSportsGamePress(): SportsGamePress {
   const fromRoute = useRoute().name;
 
