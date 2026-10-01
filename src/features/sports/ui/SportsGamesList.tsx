@@ -29,7 +29,10 @@ import { useLazyRef } from '@/hooks/useLazyRef';
 
 // ============ Types ========================================================== //
 
-export type SportsGamesListHandle = { scrollToTop: () => void };
+export type SportsGamesListHandle = {
+  /** Animates the list back to the top. */
+  scrollToTop: () => void;
+};
 
 type Row =
   | { key: string; type: 'directory'; scopeId: string; competition: boolean; style?: ViewStyle }
@@ -51,6 +54,9 @@ const VIEWABILITY_SELECTORS: ViewabilitySelectors<ViewToken<Row>> = {
 
 // ============ Components ===================================================== //
 
+/**
+ * Displays Sports pages in the main tab and Predictions.
+ */
 export function SportsGamesList({
   host,
   backgroundColor: customBackgroundColor,
@@ -104,7 +110,7 @@ export function SportsGamesList({
 
   useListen(
     sportsNavigationStores[host],
-    state => state,
+    s => s,
     () => {
       listRef.current?.scrollToOffset({ offset: 0, animated: false });
       setExpanded(EMPTY_EXPANDED_SET);
