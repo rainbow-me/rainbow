@@ -18,6 +18,7 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import usePrevious from '@/hooks/usePrevious';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -25,7 +26,7 @@ import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type AssetListType } from '..';
 import { useWalletsStore } from '../../../../state/wallets/walletsStore';
-import { assetListItemAnimator } from './assetListItemAnimator';
+import { AssetListItemAnimator } from './assetListItemAnimator';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalScrollViewWithRef } from './ExternalScrollView';
 import { getLayoutProvider } from './getLayoutProvider';
@@ -107,6 +108,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const ref = useRef<RecyclerListViewRef>(undefined);
+  const itemAnimator = useStableValue(() => new AssetListItemAnimator());
 
   useListen(
     useWalletsStore,
@@ -205,10 +207,11 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
             ? ExternalSelectNFTScrollViewWithRef
             : ExternalScrollViewWithRef
       }
-      itemAnimator={assetListItemAnimator}
+      itemAnimator={itemAnimator}
       layoutProvider={layoutProvider}
       onEndReachedThreshold={0.5}
       onEndReached={onEndReached}
+      onScroll={itemAnimator.onScroll}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
@@ -216,6 +219,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
       canChangeSize={type === 'wallet'}
       layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      scrollViewProps={itemAnimator.scrollViewProps}
       onVisibleIndicesChanged={handleViewableIndicesChanged}
     />
   );
