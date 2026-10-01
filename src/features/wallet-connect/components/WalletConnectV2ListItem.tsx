@@ -121,12 +121,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   );
 
   return (
-    <ContextMenuButton
-      testID="wallet_connect_v2_list_item"
-      menuConfig={{ menuItems: changeConnectionMenuItems(), menuTitle: dappName }}
-      onPressMenuItem={handleOnPressMenuItem}
-    >
-      <ButtonPressAnimation>
+    <ContextMenuButton menuConfig={{ menuItems: changeConnectionMenuItems(), menuTitle: dappName }} onPressMenuItem={handleOnPressMenuItem}>
+      <ButtonPressAnimation testID="wallet_connect_v2_list_item">
         <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
           <Row align="center" flex={1} style={rowStyle}>
             <RequestVendorLogoIcon

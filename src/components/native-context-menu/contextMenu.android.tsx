@@ -25,7 +25,7 @@ function toMenuAction(item: MenuActionConfig): MenuAction {
   };
 }
 
-/** Owns menu activation and accessibility while child buttons provide their press feedback. */
+/** Opens native menus through the same press handling as their animated child buttons. */
 export default function ContextMenuAndroid({
   children,
   enableContextMenu = true,
@@ -79,6 +79,7 @@ export default function ContextMenuAndroid({
   return (
     <ButtonPressAnimation
       enableHapticFeedback={false}
+      importantForAccessibility="no"
       onPress={buttonActions.onPress}
       onLongPress={buttonActions.onLongPress}
       scaleTo={1}

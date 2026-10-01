@@ -41,6 +41,8 @@ export interface ButtonPressAnimationProps
   /** @platform android */
   exclusive?: boolean;
   /** @platform android */
+  importantForAccessibility?: ViewProps['importantForAccessibility'];
+  /** @platform android */
   wrapperStyle?: StyleProp<ViewStyle>;
   /** @platform android */
   disallowInterruption?: boolean;

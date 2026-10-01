@@ -22,7 +22,7 @@ type NativeScaleButtonProps = ButtonElementProps &
       ButtonElementProps,
       'duration' | 'minLongPressDuration' | 'scaleTo' | 'hapticType' | 'enableHapticFeedback' | 'disallowInterruption'
     >
-  > & { importantForAccessibility: 'auto' | 'no' };
+  >;
 
 const ZoomableRawButton = requireNativeComponent<
   Pick<
@@ -126,6 +126,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
     disabled,
     duration = 160,
     exclusive,
+    importantForAccessibility,
     minLongPressDuration = 500,
     onLayout,
     onLongPress,
@@ -148,7 +149,6 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
   const defaultActions = useContext(ButtonPressContext);
   const handlePress = onPress === undefined ? defaultActions?.onPress : onPress;
   const handleLongPress = onLongPress === undefined ? defaultActions?.onLongPress : onLongPress;
-  const inheritsPress = onPress === undefined && !!defaultActions?.onPress;
   const hasOwnAction = onPress !== undefined || onLongPress !== undefined;
   const content =
     defaultActions && hasOwnAction ? <ButtonPressContext.Provider value={null}>{children}</ButtonPressContext.Provider> : children;
@@ -165,7 +165,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       exclusive={exclusive}
       hapticType={hapticType}
       isLongPress={!!handleLongPress}
-      importantForAccessibility={inheritsPress && !onLongPress ? 'no' : 'auto'}
+      importantForAccessibility={importantForAccessibility}
       minLongPressDuration={minLongPressDuration}
       onLongPress={handleLongPress}
       onLongPressEnded={onLongPressEnded}
