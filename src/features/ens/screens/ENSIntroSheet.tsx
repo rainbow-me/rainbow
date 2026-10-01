@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager, Platform, View } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -7,11 +7,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActivityIndicator } from '@/components/ActivityIndicator';
-import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { SheetActionButton } from '@/components/sheet';
+import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -36,13 +36,13 @@ const topPadding = Platform.OS === 'android' ? 29 : 19;
 
 const minHeight = 740;
 
-type ContextMenuRendererProps = {
-  children: React.ReactNode;
+type ChooseAnotherNameButtonProps = {
   handleSelectExistingName: () => void;
   handleNavigateToSearch: () => void;
 };
 
-const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigateToSearch }: ContextMenuRendererProps) => {
+const ChooseAnotherNameButton = ({ handleSelectExistingName, handleNavigateToSearch }: ChooseAnotherNameButtonProps) => {
+  const { colors } = useTheme();
   const menuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -68,8 +68,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
   }, []);
 
   const handlePressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === AnotherENSEnum.my_ens) {
         handleSelectExistingName();
       } else if (actionKey === AnotherENSEnum.search) {
@@ -80,7 +79,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
+    (buttonIndex: number | undefined) => {
       switch (buttonIndex) {
         case 0:
           handleSelectExistingName();
@@ -93,23 +92,33 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
     [handleNavigateToSearch, handleSelectExistingName]
   );
 
-  if (Platform.OS === 'android') {
-    return (
-      <ContextMenu
-        activeOpacity={0}
-        cancelButtonIndex={menuConfig.menuItems.length - 1}
-        dynamicOptions={undefined}
-        onPressActionSheet={handlePressActionSheet}
-        options={menuConfig.menuItems.map(i => i.actionTitle)}
-      >
-        <View>{children}</View>
-      </ContextMenu>
+  const handleOpenMenu = useCallback((): void => {
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: menuConfig.menuItems.length - 1,
+        options: menuConfig.menuItems.map(item => item.actionTitle),
+      },
+      handlePressActionSheet
     );
-  }
+  }, [handlePressActionSheet, menuConfig]);
 
-  return (
+  const button = (
+    <SheetActionButton
+      color={colors.transparent}
+      isTransparent
+      label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
+      onPress={Platform.OS === 'android' ? handleOpenMenu : undefined}
+      textColor={colors.appleBlue}
+      textSize="lmedium"
+      weight="bold"
+    />
+  );
+
+  return Platform.OS === 'android' ? (
+    button
+  ) : (
     <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-      {children}
+      {button}
     </ContextMenuButton>
   );
 };
@@ -271,19 +280,10 @@ export function ENSIntroSheet() {
                             />
                           )}
                           {nonPrimaryDomains?.length > 0 ? (
-                            <ContextMenuRenderer
+                            <ChooseAnotherNameButton
                               handleNavigateToSearch={handleNavigateToSearch}
                               handleSelectExistingName={handleSelectExistingName}
-                            >
-                              <SheetActionButton
-                                color={colors.transparent}
-                                isTransparent
-                                label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
-                                textColor={colors.appleBlue}
-                                textSize="lmedium"
-                                weight="bold"
-                              />
-                            </ContextMenuRenderer>
+                            />
                           ) : (
                             <SheetActionButton
                               color={colors.transparent}

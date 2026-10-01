@@ -3,13 +3,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, View } from 'react-native';
 
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { isEmpty, isNaN, isNil, noop } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { ContextMenu } from '@/components/context-menu';
 import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/components/text';
@@ -20,6 +19,7 @@ import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
+import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -37,7 +37,7 @@ import { type GasSpeed } from '../types/gasSpeed';
 import gasUtils from '../utils/gas';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
-const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
+const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, NORMAL, getGasLabel } = gasUtils;
 
 type WithThemeProps = {
   borderColor: string;
@@ -321,29 +321,19 @@ export const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handlePressSpeedOption(NORMAL);
-          break;
-        case 1:
-          handlePressSpeedOption(FAST);
-          break;
-        case 2:
-          handlePressSpeedOption(URGENT);
-          break;
-        case 3:
-          handlePressSpeedOption(CUSTOM);
-      }
-    },
-    [handlePressSpeedOption]
-  );
-
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
     return useBackendNetworksStore.getState().getChainsGasSpeeds()[chainId];
   }, [chainId, speeds]);
+
+  const handleOpenMenu = useCallback((): void => {
+    showActionSheetWithOptions({ options: speedOptions }, index => {
+      const speed = index == null ? undefined : speedOptions[index];
+      if (speed === undefined) return;
+
+      handlePressSpeedOption(speed);
+    });
+  }, [handlePressSpeedOption, speedOptions]);
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions?.map(gasOption => {
@@ -396,29 +386,12 @@ export const GasSpeedButton = ({
             : opacity(colors.blueGreyDark, 0.12)
         }
         dropdownEnabled={gasOptionsAvailable}
-        onPress={noop}
+        onPress={Platform.OS === 'android' && !gasIsNotReady ? handleOpenMenu : undefined}
         label={label}
         theme={theme}
       />
     );
-    if (!gasOptionsAvailable || gasIsNotReady) return pager;
-
-    if (Platform.OS === 'android') {
-      return (
-        <ContextMenu
-          activeOpacity={0}
-          enableContextMenu
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={speedOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <Centered>{pager}</Centered>
-        </ContextMenu>
-      );
-    }
+    if (Platform.OS === 'android' || !gasOptionsAvailable || gasIsNotReady) return pager;
 
     return (
       <ContextMenuButton
@@ -436,10 +409,9 @@ export const GasSpeedButton = ({
     colors,
     gasIsNotReady,
     gasOptionsAvailable,
-    handlePressActionSheet,
+    handleOpenMenu,
     handlePressMenuItem,
     menuConfig,
-    speedOptions,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
