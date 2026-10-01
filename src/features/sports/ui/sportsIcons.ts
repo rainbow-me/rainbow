@@ -22,7 +22,9 @@ import WtaIcon from '@/features/sports/assets/wta.png';
 
 type SportsIcon = { source: ImageRequireSource; color: string; darken: number };
 
-/** Standard category artwork exported from the Sports design; other competitions use their catalog image. */
+/**
+ * Bundled badge artwork and colors keyed by sport or competition ID.
+ */
 export const sportsIcons: Partial<Record<string, SportsIcon>> = {
   atp: { source: AtpIcon, color: '#3A38D7', darken: 0.4 },
   baseball: { source: BaseballIcon, color: '#59A3F9', darken: 0.3 },

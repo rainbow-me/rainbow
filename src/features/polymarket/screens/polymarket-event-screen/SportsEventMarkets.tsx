@@ -10,38 +10,35 @@ import {
   getMarketsGroupedByBetType,
   type LineBasedGroup,
   type MoneylineGroup,
+  type SingleMarketGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
-import { BET_TYPE, getBetType, type BetType } from '@/features/polymarket/utils/marketClassification';
+import { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
 import useDimensions from '@/hooks/useDimensions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
+/**
+ * Displays a Sports event's markets with bet type and line selection.
+ */
 export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { event: PolymarketEvent }): ReactElement {
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
-  const groupedMarkets = useMemo(() => getMarketsGroupedByBetType(event), [event]);
-  const availableBetTypes = useMemo(() => {
-    const types: BetType[] = [];
-    if (groupedMarkets.moneyline.length) types.push(BET_TYPE.MONEYLINE);
-    if (groupedMarkets.spreads.length) types.push(BET_TYPE.SPREADS);
-    if (groupedMarkets.totals.length) types.push(BET_TYPE.TOTALS);
-    if (groupedMarkets.other.length) types.push(BET_TYPE.OTHER);
-    return types;
-  }, [groupedMarkets]);
 
-  const [selectedBetType, setSelectedBetType] = useState<BetType>(availableBetTypes[0] ?? BET_TYPE.MONEYLINE);
-  const betType = availableBetTypes.includes(selectedBetType) ? selectedBetType : availableBetTypes[0];
+  const groupedMarkets = useMemo(() => getMarketsGroupedByBetType(event.markets, event), [event]);
+  const [selectedBetType, setSelectedBetType] = useState<BetType>(groupedMarkets.betTypes[0] ?? BET_TYPE.MONEYLINE);
+
+  const betType = groupedMarkets[selectedBetType].length ? selectedBetType : groupedMarkets.betTypes[0];
   const groups = betType ? groupedMarkets[betType] : [];
   const selectorWidth = width - 48;
 
   return (
     <Box gap={24}>
-      {availableBetTypes.length > 1 ? (
+      {groupedMarkets.betTypes.length > 1 ? (
         <BetTypeSelector
-          availableBetTypes={availableBetTypes}
+          availableBetTypes={groupedMarkets.betTypes}
           backgroundColor={isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT}
           color={isDarkMode ? globalColors.white100 : globalColors.grey100}
           containerWidth={selectorWidth}
@@ -49,13 +46,25 @@ export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { 
           selectedBetType={betType}
         />
       ) : null}
+
       {groups.map((group, index) => (
         <Fragment key={group.id}>
-          {'lines' in group ? (
-            <LineBasedMarkets group={group} event={event} isDarkMode={isDarkMode} width={selectorWidth} />
+          {'market' in group ? (
+            <MarketGroup group={group}>
+              <SingleMarketEventOutcomes market={group.market} teams={event.teams} event={event} />
+            </MarketGroup>
+          ) : 'mainLine' in group ? (
+            <LineBasedMarkets
+              group={group}
+              event={event}
+              isDarkMode={isDarkMode}
+              isSpread={betType === BET_TYPE.SPREADS}
+              width={selectorWidth}
+            />
           ) : (
             <MoneylineMarkets group={group} event={event} isDarkMode={isDarkMode} />
           )}
+
           {index < groups.length - 1 ? <Separator color="separatorSecondary" thickness={1} /> : null}
         </Fragment>
       ))}
@@ -66,43 +75,43 @@ export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { 
 const LineBasedMarkets = memo(function LineBasedMarkets({
   group,
   isDarkMode,
+  isSpread,
   width,
   event,
 }: {
   group: LineBasedGroup;
   isDarkMode: boolean;
+  isSpread: boolean;
   width: number;
   event: PolymarketEvent;
 }): ReactElement | null {
   const [selectedLineValue, setSelectedLineValue] = useState<number>(Math.abs(group.mainLine));
 
-  const selectedLine = group.lines.find(line => Math.abs(line.value) === selectedLineValue);
+  const selectedMarket = group.markets.find(market => Math.abs(market.line) === selectedLineValue);
 
-  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+  const lineSelectorItems = useMemo(() => {
+    if (group.markets.length < 2) return undefined;
+    return group.markets.map(market => {
+      const value = String(Math.abs(market.line));
+      return { value, label: value };
+    });
+  }, [group.markets]);
 
-  const lineSelectorItems = useMemo(
-    () =>
-      group.lines.map(line => {
-        const value = String(Math.abs(line.value));
-        return { value, label: value };
-      }),
-    [group.lines]
-  );
+  if (!selectedMarket) return null;
 
-  if (!selectedLine) return null;
-
-  const { market, value } = selectedLine;
-  const line = Math.abs(value);
-  const isSpread = getBetType(group.sportsMarketType) === BET_TYPE.SPREADS;
-  const outcomeTitles = [`${market.outcomes[0]} ${isSpread ? '-' : ''}${line}`, `${market.outcomes[1]} ${isSpread ? '+' : ''}${line}`];
+  const line = Math.abs(selectedMarket.line);
+  const outcomeTitles = [
+    `${selectedMarket.outcomes[0]} ${isSpread ? '-' : ''}${line}`,
+    `${selectedMarket.outcomes[1]} ${isSpread ? '+' : ''}${line}`,
+  ];
 
   return (
     <MarketGroup group={group}>
       <Box gap={16}>
-        {group.lines.length > 1 ? (
+        {lineSelectorItems ? (
           <ItemSelector
             accentColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
-            backgroundColor={backgroundColor}
+            backgroundColor={isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT}
             selectedValue={String(selectedLineValue)}
             onSelect={value => setSelectedLineValue(Number(value))}
             pillHeight={36}
@@ -114,7 +123,8 @@ const LineBasedMarkets = memo(function LineBasedMarkets({
             items={lineSelectorItems}
           />
         ) : null}
-        <SingleMarketEventOutcomes market={market} outcomeTitles={outcomeTitles} teams={event.teams} event={event} />
+
+        <SingleMarketEventOutcomes market={selectedMarket} outcomeTitles={outcomeTitles} teams={event.teams} event={event} />
       </Box>
     </MarketGroup>
   );
@@ -135,6 +145,7 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
         <Box gap={8}>
           {group.markets.map((market, index) => {
             const team = getOutcomeTeam({ outcome: market.groupItemTitle, outcomeIndex: index, teams: event.teams });
+            const image = index !== 1 ? team?.logo : undefined;
             const outcomeColor = getOutcomeColor({
               market,
               outcome: market.groupItemTitle,
@@ -142,7 +153,6 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
               isDarkMode,
               teams: event.teams,
             });
-            const image = index !== 1 ? team?.logo : undefined;
 
             return (
               <MarketRow
@@ -163,15 +173,19 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
           })}
         </Box>
       ) : (
-        group.markets.map(market => (
-          <SingleMarketEventOutcomes key={market.id} market={market} outcomeTitles={market.outcomes} teams={event.teams} event={event} />
-        ))
+        group.markets.map(market => <SingleMarketEventOutcomes key={market.id} market={market} teams={event.teams} event={event} />)
       )}
     </MarketGroup>
   );
 });
 
-function MarketGroup({ group, children }: { group: MoneylineGroup | LineBasedGroup; children: ReactNode }): ReactElement {
+function MarketGroup({
+  group,
+  children,
+}: {
+  group: MoneylineGroup | LineBasedGroup | SingleMarketGroup;
+  children: ReactNode;
+}): ReactElement {
   return (
     <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>
