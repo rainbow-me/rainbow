@@ -2,8 +2,7 @@ import { memo, type ReactElement } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 /**
- * Allows rendering efficient iOS shadows as absolutely positioned views
- * placed behind the layer the shadow is being applied to.
+ * Renders a shadow behind its parent surface on iOS.
  */
 export const SurfaceShadow = memo(function SurfaceShadow({
   backdropColor,
