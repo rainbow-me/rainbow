@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
@@ -88,6 +89,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
             anim.setDuration(fromScale == toScale ? 0 : mDuration);
             anim.setInterpolator(bezierInterpolator);
             this.startAnimation(anim);
+            anim.setStartTime(AnimationUtils.currentAnimationTimeMillis());
         }
 
         @Override
