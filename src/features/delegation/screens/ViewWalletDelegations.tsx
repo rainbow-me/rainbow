@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
-import { Alert, Text as NativeText, Platform, StyleSheet } from 'react-native';
+import { Alert, Text as NativeText, StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Address } from 'viem';
 
-import { ContextCircleButton } from '@/components/context-menu';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
@@ -422,55 +421,36 @@ export const ViewWalletDelegations = () => {
 
                 {/* Networks List */}
                 <Menu>
-                  {rainbowDelegations.map((network, index) => {
-                    const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return Platform.OS === 'ios' ? (
-                        <ContextMenuButton
-                          menuConfig={activeNetworkMenuConfig}
-                          onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
-                        >
-                          {children}
-                        </ContextMenuButton>
-                      ) : (
-                        <ContextCircleButton
-                          options={activeNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
-                          onPressActionSheet={(buttonIndex: number) => {
-                            const actionKey = activeNetworkMenuConfig.menuItems[buttonIndex].actionKey;
-                            onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
-                          }}
-                        >
-                          {children}
-                        </ContextCircleButton>
-                      );
-                    };
-
-                    return (
-                      <React.Fragment key={network.chainId}>
-                        <NetworkContextMenuWrapper>
-                          <MenuItem
-                            size={52}
-                            disabled
-                            leftComponent={
-                              <Box width={{ custom: 28 }} height={{ custom: 28 }}>
-                                <ChainImage chainId={network.chainId} size={28} position="relative" />
-                              </Box>
-                            }
-                            titleComponent={<MenuItem.Title text={getChainName(network.chainId)} weight="bold" />}
-                            rightComponent={
-                              <Text color="labelQuinary" size="17pt" weight="bold">
-                                􀍡
-                              </Text>
-                            }
-                          />
-                        </NetworkContextMenuWrapper>
-                        {index < rainbowDelegations.length - 1 && (
-                          <Box paddingHorizontal="16px">
-                            <Separator color="separatorTertiary" thickness={1} />
-                          </Box>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                  {rainbowDelegations.map((network, index) => (
+                    <React.Fragment key={network.chainId}>
+                      <ContextMenuButton
+                        isAnchoredToRight
+                        menuConfig={activeNetworkMenuConfig}
+                        onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
+                      >
+                        <MenuItem
+                          size={52}
+                          disabled
+                          leftComponent={
+                            <Box width={{ custom: 28 }} height={{ custom: 28 }}>
+                              <ChainImage chainId={network.chainId} size={28} position="relative" />
+                            </Box>
+                          }
+                          titleComponent={<MenuItem.Title text={getChainName(network.chainId)} weight="bold" />}
+                          rightComponent={
+                            <Text color="labelQuinary" size="17pt" weight="bold">
+                              􀍡
+                            </Text>
+                          }
+                        />
+                      </ContextMenuButton>
+                      {index < rainbowDelegations.length - 1 && (
+                        <Box paddingHorizontal="16px">
+                          <Separator color="separatorTertiary" thickness={1} />
+                        </Box>
+                      )}
+                    </React.Fragment>
+                  ))}
                 </Menu>
               </Stack>
             </Box>
@@ -496,69 +476,50 @@ export const ViewWalletDelegations = () => {
 
                 {/* Other Smart Accounts List */}
                 <Menu>
-                  {thirdPartyDelegations.map((network, index) => {
-                    const NetworkContextMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-                      return Platform.OS === 'ios' ? (
-                        <ContextMenuButton
-                          menuConfig={inactiveNetworkMenuConfig}
-                          onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
-                        >
-                          {children}
-                        </ContextMenuButton>
-                      ) : (
-                        <ContextCircleButton
-                          options={inactiveNetworkMenuConfig.menuItems.map(item => item.actionTitle)}
-                          onPressActionSheet={(buttonIndex: number) => {
-                            const actionKey = inactiveNetworkMenuConfig.menuItems[buttonIndex].actionKey;
-                            onPressNetworkMenuItem({ nativeEvent: { actionKey }, chainId: network.chainId });
-                          }}
-                        >
-                          {children}
-                        </ContextCircleButton>
-                      );
-                    };
-
-                    return (
-                      <React.Fragment key={network.chainId}>
-                        <NetworkContextMenuWrapper>
-                          <MenuItem
-                            size={60}
-                            disabled
-                            leftComponent={
-                              <Box width={{ custom: 28 }} height={{ custom: 28 }}>
-                                <ChainImage chainId={network.chainId} size={28} position="relative" />
-                              </Box>
+                  {thirdPartyDelegations.map((network, index) => (
+                    <React.Fragment key={network.chainId}>
+                      <ContextMenuButton
+                        isAnchoredToRight
+                        menuConfig={inactiveNetworkMenuConfig}
+                        onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
+                      >
+                        <MenuItem
+                          size={60}
+                          disabled
+                          leftComponent={
+                            <Box width={{ custom: 28 }} height={{ custom: 28 }}>
+                              <ChainImage chainId={network.chainId} size={28} position="relative" />
+                            </Box>
+                          }
+                          titleComponent={<MenuItem.Title text={getChainName(network.chainId)} weight="bold" />}
+                          labelComponent={(() => {
+                            const contractAddress = network.currentContract || network.revokeAddress;
+                            if (contractAddress) {
+                              return (
+                                <MenuItem.Label
+                                  text={i18n.t(i18n.l.wallet.delegations.delegated_to, {
+                                    name: network.currentContractName || formatAddressForDisplay(contractAddress),
+                                  })}
+                                />
+                              );
                             }
-                            titleComponent={<MenuItem.Title text={getChainName(network.chainId)} weight="bold" />}
-                            labelComponent={(() => {
-                              const contractAddress = network.currentContract || network.revokeAddress;
-                              if (contractAddress) {
-                                return (
-                                  <MenuItem.Label
-                                    text={i18n.t(i18n.l.wallet.delegations.delegated_to, {
-                                      name: network.currentContractName || formatAddressForDisplay(contractAddress),
-                                    })}
-                                  />
-                                );
-                              }
-                              // Fallback for third-party delegations where contract address isn't provided
-                              return <MenuItem.Label text={i18n.t(i18n.l.wallet.delegations.delegated_to_another_wallet)} />;
-                            })()}
-                            rightComponent={
-                              <Text color="labelQuinary" size="17pt" weight="bold">
-                                􀍡
-                              </Text>
-                            }
-                          />
-                        </NetworkContextMenuWrapper>
-                        {index < thirdPartyDelegations.length - 1 && (
-                          <Box paddingHorizontal="16px">
-                            <Separator color="separatorTertiary" thickness={1} />
-                          </Box>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                            // Fallback for third-party delegations where contract address isn't provided
+                            return <MenuItem.Label text={i18n.t(i18n.l.wallet.delegations.delegated_to_another_wallet)} />;
+                          })()}
+                          rightComponent={
+                            <Text color="labelQuinary" size="17pt" weight="bold">
+                              􀍡
+                            </Text>
+                          }
+                        />
+                      </ContextMenuButton>
+                      {index < thirdPartyDelegations.length - 1 && (
+                        <Box paddingHorizontal="16px">
+                          <Separator color="separatorTertiary" thickness={1} />
+                        </Box>
+                      )}
+                    </React.Fragment>
+                  ))}
                 </Menu>
               </Stack>
             </Box>

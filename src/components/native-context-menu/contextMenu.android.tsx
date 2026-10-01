@@ -14,7 +14,6 @@ function toMenuAction(item: MenuActionConfig): MenuAction {
   return {
     id: item.actionKey,
     title: item.actionTitle || item.menuTitle || '',
-    image: item.icon?.iconValue,
     state: item.menuState === 'on' ? 'on' : item.menuState === 'off' ? 'off' : item.menuState === 'mixed' ? 'mixed' : undefined,
     attributes: {
       destructive: item.menuAttributes?.includes('destructive'),
