@@ -142,7 +142,7 @@ const RegistrationCover = ({
       <ButtonPressAnimation
         onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? undefined : handleSelectImage}
         scaleTo={1}
-        testID={showMenu ? undefined : 'use-select-image-cover'}
+        testID="use-select-image-cover"
       >
         <Box
           alignItems="center"
