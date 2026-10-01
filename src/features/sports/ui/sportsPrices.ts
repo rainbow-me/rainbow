@@ -31,7 +31,7 @@ const OUTCOME_SELECTORS: readonly ((game: Game) => { tokenId: string } | undefin
 // ============ Price Subscription ============================================= //
 
 /**
- * Subscribes visible Games to live prices, following token changes until unmount.
+ * Subscribes visible games to live prices and tracks changes to their token IDs.
  */
 export function useSportsPriceSubscription(): (gameIds: readonly string[]) => void {
   const subscribe = useLiveTokenSubscription();
@@ -60,7 +60,7 @@ export function useSportsPriceSubscription(): (gameIds: readonly string[]) => vo
 
   useListen(
     useSportsStore,
-    state => state.games,
+    s => s.games,
     () => update(priced.gameIds)
   );
 

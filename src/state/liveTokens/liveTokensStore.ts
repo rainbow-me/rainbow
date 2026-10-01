@@ -60,14 +60,15 @@ type LiveTokensParams = {
 type LiveTokensStore = {
   subscriptions: Map<symbol, TokenSubscription>;
   tokens: LiveTokensData;
+  /** Replaces one owner's route and token set; an empty set releases that owner. */
   setSubscription: (owner: symbol, route: Route, tokenIds: readonly string[]) => void;
+  /** Releases one owner without affecting overlapping demand from others. */
   removeSubscription: (owner: symbol) => void;
+  /** Removes all owners and cached token quotes. */
   clear: () => void;
 };
 
-const fetchTokensData = async ({ tokenIds: subscribedTokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
-  const tokenIds = subscribedTokenIds.map(tokenId => (tokenId.includes('_') ? convertLegacyTokenIdToTokenId(tokenId) : tokenId));
-
+const fetchTokensData = async ({ tokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
   if (tokenIds.length === 0) {
     return null;
   }
@@ -78,7 +79,9 @@ const fetchTokensData = async ({ tokenIds: subscribedTokenIds, currency }: LiveT
   const regularTokens: string[] = [];
   const polymarketTokens: string[] = [];
 
-  tokenIds.forEach(tokenId => {
+  for (const id of tokenIds) {
+    const tokenId = id.includes('_') ? convertLegacyTokenIdToTokenId(id) : id;
+
     if (isHyperliquidToken(tokenId)) {
       hyperliquidTokens.push(tokenId);
     } else if (isPolymarketToken(tokenId)) {
@@ -88,7 +91,7 @@ const fetchTokensData = async ({ tokenIds: subscribedTokenIds, currency }: LiveT
     } else {
       regularTokens.push(tokenId);
     }
-  });
+  }
 
   // Only subscribe to mainnet ETH if we have any ETH variants
   if (ethVariants.length > 0) regularTokens.push(ETH_MAINNET_TOKEN_ID);
@@ -167,10 +170,14 @@ function updateUserAssetsStore(tokens: LiveTokensData) {
 const DEFAULT_STALE_TIME = time.seconds(5);
 const FAST_REFRESH_STALE_TIME = time.seconds(2);
 
+/**
+ * Polls quotes requested by owners on the active route while the app is active.
+ * Overlapping owners share requests; cached quotes remain available after release.
+ */
 export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
-    enabled: $ => $(useAppStateStore, state => state === 'active'),
+    enabled: $ => $(useAppStateStore, s => s === 'active'),
     disableCache: true,
     staleTime: $ => $(useNavigationStore, determineStaleTime),
     setData: ({ data, set }) => {
@@ -186,8 +193,8 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
     paramChangeThrottle: time.ms(250),
     params: {
       tokenIds: ($, store) => {
-        const route = $(useNavigationStore).activeRoute;
-        const subscriptions = $(store).subscriptions;
+        const route = $(useNavigationStore, s => s.activeRoute);
+        const subscriptions = $(store, s => s.subscriptions);
         const tokenIds = new Set<string>();
         for (const subscription of subscriptions.values()) {
           if (subscription.route === route) {
@@ -196,7 +203,7 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
         }
         return Array.from(tokenIds).sort();
       },
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(userAssetsStoreManager, s => s.currency),
     },
   },
 
@@ -206,9 +213,10 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
 
     setSubscription: (owner, route, tokenIds) =>
       set(state => {
-        const ids = Array.from(new Set(tokenIds)).sort();
         const previous = state.subscriptions.get(owner);
-        if (!ids.length && !previous) return state;
+        if (!tokenIds.length && !previous) return state;
+
+        const ids = Array.from(new Set(tokenIds)).sort();
         if (previous?.route === route && ids.length === previous.tokenIds.length && ids.every((id, i) => id === previous.tokenIds[i])) {
           return state;
         }
