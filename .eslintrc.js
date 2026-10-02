@@ -22,7 +22,6 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
 // TODO(FEPLAT-5): Legacy barrel files that are allowed to exist (but should be gradually removed)
 const allowedBarrelFiles = [
   'src/__swaps__/screens/Swap/resources/search/index.ts',
-  'src/analytics/__mocks__/index.ts',
   'src/analytics/index.ts',
   'src/components/3d/index.ts',
   'src/components/activity-list/index.ts',

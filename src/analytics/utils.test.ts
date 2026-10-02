@@ -8,8 +8,6 @@ vi.mock('@/features/local-auth/legacyKeychain', () => ({
   loadString: vi.fn(),
 }));
 
-vi.mock('@/redux/store');
-
 vi.mock('@sentry/react-native', () => ({
   setUser: vi.fn(),
 }));
