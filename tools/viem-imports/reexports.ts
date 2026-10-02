@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, resolve } from 'node:path';
 
 import { parse } from '@babel/parser';
 import { type Expression, type MemberExpression, type Node, type Statement } from '@babel/types';
@@ -18,8 +18,11 @@ export interface ViemReexport {
   source: string;
 }
 
+/** Finds the module and binding behind a named export. */
+export type ViemExportLookup = (name: string) => ViemReexport | undefined;
+
 /** Resolves exports from the Viem installation used by an importing file. */
-export type ViemExportReader = (specifier: ViemEntrySpecifier, importer: string) => ReadonlyMap<string, ViemReexport>;
+export type ViemExportReader = (specifier: ViemEntrySpecifier, importer: string) => ViemExportLookup;
 
 interface CachedEntry {
   content: string;
@@ -34,17 +37,23 @@ interface CachedEntry {
 export function createViemExportReader(format: ViemModuleFormat): ViemExportReader {
   const entries = new Map<string, CachedEntry>();
 
-  return function readExports(specifier, importer): ReadonlyMap<string, ViemReexport> {
+  return function readExports(specifier, importer): ViemExportLookup {
     const { entry } = resolveEntry(specifier, importer, format);
     const content = readFileSync(entry, 'utf8');
-    const cached = entries.get(entry);
+    let cached = entries.get(entry);
 
-    if (cached?.content === content) return cached.exports;
+    if (!cached || cached.content !== content) {
+      cached = { content, exports: parseReexports(content, entry, format) };
+      entries.set(entry, cached);
+    }
 
-    const statements = parse(content, { sourceType: format === 'esm' ? 'module' : 'script' }).program.body;
-    const exports = format === 'esm' ? readEsmReexports(statements, entry) : readCommonJsReexports(statements, entry);
-    entries.set(entry, { content, exports });
-    return exports;
+    const exports = cached.exports;
+
+    return function selectExport(name): ViemReexport | undefined {
+      const target = exports.get(name);
+      if (!target || isAbsolute(target.source)) return target;
+      return { imported: target.imported, source: resolveEntry(target.source, entry, format).entry };
+    };
   };
 }
 
@@ -65,6 +74,9 @@ export function getViemImportsCacheKey(projectRoot: string, format: ViemModuleFo
     const { manifestPath, entry } = resolveEntry(specifier, resolve(projectRoot, 'package.json'), format);
     files.add(manifestPath);
     files.add(entry);
+    const exports = parseReexports(readFileSync(entry, 'utf8'), entry, format);
+    const dependencies = new Set([...exports.values()].map(target => target.source).filter(source => !isAbsolute(source)));
+    for (const dependency of dependencies) files.add(resolveEntry(dependency, entry, format).manifestPath);
   }
 
   const hash = createHash('sha256');
@@ -73,16 +85,18 @@ export function getViemImportsCacheKey(projectRoot: string, format: ViemModuleFo
   return hash.digest('hex');
 }
 
-function resolveEntry(specifier: ViemEntrySpecifier, importer: string, format: ViemModuleFormat): { manifestPath: string; entry: string } {
+function resolveEntry(specifier: string, importer: string, format: ViemModuleFormat): { manifestPath: string; entry: string } {
   const require = createRequire(importer);
-  const manifestPath = realpathSync(require.resolve('viem/package.json'));
+  const parts = specifier.split('/');
+  const packageName = parts.slice(0, specifier.startsWith('@') ? 2 : 1).join('/');
+  const manifestPath = realpathSync(require.resolve(`${packageName}/package.json`));
   const manifest: unknown = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
   if (!isRecord(manifest) || manifest.sideEffects !== false || !isRecord(manifest.exports)) {
     throw new Error(`Cannot optimize Viem imports: ${manifestPath} must declare sideEffects: false and an exports map.`);
   }
 
-  const target = manifest.exports[specifier === 'viem' ? '.' : './chains'];
+  const target = manifest.exports[`.${specifier.slice(packageName.length)}`];
   const condition = format === 'esm' ? 'import' : 'default';
   const filename = isRecord(target) ? target[condition] : undefined;
 
@@ -96,6 +110,11 @@ function resolveEntry(specifier: ViemEntrySpecifier, importer: string, format: V
   }
 
   return { manifestPath, entry: realpathSync(resolve(dirname(manifestPath), filename)) };
+}
+
+function parseReexports(content: string, filename: string, format: ViemModuleFormat): ReadonlyMap<string, ViemReexport> {
+  const statements = parse(content, { sourceType: format === 'esm' ? 'module' : 'script' }).program.body;
+  return format === 'esm' ? readEsmReexports(statements, filename) : readCommonJsReexports(statements, filename);
 }
 
 function readEsmReexports(statements: readonly Statement[], filename: string): ReadonlyMap<string, ViemReexport> {
@@ -227,9 +246,10 @@ function readCommonJsReexports(statements: readonly Statement[], filename: strin
 }
 
 function addReexport(exports: Map<string, ViemReexport>, filename: string, name: string, imported: string, source: string): void {
-  // Bare reexports retain their public entry and its package-resolution context.
-  if (!source.startsWith('./') && !source.startsWith('../')) return;
-  exports.set(name, { imported, source: resolve(dirname(filename), source) });
+  exports.set(name, {
+    imported,
+    source: source.startsWith('./') || source.startsWith('../') ? resolve(dirname(filename), source) : source,
+  });
 }
 
 function isExportInitialization(expression: Expression): boolean {

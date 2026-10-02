@@ -36,7 +36,7 @@ export function createViemImportPlanner(format: ViemModuleFormat): ViemImportPla
       return undefined;
     }
 
-    const exports = readExports(source, importer);
+    const selectExport = readExports(source, importer);
     const direct = new Map<string, ImportSpecifier[]>();
     const remaining: ImportDeclaration['specifiers'] = [];
 
@@ -47,7 +47,7 @@ export function createViemImportPlanner(format: ViemModuleFormat): ViemImportPla
       }
 
       const name = specifier.imported.type === 'Identifier' ? specifier.imported.name : specifier.imported.value;
-      const target = exports.get(name);
+      const target = selectExport(name);
       if (!target) {
         remaining.push(specifier);
         continue;

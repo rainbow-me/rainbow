@@ -71,30 +71,74 @@ describe('canonical Viem reexports', () => {
   it.each(['esm', 'commonjs'] as const)('retains class and object identity in %s', async format => {
     const files = fixture();
     const readExports = createViemExportReader(format);
-    const exports = readExports('viem', files.importer);
+    const selectExport = readExports('viem', files.importer);
     const original = await import(pathToFileURL(files.entry(format)).href);
     for (const name of ['PublicError', 'chain']) {
-      const target = exports.get(name);
+      const target = selectExport(name);
       if (!target) throw new Error(`Missing fixture export ${name}.`);
       const selected = await import(pathToFileURL(target.source).href);
       expect(selected[target.imported]).toBe(original[name]);
     }
   });
 
+  it.each(['esm', 'commonjs'] as const)('resolves bare reexports from the owning package in %s', async format => {
+    const files = fixture();
+    for (const owner of [dirname(files.importer), files.root]) {
+      const dependency = join(owner, 'node_modules/abitype');
+      write(
+        join(dependency, 'package.json'),
+        JSON.stringify({
+          name: 'abitype',
+          sideEffects: false,
+          exports: { '.': { import: './entry.mjs', default: './entry.cjs' }, './package.json': './package.json' },
+        })
+      );
+      write(join(dependency, 'entry.mjs'), 'export const parseAbi = () => [];');
+      write(join(dependency, 'entry.cjs'), 'exports.parseAbi = () => [];');
+    }
+    write(
+      files.entry(format),
+      format === 'esm'
+        ? "export { parseAbi } from 'abitype';"
+        : "var abi = require('abitype'); Object.defineProperty(exports, 'parseAbi', { enumerable: true, get: function () { return abi.parseAbi; } });"
+    );
+    const lookup = createViemExportReader(format)('viem', files.importer);
+    const target = lookup('parseAbi');
+    const dependency = join(files.root, 'node_modules/abitype');
+    const extension = format === 'esm' ? 'mjs' : 'cjs';
+    expect(target?.source).toBe(join(dependency, `entry.${extension}`));
+    if (!target) throw new Error('Missing bare reexport.');
+    const original = await import(pathToFileURL(files.entry(format)).href);
+    const selected = await import(pathToFileURL(target.source).href);
+    expect(selected[target.imported]).toBe(original.parseAbi);
+
+    const manifest = join(dependency, 'package.json');
+    write(join(dependency, `updated.${extension}`), readFileSync(target.source, 'utf8'));
+    write(manifest, readFileSync(manifest, 'utf8').replace(`entry.${extension}`, `updated.${extension}`));
+    expect(lookup('parseAbi')?.source).toBe(join(dependency, `updated.${extension}`));
+
+    const projectRoot = dirname(files.importer);
+    write(join(projectRoot, 'yarn.lock'), '# fixture dependencies');
+    write(join(projectRoot, 'tools/viem-imports/source.ts'), '// fixture transform');
+    const key = getViemImportsCacheKey(projectRoot, format);
+    write(manifest, readFileSync(manifest, 'utf8').replace(`updated.${extension}`, `entry.${extension}`));
+    expect(getViemImportsCacheKey(projectRoot, format)).not.toBe(key);
+  });
+
   it('resolves the package relative to each importer within one reader', () => {
     const outer = fixture();
     const nested = fixture(join(dirname(outer.importer), 'feature'));
     const readExports = createViemExportReader('esm');
-    expect(readExports('viem', outer.importer).get('chain')?.source).toBe(join(outer.root, 'esm/leaf.mjs'));
-    expect(readExports('viem', nested.importer).get('chain')?.source).toBe(join(nested.root, 'esm/leaf.mjs'));
+    expect(readExports('viem', outer.importer)('chain')?.source).toBe(join(outer.root, 'esm/leaf.mjs'));
+    expect(readExports('viem', nested.importer)('chain')?.source).toBe(join(nested.root, 'esm/leaf.mjs'));
   });
 
   it('refreshes changed entries and rechecks package metadata', () => {
     const files = fixture();
     const readExports = createViemExportReader('esm');
-    expect(readExports('viem', files.importer).get('chain')?.imported).toBe('mainnet');
+    expect(readExports('viem', files.importer)('chain')?.imported).toBe('mainnet');
     write(files.entry('esm'), `export { OwnerError as chain } from './leaf.mjs';`);
-    expect(readExports('viem', files.importer).get('chain')?.imported).toBe('OwnerError');
+    expect(readExports('viem', files.importer)('chain')?.imported).toBe('OwnerError');
     const manifest = join(files.root, 'package.json');
     write(manifest, readFileSync(manifest, 'utf8').replace('"sideEffects":false', '"sideEffects":true'));
     expect(() => readExports('viem', files.importer)).toThrow('sideEffects: false');
@@ -127,7 +171,7 @@ describe('canonical Viem reexports', () => {
   it('routes unused exports without opening their implementation files', () => {
     const files = fixture();
     write(files.entry('esm'), `export { mainnet as chain } from './not-installed.mjs';`);
-    expect(createViemExportReader('esm')('viem', files.importer).get('chain')?.source).toBe(join(files.root, 'esm/not-installed.mjs'));
+    expect(createViemExportReader('esm')('viem', files.importer)('chain')?.source).toBe(join(files.root, 'esm/not-installed.mjs'));
   });
 
   it('rejects a CommonJS binding reassignment that would change a getter after declaration', () => {
@@ -152,19 +196,18 @@ describe('canonical Viem reexports', () => {
   it('recognizes the installed package aliases in both implementation formats', () => {
     for (const format of ['esm', 'commonjs'] as const) {
       const readExports = createViemExportReader(format);
-      expect(readExports('viem', importer).get('EIP1193ProviderRpcError')?.imported).toBe('ProviderRpcError');
-      expect(readExports('viem/chains', importer).get('zkSync')).toEqual(readExports('viem/chains', importer).get('zksync'));
-      expect(readExports('viem', importer).get('BaseError')?.source).toContain(format === 'esm' ? '/_esm/' : '/_cjs/');
+      expect(readExports('viem', importer)('EIP1193ProviderRpcError')?.imported).toBe('ProviderRpcError');
+      expect(readExports('viem/chains', importer)('zkSync')).toEqual(readExports('viem/chains', importer)('zksync'));
+      expect(readExports('viem', importer)('BaseError')?.source).toContain(format === 'esm' ? '/_esm/' : '/_cjs/');
     }
   });
 });
 
 describe('shared import selection', () => {
-  it('preserves local aliases, groups exports from one leaf, and retains bare reexports and types', () => {
+  it('preserves local aliases, groups exports from one leaf, and retains types', () => {
     const files = fixture();
-    write(files.entry('esm'), readFileSync(files.entry('esm'), 'utf8') + '\nexport { parseAbi } from "abitype";');
     const plan = createViemImportPlanner('esm')(
-      declaration(`import { PublicError as LocalError, chain, parseAbi, type Chain } from 'viem';`),
+      declaration(`import { PublicError as LocalError, chain, type Chain } from 'viem';`),
       files.importer
     );
     expect(plan?.direct.size).toBe(1);
@@ -172,7 +215,7 @@ describe('shared import selection', () => {
       [{ type: 'Identifier', name: 'OwnerError' }, 'LocalError'],
       [{ type: 'Identifier', name: 'mainnet' }, 'chain'],
     ]);
-    expect(plan?.remaining.map(binding => binding.local.name)).toEqual(['parseAbi', 'Chain']);
+    expect(plan?.remaining.map(binding => binding.local.name)).toEqual(['Chain']);
   });
 
   it.each([
@@ -216,7 +259,7 @@ export { identity, LocalError };`;
   it('preserves the Node CommonJS export identity selected by Babel', () => {
     const require = createRequire(importer);
     const original: unknown = require('viem/chains');
-    const target = createViemExportReader('commonjs')('viem/chains', importer).get('mainnet');
+    const target = createViemExportReader('commonjs')('viem/chains', importer)('mainnet');
     if (!target || typeof original !== 'object' || original === null) throw new Error('Missing installed chain export.');
     const leaf: unknown = require(target.source);
     if (typeof leaf !== 'object' || leaf === null) throw new Error('Missing installed chain module.');
