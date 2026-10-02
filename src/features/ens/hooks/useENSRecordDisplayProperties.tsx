@@ -198,7 +198,6 @@ export default function useENSRecordDisplayProperties({
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
-        useActionSheetFallback={false}
         {...props}
       >
         {children}

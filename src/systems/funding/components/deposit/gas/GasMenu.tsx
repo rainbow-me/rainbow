@@ -43,12 +43,6 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
     return { menuItems, menuTitle: '' };
   }, [menuOptions, metereologySuggestions]);
 
-  const button = (
-    <ButtonPressAnimation scaleTo={0.825} style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}>
-      {children}
-    </ButtonPressAnimation>
-  );
-
   return (
     <Box
       alignItems="center"
@@ -57,8 +51,10 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
       testID="gas-speed-pager"
       pointerEvents={isGasSponsored ? 'none' : 'auto'}
     >
-      <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-        {button}
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+        <ButtonPressAnimation scaleTo={0.825} style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}>
+          {children}
+        </ButtonPressAnimation>
       </ContextMenuButton>
     </Box>
   );

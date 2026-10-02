@@ -201,12 +201,11 @@ const UniqueTokenExpandedStateHeader = ({
   );
   const { goBack } = useNavigation();
 
-  const formattedCollectionUrl = useMemo(() => {
-    if (!asset.websiteUrl && !asset.collectionUrl) return;
-
-    const { hostname } = new URL(asset.websiteUrl || asset.collectionUrl || '');
-    return hostname;
-  }, [asset.websiteUrl, asset.collectionUrl]);
+  const collectionWebsiteUrl = asset.websiteUrl || asset.collectionUrl;
+  const formattedCollectionUrl = useMemo(
+    () => (collectionWebsiteUrl ? new URL(collectionWebsiteUrl).hostname : undefined),
+    [collectionWebsiteUrl]
+  );
 
   const familyMenuConfig = useMemo(() => {
     return {
@@ -219,7 +218,7 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.websiteUrl
+        ...(collectionWebsiteUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.collectionWebsite],
@@ -244,7 +243,7 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceName, hideNftMarketplaceAction, formattedCollectionUrl]);
+  }, [asset.discordUrl, asset.marketplaceName, asset.twitterUrl, collectionWebsiteUrl, formattedCollectionUrl, hideNftMarketplaceAction]);
 
   const isSVG = asset.images.mimeType?.includes('image/svg');
   const isENS = asset.type === 'ens';
@@ -308,18 +307,15 @@ const UniqueTokenExpandedStateHeader = ({
     ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceUrl) {
         openInBrowser(asset.marketplaceUrl);
-      } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        const websiteUrl = asset.websiteUrl || asset.collectionUrl;
-        if (websiteUrl) {
-          openInBrowser(websiteUrl);
-        }
+      } else if (actionKey === FamilyActionsEnum.collectionWebsite && collectionWebsiteUrl) {
+        openInBrowser(collectionWebsiteUrl);
       } else if (actionKey === FamilyActionsEnum.twitter && asset.twitterUrl) {
         openInBrowser(asset.twitterUrl, false);
       } else if (actionKey === FamilyActionsEnum.discord && asset.discordUrl) {
         openInBrowser(asset.discordUrl, false);
       }
     },
-    [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceUrl, asset.collectionUrl]
+    [asset.discordUrl, asset.marketplaceUrl, asset.twitterUrl, collectionWebsiteUrl]
   );
 
   const handlePressAssetMenuItem = useCallback(
@@ -382,7 +378,6 @@ const UniqueTokenExpandedStateHeader = ({
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
               testID="unique-token-expanded-state-context-menu-button"
-              useActionSheetFallback={false}
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
@@ -402,7 +397,6 @@ const UniqueTokenExpandedStateHeader = ({
             isAnchoredToRight
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
-            useActionSheetFallback={false}
           >
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>

@@ -59,7 +59,6 @@ export default function useSelectImageMenu({
   onUploadError,
   showRemove = false,
   uploadToIPFS = false,
-  testID = '',
 }: {
   imagePickerOptions?: ImagePickerOptions;
   menuItems?: Action[];
@@ -70,7 +69,6 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: ImagePickerAsset }) => void;
   showRemove?: boolean;
   uploadToIPFS?: boolean;
-  testID?: string;
 } = {}) {
   const { navigate, getParent: dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
@@ -165,13 +163,12 @@ export default function useSelectImageMenu({
             menuTitle: '',
           }}
           onPressMenuItem={({ nativeEvent: { actionKey } }) => handleSelectAction(actionKey)}
-          testID={`use-select-image-${testID}`}
         >
           {children}
         </ContextMenuButton>
       );
     },
-    [handleSelectAction, menuItems, testID]
+    [handleSelectAction, menuItems]
   );
 
   return {

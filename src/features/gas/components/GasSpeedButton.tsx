@@ -389,7 +389,6 @@ export const GasSpeedButton = ({
         isMenuPrimaryAction
         menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
       >
         {pager}
       </ContextMenuButton>

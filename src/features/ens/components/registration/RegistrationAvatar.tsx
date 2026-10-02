@@ -121,7 +121,6 @@ const RegistrationAvatar = ({
       setDisabled(false);
     },
     showRemove: Boolean(avatarUrl),
-    testID: 'avatar',
     uploadToIPFS: true,
   });
 

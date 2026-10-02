@@ -46,7 +46,7 @@ export type MenuConfig = Readonly<{
 
 export default function ContextMenu(
   props: PropsWithChildren<
-    Omit<ContextMenuButtonProps, 'menuConfig' | 'onPressMenuItem'> & {
+    Omit<ContextMenuButtonProps, 'menuConfig' | 'onPressMenuItem' | 'useActionSheetFallback'> & {
       menuConfig: MenuConfig;
       onPressMenuItem: (e: { nativeEvent: Omit<MenuActionConfig, 'actionKey'> & { actionKey: any } }) => void;
       isAnchoredToRight?: boolean; // this only used in android check contextMenu.android.tsx in this same folder
@@ -55,5 +55,5 @@ export default function ContextMenu(
 ) {
   // @ts-expect-error `activeOpacity` and `wrapNativeComponent` are missing in the `ContextMenuButtonProps` type but are valid
   // https://www.npmjs.com/package/react-native-ios-context-menu/v/1.2.1#312-contextmenubutton-component
-  return <ContextMenuButton activeOpacity={0} isMenuPrimaryAction useActionSheetFallback={false} wrapNativeComponent={false} {...props} />;
+  return <ContextMenuButton activeOpacity={0} isMenuPrimaryAction wrapNativeComponent={false} {...props} useActionSheetFallback={false} />;
 }
