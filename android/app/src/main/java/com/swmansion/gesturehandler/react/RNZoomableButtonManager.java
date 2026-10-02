@@ -57,12 +57,14 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         private NativeViewGestureHandler gestureHandler;
         private boolean touchExploration;
         private float presentationScale = 1f;
+        private final AccessibilityManager accessibilityManager;
         private final int touchSlop;
 
         private Runnable mLongPressRunnable;
 
         public ZoomableButtonViewGroup(Context context) {
             super(context);
+            accessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
             touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         }
 
@@ -130,9 +132,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
         @Override
         public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                AccessibilityManager accessibility = (AccessibilityManager)
-                        getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-                touchExploration = accessibility.isTouchExplorationEnabled();
+                touchExploration = accessibilityManager.isTouchExplorationEnabled();
             }
             boolean handled = super.dispatchTouchEvent(event);
             return touchExploration ? onTouchEvent(event) || handled : handled;
@@ -162,9 +162,7 @@ public class RNZoomableButtonManager extends ViewGroupManager<RNGestureHandlerBu
                 if (activePointerId != MotionEvent.INVALID_POINTER_ID) {
                     finishTouch(event, false);
                 }
-                AccessibilityManager accessibility = (AccessibilityManager)
-                        getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-                touchExploration = accessibility.isTouchExplorationEnabled();
+                touchExploration = accessibilityManager.isTouchExplorationEnabled();
                 int pointerId = event.getPointerId(event.getActionIndex());
                 if (!isEnabled() || !super.canBegin(event)) {
                     return false;
