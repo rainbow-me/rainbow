@@ -108,7 +108,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const ref = useRef<RecyclerListViewRef>(undefined);
-  const itemAnimator = useStableValue(() => new AssetListItemAnimator());
+  const itemAnimator = useStableValue(() => new AssetListItemAnimator(ref));
 
   useListen(
     useWalletsStore,
@@ -211,7 +211,6 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
       layoutProvider={layoutProvider}
       onEndReachedThreshold={0.5}
       onEndReached={onEndReached}
-      onScroll={itemAnimator.onScroll}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
