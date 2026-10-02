@@ -188,7 +188,7 @@ export const SettingsSection = ({
         />
         <ContextMenuButton
           menuConfig={themeMenuConfig}
-          isAnchoredToRight
+          anchorAndroidMenuToRight
           onPressMenuItem={handleSelectTheme}
           key={`theme-menu-${language}`}
         >

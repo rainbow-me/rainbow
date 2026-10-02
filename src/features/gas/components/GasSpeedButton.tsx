@@ -385,7 +385,7 @@ export const GasSpeedButton = ({
     return (
       <ContextMenuButton
         enableContextMenu
-        isAnchoredToRight
+        anchorAndroidMenuToRight
         isMenuPrimaryAction
         menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}

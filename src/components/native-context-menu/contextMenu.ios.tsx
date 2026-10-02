@@ -49,7 +49,7 @@ export default function ContextMenu(
     Omit<ContextMenuButtonProps, 'menuConfig' | 'onPressMenuItem' | 'useActionSheetFallback'> & {
       menuConfig: MenuConfig;
       onPressMenuItem: (e: { nativeEvent: Omit<MenuActionConfig, 'actionKey'> & { actionKey: any } }) => void;
-      isAnchoredToRight?: boolean; // this only used in android check contextMenu.android.tsx in this same folder
+      anchorAndroidMenuToRight?: boolean;
     }
   >
 ) {

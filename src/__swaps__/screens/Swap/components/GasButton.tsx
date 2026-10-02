@@ -123,12 +123,12 @@ const GasMenu = ({
   backToReview = false,
   children,
   disabled = false,
-  isAnchoredToRight,
+  anchorAndroidMenuToRight,
 }: {
   backToReview?: boolean;
   children: ReactNode;
   disabled?: boolean;
-  isAnchoredToRight?: boolean;
+  anchorAndroidMenuToRight?: boolean;
 }) => {
   const { SwapNavigation } = useSwapContext();
 
@@ -187,7 +187,7 @@ const GasMenu = ({
       style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      <ContextMenuButton isAnchoredToRight={isAnchoredToRight} menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+      <ContextMenuButton anchorAndroidMenuToRight={anchorAndroidMenuToRight} menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         <ButtonPressAnimation
           scaleTo={0.825}
           style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
@@ -219,7 +219,7 @@ export function ReviewGasButton() {
 
   return (
     <Inline alignVertical="center" space="8px" wrap={false}>
-      <GasMenu backToReview isAnchoredToRight>
+      <GasMenu backToReview anchorAndroidMenuToRight>
         <Animated.View style={[styles.reviewGasButtonPill, animatedBorderColor]}>
           <SelectedGas isPill />
         </Animated.View>

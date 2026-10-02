@@ -373,7 +373,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
             <ContextMenuButton
-              isAnchoredToRight
+              anchorAndroidMenuToRight
               menuConfig={assetMenuConfig}
               isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
@@ -394,7 +394,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            isAnchoredToRight
+            anchorAndroidMenuToRight
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
           >
