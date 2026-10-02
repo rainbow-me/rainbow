@@ -4,17 +4,15 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor } from '@/design-system';
+import { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
 import * as i18n from '@/languages';
 
 import { ItemSelector, type Item, type RenderItemProps } from './ItemSelector';
-import { BET_TYPE, type BetType } from './utils/getMarketsGroupedByBetType';
 
 // ============ Constants ====================================================== //
 
 const PILL_HEIGHT = 64;
 const PILL_GAP = 8;
-
-const BET_TYPE_ORDER: BetType[] = [BET_TYPE.MONEYLINE, BET_TYPE.SPREADS, BET_TYPE.TOTALS, BET_TYPE.OTHER];
 
 const BET_TYPE_CONFIG: Record<BetType, { labelKey: string; icon: string }> = {
   [BET_TYPE.MONEYLINE]: { labelKey: i18n.l.predictions.bet_types.winner, icon: '􀢊' },
@@ -36,6 +34,7 @@ type BetTypeSelectorProps = {
 
 // ============ Main Component ================================================= //
 
+/** Displays bet type options in the supplied order. */
 export const BetTypeSelector = memo(function BetTypeSelector({
   availableBetTypes,
   backgroundColor,
@@ -46,9 +45,9 @@ export const BetTypeSelector = memo(function BetTypeSelector({
 }: BetTypeSelectorProps) {
   const items: Item[] = useMemo(
     () =>
-      BET_TYPE_ORDER.filter(type => availableBetTypes.includes(type)).map(type => ({
-        value: type,
-        label: i18n.t(BET_TYPE_CONFIG[type].labelKey),
+      availableBetTypes.map(betType => ({
+        value: betType,
+        label: i18n.t(BET_TYPE_CONFIG[betType].labelKey),
       })),
     [availableBetTypes]
   );
