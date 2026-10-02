@@ -83,7 +83,7 @@ jobs:
           is-testing: 'true'
 
       - name: Unit tests
-        run: yarn test
+        run: yarn test --maxWorkers=2
 
   deps-rules:
     name: Dependency rules

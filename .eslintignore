@@ -9,7 +9,6 @@ out/
 .eslintrc.js
 babel.config.js
 metro.config.js
-jest.config.js
 __generated__
 coverage
 src/browser
