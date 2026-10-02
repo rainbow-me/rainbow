@@ -14,7 +14,7 @@ import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowK
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { formatAccountLabel, getIsDamagedWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
@@ -51,6 +51,10 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   };
   const onLongPressName = React.useCallback(() => {
     if (disableOnPress) return;
+    if (getIsDamagedWallet()) {
+      navigate(Routes.WALLET_ERROR_SHEET);
+      return;
+    }
     if (!isToastActive) {
       setToastActive(true);
       setTimeout(() => {
@@ -60,7 +64,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
     triggerHaptics('notificationSuccess');
     onNewEmoji?.current && onNewEmoji.current();
     Clipboard.setString(accountAddress);
-  }, [accountAddress, disableOnPress, isToastActive, setToastActive]);
+  }, [accountAddress, disableOnPress, isToastActive, navigate, setToastActive]);
 
   const name = React.useMemo(() => {
     return (
