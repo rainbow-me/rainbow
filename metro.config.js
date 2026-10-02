@@ -1,5 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const path = require('path');
+const { createJiti } = require('jiti');
+
+const { getViemImportsCacheKey } = createJiti(__filename)('./tools/viem-imports/reexports.ts');
 // @ts-ignore — types ship only via `exports` field, which moduleResolution:"node" ignores.
 const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 // @ts-ignore — types ship in dist/ but only via `exports` field, which moduleResolution:"node" ignores. Resolvable after migrating to moduleResolution:"bundler".
@@ -35,6 +38,7 @@ const transformer = {
  * @type {import('metro-config').MetroConfig}
  */
 const rainbowConfig = {
+  cacheVersion: getViemImportsCacheKey(__dirname, 'commonjs'),
   resolver: {
     blockList,
     resolveRequest: (context, moduleName, platform) => {

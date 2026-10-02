@@ -1753,7 +1753,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.0.0, @babel/types@npm:^7.0.0-beta.49, @babel/types@npm:^7.1.6, @babel/types@npm:^7.20.7, @babel/types@npm:^7.25.2, @babel/types@npm:^7.25.9, @babel/types@npm:^7.26.10, @babel/types@npm:^7.27.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4":
+"@babel/types@npm:7.27.0, @babel/types@npm:^7.0.0, @babel/types@npm:^7.0.0-beta.49, @babel/types@npm:^7.1.6, @babel/types@npm:^7.20.7, @babel/types@npm:^7.25.2, @babel/types@npm:^7.25.9, @babel/types@npm:^7.26.10, @babel/types@npm:^7.27.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4":
   version: 7.27.0
   resolution: "@babel/types@npm:7.27.0"
   dependencies:
@@ -4279,7 +4279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/sourcemap-codec@npm:^1.6.0":
+"@jridgewell/sourcemap-codec@npm:^1.5.5, @jridgewell/sourcemap-codec@npm:^1.6.0":
   version: 1.6.0
   resolution: "@jridgewell/sourcemap-codec@npm:1.6.0"
   checksum: 10c0/b5be700e45a775f218589c3466c4ffea630582b4988657652da464e5ab8a7d18bf928ee4fd2363fb346ede4bea9c6ff0bae05a538358c4565ece6199531b5f72
@@ -9244,6 +9244,7 @@ __metadata:
     "@babel/plugin-transform-export-namespace-from": "npm:^7.25.9"
     "@babel/plugin-transform-runtime": "npm:^7.25.0"
     "@babel/runtime": "npm:^7.25.0"
+    "@babel/types": "npm:7.27.0"
     "@bankify/react-native-animate-number": "npm:0.2.1"
     "@bivoglobal/payment-react-native": "npm:0.0.7"
     "@bradgarropy/use-countdown": "npm:1.4.1"
@@ -9407,8 +9408,10 @@ __metadata:
     imgix-core-js: "npm:2.3.2"
     immer: "npm:9.0.6"
     inherits: "npm:2.0.4"
+    jiti: "npm:2.7.0"
     lint-staged: "npm:10.4.0"
     lodash: "npm:4.17.21"
+    magic-string: "npm:0.30.21"
     make-color-more-chill: "npm:0.2.2"
     match-sorter: "npm:6.3.0"
     mipd: "npm:0.0.5"
@@ -17187,6 +17190,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jiti@npm:2.7.0":
+  version: 2.7.0
+  resolution: "jiti@npm:2.7.0"
+  bin:
+    jiti: lib/jiti-cli.mjs
+  checksum: 10c0/1b1e2310a490dce1aeea3da5f5dfe18273516c20ce48be2e98eb8ea452d5f3dcc8fd0cfd6d28b4052a24c5dbab6e3089b2d7e79f0bce7915b10d750929563c42
+  languageName: node
+  linkType: hard
+
 "jiti@npm:^1.21.0":
   version: 1.21.6
   resolution: "jiti@npm:1.21.6"
@@ -18181,6 +18193,15 @@ __metadata:
   version: 2.2.1
   resolution: "ltgt@npm:2.2.1"
   checksum: 10c0/60fdad732c3aa6acf37e927a5ef58c0d1776192321d55faa1f8775c134c27fbf20ef8ec542fb7f7f33033f79c2a2df75cac39b43e274b32e9d95400154cd41f3
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:0.30.21":
+  version: 0.30.21
+  resolution: "magic-string@npm:0.30.21"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.5.5"
+  checksum: 10c0/299378e38f9a270069fc62358522ddfb44e94244baa0d6a8980ab2a9b2490a1d03b236b447eee309e17eb3bddfa482c61259d47960eb018a904f0ded52780c4a
   languageName: node
   linkType: hard
 

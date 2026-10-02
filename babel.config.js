@@ -1,3 +1,8 @@
+const { createJiti } = require('jiti');
+
+const loadTypeScript = createJiti(__filename);
+const { viemImportsBabelPlugin } = loadTypeScript('./tools/viem-imports/babel.ts');
+
 function getAliasesFromTsConfig() {
   const tsConfig = require('./tsconfig.json');
   const paths = tsConfig.compilerOptions.paths;
@@ -13,6 +18,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
+    viemImportsBabelPlugin,
     [
       'module-resolver',
       {

@@ -2,9 +2,11 @@ import { resolve } from 'node:path';
 
 import { defineConfig } from 'vitest/config';
 
+import { viemImportsVitePlugin } from './tools/viem-imports/vite';
 import tsconfig from './tsconfig.json';
 
 export default defineConfig({
+  plugins: [viemImportsVitePlugin()],
   resolve: {
     alias: Object.entries(tsconfig.compilerOptions.paths)
       .map(([alias, paths]) => ({
