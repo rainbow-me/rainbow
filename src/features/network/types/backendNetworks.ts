@@ -1,7 +1,42 @@
 import { Platform } from 'react-native';
 
 import type { Address } from 'viem';
-import * as chain from 'viem/chains';
+import {
+  apeChain,
+  arbitrum as arbitrumChain,
+  arbitrumNova as arbitrumNovaChain,
+  arbitrumSepolia as arbitrumSepoliaChain,
+  avalanche as avalancheChain,
+  avalancheFuji as avalancheFujiChain,
+  base as baseChain,
+  baseSepolia as baseSepoliaChain,
+  blast as blastChain,
+  blastSepolia as blastSepoliaChain,
+  bsc as bscChain,
+  bscTestnet as bscTestnetChain,
+  celo as celoChain,
+  degen as degenChain,
+  gnosis as gnosisChain,
+  goerli as goerliChain,
+  gravity as gravityChain,
+  holesky as holeskyChain,
+  linea as lineaChain,
+  mainnet as mainnetChain,
+  manta as mantaChain,
+  optimism as optimismChain,
+  optimismSepolia as optimismSepoliaChain,
+  polygonAmoy as polygonAmoyChain,
+  polygon as polygonChain,
+  polygonMumbai as polygonMumbaiChain,
+  polygonZkEvm as polygonZkEvmChain,
+  sanko as sankoChain,
+  scroll as scrollChain,
+  sepolia as sepoliaChain,
+  zksync as zksyncChain,
+  zora as zoraChain,
+  zoraSepolia as zoraSepoliaChain,
+  type Chain as ViemChain,
+} from 'viem/chains';
 
 import type { AddressOrEth } from '@/__swaps__/types/assets';
 
@@ -32,43 +67,43 @@ export enum Network {
 }
 
 export enum ChainId {
-  apechain = chain.apeChain.id,
-  arbitrum = chain.arbitrum.id,
-  arbitrumNova = chain.arbitrumNova.id,
-  arbitrumSepolia = chain.arbitrumSepolia.id,
-  avalanche = chain.avalanche.id,
-  avalancheFuji = chain.avalancheFuji.id,
-  base = chain.base.id,
-  baseSepolia = chain.baseSepolia.id,
-  blast = chain.blast.id,
-  blastSepolia = chain.blastSepolia.id,
-  bsc = chain.bsc.id,
-  bscTestnet = chain.bscTestnet.id,
-  celo = chain.celo.id,
-  degen = chain.degen.id,
-  gnosis = chain.gnosis.id,
-  goerli = chain.goerli.id,
-  gravity = chain.gravity.id,
+  apechain = apeChain.id,
+  arbitrum = arbitrumChain.id,
+  arbitrumNova = arbitrumNovaChain.id,
+  arbitrumSepolia = arbitrumSepoliaChain.id,
+  avalanche = avalancheChain.id,
+  avalancheFuji = avalancheFujiChain.id,
+  base = baseChain.id,
+  baseSepolia = baseSepoliaChain.id,
+  blast = blastChain.id,
+  blastSepolia = blastSepoliaChain.id,
+  bsc = bscChain.id,
+  bscTestnet = bscTestnetChain.id,
+  celo = celoChain.id,
+  degen = degenChain.id,
+  gnosis = gnosisChain.id,
+  goerli = goerliChain.id,
+  gravity = gravityChain.id,
   anvil = ANVIL_CHAIN_ID,
   anvilOptimism = ANVIL_OP_CHAIN_ID,
-  holesky = chain.holesky.id,
+  holesky = holeskyChain.id,
   ink = 57073,
-  linea = chain.linea.id,
-  mainnet = chain.mainnet.id,
-  manta = chain.manta.id,
-  optimism = chain.optimism.id,
-  optimismSepolia = chain.optimismSepolia.id,
-  polygon = chain.polygon.id,
-  polygonAmoy = chain.polygonAmoy.id,
-  polygonMumbai = chain.polygonMumbai.id,
-  polygonZkEvm = chain.polygonZkEvm.id,
+  linea = lineaChain.id,
+  mainnet = mainnetChain.id,
+  manta = mantaChain.id,
+  optimism = optimismChain.id,
+  optimismSepolia = optimismSepoliaChain.id,
+  polygon = polygonChain.id,
+  polygonAmoy = polygonAmoyChain.id,
+  polygonMumbai = polygonMumbaiChain.id,
+  polygonZkEvm = polygonZkEvmChain.id,
   rari = 1380012617,
-  sanko = chain.sanko.id,
-  scroll = chain.scroll.id,
-  sepolia = chain.sepolia.id,
-  zksync = chain.zksync.id,
-  zora = chain.zora.id,
-  zoraSepolia = chain.zoraSepolia.id,
+  sanko = sankoChain.id,
+  scroll = scrollChain.id,
+  sepolia = sepoliaChain.id,
+  zksync = zksyncChain.id,
+  zora = zoraChain.id,
+  zoraSepolia = zoraSepoliaChain.id,
 }
 
 export enum ChainName {
@@ -111,7 +146,7 @@ export enum ChainName {
   zoraSepolia = 'zora-sepolia',
 }
 
-export const chainAnvil: chain.Chain = {
+export const chainAnvil: ViemChain = {
   id: ANVIL_CHAIN_ID,
   name: 'Anvil',
   nativeCurrency: {
@@ -126,7 +161,7 @@ export const chainAnvil: chain.Chain = {
   testnet: true,
 };
 
-export const chainAnvilOptimism: chain.Chain = {
+export const chainAnvilOptimism: ViemChain = {
   id: ANVIL_OP_CHAIN_ID,
   name: 'Anvil OP',
   nativeCurrency: {
