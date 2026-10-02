@@ -27,7 +27,10 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
   const inputTextStyle = useSetupInputTextStyle();
 
   const setDigits = useCallback((text: string) => {
-    setRawDigits(extractNationalDigits(text));
+    const digits = extractNationalDigits(text);
+    if (digits === null) return;
+
+    setRawDigits(digits);
     setState(s => (s === 'submitting' ? s : 'entry'));
   }, []);
 
