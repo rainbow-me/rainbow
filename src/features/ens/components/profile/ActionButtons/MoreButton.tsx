@@ -153,7 +153,6 @@ export function MoreButton({ address, ensName }: { address?: string; ensName?: s
       {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
     >
       <More />
     </ContextMenuButton>

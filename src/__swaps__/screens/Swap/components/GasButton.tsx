@@ -123,10 +123,12 @@ const GasMenu = ({
   backToReview = false,
   children,
   disabled = false,
+  isAnchoredToRight,
 }: {
   backToReview?: boolean;
   children: ReactNode;
   disabled?: boolean;
+  isAnchoredToRight?: boolean;
 }) => {
   const { SwapNavigation } = useSwapContext();
 
@@ -178,16 +180,6 @@ const GasMenu = ({
 
   if (isLoading) return children;
 
-  const button = (
-    <ButtonPressAnimation
-      scaleTo={0.825}
-      style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
-      testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
-    >
-      {children}
-    </ButtonPressAnimation>
-  );
-
   return (
     <Box
       alignItems="center"
@@ -195,14 +187,14 @@ const GasMenu = ({
       style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      <ContextMenuButton
-        enableContextMenu
-        isMenuPrimaryAction
-        menuConfig={menuConfig}
-        onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
-      >
-        {button}
+      <ContextMenuButton isAnchoredToRight={isAnchoredToRight} menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+        <ButtonPressAnimation
+          scaleTo={0.825}
+          style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
+          testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
+        >
+          {children}
+        </ButtonPressAnimation>
       </ContextMenuButton>
     </Box>
   );
@@ -227,7 +219,7 @@ export function ReviewGasButton() {
 
   return (
     <Inline alignVertical="center" space="8px" wrap={false}>
-      <GasMenu backToReview>
+      <GasMenu backToReview isAnchoredToRight>
         <Animated.View style={[styles.reviewGasButtonPill, animatedBorderColor]}>
           <SelectedGas isPill />
         </Animated.View>

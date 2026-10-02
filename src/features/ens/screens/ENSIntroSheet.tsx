@@ -77,20 +77,16 @@ const ChooseAnotherNameButton = ({ handleSelectExistingName, handleNavigateToSea
     [handleNavigateToSearch, handleSelectExistingName]
   );
 
-  const button = (
-    <SheetActionButton
-      color={colors.transparent}
-      isTransparent
-      label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
-      textColor={colors.appleBlue}
-      textSize="lmedium"
-      weight="bold"
-    />
-  );
-
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-      {button}
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+      <SheetActionButton
+        color={colors.transparent}
+        isTransparent
+        label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
+        textColor={colors.appleBlue}
+        textSize="lmedium"
+        weight="bold"
+      />
     </ContextMenuButton>
   );
 };

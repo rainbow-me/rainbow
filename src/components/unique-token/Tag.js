@@ -182,7 +182,6 @@ const Tag = ({
         enableContextMenu
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
         <ButtonPressAnimation>{children}</ButtonPressAnimation>

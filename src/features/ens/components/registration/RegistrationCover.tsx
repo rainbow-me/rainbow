@@ -122,7 +122,6 @@ const RegistrationCover = ({
       setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),
-    testID: 'cover',
     uploadToIPFS: true,
   });
 
