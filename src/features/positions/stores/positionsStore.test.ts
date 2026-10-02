@@ -1,41 +1,15 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
-
-import { getPlatformClient } from '@/resources/platform/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { createMockPositionsData } from '../__fixtures__/mocks/positions';
+import { preparePositionsStore } from '../__fixtures__/positionsStore';
 import type { RainbowPositions } from '../types';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { usePositionsStore } from './positionsStore';
 
-vi.mock('@/resources/platform/client');
-vi.mock('@/features/config/hooks/experimentalHooks', () => ({}));
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: vi.fn(() => false),
-}));
-vi.mock('@/features/network/stores/backendNetworksStore', () => ({
-  useBackendNetworksStore: {
-    getState: () => ({
-      getSupportedPositionsChainIds: () => [1, 10, 137],
-    }),
-    subscribe: vi.fn(),
-  },
-}));
-vi.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = vi.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
-  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    vi.requireActual<typeof import('../__fixtures__/ListPositions')>('../__fixtures__/ListPositions');
-  return {
-    userAssetsStoreManager: createZustandStore(() => ({
-      address,
-      currency: params.currency,
-    })),
-  };
-});
-
 // ============================= HELPERS ===============================
 
-const setStoreData = (data: RainbowPositions) => {
+function setStoreData(data: RainbowPositions): void {
   const store = usePositionsStore.getState();
   store.queryCache[store.queryKey] = {
     data,
@@ -43,28 +17,23 @@ const setStoreData = (data: RainbowPositions) => {
     cacheTime: 0,
     errorInfo: null,
   };
-};
+}
 
 // =============================== TESTS ===============================
 
 describe('positionsStore Integration Tests', () => {
-  let mockClient: { get: Mock };
-
   beforeEach(() => {
-    vi.clearAllMocks();
-
-    // Setup mock client
-    mockClient = {
-      get: vi.fn(),
-    };
-    (getPlatformClient as Mock).mockReturnValue(mockClient);
+    preparePositionsStore();
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected positions request'));
   });
+
+  afterEach(() => vi.restoreAllMocks());
 
   describe('Integration with Platform API', () => {
     it('should integrate with real fixture response', async () => {
-      mockClient.get.mockResolvedValueOnce({
-        data: FIXTURE_LIST_POSITIONS_SUCCESS,
-      });
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(JSON.stringify(FIXTURE_LIST_POSITIONS_SUCCESS), { headers: { 'Content-Type': 'application/json' } })
+      );
 
       const params: PositionsParams = FIXTURE_PARAMS;
 

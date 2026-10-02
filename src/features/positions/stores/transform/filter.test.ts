@@ -1,12 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createMockDeposit, createMockPortfolioItem, createMockRainbowPosition } from '../../__fixtures__/mocks/positions';
+import { setPositionValueFilter } from '../../__fixtures__/positionFilters';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
 
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: vi.fn(() => true),
-}));
+beforeEach(() => setPositionValueFilter(true));
 
 describe('Position Filters', () => {
   describe('shouldFilterPosition', () => {

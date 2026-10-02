@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { transformPositions } from '.';
 import {
@@ -17,11 +17,8 @@ import {
 } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
+import { setPositionValueFilter } from '../../__fixtures__/positionFilters';
 import { DetailType, PositionName, type ListPositionsResponse, type PortfolioItem } from '../../types/generated/positions/positions';
-
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: vi.fn(() => true),
-}));
 
 // ============ Helpers ===================================================== //
 
@@ -33,6 +30,8 @@ function calculateFilteredValue(items: PortfolioItem[]): number {
 }
 
 // ============ Tests ======================================================== //
+
+beforeEach(() => setPositionValueFilter(true));
 
 describe('transformPositions', () => {
   const defaultParams = FIXTURE_PARAMS;

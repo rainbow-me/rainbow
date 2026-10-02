@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createMockPosition, createMockResponse } from '../../__fixtures__/mocks/positions';
+import { preparePositionsStore } from '../../__fixtures__/positionsStore';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { usePositionsStore } from '../positionsStore';
 
@@ -20,39 +21,8 @@ import { usePositionsStore } from '../positionsStore';
  * operations correctly propagate through the entire system and adjust balances.
  */
 
-// Mock config to avoid React Native gesture handler imports
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: vi.fn(() => false),
-}));
-
-vi.mock('@/features/network/stores/backendNetworksStore', () => ({
-  useBackendNetworksStore: {
-    getState: () => ({
-      getSupportedPositionsChainIds: () => [1, 10, 137],
-    }),
-    subscribe: vi.fn(),
-  },
-}));
-vi.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = vi.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
-  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    vi.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
-  return {
-    userAssetsStoreManager: createZustandStore(() => ({
-      address,
-      currency: params.currency,
-    })),
-  };
-});
-
 describe('Position Filtering Integration', () => {
-  beforeEach(() => {
-    // Reset store state before each test
-    usePositionsStore.setState({
-      queryCache: {},
-      queryKey: '',
-    });
-  });
+  beforeEach(preparePositionsStore);
 
   // ============================================================================
   // SECTION 1: Token-Preferred Position Filtering (stETH, wstETH, rETH)

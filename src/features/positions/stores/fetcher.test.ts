@@ -3,9 +3,6 @@ import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vites
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { fetchPositions } from './fetcher';
 
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: vi.fn(() => false),
-}));
 vi.mock('./fetcher', () => ({
   fetchPositions: vi.fn(),
 }));
