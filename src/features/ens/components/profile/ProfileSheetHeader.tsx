@@ -45,7 +45,7 @@ export function ProfileSheetHeader({
   const ensName = defaultEnsName || params?.address;
 
   const { data: profileAddress } = useENSAddress(
-    { name: ensName, chainId: ChainId.mainnet },
+    { addressOrName: ensName, chainId: ChainId.mainnet },
     {
       enabled: profilesEnabled,
     }

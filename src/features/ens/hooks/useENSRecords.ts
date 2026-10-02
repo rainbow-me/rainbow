@@ -21,10 +21,7 @@ type ProfileRecords = {
 // ============ Constants ====================================================== //
 
 const STALE_TIME = 10000;
-const PROFILE_RECORDS: EnsRecordKeys = {
-  texts: Object.values(ENS_RECORDS).filter(key => key !== ENS_RECORDS.contenthash && !formatsByName[key]),
-  coins: [ETHEREUM_COIN_TYPE, 0, 2, 3],
-};
+const PROFILE_RECORDS = getProfileRecordKeys();
 const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
   'ipfs-ns': 'ipfs',
   'ipns-ns': 'ipns',
@@ -138,4 +135,18 @@ export default function useENSRecords(
     // Data will be stale for 10s to avoid dupe queries
     staleTime: STALE_TIME,
   });
+}
+
+function getProfileRecordKeys(): EnsRecordKeys {
+  const texts: string[] = [];
+  const coins: number[] = [];
+
+  for (const key of Object.values(ENS_RECORDS)) {
+    if (key === ENS_RECORDS.contenthash) continue;
+    const format = formatsByName[key];
+    if (format) coins.push(format.coinType);
+    else texts.push(key);
+  }
+
+  return { texts, coins };
 }

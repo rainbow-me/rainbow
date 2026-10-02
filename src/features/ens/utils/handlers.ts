@@ -172,7 +172,7 @@ export const fetchSuggestions = async (
         cacheFirst: true,
       });
       prefetchENSAddress(
-        { name: ens, chainId: ChainId.mainnet },
+        { addressOrName: ens, chainId: ChainId.mainnet },
         {
           staleTime: 1000 * 60 * 10, // 10 minutes
         }
@@ -225,7 +225,7 @@ export const fetchSuggestions = async (
                 });
                 if (i === 0) {
                   prefetchENSAddress(
-                    { name: domain.name, chainId: ChainId.mainnet },
+                    { addressOrName: domain.name, chainId: ChainId.mainnet },
                     {
                       staleTime: 1000 * 60 * 10, // 10 minutes
                     }

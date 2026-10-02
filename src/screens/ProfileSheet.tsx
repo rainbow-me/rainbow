@@ -35,7 +35,7 @@ export function ProfileSheet() {
 
   const ensName = params?.address;
   const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
-    name: ensName,
+    addressOrName: ensName,
     chainId: ChainId.mainnet,
   });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);

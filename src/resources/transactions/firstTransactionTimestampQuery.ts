@@ -31,7 +31,7 @@ export async function firstTransactionTimestampQueryFunction({
 
   let address = addressOrName;
   if (!isAddress(addressOrName)) {
-    address = (await fetchENSAddress({ name: addressOrName, chainId: ChainId.mainnet })) ?? '';
+    address = (await fetchENSAddress({ addressOrName, chainId: ChainId.mainnet })) ?? '';
   }
 
   let timestamp;
