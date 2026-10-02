@@ -38,12 +38,10 @@ vi.mock('@/features/local-auth/legacyKeychain', () => ({
 }));
 
 vi.mock('@/navigation/Navigation', () => ({
-  __esModule: true,
   default: { handleAction: vi.fn() },
 }));
 
 vi.mock('@/navigation/routesNames', () => ({
-  __esModule: true,
   default: { WALLET_ERROR_SHEET: 'WalletErrorSheet' },
 }));
 

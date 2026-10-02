@@ -12,8 +12,8 @@ vi.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
 }));
 
-vi.mock('../services/rampClient', () => ({
-  ...vi.requireActual('../services/rampClient'),
+vi.mock('../services/rampClient', async () => ({
+  ...(await vi.importActual<typeof import('../services/rampClient')>('../services/rampClient')),
   deleteCard: vi.fn(),
   listCards: vi.fn(),
 }));

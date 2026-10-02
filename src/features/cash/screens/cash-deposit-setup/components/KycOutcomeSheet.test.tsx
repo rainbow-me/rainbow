@@ -5,8 +5,8 @@ import { expect, it, vi } from 'vitest';
 import { KycRejectionReasonCode, type UnsupportedLocation } from '../../../services/userClient';
 import { KycOutcomeSheet } from './KycOutcomeSheet';
 
-vi.mock('react', () => ({
-  ...vi.requireActual('react'),
+vi.mock('react', async () => ({
+  ...(await vi.importActual<typeof import('react')>('react')),
   memo: (component: unknown) => component,
 }));
 

@@ -132,7 +132,7 @@ describe('mapWithConcurrency', () => {
     expect(maxInFlight).toBe(total);
   });
 
-  it.each([0, -3, NaN])('clamps invalid concurrency (%p) to a single serial worker', async concurrency => {
+  it.each([0, -3, NaN])('clamps invalid concurrency (%o) to a single serial worker', async concurrency => {
     const total = 3;
     let inFlight = 0;
     let maxInFlight = 0;

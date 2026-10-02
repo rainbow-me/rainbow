@@ -38,8 +38,8 @@ vi.mock('@/utils/delay', () => ({
   delay: vi.fn(() => Promise.resolve()),
 }));
 
-vi.mock('../../../services/userClient', () => ({
-  ...vi.requireActual('../../../services/userClient'),
+vi.mock('../../../services/userClient', async () => ({
+  ...(await vi.importActual<typeof import('../../../services/userClient')>('../../../services/userClient')),
   getUserStatus: vi.fn(),
   submitOnboarding: vi.fn(),
 }));

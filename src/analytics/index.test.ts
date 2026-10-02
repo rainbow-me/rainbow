@@ -26,16 +26,22 @@ vi.mock('react-native-device-info', () => ({
 }));
 
 vi.mock('@/analytics/appsflyer', () => ({
-  AppsFlyer: vi.fn().mockImplementation(() => ({
-    uid: undefined,
-    init: vi.fn(),
-    stop: vi.fn(),
-  })),
+  AppsFlyer: vi.fn().mockImplementation(function () {
+    return {
+      uid: undefined,
+      init: vi.fn(),
+      stop: vi.fn(),
+    };
+  }),
 }));
 
 vi.mock('react-native-dotenv', () => ({
-  __esModule: true,
-  POSTHOG_API_KEY: 'phc_test',
+  LOG_LEVEL: undefined,
+  LOG_DEBUG: undefined,
+
+  get POSTHOG_API_KEY() {
+    return 'phc_test';
+  },
   POSTHOG_HOST: 'https://us.i.posthog.com',
 }));
 
@@ -221,7 +227,7 @@ describe('@/analytics', () => {
 
   test('missing PostHog configuration leaves AppsFlyer initialization intact', async () => {
     const warning = vi.spyOn(logger, 'warn').mockImplementation(() => {});
-    vi.replaceProperty(analyticsConfig, 'POSTHOG_API_KEY', '');
+    vi.spyOn(analyticsConfig, 'POSTHOG_API_KEY', 'get').mockReturnValue('');
     const analytics = new Analytics();
     analytics.init({ deviceId: 'test-device' });
     analytics.track(analytics.event.pressedButton);

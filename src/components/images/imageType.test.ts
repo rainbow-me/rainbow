@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { getImageType } from './imageType';
 
-vi.mock('react-native-dotenv', () => ({ IMGIX_DOMAIN: 'rainbow.imgix.net' }));
+vi.mock('react-native-dotenv', () => ({ LOG_LEVEL: undefined, LOG_DEBUG: undefined, IMGIX_DOMAIN: 'rainbow.imgix.net' }));
 
 const encoded = (source: string) => encodeURIComponent(source);
 

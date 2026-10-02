@@ -4,7 +4,7 @@ import { OrderStatus, RampError, RampNetwork, type BuyOrder } from '../services/
 import { buildCashPurchaseTransaction } from './buildCashPurchaseTransaction';
 
 vi.mock('@/utils/ethereumUtils', () => ({ getUniqueId: vi.fn(() => 'usdc-base') }));
-vi.mock('@/utils/getUrlForTrustIconFallback', () => vi.fn(() => null));
+vi.mock('@/utils/getUrlForTrustIconFallback', () => ({ default: vi.fn(() => null) }));
 
 type CompletedBuyOrder = Extract<BuyOrder, { status: OrderStatus.Completed }>;
 

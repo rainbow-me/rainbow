@@ -102,7 +102,7 @@ describe('estimateUnlockAndSwapGasLimits', () => {
     expect(estimateApprove).not.toHaveBeenCalled();
   });
 
-  it.each([' ', 'Infinity'])('uses fallback estimates when simulation returns %p', async gasLimit => {
+  it.each([' ', 'Infinity'])('uses fallback estimates when simulation returns %o', async gasLimit => {
     vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(gasLimit);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({

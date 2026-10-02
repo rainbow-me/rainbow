@@ -21,8 +21,8 @@ import { SwapType } from '@rainbow-me/swaps';
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 import { useWatchPendingTransactions, watchPendingTransaction } from './useWatchPendingTxs';
 
-vi.mock('react', () => ({
-  ...vi.requireActual<typeof import('react')>('react'),
+vi.mock('react', async () => ({
+  ...(await vi.importActual<typeof import('react')>('react')),
   useCallback: (callback: unknown) => callback,
   useRef: (initialValue: unknown) => ({ current: initialValue }),
 }));
@@ -41,7 +41,6 @@ vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
 }));
 
 vi.mock('@/redux/store', () => ({
-  __esModule: true,
   default: {
     getState: () => ({
       settings: {

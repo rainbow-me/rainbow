@@ -17,8 +17,8 @@ vi.mock('@/navigation/Navigation', () => ({
   navigate: vi.fn(),
 }));
 
-vi.mock('../../stores/kycReturnFlowStore', () => {
-  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('../../stores/kycReturnFlowStore', async () => {
+  const { createBaseStore } = await vi.importActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useKycReturnFlowStore: createBaseStore<{ reset: () => void; state: string }>(set => ({
       state: 'idle',
@@ -27,8 +27,8 @@ vi.mock('../../stores/kycReturnFlowStore', () => {
   };
 });
 
-vi.mock('../../stores/verifyPhoneFlowStore', () => {
-  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('../../stores/verifyPhoneFlowStore', async () => {
+  const { createBaseStore } = await vi.importActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useVerifyPhoneFlowStore: createBaseStore<{ kycOutcome: string | null; reset: () => void }>(set => ({
       kycOutcome: null,
@@ -37,8 +37,8 @@ vi.mock('../../stores/verifyPhoneFlowStore', () => {
   };
 });
 
-vi.mock('./steps/useSubmitReviewFlow', () => {
-  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('./steps/useSubmitReviewFlow', async () => {
+  const { createBaseStore } = await vi.importActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useSubmitReviewFlowStore: createBaseStore<{ reset: () => void; state: string }>(set => ({
       state: 'entry',

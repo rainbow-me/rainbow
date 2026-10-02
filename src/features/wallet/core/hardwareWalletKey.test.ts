@@ -7,7 +7,7 @@ describe('isHardwareWalletKey', () => {
     expect(isHardwareWalletKey('device-id/12')).toBe(true);
   });
 
-  it.each([null, 'device-id/', '/12', 'device-id/account', 'device-id/12/extra'])('rejects malformed hardware key %p', key => {
+  it.each([null, 'device-id/', '/12', 'device-id/account', 'device-id/12/extra'])('rejects malformed hardware key %o', key => {
     expect(isHardwareWalletKey(key)).toBe(false);
   });
 });

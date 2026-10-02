@@ -7,6 +7,11 @@ import { fetchRawTransaction } from './transaction';
 
 vi.mock('@/env', () => ({
   IS_TEST: false,
+  IS_DEV: false,
+  IS_PROD: false,
+  IS_STORE_INSTALL: false,
+  RPC_PROXY_API_KEY: undefined,
+  RPC_PROXY_BASE_URL: undefined,
 }));
 
 vi.mock('@/features/config/stores/experimentalConfigStore', () => ({

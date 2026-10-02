@@ -5,8 +5,8 @@ import { useTimestampReached } from './useTimestampReached';
 const mockUseEffect = vi.fn<(effect: () => void | (() => void)) => void>();
 let mockState: boolean | undefined;
 
-vi.mock('react', () => ({
-  ...(vi.requireActual('react') as object),
+vi.mock('react', async () => ({
+  ...((await vi.importActual<typeof import('react')>('react')) as object),
   useEffect: (effect: () => void | (() => void)) => mockUseEffect(effect),
   useState: (initialValue: () => boolean) => {
     mockState ??= initialValue();

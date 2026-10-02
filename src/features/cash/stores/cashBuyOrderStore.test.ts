@@ -43,8 +43,8 @@ vi.mock('@/logger', () => ({
   },
 }));
 
-vi.mock('../services/rampClient', () => ({
-  ...vi.requireActual('../services/rampClient'),
+vi.mock('../services/rampClient', async () => ({
+  ...(await vi.importActual<typeof import('../services/rampClient')>('../services/rampClient')),
   createBuyOrder: vi.fn(),
   getOrder: vi.fn(),
 }));

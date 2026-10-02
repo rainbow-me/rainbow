@@ -30,13 +30,13 @@ vi.mock('./steps/useAddPasskeyFlow', () => ({
   useAddPasskeyFlowStore: {},
 }));
 
-vi.mock('./steps/useSubmitReviewFlow', () => {
-  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('./steps/useSubmitReviewFlow', async () => {
+  const { createBaseStore } = await vi.importActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return { useSubmitReviewFlowStore: createBaseStore(() => ({ state: 'entry', kycSubmitted: false })) };
 });
 
-vi.mock('../../stores/kycReturnFlowStore', () => {
-  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('../../stores/kycReturnFlowStore', async () => {
+  const { createBaseStore } = await vi.importActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return { useKycReturnFlowStore: createBaseStore(() => ({ state: 'idle', check: vi.fn(), reset: vi.fn() })) };
 });
 

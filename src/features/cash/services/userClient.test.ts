@@ -160,7 +160,7 @@ describe('verifyPhone', () => {
     await expect(verifyPhone(PARAMS)).rejects.toThrow('invalid bootstrap token');
   });
 
-  it.each(['300', '0s', '-1s', 'NaNs', '1.0000000001s', 600, undefined])('rejects invalid expiry %p', async expiresIn => {
+  it.each(['300', '0s', '-1s', 'NaNs', '1.0000000001s', 600, undefined])('rejects invalid expiry %o', async expiresIn => {
     post.mockResolvedValue({ data: { bootstrapToken: 'bst_test', expiresIn } });
 
     await expect(verifyPhone(PARAMS)).rejects.toThrow('invalid bootstrap token expiry');

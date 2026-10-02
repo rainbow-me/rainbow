@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`rendering names the tests a killed shard never got to 1`] = `
+exports[`rendering > names the tests a killed shard never got to 1`] = `
 "**1 did not run · 1 passed**
 
 |  | Test | Shard | Attempts | Time |
@@ -11,7 +11,7 @@ exports[`rendering names the tests a killed shard never got to 1`] = `
 "
 `;
 
-exports[`rendering reports an all-green run 1`] = `
+exports[`rendering > reports an all-green run 1`] = `
 "**2 passed**
 
 |  | Test | Shard | Attempts | Time |
@@ -22,13 +22,13 @@ exports[`rendering reports an all-green run 1`] = `
 "
 `;
 
-exports[`rendering says so plainly when no shard reported anything 1`] = `
+exports[`rendering > says so plainly when no shard reported anything 1`] = `
 "No e2e results were reported. Look into the shard jobs instead.
 
 "
 `;
 
-exports[`rendering skips a half-written row without losing the rest of the file 1`] = `
+exports[`rendering > skips a half-written row without losing the rest of the file 1`] = `
 "**1 passed**
 
 |  | Test | Shard | Attempts | Time |
@@ -38,7 +38,7 @@ exports[`rendering skips a half-written row without losing the rest of the file 
 "
 `;
 
-exports[`rendering sorts failures and retries above passes, merging every shard file 1`] = `
+exports[`rendering > sorts failures and retries above passes, merging every shard file 1`] = `
 "**1 failed · 1 retried · 1 passed**
 
 |  | Test | Shard | Attempts | Time |
@@ -50,7 +50,7 @@ exports[`rendering sorts failures and retries above passes, merging every shard 
 "
 `;
 
-exports[`shards that never reported lists every missing shard when more than one is gone 1`] = `
+exports[`shards that never reported > lists every missing shard when more than one is gone 1`] = `
 "**3 did not report · 1 passed**
 
 > [!WARNING]
@@ -66,7 +66,7 @@ exports[`shards that never reported lists every missing shard when more than one
 "
 `;
 
-exports[`shards that never reported names the shard whose ledger never arrived, and warns the table is partial 1`] = `
+exports[`shards that never reported > names the shard whose ledger never arrived, and warns the table is partial 1`] = `
 "**1 did not report · 2 passed**
 
 > [!WARNING]
@@ -81,7 +81,7 @@ exports[`shards that never reported names the shard whose ledger never arrived, 
 "
 `;
 
-exports[`shards that never reported treats an empty ledger as having reported, since the shard wrote it before running anything 1`] = `
+exports[`shards that never reported > treats an empty ledger as having reported, since the shard wrote it before running anything 1`] = `
 "**1 passed**
 
 |  | Test | Shard | Attempts | Time |

@@ -46,7 +46,6 @@ vi.mock('@/resources/nfts', () => ({
 }));
 
 vi.mock('@/redux/store', () => ({
-  __esModule: true,
   default: {
     getState: () => ({
       settings: {

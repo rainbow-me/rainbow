@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
 
@@ -70,10 +70,6 @@ const TEST_CASES: TestCase[] = [
 ];
 
 describe('NiceIncrementFormatter', () => {
-  beforeAll(() => {
-    vi.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
-  });
-
   TEST_CASES.forEach(({ testName, expectedResult, ...params }, index) => {
     test(testName || `test-${index}`, () => {
       expect(niceIncrementFormatter({ ...params })).toBe(expectedResult);

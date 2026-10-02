@@ -17,12 +17,14 @@ const mockWalletExecuteRap = vi.fn();
 
 vi.mock('ethers', () => ({
   ethers: {
-    Contract: vi.fn(() => ({
-      interface: {
-        encodeFunctionData: (...args: unknown[]) => mockEncodeFunctionData(...args),
-      },
-      transfer: (...args: unknown[]) => mockContractTransfer(...args),
-    })),
+    Contract: vi.fn(function () {
+      return {
+        interface: {
+          encodeFunctionData: (...args: unknown[]) => mockEncodeFunctionData(...args),
+        },
+        transfer: (...args: unknown[]) => mockContractTransfer(...args),
+      };
+    }),
   },
   Wallet: class MockWallet {},
 }));

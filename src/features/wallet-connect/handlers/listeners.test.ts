@@ -9,7 +9,7 @@ import { delay } from '@/utils/delay';
 import { getWalletKitClient } from '../services/client';
 import { initWalletConnectPushNotifications } from './listeners';
 
-vi.mock('@react-native-firebase/messaging', () => vi.fn());
+vi.mock('@react-native-firebase/messaging', () => ({ default: vi.fn() }));
 vi.mock('gretchen', () => ({
   gretch: vi.fn(),
 }));

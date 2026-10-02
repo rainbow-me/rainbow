@@ -37,12 +37,10 @@ vi.mock('@/logger', () => ({
 }));
 
 vi.mock('@/navigation/Navigation', () => ({
-  __esModule: true,
   default: { handleAction: vi.fn() },
 }));
 
 vi.mock('@/navigation/routesNames', () => ({
-  __esModule: true,
   default: {
     PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
     PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',

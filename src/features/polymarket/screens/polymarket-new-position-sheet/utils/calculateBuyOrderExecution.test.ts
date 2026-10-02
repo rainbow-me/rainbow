@@ -9,8 +9,8 @@ vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
 }));
 
-vi.mock('@polymarket/clob-client-v2', () => {
-  const actual = vi.requireActual<typeof import('@polymarket/clob-client-v2')>('@polymarket/clob-client-v2');
+vi.mock('@polymarket/clob-client-v2', async () => {
+  const actual = await vi.importActual<typeof import('@polymarket/clob-client-v2')>('@polymarket/clob-client-v2');
   return { ...actual, adjustBuyAmountForFees: vi.fn(actual.adjustBuyAmountForFees) };
 });
 
