@@ -1,63 +1,55 @@
-import React, { memo } from 'react';
+import React, { memo, use, type ReactElement } from 'react';
 import { Platform, View } from 'react-native';
 
-import { useColorMode } from '@/design-system/color/ColorMode';
+import { ColorModeContext } from '@/design-system/color/ColorMode';
 import { type ForegroundColor } from '@/design-system/color/palettes';
-import { useForegroundColor, type CustomColor } from '@/design-system/color/useForegroundColor';
+import { getColorForTheme, type CustomColor } from '@/design-system/color/useForegroundColor';
 
 export type BorderProps = {
+  borderColor?: ForegroundColor | CustomColor;
+  borderRadius?: number;
   borderBottomLeftRadius?: number;
   borderBottomRightRadius?: number;
-  borderColor?: ForegroundColor | CustomColor;
   borderTopLeftRadius?: number;
   borderTopRightRadius?: number;
-  borderRadius?: number;
+  borderWidth?: number;
   borderBottomWidth?: number;
   borderLeftWidth?: number;
   borderRightWidth?: number;
   borderTopWidth?: number;
-  borderWidth?: number;
+
+  /** Whether to show the border in light color modes. Defaults to `false`. */
   enableInLightMode?: boolean;
+  /** Whether to show the border on Android. Defaults to `true`. */
   enableOnAndroid?: boolean;
 } & (
-  | {
-      borderBottomRadius?: number;
-      borderLeftRadius?: never;
-      borderRightRadius?: never;
-      borderTopRadius?: number;
-    }
-  | {
-      borderBottomRadius?: never;
-      borderLeftRadius?: number;
-      borderRightRadius?: number;
-      borderTopRadius?: never;
-    }
+  | { borderBottomRadius?: number; borderLeftRadius?: never; borderRightRadius?: never; borderTopRadius?: number }
+  | { borderBottomRadius?: never; borderLeftRadius?: number; borderRightRadius?: number; borderTopRadius?: never }
 );
 
-export const Border = memo(function Border({
-  borderBottomLeftRadius,
-  borderBottomRadius,
-  borderBottomRightRadius,
-  borderColor = 'separatorSecondary',
-  borderLeftRadius,
-  borderRadius,
-  borderRightRadius,
-  borderTopLeftRadius,
-  borderTopRadius,
-  borderTopRightRadius,
-  borderBottomWidth,
-  borderLeftWidth,
-  borderRightWidth,
-  borderTopWidth,
-  borderWidth = 1,
-  enableInLightMode,
-  enableOnAndroid = true,
-}: BorderProps) {
-  const { isDarkMode } = useColorMode();
+/**
+ * Non-interactive border overlay that fills its parent. Defaults
+ * to hidden in light mode unless `enableInLightMode` is set.
+ */
+export const Border = memo(function Border(props: BorderProps): ReactElement | null {
+  if (Platform.OS === 'android' && props.enableOnAndroid === false) return null;
 
-  const color = useForegroundColor(borderColor);
+  const borderColor = props.borderColor ?? 'separatorSecondary';
+  const enableInLightMode = props.enableInLightMode ?? false;
+  let color: string;
 
-  return (isDarkMode || enableInLightMode) && (Platform.OS === 'ios' || enableOnAndroid) ? (
+  if (enableInLightMode && typeof borderColor === 'object' && typeof borderColor.custom === 'string') {
+    color = borderColor.custom;
+  } else {
+    const colorMode = use(ColorModeContext).colorMode;
+    const isDarkMode = colorMode === 'dark' || colorMode === 'darkTinted';
+    if (!isDarkMode && !enableInLightMode) return null;
+    color = getColorForTheme(borderColor, colorMode);
+  }
+
+  const { borderBottomRadius, borderLeftRadius, borderRadius, borderRightRadius, borderTopRadius, borderWidth = 1 } = props;
+
+  return (
     <View
       pointerEvents="none"
       style={{
@@ -66,19 +58,19 @@ export const Border = memo(function Border({
         left: 0,
         right: 0,
         top: 0,
-        borderBottomLeftRadius: borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,
-        borderBottomRightRadius: borderBottomRightRadius ?? borderBottomRadius ?? borderRightRadius ?? borderRadius,
+        borderBottomLeftRadius: props.borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,
+        borderBottomRightRadius: props.borderBottomRightRadius ?? borderBottomRadius ?? borderRightRadius ?? borderRadius,
         borderColor: color,
         borderCurve: 'continuous',
-        borderTopLeftRadius: borderTopLeftRadius ?? borderTopRadius ?? borderLeftRadius ?? borderRadius,
-        borderTopRightRadius: borderTopRightRadius ?? borderTopRadius ?? borderRightRadius ?? borderRadius,
-        borderBottomWidth: borderBottomWidth ?? borderWidth,
-        borderLeftWidth: borderLeftWidth ?? borderWidth,
-        borderRightWidth: borderRightWidth ?? borderWidth,
-        borderTopWidth: borderTopWidth ?? borderWidth,
+        borderTopLeftRadius: props.borderTopLeftRadius ?? borderTopRadius ?? borderLeftRadius ?? borderRadius,
+        borderTopRightRadius: props.borderTopRightRadius ?? borderTopRadius ?? borderRightRadius ?? borderRadius,
+        borderBottomWidth: props.borderBottomWidth ?? borderWidth,
+        borderLeftWidth: props.borderLeftWidth ?? borderWidth,
+        borderRightWidth: props.borderRightWidth ?? borderWidth,
+        borderTopWidth: props.borderTopWidth ?? borderWidth,
         overflow: 'hidden',
         zIndex: 100,
       }}
     />
-  ) : null;
+  );
 });
