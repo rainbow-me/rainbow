@@ -1,6 +1,9 @@
+import { type RefObject } from 'react';
 import { LayoutAnimation, Platform, type LayoutAnimationConfig, type ScrollViewProps } from 'react-native';
 
-import { BaseItemAnimator, type RecyclerListViewProps } from 'recyclerlistview';
+import { BaseItemAnimator } from 'recyclerlistview';
+
+import { type RecyclerListViewRef } from './ViewTypes';
 
 const EASING_ANIMATION: LayoutAnimationConfig = {
   duration: 250,
@@ -21,14 +24,12 @@ const SPRING_ANIMATION: LayoutAnimationConfig = {
 
 /** Selects the row-update animation from the list's current scroll position. */
 export class AssetListItemAnimator extends BaseItemAnimator {
-  private scrollOffset = 0;
   private viewportHeight = 0;
   private contentHeight = 0;
 
-  /** Receives the scroll position from RecyclerListView. */
-  readonly onScroll: NonNullable<RecyclerListViewProps['onScroll']> = (_event, _offsetX, offsetY) => {
-    this.scrollOffset = offsetY;
-  };
+  constructor(private readonly listRef: RefObject<RecyclerListViewRef | undefined>) {
+    super();
+  }
 
   /** Measures the native viewport and full content, including headers and padding. */
   readonly scrollViewProps: Pick<ScrollViewProps, 'onLayout' | 'onContentSizeChange'> = {
@@ -41,11 +42,9 @@ export class AssetListItemAnimator extends BaseItemAnimator {
   };
 
   override animateWillUpdate(): void {
+    const scrollOffset = this.listRef.current?.getCurrentScrollOffset() ?? 0;
     const bottomIsVisible =
-      this.scrollOffset > 0 &&
-      this.viewportHeight > 0 &&
-      this.contentHeight > 0 &&
-      this.scrollOffset + this.viewportHeight >= this.contentHeight;
+      scrollOffset > 0 && this.viewportHeight > 0 && this.contentHeight > 0 && scrollOffset + this.viewportHeight >= this.contentHeight;
 
     LayoutAnimation.configureNext(bottomIsVisible ? EASING_ANIMATION : SPRING_ANIMATION);
   }
