@@ -125,7 +125,7 @@
     "update-tokens": "yarn update-token-list"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,graphql,yml,yaml}": [
+    "*.{js,jsx,ts,tsx,mts,graphql,yml,yaml}": [
       "prettier --write",
       "eslint --cache"
     ]
@@ -401,6 +401,7 @@
     "@babel/plugin-transform-export-namespace-from": "^7.25.9",
     "@babel/plugin-transform-runtime": "^7.25.0",
     "@babel/runtime": "^7.25.0",
+    "@expo/fingerprint": "0.20.13",
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@lavamoat/allow-scripts": "3.0.1",
     "@react-native-community/cli": "20.0.2",

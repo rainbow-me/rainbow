@@ -23,7 +23,7 @@
    [installation docs](https://mise.jdx.dev/getting-started.html) for shell
    activation (required so tool versions auto-switch when you `cd` into the repo).
 2. From the repo root: `mise install`. This installs all pinned tools. Use Node
-   22.18+ in the pinned 22.x line (or 23.6+); Metro uses built-in TypeScript support.
+   22.18+ in the pinned 22.x line (or 23.6+); Metro and native fingerprinting use built-in TypeScript support.
 3. Enable yarn: `corepack enable`
 
 ### Internal developers

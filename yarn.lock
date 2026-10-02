@@ -2946,27 +2946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/fingerprint@npm:^0.11.6":
-  version: 0.11.11
-  resolution: "@expo/fingerprint@npm:0.11.11"
-  dependencies:
-    "@expo/spawn-async": "npm:^1.7.2"
-    arg: "npm:^5.0.2"
-    chalk: "npm:^4.1.2"
-    debug: "npm:^4.3.4"
-    find-up: "npm:^5.0.0"
-    getenv: "npm:^1.0.0"
-    minimatch: "npm:^3.0.4"
-    p-limit: "npm:^3.1.0"
-    resolve-from: "npm:^5.0.0"
-    semver: "npm:^7.6.0"
-  bin:
-    fingerprint: bin/cli.js
-  checksum: 10c0/91fb9a8af65340dce36f3d783361755fd545f1e4ced1fd7ae81284bf56039566c2bda302d3519764c36485dd9b1f7d87e4622ae5aa82ef9e0ab7bcd93bf8b566
-  languageName: node
-  linkType: hard
-
-"@expo/fingerprint@npm:^0.20.10":
+"@expo/fingerprint@npm:0.20.13, @expo/fingerprint@npm:^0.20.10":
   version: 0.20.13
   resolution: "@expo/fingerprint@npm:0.20.13"
   dependencies:
@@ -2984,6 +2964,26 @@ __metadata:
   bin:
     fingerprint: bin/cli.js
   checksum: 10c0/0fc278d17080b5855db1d0afd3b6d5d4c8eaccbe53542c9d8fc5c7e385b43b03c4445ba11d085fc8c86308347efb774d75a9c0201973e7b0d8a6823af36e1159
+  languageName: node
+  linkType: hard
+
+"@expo/fingerprint@npm:^0.11.6":
+  version: 0.11.11
+  resolution: "@expo/fingerprint@npm:0.11.11"
+  dependencies:
+    "@expo/spawn-async": "npm:^1.7.2"
+    arg: "npm:^5.0.2"
+    chalk: "npm:^4.1.2"
+    debug: "npm:^4.3.4"
+    find-up: "npm:^5.0.0"
+    getenv: "npm:^1.0.0"
+    minimatch: "npm:^3.0.4"
+    p-limit: "npm:^3.1.0"
+    resolve-from: "npm:^5.0.0"
+    semver: "npm:^7.6.0"
+  bin:
+    fingerprint: bin/cli.js
+  checksum: 10c0/91fb9a8af65340dce36f3d783361755fd545f1e4ced1fd7ae81284bf56039566c2bda302d3519764c36485dd9b1f7d87e4622ae5aa82ef9e0ab7bcd93bf8b566
   languageName: node
   linkType: hard
 
@@ -9342,6 +9342,7 @@ __metadata:
     "@ethersproject/transactions": "npm:5.8.0"
     "@ethersproject/units": "npm:5.8.0"
     "@ethersproject/wallet": "npm:5.8.0"
+    "@expo/fingerprint": "npm:0.20.13"
     "@gorhom/bottom-sheet": "npm:5.2.8"
     "@ianvs/prettier-plugin-sort-imports": "npm:4.7.1"
     "@json-rpc-tools/utils": "npm:1.7.6"

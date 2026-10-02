@@ -90,7 +90,7 @@ test('missing environment declarations fail instead of accepting an incomplete i
 });
 
 test('every dotenv import in Rainbow participates in the transform identity', () => {
-  const project = join(__dirname, '../..');
+  const project = join(import.meta.dirname, '../..');
   const sourceRoot = join(project, 'src');
   const names = new Set<string>();
   for (const file of readdirSync(sourceRoot, { recursive: true, encoding: 'utf8' })) {
@@ -121,17 +121,7 @@ function write(path: string, contents: string): void {
 }
 
 function transformEnvironment(): string {
-  const transform = `
-    const babel = require(${JSON.stringify(require.resolve('@babel/core'))});
-    const plugin = require(${JSON.stringify(require.resolve('react-native-dotenv'))});
-    const result = babel.transformSync('import { DOTENV_VALUE } from "react-native-dotenv"; export const value = DOTENV_VALUE;', {
-      configFile: false,
-      babelrc: false,
-      plugins: [[plugin, { moduleName: 'react-native-dotenv' }]],
-    });
-    process.stdout.write(result.code);
-  `;
-  return execFileSync(process.execPath, ['-e', transform], {
+  return execFileSync(process.execPath, [join(import.meta.dirname, 'fixtures/transformEnvironment.mts')], {
     cwd: root,
     encoding: 'utf8',
     env: { ...process.env, DOTENV_VALUE: undefined },

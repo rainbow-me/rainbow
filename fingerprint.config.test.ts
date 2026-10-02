@@ -1,20 +1,18 @@
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-const require = createRequire(import.meta.url);
 const PROJECT_ROOT = import.meta.dirname;
-const STIM_PACKAGE = require.resolve('stim/package.json');
 let root: string;
 
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'rainbow-native-fingerprint-'));
   for (const file of [
     'fingerprint.config.cjs',
+    'fingerprint.config.ts',
     '.node-version',
     '.ruby-version',
     '.xcode-version',
@@ -50,18 +48,7 @@ test('the optional testing marker distinguishes normal and E2E artifacts', () =>
 });
 
 function fingerprint(env: Partial<NodeJS.ProcessEnv> = {}): string {
-  const script = `
-    const { createRequire } = require('node:module');
-    const fromStim = createRequire(${JSON.stringify(STIM_PACKAGE)});
-    const { createFingerprintAsync } = fromStim('@expo/fingerprint');
-    createFingerprintAsync(process.cwd(), { platforms: [], silent: true }).then(result => {
-      const environment = result.sources.find(source => source.id === 'rainbowBuildEnvironment');
-      const dotenv = result.sources.find(source => source.filePath === '.env');
-      if (!environment?.hash || !dotenv?.hash) throw new Error('Rainbow fingerprint configuration was not loaded');
-      process.stdout.write(result.hash);
-    }).catch(error => { console.error(error); process.exitCode = 1; });
-  `;
-  return execFileSync(process.execPath, ['-e', script], {
+  return execFileSync(process.execPath, [join(PROJECT_ROOT, 'tools/stim/fixtures/fingerprint.mts')], {
     cwd: root,
     encoding: 'utf8',
     env: { ...process.env, CXXFLAGS: undefined, ...env },
