@@ -30,18 +30,16 @@ export default function ContextMenuAndroid({
   enableContextMenu = true,
   menuConfig: { menuItems, menuTitle },
   anchorAndroidMenuToRight,
-  isMenuPrimaryAction = true,
   onPressMenuItem,
-  shouldOpenOnLongPress = !isMenuPrimaryAction,
+  requireLongPressToOpen = false,
   style,
   testID,
 }: PropsWithChildren<{
   enableContextMenu?: boolean;
   menuConfig: MenuConfig;
   anchorAndroidMenuToRight?: boolean;
-  isMenuPrimaryAction?: boolean;
   onPressMenuItem: (event: { nativeEvent: { actionKey: string } }) => void;
-  shouldOpenOnLongPress?: boolean;
+  requireLongPressToOpen?: boolean;
   style?: NativeMenuComponentProps['style'];
   testID?: string;
 }>) {
@@ -60,10 +58,10 @@ export default function ContextMenuAndroid({
   });
   const buttonActions = useMemo(
     () => ({
-      onPress: enableContextMenu && !shouldOpenOnLongPress ? openMenu : null,
-      onLongPress: enableContextMenu && shouldOpenOnLongPress ? openMenu : null,
+      onPress: enableContextMenu && !requireLongPressToOpen ? openMenu : null,
+      onLongPress: enableContextMenu && requireLongPressToOpen ? openMenu : null,
     }),
-    [enableContextMenu, openMenu, shouldOpenOnLongPress]
+    [enableContextMenu, openMenu, requireLongPressToOpen]
   );
 
   const content = <ButtonPressContext.Provider value={buttonActions}>{children}</ButtonPressContext.Provider>;

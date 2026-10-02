@@ -180,7 +180,6 @@ const Tag = ({
         menuConfig={menuConfig}
         {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
         enableContextMenu
-        isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         wrapNativeComponent={false}
       >
