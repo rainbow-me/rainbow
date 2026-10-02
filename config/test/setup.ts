@@ -1,9 +1,6 @@
 import './native';
 
-import { configureStores } from '@storesjs/stores';
 import { vi } from 'vitest';
-
-import { rainbowStorage } from '@/state/internal/rainbowStorage';
 
 vi.stubGlobal('__DEV__', true);
 vi.stubGlobal('ios', false);
@@ -20,4 +17,10 @@ vi.mock('@/env', () => ({
   web: false,
 }));
 
-configureStores({ storage: rainbowStorage });
+// Initialize storage on the first store import, preserving the real exports.
+vi.mock('@storesjs/stores', async importOriginal => {
+  const stores = await importOriginal<typeof import('@storesjs/stores')>();
+  const { rainbowStorage } = await import('@/state/internal/rainbowStorage');
+  stores.configureStores({ storage: rainbowStorage });
+  return stores;
+});
