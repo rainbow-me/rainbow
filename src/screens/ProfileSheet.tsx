@@ -10,6 +10,7 @@ import { ProfileSheetConfigContext } from '@/features/ens/components/profile/Pro
 import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { useENSAddress } from '@/features/ens/resources/addressQuery';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -35,6 +36,7 @@ export function ProfileSheet() {
   const ensName = params?.address;
   const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
     name: ensName,
+    chainId: ChainId.mainnet,
   });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 

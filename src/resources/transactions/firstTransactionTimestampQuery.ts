@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { isAddress } from 'viem';
 
 import { fetchENSAddress } from '@/features/ens/resources/addressQuery';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
 
@@ -28,8 +30,8 @@ export async function firstTransactionTimestampQueryFunction({
   if (!addressOrName) return null;
 
   let address = addressOrName;
-  if (addressOrName.includes('.eth')) {
-    address = (await fetchENSAddress({ name: addressOrName })) ?? '';
+  if (!isAddress(addressOrName)) {
+    address = (await fetchENSAddress({ name: addressOrName, chainId: ChainId.mainnet })) ?? '';
   }
 
   let timestamp;

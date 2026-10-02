@@ -7,6 +7,7 @@ import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
@@ -44,7 +45,7 @@ export function ProfileSheetHeader({
   const ensName = defaultEnsName || params?.address;
 
   const { data: profileAddress } = useENSAddress(
-    { name: ensName },
+    { name: ensName, chainId: ChainId.mainnet },
     {
       enabled: profilesEnabled,
     }

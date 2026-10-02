@@ -10,10 +10,11 @@ import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/addre
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { resolveEnsAddress } from '@/features/ens/data/ens';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { isValidWallet } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -143,9 +144,8 @@ export default function useImportingWallet({
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const provider = getProvider({ chainId: ChainId.mainnet });
           const [address, avatar] = await Promise.all([
-            provider.resolveName(input),
+            resolveEnsAddress(input, ChainId.mainnet),
             !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {

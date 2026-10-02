@@ -1,8 +1,9 @@
 import { isValidAddress } from 'ethereumjs-util';
+import { normalize } from 'viem/ens';
 
 import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
+import { isHexStringIgnorePrefix, isValidMnemonic, resolveNameOrAddress } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 /**
@@ -15,42 +16,30 @@ export const isValidEmail = (email: any) =>
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
 
-/**
- * @desc validate ethereum address, ENS, or Unstoppable name formatting
- * @param  {String} address, ENS, or Unstoppable
- * @return {Boolean}
- */
-export const checkIsValidAddressOrDomainFormat = (address: any) => {
-  if (isENSAddressFormat(address)) {
+/** Checks address or name syntax without requiring a record on a particular chain. */
+export function checkIsValidAddressOrDomainFormat(input: string | null | undefined): boolean {
+  if (!input) return false;
+  const value = input.trim();
+  if (isValidAddress(value)) return true;
+  if (value.startsWith('0x') || !value.includes('.')) return false;
+  if (isUnstoppableAddressFormat(value)) return true;
+  try {
+    normalize(value);
     return true;
+  } catch {
+    return false;
   }
-  if (isUnstoppableAddressFormat(address)) {
-    return true;
-  }
-  return isValidAddress(address);
-};
+}
 
-/**
- * @desc validate ethereum address, ENS, or Unstoppable name
- * @param  {String} address, ENS, or Unstoppable
- * @return {Boolean}
- */
-export const checkIsValidAddressOrDomain = async (address: any) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  if (isENSAddressFormat(address)) {
-    try {
-      const resolvedAddress = await provider.resolveName(address);
-      return !!resolvedAddress;
-    } catch (error) {
-      return false;
-    }
+/** Checks whether an address or name has an Ethereum destination for chain-agnostic legacy callers. */
+export async function checkIsValidAddressOrDomain(input: string | null | undefined): Promise<boolean> {
+  if (!input || !checkIsValidAddressOrDomainFormat(input)) return false;
+  try {
+    return (await resolveNameOrAddress(input, ChainId.mainnet)) !== null;
+  } catch {
+    return false;
   }
-  if (isUnstoppableAddressFormat(address)) {
-    const resolvedAddress = await resolveUnstoppableDomain(address);
-    return !!resolvedAddress;
-  }
-  return isValidAddress(address);
-};
+}
 
 /**
  * @desc validate seed phrase mnemonic

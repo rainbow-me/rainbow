@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import { isEmpty, isEqual, isString } from 'lodash';
 import { useDebounce } from 'use-debounce';
+import { getAddress, isAddress } from 'viem';
 
 import { analytics } from '@/analytics';
 import { Column } from '@/components/layout';
@@ -36,7 +38,7 @@ import {
   resolveNameOrAddress,
 } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
-import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
+import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -44,6 +46,7 @@ import useContacts from '@/hooks/useContacts';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import usePrevious from '@/hooks/usePrevious';
 import useUserAccounts from '@/hooks/useUserAccounts';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -166,7 +169,6 @@ export function SendSheet() {
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const { pinnedCoinsObj } = useCoinListEditOptions();
-  const [toAddress, setToAddress] = useState<string>('');
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -185,19 +187,37 @@ export function SendSheet() {
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
   const [maxEnabled, setMaxEnabled] = useState(false);
 
-  const [debouncedInput] = useDebounce(currentInput, 500);
   const [debouncedRecipient] = useDebounce(recipient, 500);
   const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
 
-  const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
+  const input = recipient.trim();
+  const address = useMemo(() => (isAddress(input) ? getAddress(input) : null), [input]);
+  const isRecipientInputValid = useMemo(
+    () => address !== null || (input === debouncedRecipient.trim() && checkIsValidAddressOrDomainFormat(input)),
+    [address, debouncedRecipient, input]
+  );
+  const destinationChainId = selected?.chainId ?? chainId;
+  const recipientQuery = useQuery({
+    queryKey: ['sendRecipient', input, destinationChainId],
+    queryFn: ({ signal }) => resolveNameOrAddress(input, destinationChainId, signal),
+    enabled: isRecipientInputValid && address === null,
+    cacheTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const toAddress = address ?? (recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
+  const isValidAddress = Boolean(toAddress);
+  const isResolvingAddress = isRecipientInputValid && address === null && recipientQuery.isFetching;
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
   const { nativeCurrencyInputRef, setLastFocusedInputHandle, assetInputRef } = useSendSheetInputRefs();
 
-  const showEmptyState = !isValidAddress;
-  const showAssetList = isValidAddress && isEmpty(selected);
-  const showAssetForm = isValidAddress && !isEmpty(selected);
+  const showEmptyState = !isRecipientInputValid;
+  const showAssetList = isRecipientInputValid && isEmpty(selected);
+  const showAssetForm = isRecipientInputValid && !isEmpty(selected);
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
@@ -308,7 +328,6 @@ export function SendSheet() {
 
   useEffect(() => {
     if (recipientOverride && !recipient) {
-      setIsValidAddress(true);
       setRecipient(recipientOverride);
     }
 
@@ -381,23 +400,6 @@ export function SendSheet() {
     [maxEnabled, sendUpdateAssetAmount]
   );
 
-  useEffect(() => {
-    const resolveAddressIfNeeded = async () => {
-      const isValid = checkIsValidAddressOrDomainFormat(debouncedRecipient);
-      if (isValid) {
-        const resolvedAddress = await resolveNameOrAddress(debouncedRecipient);
-        if (resolvedAddress && typeof resolvedAddress === 'string') {
-          setToAddress(resolvedAddress);
-        } else {
-          setIsValidAddress(false);
-        }
-      } else {
-        setIsValidAddress(false);
-      }
-    };
-    debouncedRecipient && resolveAddressIfNeeded();
-  }, [debouncedRecipient]);
-
   const updateTxFeeForOptimism = useCallback(
     async (updatedGasLimit: string) => {
       if (!selected || !currentProvider) return;
@@ -436,6 +438,19 @@ export function SendSheet() {
   });
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
+    if (!toAddress) {
+      return {
+        buttonDisabled: !recipientQuery.isError,
+        buttonLabel: recipientQuery.isError
+          ? i18n.t(i18n.l.send.retry_recipient)
+          : recipientQuery.isSuccess
+            ? i18n.t(i18n.l.send.no_address_on_network)
+            : i18n.t(i18n.l.button.confirm_exchange.loading),
+      };
+    }
+    if (currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
+      return { buttonDisabled: true, buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading) };
+    }
     const isGasFeeReady =
       !isEmpty(gasFeeParamsBySpeed) &&
       Boolean(selectedGasFee) &&
@@ -459,6 +474,10 @@ export function SendSheet() {
       sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
+    currentProvider,
+    destinationChainId,
+    recipientQuery.isError,
+    recipientQuery.isSuccess,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
@@ -477,16 +496,8 @@ export function SendSheet() {
     isValidGas,
   ]);
 
-  const showConfirmationSheet = useCallback(async () => {
-    if (buttonDisabled || !selected) return;
-    let toAddress = recipient;
-    const isValid = await checkIsValidAddressOrDomain(recipient);
-    if (isValid) {
-      const resolvedAddress = await resolveNameOrAddress(recipient);
-      if (resolvedAddress && typeof resolvedAddress === 'string') {
-        toAddress = resolvedAddress;
-      }
-    }
+  const showConfirmationSheet = useCallback(() => {
+    if (buttonDisabled || !selected || !toAddress) return;
     const tokenAddress = !isUniqueAsset ? selected?.address : undefined;
     const validRecipient = validateRecipient(toAddress, tokenAddress);
     assetInputRef?.current?.blur();
@@ -514,7 +525,7 @@ export function SendSheet() {
       ensProfile,
       isENS,
       chainId,
-      toAddress: recipient,
+      toAddress,
     });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
@@ -535,6 +546,7 @@ export function SendSheet() {
     buttonDisabled,
     selected,
     recipient,
+    toAddress,
     isUniqueAsset,
     assetInputRef,
     nativeCurrencyInputRef,
@@ -558,11 +570,6 @@ export function SendSheet() {
 
   const onChangeInput = useCallback(
     (text: string) => {
-      const isValid = checkIsValidAddressOrDomainFormat(text);
-      if (!isValid) {
-        setIsValidAddress(false);
-        setToAddress('');
-      }
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
@@ -579,17 +586,10 @@ export function SendSheet() {
   }, [updateDefaultGasLimit]);
 
   useEffect(() => {
-    if ((isValidAddress && showAssetList) || (isValidAddress && showAssetForm && assetIsUniqueAsset(selected))) {
+    if (showAssetList || (showAssetForm && assetIsUniqueAsset(selected))) {
       Keyboard.dismiss();
     }
-  }, [isValidAddress, selected, showAssetForm, showAssetList]);
-
-  const checkAddress = useCallback((recipient: string) => {
-    if (recipient) {
-      const isValidFormat = checkIsValidAddressOrDomainFormat(recipient);
-      setIsValidAddress(isValidFormat);
-    }
-  }, []);
+  }, [selected, showAssetForm, showAssetList]);
 
   const [ensSuggestions, setEnsSuggestions] = useState<Contact[]>([]);
   const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
@@ -599,10 +599,6 @@ export function SendSheet() {
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
     }
   }, [chainId, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
-
-  useEffect(() => {
-    checkAddress(debouncedInput);
-  }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -618,7 +614,6 @@ export function SendSheet() {
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
       toAddress &&
-      isValidAddress &&
       !isEmpty(selected)
     ) {
       estimateGasLimit(
@@ -648,7 +643,6 @@ export function SendSheet() {
     accountAddress,
     amountDetails.assetAmount,
     currentProvider,
-    isValidAddress,
     isSponsoredSend,
     recipient,
     selected,
@@ -687,11 +681,12 @@ export function SendSheet() {
           contacts={contacts}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
-          isValidAddress={isValidAddress}
+          isRecipientInputValid={isRecipientInputValid}
+          isResolvingAddress={isResolvingAddress}
+          toAddress={toAddress}
           nickname={nickname}
           onChangeAddressInput={onChangeInput}
           onPressPaste={(recipient: string) => {
-            checkAddress(recipient);
             setRecipient(recipient);
           }}
           recipient={recipient}
@@ -709,7 +704,6 @@ export function SendSheet() {
             key={sendContactListDataKey}
             loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
-              setIsValidAddress(true);
               setRecipient(recipient);
               setNickname(nickname);
             }}
@@ -755,7 +749,7 @@ export function SendSheet() {
                   disabled={buttonDisabled}
                   forceShadows
                   label={buttonLabel}
-                  onPress={showConfirmationSheet}
+                  onPress={recipientQuery.isError ? () => recipientQuery.refetch() : showConfirmationSheet}
                   scaleTo={buttonDisabled ? 1.025 : 0.9}
                   size="big"
                   testID="send-sheet-confirm"

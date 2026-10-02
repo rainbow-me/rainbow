@@ -1,54 +1,42 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { type Address } from 'viem';
 
-import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider } from '@/handlers/web3';
-import { createQueryKey, queryClient, type QueryFunctionArgs } from '@/react-query';
+import { resolveEnsAddress } from '@/features/ens/data/ens';
+import { type ChainId } from '@/features/network/types/backendNetworks';
+import { createQueryKey } from '@/react-query/createQueryKey';
+import { queryClient } from '@/react-query/queryClient';
+import { type QueryFunctionArgs } from '@/react-query/types';
 
-// Set a default stale time of 10 seconds so we don't over-fetch
-// (query will serve cached data & invalidate after 10s).
-const defaultStaleTime = 10_000;
+/** A name and the chain whose address record is needed. */
+export type ENSAddressArgs = { name: string; chainId: ChainId };
 
-// ///////////////////////////////////////////////
-// Query Types
+const STALE_TIME = 10_000;
 
-export type ENSAddressArgs = {
-  name: string;
-};
-
-// ///////////////////////////////////////////////
-// Query Key
-
-const ensAddressQueryKey = ({ name }: ENSAddressArgs) => createQueryKey('ensAddress', { name }, { persisterVersion: 1 });
-
-// ///////////////////////////////////////////////
-// Query Function
-
-async function ensAddressQueryFunction({ queryKey: [{ name }] }: QueryFunctionArgs<typeof ensAddressQueryKey>) {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const address = await provider.resolveName(name);
-  return address;
+function ensAddressQueryKey({ name, chainId }: ENSAddressArgs): ReturnType<typeof createQueryKey<ENSAddressArgs>> {
+  return createQueryKey('ensAddress', { name, chainId }, { persisterVersion: 2 });
 }
 
-// ///////////////////////////////////////////////
-// Query Prefetcher
-
-export async function prefetchENSAddress({ name }: ENSAddressArgs, { staleTime = defaultStaleTime }: { staleTime?: number } = {}) {
-  return await queryClient.prefetchQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, { staleTime });
+function ensAddressQueryFunction({
+  queryKey: [{ name, chainId }],
+  signal,
+}: QueryFunctionArgs<typeof ensAddressQueryKey>): Promise<Address | null> {
+  return resolveEnsAddress(name, chainId, signal);
 }
 
-// ///////////////////////////////////////////////
-// Query Fetcher
-
-export async function fetchENSAddress({ name }: ENSAddressArgs) {
-  return await queryClient.fetchQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, { staleTime: defaultStaleTime });
+/** Warms the existing display cache for a name's address on one chain. */
+export function prefetchENSAddress(args: ENSAddressArgs, { staleTime = STALE_TIME }: { staleTime?: number } = {}): Promise<void> {
+  return queryClient.prefetchQuery(ensAddressQueryKey(args), ensAddressQueryFunction, { staleTime });
 }
 
-// ///////////////////////////////////////////////
-// Query Hook
+/**
+ * Reads an address through the display cache.
+ * Payment callers resolve their own current input.
+ */
+export function fetchENSAddress(args: ENSAddressArgs): Promise<Address | null> {
+  return queryClient.fetchQuery(ensAddressQueryKey(args), ensAddressQueryFunction, { staleTime: STALE_TIME });
+}
 
-export function useENSAddress({ name }: ENSAddressArgs, { enabled }: { enabled?: boolean } = {}) {
-  return useQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, {
-    enabled,
-    staleTime: defaultStaleTime,
-  });
+/** Subscribes to a name's address on one chain. */
+export function useENSAddress(args: ENSAddressArgs, { enabled }: { enabled?: boolean } = {}): UseQueryResult<Address | null> {
+  return useQuery(ensAddressQueryKey(args), ensAddressQueryFunction, { enabled, staleTime: STALE_TIME });
 }

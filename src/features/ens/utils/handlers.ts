@@ -1,14 +1,14 @@
-import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { type Resolver } from '@ethersproject/providers';
 import { sub, type Duration } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { type Address } from 'viem';
+import { getAddress as getViemAddress, type Address } from 'viem';
 
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { resolveEnsName } from '@/features/ens/data/ens';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { ensClient } from '@/graphql';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -172,7 +172,7 @@ export const fetchSuggestions = async (
         cacheFirst: true,
       });
       prefetchENSAddress(
-        { name: ens },
+        { name: ens, chainId: ChainId.mainnet },
         {
           staleTime: 1000 * 60 * 10, // 10 minutes
         }
@@ -225,7 +225,7 @@ export const fetchSuggestions = async (
                 });
                 if (i === 0) {
                   prefetchENSAddress(
-                    { name: domain.name },
+                    { name: domain.name, chainId: ChainId.mainnet },
                     {
                       staleTime: 1000 * 60 * 10, // 10 minutes
                     }
@@ -291,74 +291,6 @@ export const fetchAccountDomains = async (address: string) => {
   return domains;
 };
 
-export const fetchRecords = async (ensName: string, { supportedOnly = true }: { supportedOnly?: boolean } = {}) => {
-  const response = await ensClient.getTextRecordKeysByName({
-    name: ensName,
-  });
-  const data = response.domains[0] || {};
-  const rawRecordKeys = data.resolver?.texts || [];
-
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const supportedRecords = Object.values(ENS_RECORDS);
-  const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key => (supportedOnly ? supportedRecords.includes(key) : true));
-  const recordValues = await Promise.all(recordKeys.map((key: string) => resolver?.getText(key)));
-  const records = recordKeys.reduce((records, key, i) => {
-    return {
-      ...records,
-      ...(recordValues[i] ? { [key]: recordValues[i] } : {}),
-    };
-  }, {}) as Partial<Records>;
-
-  return records;
-};
-
-export const fetchCoinAddresses = async (
-  ensName: string,
-  { supportedOnly = true }: { supportedOnly?: boolean } = {}
-): Promise<{ [key in ENS_RECORDS]: string }> => {
-  const response = await ensClient.getCoinTypesByName({ name: ensName });
-  const data = response.domains[0] || {};
-  const supportedRecords = Object.values(ENS_RECORDS);
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
-  const rawCoinTypesNames: string[] = rawCoinTypes.map(type => formatsByCoinType[type].name);
-  const coinTypes: number[] =
-    (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
-      .map(name => formatsByName[name].coinType) || [];
-
-  const coinAddressValues = await Promise.all(
-    coinTypes
-      .map(async (coinType: number) => {
-        try {
-          return await resolver?.getAddress(coinType);
-        } catch (err) {
-          return undefined;
-        }
-      })
-      .filter(Boolean)
-  );
-  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
-    (coinAddresses, coinType, i) => {
-      return {
-        ...coinAddresses,
-        ...(coinAddressValues[i] ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] } : {}),
-      };
-    },
-    {} as { [key in ENS_RECORDS]: string }
-  );
-  return coinAddresses;
-};
-
-export const fetchContenthash = async (ensName: string) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const contenthash = await resolver?.getContentHash();
-  return contenthash;
-};
-
 export const fetchOwner = async (ensName: string) => {
   const ownerAddress = await getNameOwner(ensName);
 
@@ -396,14 +328,6 @@ export const fetchRegistration = async (ensName: string) => {
       expiryDate: data?.expiryDate,
       registrationDate: data?.registrationDate,
     },
-  };
-};
-
-export const fetchPrimary = async (ensName: string) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const address = await provider.resolveName(ensName);
-  return {
-    address,
   };
 };
 
@@ -838,9 +762,7 @@ export const getRapActionTypeForTxType = (txType: ENSRegistrationTransactionType
 
 export const fetchReverseRecord = async (address: string) => {
   try {
-    const checksumAddress = getAddress(address);
-    const provider = getProvider({ chainId: ChainId.mainnet });
-    const reverseRecord = await provider.lookupAddress(checksumAddress);
+    const reverseRecord = await resolveEnsName(getViemAddress(address), ChainId.mainnet);
     return reverseRecord ?? '';
   } catch (e) {
     return '';

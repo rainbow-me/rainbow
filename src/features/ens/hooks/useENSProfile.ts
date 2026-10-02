@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 
-import { fetchENSAddress } from '../resources/addressQuery';
 import { getENSProfile, saveENSProfile } from '../utils/localStorage';
 import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
 import { ensCoverQueryKey, fetchENSCover } from './useENSCover';
@@ -26,19 +25,19 @@ async function fetchENSProfile(name: string, { supportedRecordsOnly = true }: { 
     queryClient.setQueryData(queryKey(name, { supportedRecordsOnly }), cachedProfile);
   }
 
-  const [address, avatar, header, owner, { coinAddresses, contenthash, records }, { registration, registrant }, resolver] =
-    await Promise.all([
-      fetchENSAddress({ name }),
-      queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
-      queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
-      queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
-      queryClient.fetchQuery(ensRecordsQueryKey({ name }), () => fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })),
-      queryClient.fetchQuery(ensRegistrantQueryKey(name), () => fetchENSRegistrant(name)),
-      queryClient.fetchQuery(ensResolverQueryKey(name), () => fetchENSResolver(name)),
-    ]);
+  const [avatar, header, owner, { coinAddresses, contenthash, records }, { registration, registrant }, resolver] = await Promise.all([
+    queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
+    queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
+    queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
+    queryClient.fetchQuery(ensRecordsQueryKey({ name, supportedOnly: supportedRecordsOnly }), () =>
+      fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })
+    ),
+    queryClient.fetchQuery(ensRegistrantQueryKey(name), () => fetchENSRegistrant(name)),
+    queryClient.fetchQuery(ensResolverQueryKey(name), () => fetchENSResolver(name)),
+  ]);
 
   const profile = {
-    address,
+    address: coinAddresses.ETH ?? null,
     coinAddresses,
     contenthash,
     images: {

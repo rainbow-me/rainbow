@@ -8,7 +8,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
@@ -55,7 +54,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
     async (address: string) => {
       triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedAddress);
-      const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
+      const ensName = await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
@@ -81,14 +80,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
       const isValid = await checkIsValidAddressOrDomain(addressOrENS);
       if (isValid) {
-        const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
+        const ensName = isValidAddress(addressOrENS) ? await fetchReverseRecordWithRetry(addressOrENS) : addressOrENS;
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.PROFILE_SHEET, {
-            address: ensName ?? '',
+            address: ensName || addressOrENS,
             fromRoute: 'QR Code',
           });
 

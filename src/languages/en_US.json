@@ -2238,6 +2238,8 @@
       }
     },
     "send": {
+      "retry_recipient": "Couldn’t resolve name · Retry",
+      "no_address_on_network": "No address on this network",
       "sponsorship_unavailable": "Free sends are temporarily unavailable on this network. Please try again with network fees."
     },
     "swap": {

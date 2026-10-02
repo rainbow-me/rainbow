@@ -12,7 +12,6 @@ import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { getUniqueId } from '@/entities/assetId';
 import { FiatProviderName } from '@/entities/f2c';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
@@ -236,7 +235,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
 
           if (isValid) {
-            const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
+            const ensName = isAddress(addressOrENS) ? await fetchReverseRecordWithRetry(addressOrENS) : addressOrENS;
             return Navigation.handleAction(Routes.PROFILE_SHEET, {
               address: ensName || addressOrENS,
               fromRoute: 'Deeplink',

@@ -11,6 +11,7 @@ import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverl
 import { CardSize } from '@/components/unique-token/CardSize';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
@@ -176,7 +177,7 @@ export function InfoRow({
 function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; value?: string }) {
   const accountAddress = useAccountAddress();
 
-  const { data: address } = useENSAddress({ name: ensName || '' });
+  const { data: address } = useENSAddress({ name: ensName || '', chainId: ChainId.mainnet });
 
   const {
     data: { nfts: uniqueTokensAccount },
