@@ -1,3 +1,3 @@
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-export const getFCMToken = jest.fn();
+export const getFCMToken = vi.fn();

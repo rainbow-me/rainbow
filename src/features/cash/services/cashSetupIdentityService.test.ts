@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { formatUsSsnMasked, isValidDateOfBirth, isValidLegalName, isValidUsSsnLast4 } from './cashSetupIdentityService';
 
 const TODAY = new Date(2026, 6, 13);

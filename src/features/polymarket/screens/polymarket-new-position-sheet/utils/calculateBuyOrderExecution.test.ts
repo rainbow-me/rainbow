@@ -1,19 +1,20 @@
 import { adjustBuyAmountForFees } from '@polymarket/clob-client-v2';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 
 import { calculateBuyOrderExecution } from './calculateBuyOrderExecution';
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
 }));
 
-jest.mock('@polymarket/clob-client-v2', () => {
-  const actual = jest.requireActual<typeof import('@polymarket/clob-client-v2')>('@polymarket/clob-client-v2');
-  return { ...actual, adjustBuyAmountForFees: jest.fn(actual.adjustBuyAmountForFees) };
+vi.mock('@polymarket/clob-client-v2', () => {
+  const actual = vi.requireActual<typeof import('@polymarket/clob-client-v2')>('@polymarket/clob-client-v2');
+  return { ...actual, adjustBuyAmountForFees: vi.fn(actual.adjustBuyAmountForFees) };
 });
 
-const mockAdjustBuyAmountForFees = jest.mocked(adjustBuyAmountForFees);
+const mockAdjustBuyAmountForFees = vi.mocked(adjustBuyAmountForFees);
 
 describe('calculateBuyOrderExecution', () => {
   beforeEach(() => {

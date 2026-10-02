@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -10,13 +12,13 @@ import { endSetupSession, restartSetupWithoutCredential } from './setupNavigatio
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
-jest.mock('@/navigation/Navigation', () => ({
-  goBack: jest.fn(),
-  navigate: jest.fn(),
+vi.mock('@/navigation/Navigation', () => ({
+  goBack: vi.fn(),
+  navigate: vi.fn(),
 }));
 
-jest.mock('../../stores/kycReturnFlowStore', () => {
-  const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('../../stores/kycReturnFlowStore', () => {
+  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useKycReturnFlowStore: createBaseStore<{ reset: () => void; state: string }>(set => ({
       state: 'idle',
@@ -25,8 +27,8 @@ jest.mock('../../stores/kycReturnFlowStore', () => {
   };
 });
 
-jest.mock('../../stores/verifyPhoneFlowStore', () => {
-  const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('../../stores/verifyPhoneFlowStore', () => {
+  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useVerifyPhoneFlowStore: createBaseStore<{ kycOutcome: string | null; reset: () => void }>(set => ({
       kycOutcome: null,
@@ -35,8 +37,8 @@ jest.mock('../../stores/verifyPhoneFlowStore', () => {
   };
 });
 
-jest.mock('./steps/useSubmitReviewFlow', () => {
-  const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('./steps/useSubmitReviewFlow', () => {
+  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return {
     useSubmitReviewFlowStore: createBaseStore<{ reset: () => void; state: string }>(set => ({
       state: 'entry',
@@ -67,7 +69,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('endSetupSession', () => {
@@ -100,7 +102,7 @@ describe('endSetupSession', () => {
   it('drops an expired verification', () => {
     const expiresAt = Date.now() + 60_000;
     verifyPhone(expiresAt);
-    jest.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
+    vi.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
     expect(session().status).toBe('phoneVerified');
 
     endSetupSession();

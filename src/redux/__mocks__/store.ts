@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-export const getState = jest.fn();
-export const dispatch = jest.fn();
+export const getState = vi.fn();
+export const dispatch = vi.fn();

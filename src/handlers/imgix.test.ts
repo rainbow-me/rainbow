@@ -1,27 +1,29 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 
 import { getSizedImageUrl, maybeSignSource, maybeSignUri, staticSignatureLRU, withImageHost } from './imgix';
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 
-jest.mock('react-native-dotenv', () => ({
+vi.mock('react-native-dotenv', () => ({
   IMGIX_DOMAIN: 'rainbow.imgix.net',
   IMGIX_TOKEN: 'test-secure-url-token',
 }));
 
-jest.mock('react-native', () => ({
+vi.mock('react-native', () => ({
   PixelRatio: { getPixelSizeForLayoutSize: (n: number) => Math.round(n * 3) },
 }));
 
 // imgix-core-js is patched to sign via react-native-quick-md5, a native module.
 // Substitute a real md5 so the signatures below are the genuine ones.
-jest.mock('react-native-quick-md5', () => ({
+vi.mock('react-native-quick-md5', () => ({
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   stringMd5: (value: string) => require('crypto').createHash('md5').update(value).digest('hex'),
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { error: jest.fn(), warn: jest.fn(), debug: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
   RainbowError: class extends Error {},
 }));
 

@@ -1,4 +1,5 @@
 import { type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { signPersonalMessage } from '@/model/wallet';
@@ -9,35 +10,35 @@ import { ensureAccessToken } from './cashSignInService';
 import { linkWallet, listWallets } from './rampClient';
 import { checkWalletLink, linkWalletWithSignature, WalletSignatureError } from './walletLinkService';
 
-jest.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
+vi.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
 
-jest.mock('./rampClient', () => ({
-  listWallets: jest.fn(),
-  linkWallet: jest.fn(),
+vi.mock('./rampClient', () => ({
+  listWallets: vi.fn(),
+  linkWallet: vi.fn(),
   WalletSignatureMethod: { EthPersonalSign: 'WALLET_SIGNATURE_METHOD_ETH_PERSONAL_SIGN' },
 }));
 
-jest.mock('./cashSignInService', () => ({
-  ensureAccessToken: jest.fn(),
+vi.mock('./cashSignInService', () => ({
+  ensureAccessToken: vi.fn(),
 }));
 
-jest.mock('@/features/wallet/data/loadWallet', () => ({
-  loadWallet: jest.fn(),
+vi.mock('@/features/wallet/data/loadWallet', () => ({
+  loadWallet: vi.fn(),
 }));
 
-jest.mock('@/model/wallet', () => ({
-  signPersonalMessage: jest.fn(),
+vi.mock('@/model/wallet', () => ({
+  signPersonalMessage: vi.fn(),
 }));
 
-jest.mock('@/handlers/web3', () => ({
-  getProvider: jest.fn(() => ({})),
+vi.mock('@/handlers/web3', () => ({
+  getProvider: vi.fn(() => ({})),
 }));
 
-const mockListWallets = listWallets as jest.Mock;
-const mockLinkWallet = linkWallet as jest.Mock;
-const mockEnsureAccessToken = ensureAccessToken as jest.Mock;
-const mockLoadWallet = loadWallet as jest.Mock;
-const mockSignPersonalMessage = signPersonalMessage as jest.Mock;
+const mockListWallets = listWallets as Mock;
+const mockLinkWallet = linkWallet as Mock;
+const mockEnsureAccessToken = ensureAccessToken as Mock;
+const mockLoadWallet = loadWallet as Mock;
+const mockSignPersonalMessage = signPersonalMessage as Mock;
 
 const USER_ID = 'a7f1c2d3-0000-4000-8000-000000000001';
 const ADDRESS = '0xAbC0000000000000000000000000000000000001' as Address;
@@ -51,9 +52,9 @@ const UNLOCK_DELAY_MS = 90_000;
 let nowMs = NOW_MS;
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   nowMs = NOW_MS;
-  jest.spyOn(Date, 'now').mockImplementation(() => nowMs);
+  vi.spyOn(Date, 'now').mockImplementation(() => nowMs);
   useCashAccountStore.setState({ userId: USER_ID });
   useCashWalletStore.setState({ linkedWallets: [] });
   mockEnsureAccessToken.mockResolvedValue('jwt');

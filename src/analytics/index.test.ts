@@ -1,6 +1,6 @@
-import { expect, test } from '@jest/globals';
 import { PostHog, type PostHogOptions } from 'posthog-react-native';
 import * as analyticsConfig from 'react-native-dotenv';
+import { beforeEach, describe, expect, test, vi, type Mock, type MockedClass } from 'vitest';
 
 import { Analytics } from '@/analytics';
 import { AppsFlyer } from '@/analytics/appsflyer';
@@ -9,40 +9,40 @@ import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 import { type Device } from '@/storage/schema';
 
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   IS_DEV: false,
   IS_TEST: false,
   IS_PROD: true,
   IS_ANDROID: false,
 }));
 
-jest.mock('@/storage', () => ({
-  device: { get: jest.fn(() => undefined), set: jest.fn() },
+vi.mock('@/storage', () => ({
+  device: { get: vi.fn(() => undefined), set: vi.fn() },
 }));
 
-jest.mock('react-native-device-info', () => ({
+vi.mock('react-native-device-info', () => ({
   getVersion: () => '2.0.47',
   getBuildNumber: () => '1',
 }));
 
-jest.mock('@/analytics/appsflyer', () => ({
-  AppsFlyer: jest.fn().mockImplementation(() => ({
+vi.mock('@/analytics/appsflyer', () => ({
+  AppsFlyer: vi.fn().mockImplementation(() => ({
     uid: undefined,
-    init: jest.fn(),
-    stop: jest.fn(),
+    init: vi.fn(),
+    stop: vi.fn(),
   })),
 }));
 
-jest.mock('react-native-dotenv', () => ({
+vi.mock('react-native-dotenv', () => ({
   __esModule: true,
   POSTHOG_API_KEY: 'phc_test',
   POSTHOG_HOST: 'https://us.i.posthog.com',
 }));
 
 const flushPromises = () => new Promise(resolve => setImmediate(resolve));
-const mockAppsFlyerClass = AppsFlyer as jest.MockedClass<typeof AppsFlyer>;
-const mockDeviceGet = device.get as jest.Mock;
-type MockAppsFlyer = { init: jest.Mock; stop: jest.Mock; uid?: string };
+const mockAppsFlyerClass = AppsFlyer as MockedClass<typeof AppsFlyer>;
+const mockDeviceGet = device.get as Mock;
+type MockAppsFlyer = { init: Mock; stop: Mock; uid?: string };
 
 function getLatestAppsFlyerInstance(): MockAppsFlyer {
   const latestInstance = mockAppsFlyerClass.mock.results.at(-1)?.value;
@@ -51,10 +51,10 @@ function getLatestAppsFlyerInstance(): MockAppsFlyer {
 
 describe('@/analytics', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
     mockDeviceGet.mockReturnValue(undefined);
-    jest.mocked(device.set).mockReset();
+    vi.mocked(device.set).mockReset();
   });
 
   test('track', async () => {
@@ -196,7 +196,7 @@ describe('@/analytics', () => {
 
     expect(analytics.client?.capture).not.toHaveBeenCalled();
     expect(analytics.client?.optOut).toHaveBeenCalled();
-    const options = jest.mocked(PostHog).mock.calls[0][1] as PostHogOptions;
+    const options = vi.mocked(PostHog).mock.calls[0][1] as PostHogOptions;
     if (typeof options.before_send !== 'function') throw new Error('Expected a before_send callback');
     expect(options.before_send?.({ event: 'Application Opened', properties: {} })).toBeNull();
   });
@@ -207,7 +207,7 @@ describe('@/analytics', () => {
     analytics.init({ deviceId: 'test-device' });
     await flushPromises();
 
-    const options = jest.mocked(PostHog).mock.calls[0][1] as PostHogOptions;
+    const options = vi.mocked(PostHog).mock.calls[0][1] as PostHogOptions;
     if (typeof options.before_send !== 'function') throw new Error('Expected a before_send callback');
     const event = { event: 'Application Installed', properties: {} };
     expect(options.before_send?.(event)).toBeNull();
@@ -220,8 +220,8 @@ describe('@/analytics', () => {
   });
 
   test('missing PostHog configuration leaves AppsFlyer initialization intact', async () => {
-    const warning = jest.spyOn(logger, 'warn').mockImplementation(() => {});
-    jest.replaceProperty(analyticsConfig, 'POSTHOG_API_KEY', '');
+    const warning = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+    vi.replaceProperty(analyticsConfig, 'POSTHOG_API_KEY', '');
     const analytics = new Analytics();
     analytics.init({ deviceId: 'test-device' });
     analytics.track(analytics.event.pressedButton);
@@ -237,7 +237,7 @@ describe('@/analytics', () => {
   test('tracks a version upgrade with an unchanged build only once across launches', async () => {
     let previous = { version: '2.0.46', build: '1' };
     mockDeviceGet.mockImplementation(([key]) => (key === 'analyticsAppVersion' ? previous : undefined));
-    jest.mocked(device.set).mockImplementation((key, value) => {
+    vi.mocked(device.set).mockImplementation((key, value) => {
       if (key[0] === 'analyticsAppVersion') previous = value as Device['analyticsAppVersion'];
     });
 

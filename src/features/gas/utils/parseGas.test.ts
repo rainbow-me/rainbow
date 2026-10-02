@@ -1,6 +1,8 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { buildGasParams } from './parseGas';
 
-jest.mock('@/handlers/web3', () => ({
+vi.mock('@/handlers/web3', () => ({
   toHex: (value: string) => `0x${BigInt(value).toString(16)}`,
 }));
 

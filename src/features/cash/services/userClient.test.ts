@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { useCashAccessRefusalStore } from '../stores/cashAccessRefusalStore';
@@ -15,12 +17,12 @@ import {
   verifyPhone,
 } from './userClient';
 
-jest.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
+vi.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
 
-const mockPost = jest.fn();
-const mockGet = jest.fn();
+const mockPost = vi.fn();
+const mockGet = vi.fn();
 
-jest.mock('./cashPlatformClient', () => ({
+vi.mock('./cashPlatformClient', () => ({
   getCashPlatformClient: () => ({ post: mockPost, get: mockGet }),
   buildAuthenticatedHeader: (token: string) => ({ Authorization: `Bearer ${token}` }),
 }));
@@ -44,7 +46,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 function platformError(code: unknown, httpStatus?: number) {
@@ -115,7 +117,7 @@ describe('createUserWithPhone', () => {
 describe('startSignupResume', () => {
   it('parses the resend cooldown from the response', async () => {
     const now = 1_750_000_000_000;
-    jest.spyOn(Date, 'now').mockReturnValue(now);
+    vi.spyOn(Date, 'now').mockReturnValue(now);
     post.mockResolvedValue({ data: { resumeId: 'rcv_1', resendAfter: '30s' } });
 
     await expect(startSignupResume({ nationalNumber: '5869132511' })).resolves.toEqual({ resumeId: 'rcv_1', resendAfter: now + 30_000 });
@@ -172,7 +174,7 @@ describe('verifyPhone', () => {
 
   it('converts the duration into an absolute expiry', async () => {
     const now = 1_750_000_000_000;
-    jest.spyOn(Date, 'now').mockReturnValue(now);
+    vi.spyOn(Date, 'now').mockReturnValue(now);
     post.mockResolvedValue({ data: { bootstrapToken: 'bst_test', expiresIn: '600s' } });
 
     await expect(verifyPhone(PARAMS)).resolves.toEqual({ bootstrapToken: 'bst_test', expiresAt: now + 600_000 });
@@ -189,7 +191,7 @@ describe('account recovery', () => {
 
   it('starts the personal-details recovery method', async () => {
     const now = 1_750_000_000_000;
-    jest.spyOn(Date, 'now').mockReturnValue(now);
+    vi.spyOn(Date, 'now').mockReturnValue(now);
     post.mockResolvedValue({
       data: { recoveryId: 'recovery-1', methods: ['RECOVERY_METHOD_PERSONAL_DETAILS'], resendAfter: '30s' },
     });

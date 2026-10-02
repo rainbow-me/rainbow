@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { Address } from 'viem';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -21,26 +21,26 @@ import { SwapType } from '@rainbow-me/swaps';
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 import { useWatchPendingTransactions, watchPendingTransaction } from './useWatchPendingTxs';
 
-jest.mock('react', () => ({
-  ...jest.requireActual<typeof import('react')>('react'),
+vi.mock('react', () => ({
+  ...vi.requireActual<typeof import('react')>('react'),
   useCallback: (callback: unknown) => callback,
   useRef: (initialValue: unknown) => ({ current: initialValue }),
 }));
 
-jest.mock('./pendingTransactionResolution', () => ({
-  resolveTrackedTransaction: jest.fn(),
+vi.mock('./pendingTransactionResolution', () => ({
+  resolveTrackedTransaction: vi.fn(),
 }));
 
-jest.mock('@/resources/transactions/transaction', () => ({
-  fetchRawTransaction: jest.fn(),
+vi.mock('@/resources/transactions/transaction', () => ({
+  fetchRawTransaction: vi.fn(),
 }));
 
-jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/features/config/hooks/experimentalHooks', () => ({}));
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
 
-jest.mock('@/redux/store', () => ({
+vi.mock('@/redux/store', () => ({
   __esModule: true,
   default: {
     getState: () => ({
@@ -51,7 +51,7 @@ jest.mock('@/redux/store', () => ({
   },
 }));
 
-jest.mock('@/state/swaps/swapsStore', () => ({
+vi.mock('@/state/swaps/swapsStore', () => ({
   useSwapsStore: {
     getState: () => ({
       preferredNetwork: undefined,
@@ -59,7 +59,7 @@ jest.mock('@/state/swaps/swapsStore', () => ({
   },
 }));
 
-jest.mock('@/state/assets/userAssetsStoreManager', () => {
+vi.mock('@/state/assets/userAssetsStoreManager', () => {
   const cachedStore = { getState: () => ({ userAssets: new Map() }) };
   const state = { address: '0x123', cachedStore, currency: 'ETH' as const };
 
@@ -67,38 +67,38 @@ jest.mock('@/state/assets/userAssetsStoreManager', () => {
     userAssetsStoreManager: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
       getState: () => state,
       setState: (nextState: Partial<typeof state>) => Object.assign(state, nextState),
-      subscribe: jest.fn(),
+      subscribe: vi.fn(),
     }),
   };
 });
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   getAccountAddress: () => '0x123',
   useAccountAddress: () => '0x123',
   useWalletsStore: {
     getState: () => ({
       accountAddress: '0x123',
     }),
-    subscribe: jest.fn(),
+    subscribe: vi.fn(),
   },
 }));
 
-jest.mock('@/parsers/transactions', () => ({
-  convertNewTransactionToRainbowTransaction: jest.fn(),
+vi.mock('@/parsers/transactions', () => ({
+  convertNewTransactionToRainbowTransaction: vi.fn(),
 }));
 
-jest.mock('@/state/nonces', () => ({
+vi.mock('@/state/nonces', () => ({
   nonceActions: {
-    getNonce: jest.fn(),
-    setNonce: jest.fn(),
+    getNonce: vi.fn(),
+    setNonce: vi.fn(),
   },
 }));
 
-jest.mock('@/resources/transactions/consolidatedTransactions', () => ({
+vi.mock('@/resources/transactions/consolidatedTransactions', () => ({
   consolidatedTransactionsQueryKey: (params: unknown) => ['consolidatedTransactions', params],
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => {
+vi.mock('@/features/network/stores/backendNetworksStore', () => {
   const chainIds = [1, 10, 8453];
   const state = {
     getSupportedChainIds: () => chainIds,
@@ -112,13 +112,13 @@ jest.mock('@/features/network/stores/backendNetworksStore', () => {
   };
 });
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
   },
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
@@ -131,23 +131,23 @@ type ConfirmedManagedTransaction = Omit<PendingTransaction, 'status' | 'title'> 
 };
 
 describe('watchPendingTransaction', () => {
-  const mockResolveTrackedTransaction = jest.mocked(resolveTrackedTransaction);
-  const mockFetchRawTransaction = jest.mocked(fetchRawTransaction);
-  let refetchQueriesSpy: jest.SpiedFunction<typeof queryClient.refetchQueries>;
+  const mockResolveTrackedTransaction = vi.mocked(resolveTrackedTransaction);
+  const mockFetchRawTransaction = vi.mocked(fetchRawTransaction);
+  let refetchQueriesSpy: MockInstance<typeof queryClient.refetchQueries>;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.clearAllMocks();
+    vi.useFakeTimers();
+    vi.clearAllMocks();
     queryClient.clear();
     resetStores();
 
-    refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries').mockImplementation(async () => undefined);
+    refetchQueriesSpy = vi.spyOn(queryClient, 'refetchQueries').mockImplementation(async () => undefined);
   });
 
   afterEach(() => {
     refetchQueriesSpy.mockRestore();
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it('polls caller-supplied transactions one at a time in round-robin order', async () => {

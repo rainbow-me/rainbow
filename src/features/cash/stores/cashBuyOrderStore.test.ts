@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
@@ -19,9 +21,9 @@ import { buildCashPurchaseTransaction } from '../utils/buildCashPurchaseTransact
 import { cashBuyOrderActions, selectCashBuyPhase, useCashBuyOrderStore, type CashBuyStatus } from './cashBuyOrderStore';
 import { useCashWalletStore } from './cashWalletStore';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashBuyOrderCompleted: 'cash.buy_completed',
       cashBuyOrderFailed: 'cash.buy_failed',
@@ -30,10 +32,10 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/features/local-auth/legacyKeychain', () => ({}));
+vi.mock('@/features/local-auth/legacyKeychain', () => ({}));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {
     constructor(message: string, cause?: unknown) {
       super(message, { cause });
@@ -41,33 +43,33 @@ jest.mock('@/logger', () => ({
   },
 }));
 
-jest.mock('../services/rampClient', () => ({
-  ...jest.requireActual('../services/rampClient'),
-  createBuyOrder: jest.fn(),
-  getOrder: jest.fn(),
+vi.mock('../services/rampClient', () => ({
+  ...vi.requireActual('../services/rampClient'),
+  createBuyOrder: vi.fn(),
+  getOrder: vi.fn(),
 }));
 
 let mockUuidCounter = 0;
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => {
+vi.mock('uuid', () => ({
+  v4: vi.fn(() => {
     mockUuidCounter += 1;
     return `order-${mockUuidCounter}`;
   }),
 }));
 
-jest.mock('@/state/pendingTransactions', () => ({
-  pendingTransactionsActions: { addPendingTransaction: jest.fn() },
+vi.mock('@/state/pendingTransactions', () => ({
+  pendingTransactionsActions: { addPendingTransaction: vi.fn() },
 }));
 
-jest.mock('../utils/buildCashPurchaseTransaction', () => ({
-  buildCashPurchaseTransaction: jest.fn(),
+vi.mock('../utils/buildCashPurchaseTransaction', () => ({
+  buildCashPurchaseTransaction: vi.fn(),
 }));
 
-const createBuyOrder = rampCreateBuyOrder as jest.Mock;
-const getOrder = rampGetOrder as jest.Mock;
-const addPendingTransaction = pendingTransactionsActions.addPendingTransaction as jest.Mock;
-const buildPurchaseTransaction = buildCashPurchaseTransaction as jest.Mock;
-const track = analytics.track as jest.Mock;
+const createBuyOrder = rampCreateBuyOrder as Mock;
+const getOrder = rampGetOrder as Mock;
+const addPendingTransaction = pendingTransactionsActions.addPendingTransaction as Mock;
+const buildPurchaseTransaction = buildCashPurchaseTransaction as Mock;
+const track = analytics.track as Mock;
 
 const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 
@@ -115,7 +117,7 @@ const getState = () => store.getState();
 const phase = () => selectCashBuyPhase(getState());
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mockUuidCounter = 0;
   store.setState({ status: { step: 'idle' } });
   useCashWalletStore.getState().clear();
@@ -361,7 +363,7 @@ describe('syncActiveOrder', () => {
 
     await getState().syncActiveOrder();
 
-    const [loggedError] = (logger.error as jest.Mock).mock.calls[0];
+    const [loggedError] = (logger.error as Mock).mock.calls[0];
     expect(loggedError.cause).toBe(cause);
   });
 

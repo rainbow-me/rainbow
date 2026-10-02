@@ -1,16 +1,16 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { CLOUD_BACKUP_ERRORS, getDataFromCloud, parseBackupJson } from './cloudBackup';
 
-jest.mock('react-native-cloud-fs', () => ({
-  getIcloudDocument: jest.fn(() => Promise.resolve('encrypted-blob')),
-  listFiles: jest.fn(() => Promise.resolve({ files: [{ id: 'file-id', name: 'UserData.json' }] })),
-  loginIfNeeded: jest.fn(),
+vi.mock('react-native-cloud-fs', () => ({
+  getIcloudDocument: vi.fn(() => Promise.resolve('encrypted-blob')),
+  listFiles: vi.fn(() => Promise.resolve({ files: [{ id: 'file-id', name: 'UserData.json' }] })),
+  loginIfNeeded: vi.fn(),
 }));
 
-jest.mock('react-native-fs', () => ({ unlink: jest.fn(), writeFile: jest.fn() }));
+vi.mock('react-native-fs', () => ({ unlink: vi.fn(), writeFile: vi.fn() }));
 
-jest.mock('./aesEncryption', () => {
+vi.mock('./aesEncryption', () => {
   const state = { plaintext: '' };
 
   return {
@@ -24,7 +24,7 @@ jest.mock('./aesEncryption', () => {
   };
 });
 
-const encryptor = jest.requireMock<{ state: { plaintext: string } }>('./aesEncryption');
+const encryptor = vi.requireMock<{ state: { plaintext: string } }>('./aesEncryption');
 
 // Decryption has already succeeded by the time the parse runs, so what fails to parse here is
 // decrypted backup contents. A phrase is the worst case that can be sitting in it.

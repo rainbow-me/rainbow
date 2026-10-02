@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { keccak256 } from '@ethersproject/keccak256';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { toUtf8Bytes } from '@ethersproject/strings';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { REFERRER } from '@/references/constants';
 import { SwapType, type Quote } from '@rainbow-me/swaps';
@@ -9,52 +10,52 @@ import { SwapType, type Quote } from '@rainbow-me/swaps';
 import { populateSwap } from '../utils';
 import { prepareSwapCall } from './swap';
 
-jest.mock('../utils', () => ({
-  populateSwap: jest.fn(),
+vi.mock('../utils', () => ({
+  populateSwap: vi.fn(),
 }));
 
-jest.mock('@/handlers/web3', () => ({
-  estimateGasWithPadding: jest.fn(),
-  getProvider: jest.fn(),
-  toHex: jest.fn(),
+vi.mock('@/handlers/web3', () => ({
+  estimateGasWithPadding: vi.fn(),
+  getProvider: vi.fn(),
+  toHex: vi.fn(),
 }));
 
-jest.mock('@/state/pendingTransactions/addNewTransaction', () => ({
-  addNewTransaction: jest.fn(),
+vi.mock('@/state/pendingTransactions/addNewTransaction', () => ({
+  addNewTransaction: vi.fn(),
 }));
 
-jest.mock('@/state/performance/performance', () => ({
+vi.mock('@/state/performance/performance', () => ({
   Screens: {},
   TimeToSignOperation: {},
-  executeFn: jest.fn(),
+  executeFn: vi.fn(),
 }));
 
-jest.mock('@/state/swaps/swapsStore', () => ({
+vi.mock('@/state/swaps/swapsStore', () => ({
   swapsStore: {
-    getState: jest.fn(),
+    getState: vi.fn(),
   },
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
-    getState: jest.fn(),
+    getState: vi.fn(),
   },
 }));
 
-jest.mock('../common', () => ({
+vi.mock('../common', () => ({
   swapMetadataStorage: {
-    get: jest.fn(),
-    remove: jest.fn(),
-    set: jest.fn(),
+    get: vi.fn(),
+    remove: vi.fn(),
+    set: vi.fn(),
   },
 }));
 
-jest.mock('../replay', () => ({
-  extractReplayableExecution: jest.fn(),
+vi.mock('../replay', () => ({
+  extractReplayableExecution: vi.fn(),
 }));
 
-jest.mock('../transactionAsset', () => ({
-  toTransactionAsset: jest.fn(),
+vi.mock('../transactionAsset', () => ({
+  toTransactionAsset: vi.fn(),
 }));
 
 const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', 8453);
@@ -92,13 +93,13 @@ function buildQuote(overrides: Partial<Quote> = {}): Quote {
 
 describe('prepareSwapCall', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('appends the Rainbow referrer code for non-fallback quotes', async () => {
     const quote = buildQuote();
 
-    jest.mocked(populateSwap).mockResolvedValue({
+    vi.mocked(populateSwap).mockResolvedValue({
       data: '0xabcdef',
       to: quote.to,
       value: BigNumber.from(quote.value),

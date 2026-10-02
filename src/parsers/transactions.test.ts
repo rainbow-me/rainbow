@@ -1,10 +1,12 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { TransactionStatus } from '@/entities/transactions';
 
 import { convertNewTransactionToRainbowTransaction } from './transactions';
 
-jest.mock('@/resources/assets/assets', () => ({
-  parseGoldskyAddressAsset: jest.fn(),
-  parseGoldskyAsset: jest.fn(),
+vi.mock('@/resources/assets/assets', () => ({
+  parseGoldskyAddressAsset: vi.fn(),
+  parseGoldskyAsset: vi.fn(),
 }));
 
 describe('convertNewTransactionToRainbowTransaction', () => {

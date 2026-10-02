@@ -1,5 +1,6 @@
 import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
 import { ethers } from 'ethers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { analytics } from '@/analytics';
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
@@ -10,29 +11,29 @@ import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingAppro
 
 import { executePolymarketBuyPosition, executePolymarketSellPosition } from './executePolymarketOrder';
 
-const mockCreateAndPostMarketOrder = jest.fn();
-const mockGetOrder = jest.fn();
-const mockGetTrades = jest.fn();
-const mockUpdateBalanceAllowance = jest.fn();
+const mockCreateAndPostMarketOrder = vi.fn();
+const mockGetOrder = vi.fn();
+const mockGetTrades = vi.fn();
+const mockUpdateBalanceAllowance = vi.fn();
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   useWalletsStore: {
-    getState: jest.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
+    getState: vi.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
   },
 }));
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
     event: {
       predictionsOrderMatchFailed: 'predictions.order_match.failed',
       predictionsPlaceOrder: 'predictions.place_order',
     },
-    track: jest.fn(),
+    track: vi.fn(),
   },
 }));
 
-jest.mock('@/features/polymarket/stores/derived/usePolymarketClients', () => ({
-  getPolymarketClobClient: jest.fn(async () => ({
+vi.mock('@/features/polymarket/stores/derived/usePolymarketClients', () => ({
+  getPolymarketClobClient: vi.fn(async () => ({
     createAndPostMarketOrder: mockCreateAndPostMarketOrder,
     getOrder: mockGetOrder,
     getTrades: mockGetTrades,
@@ -40,38 +41,38 @@ jest.mock('@/features/polymarket/stores/derived/usePolymarketClients', () => ({
   })),
 }));
 
-jest.mock('@/features/polymarket/stores/polymarketBalanceStore', () => ({
+vi.mock('@/features/polymarket/stores/polymarketBalanceStore', () => ({
   usePolymarketBalanceStore: {
-    getState: jest.fn(() => ({ getBalance: () => '100' })),
+    getState: vi.fn(() => ({ getBalance: () => '100' })),
   },
 }));
 
-jest.mock('@/features/polymarket/utils/collateral', () => ({
-  getPolygonUsdcBalance: jest.fn(async () => ({ isZero: () => true })),
-  wrapUsdcAmountToPusd: jest.fn(),
+vi.mock('@/features/polymarket/utils/collateral', () => ({
+  getPolygonUsdcBalance: vi.fn(async () => ({ isZero: () => true })),
+  wrapUsdcAmountToPusd: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/collectPolymarketTradeFee', () => ({
-  collectPolymarketTradeFee: jest.fn(),
+vi.mock('@/features/polymarket/utils/collectPolymarketTradeFee', () => ({
+  collectPolymarketTradeFee: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/polymarketWallet', () => ({
-  getPolymarketWallet: jest.fn(async () => ({ address: '0x0000000000000000000000000000000000000001' })),
+vi.mock('@/features/polymarket/utils/polymarketWallet', () => ({
+  getPolymarketWallet: vi.fn(async () => ({ address: '0x0000000000000000000000000000000000000001' })),
 }));
 
-jest.mock('@/features/polymarket/utils/tradingApprovals', () => ({
-  ensureTradingApprovals: jest.fn(),
+vi.mock('@/features/polymarket/utils/tradingApprovals', () => ({
+  ensureTradingApprovals: vi.fn(),
 }));
 
-jest.mock('@/utils/delay', () => ({
-  delay: jest.fn(async () => undefined),
+vi.mock('@/utils/delay', () => ({
+  delay: vi.fn(async () => undefined),
 }));
 
-const mockAnalyticsTrack = jest.mocked(analytics.track);
-const mockCollectPolymarketTradeFee = jest.mocked(collectPolymarketTradeFee);
-const mockEnsureTradingApprovals = jest.mocked(ensureTradingApprovals);
-const mockGetPolygonUsdcBalance = jest.mocked(getPolygonUsdcBalance);
-const mockWrapUsdcAmountToPusd = jest.mocked(wrapUsdcAmountToPusd);
+const mockAnalyticsTrack = vi.mocked(analytics.track);
+const mockCollectPolymarketTradeFee = vi.mocked(collectPolymarketTradeFee);
+const mockEnsureTradingApprovals = vi.mocked(ensureTradingApprovals);
+const mockGetPolygonUsdcBalance = vi.mocked(getPolygonUsdcBalance);
+const mockWrapUsdcAmountToPusd = vi.mocked(wrapUsdcAmountToPusd);
 
 describe('executePolymarketOrder', () => {
   beforeEach(() => {

@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import * as kc from '@/features/local-auth/keychain';
 import { addressKey, allWalletsKey } from '@/features/local-auth/keychainConstants';
 import * as legacyKeychain from '@/features/local-auth/legacyKeychain';
@@ -14,39 +16,39 @@ import {
   saveKeyForWallet,
 } from './walletKeychain';
 
-jest.mock('@/features/local-auth/keychain', () => ({
+vi.mock('@/features/local-auth/keychain', () => ({
   ErrorType: {
     Unknown: 0,
     UserCanceled: -1,
     NotAuthenticated: -2,
     Unavailable: -3,
   },
-  has: jest.fn(),
-  getObject: jest.fn(),
-  isPasscodeAuthAvailable: jest.fn(),
-  maybeAuthenticateWithPIN: jest.fn().mockResolvedValue(undefined),
+  has: vi.fn(),
+  getObject: vi.fn(),
+  isPasscodeAuthAvailable: vi.fn(),
+  maybeAuthenticateWithPIN: vi.fn().mockResolvedValue(undefined),
   publicAccessControlOptions: { accessible: 'public' },
-  setObject: jest.fn(),
+  setObject: vi.fn(),
 }));
 
-jest.mock('@/features/local-auth/legacyKeychain', () => ({
-  loadString: jest.fn(),
+vi.mock('@/features/local-auth/legacyKeychain', () => ({
+  loadString: vi.fn(),
   publicAccessControlOptions: { accessible: 'public' },
-  saveString: jest.fn(),
+  saveString: vi.fn(),
 }));
 
-jest.mock('@/navigation/Navigation', () => ({
+vi.mock('@/navigation/Navigation', () => ({
   __esModule: true,
-  default: { handleAction: jest.fn() },
+  default: { handleAction: vi.fn() },
 }));
 
-jest.mock('@/navigation/routesNames', () => ({
+vi.mock('@/navigation/routesNames', () => ({
   __esModule: true,
   default: { WALLET_ERROR_SHEET: 'WalletErrorSheet' },
 }));
 
-jest.mock('@/utils/wallet', () => ({
-  deriveAccountFromMnemonic: jest.fn(),
+vi.mock('@/utils/wallet', () => ({
+  deriveAccountFromMnemonic: vi.fn(),
 }));
 
 const ADDRESS = '0x0000000000000000000000000000000000000001';
@@ -73,7 +75,7 @@ const WALLETS: AllRainbowWallets = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('walletKeychain', () => {
@@ -92,13 +94,13 @@ describe('walletKeychain', () => {
 
   it('loads the complete wallets record', async () => {
     const storedWallets = { version: 1, wallets: WALLETS };
-    jest.mocked(kc.getObject).mockResolvedValue({ value: storedWallets, error: undefined });
+    vi.mocked(kc.getObject).mockResolvedValue({ value: storedWallets, error: undefined });
 
     await expect(getAllWallets()).resolves.toEqual(storedWallets);
   });
 
   it('returns only string account addresses from legacy storage', async () => {
-    jest.mocked(legacyKeychain.loadString).mockResolvedValueOnce(ADDRESS).mockResolvedValueOnce(kc.ErrorType.UserCanceled);
+    vi.mocked(legacyKeychain.loadString).mockResolvedValueOnce(ADDRESS).mockResolvedValueOnce(kc.ErrorType.UserCanceled);
 
     await expect(loadAddress()).resolves.toBe(ADDRESS);
     await expect(loadAddress()).resolves.toBeNull();
@@ -106,7 +108,7 @@ describe('walletKeychain', () => {
   });
 
   it('preserves keychain cancellation when loading a private key', async () => {
-    jest.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.UserCanceled });
+    vi.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.UserCanceled });
 
     await expect(getPrivateKey(ADDRESS)).resolves.toBe(kc.ErrorType.UserCanceled);
   });
@@ -114,7 +116,7 @@ describe('walletKeychain', () => {
   it.each([kc.ErrorType.UserCanceled, kc.ErrorType.NotAuthenticated])(
     'does not complete legacy migration after keychain error %s',
     async error => {
-      jest.mocked(legacyKeychain.loadString).mockResolvedValue(error);
+      vi.mocked(legacyKeychain.loadString).mockResolvedValue(error);
 
       await expect(migrateWalletSecrets()).resolves.toBeNull();
       expect(legacyKeychain.saveString).not.toHaveBeenCalled();
@@ -127,8 +129,8 @@ describe('walletKeychain', () => {
   });
 
   it('marks an iOS wallet as damaged when its keychain key cannot be checked', async () => {
-    jest.mocked(kc.isPasscodeAuthAvailable).mockResolvedValue(true);
-    jest.mocked(kc.has).mockRejectedValue(new Error('Keychain unavailable'));
+    vi.mocked(kc.isPasscodeAuthAvailable).mockResolvedValue(true);
+    vi.mocked(kc.has).mockRejectedValue(new Error('Keychain unavailable'));
 
     await expect(checkWalletsDamagedState(WALLETS)).resolves.toEqual(new Map([['wallet_1', true]]));
   });

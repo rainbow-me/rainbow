@@ -1,5 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
+import { beforeEach, expect, test, vi } from 'vitest';
 
 import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { isHardwareWalletKey } from '@/features/wallet/core/hardwareWalletKey';
@@ -12,24 +13,24 @@ import { getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsS
 
 import { loadWallet } from './loadWallet';
 
-jest.mock('@ethersproject/wallet', () => ({ Wallet: jest.fn() }));
-jest.mock('@/features/hardware-wallet/utils/LedgerSigner', () => ({ LedgerSigner: jest.fn() }));
-jest.mock('@/features/wallet/core/hardwareWalletKey', () => ({ isHardwareWalletKey: jest.fn() }));
-jest.mock('@/features/wallet/data/walletKeychain', () => ({
-  loadAddress: jest.fn(),
-  loadPrivateKey: jest.fn(),
+vi.mock('@ethersproject/wallet', () => ({ Wallet: vi.fn() }));
+vi.mock('@/features/hardware-wallet/utils/LedgerSigner', () => ({ LedgerSigner: vi.fn() }));
+vi.mock('@/features/wallet/core/hardwareWalletKey', () => ({ isHardwareWalletKey: vi.fn() }));
+vi.mock('@/features/wallet/data/walletKeychain', () => ({
+  loadAddress: vi.fn(),
+  loadPrivateKey: vi.fn(),
 }));
-jest.mock('@/navigation/Navigation', () => ({
+vi.mock('@/navigation/Navigation', () => ({
   __esModule: true,
-  default: { handleAction: jest.fn() },
+  default: { handleAction: vi.fn() },
 }));
-jest.mock('@/navigation/routesNames', () => ({
+vi.mock('@/navigation/routesNames', () => ({
   __esModule: true,
   default: { WALLET_ERROR_SHEET: 'WalletErrorSheet' },
 }));
-jest.mock('@/state/wallets/walletsStore', () => ({
-  getWalletWithAccount: jest.fn(),
-  setWalletDamaged: jest.fn(),
+vi.mock('@/state/wallets/walletsStore', () => ({
+  getWalletWithAccount: vi.fn(),
+  setWalletDamaged: vi.fn(),
 }));
 
 const ADDRESS = '0x0000000000000000000000000000000000000001';
@@ -54,13 +55,13 @@ const HARDWARE_WALLET: RainbowWallet = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 test('rejects malformed hardware metadata without constructing a software wallet', async () => {
-  jest.mocked(getWalletWithAccount).mockReturnValue(HARDWARE_WALLET);
-  jest.mocked(loadPrivateKey).mockResolvedValue('device-id/account');
-  jest.mocked(isHardwareWalletKey).mockReturnValue(false);
+  vi.mocked(getWalletWithAccount).mockReturnValue(HARDWARE_WALLET);
+  vi.mocked(loadPrivateKey).mockResolvedValue('device-id/account');
+  vi.mocked(isHardwareWalletKey).mockReturnValue(false);
 
   await expect(loadWallet({ address: ADDRESS, provider: new StaticJsonRpcProvider() })).resolves.toBeNull();
   expect(Wallet).not.toHaveBeenCalled();

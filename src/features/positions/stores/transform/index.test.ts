@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { transformPositions } from '.';
 import {
   filteredItemsForPosition,
@@ -17,8 +19,8 @@ import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createSimpleDapp } from '../../__fixtures__/mocks/positions';
 import { DetailType, PositionName, type ListPositionsResponse, type PortfolioItem } from '../../types/generated/positions/positions';
 
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => true),
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => true),
 }));
 
 // ============ Helpers ===================================================== //
@@ -886,7 +888,7 @@ describe('transformPositions', () => {
         if (lidoPosition) {
           // Check that no stakes have wstETH in their name/description
           const wstethStakes = lidoPosition.stakes.filter(stake => 'name' in stake && stake.name === 'wstETH');
-          // eslint-disable-next-line jest/no-conditional-expect
+          // eslint-disable-next-line @vitest/no-conditional-expect
           expect(wstethStakes.length).toBe(0);
         }
 
@@ -899,7 +901,7 @@ describe('transformPositions', () => {
           );
 
           // Raw fixture should have wstETH items
-          // eslint-disable-next-line jest/no-conditional-expect
+          // eslint-disable-next-line @vitest/no-conditional-expect
           expect(rawWstethItems.length).toBeGreaterThan(0);
 
           // But they should be filtered from final result
@@ -915,7 +917,7 @@ describe('transformPositions', () => {
             const rawLidoItemCount = rawLidoPositions.flatMap(p => p.portfolioItems || []).length;
 
             // Filtered items should be fewer than raw items
-            // eslint-disable-next-line jest/no-conditional-expect
+            // eslint-disable-next-line @vitest/no-conditional-expect
             expect(totalLidoItems).toBeLessThan(rawLidoItemCount);
           }
         }
@@ -951,9 +953,9 @@ describe('transformPositions', () => {
             if (lidoPosition) {
               const transformedTotal = parseFloat(lidoPosition.totals.total.amount);
 
-              // eslint-disable-next-line jest/no-conditional-expect
+              // eslint-disable-next-line @vitest/no-conditional-expect
               expect(transformedTotal).toBeCloseTo(expectedTotal, 2);
-              // eslint-disable-next-line jest/no-conditional-expect
+              // eslint-disable-next-line @vitest/no-conditional-expect
               expect(filteredValue).toBeGreaterThan(0);
             }
           }
@@ -987,7 +989,7 @@ describe('transformPositions', () => {
 
           if (transformedPosition) {
             const transformedTotal = parseFloat(transformedPosition.totals.total.amount);
-            // eslint-disable-next-line jest/no-conditional-expect
+            // eslint-disable-next-line @vitest/no-conditional-expect
             expect(transformedTotal).toBeCloseTo(expectedTotal, 2);
           }
         });
@@ -1004,7 +1006,7 @@ describe('transformPositions', () => {
 
           if (transformedPosition && backendTotal > 0) {
             const transformedTotal = parseFloat(transformedPosition.totals.total.amount);
-            // eslint-disable-next-line jest/no-conditional-expect
+            // eslint-disable-next-line @vitest/no-conditional-expect
             expect(transformedTotal).toBeCloseTo(backendTotal, 2);
           }
         });

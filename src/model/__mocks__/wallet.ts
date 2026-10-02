@@ -1,3 +1,3 @@
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-export const loadWallet = jest.fn();
+export const loadWallet = vi.fn();

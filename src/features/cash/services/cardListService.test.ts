@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { logger } from '@/logger';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
@@ -6,16 +8,16 @@ import { loadLinkedCards } from './cardListService';
 import { CashAccessRefusedError } from './cashAccessRefusal';
 import { listCardsWithCachedAuth } from './rampClient';
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('./rampClient', () => ({
-  listCardsWithCachedAuth: jest.fn(),
+vi.mock('./rampClient', () => ({
+  listCardsWithCachedAuth: vi.fn(),
 }));
 
-const mockListCardsWithCachedAuth = jest.mocked(listCardsWithCachedAuth);
+const mockListCardsWithCachedAuth = vi.mocked(listCardsWithCachedAuth);
 
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const OTHER_CARD: LinkedCard = { id: 'card_2', brand: 'Visa', last4: '1115' };
@@ -38,7 +40,7 @@ function deferListCards() {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   store().clear();
   useCashAccountStore.getState().setUserId('user-1');
   mockListCardsWithCachedAuth.mockResolvedValue({ kind: 'success', data: [CARD] });

@@ -1,23 +1,24 @@
 import { getAddress, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { getCachedDelegationSupport, getDelegationSupportRequestKey, getSponsoredSendRequestKey } from './useSponsoredSendPreparation';
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 
-jest.mock('../utils/sponsoredSend', () => ({
-  predictSponsoredSend: jest.fn(),
-  prepareSponsoredSend: jest.fn(),
+vi.mock('../utils/sponsoredSend', () => ({
+  predictSponsoredSend: vi.fn(),
+  prepareSponsoredSend: vi.fn(),
 }));
 
-jest.mock('../utils/sponsoredSendExecution', () => ({
-  buildSendCallFromSendDetails: jest.fn(),
+vi.mock('../utils/sponsoredSendExecution', () => ({
+  buildSendCallFromSendDetails: vi.fn(),
 }));
 
-const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
+const mockSupportsDelegatedExecution = vi.fn<(...args: [unknown]) => Promise<boolean>>();
 
-jest.mock('@/features/delegation/utils/willDelegate', () => ({
+vi.mock('@/features/delegation/utils/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 
@@ -139,7 +140,7 @@ describe('getSponsoredSendRequestKey', () => {
 
 describe('getCachedDelegationSupport', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('normalizes cache keys by account and chain', () => {

@@ -1,19 +1,21 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { getFallbackGasLimitForTrade } from './utils';
 
-const mockGetChainGasUnits = jest.fn();
+const mockGetChainGasUnits = vi.fn();
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({ getChainGasUnits: mockGetChainGasUnits }),
   },
 }));
 
-jest.mock('@/handlers/web3', () => ({
-  toHexNoLeadingZeros: jest.fn(),
+vi.mock('@/handlers/web3', () => ({
+  toHexNoLeadingZeros: vi.fn(),
 }));
 
-jest.mock('@/resources/transactions/transactionSimulation', () => ({
-  simulateTransactions: jest.fn(),
+vi.mock('@/resources/transactions/transactionSimulation', () => ({
+  simulateTransactions: vi.fn(),
 }));
 
 describe('getFallbackGasLimitForTrade', () => {

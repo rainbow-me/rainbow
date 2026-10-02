@@ -1,17 +1,18 @@
 import { parseUnits } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RNBW_DECIMALS } from '../constants';
 import { resolveStakeClaimStrategy } from './resolveStakeClaimStrategy';
 
-const mockFetch = jest.fn();
-const mockGetData = jest.fn();
-const mockHasClaimableRewards = jest.fn();
+const mockFetch = vi.fn();
+const mockGetData = vi.fn();
+const mockHasClaimableRewards = vi.fn();
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${chainId}:${address}`,
 }));
 
-jest.mock('@/features/rnbw-rewards/stores/rewardsBalanceStore', () => ({
+vi.mock('@/features/rnbw-rewards/stores/rewardsBalanceStore', () => ({
   useRewardsBalanceStore: {
     getState: () => ({
       fetch: mockFetch,
@@ -32,7 +33,7 @@ function setClaimableRnbw(claimableRnbw: string): void {
 
 describe('resolveStakeClaimStrategy', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('claims sub-threshold rewards to wallet and stakes the full requested amount from wallet balance', async () => {

@@ -1,6 +1,8 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { normalizeUrlWorklet } from './browserUtils';
 
-jest.mock('../constants/constants', () => ({
+vi.mock('../constants/constants', () => ({
   APP_STORE_URL_PREFIXES: [],
   RAINBOW_HOME: 'RAINBOW_HOME',
 }));

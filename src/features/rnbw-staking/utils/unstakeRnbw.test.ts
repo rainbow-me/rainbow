@@ -1,5 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { STAKING_CHAIN_ID } from '../constants';
 import { type StakingPositionData } from '../stores/rnbwStakingPositionStore';
@@ -7,15 +8,15 @@ import { type RnbwStakingExecution } from './executeRnbwStakingCalls';
 import { type PreparedUnstakeRnbw } from './prepareUnstakeRnbw';
 import { unstakeRnbw } from './unstakeRnbw';
 
-const mockGetProvider = jest.fn();
-const mockLoadWallet = jest.fn<Promise<unknown>, [unknown]>();
-const mockFetch = jest.fn<Promise<void>, [undefined, { force: boolean } | undefined]>();
-const mockGetData = jest.fn<StakingPositionData | undefined, []>();
-const mockExecuteUnstakeRnbw = jest.fn<Promise<RnbwStakingExecution>, [unknown]>();
-const mockPollForStakingUpdate = jest.fn<Promise<boolean>, [string]>();
-const mockTrack = jest.fn();
+const mockGetProvider = vi.fn();
+const mockLoadWallet = vi.fn<(...args: [unknown]) => Promise<unknown>>();
+const mockFetch = vi.fn<(...args: [undefined, { force: boolean } | undefined]) => Promise<void>>();
+const mockGetData = vi.fn<(...args: []) => StakingPositionData | undefined>();
+const mockExecuteUnstakeRnbw = vi.fn<(...args: [unknown]) => Promise<RnbwStakingExecution>>();
+const mockPollForStakingUpdate = vi.fn<(...args: [string]) => Promise<boolean>>();
+const mockTrack = vi.fn();
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
     event: {
       rnbwStakingUnstake: 'rnbw_staking.unstake',
@@ -25,15 +26,15 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/handlers/web3', () => ({
+vi.mock('@/handlers/web3', () => ({
   getProvider: () => mockGetProvider(),
 }));
 
-jest.mock('@/features/wallet/data/loadWallet', () => ({
+vi.mock('@/features/wallet/data/loadWallet', () => ({
   loadWallet: (params: unknown) => mockLoadWallet(params),
 }));
 
-jest.mock('../stores/rnbwStakingPositionStore', () => ({
+vi.mock('../stores/rnbwStakingPositionStore', () => ({
   useStakingPositionStore: {
     getState: () => ({
       fetch: (params: undefined, options?: { force: boolean }) => mockFetch(params, options),
@@ -42,15 +43,15 @@ jest.mock('../stores/rnbwStakingPositionStore', () => ({
   },
 }));
 
-jest.mock('./executeUnstakeRnbw', () => ({
+vi.mock('./executeUnstakeRnbw', () => ({
   executeUnstakeRnbw: (params: unknown) => mockExecuteUnstakeRnbw(params),
 }));
 
-jest.mock('./pollForStakingUpdate', () => ({
+vi.mock('./pollForStakingUpdate', () => ({
   pollForStakingUpdate: (originalStakedRnbwShares: string) => mockPollForStakingUpdate(originalStakedRnbwShares),
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
@@ -124,7 +125,7 @@ function recordCallOrder(): { order: string[]; record: (name: string) => void } 
 
 describe('unstakeRnbw', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetProvider.mockReturnValue(PROVIDER);
     mockLoadWallet.mockResolvedValue(new Wallet(PRIVATE_KEY));
     mockGetData.mockReturnValue(POSITION);
@@ -251,7 +252,7 @@ describe('unstakeRnbw', () => {
   });
 
   it('skips prepared calls when the signer is not a software wallet', async () => {
-    const hardwareSigner = { sendTransaction: jest.fn() };
+    const hardwareSigner = { sendTransaction: vi.fn() };
     mockLoadWallet.mockResolvedValue(hardwareSigner);
 
     await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(PREPARED_CALLS) });

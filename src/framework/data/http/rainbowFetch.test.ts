@@ -1,6 +1,8 @@
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import { rainbowFetch, RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-const mockFetch = jest.fn();
+const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 beforeEach(() => {

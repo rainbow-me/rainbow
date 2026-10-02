@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { mapWithConcurrency } from './mapWithConcurrency';
 
 function createDeferred<T>() {
@@ -18,7 +20,7 @@ const flush = () =>
 
 describe('mapWithConcurrency', () => {
   it('returns [] for empty input without invoking the mapper', async () => {
-    const mapper = jest.fn(async (n: number) => n);
+    const mapper = vi.fn(async (n: number) => n);
     const results = await mapWithConcurrency([], 4, mapper);
     expect(results).toEqual([]);
     expect(mapper).not.toHaveBeenCalled();
@@ -134,7 +136,7 @@ describe('mapWithConcurrency', () => {
     const total = 3;
     let inFlight = 0;
     let maxInFlight = 0;
-    const mapper = jest.fn(async (i: number) => {
+    const mapper = vi.fn(async (i: number) => {
       inFlight += 1;
       maxInFlight = Math.max(maxInFlight, inFlight);
       await Promise.resolve();

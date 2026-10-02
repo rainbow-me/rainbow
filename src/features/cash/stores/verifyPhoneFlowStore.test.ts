@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
@@ -17,9 +19,9 @@ import {
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 import { useVerifyPhoneFlowStore } from './verifyPhoneFlowStore';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashPhoneVerified: 'cash.phone_verified',
       cashPhoneVerifyFailed: 'cash.phone_verify_failed',
@@ -32,33 +34,33 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/utils/delay', () => ({
-  delay: jest.fn(() => Promise.resolve()),
+vi.mock('@/utils/delay', () => ({
+  delay: vi.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../services/userClient', () => ({
-  ...jest.requireActual('../services/userClient'),
-  finishSignupResume: jest.fn(),
-  getUserStatus: jest.fn(),
-  resendPhoneCode: jest.fn(),
-  startRecovery: jest.fn(),
-  startSignupResume: jest.fn(),
-  verifyPhone: jest.fn(),
+vi.mock('../services/userClient', () => ({
+  ...vi.requireActual('../services/userClient'),
+  finishSignupResume: vi.fn(),
+  getUserStatus: vi.fn(),
+  resendPhoneCode: vi.fn(),
+  startRecovery: vi.fn(),
+  startSignupResume: vi.fn(),
+  verifyPhone: vi.fn(),
 }));
 
-const mockVerifyPhone = jest.mocked(verifyPhone);
-const mockFinishSignupResume = jest.mocked(finishSignupResume);
-const mockGetUserStatus = jest.mocked(getUserStatus);
-const mockDelay = jest.mocked(delay);
-const mockResendPhoneCode = jest.mocked(resendPhoneCode);
-const mockStartRecovery = jest.mocked(startRecovery);
-const mockStartSignupResume = jest.mocked(startSignupResume);
-const track = jest.mocked(analytics.track);
+const mockVerifyPhone = vi.mocked(verifyPhone);
+const mockFinishSignupResume = vi.mocked(finishSignupResume);
+const mockGetUserStatus = vi.mocked(getUserStatus);
+const mockDelay = vi.mocked(delay);
+const mockResendPhoneCode = vi.mocked(resendPhoneCode);
+const mockStartRecovery = vi.mocked(startRecovery);
+const mockStartSignupResume = vi.mocked(startSignupResume);
+const track = vi.mocked(analytics.track);
 
 const CODE = '123456';
 let token = { bootstrapToken: 'bst_1', expiresAt: 0 };
@@ -78,7 +80,7 @@ const startAccountRecovery = (recoveryId = 'recovery-1') =>
   store().setPhoneSubmitted({ challenge: { kind: 'recovery', recoveryId }, phoneNationalNumber: '4155550100', resendAfter: 0 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   store().reset();
   submitPhone({ kind: 'signup', userId: 'user-1' });
   useVerifyPhoneFlowStore.getState().reset();
@@ -92,7 +94,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('useVerifyPhoneFlowStore.submit', () => {
@@ -277,7 +279,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
 
   it('refreshes an expired resumed-signup credential before a manual status retry', async () => {
     const now = 1_750_000_000_000;
-    const dateNow = jest.spyOn(Date, 'now').mockReturnValue(now);
+    const dateNow = vi.spyOn(Date, 'now').mockReturnValue(now);
     const expiringToken = { bootstrapToken: 'bst_expiring', expiresAt: now + 1 };
     const refreshedToken = { bootstrapToken: 'bst_refreshed', expiresAt: now + 60_000 };
     const policyError = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
@@ -581,7 +583,7 @@ describe('useVerifyPhoneFlowStore.submit', () => {
 describe('useVerifyPhoneFlowStore.resend', () => {
   it('resends only after the backend resendAfter time, then stores the next backend resendAfter', async () => {
     const now = 1_750_000_000_000;
-    const dateNow = jest.spyOn(Date, 'now').mockReturnValue(now);
+    const dateNow = vi.spyOn(Date, 'now').mockReturnValue(now);
     store().setResendAfter(challenge(), now + 1);
 
     await flow().resend();

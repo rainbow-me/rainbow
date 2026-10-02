@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
@@ -8,9 +10,9 @@ import { useCashAccountStore } from './cashAccountStore';
 import { useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 import { getShouldCheckKycOnReturn, useKycReturnFlowStore } from './kycReturnFlowStore';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashKycApproved: 'cash.kyc_approved',
       cashKycAwaitingDecision: 'cash.kyc_awaiting_decision',
@@ -19,22 +21,22 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/utils/delay', () => ({
+vi.mock('@/utils/delay', () => ({
   delay: () => Promise.resolve(),
 }));
 
-jest.mock('../services/userClient', () => ({
-  ...jest.requireActual('../services/userClient'),
-  getUserStatus: jest.fn(),
+vi.mock('../services/userClient', () => ({
+  ...vi.requireActual('../services/userClient'),
+  getUserStatus: vi.fn(),
 }));
 
-const mockGetUserStatus = jest.mocked(getUserStatus);
-const track = jest.mocked(analytics.track);
+const mockGetUserStatus = vi.mocked(getUserStatus);
+const track = vi.mocked(analytics.track);
 
 const CHALLENGE: PhoneVerificationChallenge = { kind: 'signup', userId: 'user-1' };
 const BOOTSTRAP_TOKEN = 'bst_1';
@@ -49,7 +51,7 @@ function verifyPhone(expiresAt = Date.now() + 60_000) {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCashAccountStore.getState().clearUserId();
   useCashSetupSessionStore.getState().reset();
   flow().reset();
@@ -58,8 +60,8 @@ beforeEach(() => {
 
 afterEach(() => {
   useCashSetupSessionStore.getState().reset();
-  jest.restoreAllMocks();
-  jest.useRealTimers();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
 describe('useKycReturnFlowStore.check', () => {
@@ -194,7 +196,7 @@ describe('useKycReturnFlowStore.check', () => {
   it('drops an expired session without reading its status', async () => {
     const now = Date.now();
     verifyPhone(now + 1_000);
-    jest.spyOn(Date, 'now').mockReturnValue(now + 1_001);
+    vi.spyOn(Date, 'now').mockReturnValue(now + 1_001);
 
     await expect(flow().check()).resolves.toBe('expired');
 
@@ -203,14 +205,14 @@ describe('useKycReturnFlowStore.check', () => {
   });
 
   it('does not publish a status response that lands after the credential expires', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     const now = Date.now();
     const status = Promise.withResolvers<{ kycStatus: KycStatus }>();
     verifyPhone(now + 1_000);
     mockGetUserStatus.mockReturnValue(status.promise);
 
     const pending = flow().check();
-    jest.advanceTimersByTime(1_000);
+    vi.advanceTimersByTime(1_000);
     expect(session()).toEqual({ status: 'empty' });
     status.resolve({ kycStatus: KycStatus.Approved });
 
@@ -290,7 +292,7 @@ describe('getShouldCheckKycOnReturn', () => {
   it('drops an expired session when its suspended timer has not run', () => {
     const now = Date.now();
     verifyPhone(now + 1_000);
-    jest.spyOn(Date, 'now').mockReturnValue(now + 1_001);
+    vi.spyOn(Date, 'now').mockReturnValue(now + 1_001);
 
     expect(getShouldCheckKycOnReturn()).toBe(false);
     expect(session()).toEqual({ status: 'empty' });

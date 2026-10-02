@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { getPlatformClient } from '@/resources/platform/client';
 
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
@@ -6,23 +8,23 @@ import type { RainbowPositions } from '../types';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { usePositionsStore } from './positionsStore';
 
-jest.mock('@/resources/platform/client');
-jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/resources/platform/client');
+vi.mock('@/features/config/hooks/experimentalHooks', () => ({}));
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({
       getSupportedPositionsChainIds: () => [1, 10, 137],
     }),
-    subscribe: jest.fn(),
+    subscribe: vi.fn(),
   },
 }));
-jest.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
+vi.mock('@/state/assets/userAssetsStoreManager', () => {
+  const { createStore: createZustandStore } = vi.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
   const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    jest.requireActual<typeof import('../__fixtures__/ListPositions')>('../__fixtures__/ListPositions');
+    vi.requireActual<typeof import('../__fixtures__/ListPositions')>('../__fixtures__/ListPositions');
   return {
     userAssetsStoreManager: createZustandStore(() => ({
       address,
@@ -46,16 +48,16 @@ const setStoreData = (data: RainbowPositions) => {
 // =============================== TESTS ===============================
 
 describe('positionsStore Integration Tests', () => {
-  let mockClient: { get: jest.Mock };
+  let mockClient: { get: Mock };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Setup mock client
     mockClient = {
-      get: jest.fn(),
+      get: vi.fn(),
     };
-    (getPlatformClient as jest.Mock).mockReturnValue(mockClient);
+    (getPlatformClient as Mock).mockReturnValue(mockClient);
   });
 
   describe('Integration with Platform API', () => {

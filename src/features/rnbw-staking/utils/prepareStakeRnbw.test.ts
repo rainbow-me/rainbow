@@ -1,17 +1,18 @@
 import { type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { prepareStakeRnbw, type StakeRnbwPreparationParams } from './prepareStakeRnbw';
 
-const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockBuildStakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
-const mockGetProvider = jest.fn();
-const mockResolveStakeClaimStrategy = jest.fn<Promise<unknown>, [string]>();
+const mockCanUseDelegatedExecution = vi.fn<(...args: [Address]) => boolean>();
+const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<unknown>>();
+const mockBuildStakeRnbwExecutionPlan = vi.fn<(...args: [unknown]) => Promise<{ calls: Call[]; requirements?: CallsRequirements }>>();
+const mockGetProvider = vi.fn();
+const mockResolveStakeClaimStrategy = vi.fn<(...args: [string]) => Promise<unknown>>();
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),
@@ -19,15 +20,15 @@ jest.mock('@rainbow-me/sdk', () => ({
   },
 }));
 
-jest.mock('@/handlers/web3', () => ({
+vi.mock('@/handlers/web3', () => ({
   getProvider: () => mockGetProvider(),
 }));
 
-jest.mock('@/features/delegation/utils/willDelegate', () => ({
+vi.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     getChainDefaultRpc: () => 'http://127.0.0.1:8545',
     getDefaultChains: () => ({
@@ -41,15 +42,15 @@ jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   },
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
-jest.mock('./resolveStakeClaimStrategy', () => ({
+vi.mock('./resolveStakeClaimStrategy', () => ({
   resolveStakeClaimStrategy: (stakeAmountRaw: string) => mockResolveStakeClaimStrategy(stakeAmountRaw),
 }));
 
-jest.mock('./stakeRnbwCalls', () => ({
+vi.mock('./stakeRnbwCalls', () => ({
   buildStakeRnbwExecutionPlan: (params: unknown) => mockBuildStakeRnbwExecutionPlan(params),
 }));
 
@@ -61,7 +62,7 @@ const SPONSORED_REQUIREMENTS = { atomic: 'required', fees: { payer: 'sponsor' } 
 
 describe('prepareStakeRnbw', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockGetProvider.mockReturnValue(provider);
     mockBuildStakeRnbwExecutionPlan.mockResolvedValue({ calls: [STAKE_CALL], requirements: SPONSORED_REQUIREMENTS });

@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { GRAPHS, type Graph } from './internal/cruise';
 
 type RuleConfig = { name: string; from: { path?: string; pathNot?: string }; to: { path?: string; pathNot?: string; circular?: boolean } };
@@ -15,7 +17,7 @@ function loadConfig(graph: string): Config {
   process.env.DEPCRUISE_GRAPH = graph;
   try {
     let config: Config | undefined;
-    jest.isolateModules(() => {
+    vi.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       config = require('../../.dependency-cruiser.cjs') as Config;
     });

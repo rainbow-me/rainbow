@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
@@ -6,22 +8,22 @@ import { DetailType, PositionName } from '../../types/generated/positions/positi
 import { usePositionsStore } from '../positionsStore';
 
 // Mock config to avoid React Native gesture handler imports
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({
       getSupportedPositionsChainIds: () => [1, 10, 137],
     }),
-    subscribe: jest.fn(),
+    subscribe: vi.fn(),
   },
 }));
-jest.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
+vi.mock('@/state/assets/userAssetsStoreManager', () => {
+  const { createStore: createZustandStore } = vi.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
   const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    jest.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
+    vi.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
   return {
     userAssetsStoreManager: createZustandStore(() => ({
       address,

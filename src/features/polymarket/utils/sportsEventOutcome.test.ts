@@ -1,8 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { findSportsEventOutcome } from '@/features/polymarket/utils/sportsEventOutcome';
 
-jest.mock('@/features/polymarket/utils/getMarketColor', () => ({
-  getOutcomeColor: jest.fn(),
+vi.mock('@/features/polymarket/utils/getMarketColor', () => ({
+  getOutcomeColor: vi.fn(),
 }));
 
 describe('findSportsEventOutcome', () => {

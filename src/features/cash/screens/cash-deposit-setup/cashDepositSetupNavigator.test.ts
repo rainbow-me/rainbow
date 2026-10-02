@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import Routes from '@/navigation/routesNames';
 
 import { useCashAccountStore } from '../../stores/cashAccountStore';
@@ -31,7 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('CashDepositSetupNavigator entry route', () => {
@@ -48,7 +50,7 @@ describe('CashDepositSetupNavigator entry route', () => {
   it('starts at Phone once the retained token has expired', () => {
     const expiresAt = Date.now() + 60_000;
     verifyPhone({ complete: true, expiresAt });
-    jest.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
+    vi.spyOn(Date, 'now').mockReturnValue(expiresAt + 1);
     expect(useCashSetupSessionStore.getState().session.status).toBe('phoneVerified');
 
     expect(open()).toBe(Routes.CASH_SETUP_PHONE);

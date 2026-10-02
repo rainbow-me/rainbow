@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 

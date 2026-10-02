@@ -1,28 +1,30 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { delegation } from '@rainbow-me/sdk';
 
 import { canUseDelegatedExecution, supportsDelegatedExecution } from './willDelegate';
 
-const mockGetWalletWithAccount = jest.fn();
-const mockIsDelegationEnabled = jest.fn();
+const mockGetWalletWithAccount = vi.fn();
+const mockIsDelegationEnabled = vi.fn();
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   getWalletWithAccount: (accountAddress: string) => mockGetWalletWithAccount(accountAddress),
-  useWalletsStore: jest.fn(),
+  useWalletsStore: vi.fn(),
 }));
 
-jest.mock('./featureFlags', () => ({
+vi.mock('./featureFlags', () => ({
   isDelegationEnabled: () => mockIsDelegationEnabled(),
-  useIsDelegationEnabled: jest.fn(),
+  useIsDelegationEnabled: vi.fn(),
 }));
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   delegation: {
-    isEnabled: jest.fn(),
-    isSupported: jest.fn(),
-    willDelegate: jest.fn(),
+    isEnabled: vi.fn(),
+    isSupported: vi.fn(),
+    willDelegate: vi.fn(),
   },
-  useWillDelegate: jest.fn(),
+  useWillDelegate: vi.fn(),
 }));
 
 const ADDRESS = '0x1111111111111111111111111111111111111111';
@@ -37,10 +39,10 @@ function setWallet(type: EthereumWalletType) {
 
 describe('delegation wallet gating', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockIsDelegationEnabled.mockReturnValue(true);
-    jest.mocked(delegation.isEnabled).mockReturnValue(true);
-    jest.mocked(delegation.isSupported).mockResolvedValue({ supported: true, reason: null });
+    vi.mocked(delegation.isEnabled).mockReturnValue(true);
+    vi.mocked(delegation.isSupported).mockResolvedValue({ supported: true, reason: null });
   });
 
   it('rejects hardware wallets even when their optional deviceId is missing', async () => {

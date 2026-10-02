@@ -1,16 +1,18 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 import { buildPolymarketSportsEventsListData, type SportsListItem } from './buildPolymarketSportsEventsListData';
 
 // Resolve every event to one league so a single selected league yields one group.
-jest.mock('@/features/polymarket/leagues', () => ({
+vi.mock('@/features/polymarket/leagues', () => ({
   getLeague: () => ({ name: 'Test League' }),
   getLeagueId: () => 'nba',
   getLeagueSlugId: () => 'nba',
   LEAGUE_LIST_ORDER: ['nba'],
 }));
 
-jest.mock('@/languages', () => ({
+vi.mock('@/languages', () => ({
   t: (key: string) => key,
   l: {
     predictions: { sports: { live: 'live' }, bet_types: { other: 'other' } },

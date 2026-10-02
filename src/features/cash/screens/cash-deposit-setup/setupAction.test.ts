@@ -1,4 +1,5 @@
 import { createBaseStore } from '@storesjs/stores';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import Routes from '@/navigation/routesNames';
 
@@ -11,44 +12,44 @@ import { completeSetup, completeSetupStep } from './setupNavigation';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
-jest.mock('../../services/cashSignInService', () => ({
-  signInWithPhone: jest.fn(),
+vi.mock('../../services/cashSignInService', () => ({
+  signInWithPhone: vi.fn(),
 }));
 
-jest.mock('./setupNavigation', () => ({
-  completeSetup: jest.fn(),
-  completeSetupStep: jest.fn(),
-  goBackInSetup: jest.fn(),
+vi.mock('./setupNavigation', () => ({
+  completeSetup: vi.fn(),
+  completeSetupStep: vi.fn(),
+  goBackInSetup: vi.fn(),
 }));
 
-jest.mock('../../stores/cardLinkFlowStore', () => ({
+vi.mock('../../stores/cardLinkFlowStore', () => ({
   useCardLinkFlowStore: {},
 }));
 
-jest.mock('./steps/useAddPasskeyFlow', () => ({
+vi.mock('./steps/useAddPasskeyFlow', () => ({
   useAddPasskeyFlowStore: {},
 }));
 
-jest.mock('./steps/useSubmitReviewFlow', () => {
-  const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+vi.mock('./steps/useSubmitReviewFlow', () => {
+  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
   return { useSubmitReviewFlowStore: createBaseStore(() => ({ state: 'entry', kycSubmitted: false })) };
 });
 
-jest.mock('../../stores/kycReturnFlowStore', () => {
-  const { createBaseStore } = jest.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
-  return { useKycReturnFlowStore: createBaseStore(() => ({ state: 'idle', check: jest.fn(), reset: jest.fn() })) };
+vi.mock('../../stores/kycReturnFlowStore', () => {
+  const { createBaseStore } = vi.requireActual<typeof import('@storesjs/stores')>('@storesjs/stores');
+  return { useKycReturnFlowStore: createBaseStore(() => ({ state: 'idle', check: vi.fn(), reset: vi.fn() })) };
 });
 
 const DIGITS = '4155550100';
-const mockCompleteSetupStep = completeSetupStep as jest.Mock;
+const mockCompleteSetupStep = completeSetupStep as Mock;
 
 const useActionStore = createSetupActionStore(
-  jest.fn() as never,
+  vi.fn() as never,
   createBaseStore(() => ({ isReady: false }))
 );
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useSubmitReviewFlowStore.setState({ kycSubmitted: false });
   CashDepositSetupNavigation.resetNavigationState();
   useCashSetupSessionStore.getState().reset();
@@ -85,7 +86,7 @@ it.each([
   { step: Routes.CASH_SETUP_CONFIRM_PHONE, expectedCompletions: 0 },
 ])('completes sign-in $expectedCompletions times when it resolves on $step', async ({ step, expectedCompletions }) => {
   let resolveSignIn!: () => void;
-  jest.mocked(signInWithPhone).mockReturnValue(
+  vi.mocked(signInWithPhone).mockReturnValue(
     new Promise<void>(resolve => {
       resolveSignIn = resolve;
     })
@@ -103,7 +104,7 @@ it.each([
 });
 
 describe('checkKycOnReturn', () => {
-  const mockCheck = jest.mocked(useKycReturnFlowStore.getState().check);
+  const mockCheck = vi.mocked(useKycReturnFlowStore.getState().check);
 
   beforeEach(() => {
     CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_IDENTITY);

@@ -1,8 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { OrderStatus, RampError, RampNetwork, type BuyOrder } from '../services/rampClient';
 import { buildCashPurchaseTransaction } from './buildCashPurchaseTransaction';
 
-jest.mock('@/utils/ethereumUtils', () => ({ getUniqueId: jest.fn(() => 'usdc-base') }));
-jest.mock('@/utils/getUrlForTrustIconFallback', () => jest.fn(() => null));
+vi.mock('@/utils/ethereumUtils', () => ({ getUniqueId: vi.fn(() => 'usdc-base') }));
+vi.mock('@/utils/getUrlForTrustIconFallback', () => vi.fn(() => null));
 
 type CompletedBuyOrder = Extract<BuyOrder, { status: OrderStatus.Completed }>;
 

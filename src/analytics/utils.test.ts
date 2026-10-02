@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import * as keychain from '@/features/local-auth/legacyKeychain';
 import * as ls from '@/storage';
 
-jest.mock('@/features/local-auth/legacyKeychain', () => ({
-  loadString: jest.fn(),
+vi.mock('@/features/local-auth/legacyKeychain', () => ({
+  loadString: vi.fn(),
 }));
 
-jest.mock('@/redux/store');
+vi.mock('@/redux/store');
 
-jest.mock('@sentry/react-native', () => ({
-  setUser: jest.fn(),
+vi.mock('@sentry/react-native', () => ({
+  setUser: vi.fn(),
 }));
 
 beforeEach(() => {

@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
@@ -5,8 +7,8 @@ import { createMockPosition, createMockResponse, createMockStats } from '../../_
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 
 // Mock config to avoid React Native gesture handler imports
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
 
 describe('Curve Protocol', () => {

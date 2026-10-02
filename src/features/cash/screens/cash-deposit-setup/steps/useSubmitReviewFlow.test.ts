@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { setRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
@@ -10,9 +12,9 @@ import { getUserStatus, KycRejectionReasonCode, KycStatus, submitOnboarding } fr
 import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
 import { KYC_POLL_INTERVAL_MS, useSubmitReviewFlowStore, type SubmitReviewState } from './useSubmitReviewFlow';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashKycSubmitted: 'cash.kyc_submitted',
       cashKycApproved: 'cash.kyc_approved',
@@ -24,28 +26,28 @@ jest.mock('@/analytics', () => ({
 
 const REVIEW_DELAY_MS = 60_000;
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 setRemoteConfig({ cash_kyc_review_delay_ms: REVIEW_DELAY_MS });
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/utils/delay', () => ({
-  delay: jest.fn(() => Promise.resolve()),
+vi.mock('@/utils/delay', () => ({
+  delay: vi.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../../../services/userClient', () => ({
-  ...jest.requireActual('../../../services/userClient'),
-  getUserStatus: jest.fn(),
-  submitOnboarding: jest.fn(),
+vi.mock('../../../services/userClient', () => ({
+  ...vi.requireActual('../../../services/userClient'),
+  getUserStatus: vi.fn(),
+  submitOnboarding: vi.fn(),
 }));
 
-const mockSubmitOnboarding = jest.mocked(submitOnboarding);
-const mockGetUserStatus = jest.mocked(getUserStatus);
-const mockDelay = jest.mocked(delay);
-const track = jest.mocked(analytics.track);
+const mockSubmitOnboarding = vi.mocked(submitOnboarding);
+const mockGetUserStatus = vi.mocked(getUserStatus);
+const mockDelay = vi.mocked(delay);
+const track = vi.mocked(analytics.track);
 
 const TOKEN = 'bst_1';
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1990, month: 1, day: 2 } };
@@ -55,7 +57,7 @@ const GOVERNMENT_ID = createUsSsnLast4GovernmentId(SSN_LAST4);
 
 function fakeClock(start = 1_750_000_000_000) {
   let clock = start;
-  jest.spyOn(Date, 'now').mockImplementation(() => clock);
+  vi.spyOn(Date, 'now').mockImplementation(() => clock);
   return { advance: (ms: number) => (clock += ms) };
 }
 
@@ -68,7 +70,7 @@ const challenge = () => {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
@@ -82,7 +84,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('useSubmitReviewFlowStore.submit onboarding', () => {

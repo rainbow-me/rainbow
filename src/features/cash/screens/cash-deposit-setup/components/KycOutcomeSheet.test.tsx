@@ -1,16 +1,18 @@
 import { isValidElement } from 'react';
 
+import { expect, it, vi } from 'vitest';
+
 import { KycRejectionReasonCode, type UnsupportedLocation } from '../../../services/userClient';
 import { KycOutcomeSheet } from './KycOutcomeSheet';
 
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
+vi.mock('react', () => ({
+  ...vi.requireActual('react'),
   memo: (component: unknown) => component,
 }));
 
-jest.mock('@/features/cash/components/CashStatusHalfSheet', () => ({ CashStatusHalfSheet: () => null }));
-jest.mock('@/navigation/Navigation', () => ({ goBack: jest.fn(), navigate: jest.fn() }));
-jest.mock('@/utils/openInBrowser', () => ({ openInBrowser: jest.fn() }));
+vi.mock('@/features/cash/components/CashStatusHalfSheet', () => ({ CashStatusHalfSheet: () => null }));
+vi.mock('@/navigation/Navigation', () => ({ goBack: vi.fn(), navigate: vi.fn() }));
+vi.mock('@/utils/openInBrowser', () => ({ openInBrowser: vi.fn() }));
 
 it.each<{ location?: UnsupportedLocation; name: string; code: string }>([
   { location: { countryCode: 'US', regionName: 'New York', regionCode: 'NY' }, name: 'New York', code: 'NY' },
@@ -23,7 +25,7 @@ it.each<{ location?: UnsupportedLocation; name: string; code: string }>([
 ])('shows the backend location or generic copy for $location', ({ location, name, code }) => {
   const sheet = KycOutcomeSheet({
     outcome: 'unsupportedState',
-    onContinue: jest.fn(),
+    onContinue: vi.fn(),
     kycRejectionReason: { code: KycRejectionReasonCode.StateNotSupported, unsupportedLocation: location },
   });
   if (!isValidElement<{ title: string; description: string }>(sheet)) throw new Error('Expected a KYC outcome sheet');

@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { time } from '@/framework/core/utils/time';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigationStore';
@@ -5,7 +7,7 @@ import { useNavigationStore, type SwipeRoute } from '@/state/navigation/navigati
 import { type CompactLineChartData } from '../../line/compact/types';
 import { createLineChartDataStore, type FetchedLineChartData } from './createLineChartDataStore';
 
-jest.mock('@/navigation/virtualNavigators', () => ({
+vi.mock('@/navigation/virtualNavigators', () => ({
   VIRTUAL_NAVIGATORS: {},
 }));
 
@@ -70,7 +72,7 @@ describe('createLineChartDataStore', () => {
 
   it('notifies chart listeners from query cache updates', async () => {
     const store = createLineChartDataStore(fetchChartData);
-    const listener = jest.fn();
+    const listener = vi.fn();
 
     const unsubscribe = store.subscribe(state => state.getChartData('BTC'), listener);
 
@@ -83,9 +85,9 @@ describe('createLineChartDataStore', () => {
 
   it('does not refetch fresh charts when active batches change', async () => {
     const now = 1_000_000;
-    jest.spyOn(Date, 'now').mockImplementation(() => now);
+    vi.spyOn(Date, 'now').mockImplementation(() => now);
 
-    const fetchLineChartData = jest.fn(fetchChartData);
+    const fetchLineChartData = vi.fn(fetchChartData);
     const store = createLineChartDataStore(fetchLineChartData);
 
     try {
@@ -98,15 +100,15 @@ describe('createLineChartDataStore', () => {
       expect(store.getState().getCacheEntry({ chartIds: ['BTC', 'ETH'] })?.lastFetchedAt).toBe(now);
     } finally {
       store.getState().reset(true);
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     }
   });
 
   it('uses configured stale time when filtering chart ids to fetch', async () => {
     let now = 1_000_000;
-    jest.spyOn(Date, 'now').mockImplementation(() => now);
+    vi.spyOn(Date, 'now').mockImplementation(() => now);
 
-    const fetchLineChartData = jest.fn(fetchChartData);
+    const fetchLineChartData = vi.fn(fetchChartData);
     const store = createLineChartDataStore(fetchLineChartData, { staleTime: time.minutes(7) });
 
     try {
@@ -121,13 +123,13 @@ describe('createLineChartDataStore', () => {
       expect(fetchLineChartData.mock.calls[2]?.[0]).toEqual(['BTC']);
     } finally {
       store.getState().reset(true);
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     }
   });
 
   it('seeds active batch freshness from chart cache when demand changes', async () => {
     const now = 1_000_000;
-    jest.spyOn(Date, 'now').mockImplementation(() => now);
+    vi.spyOn(Date, 'now').mockImplementation(() => now);
 
     const store = createLineChartDataStore(fetchChartData);
 
@@ -149,15 +151,15 @@ describe('createLineChartDataStore', () => {
     unsubscribeBtc();
     unsubscribeEth();
     store.getState().reset(true);
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('gates fetching to the configured navigation scope', async () => {
     const previousRoute = useNavigationStore.getState().activeRoute;
     const previousSwipeRoute = useNavigationStore.getState().activeSwipeRoute;
 
-    const routeFetcher = jest.fn(fetchChartData);
-    const swipeFetcher = jest.fn(fetchChartData);
+    const routeFetcher = vi.fn(fetchChartData);
+    const swipeFetcher = vi.fn(fetchChartData);
     const resetStores: (() => void)[] = [];
 
     try {

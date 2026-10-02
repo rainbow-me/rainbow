@@ -1,3 +1,3 @@
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-export const maybeSignUri = jest.fn();
+export const maybeSignUri = vi.fn();

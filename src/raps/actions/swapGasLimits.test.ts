@@ -1,4 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getProvider } from '@/handlers/web3';
 import {
@@ -13,36 +14,36 @@ import { SwapType, type Quote } from '@rainbow-me/swaps';
 import { estimateUnlockAndSwapGasLimits } from './swap';
 import { estimateApprove, populateApprove } from './unlock';
 
-jest.mock('@/handlers/web3', () => ({
-  estimateGasWithPadding: jest.fn(),
-  getProvider: jest.fn(),
-  toHex: jest.fn(),
+vi.mock('@/handlers/web3', () => ({
+  estimateGasWithPadding: vi.fn(),
+  getProvider: vi.fn(),
+  toHex: vi.fn(),
 }));
 
-jest.mock('@/state/performance/performance', () => ({
-  executeFn: jest.fn(),
+vi.mock('@/state/performance/performance', () => ({
+  executeFn: vi.fn(),
   Screens: { SWAPS: 'swaps' },
   TimeToSignOperation: { BroadcastTransaction: 'broadcastTransaction' },
 }));
 
-jest.mock('@/state/swaps/swapsStore', () => ({
-  swapsStore: { getState: jest.fn(() => ({ degenMode: false })) },
+vi.mock('@/state/swaps/swapsStore', () => ({
+  swapsStore: { getState: vi.fn(() => ({ degenMode: false })) },
 }));
 
-jest.mock('@/raps/utils', () => ({
+vi.mock('@/raps/utils', () => ({
   CHAIN_IDS_WITH_TRACE_SUPPORT: [1],
   SWAP_GAS_PADDING: 1.1,
-  estimateSwapGasLimitWithFakeApproval: jest.fn(),
-  estimateTransactionsGasLimit: jest.fn(),
-  getDefaultGasLimitForTrade: jest.fn(),
-  getFallbackGasLimitForTrade: jest.fn(),
-  overrideWithFastSpeedIfNeeded: jest.fn(),
-  populateSwap: jest.fn(),
+  estimateSwapGasLimitWithFakeApproval: vi.fn(),
+  estimateTransactionsGasLimit: vi.fn(),
+  getDefaultGasLimitForTrade: vi.fn(),
+  getFallbackGasLimitForTrade: vi.fn(),
+  overrideWithFastSpeedIfNeeded: vi.fn(),
+  populateSwap: vi.fn(),
 }));
 
-jest.mock('./unlock', () => ({
-  estimateApprove: jest.fn(),
-  populateApprove: jest.fn(),
+vi.mock('./unlock', () => ({
+  estimateApprove: vi.fn(),
+  populateApprove: vi.fn(),
 }));
 
 const quote: Quote = {
@@ -80,18 +81,18 @@ const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', 4663);
 
 describe('estimateUnlockAndSwapGasLimits', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.mocked(getProvider).mockReturnValue(provider);
-    jest.mocked(populateApprove).mockResolvedValue(transaction);
-    jest.mocked(populateSwap).mockResolvedValue(transaction);
-    jest.mocked(getDefaultGasLimitForTrade).mockReturnValue('2000000');
-    jest.mocked(getFallbackGasLimitForTrade).mockReturnValue('525000');
-    jest.mocked(estimateApprove).mockResolvedValue('55000');
-    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue(undefined);
+    vi.clearAllMocks();
+    vi.mocked(getProvider).mockReturnValue(provider);
+    vi.mocked(populateApprove).mockResolvedValue(transaction);
+    vi.mocked(populateSwap).mockResolvedValue(transaction);
+    vi.mocked(getDefaultGasLimitForTrade).mockReturnValue('2000000');
+    vi.mocked(getFallbackGasLimitForTrade).mockReturnValue('525000');
+    vi.mocked(estimateApprove).mockResolvedValue('55000');
+    vi.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue(undefined);
   });
 
   it('uses a complete simulation estimate for both execution and fee display', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue('410000');
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue('410000');
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
       transactionGasLimit: '410000',
@@ -102,7 +103,7 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it.each([' ', 'Infinity'])('uses fallback estimates when simulation returns %p', async gasLimit => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(gasLimit);
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(gasLimit);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
       transactionGasLimit: '2055000',
@@ -111,7 +112,7 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it('keeps the quote gas cap for execution while displaying the configured fallback estimate', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
       transactionGasLimit: '2055000',
@@ -120,8 +121,8 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it('uses a fake-approval estimate when available', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
-    jest.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue('410000');
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    vi.mocked(estimateSwapGasLimitWithFakeApproval).mockResolvedValue('410000');
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 1, quote: { ...quote, chainId: 1 } })).resolves.toEqual({
       transactionGasLimit: '465000',
@@ -130,7 +131,7 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it('uses the configured fee fallback when no fake-approval estimate is available', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 1, quote: { ...quote, chainId: 1 } })).resolves.toEqual({
       transactionGasLimit: '2055000',
@@ -139,8 +140,8 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it('uses fallback estimates when approval estimation returns a non-finite value', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
-    jest.mocked(estimateApprove).mockResolvedValue('Infinity');
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    vi.mocked(estimateApprove).mockResolvedValue('Infinity');
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
       transactionGasLimit: '2000000',
@@ -149,8 +150,8 @@ describe('estimateUnlockAndSwapGasLimits', () => {
   });
 
   it('never projects a fee estimate above the transaction gas limit', async () => {
-    jest.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
-    jest.mocked(getDefaultGasLimitForTrade).mockReturnValue('300000');
+    vi.mocked(estimateTransactionsGasLimit).mockResolvedValue(undefined);
+    vi.mocked(getDefaultGasLimitForTrade).mockReturnValue('300000');
 
     await expect(estimateUnlockAndSwapGasLimits({ chainId: 4663, quote })).resolves.toEqual({
       transactionGasLimit: '355000',

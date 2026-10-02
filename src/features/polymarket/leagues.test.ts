@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { getGammaLeagueId, getLeagueId } from './leagues';
 
 describe('Polymarket league ids', () => {

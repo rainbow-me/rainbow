@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { calculateEstimatedGasFeeWorklet, calculateMaxGasFeeWorklet } from './calculateGasFee';
 
 describe('gas fee calculations', () => {
