@@ -424,7 +424,7 @@ export const ViewWalletDelegations = () => {
                   {rainbowDelegations.map((network, index) => (
                     <React.Fragment key={network.chainId}>
                       <ContextMenuButton
-                        isAnchoredToRight
+                        anchorAndroidMenuToRight
                         menuConfig={activeNetworkMenuConfig}
                         onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
                       >
@@ -479,7 +479,7 @@ export const ViewWalletDelegations = () => {
                   {thirdPartyDelegations.map((network, index) => (
                     <React.Fragment key={network.chainId}>
                       <ContextMenuButton
-                        isAnchoredToRight
+                        anchorAndroidMenuToRight
                         menuConfig={inactiveNetworkMenuConfig}
                         onPressMenuItem={e => onPressNetworkMenuItem({ ...e, chainId: network.chainId })}
                       >

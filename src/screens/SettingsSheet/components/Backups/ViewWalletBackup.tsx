@@ -437,7 +437,7 @@ export const ViewWalletBackup = () => {
               return (
                 <ContextMenuButton
                   key={account.address}
-                  isAnchoredToRight
+                  anchorAndroidMenuToRight
                   menuConfig={menuConfig}
                   onPressMenuItem={e => onPressMenuItem({ ...e, account })}
                 >

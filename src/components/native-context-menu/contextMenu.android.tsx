@@ -29,7 +29,7 @@ export default function ContextMenuAndroid({
   children,
   enableContextMenu = true,
   menuConfig: { menuItems, menuTitle },
-  isAnchoredToRight,
+  anchorAndroidMenuToRight,
   isMenuPrimaryAction = true,
   onPressMenuItem,
   shouldOpenOnLongPress = !isMenuPrimaryAction,
@@ -38,7 +38,7 @@ export default function ContextMenuAndroid({
 }: PropsWithChildren<{
   enableContextMenu?: boolean;
   menuConfig: MenuConfig;
-  isAnchoredToRight?: boolean;
+  anchorAndroidMenuToRight?: boolean;
   isMenuPrimaryAction?: boolean;
   onPressMenuItem: (event: { nativeEvent: { actionKey: string } }) => void;
   shouldOpenOnLongPress?: boolean;
@@ -88,7 +88,7 @@ export default function ContextMenuAndroid({
       <MenuView
         ref={menuRef}
         actions={actions}
-        isAnchoredToRight={isAnchoredToRight}
+        isAnchoredToRight={anchorAndroidMenuToRight}
         onPressAction={onPressAction}
         // MenuView intercepts child touches; the button owns activation instead.
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}
