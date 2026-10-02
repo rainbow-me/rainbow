@@ -1,14 +1,18 @@
-import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 
-// Driven as a CLI rather than by importing the render functions: the contract is
-// "ledger files on disk in, markdown out", so reading and merging the per-shard
-// files is part of what needs pinning, as are the exit codes.
+import { renderSummary } from './report';
+
+// Report cases read real ledger files. Process tests also cover CLI output,
+// malformed input, argument validation, exit codes and GitHub output routing.
 const CLI = join(__dirname, 'index.ts');
+const temporaryDirectory = mkdtempSync(join(tmpdir(), 'e2e-summary-tests-'));
+
+afterAll(() => rmSync(temporaryDirectory, { recursive: true, force: true }));
 
 describe('rendering', () => {
   it('reports an all-green run', () => {
@@ -33,7 +37,7 @@ describe('rendering', () => {
         row('transactions/WrapTransaction', 'failed', { shard: 2, attempts: 3, duration: 252 }),
       ],
     });
-    expect(run([dir]).stdout).toMatchSnapshot();
+    expect(renderSummary(dir)).toMatchSnapshot();
   });
 
   it('names the tests a killed shard never got to', () => {
@@ -44,7 +48,7 @@ describe('rendering', () => {
         row('screens/Home', 'passed', { attempts: 1, duration: 74 }),
       ],
     });
-    expect(run([dir]).stdout).toMatchSnapshot();
+    expect(renderSummary(dir)).toMatchSnapshot();
   });
 
   it('skips a half-written row without losing the rest of the file', () => {
@@ -57,7 +61,7 @@ describe('rendering', () => {
   });
 
   it('says so plainly when no shard reported anything', () => {
-    expect(run([ledgers({})]).stdout).toMatchSnapshot();
+    expect(renderSummary(ledgers({}))).toMatchSnapshot();
   });
 });
 
@@ -67,24 +71,24 @@ describe('shards that never reported', () => {
       'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })],
       'shard-2.jsonl': [row('cash/SetupResume', 'passed', { shard: 2, attempts: 1, duration: 91 })],
     });
-    expect(run([dir, '3']).stdout).toMatchSnapshot();
+    expect(renderSummary(dir, 3)).toMatchSnapshot();
   });
 
   it('lists every missing shard when more than one is gone', () => {
     const dir = ledgers({ 'shard-2.jsonl': [row('screens/Home', 'passed', { shard: 2, attempts: 1, duration: 74 })] });
-    expect(run([dir, '4']).stdout).toMatchSnapshot();
+    expect(renderSummary(dir, 4)).toMatchSnapshot();
   });
 
   it('treats an empty ledger as having reported, since the shard wrote it before running anything', () => {
     const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })], 'shard-2.jsonl': [] });
-    const result = run([dir, '2']);
-    expect(result.stdout).not.toContain('did not report');
-    expect(result.stdout).toMatchSnapshot();
+    const markdown = renderSummary(dir, 2);
+    expect(markdown).not.toContain('did not report');
+    expect(markdown).toMatchSnapshot();
   });
 
   it('checks nothing when no shard count is given, so local single runs are unaffected', () => {
     const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })] });
-    expect(run([dir]).stdout).not.toContain('did not report');
+    expect(renderSummary(dir)).not.toContain('did not report');
   });
 
   it('still reports the shards it does have when the count is wrong in the other direction', () => {
@@ -92,7 +96,7 @@ describe('shards that never reported', () => {
       'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })],
       'shard-9.jsonl': [row('cash/SetupResume', 'passed', { shard: 9, attempts: 1, duration: 91 })],
     });
-    expect(run([dir, '1']).stdout).toContain('cash/SetupResume');
+    expect(renderSummary(dir, 1)).toContain('cash/SetupResume');
   });
 });
 
@@ -105,7 +109,7 @@ describe('reporting is never fatal', () => {
 
   it('writes to the step summary instead of stdout when Actions provides one', () => {
     const dir = ledgers({ 'shard-1.jsonl': [row('screens/Home', 'passed', { attempts: 1, duration: 74 })] });
-    const summary = join(mkdtempSync(join(tmpdir(), 'summary-out-')), 'summary.md');
+    const summary = join(temporaryDirectory, 'summary.md');
     const result = run([dir], { GITHUB_STEP_SUMMARY: summary });
     expect(result.stdout).toBe('');
     expect(readFileSync(summary, 'utf8')).toContain('| ✅ | `screens/Home` | 1 | 1 | 1m 14s |');
@@ -141,7 +145,7 @@ function row(test: string, status: string, over: Record<string, unknown> = {}): 
 }
 
 function ledgers(files: Record<string, string[]>): string {
-  const dir = mkdtempSync(join(tmpdir(), 'summary-'));
+  const dir = mkdtempSync(join(temporaryDirectory, 'ledgers-'));
   for (const [name, lines] of Object.entries(files)) {
     writeFileSync(join(dir, name), lines.length > 0 ? `${lines.join('\n')}\n` : '');
   }
@@ -150,7 +154,7 @@ function ledgers(files: Record<string, string[]>): string {
 
 // GitHub sets GITHUB_STEP_SUMMARY in CI, which would divert output to a file and
 // empty every snapshot, so each case declares the environment it wants.
-function run(args: string[], extraEnv: Record<string, string> = {}) {
+function run(args: string[], extraEnv: Record<string, string> = {}): SpawnSyncReturns<string> {
   const env: NodeJS.ProcessEnv = { ...process.env, ...extraEnv };
   for (const key of Object.keys(env)) {
     if (key.startsWith('GITHUB_') && !(key in extraEnv)) delete env[key];
