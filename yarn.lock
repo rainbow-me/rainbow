@@ -2901,6 +2901,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/env@npm:^2.4.3":
+  version: 2.5.1
+  resolution: "@expo/env@npm:2.5.1"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.4"
+    getenv: "npm:^2.0.0"
+  checksum: 10c0/1ca2010411fe5aaf2d14e0ead0039b83e92a4ce96316ce2584293d290493d6530a7eefaf648455cadd38d739a2068f6a26a132387891a64b35608fb5e9b534bb
+  languageName: node
+  linkType: hard
+
 "@expo/env@npm:~2.0.8":
   version: 2.0.11
   resolution: "@expo/env@npm:2.0.11"
@@ -2952,6 +2963,27 @@ __metadata:
   bin:
     fingerprint: bin/cli.js
   checksum: 10c0/91fb9a8af65340dce36f3d783361755fd545f1e4ced1fd7ae81284bf56039566c2bda302d3519764c36485dd9b1f7d87e4622ae5aa82ef9e0ab7bcd93bf8b566
+  languageName: node
+  linkType: hard
+
+"@expo/fingerprint@npm:^0.20.10":
+  version: 0.20.13
+  resolution: "@expo/fingerprint@npm:0.20.13"
+  dependencies:
+    "@expo/env": "npm:^2.4.3"
+    "@expo/spawn-async": "npm:^1.8.0"
+    arg: "npm:^5.0.2"
+    chalk: "npm:^4.1.2"
+    debug: "npm:^4.3.4"
+    getenv: "npm:^2.0.0"
+    glob: "npm:^13.0.0"
+    ignore: "npm:^5.3.1"
+    minimatch: "npm:^10.2.2"
+    resolve-from: "npm:^5.0.0"
+    semver: "npm:^7.6.0"
+  bin:
+    fingerprint: bin/cli.js
+  checksum: 10c0/0fc278d17080b5855db1d0afd3b6d5d4c8eaccbe53542c9d8fc5c7e385b43b03c4445ba11d085fc8c86308347efb774d75a9c0201973e7b0d8a6823af36e1159
   languageName: node
   linkType: hard
 
@@ -3147,6 +3179,15 @@ __metadata:
   dependencies:
     cross-spawn: "npm:^7.0.3"
   checksum: 10c0/0548c4e95ee39393c2f3919bc605f21eba4f0a8ba66fa82fbbc4b1b624e0054526918489227b924f03af5bc156a011f39a2472c223c0d2237fb7afd8dedd5357
+  languageName: node
+  linkType: hard
+
+"@expo/spawn-async@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@expo/spawn-async@npm:1.8.0"
+  dependencies:
+    cross-spawn: "npm:^7.0.6"
+  checksum: 10c0/08d3c63f9cc097ce9c8cf6850ca482fd7999a6fddc4cb38a3a9915a1662cb674fe7353de2eb3c693728542bf57db732ae433e82b2d698be141d07cea3092ebf3
   languageName: node
   linkType: hard
 
@@ -7542,6 +7583,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stim-cli/cache@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@stim-cli/cache@npm:1.14.0"
+  checksum: 10c0/c6f93adfec8ab00ac5169866e2762a9a4b1dc33362489908a80ed413440694c9511457ed7ffbeb2d421c8b281ba0d75d0db96ec33e73d073de433b401e12a6f3
+  languageName: node
+  linkType: hard
+
+"@stim-cli/core@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@stim-cli/core@npm:1.14.0"
+  dependencies:
+    unique-pid: "npm:0.1.1"
+  checksum: 10c0/e13dbf50626390d673500b0c0d1f202c757aaa2fc508eb0e78bc14a785c6e77d2ced3c110fdd9693097022b2e11a375167d56177261f182bfe3313121cdc9382
+  languageName: node
+  linkType: hard
+
+"@stim-cli/metro@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@stim-cli/metro@npm:1.14.0"
+  dependencies:
+    "@stim-cli/cache": "npm:^1.14.0"
+    "@stim-cli/core": "npm:^1.14.0"
+  peerDependencies:
+    metro-cache: "*"
+  checksum: 10c0/07d5e1a55093a9c7386a4fda25ed8bee02e780b17c040d37822770ddaded95e6e0bc37320f1c01e329859c5763efd27004a3b285a0ff968a2427f6615a17b72f
+  languageName: node
+  linkType: hard
+
 "@storesjs/stores@npm:0.12.0":
   version: 0.12.0
   resolution: "@storesjs/stores@npm:0.12.0"
@@ -9510,6 +9579,7 @@ __metadata:
     rn-nodeify: "npm:10.2.0"
     rock: "npm:0.9.2"
     sonner-native: "npm:0.16.0"
+    stim: "npm:1.14.0"
     stream-browserify: "npm:1.0.0"
     string_decoder: "npm:0.10.31"
     styled-components: "npm:5.2.1"
@@ -11445,6 +11515,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "chalk@npm:6.0.1"
+  checksum: 10c0/4c58238fa874f531b5201bf99ebd374742be31f8e306c7783d930856aec305f2dea3e07531a8805b2a7ba92807296e39ced52e9f673703e0264d96e83998a429
+  languageName: node
+  linkType: hard
+
 "chardet@npm:^0.4.0":
   version: 0.4.2
   resolution: "chardet@npm:0.4.2"
@@ -11879,7 +11956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:15.0.0":
+"commander@npm:15.0.0, commander@npm:^15.0.0":
   version: 15.0.0
   resolution: "commander@npm:15.0.0"
   checksum: 10c0/539229c171914ea1ccd45ee5f10d924289a12a684ea3a7a44147abe54003c35ed6de9ae4ad198d88c29fdf403dca0428451a388234e6dc01b6faa978fb207206
@@ -12274,6 +12351,17 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/5738c312387081c98d69c98e105b6327b069197f864a60593245d64c8089c8a0a744e16349281210d56835bb9274130d825a78b2ad6853ca13cfbeffc0c31750
+  languageName: node
+  linkType: hard
+
+"cross-spawn@npm:^7.0.6":
+  version: 7.0.6
+  resolution: "cross-spawn@npm:7.0.6"
+  dependencies:
+    path-key: "npm:^3.1.0"
+    shebang-command: "npm:^2.0.0"
+    which: "npm:^2.0.1"
+  checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
   languageName: node
   linkType: hard
 
@@ -19906,6 +19994,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-gyp-build@npm:4.8.4":
+  version: 4.8.4
+  resolution: "node-gyp-build@npm:4.8.4"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: 10c0/444e189907ece2081fe60e75368784f7782cfddb554b60123743dfb89509df89f1f29c03bbfa16b3a3e0be3f48799a4783f487da6203245fa5bed239ba7407e1
+  languageName: node
+  linkType: hard
+
 "node-gyp-build@npm:^4.2.0":
   version: 4.8.1
   resolution: "node-gyp-build@npm:4.8.1"
@@ -24512,6 +24611,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stim@npm:1.14.0":
+  version: 1.14.0
+  resolution: "stim@npm:1.14.0"
+  dependencies:
+    "@expo/fingerprint": "npm:^0.20.10"
+    "@stim-cli/cache": "npm:^1.14.0"
+    "@stim-cli/core": "npm:^1.14.0"
+    "@stim-cli/metro": "npm:^1.14.0"
+    chalk: "npm:^6.0.0"
+    commander: "npm:^15.0.0"
+    cross-spawn: "npm:^7.0.6"
+    which: "npm:^5.0.0"
+    ws: "npm:^8.21.3"
+  bin:
+    stim: dist/cli.mjs
+  checksum: 10c0/647171aaacd5043f23531f423fc5acc9ca07dd94c18848f78243085ca968a1d21b08c90257294dcea1d7cc007bf2f56178af919127b57b804517532c425b62ab
+  languageName: node
+  linkType: hard
+
 "stream-browserify@npm:1.0.0":
   version: 1.0.0
   resolution: "stream-browserify@npm:1.0.0"
@@ -25996,6 +26114,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unique-pid@npm:0.1.1":
+  version: 0.1.1
+  resolution: "unique-pid@npm:0.1.1"
+  dependencies:
+    node-gyp-build: "npm:4.8.4"
+  checksum: 10c0/000a34f780ad4771ae104d66a8aee615b45bf7c915a26319327b079b50ce14b6898ca9fa3012715ab9b8c619acd96d9bd639951b8505f91f61bf59ee46780573
+  conditions: (os=darwin | os=linux | os=win32)
+  languageName: node
+  linkType: hard
+
 "unique-slug@npm:^3.0.0":
   version: 3.0.0
   resolution: "unique-slug@npm:3.0.0"
@@ -26905,6 +27033,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"which@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "which@npm:5.0.0"
+  dependencies:
+    isexe: "npm:^3.1.1"
+  bin:
+    node-which: bin/which.js
+  checksum: 10c0/e556e4cd8b7dbf5df52408c9a9dd5ac6518c8c5267c8953f5b0564073c66ed5bf9503b14d876d0e9c7844d4db9725fb0dcf45d6e911e17e26ab363dc3965ae7b
+  languageName: node
+  linkType: hard
+
 "why-is-node-running@npm:3.2.1":
   version: 3.2.1
   resolution: "why-is-node-running@npm:3.2.1"
@@ -27092,6 +27231,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/e498965d6938c63058c4310ffb6967f07d4fa06789d3364829028af380d299fe05762961742971c764973dce3d1f6a2633fe8b2d9410c9b52e534b4b882a99fa
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.21.3":
+  version: 8.22.0
+  resolution: "ws@npm:8.22.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/7304d14ef38898dd366a528a85e2da389c4eebf30f4ce8a007bd2dce6025f9b619cefe44fe2354f0bad0ec541b1c9a4da06a3f3e046ab56f01fd52d5784ecfb2
   languageName: node
   linkType: hard
 

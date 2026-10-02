@@ -19,7 +19,12 @@ export default defineConfig({
     environment: 'node',
     isolate: true,
     clearMocks: false,
-    include: ['config/test/**/*.test.ts', 'src/**/*.{test,spec}.{ts,tsx,js,jsx}', 'tools/**/*.{test,spec}.{ts,tsx,js,jsx}'],
+    include: [
+      'config/test/**/*.test.ts',
+      'fingerprint.config.test.ts',
+      'src/**/*.{test,spec}.{ts,tsx,js,jsx}',
+      'tools/**/*.{test,spec}.{ts,tsx,js,jsx}',
+    ],
     server: { deps: { inline: ['@storesjs/stores', 'react-native-mmkv'] } },
     setupFiles: ['config/test/setup.ts'],
     pool: 'threads',

@@ -22,7 +22,8 @@
 1. Install [mise](https://mise.jdx.dev): `curl https://mise.run | sh`. See the
    [installation docs](https://mise.jdx.dev/getting-started.html) for shell
    activation (required so tool versions auto-switch when you `cd` into the repo).
-2. From the repo root: `mise install`. This installs all pinned tools.
+2. From the repo root: `mise install`. This installs all pinned tools. Use Node
+   22.18+ in the pinned 22.x line (or 23.6+); Metro uses built-in TypeScript support.
 3. Enable yarn: `corepack enable`
 
 ### Internal developers
@@ -90,12 +91,16 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    # export ANDROID_HOME=$HOME/Android/Sdk        # Linux
    export PATH=$PATH:$ANDROID_HOME/emulator
    export PATH=$PATH:$ANDROID_HOME/platform-tools
+   export PATH=$ANDROID_HOME/cmdline-tools/19.0/bin:$PATH
    ```
 
    On Linux, also install system dependencies: `sudo apt install libsecret-tools watchman`
 
-3. Install [Android Studio](https://developer.android.com/studio) (the standard
-   setup wizard is fine).
+3. Install [Android Studio](https://developer.android.com/studio), including
+   **Android SDK Command-line Tools 19.0** in SDK Manager (enable **Show Package
+   Details** to select the version). This version is validated with JDK 17. Confirm
+   `avdmanager list device -c` works with JDK 17. The old `tools/bin` package is
+   incompatible with JDK 17.
 4. Increase the IDE memory: **Android Studio > Settings > Memory Settings** and
    set the heap to at least 4096 MB. This project is large enough that the
    default 2048 MB will cause slow syncs and builds.
@@ -119,6 +124,38 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    cause Gradle sync to fail with "Cannot run program node".
 
 ## Developing
+
+### Isolated devices with Stim
+
+After completing Setup in this checkout, use the pinned CLI:
+
+```sh
+yarn stim ios --scheme Rainbow --configuration Debug
+yarn stim android --variant debug
+yarn stim status --json
+yarn stim logs --errors
+yarn stim stop
+```
+
+Stim assigns each checkout a device and Metro port. Debug runs start Metro
+automatically. Use ordinary Fast Refresh for source edits. After environment,
+Babel or Metro configuration changes, stop and run each desired platform again.
+Read the current port from the result; stopping releases the old reservation.
+
+Each new worktree needs its own Setup. `.worktreeexclude` prevents automatically
+copying ignored credentials, generated configuration and installed dependencies
+from another checkout. Never symlink `node_modules` between worktrees.
+
+Before an agent's first native run, inspect `yarn stim status --json` and
+`yarn stim settings --json`. Use the checkout's owned simulator/emulator with
+local builds and tunneling off. Ask before replacing an existing assignment or
+using a physical/remote device. Stop only the checkout being worked on.
+
+Do not use `start --reset-cache` for ordinary restarts: it also clears shared
+Rainbow transforms. Stim is for local development; release/signing and the
+existing fixed-port E2E runners retain their existing commands.
+
+### Direct React Native commands
 
 Start Metro in one terminal:
 

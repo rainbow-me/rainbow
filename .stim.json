@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/stim@1.14.0/dist/settings.schema.json",
+  "ios": { "deviceType": "iPhone 16 Pro" },
+  "metro": { "tunnel": "off" },
+  "optimizations": {
+    "buildCache": true,
+    "metroSharedCache": true,
+    "remoteBuildCache": false,
+    "releaseBundleSwap": false
+  }
+}

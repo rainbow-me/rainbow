@@ -12,6 +12,14 @@ React Native crypto wallet app (iOS & Android). Uses React Navigation, `@storesj
 - **Single test:** `yarn test path/to/test`
 - **Dependency rules + cycles:** `yarn lint:deps` (dependency-cruiser via `tools/deps-check/`: architectural boundaries, plus circular deps checked against a grandfathered per-platform baseline). Net-new cycles fail; removing cycles also fails until you run `yarn lint:deps:baseline:update` and commit the baselines, which keeps them exact. Per-rule policies (grandfathered vs strict) live in `tools/deps-check/policies.ts`.
 
+## Local devices
+
+Follow README's Setup and Stim sections for each worktree. Use the pinned
+`yarn stim` CLI and inspect its effective settings and checkout ownership before
+building. A successful launch check is not UI proof: inspect the reported device
+and exercise the requested interaction. Preserve other worktrees' devices and
+Metro processes. Use the existing E2E commands for fixed-port test runners.
+
 ## Architecture
 
 ### State management

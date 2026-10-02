@@ -1,0 +1,4 @@
+# Stim copies ignored entries from the source checkout. Rainbow's ignored state
+# includes credentials, generated native configuration and patched dependencies.
+# Prepare each checkout through README Setup; reuse Stim's keyed build caches.
+*

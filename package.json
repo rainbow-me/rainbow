@@ -451,6 +451,7 @@
     "react-native-dotenv": "2.4.2",
     "rn-nodeify": "10.2.0",
     "rock": "0.9.2",
+    "stim": "1.14.0",
     "ts-loader": "9.5.1",
     "ts-migrate": "0.1.26",
     "tsx": "4.20.6",
@@ -464,7 +465,7 @@
   },
   "packageManager": "yarn@4.13.0",
   "engines": {
-    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+    "node": "^22.18.0 || ^24.0.0 || >=26.0.0"
   },
   "lavamoat": {
     "allowScripts": {

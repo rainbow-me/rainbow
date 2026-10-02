@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const path = require('path');
+const { getMetroCacheVersion } = require('./tools/metro/cacheVersion.ts');
 // @ts-ignore — types ship only via `exports` field, which moduleResolution:"node" ignores.
 const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 // @ts-ignore — types ship in dist/ but only via `exports` field, which moduleResolution:"node" ignores. Resolvable after migrating to moduleResolution:"bundler".
@@ -92,4 +93,7 @@ const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });
 
-module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
+const finalConfig = wrapWithReanimatedMetroConfig(sentryConfig);
+finalConfig.cacheVersion = `${finalConfig.cacheVersion}:${getMetroCacheVersion(__dirname)}`;
+
+module.exports = finalConfig;
