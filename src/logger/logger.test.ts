@@ -89,17 +89,23 @@ describe('general functionality', () => {
     expect(reported.cause).toBe(original);
   });
 
-  test('a throwing transport does not stop the others or escape to the caller', () => {
+  test('a throwing transport does not stop the others or escape to the caller', ({ onTestFinished }) => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    onTestFinished(() => consoleError.mockRestore());
+
     const logger = new Logger();
-    const throwing = vi.fn(() => {
-      throw new Error('transport exploded');
-    });
+    const error = new Error('transport exploded');
     const next = vi.fn();
-    logger.addTransport(throwing);
+
+    logger.addTransport(() => {
+      throw error;
+    });
     logger.addTransport(next);
 
-    expect(() => logger.error(new RainbowError('x'))).not.toThrow();
+    logger.error(new RainbowError('x'));
+
     expect(next).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledExactlyOnceWith('[logger]: transport threw', error);
   });
 
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {
