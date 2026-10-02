@@ -118,7 +118,6 @@ export const ImportOrWatchWalletSheet = () => {
                     ? () => handlePressImportButton({ type })
                     : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text.trim()))
                 }
-                overflowMargin={50}
                 testID="import-sheet-button"
               >
                 <Box

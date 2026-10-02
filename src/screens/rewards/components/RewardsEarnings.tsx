@@ -77,7 +77,7 @@ export const RewardsEarnings: React.FC<Props> = ({
   return (
     <AccentColorProvider color={color}>
       <Box paddingBottom="36px">
-        <ButtonPressAnimation onPress={navigateToTimingExplainer} scaleTo={0.96} overflowMargin={50}>
+        <ButtonPressAnimation onPress={navigateToTimingExplainer} scaleTo={0.96}>
           <RewardsSectionCard>
             <Columns space="32px">
               <Stack space="32px" alignHorizontal="left">

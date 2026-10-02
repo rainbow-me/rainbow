@@ -93,6 +93,13 @@ export function FeesGweiInput({
     setActionType(null);
   }, [longPressHandle]);
 
+  useEffect(
+    () => () => {
+      longPressHandle.current = false;
+    },
+    []
+  );
+
   const onLongPressLoop = useCallback(async () => {
     setTrigger(true);
     setTrigger(false);

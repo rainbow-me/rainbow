@@ -122,9 +122,10 @@ const RegistrationCover = ({
       setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),
-    testID: 'cover',
     uploadToIPFS: true,
   });
+
+  const showMenu = hasSeenExplainSheet && (enableNFTs || !!coverUrl);
 
   if (isLoading) {
     return (
@@ -136,8 +137,12 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalWrap condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)} wrap={children => <ContextMenu>{children}</ContextMenu>}>
-      <ButtonPressAnimation onPress={!hasSeenExplainSheet ? onShowExplainSheet : enableNFTs ? undefined : handleSelectImage} scaleTo={1}>
+    <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
+      <ButtonPressAnimation
+        onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? undefined : handleSelectImage}
+        scaleTo={1}
+        testID="use-select-image-cover"
+      >
         <Box
           alignItems="center"
           as={Platform.OS === 'ios' ? RadialGradient : View}

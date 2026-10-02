@@ -123,7 +123,7 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
           <ContextMenuButton testID="avatar-button" menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
-            <ButtonPressAnimation onPress={onAvatarPressProfile} overflowMargin={20}>
+            <ButtonPressAnimation onPress={onAvatarPressProfile}>
               <Box
                 alignItems="center"
                 background="accent"

@@ -28,7 +28,7 @@ export function ActionButton({ children, icon, onPress, paddingHorizontal = '12p
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress} overflowMargin={20} testID={testID}>
+    <ButtonPressAnimation onPress={onPress} testID={testID}>
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"

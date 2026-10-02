@@ -121,9 +121,10 @@ const RegistrationAvatar = ({
       setDisabled(false);
     },
     showRemove: Boolean(avatarUrl),
-    testID: 'avatar',
     uploadToIPFS: true,
   });
+
+  const showMenu = hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl);
 
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
@@ -137,12 +138,9 @@ const RegistrationAvatar = ({
           <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
         </Skeleton>
       ) : (
-        <ConditionalWrap
-          condition={hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl)}
-          wrap={children => <ContextMenu>{children}</ContextMenu>}
-        >
+        <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
           <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : enableNFTs ? undefined : handleSelectImage}
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : showMenu ? undefined : handleSelectImage}
             testID="use-select-image-avatar"
           >
             <AccentColorProvider color={accentColor + '10'}>

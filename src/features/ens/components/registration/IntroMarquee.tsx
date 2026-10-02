@@ -105,7 +105,6 @@ function ENSAvatarPlaceholder({
       }}
       onPress={onPress}
       onPressStart={onPressStart}
-      reanimatedButton={false}
       scaleTo={0.8}
       testID={testID}
     >

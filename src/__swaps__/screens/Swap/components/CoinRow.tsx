@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { type GestureResponderEvent } from 'react-native';
 
 import { startCase } from 'lodash';
-import { type OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
@@ -11,10 +10,9 @@ import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__sw
 import { type CoinRowItem } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ContextMenuButton } from '@/components/context-menu';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references/constants';
@@ -122,7 +120,7 @@ export function CoinRow({
     <Box testID={testID} style={{ height, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
+          <ButtonPressAnimation onPress={onPressHandler} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"
@@ -190,90 +188,42 @@ const InfoButton = ({
     setClipboard(address);
   }, [address]);
 
-  const { options, menuConfig } = useMemo(() => {
-    const options = {
-      copy: {
-        title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
-        action: handleCopy,
-      },
-      ...(isSupportedChain
-        ? {
-            blockExplorer: {
-              title: i18n.t(i18n.l.exchange.coin_row.view_on, {
-                blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
-              }),
-              action: () => ethereumUtils.openAddressInBlockExplorer({ address, chainId }),
-            },
-          }
-        : {}),
-    };
-
-    const menuConfig = {
+  const menuConfig = useMemo(
+    () => ({
       menuItems: [
         {
           actionKey: 'copyAddress',
-          actionTitle: options.copy.title,
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'doc.on.doc',
-          },
+          actionTitle: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
+          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
         },
         ...(isSupportedChain
           ? [
               {
                 actionKey: 'blockExplorer',
-                actionTitle: options.blockExplorer?.title,
-                icon: {
-                  iconType: 'SYSTEM',
-                  iconValue: 'link',
-                },
+                actionTitle: i18n.t(i18n.l.exchange.coin_row.view_on, {
+                  blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
+                }),
+                icon: { iconType: 'SYSTEM', iconValue: 'link' },
               },
             ]
           : []),
       ],
       menuTitle: `${isVerified ? i18n.t(i18n.l.token_search.section_header.verified) : i18n.t(i18n.l.token_search.section_header.unverified)} ${i18n.t(i18n.l.exchange.coin_row.token)}`,
-    };
+    }),
+    [chainId, isSupportedChain, isVerified]
+  );
 
-    return { options, menuConfig };
-  }, [address, chainId, handleCopy, isSupportedChain, isVerified]);
-
-  const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+  const handlePressMenuItem = ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }): void => {
     if (actionKey === 'copyAddress') {
-      options.copy.action();
+      handleCopy();
     } else if (actionKey === 'blockExplorer' && isSupportedChain) {
-      options.blockExplorer?.action();
+      ethereumUtils.openAddressInBlockExplorer({ address, chainId });
     }
   };
 
-  const onPressAndroid = () => {
-    const androidOptions = [
-      options.copy.title,
-      ...(isSupportedChain && options.blockExplorer?.title ? [options.blockExplorer?.title] : []),
-    ];
-    showActionSheetWithOptions(
-      {
-        options: androidOptions,
-      },
-      idx => {
-        if (idx === 0) {
-          options.copy.action();
-        }
-        if (idx === 1 && isSupportedChain) {
-          options.blockExplorer?.action();
-        }
-      }
-    );
-  };
-
   return (
-    <ContextMenuButton
-      menuItems={menuConfig.menuItems}
-      menuTitle={menuConfig.menuTitle}
-      onPressAndroid={onPressAndroid}
-      onPressMenuItem={handlePressMenuItem}
-      testID={`coin-row-info-button-${address}`}
-    >
-      <CoinRowButton icon="􀅳" outline size="icon 14px" />
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+      <CoinRowButton icon="􀅳" outline size="icon 14px" testID={`coin-row-info-button-${address}`} />
     </ContextMenuButton>
   );
 };

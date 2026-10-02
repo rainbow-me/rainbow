@@ -88,7 +88,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   };
 
   return (
-    <ButtonPressAnimation onPress={navigateToProfile} scaleTo={0.96} overflowMargin={10}>
+    <ButtonPressAnimation onPress={navigateToProfile} scaleTo={0.96}>
       <Stack>
         <Columns space="10px" alignVertical="center">
           <Column width="content">

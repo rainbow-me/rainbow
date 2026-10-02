@@ -1,4 +1,5 @@
 import { type MenuItem } from '@/components/DropdownMenu';
+import { type MenuActionConfig } from '@/components/native-context-menu/contextMenu';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
@@ -31,10 +32,9 @@ export const networksMenuItems: () => MenuItem<string>[] = () => {
     }));
 };
 
-const networksAvailable = networksMenuItems();
-
-export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConnectV2?: boolean } = {}) => {
-  const baseOptions = [
+/** Lists the actions available for a WalletConnect connection. */
+export const changeConnectionMenuItems = (): MenuActionConfig[] => {
+  return [
     {
       actionKey: 'disconnect',
       actionTitle: i18n.t(i18n.l.walletconnect.menu_options.disconnect),
@@ -53,21 +53,6 @@ export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConne
       },
     },
   ];
-
-  if (networksAvailable.length > 1 && !isWalletConnectV2) {
-    return [
-      ...baseOptions,
-      {
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'network',
-        },
-        menuItems: networksMenuItems(),
-        menuTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_network),
-      },
-    ];
-  }
-  return baseOptions;
 };
 
 export const androidShowNetworksActionSheet = (callback: any) => {

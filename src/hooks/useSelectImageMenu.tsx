@@ -1,13 +1,11 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
 import { type ImagePickerAsset } from 'expo-image-picker';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { uploadImage, type UploadImageReturnData } from '@/handlers/pinata';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -24,10 +22,8 @@ const items = {
       return i18n.t(i18n.l.profiles.create.upload_photo);
     },
     icon: {
-      imageValue: {
-        systemName: 'photo.on.rectangle.angled',
-      },
-      type: 'IMAGE_SYSTEM',
+      iconType: 'SYSTEM',
+      iconValue: 'photo.on.rectangle.angled',
     },
   },
   nft: {
@@ -36,11 +32,8 @@ const items = {
       return i18n.t(i18n.l.profiles.create.choose_nft);
     },
     icon: {
-      imageValue: {
-        systemName: 'square.grid.2x2',
-      },
-      testID: 'choose-nft',
-      type: 'IMAGE_SYSTEM',
+      iconType: 'SYSTEM',
+      iconValue: 'square.grid.2x2',
     },
   },
   remove: {
@@ -49,10 +42,8 @@ const items = {
       return i18n.t(i18n.l.profiles.create.remove);
     },
     icon: {
-      imageValue: {
-        systemName: 'trash',
-      },
-      type: 'IMAGE_SYSTEM',
+      iconType: 'SYSTEM',
+      iconValue: 'trash',
     },
     menuAttributes: ['destructive'],
   },
@@ -68,7 +59,6 @@ export default function useSelectImageMenu({
   onUploadError,
   showRemove = false,
   uploadToIPFS = false,
-  testID = '',
 }: {
   imagePickerOptions?: ImagePickerOptions;
   menuItems?: Action[];
@@ -79,7 +69,6 @@ export default function useSelectImageMenu({
   onUploadError?: ({ error, image }: { error: unknown; image: ImagePickerAsset }) => void;
   showRemove?: boolean;
   uploadToIPFS?: boolean;
-  testID?: string;
 } = {}) {
   const { navigate, getParent: dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
@@ -108,7 +97,7 @@ export default function useSelectImageMenu({
   );
 
   const menuItems = useMemo(
-    () => [...initialMenuItems, showRemove ? 'remove' : undefined].filter(Boolean) as (Action | 'remove')[],
+    () => (showRemove ? [...initialMenuItems, 'remove' as const] : initialMenuItems),
     [initialMenuItems, showRemove]
   );
 
@@ -148,9 +137,8 @@ export default function useSelectImageMenu({
     });
   }, [navigate, onChangeImage]);
 
-  const handlePressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+  const handleSelectAction = useCallback(
+    (actionKey: string) => {
       if (actionKey === 'library') {
         isRemoved.current = false;
         handleSelectImage();
@@ -166,46 +154,27 @@ export default function useSelectImageMenu({
     [handleSelectImage, handleSelectNFT, onRemoveImage]
   );
 
-  const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems.map(item => items[item]?.actionTitle).filter(Boolean);
-
-    showActionSheetWithOptions(
-      {
-        options: actionSheetOptions,
-      },
-      async buttonIndex => {
-        if (buttonIndex === 0) {
-          isRemoved.current = false;
-          handleSelectImage();
-        } else if (buttonIndex === 1) {
-          handleSelectNFT();
-        } else if (buttonIndex === 2) {
-          isRemoved.current = true;
-          onRemoveImage?.();
-        }
-      }
-    );
-  }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
-
   const ContextMenu = useCallback(
-    ({ children }: { children?: React.ReactNode }) => (
-      <ContextMenuButton
-        enableContextMenu
-        menuConfig={{
-          menuItems: menuItems.map(item => items[item]) as any,
-          menuTitle: '',
-        }}
-        {...(Platform.OS === 'android' ? { onPress: handleAndroidPress } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        testID={`use-select-image-${testID}`}
-        useActionSheetFallback={false}
-      >
-        {children}
-      </ContextMenuButton>
-    ),
-    [handleAndroidPress, handlePressMenuItem, menuItems, testID]
+    ({ children }: { children?: React.ReactNode }) => {
+      return (
+        <ContextMenuButton
+          menuConfig={{
+            menuItems: menuItems.map(item => items[item]),
+            menuTitle: '',
+          }}
+          onPressMenuItem={({ nativeEvent: { actionKey } }) => handleSelectAction(actionKey)}
+        >
+          {children}
+        </ContextMenuButton>
+      );
+    },
+    [handleSelectAction, menuItems]
   );
 
-  return { ContextMenu, handleSelectImage, handleSelectNFT, isUploading };
+  return {
+    ContextMenu,
+    handleSelectImage,
+    handleSelectNFT,
+    isUploading,
+  };
 }

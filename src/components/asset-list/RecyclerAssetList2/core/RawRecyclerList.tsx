@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, type LegacyRef } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
 import { type SetterOrUpdater } from 'recoil';
@@ -19,6 +18,7 @@ import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import usePrevious from '@/hooks/usePrevious';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -26,12 +26,12 @@ import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type AssetListType } from '..';
 import { useWalletsStore } from '../../../../state/wallets/walletsStore';
+import { AssetListItemAnimator } from './assetListItemAnimator';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalScrollViewWithRef } from './ExternalScrollView';
 import { getLayoutProvider } from './getLayoutProvider';
 import { RefreshControlWrapped as RefreshControl } from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
 
 const dimensions = {
@@ -107,15 +107,14 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
 
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
-  const topMarginRef = useRef<number>(0);
   const ref = useRef<RecyclerListViewRef>(undefined);
+  const itemAnimator = useStableValue(() => new AssetListItemAnimator(ref));
 
   useListen(
     useWalletsStore,
     state => state.accountAddress,
     () => {
       ref.current?.scrollToTop();
-      topMarginRef.current = 0;
       y?.setValue(0);
     }
   );
@@ -125,16 +124,6 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
 
     setScrollToTopRef(ref.current);
   }, [ref, setScrollToTopRef]);
-
-  const onLayout = useCallback(
-    () =>
-      ({ nativeEvent }: LayoutChangeEvent) => {
-        topMarginRef.current = nativeEvent.layout.y;
-      },
-    []
-  );
-
-  const layoutItemAnimator = useLayoutItemAnimator(ref, topMarginRef);
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -218,11 +207,10 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
             ? ExternalSelectNFTScrollViewWithRef
             : ExternalScrollViewWithRef
       }
-      itemAnimator={layoutItemAnimator}
+      itemAnimator={itemAnimator}
       layoutProvider={layoutProvider}
       onEndReachedThreshold={0.5}
       onEndReached={onEndReached}
-      onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
@@ -230,6 +218,7 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
       canChangeSize={type === 'wallet'}
       layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      scrollViewProps={itemAnimator.scrollViewProps}
       onVisibleIndicesChanged={handleViewableIndicesChanged}
     />
   );

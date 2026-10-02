@@ -57,7 +57,7 @@ export function ProviderListItem({ accountAddress, config, getWidgetURL }: Provi
   };
 
   return (
-    <ButtonPressAnimation onPress={onPress} overflowMargin={30}>
+    <ButtonPressAnimation onPress={onPress}>
       <ProviderCard config={config} />
     </ButtonPressAnimation>
   );
