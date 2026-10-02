@@ -1,10 +1,11 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { createMockDeposit, createMockPortfolioItem, createMockRainbowPosition } from '../../__fixtures__/mocks/positions';
+import { setPositionValueFilter } from '../../__fixtures__/positionFilters';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { shouldFilterPortfolioItem, shouldFilterPosition } from './filter';
 
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => true),
-}));
+beforeEach(() => setPositionValueFilter(true));
 
 describe('Position Filters', () => {
   describe('shouldFilterPosition', () => {

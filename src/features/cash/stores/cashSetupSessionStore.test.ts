@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+
 import { selectCanSubmitReview, useCashSetupSessionStore, type PhoneVerificationChallenge } from './cashSetupSessionStore';
 
 const NOW = 1_750_000_000_000;
@@ -19,24 +21,24 @@ function setPersonalDetails() {
 }
 
 beforeEach(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(NOW);
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
   store().reset();
 });
 
 afterEach(() => {
   store().reset();
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 it('clears the retained session when its bootstrap credential expires', () => {
   verifyPhone();
   setPersonalDetails();
 
-  jest.advanceTimersByTime(59_999);
+  vi.advanceTimersByTime(59_999);
   expect(store().session).toMatchObject({ status: 'phoneVerified', ssnLast4: '1234' });
 
-  jest.advanceTimersByTime(1);
+  vi.advanceTimersByTime(1);
   expect(store().session).toEqual({ status: 'empty' });
 });
 
@@ -74,7 +76,7 @@ it('clears a submitted session when its bootstrap credential expires', () => {
   verifyPhone();
   store().markKycSubmitted(BOOTSTRAP_TOKEN);
 
-  jest.advanceTimersByTime(60_000);
+  vi.advanceTimersByTime(60_000);
 
   expect(store().session).toEqual({ status: 'empty' });
 });
@@ -83,7 +85,7 @@ it('does not allow review submission after the bootstrap credential expires by w
   verifyPhone();
   expect(selectCanSubmitReview(store())).toBe(true);
 
-  jest.setSystemTime(NOW + 60_000);
+  vi.setSystemTime(NOW + 60_000);
 
   expect(selectCanSubmitReview(store())).toBe(false);
 });

@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions/transaction';
 import { setRemoteConfig, withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
@@ -16,21 +17,21 @@ import {
   prepareSponsoredSend,
 } from './sponsoredSend';
 
-const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockCreateDelegationPublicClient = jest.fn<unknown, [ChainId, { signal?: AbortSignal }?]>();
-const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
-const mockIsSponsorshipEligible = jest.fn<boolean, [ChainId]>();
-const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
-const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
-const mockTrackCallsExecution = jest.fn<void, [unknown]>();
+const mockCanUseDelegatedExecution = vi.fn<(...args: [Address]) => boolean>();
+const mockCreateDelegationPublicClient = vi.fn<(...args: [ChainId, { signal?: AbortSignal }?]) => unknown>();
+const mockExecuteCalls = vi.fn<(...args: [unknown, unknown?]) => Promise<unknown>>();
+const mockIsSponsorshipEligible = vi.fn<(...args: [ChainId]) => boolean>();
+const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<unknown>>();
+const mockResolveManagedExecutionFailure = vi.fn<(...args: [unknown]) => Promise<string | null>>();
+const mockSupportsDelegatedExecution = vi.fn<(...args: [unknown]) => Promise<boolean>>();
+const mockTrackCallsExecution = vi.fn<(...args: [unknown]) => void>();
 
 const mockSponsoredCallsRequirements = {
   atomic: 'required',
   fees: { payer: 'sponsor' },
 };
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {
@@ -39,16 +40,16 @@ jest.mock('@rainbow-me/sdk', () => ({
   },
 }));
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 setRemoteConfig({ sponsored_sends_enabled: true });
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     isSponsorshipEligible: (chainId: ChainId) => mockIsSponsorshipEligible(chainId),
   },
 }));
 
-jest.mock('@/features/delegation/utils/calls', () => ({
+vi.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId, options?: { signal?: AbortSignal }) =>
     options ? mockCreateDelegationPublicClient(chainId, options) : mockCreateDelegationPublicClient(chainId),
   SPONSORED_CALLS_REQUIREMENTS: {
@@ -57,15 +58,15 @@ jest.mock('@/features/delegation/utils/calls', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
+vi.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
   trackCallsExecution: (params: unknown) => mockTrackCallsExecution(params),
 }));
 
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
+vi.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
   resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
-jest.mock('@/features/delegation/utils/willDelegate', () => ({
+vi.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
@@ -122,7 +123,7 @@ function executeWith(params?: Partial<Parameters<typeof executeSponsoredSend>[0]
 
 describe('sponsoredSend', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockCreateDelegationPublicClient.mockReturnValue(publicClient);
     mockIsSponsorshipEligible.mockReturnValue(true);

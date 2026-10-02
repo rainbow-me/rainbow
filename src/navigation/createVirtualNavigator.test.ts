@@ -1,14 +1,16 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute, type PerpsRoute } from '@/navigation/types';
 
 import { createVirtualNavigator } from './createVirtualNavigator';
 
-jest.mock('@/navigation/RouteContext', () => ({
+vi.mock('@/navigation/RouteContext', () => ({
   UseRouteProvider: ({ children }: { children: unknown }) => children,
 }));
 
-jest.mock('@/state/navigation/navigationStore', () => ({
-  setActiveRoute: jest.fn(),
+vi.mock('@/state/navigation/navigationStore', () => ({
+  setActiveRoute: vi.fn(),
 }));
 
 const ROUTES: readonly CashDepositSetupRoute[] = [

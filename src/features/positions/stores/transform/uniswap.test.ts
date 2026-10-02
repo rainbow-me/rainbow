@@ -1,13 +1,13 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createMockPosition, createMockResponse, createMockStats } from '../../__fixtures__/mocks/positions';
+import { setPositionValueFilter } from '../../__fixtures__/positionFilters';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 
-// Mock config to avoid React Native gesture handler imports
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
-}));
+beforeEach(() => setPositionValueFilter(false));
 
 describe('Uniswap Position Parsing', () => {
   describe('Protocol Aggregation', () => {

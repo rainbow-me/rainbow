@@ -1,20 +1,19 @@
+import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { fetchPositions } from './fetcher';
 
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
-}));
-jest.mock('./fetcher', () => ({
-  fetchPositions: jest.fn(),
+vi.mock('./fetcher', () => ({
+  fetchPositions: vi.fn(),
 }));
 
-const mockFetchPositions = fetchPositions as jest.MockedFunction<typeof fetchPositions>;
+const mockFetchPositions = fetchPositions as MockedFunction<typeof fetchPositions>;
 
 describe('fetchPositions', () => {
   const defaultParams = FIXTURE_PARAMS;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw error when address is missing', async () => {

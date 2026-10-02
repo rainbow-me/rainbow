@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { baselineDelta } from './delta';
 import { cycle } from './test-fixtures';
 

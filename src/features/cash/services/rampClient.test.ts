@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { ResponseParseError } from '@/framework/data/http/parseResponse';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
@@ -26,24 +28,24 @@ import {
   type WalletSignature,
 } from './rampClient';
 
-jest.mock('./cashPlatformClient', () => ({
-  getCashPlatformClient: jest.fn(),
+vi.mock('./cashPlatformClient', () => ({
+  getCashPlatformClient: vi.fn(),
   buildAuthenticatedHeader: (token: string) => ({ Authorization: `Bearer ${token}` }),
 }));
 
-jest.mock('./cashSignInService', () => ({
-  ensureAccessToken: jest.fn(),
-  getCachedAccessToken: jest.fn(),
+vi.mock('./cashSignInService', () => ({
+  ensureAccessToken: vi.fn(),
+  getCachedAccessToken: vi.fn(),
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { warn: vi.fn() },
 }));
 
-const get = jest.fn();
-const post = jest.fn();
-const mockEnsureAccessToken = ensureAccessToken as jest.Mock;
-const mockGetCachedAccessToken = jest.mocked(getCachedAccessToken);
+const get = vi.fn();
+const post = vi.fn();
+const mockEnsureAccessToken = ensureAccessToken as Mock;
+const mockGetCachedAccessToken = vi.mocked(getCachedAccessToken);
 
 // `tokenExpiresTime` rides along on the wire but nothing reads it, so the parsed session drops it.
 const SESSION = { linkUrl: 'https://link', token: 'vault-token', tokenExpiresTime: '2026-07-24T00:00:00Z' };
@@ -102,8 +104,8 @@ function fetchError(status: number, message: string, code?: number) {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
-  (getCashPlatformClient as jest.Mock).mockReturnValue({ get, post });
+  vi.clearAllMocks();
+  (getCashPlatformClient as Mock).mockReturnValue({ get, post });
   mockEnsureAccessToken.mockResolvedValue('jwt-1');
   mockGetCachedAccessToken.mockReturnValue('jwt-1');
   useCashAuthTokenStore.getState().setToken({ accessToken: 'jwt-1', expiresAt: Date.now() + 60_000 });

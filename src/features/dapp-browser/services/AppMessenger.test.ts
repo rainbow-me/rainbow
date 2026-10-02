@@ -1,11 +1,12 @@
 import { type RefObject } from 'react';
 
 import type WebView from 'react-native-webview';
+import { expect, test, vi } from 'vitest';
 
 import { appMessenger } from './AppMessenger';
 
 test('routes a WebView reply to the matching app message', async () => {
-  const injectJavaScript = jest.fn();
+  const injectJavaScript = vi.fn();
   const messenger = appMessenger({ current: { injectJavaScript } } as unknown as RefObject<WebView>, 'tab-id', 'https://example.com');
 
   const response = messenger.send<number, string>('chainChanged:example.com', 137, { id: 7 });

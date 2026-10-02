@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { addReferralToDappBrowserUrl } from './dappReferrals';
 
 describe('addReferralToDappBrowserUrl', () => {

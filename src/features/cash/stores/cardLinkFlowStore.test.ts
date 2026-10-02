@@ -1,4 +1,5 @@
 import type { BivoSecureStore } from '@bivoglobal/payment-react-native';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
@@ -10,9 +11,9 @@ import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
 import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashCardLinked: 'cash.card_linked',
       cashCardLinkFailed: 'cash.card_link_failed',
@@ -20,22 +21,22 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../services/cardLinkService', () => ({
-  linkCardWithVault: jest.fn(),
+vi.mock('../services/cardLinkService', () => ({
+  linkCardWithVault: vi.fn(),
 }));
 
-jest.mock('../services/cashPasskeyService', () => ({
-  isPasskeyCancellation: jest.fn(),
+vi.mock('../services/cashPasskeyService', () => ({
+  isPasskeyCancellation: vi.fn(),
 }));
 
-const mockLinkCardWithVault = linkCardWithVault as jest.Mock;
-const mockIsPasskeyCancellation = isPasskeyCancellation as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockLinkCardWithVault = linkCardWithVault as Mock;
+const mockIsPasskeyCancellation = isPasskeyCancellation as Mock;
+const track = analytics.track as Mock;
 
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
@@ -58,7 +59,7 @@ function deferLink() {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   flow().reset();
   useCashPaymentMethodStore.getState().clear();
   mockLinkCardWithVault.mockResolvedValue(CARD);

@@ -1,14 +1,16 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { type SandboxTestCaseId, type SandboxTestCaseResult } from '../../core/models/cases';
 import { probeHttpAllowed, probeHttpBlocked } from '../api/httpProbes';
 import { useSandboxDiagnosticsStore } from './sandboxDiagnosticsStore';
 
-jest.mock('../api/httpProbes', () => ({
-  probeHttpAllowed: jest.fn(),
-  probeHttpBlocked: jest.fn(),
+vi.mock('../api/httpProbes', () => ({
+  probeHttpAllowed: vi.fn(),
+  probeHttpBlocked: vi.fn(),
 }));
 
-const mockProbeAllowed = jest.mocked(probeHttpAllowed);
-const mockProbeBlocked = jest.mocked(probeHttpBlocked);
+const mockProbeAllowed = vi.mocked(probeHttpAllowed);
+const mockProbeBlocked = vi.mocked(probeHttpBlocked);
 
 const store = () => useSandboxDiagnosticsStore.getState();
 const allCasesIdle = () => Object.values(store().cases).every(testCase => testCase.status === 'idle' && testCase.detail === undefined);
@@ -16,7 +18,7 @@ const markRunning = (caseId: SandboxTestCaseId) =>
   useSandboxDiagnosticsStore.setState(state => ({ cases: { ...state.cases, [caseId]: { ...state.cases[caseId], status: 'running' } } }));
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mockProbeAllowed.mockResolvedValue({ passed: true, detail: 'reachable (status 200)' });
   mockProbeBlocked.mockResolvedValue({ passed: true, detail: 'blocked (no response)' });
   useSandboxDiagnosticsStore.setState(useSandboxDiagnosticsStore.getInitialState());

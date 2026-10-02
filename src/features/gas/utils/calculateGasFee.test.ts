@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { calculateEstimatedGasFeeWorklet, calculateMaxGasFeeWorklet } from './calculateGasFee';
 
 describe('gas fee calculations', () => {
@@ -23,11 +25,11 @@ describe('gas fee calculations', () => {
     expect(calculateEstimatedGasFeeWorklet(eip1559GasSettings, '100', undefined)).toBe('1200');
   });
 
-  it.each(['', ' ', 'Infinity'])('falls back to the fee cap when the current base fee is %p', currentBaseFee => {
+  it.each(['', ' ', 'Infinity'])('falls back to the fee cap when the current base fee is %o', currentBaseFee => {
     expect(calculateEstimatedGasFeeWorklet(eip1559GasSettings, '100', currentBaseFee)).toBe('1200');
   });
 
-  it.each(['', ' ', 'Infinity'])('treats an invalid selected fee value %p as zero', maxBaseFee => {
+  it.each(['', ' ', 'Infinity'])('treats an invalid selected fee value %o as zero', maxBaseFee => {
     expect(calculateMaxGasFeeWorklet({ ...eip1559GasSettings, maxBaseFee }, '100')).toBe('200');
   });
 

@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, test } from 'vitest';
+
 import { useFavoriteDappsStore } from './favoriteDappsStore';
 
 // TODO: Fix test. skipping for now to unblock CI

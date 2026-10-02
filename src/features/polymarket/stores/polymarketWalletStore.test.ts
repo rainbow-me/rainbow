@@ -1,5 +1,6 @@
 import { SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { type Address } from 'viem';
+import { describe, expect, it, vi, type Mocked } from 'vitest';
 
 import {
   resolvePolymarketWalletDescriptor,
@@ -7,14 +8,14 @@ import {
 } from '@/features/polymarket/stores/polymarketWalletKindStore';
 import { deriveSafeWalletAddress } from '@/features/polymarket/utils/deriveSafeWalletAddress';
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_RELAYER_PROXY_URL: 'https://relayer-v2.polymarket.com',
 }));
 
-jest.mock('@/state/wallets/walletsStore', () => ({
-  useWalletsStore: Object.assign(jest.fn(), {
-    getState: jest.fn(() => ({ accountAddress: null })),
-    subscribe: jest.fn(() => jest.fn()),
+vi.mock('@/state/wallets/walletsStore', () => ({
+  useWalletsStore: Object.assign(vi.fn(), {
+    getState: vi.fn(() => ({ accountAddress: null })),
+    subscribe: vi.fn(() => vi.fn()),
   }),
 }));
 
@@ -49,9 +50,9 @@ describe('resolvePolymarketWalletDescriptor', () => {
   });
 });
 
-function createClient({ safeDeployed }: { safeDeployed: boolean }): jest.Mocked<PolymarketWalletDescriptorClient> {
+function createClient({ safeDeployed }: { safeDeployed: boolean }): Mocked<PolymarketWalletDescriptorClient> {
   return {
-    deriveDepositWalletAddress: jest.fn().mockResolvedValue(beaconDepositWallet),
-    getDeployed: jest.fn().mockResolvedValue(safeDeployed),
+    deriveDepositWalletAddress: vi.fn().mockResolvedValue(beaconDepositWallet),
+    getDeployed: vi.fn().mockResolvedValue(safeDeployed),
   };
 }

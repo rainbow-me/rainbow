@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
@@ -7,9 +9,9 @@ import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { useSubmitReviewFlowStore } from './useSubmitReviewFlow';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashPhoneSubmitted: 'cash.phone_submitted',
       cashPhoneVerified: 'cash.phone_verified',
@@ -18,25 +20,25 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/features/config/stores/remoteConfig', () => ({
+vi.mock('@/features/config/stores/remoteConfig', () => ({
   getRemoteConfig: () => ({ cash_kyc_review_delay_ms: 60_000 }),
 }));
 
-jest.mock('../../../services/userClient', () => ({
-  finishRecovery: jest.fn(),
-  startRecovery: jest.fn(),
-  startSignupResume: jest.fn(),
+vi.mock('../../../services/userClient', () => ({
+  finishRecovery: vi.fn(),
+  startRecovery: vi.fn(),
+  startSignupResume: vi.fn(),
 }));
 
-const mockFinishRecovery = jest.mocked(finishRecovery);
-const mockStartRecovery = jest.mocked(startRecovery);
-const mockStartSignupResume = jest.mocked(startSignupResume);
-const track = jest.mocked(analytics.track);
+const mockFinishRecovery = vi.mocked(finishRecovery);
+const mockStartRecovery = vi.mocked(startRecovery);
+const mockStartSignupResume = vi.mocked(startSignupResume);
+const track = vi.mocked(analytics.track);
 
 const CODE = '123456';
 const IDENTITY = { firstName: 'Ada', lastName: 'Lovelace', dateOfBirth: { year: 1815, month: 12, day: 10 } };
@@ -53,7 +55,7 @@ const sessionStore = () => useCashSetupSessionStore.getState();
 const verifyFlow = () => useVerifyPhoneFlowStore.getState();
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   flow().reset();
   sessionStore().reset();
   verifyFlow().reset();

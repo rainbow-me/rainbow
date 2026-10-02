@@ -1,13 +1,13 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`annotations annotates new and strict violations, not fixed ones 1`] = `
+exports[`annotations > annotates new and strict violations, not fixed ones 1`] = `
 [
   "::error file=node_modules/evil/index.js,title=Third-party package importing app code::New: node_modules/evil/index.js → src/state/wallets.ts",
   "::error file=src/new1.ts,title=Circular dependencies::New: src/new1.ts → src/new2.ts → src/new1.ts",
 ]
 `;
 
-exports[`baseline state zone fits opposite movements into one cell and stacks their receipts, warning first: markdown 1`] = `
+exports[`baseline state zone > fits opposite movements into one cell and stacks their receipts, warning first > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -27,14 +27,14 @@ Added to the baseline by this change through \`--allow-additions\`. Confirm this
 - \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
 `;
 
-exports[`baseline state zone fits opposite movements into one cell and stacks their receipts, warning first: terminal 1`] = `
+exports[`baseline state zone > fits opposite movements into one cell and stacks their receipts, warning first > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular: 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked)"
 `;
 
-exports[`baseline state zone keeps the rule row when a baseline is banked down to zero: markdown 1`] = `
+exports[`baseline state zone > keeps the rule row when a baseline is banked down to zero > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -49,14 +49,14 @@ exports[`baseline state zone keeps the rule row when a baseline is banked down t
 - \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
 `;
 
-exports[`baseline state zone keeps the rule row when a baseline is banked down to zero: terminal 1`] = `
+exports[`baseline state zone > keeps the rule row when a baseline is banked down to zero > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular: 2 → 0 (🟢 -2 banked)"
 `;
 
-exports[`baseline state zone labels rows with the platform on single-platform runs: markdown 1`] = `
+exports[`baseline state zone > labels rows with the platform on single-platform runs > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -66,14 +66,14 @@ exports[`baseline state zone labels rows with the platform on single-platform ru
 | \`no-circular\` | ios | 2 |"
 `;
 
-exports[`baseline state zone labels rows with the platform on single-platform runs: terminal 1`] = `
+exports[`baseline state zone > labels rows with the platform on single-platform runs > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular [ios]: 2"
 `;
 
-exports[`baseline state zone shows banked movement as a cell arrow plus a celebration receipt: markdown 1`] = `
+exports[`baseline state zone > shows banked movement as a cell arrow plus a celebration receipt > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -87,14 +87,14 @@ exports[`baseline state zone shows banked movement as a cell arrow plus a celebr
 - \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
 `;
 
-exports[`baseline state zone shows banked movement as a cell arrow plus a celebration receipt: terminal 1`] = `
+exports[`baseline state zone > shows banked movement as a cell arrow plus a celebration receipt > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular: 2 → 1 (🟢 -1 banked)"
 `;
 
-exports[`baseline state zone shows grandfathered movement as a cell arrow plus a receipt requiring confirmation: markdown 1`] = `
+exports[`baseline state zone > shows grandfathered movement as a cell arrow plus a receipt requiring confirmation > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -110,14 +110,14 @@ exports[`baseline state zone shows grandfathered movement as a cell arrow plus a
 Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended."
 `;
 
-exports[`baseline state zone shows grandfathered movement as a cell arrow plus a receipt requiring confirmation: terminal 1`] = `
+exports[`baseline state zone > shows grandfathered movement as a cell arrow plus a receipt requiring confirmation > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular: 2 → 3 (⚠️ +1 grandfathered)"
 `;
 
-exports[`baseline state zone splits rows when committed baselines diverge, scoping movement per platform: markdown 1`] = `
+exports[`baseline state zone > splits rows when committed baselines diverge, scoping movement per platform > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -134,7 +134,7 @@ exports[`baseline state zone splits rows when committed baselines diverge, scopi
 Added to the baseline by this change through \`--allow-additions\`. Confirm this is intended."
 `;
 
-exports[`baseline state zone splits rows when committed baselines diverge, scoping movement per platform: terminal 1`] = `
+exports[`baseline state zone > splits rows when committed baselines diverge, scoping movement per platform > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
@@ -142,7 +142,7 @@ Baseline state:
   no-circular [android]: 2"
 `;
 
-exports[`clean report renders the all-clear line and a bare-count table: markdown 1`] = `
+exports[`clean report > renders the all-clear line and a bare-count table > markdown 1`] = `
 "## Dependency rules
 
 ### Baseline state
@@ -152,14 +152,14 @@ exports[`clean report renders the all-clear line and a bare-count table: markdow
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`clean report renders the all-clear line and a bare-count table: terminal 1`] = `
+exports[`clean report > renders the all-clear line and a bare-count table > terminal 1`] = `
 "✔ No new dependency violations.
 
 Baseline state:
   no-circular: 2"
 `;
 
-exports[`everything at once orders strict and pending sections first with their remedies, the baseline ledger last: markdown 1`] = `
+exports[`everything at once > orders strict and pending sections first with their remedies, the baseline ledger last > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ Third-party package importing app code (\`no-dep-into-app-source\`) — 1 violation (FORBIDDEN)
@@ -200,7 +200,7 @@ Added to the baseline by this change through \`--allow-additions\`. Confirm this
 - \`src/c.ts → src/d.ts → src/e.ts → src/c.ts\`"
 `;
 
-exports[`everything at once orders strict and pending sections first with their remedies, the baseline ledger last: terminal 1`] = `
+exports[`everything at once > orders strict and pending sections first with their remedies, the baseline ledger last > terminal 1`] = `
 "✖ Third-party package importing app code (no-dep-into-app-source): 1 violation — FORBIDDEN
     node_modules/evil/index.js → src/state/wallets.ts
 
@@ -220,7 +220,7 @@ Baseline state:
   no-circular: 2 → 2 (⚠️ +1 grandfathered, 🟢 -1 banked)"
 `;
 
-exports[`pending zone caps fixed listings and counts the overflow: markdown 1`] = `
+exports[`pending zone > caps fixed listings and counts the overflow > markdown 1`] = `
 "## Dependency rules
 
 ### 🎉 Circular dependencies — 12 fixed!
@@ -249,7 +249,7 @@ yarn lint:deps:baseline:update
 | \`no-circular\` | all | 12 |"
 `;
 
-exports[`pending zone caps fixed listings and counts the overflow: terminal 1`] = `
+exports[`pending zone > caps fixed listings and counts the overflow > terminal 1`] = `
 "🎉 Circular dependencies: 12 fixed!
     src/m0.ts → src/n0.ts → src/m0.ts
     src/m1.ts → src/n1.ts → src/m1.ts
@@ -270,7 +270,7 @@ Baseline state:
   no-circular: 12"
 `;
 
-exports[`pending zone celebrates fixed violations and closes with the bank-the-win footer: markdown 1`] = `
+exports[`pending zone > celebrates fixed violations and closes with the bank-the-win footer > markdown 1`] = `
 "## Dependency rules
 
 ### 🎉 Circular dependencies — 1 fixed!
@@ -289,7 +289,7 @@ yarn lint:deps:baseline:update
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone celebrates fixed violations and closes with the bank-the-win footer: terminal 1`] = `
+exports[`pending zone > celebrates fixed violations and closes with the bank-the-win footer > terminal 1`] = `
 "🎉 Circular dependencies: 1 fixed!
     src/c.ts → src/d.ts → src/e.ts → src/c.ts
 
@@ -300,7 +300,7 @@ Baseline state:
   no-circular: 2"
 `;
 
-exports[`pending zone merges new and fixed into one section with labeled sub-lists: markdown 1`] = `
+exports[`pending zone > merges new and fixed into one section with labeled sub-lists > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ Circular dependencies — 1 new (FORBIDDEN), 1 fixed 🎉
@@ -327,7 +327,7 @@ yarn lint:deps:baseline:update
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone merges new and fixed into one section with labeled sub-lists: terminal 1`] = `
+exports[`pending zone > merges new and fixed into one section with labeled sub-lists > terminal 1`] = `
 "✖ Circular dependencies: 1 new — FORBIDDEN, 1 fixed 🎉
   New:
     src/new1.ts → src/new2.ts → src/new1.ts
@@ -344,7 +344,7 @@ Baseline state:
   no-circular: 2"
 `;
 
-exports[`pending zone qualifies entries that are missing from some platforms: markdown 1`] = `
+exports[`pending zone > qualifies entries that are missing from some platforms > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ Circular dependencies — 1 new (FORBIDDEN)
@@ -360,7 +360,7 @@ Fix the cycle (usually: extract the shared piece into its own module). If genuin
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone qualifies entries that are missing from some platforms: terminal 1`] = `
+exports[`pending zone > qualifies entries that are missing from some platforms > terminal 1`] = `
 "✖ Circular dependencies: 1 new — FORBIDDEN
     src/new1.ts → src/new2.ts → src/new1.ts (ios only)
   Fix the cycle (usually: extract the shared piece into its own module).
@@ -371,7 +371,7 @@ Baseline state:
   no-circular: 2"
 `;
 
-exports[`pending zone renders new violations as a FORBIDDEN section with the hint and the grandfather escape: markdown 1`] = `
+exports[`pending zone > renders new violations as a FORBIDDEN section with the hint and the grandfather escape > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ Circular dependencies — 1 new (FORBIDDEN)
@@ -387,7 +387,7 @@ Fix the cycle (usually: extract the shared piece into its own module). If genuin
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone renders new violations as a FORBIDDEN section with the hint and the grandfather escape: terminal 1`] = `
+exports[`pending zone > renders new violations as a FORBIDDEN section with the hint and the grandfather escape > terminal 1`] = `
 "✖ Circular dependencies: 1 new — FORBIDDEN
     src/new1.ts → src/new2.ts → src/new1.ts
   Fix the cycle (usually: extract the shared piece into its own module).
@@ -398,7 +398,7 @@ Baseline state:
   no-circular: 2"
 `;
 
-exports[`pending zone renders strict violations as FORBIDDEN without baseline affordances: markdown 1`] = `
+exports[`pending zone > renders strict violations as FORBIDDEN without baseline affordances > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ Third-party package importing app code (\`no-dep-into-app-source\`) — 1 violation (FORBIDDEN)
@@ -412,7 +412,7 @@ exports[`pending zone renders strict violations as FORBIDDEN without baseline af
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone renders strict violations as FORBIDDEN without baseline affordances: terminal 1`] = `
+exports[`pending zone > renders strict violations as FORBIDDEN without baseline affordances > terminal 1`] = `
 "✖ Third-party package importing app code (no-dep-into-app-source): 1 violation — FORBIDDEN
     node_modules/evil/index.js → src/state/wallets.ts
 
@@ -420,7 +420,7 @@ Baseline state:
   no-circular: 2"
 `;
 
-exports[`pending zone treats rules without a policy entry as strict, labeled by their bare rule name: markdown 1`] = `
+exports[`pending zone > treats rules without a policy entry as strict, labeled by their bare rule name > markdown 1`] = `
 "## Dependency rules
 
 ### ✖ some-future-rule — 1 violation (FORBIDDEN)
@@ -434,7 +434,7 @@ exports[`pending zone treats rules without a policy entry as strict, labeled by 
 | \`no-circular\` | all | 2 |"
 `;
 
-exports[`pending zone treats rules without a policy entry as strict, labeled by their bare rule name: terminal 1`] = `
+exports[`pending zone > treats rules without a policy entry as strict, labeled by their bare rule name > terminal 1`] = `
 "✖ some-future-rule: 1 violation — FORBIDDEN
     src/x.ts → src/y.ts
 

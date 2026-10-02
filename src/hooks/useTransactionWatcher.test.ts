@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useWatcher } from '@/framework/ui/hooks/useWatcher';
 
@@ -23,20 +23,20 @@ function mockUseCallback(callback: WatcherCallback, dependencies: readonly unkno
   return callback;
 }
 
-jest.mock('react', () => ({
+vi.mock('react', () => ({
   useCallback: (callback: WatcherCallback, dependencies: readonly unknown[]) => mockUseCallback(callback, dependencies),
   useRef: () => mockTransactionsRef,
 }));
 
-jest.mock('@/framework/ui/hooks/useWatcher', () => ({
-  useWatcher: jest.fn(),
+vi.mock('@/framework/ui/hooks/useWatcher', () => ({
+  useWatcher: vi.fn(),
 }));
 
-const mockUseWatcher = jest.mocked(useWatcher);
+const mockUseWatcher = vi.mocked(useWatcher);
 
 describe('useTransactionWatcher', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockMemoizedCallback = undefined;
     mockTransactionsRef.current = [];
   });
@@ -44,7 +44,7 @@ describe('useTransactionWatcher', () => {
   it('keeps the scheduler callback stable while reading the latest transactions', async () => {
     const firstTransactions = ['first'];
     const latestTransactions = ['latest'];
-    const watchFunction = jest.fn<(transactions: string[], abortController: AbortController) => Promise<void>>().mockResolvedValue();
+    const watchFunction = vi.fn<(transactions: string[], abortController: AbortController) => Promise<void>>().mockResolvedValue();
 
     useTransactionWatcher({ transactions: firstTransactions, watchFunction });
     const firstWatch = mockUseWatcher.mock.calls[0][0].watchFunction;
