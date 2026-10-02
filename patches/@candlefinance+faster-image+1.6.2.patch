@@ -1,98 +1,234 @@
+diff --git a/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt b/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
+--- a/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
++++ b/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
+@@ -15,6 +15,8 @@
+ import android.view.View
+ import android.view.ViewOutlineProvider
+ import android.widget.ImageView.ScaleType
++import kotlin.math.min
++import kotlin.math.roundToInt
+ import androidx.appcompat.widget.AppCompatImageView
+ import coil.annotation.ExperimentalCoilApi
+ import coil.imageLoader
+@@ -102,9 +104,7 @@
+           bottomRight = if (options.hasKey("borderBottomRightRadius")) options.getDouble("borderBottomRightRadius") else 0.0,
+         )
+
+-        if (borderRadii.sum() != 0.0) {
+-          setViewBorderRadius(view, borderRadii)
+-        }
++        setViewBorderRadius(view, borderRadii)
+
+       if (RESIZE_MODE.containsKey(resizeMode)) {
+         view.scaleType = RESIZE_MODE[resizeMode]
+@@ -138,6 +138,7 @@
+           .target(
+             onStart = { placeholder ->
+               view.setImageDrawable(placeholder)
++              view.invalidateOutline()
+             },
+             onSuccess = { result ->
+               val event = Arguments.createMap()
+@@ -160,6 +161,7 @@
+                 grayscaleDrawable.colorFilter = colorFilter
+                 view.setImageDrawable(grayscaleDrawable)
+               }
++              view.invalidateOutline()
+             },
+             onError = { error ->
+                 val event = Arguments.createMap()
+@@ -169,6 +171,7 @@
+                   .getJSModule(RCTEventEmitter::class.java)
+                   .receiveEvent(view.id, "onError", event)
+                 view.setImageDrawable(error ?: failureDrawable)
++                view.invalidateOutline()
+             }
+           )
+           .crossfade(transitionDuration.toInt() ?: 100)
+@@ -186,13 +189,31 @@
+       private fun setViewBorderRadius(view: AppCompatImageView, borderRadii: BorderRadii) {
++        if (borderRadii.sum() == 0.0) {
++          view.clipToOutline = false
++          view.outlineProvider = ViewOutlineProvider.BACKGROUND
++          return
++        }
++
+         view.clipToOutline = true
+         view.outlineProvider = object : ViewOutlineProvider() {
+-          override fun getOutline(view: View, outline: Outline) {
++          override fun getOutline(outlinedView: View, outline: Outline) {
+             val width = view.width
+             val height = view.height
++            val rect = Rect(0, 0, width, height)
++            val drawable = view.drawable
++
++            if (view.scaleType == ScaleType.FIT_CENTER && drawable != null && drawable.intrinsicWidth > 0 && drawable.intrinsicHeight > 0) {
++              val scale = min(width.toFloat() / drawable.intrinsicWidth, height.toFloat() / drawable.intrinsicHeight)
++              val fittedWidth = (drawable.intrinsicWidth * scale).roundToInt()
++              val fittedHeight = (drawable.intrinsicHeight * scale).roundToInt()
++              val left = (width - fittedWidth) / 2
++              val top = (height - fittedHeight) / 2
++              rect.set(left, top, left + fittedWidth, top + fittedHeight)
++            }
++
+             val nonUniformRadiiSum = borderRadii.sum() - borderRadii.uniform
+
+             if (nonUniformRadiiSum == 0.0 || nonUniformRadiiSum == borderRadii.uniform) {
+-              outline.setRoundRect(0, 0, width, height, borderRadii.uniform.toFloat())
++              outline.setRoundRect(rect, borderRadii.uniform.toFloat())
+               return
+             }
+
+@@ -202,8 +223,6 @@
+               borderRadii.bottomRight.toFloat(), borderRadii.bottomRight.toFloat(),
+               borderRadii.bottomLeft.toFloat(), borderRadii.bottomLeft.toFloat(),
+             )
+-
+-            val rect = Rect(0, 0, width, height)
+
+             val path = Path().apply {
+               addRoundRect(
 diff --git a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
-index a8dee30..26b1d32 100644
 --- a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
 +++ b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
-@@ -65,12 +65,17 @@ final class FasterImageView: UIView {
+@@ -64,13 +64,7 @@
+     init() {
          super.init(frame: .zero)
          addSubview(lazyImageView)
-         lazyImageView.translatesAutoresizingMaskIntoConstraints = false
-+
-+        let bottomAnchor = lazyImageView.bottomAnchor.constraint(equalTo: bottomAnchor)
-+        bottomConstraint = bottomAnchor
-+
-         NSLayoutConstraint.activate([
-             lazyImageView.topAnchor.constraint(equalTo: topAnchor),
+-        lazyImageView.translatesAutoresizingMaskIntoConstraints = false
+-        NSLayoutConstraint.activate([
+-            lazyImageView.topAnchor.constraint(equalTo: topAnchor),
 -            lazyImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-+            bottomAnchor,
-             lazyImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-             lazyImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-         ])
-+        
+-            lazyImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+-            lazyImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+-        ])
++        lazyImageView.placeholderView = nil
          lazyImageView.pipeline = .shared
          lazyImageView.priority = .high
          lazyImageView.onCompletion = { [weak self] result in
-@@ -86,6 +91,9 @@ final class FasterImageView: UIView {
- 
-     private lazy var lazyImageView = LazyImageView()
-   
-+    private var aspectRatioConstraint: NSLayoutConstraint?
-+    private var bottomConstraint: NSLayoutConstraint?
-+
-     // MARK: - Callbacks
- 
-     @objc var onError: RCTDirectEventBlock?
-@@ -233,20 +241,29 @@ final class FasterImageView: UIView {
+@@ -95,9 +89,7 @@
+     @objc var source: NSDictionary? = nil {
+         didSet {
+             guard let source = source else {
+-                onError?([
+-                    "error": "Expected a valid source but got: \("nil")",
+-                ])
++                sendError("Expected a valid source but got: nil")
+                 return
+             }
+             do {
+@@ -141,20 +133,19 @@
+                     
+                     urlRequest = urlRequestFromOptions
+                 } else {
+-                    onError?([
+-                        "error": "Expected a valid url but got: \(options.url)",
+-                    ])
++                    sendError("Expected a valid url but got: \(options.url)")
+                 }
+             } catch {
+-                onError?([
+-                    "error": error.localizedDescription,
+-                ])
++                sendError(error.localizedDescription)
+             }
          }
      }
- 
--    var showActivityIndicator = false {
--        didSet {
+
+     private func applyBorderRadii() {
+       let radiiSum = borderRadii.sum()
++
++      lazyImageView.layer.cornerRadius = 0
++      lazyImageView.layer.mask = nil
+
+       if radiiSum != 0.0 {
+         let nonUniformRadiiiSum = radiiSum - borderRadii.uniform
+@@ -207,6 +198,23 @@
+
+     override func layoutSubviews() {
+         super.layoutSubviews()
++
++        var imageBounds = bounds
++        if let image = lazyImageView.imageView.image, resizeMode == "contain" || resizeMode == "topContain" {
++            let scale = resizeMode == "topContain"
++                ? bounds.width / image.size.width
++                : min(bounds.width / image.size.width, bounds.height / image.size.height)
++            let width = image.size.width * scale
++            let height = image.size.height * scale
++            imageBounds = CGRect(
++                x: (bounds.width - width) / 2,
++                y: resizeMode == "topContain" ? 0 : (bounds.height - height) / 2,
++                width: width,
++                height: height
++            )
++        }
++
++        lazyImageView.frame = imageBounds
+         applyBorderRadii()
+     }
+
+@@ -235,11 +243,13 @@
+
+     var showActivityIndicator = false {
+         didSet {
 -            let activity = UIActivityIndicatorView()
 -            if self.activityColor != nil {
 -                activity.color = self.activityColor
 -            }
 -            lazyImageView.placeholderView = activity
--        }
--    }
-+    var showActivityIndicator = false
- 
--    var activityColor: UIColor?
-+    var activityColor: UIColor? = Color.clear
-   
-     var resizeMode = "contain" {
-         didSet {
-+            if (resizeMode == "topContain") {
-+                lazyImageView.imageView.contentMode = .scaleAspectFit
-+                bottomConstraint?.priority = .defaultLow
-+
-+                if aspectRatioConstraint == nil, let image = lazyImageView.imageView.image {
-+                    aspectRatioConstraint?.isActive = false
-+                    aspectRatioConstraint = lazyImageView.imageView.widthAnchor.constraint(
-+                        equalTo: lazyImageView.imageView.heightAnchor,
-+                        multiplier: image.size.width / image.size.height
-+                    )
-+                    aspectRatioConstraint?.isActive = true
-+                }
-+                return
++            if showActivityIndicator {
++                let activity = UIActivityIndicatorView()
++                activity.color = activityColor
++                lazyImageView.placeholderView = activity
++            } else if lazyImageView.placeholderView is UIActivityIndicatorView {
++                lazyImageView.placeholderView = nil
 +            }
-+
-+            bottomConstraint?.priority = .required
-+            aspectRatioConstraint = nil
+         }
+     }
+
+@@ -249,6 +259,7 @@
+         didSet {
              let mode = ResizeMode(rawValue: resizeMode)
              lazyImageView.imageView.contentMode = mode?.contentMode ?? .scaleAspectFit
++            setNeedsLayout()
          }
-@@ -362,11 +379,19 @@ fileprivate extension FasterImageView {
+     }
+
+@@ -359,18 +370,28 @@
+
+ fileprivate extension FasterImageView {
+
++    func sendError(_ message: String) {
++        DispatchQueue.main.async { [weak self] in
++            self?.onError?(["error": message])
++        }
++    }
++
      func completionHandler(with result: Result<ImageResponse, Error>) {
          switch result {
          case .success(let value):
-+            if resizeMode == "topContain" {
-+                aspectRatioConstraint = lazyImageView.imageView.widthAnchor.constraint(
-+                    equalTo: lazyImageView.imageView.heightAnchor,
-+                    multiplier: value.image.size.width / value.image.size.height
-+                )
-+                aspectRatioConstraint?.isActive = true
-+            }
-             onSuccess?([
+-            onSuccess?([
++            setNeedsLayout()
++            let event: [String: Any] = [
                  "width": value.image.size.width,
                  "height": value.image.size.height,
                  "source": value.urlResponse?.url?.absoluteString ?? ""
-             ])
+-            ])
++            ]
++            // A cached image can finish before React installs the event callbacks.
++            DispatchQueue.main.async { [weak self] in
++                self?.onSuccess?(event)
++            }
 +
          case .failure(let error):
-             onError?([
-                 "error": error.localizedDescription,
+-            onError?([
+-                "error": error.localizedDescription,
+-            ])
++            sendError(error.localizedDescription)
+         }
+     }
+
 diff --git a/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts b/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts
-index 03be2a8..5b191c6 100644
 --- a/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts
 +++ b/node_modules/@candlefinance/faster-image/lib/typescript/index.d.ts
 @@ -1,5 +1,5 @@
@@ -103,10 +239,9 @@ index 03be2a8..5b191c6 100644
  export type ImageOptions = {
      blurhash?: string;
 diff --git a/node_modules/@candlefinance/faster-image/src/index.tsx b/node_modules/@candlefinance/faster-image/src/index.tsx
-index bb203a8..a0706f3 100644
 --- a/node_modules/@candlefinance/faster-image/src/index.tsx
 +++ b/node_modules/@candlefinance/faster-image/src/index.tsx
-@@ -15,6 +15,7 @@ export type IOSImageResizeMode =
+@@ -15,6 +15,7 @@
    | 'bottom'
    | 'left'
    | 'right'
