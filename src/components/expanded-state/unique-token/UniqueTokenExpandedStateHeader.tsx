@@ -375,7 +375,6 @@ const UniqueTokenExpandedStateHeader = ({
             <ContextMenuButton
               anchorAndroidMenuToRight
               menuConfig={assetMenuConfig}
-              isMenuPrimaryAction
               onPressMenuItem={handlePressAssetMenuItem}
               testID="unique-token-expanded-state-context-menu-button"
             >
@@ -392,12 +391,7 @@ const UniqueTokenExpandedStateHeader = ({
       </Columns>
       <Inline wrap={false}>
         <Bleed space={familyNameHitSlop}>
-          <ContextMenuButton
-            menuConfig={familyMenuConfig}
-            anchorAndroidMenuToRight
-            isMenuPrimaryAction
-            onPressMenuItem={handlePressFamilyMenuItem}
-          >
+          <ContextMenuButton menuConfig={familyMenuConfig} anchorAndroidMenuToRight onPressMenuItem={handlePressFamilyMenuItem}>
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>
                 <Inline alignVertical="center" space="6px" wrap={false}>

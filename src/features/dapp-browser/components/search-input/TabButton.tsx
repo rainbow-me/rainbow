@@ -186,7 +186,7 @@ export const TabButton = React.memo(function TabButton({
           wrap={children => (
             <ContextMenuButton
               enableContextMenu={Platform.OS === 'ios' ? !isFocusedState : undefined}
-              isMenuPrimaryAction={Platform.OS === 'ios' ? isFocusedState : undefined}
+              requireLongPressToOpen={!isFocusedState}
               menuConfig={longPressMenuConfig}
               onPressMenuItem={onPressMenuItem}
             >

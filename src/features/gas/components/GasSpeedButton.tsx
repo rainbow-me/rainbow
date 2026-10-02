@@ -383,13 +383,7 @@ export const GasSpeedButton = ({
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
 
     return (
-      <ContextMenuButton
-        enableContextMenu
-        anchorAndroidMenuToRight
-        isMenuPrimaryAction
-        menuConfig={menuConfig}
-        onPressMenuItem={handlePressMenuItem}
-      >
+      <ContextMenuButton enableContextMenu anchorAndroidMenuToRight menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         {pager}
       </ContextMenuButton>
     );

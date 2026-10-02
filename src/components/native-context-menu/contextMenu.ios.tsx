@@ -44,16 +44,26 @@ export type MenuConfig = Readonly<{
   icon?: IconConfig;
 }>;
 
-export default function ContextMenu(
-  props: PropsWithChildren<
-    Omit<ContextMenuButtonProps, 'menuConfig' | 'onPressMenuItem' | 'useActionSheetFallback'> & {
-      menuConfig: MenuConfig;
-      onPressMenuItem: (e: { nativeEvent: Omit<MenuActionConfig, 'actionKey'> & { actionKey: any } }) => void;
-      anchorAndroidMenuToRight?: boolean;
-    }
-  >
-) {
-  // @ts-expect-error `activeOpacity` and `wrapNativeComponent` are missing in the `ContextMenuButtonProps` type but are valid
-  // https://www.npmjs.com/package/react-native-ios-context-menu/v/1.2.1#312-contextmenubutton-component
-  return <ContextMenuButton activeOpacity={0} isMenuPrimaryAction wrapNativeComponent={false} {...props} useActionSheetFallback={false} />;
+export default function ContextMenu({
+  requireLongPressToOpen = false,
+  ...props
+}: PropsWithChildren<
+  Omit<ContextMenuButtonProps, 'isMenuPrimaryAction' | 'menuConfig' | 'onPressMenuItem' | 'useActionSheetFallback'> & {
+    menuConfig: MenuConfig;
+    onPressMenuItem: (e: { nativeEvent: Omit<MenuActionConfig, 'actionKey'> & { actionKey: any } }) => void;
+    anchorAndroidMenuToRight?: boolean;
+    requireLongPressToOpen?: boolean;
+  }
+>) {
+  return (
+    <ContextMenuButton
+      // @ts-expect-error `activeOpacity` and `wrapNativeComponent` are missing in the `ContextMenuButtonProps` type but are valid
+      // https://www.npmjs.com/package/react-native-ios-context-menu/v/1.2.1#312-contextmenubutton-component
+      activeOpacity={0}
+      wrapNativeComponent={false}
+      {...props}
+      isMenuPrimaryAction={!requireLongPressToOpen}
+      useActionSheetFallback={false}
+    />
+  );
 }
