@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import { capitalize } from 'lodash';
 
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';

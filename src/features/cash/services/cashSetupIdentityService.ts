@@ -1,4 +1,5 @@
-import { isExists, startOfDay } from 'date-fns';
+import isExists from 'date-fns/isExists/index.js';
+import startOfDay from 'date-fns/startOfDay/index.js';
 
 export type CashSetupDateOfBirth = {
   year: number;
