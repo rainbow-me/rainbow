@@ -145,3 +145,6 @@ deps-comment.md
 .claude/*
 !.claude/CLAUDE.md
 !.claude/settings.local.json
+
+# Vitest reports and diagnostics
+.vitest/
