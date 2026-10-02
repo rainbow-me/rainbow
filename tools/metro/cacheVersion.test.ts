@@ -47,7 +47,7 @@ test('mode files and process overrides participate without changing their inputs
   const env = { NODE_ENV: 'development', DOTENV_VALUE: 'override' };
   const before = getMetroCacheVersion(root, env);
   write('.env.development', 'DOTENV_VALUE=mode\n');
-  expect(getMetroCacheVersion(root, env)).not.toBe(before);
+  expect(getMetroCacheVersion(root, env)).toBe(before);
   expect(env).toEqual({ NODE_ENV: 'development', DOTENV_VALUE: 'override' });
   expect(readFileSync(join(root, '.env'), 'utf8')).toBe('DOTENV_VALUE=first\n');
 
@@ -62,7 +62,7 @@ test('unrelated process variables and ordinary source edits do not invalidate tr
   expect(getMetroCacheVersion(root, { PWD: '/another/checkout', TERM: 'xterm' })).toBe(before);
 });
 
-test.each(['babel.config.js', 'metro.config.js', 'tsconfig.json', 'yarn.lock', 'patches/native.patch', '.yarn/patches/package.patch'])(
+test.each(['babel.config.js', 'tsconfig.json', 'yarn.lock', 'patches/native.patch', '.yarn/patches/package.patch'])(
   '%s invalidates transforms when its contents change',
   path => {
     write(path, 'before');
@@ -72,10 +72,31 @@ test.each(['babel.config.js', 'metro.config.js', 'tsconfig.json', 'yarn.lock', '
   }
 );
 
-test('an absent file differs from an empty file', () => {
+test('an empty mode file preserves effective values, while an empty value overrides the base file', () => {
   const before = getMetroCacheVersion(root, {});
   write('.env.development', '');
+  expect(getMetroCacheVersion(root, {})).toBe(before);
+
+  write('.env.development', 'DOTENV_VALUE=');
   expect(getMetroCacheVersion(root, {})).not.toBe(before);
+  expect(transformEnvironment()).toContain('value = ""');
+});
+
+test('comments, unused values and unrelated configuration preserve transforms', () => {
+  const before = getMetroCacheVersion(root, {});
+  write('.env', '# Documentation\nDOTENV_VALUE="first"\nUNUSED_VALUE=changed\n');
+  write('globals.d.ts', `${DECLARATIONS}\ndeclare const unrelated: number;\n`);
+  write('package.json', JSON.stringify({ description: 'New package metadata' }));
+  write('metro.config.js', 'module.exports = { server: { port: 8099 } };');
+  expect(getMetroCacheVersion(root, {})).toBe(before);
+  expect(transformEnvironment()).toContain('"first"');
+});
+
+test('production dotenv values participate even when Metro starts without BABEL_ENV', () => {
+  const before = getMetroCacheVersion(root, {});
+  write('.env.production', 'DOTENV_VALUE=production\n');
+  expect(getMetroCacheVersion(root, {})).not.toBe(before);
+  expect(transformEnvironment({ BABEL_ENV: 'production' })).toContain('"production"');
 });
 
 test('new declared environment keys participate without a second key list', () => {
@@ -120,10 +141,10 @@ function write(path: string, contents: string): void {
   writeFileSync(target, contents);
 }
 
-function transformEnvironment(): string {
+function transformEnvironment(env: Partial<NodeJS.ProcessEnv> = {}): string {
   return execFileSync(process.execPath, [join(import.meta.dirname, 'fixtures/transformEnvironment.mts')], {
     cwd: root,
     encoding: 'utf8',
-    env: { ...process.env, DOTENV_VALUE: undefined },
+    env: { ...process.env, NODE_ENV: 'development', BABEL_ENV: 'development', DOTENV_VALUE: undefined, ...env },
   });
 }

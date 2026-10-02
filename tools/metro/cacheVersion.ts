@@ -2,6 +2,7 @@ import { createHash, type Hash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { parse } from 'dotenv';
 import {
   createSourceFile,
   isIdentifier,
@@ -12,30 +13,31 @@ import {
   ScriptTarget,
 } from 'typescript';
 
-const CONFIG_FILES = ['babel.config.js', 'metro.config.js', 'package.json', 'tsconfig.json', 'yarn.lock'];
+const CONFIG_FILES = ['babel.config.js', 'tsconfig.json', 'yarn.lock'];
 const PATCH_DIRECTORIES = ['.yarn/patches', 'patches'];
 
 /**
  * Identifies the configuration and environment used to transform JavaScript.
  *
+ * Includes effective dotenv values for development and production transforms.
  * Source contents remain Metro's responsibility. Recompute this value when
  * starting Metro after a configuration or environment change.
  */
 export function getMetroCacheVersion(root: string, env: Readonly<Partial<NodeJS.ProcessEnv>> = process.env): string {
   const hash = createHash('sha256');
-  hash.update('rainbow-metro-v1');
+  hash.update('rainbow-metro-v2');
   const declarations = readFileSync(join(root, 'globals.d.ts'), 'utf8');
-  hash.update(JSON.stringify(['globals.d.ts', declarations]));
+  const names = getEnvironmentNames(declarations);
 
   for (const file of CONFIG_FILES) hashFile(hash, root, file);
   for (const directory of PATCH_DIRECTORIES) hashDirectory(hash, root, directory);
   hashFile(hash, root, 'tools/metro/cacheVersion.ts');
-  hashFile(hash, root, '.env');
-  hashFile(hash, root, `.env.${env.BABEL_ENV || env.NODE_ENV || 'development'}`);
+  const base = parse(readOptionalFile(root, '.env') ?? '');
 
   hash.update(JSON.stringify([process.version, env.BABEL_ENV ?? null, env.NODE_ENV ?? null]));
-  for (const name of getEnvironmentNames(declarations)) {
-    hash.update(JSON.stringify([name, env[name] ?? null]));
+  for (const mode of new Set(['development', env.BABEL_ENV || 'production'])) {
+    const values = parse(readOptionalFile(root, `.env.${mode}`) ?? '');
+    hash.update(JSON.stringify([mode, names.map(name => [name, env[name] ?? values[name] ?? base[name] ?? null])]));
   }
   return `rainbow-${hash.digest('hex')}`;
 }
@@ -60,16 +62,18 @@ function getEnvironmentNames(declarations: string): string[] {
 }
 
 function hashFile(hash: Hash, root: string, path: string): void {
-  let contents: Buffer;
+  const contents = readOptionalFile(root, path);
+  hash.update(JSON.stringify([path, contents?.length ?? null]));
+  if (contents !== null) hash.update(contents);
+}
+
+function readOptionalFile(root: string, path: string): Buffer | null {
   try {
-    contents = readFileSync(join(root, path));
+    return readFileSync(join(root, path));
   } catch (error) {
     if (typeof error !== 'object' || error === null || !('code' in error) || error.code !== 'ENOENT') throw error;
-    hash.update(JSON.stringify([path, null]));
-    return;
+    return null;
   }
-  hash.update(JSON.stringify([path, contents.length]));
-  hash.update(contents);
 }
 
 function hashDirectory(hash: Hash, root: string, path: string): void {
