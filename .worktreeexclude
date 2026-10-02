@@ -1,4 +1,32 @@
-# Stim copies ignored entries from the source checkout. Rainbow's ignored state
-# includes credentials, generated native configuration and patched dependencies.
-# Prepare each checkout through README Setup; reuse Stim's keyed build caches.
-*
+# Keep prepared dependencies, Pods and local configuration available to warm.
+# Exclude agent scratch data, signing keys and machine-specific build state.
+/.claude
+/.claude/**/*
+/.local
+/.local/**/*
+/.sentry
+/.sentry/**/*
+/artifacts
+/artifacts/**/*
+/e2e-artifacts
+/e2e-artifacts/**/*
+/e2e-results
+/e2e-results/**/*
+.gradle
+.gradle/**/*
+.kotlin
+.kotlin/**/*
+.cxx
+.cxx/**/*
+/android/build
+/android/build/**/*
+/android/app/build
+/android/app/build/**/*
+/android/keystores
+/android/keystores/**/*
+/ios/build
+/ios/build/**/*
+local.properties
+.xcode.env.local
+*.keystore
+.eslintcache

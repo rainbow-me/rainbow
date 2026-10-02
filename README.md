@@ -142,9 +142,17 @@ automatically. Use ordinary Fast Refresh for source edits. After environment,
 Babel or Metro configuration changes, stop and run each desired platform again.
 Read the current port from the result; stopping releases the old reservation.
 
-Each new worktree needs its own Setup. `.worktreeexclude` prevents automatically
-copying ignored credentials, generated configuration and installed dependencies
-from another checkout. Never symlink `node_modules` between worktrees.
+To prepare a new linked worktree from an already prepared source checkout, run
+`/path/to/source/node_modules/.bin/stim worktree warm` inside the new worktree.
+Warming copies missing dependencies, Pods and local configuration,
+including `.env`, into independently writable files. It preserves existing
+target files and excludes the scratch/build paths in `.worktreeexclude`.
+
+Stim reads that policy from the source checkout. Reinstall dependencies when
+package, lockfile or patch inputs differ; rerun Pods when Podfile inputs differ,
+and regenerate native configuration when its environment inputs differ. Follow
+any mismatch reported by Stim. Use Setup when the source is not prepared.
+Never symlink `node_modules` between worktrees. The Android keystore directory is excluded.
 
 Before an agent's first native run, inspect `yarn stim status --json` and
 `yarn stim settings --json`. Use the checkout's owned simulator/emulator with
