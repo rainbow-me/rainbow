@@ -24,6 +24,6 @@ export const useEnsAddressStore = createQueryCollectionStore({
     if (isAddress(addressOrName)) return getAddress(addressOrName);
     return resolveEnsAddress(addressOrName, chainId, signal);
   },
-  staleTime: time.seconds(10),
-  cacheTime: time.minutes(5),
+  staleTime: time.minutes(5),
+  cacheTime: time.hours(1),
 });
