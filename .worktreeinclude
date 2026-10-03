@@ -1,0 +1,22 @@
+# Gitignored files copied into every worktree an agent creates. Paths only, so
+# nothing sensitive lives here; the file contents stay gitignored. Consumed
+# natively by Claude Code, and by Codex via scripts/worktree-setup.sh.
+# https://code.claude.com/docs/en/worktrees
+
+# Required before anything can typecheck or build.
+.env
+src/config/debug.ts
+src/graphql/config.js
+
+# Generated output, copied as a snapshot rather than regenerated. Re-run
+# `yarn graphql-codegen` in the worktree if the branch changes queries, schemas
+# or codegen config.
+src/graphql/__generated__/
+
+# Deliberately absent:
+#   ios/*.xcconfig, .xcode.env.local  postinstall.sh appends to these, so copying
+#     them yields duplicate keys. Worktrees don't build the app anyway, since
+#     pods and simulators are single-instance.
+#   node_modules  scripts/worktree-setup.sh runs `yarn install` instead, so the
+#     tree comes from this branch's own lockfile and patches/ rather than from
+#     whatever branch another checkout happens to be sitting on.
