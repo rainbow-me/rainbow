@@ -45,7 +45,7 @@ export function ProfileSheetHeader({
   const ensName = defaultEnsName || params?.address;
 
   const profileAddress = useEnsAddressStore(s =>
-    profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }).data : undefined
+    profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined
   );
   const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(ensName, {
     enabled: profilesEnabled,

@@ -173,7 +173,7 @@ export const fetchSuggestions = async (
       });
       void useEnsAddressStore
         .getState()
-        .fetch({ addressOrName: ens, chainId: ChainId.mainnet })
+        .fetch({ inputs: [{ addressOrName: ens, chainId: ChainId.mainnet }] }, { skipStoreUpdates: 'withCache' })
         .catch(() => undefined);
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
@@ -224,7 +224,7 @@ export const fetchSuggestions = async (
                 if (i === 0) {
                   void useEnsAddressStore
                     .getState()
-                    .fetch({ addressOrName: domain.name, chainId: ChainId.mainnet })
+                    .fetch({ inputs: [{ addressOrName: domain.name, chainId: ChainId.mainnet }] }, { skipStoreUpdates: 'withCache' })
                     .catch(() => undefined);
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });

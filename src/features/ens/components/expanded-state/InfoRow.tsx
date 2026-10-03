@@ -177,7 +177,7 @@ export function InfoRow({
 function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; value?: string }) {
   const accountAddress = useAccountAddress();
 
-  const address = useEnsAddressStore(s => (ensName ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }).data : undefined));
+  const address = useEnsAddressStore(s => (ensName ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined));
 
   const {
     data: { nfts: uniqueTokensAccount },

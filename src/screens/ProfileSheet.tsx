@@ -34,7 +34,7 @@ export function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }).data);
+  const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }));
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;

@@ -29,12 +29,14 @@ afterAll(() => {
 });
 
 it.each([ADDRESS, ADDRESS.toLowerCase()])('preserves the raw profile address %s without an ENS request', async addressOrName => {
-  await expect(useEnsAddressStore.getState().fetch({ addressOrName, chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(
+    useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName, chainId: ChainId.mainnet }] }, { force: true })
+  ).resolves.toEqual([ADDRESS]);
 
   expect(fetchMock).not.toHaveBeenCalled();
 });
 
-it('resolves profile names through ENS', async () => {
+it('resolves profile names and shares the result with imperative prefetchers', async () => {
   fetchMock.mockImplementation(async (_url, init) => {
     const { id }: { id: number } = JSON.parse(String(init?.body));
     return new Response(
@@ -51,7 +53,13 @@ it('resolves profile names through ENS', async () => {
     );
   });
 
-  await expect(useEnsAddressStore.getState().fetch({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(
+    useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName: 'alice.eth', chainId: ChainId.mainnet }] }, { force: true })
+  ).resolves.toEqual([ADDRESS]);
+
+  const input = { addressOrName: 'alice.eth', chainId: ChainId.mainnet };
+  await useEnsAddressStore.getState().fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });
+  expect(useEnsAddressStore.getState().get(input)).toBe(ADDRESS);
 
   expect(fetchMock).toHaveBeenCalledTimes(1);
   expect(fetchMock.mock.calls[0][0]).toBe('https://fixture.invalid/rpc');

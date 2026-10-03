@@ -204,13 +204,12 @@ export function SendSheet() {
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
-  const recipientResult = useRecipientStore(s =>
-    isRecipientInputValid && address === null ? s.get({ input, chainId: destinationChainId }) : undefined
-  );
-  const toAddress = address ?? (recipientResult?.status === 'success' ? (recipientResult.data ?? '') : '');
+  const isNameRecipient = isRecipientInputValid && address === null;
+  const resolvedRecipient = useRecipientStore(s => (isNameRecipient ? s.get({ input, chainId: destinationChainId }) : undefined));
+  const recipientStatus = useRecipientStore(s => (isNameRecipient ? s.status : undefined));
+  const toAddress = address ?? (recipientStatus === 'success' ? (resolvedRecipient ?? '') : '');
   const isValidAddress = Boolean(toAddress);
-  const isResolvingAddress =
-    isRecipientInputValid && address === null && (recipientResult?.status === 'idle' || recipientResult?.status === 'loading');
+  const isResolvingAddress = isNameRecipient && (recipientStatus === 'idle' || recipientStatus === 'loading');
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -441,11 +440,11 @@ export function SendSheet() {
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     if (!toAddress) {
       return {
-        buttonDisabled: recipientResult?.status !== 'error',
+        buttonDisabled: recipientStatus !== 'error',
         buttonLabel:
-          recipientResult?.status === 'error'
+          recipientStatus === 'error'
             ? i18n.t(i18n.l.send.retry_recipient)
-            : recipientResult?.status === 'success'
+            : recipientStatus === 'success'
               ? i18n.t(i18n.l.send.no_address_on_network)
               : i18n.t(i18n.l.button.confirm_exchange.loading),
       };
@@ -478,7 +477,7 @@ export function SendSheet() {
   }, [
     currentProvider,
     destinationChainId,
-    recipientResult?.status,
+    recipientStatus,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
@@ -751,11 +750,11 @@ export function SendSheet() {
                   forceShadows
                   label={buttonLabel}
                   onPress={
-                    recipientResult?.status === 'error'
+                    recipientStatus === 'error'
                       ? () =>
                           useRecipientStore
                             .getState()
-                            .fetch({ input, chainId: destinationChainId })
+                            .fetch(undefined, { force: true })
                             .catch(() => undefined)
                       : showConfirmationSheet
                   }
