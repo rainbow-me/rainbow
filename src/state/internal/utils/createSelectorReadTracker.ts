@@ -17,7 +17,7 @@ type ObservedKeys<Key extends string | number> = Key | Key[] | null;
 
 type SelectorReadTracker<Key extends string | number> = {
   install<State>(store: BaseStore<State>, onChange: (keys: Key[]) => void): BaseStore<State>;
-  track(key: Key): void;
+  track(key: Key): boolean;
 };
 
 // ============ Constants ====================================================== //
@@ -37,8 +37,8 @@ const TRACKING_INACTIVE = Symbol();
  * and returns the store with the tracker built in. `onChange` is
  * invoked any time the set of observed keys changes.
  *
- * Cleanup is handled automatically, and tracking is skipped outside
- * of subscription contexts.
+ * Cleanup is handled automatically. `track` returns true inside a tracked
+ * selector and false for ordinary reads, which do not acquire a subscription.
  */
 export function createSelectorReadTracker<Key extends string | number>(): SelectorReadTracker<Key> {
   const subscriptionCounts = new Map<Key, number>();
@@ -46,8 +46,8 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
   let collectedKeys: ObservedKeys<Key> | typeof TRACKING_INACTIVE = TRACKING_INACTIVE;
   let didInstall = false;
 
-  function track(key: Key): void {
-    if (collectedKeys === TRACKING_INACTIVE) return;
+  function track(key: Key): boolean {
+    if (collectedKeys === TRACKING_INACTIVE) return false;
 
     if (collectedKeys === null) {
       collectedKeys = key;
@@ -56,6 +56,7 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     } else if (!collectedKeys.includes(key)) {
       collectedKeys.push(key);
     }
+    return true;
   }
 
   function install<S>(store: BaseStore<S>, onChange: (keys: Key[]) => void): BaseStore<S> {
