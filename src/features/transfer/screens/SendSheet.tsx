@@ -2,10 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
 import { isEmpty, isEqual, isString } from 'lodash';
 import { useDebounce } from 'use-debounce';
-import { getAddress, isAddress } from 'viem';
+import { getAddress, isAddress, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { Column } from '@/components/layout';
@@ -54,6 +53,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { borders } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -137,6 +137,13 @@ const validateRecipientDamagedState = (toAddress?: string) => {
 const hasSufficientAssetBalance = (assetAmount: string, maxSendableBalance: string): boolean =>
   !assetAmount || greaterThanOrEqualTo(maxSendableBalance || '0', assetAmount);
 
+const useRecipientStore = createQueryCollectionStore({
+  key: ({ input, chainId }: { input: string; chainId: ChainId }) => `${chainId}:${input}`,
+  fetcher: ({ input, chainId }, signal): Promise<Address | null> => resolveNameOrAddress(input, chainId, signal),
+  staleTime: 0,
+  cacheTime: 0,
+});
+
 export function SendSheet() {
   const { navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
@@ -197,19 +204,13 @@ export function SendSheet() {
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
-  const recipientQuery = useQuery({
-    queryKey: ['sendRecipient', input, destinationChainId],
-    queryFn: ({ signal }) => resolveNameOrAddress(input, destinationChainId, signal),
-    enabled: isRecipientInputValid && address === null,
-    cacheTime: 0,
-    staleTime: 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-  const toAddress = address ?? (recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
+  const recipientResult = useRecipientStore(s =>
+    isRecipientInputValid && address === null ? s.get({ input, chainId: destinationChainId }) : undefined
+  );
+  const toAddress = address ?? (recipientResult?.status === 'success' ? (recipientResult.data ?? '') : '');
   const isValidAddress = Boolean(toAddress);
-  const isResolvingAddress = isRecipientInputValid && address === null && recipientQuery.isFetching;
+  const isResolvingAddress =
+    isRecipientInputValid && address === null && (recipientResult?.status === 'idle' || recipientResult?.status === 'loading');
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -440,12 +441,13 @@ export function SendSheet() {
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     if (!toAddress) {
       return {
-        buttonDisabled: !recipientQuery.isError,
-        buttonLabel: recipientQuery.isError
-          ? i18n.t(i18n.l.send.retry_recipient)
-          : recipientQuery.isSuccess
-            ? i18n.t(i18n.l.send.no_address_on_network)
-            : i18n.t(i18n.l.button.confirm_exchange.loading),
+        buttonDisabled: recipientResult?.status !== 'error',
+        buttonLabel:
+          recipientResult?.status === 'error'
+            ? i18n.t(i18n.l.send.retry_recipient)
+            : recipientResult?.status === 'success'
+              ? i18n.t(i18n.l.send.no_address_on_network)
+              : i18n.t(i18n.l.button.confirm_exchange.loading),
       };
     }
     if (currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
@@ -476,8 +478,7 @@ export function SendSheet() {
   }, [
     currentProvider,
     destinationChainId,
-    recipientQuery.isError,
-    recipientQuery.isSuccess,
+    recipientResult?.status,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
@@ -749,7 +750,15 @@ export function SendSheet() {
                   disabled={buttonDisabled}
                   forceShadows
                   label={buttonLabel}
-                  onPress={recipientQuery.isError ? () => recipientQuery.refetch() : showConfirmationSheet}
+                  onPress={
+                    recipientResult?.status === 'error'
+                      ? () =>
+                          useRecipientStore
+                            .getState()
+                            .fetch({ input, chainId: destinationChainId })
+                            .catch(() => undefined)
+                      : showConfirmationSheet
+                  }
                   scaleTo={buttonDisabled ? 1.025 : 0.9}
                   size="big"
                   testID="send-sheet-confirm"

@@ -22,12 +22,12 @@ import { handleNFTImages, MimeType } from '@/utils/handleNFTImages';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
 
+import { useEnsAddressStore } from '../data/useEnsAddressStore';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
-import { prefetchENSAddress } from '../resources/addressQuery';
 import type { ENSRegistrationRecords, Records } from '../types/registration';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from './helpers';
 import { getNameFromLabelhash } from './localStorage';
@@ -171,12 +171,10 @@ export const fetchSuggestions = async (
       avatar = await fetchENSAvatar(ens, {
         cacheFirst: true,
       });
-      prefetchENSAddress(
-        { addressOrName: ens, chainId: ChainId.mainnet },
-        {
-          staleTime: 1000 * 60 * 10, // 10 minutes
-        }
-      );
+      void useEnsAddressStore
+        .getState()
+        .fetch({ addressOrName: ens, chainId: ChainId.mainnet })
+        .catch(() => undefined);
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
       prefetchFirstTransactionTimestamp({ addressOrName: ens });
@@ -224,12 +222,10 @@ export const fetchSuggestions = async (
                   cacheFirst: true,
                 });
                 if (i === 0) {
-                  prefetchENSAddress(
-                    { addressOrName: domain.name, chainId: ChainId.mainnet },
-                    {
-                      staleTime: 1000 * 60 * 10, // 10 minutes
-                    }
-                  );
+                  void useEnsAddressStore
+                    .getState()
+                    .fetch({ addressOrName: domain.name, chainId: ChainId.mainnet })
+                    .catch(() => undefined);
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });
                   prefetchFirstTransactionTimestamp({

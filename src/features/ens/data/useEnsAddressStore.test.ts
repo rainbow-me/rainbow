@@ -1,14 +1,8 @@
 import { encodeAbiParameters, encodeFunctionResult, parseAbi } from 'viem';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { queryClient } from '@/react-query/queryClient';
 
-import { fetchENSAddress } from './addressQuery';
-
-jest.mock('@/react-query/queryClient', () => {
-  const { QueryClient } = jest.requireActual<typeof import('@tanstack/react-query')>('@tanstack/react-query');
-  return { queryClient: new QueryClient({ defaultOptions: { queries: { retry: false, cacheTime: 0 } } }) };
-});
+import { useEnsAddressStore } from './useEnsAddressStore';
 
 jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: { getChainDefaultRpc: () => 'https://fixture.invalid/rpc' },
@@ -21,17 +15,21 @@ const RESOLVER_ABI = parseAbi([
 const fetchMock = jest.spyOn(global, 'fetch');
 
 beforeEach(() => {
-  queryClient.clear();
+  jest.useFakeTimers();
   fetchMock.mockReset().mockRejectedValue(new Error('Unexpected ENS request'));
 });
 
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
+
 afterAll(() => {
-  queryClient.clear();
   fetchMock.mockRestore();
 });
 
 it.each([ADDRESS, ADDRESS.toLowerCase()])('preserves the raw profile address %s without an ENS request', async addressOrName => {
-  await expect(fetchENSAddress({ addressOrName, chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(useEnsAddressStore.getState().fetch({ addressOrName, chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
 
   expect(fetchMock).not.toHaveBeenCalled();
 });
@@ -53,7 +51,7 @@ it('resolves profile names through ENS', async () => {
     );
   });
 
-  await expect(fetchENSAddress({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(useEnsAddressStore.getState().fetch({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
 
   expect(fetchMock).toHaveBeenCalledTimes(1);
   expect(fetchMock.mock.calls[0][0]).toBe('https://fixture.invalid/rpc');

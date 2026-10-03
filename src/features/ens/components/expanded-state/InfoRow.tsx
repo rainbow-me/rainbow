@@ -18,8 +18,8 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
+import { useEnsAddressStore } from '../../data/useEnsAddressStore';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { useENSAddress } from '../../resources/addressQuery';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -177,7 +177,7 @@ export function InfoRow({
 function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; value?: string }) {
   const accountAddress = useAccountAddress();
 
-  const { data: address } = useENSAddress({ addressOrName: ensName || '', chainId: ChainId.mainnet });
+  const address = useEnsAddressStore(s => (ensName ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }).data : undefined));
 
   const {
     data: { nfts: uniqueTokensAccount },

@@ -8,8 +8,8 @@ import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
 import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
 import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
+import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { useENSAddress } from '@/features/ens/resources/addressQuery';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
@@ -34,10 +34,7 @@ export function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
-    addressOrName: ensName,
-    chainId: ChainId.mainnet,
-  });
+  const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }).data);
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
@@ -81,7 +78,7 @@ export function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isPreview && (!isAddressSuccess || !hasListFetched || !hasFirstTxTimestampFetched) ? (
+              {!isPreview && (profileAddress === undefined || !hasListFetched || !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
