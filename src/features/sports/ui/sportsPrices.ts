@@ -7,7 +7,7 @@ import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { useStableValue } from '@/hooks/useStableValue';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
-import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
+import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 
 // ============ Types ========================================================== //
 
@@ -34,7 +34,7 @@ const OUTCOME_SELECTORS: readonly ((game: Game) => { tokenId: string } | undefin
  * Subscribes visible games to live prices and tracks changes to their token IDs.
  */
 export function useSportsPriceSubscription(): (gameIds: readonly string[]) => void {
-  const subscribe = useLiveTokenSubscription();
+  const subscribe = useLiveTokenListSubscription();
   const priced = useStableValue<PricedList>(() => ({ gameIds: NO_IDS, games: [] }));
 
   const update = useCallback(

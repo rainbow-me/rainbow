@@ -22,7 +22,7 @@ import { useWalletCohort } from '@/hooks/useWalletCohort';
 import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
+import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
@@ -64,7 +64,7 @@ const VIEWABILITY_SELECTORS: ViewabilitySelectors<CellTypes> = {
 
 function WalletScreen() {
   const insets = useSafeAreaInsets();
-  const setSubscribedTokens = useLiveTokenSubscription();
+  const setSubscribedTokens = useLiveTokenListSubscription();
 
   const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
 

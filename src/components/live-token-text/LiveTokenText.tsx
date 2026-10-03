@@ -3,9 +3,9 @@ import React, { useEffect, useMemo } from 'react';
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
+import { useRoute } from '@/navigation/RouteContext';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
 
@@ -50,11 +50,12 @@ function useLiveTokenSelector({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): (state: { tokens: LiveTokensData }) => string {
-  const setSubscribedTokens = useLiveTokenSubscription();
+  const { name: route } = useRoute();
 
   useEffect(() => {
-    setSubscribedTokens(autoSubscriptionEnabled ? [tokenId] : []);
-  }, [autoSubscriptionEnabled, setSubscribedTokens, tokenId]);
+    if (!autoSubscriptionEnabled) return;
+    return useLiveTokensStore.getState().subscribeToToken(route, tokenId);
+  }, [autoSubscriptionEnabled, route, tokenId]);
 
   return useMemo(() => {
     let previousToken: TokenData | undefined;
