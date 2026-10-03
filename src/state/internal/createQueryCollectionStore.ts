@@ -4,27 +4,44 @@ import { createSelectorReadTracker } from '@/state/internal/utils/createSelector
 
 // ============ Types ========================================================== //
 
-/** The latest result, retaining existing data while a refresh is pending or fails. */
+/**
+ * A query's current result. Previously fetched data remains available during
+ * a refresh and after a failed refresh.
+ */
 export type QueryResult<Data> =
   | { status: 'idle'; data: undefined; error: null }
   | { status: 'loading'; data: Data | undefined; error: null }
   | { status: 'success'; data: Data; error: null }
   | { status: 'error'; data: Data | undefined; error: unknown };
 
-/** Reads and fetches independently keyed data through one store. */
+/** The query methods available in store selectors and through `getState()`. */
 export type QueryCollectionState<Params, Data> = {
-  /** Subscribed reads acquire the query; ordinary reads inspect the cache. */
+  /**
+   * Reads a query's cached result.
+   * In a subscribed selector, the first reader also fetches missing or stale
+   * data. Outside a selector subscription, this only reads the cache.
+   */
   get: (params: Params) => QueryResult<Data>;
-  /** Reuses fresh data or pending work. Force bypasses freshness, but still shares a pending request. */
+  /**
+   * Resolves to the query's data, fetching it if the cache is missing or stale.
+   * Calls for the same query share any pending request. Pass `force: true` to
+   * refresh cached data before it becomes stale.
+   */
   fetch: (params: Params, options?: { force?: boolean }) => Promise<Data>;
 };
 
-/** Query identity, fetching, and cache lifetimes in milliseconds. */
+/**
+ * Configuration for a store that shares fetched data across consumers by
+ * query key.
+ */
 export type QueryCollectionConfig<Params, Data> = {
-  /** Inputs with the same key must identify the same data. No serialization is performed by the collection. */
+  /** Identifies a query from its inputs. Inputs with the same key must refer to the same data. */
   key: (params: Params) => string | number;
+  /** Loads a query's data. Forward the signal to support request cancellation. */
   fetcher: (params: Params, signal: AbortSignal) => Promise<Data>;
+  /** How long a successful result counts as fresh, in milliseconds. */
   staleTime: number;
+  /** How long results stay cached without subscribers, in milliseconds. */
   cacheTime: number;
 };
 
@@ -50,12 +67,12 @@ const IDLE = { status: 'idle', data: undefined, error: null } as const;
 // ============ Factory ======================================================== //
 
 /**
- * Shares independent queries through native store selectors and subscriptions.
+ * Creates a store that shares cached data and pending requests by query key.
+ * Use `get` in a store selector to load and observe a query, or `fetch` to await
+ * its data directly.
  *
- * A key becoming observed fetches missing or stale data. Additional readers share
- * that result until the key is released or explicitly refreshed. The last reader
- * cancels pending work unless an imperative fetch needs it. Unobserved results
- * expire after `cacheTime`. There are no automatic retries or polling.
+ * When a query's last subscriber leaves, pending work is cancelled unless
+ * a `fetch` call is waiting for the result.
  */
 export function createQueryCollectionStore<Params, Data>({
   key: getKey,
@@ -65,6 +82,7 @@ export function createQueryCollectionStore<Params, Data>({
 }: QueryCollectionConfig<Params, Data>): BaseStore<QueryCollectionState<Params, Data>> {
   const reads = createSelectorReadTracker<string | number>();
   const entries = new Map<string | number, Entry<Params, Data>>();
+
   let observed = new Set<string | number>();
   let nextKeys: (string | number)[] = [];
   let scheduled = false;
@@ -100,20 +118,22 @@ export function createQueryCollectionStore<Params, Data>({
       request.controller.abort();
       publish(entry, request.previous);
     }
+
     if (entry.expiry !== undefined) return;
-    if (cacheTime) {
-      entry.expiry = setTimeout(() => entries.delete(key), cacheTime);
-    } else entries.delete(key);
+    if (cacheTime) entry.expiry = setTimeout(() => entries.delete(key), cacheTime);
+    else entries.delete(key);
   }
 
   function load(key: string | number, params: Params, retained: boolean, force = false): Promise<Data> {
     const entry = getEntry(key, params);
     clearTimeout(entry.expiry);
     entry.expiry = undefined;
+
     if (entry.request) {
       if (retained) entry.request.retained = true;
       return entry.request.promise;
     }
+
     const previous = entry.result;
     if (!force && previous.status === 'success' && Date.now() - entry.updatedAt < staleTime) {
       release(key, entry);
@@ -149,6 +169,7 @@ export function createQueryCollectionStore<Params, Data>({
           }
         ),
     };
+
     entry.request = request;
     publish(entry, { status: 'loading', data: previous.data, error: null });
     return request.promise;
@@ -158,11 +179,13 @@ export function createQueryCollectionStore<Params, Data>({
     scheduled = false;
     const previous = observed;
     observed = new Set(nextKeys);
+
     for (const key of previous) {
       if (observed.has(key)) continue;
       const entry = entries.get(key);
       if (entry) release(key, entry);
     }
+
     for (const key of observed) {
       if (previous.has(key)) continue;
       const entry = entries.get(key);

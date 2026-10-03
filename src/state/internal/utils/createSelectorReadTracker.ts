@@ -37,8 +37,8 @@ const TRACKING_INACTIVE = Symbol();
  * and returns the store with the tracker built in. `onChange` is
  * invoked any time the set of observed keys changes.
  *
- * Cleanup is handled automatically. `track` returns true inside a tracked
- * selector and false for ordinary reads, which do not acquire a subscription.
+ * Cleanup is handled automatically. `track` returns true while a tracked
+ * selector is running. Calls outside tracked selectors are ignored and return false.
  */
 export function createSelectorReadTracker<Key extends string | number>(): SelectorReadTracker<Key> {
   const subscriptionCounts = new Map<Key, number>();

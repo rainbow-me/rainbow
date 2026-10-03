@@ -8,15 +8,15 @@ import { resolveEnsAddress } from './ens';
 
 // ============ Types ========================================================== //
 
-/** An address or ENS name, and the destination chain for name resolution. */
+/** Identifies a name lookup on a destination chain, or an address to use directly. */
 export type EnsAddressInput = { addressOrName: string; chainId: ChainId };
 
 // ============ Store ========================================================== //
 
 /**
- * Shared ENS address reads for profiles and other display consumers.
- * Literal addresses pass through without a lookup. Payment reads use their own
- * current-input lifetime rather than this retained display cache.
+ * Caches address lookups for profiles and other display consumers.
+ * Names resolve to their address for the requested destination chain.
+ * Literal addresses are checksummed locally, without a network request.
  */
 export const useEnsAddressStore = createQueryCollectionStore({
   key: ({ addressOrName, chainId }: EnsAddressInput) => `${chainId}:${addressOrName}`,
