@@ -6,7 +6,7 @@ import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { type CardPressHandler, type ListSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
-import { trackPlacementInteraction } from '@/features/placements/engagement/trackInteraction';
+import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 
@@ -74,31 +74,7 @@ export function MarketList<T extends PlacementItem>({
           : visibleItems.map((item, index) => {
               const onCardPress: CardPressHandler = placement
                 ? metadata => {
-                    analytics.track(event.discoverCardPressed, {
-                      placementId: placement.id,
-                      placementSource: placement.source,
-                      placementTitle: title,
-                      itemOrder: index,
-                      itemId: item.id,
-                      marketId: metadata.marketId,
-                      marketName: metadata.marketName,
-                      marketSlug: metadata.marketSlug,
-                      marketSymbol: metadata.marketSymbol,
-                      marketType: placement.type,
-                    });
-                    trackPlacementInteraction({
-                      display: section.display,
-                      id: placement.id,
-                      interactionType: 'card_press',
-                      itemId: item.id,
-                      itemOrder: index,
-                      sectionId: section.id,
-                      sectionTitle: title,
-                      source: placement.source,
-                      surfaceId,
-                      type: placement.type,
-                      version: placement.version,
-                    });
+                    trackDiscoverCardPress({ placement, section, surfaceId, title, itemId: item.id, itemOrder: index, metadata });
                   }
                 : noopPress;
               const onOrderPress: OrderPressHandler = placement
