@@ -1,4 +1,4 @@
-import { createQueryStore } from '@storesjs/stores';
+import { createBaseStore, createQueryStore, type QueryStore } from '@storesjs/stores';
 
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
@@ -20,6 +20,7 @@ import { type LiveTokensData, type TokenData } from './types';
 export type { TokenData, LiveTokensData, PriceReliabilityStatus } from './types';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
+const EMPTY_TOKEN_IDS: readonly string[] = [];
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -37,11 +38,6 @@ function isEthVariant(tokenId: string) {
   return userAsset && (userAsset.mainnetAddress === ETH_ADDRESS || userAsset.mainnetAddress === WETH_ADDRESS);
 }
 
-type TokenSubscription = {
-  route: Route;
-  tokenIds: string[];
-};
-
 type LiveTokensResponse = {
   metadata: {
     currency: string;
@@ -53,19 +49,16 @@ type LiveTokensResponse = {
 };
 
 type LiveTokensParams = {
-  tokenIds: string[];
+  tokenIds: readonly string[];
   currency: SupportedCurrencyKey;
 };
 
 type LiveTokensStore = {
-  subscriptions: Map<symbol, TokenSubscription>;
   tokens: LiveTokensData;
-  /** Replaces one owner's route and token set; an empty set releases that owner. */
-  setSubscription: (owner: symbol, route: Route, tokenIds: readonly string[]) => void;
-  /** Releases one owner without affecting overlapping demand from others. */
-  removeSubscription: (owner: symbol) => void;
-  /** Removes all owners and cached token quotes. */
-  clear: () => void;
+  /** Subscribes to a token until the returned cleanup function is called. */
+  subscribeToToken: (route: Route, tokenId: string) => () => void;
+  /** Replaces one subscriber's token set without changing other subscribers' counts. */
+  replaceSubscribedTokens: (route: Route, previous: ReadonlySet<string>, next: ReadonlySet<string>) => void;
 };
 
 const fetchTokensData = async ({ tokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
@@ -171,73 +164,93 @@ const DEFAULT_STALE_TIME = time.seconds(5);
 const FAST_REFRESH_STALE_TIME = time.seconds(2);
 
 /**
- * Polls quotes requested by owners on the active route while the app is active.
- * Overlapping owners share requests; cached quotes remain available after release.
+ * Polls subscribed tokens on the active route while the app is active.
+ * Cached quotes remain available after the last subscription is released.
  */
-export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
-  {
-    fetcher: fetchTokensData,
-    enabled: $ => $(useAppStateStore, s => s === 'active'),
-    disableCache: true,
-    staleTime: $ => $(useNavigationStore, determineStaleTime),
-    setData: ({ data, set }) => {
-      if (!data) return;
-      set(state => ({
-        ...state,
-        tokens: { ...state.tokens, ...data },
-      }));
-    },
-    onFetched: ({ data }) => {
-      if (data) updateUserAssetsStore(data);
-    },
-    paramChangeThrottle: time.ms(250),
-    params: {
-      tokenIds: ($, store) => {
-        const route = $(useNavigationStore, s => s.activeRoute);
-        const subscriptions = $(store, s => s.subscriptions);
-        const tokenIds = new Set<string>();
-        for (const subscription of subscriptions.values()) {
-          if (subscription.route === route) {
-            for (const tokenId of subscription.tokenIds) tokenIds.add(tokenId);
-          }
-        }
-        return Array.from(tokenIds).sort();
+export const useLiveTokensStore = createLiveTokensStore();
+
+function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore> {
+  const subscriptionCountsByRoute = new Map<Route, Map<string, number>>();
+  const tokenIdsByRoute = createBaseStore<Partial<Record<Route, readonly string[]>>>(() => ({}));
+
+  function updateSubscriptionCount(route: Route, tokenId: string, change: 1 | -1): boolean {
+    let counts = subscriptionCountsByRoute.get(route);
+    const previous = counts?.get(tokenId) ?? 0;
+    if (!previous && change === -1) return false;
+
+    const next = previous + change;
+    if (next) {
+      if (!counts) {
+        counts = new Map();
+        subscriptionCountsByRoute.set(route, counts);
+      }
+      counts.set(tokenId, next);
+    } else if (counts) {
+      counts.delete(tokenId);
+      if (!counts.size) subscriptionCountsByRoute.delete(route);
+    }
+    return previous === 0 || next === 0;
+  }
+
+  function publishTokens(route: Route): void {
+    const counts = subscriptionCountsByRoute.get(route);
+    const next = { ...tokenIdsByRoute.getState() };
+
+    if (counts) next[route] = Array.from(counts.keys()).sort();
+    else delete next[route];
+
+    tokenIdsByRoute.setState(next, true);
+  }
+
+  return createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
+    {
+      fetcher: fetchTokensData,
+      enabled: $ => $(useAppStateStore, s => s === 'active'),
+      disableCache: true,
+      staleTime: $ => $(useNavigationStore, determineStaleTime),
+      setData: ({ data, set }) => {
+        if (!data) return;
+        set(state => ({
+          ...state,
+          tokens: { ...state.tokens, ...data },
+        }));
       },
-      currency: $ => $(userAssetsStoreManager, s => s.currency),
+      onFetched: ({ data }) => {
+        if (data) updateUserAssetsStore(data);
+      },
+      paramChangeThrottle: time.ms(250),
+      params: {
+        tokenIds: $ => {
+          const route = $(useNavigationStore, s => s.activeRoute);
+          const idsByRoute = $(tokenIdsByRoute, s => s);
+          return idsByRoute[route] ?? EMPTY_TOKEN_IDS;
+        },
+        currency: $ => $(userAssetsStoreManager, s => s.currency),
+      },
     },
-  },
 
-  set => ({
-    subscriptions: new Map(),
-    tokens: {},
+    () => ({
+      tokens: {},
+      subscribeToToken: (route, tokenId) => {
+        if (updateSubscriptionCount(route, tokenId, 1)) publishTokens(route);
+        return () => {
+          if (updateSubscriptionCount(route, tokenId, -1)) publishTokens(route);
+        };
+      },
 
-    setSubscription: (owner, route, tokenIds) =>
-      set(state => {
-        const previous = state.subscriptions.get(owner);
-        if (!tokenIds.length && !previous) return state;
-
-        const ids = Array.from(new Set(tokenIds)).sort();
-        if (previous?.route === route && ids.length === previous.tokenIds.length && ids.every((id, i) => id === previous.tokenIds[i])) {
-          return state;
+      replaceSubscribedTokens: (route, previous, next) => {
+        let changed = false;
+        for (const tokenId of next) {
+          if (!previous.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, 1) || changed;
         }
-
-        const subscriptions = new Map(state.subscriptions);
-        if (ids.length) subscriptions.set(owner, { route, tokenIds: ids });
-        else subscriptions.delete(owner);
-        return { subscriptions };
-      }),
-
-    removeSubscription: owner =>
-      set(state => {
-        if (!state.subscriptions.has(owner)) return state;
-        const subscriptions = new Map(state.subscriptions);
-        subscriptions.delete(owner);
-        return { subscriptions };
-      }),
-
-    clear: () => set({ subscriptions: new Map(), tokens: {} }),
-  })
-);
+        for (const tokenId of previous) {
+          if (!next.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, -1) || changed;
+        }
+        if (changed) publishTokens(route);
+      },
+    })
+  );
+}
 
 export function getLiquidityCappedBalance({
   token,

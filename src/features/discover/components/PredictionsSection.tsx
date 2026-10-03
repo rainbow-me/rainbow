@@ -50,7 +50,7 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { logger } from '@/logger';
-import { useLiveTokenSubscription } from '@/state/liveTokens/useLiveTokenSubscription';
+import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
@@ -191,7 +191,7 @@ function usePredictionTokenSubscription({
   items: PredictionPlacementItem[];
   limit: number | undefined;
 }) {
-  const setSubscribedTokens = useLiveTokenSubscription();
+  const setSubscribedTokens = useLiveTokenListSubscription();
   // List displays render the full unsliced data (expandable via ShowMore), so subscribe all
   // items. Carousel/grid slice to surface.limit, so subscribe only the capped slice.
   const isListDisplay = PREDICTIONS_SECTION_DESCRIPTORS[display].layout === 'list';
