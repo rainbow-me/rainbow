@@ -1,132 +1,75 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import { useListen } from '@storesjs/stores';
-import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
+import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/RouteContext';
-import { addSubscribedToken, removeSubscribedToken, useLiveTokensStore, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
 
 interface LiveTokenValueParams {
   tokenId: string;
+  /**
+   * Timestamp of the initial value, in Unix seconds. Defaults to `0`.
+   * Live quotes take precedence when timestamps match.
+   */
   initialValueLastUpdated?: number;
+  /** Display value used when the live quote is absent or older than the initial value. */
   initialValue: string;
+  /**
+   * Subscribes to this token on the current route. Disable when the caller manages
+   * the price subscription. Defaults to `true`.
+   */
   autoSubscriptionEnabled?: boolean;
   selector: (token: TokenData) => string;
   testId?: string;
 }
 
-export function useLiveTokenSharedValue({
-  tokenId,
-  initialValueLastUpdated = 0,
-  initialValue,
-  autoSubscriptionEnabled = true,
-  selector,
-}: LiveTokenValueParams): SharedValue<string> {
-  const prevTokenId = usePrevious(tokenId);
-  const { name: routeName } = useRoute();
-  const liveValue = useSharedValue(initialValue);
-  // prevValue and liveValue will always be equal, but there is a cost to reading shared values
-  const prevValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      liveValue.value = initialValue;
-      prevValue.current = initialValue;
-    }
-  }, [initialValue, liveValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) >= initialValueLastUpdated && newValue !== prevValue.current) {
-        liveValue.value = newValue;
-        prevValue.current = newValue;
-      }
-    },
-    [initialValueLastUpdated, liveValue, selector]
-  );
-
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
-
-  // Immediately update value when selector changes
-  useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
-
-  useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
-
-    addSubscribedToken({ route: routeName, tokenId });
-
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
-    };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
-
-  return liveValue;
+/**
+ * Returns the selected token value as a shared value.
+ */
+export function useLiveTokenSharedValue(params: LiveTokenValueParams): ReadOnlySharedValue<string> {
+  const selector = useLiveTokenSelector(params);
+  return useStoreSharedValue(useLiveTokensStore, selector);
 }
 
-export function useLiveTokenValue({
+/**
+ * Returns the selected token value as React state.
+ */
+export function useLiveTokenValue(params: LiveTokenValueParams): string {
+  const selector = useLiveTokenSelector(params);
+  return useLiveTokensStore(selector);
+}
+
+function useLiveTokenSelector({
   tokenId,
-  initialValueLastUpdated = 0,
   initialValue,
+  initialValueLastUpdated = 0,
   autoSubscriptionEnabled = true,
   selector,
-}: LiveTokenValueParams): string {
-  const prevTokenId = usePrevious(tokenId);
-  const { name: routeName } = useRoute();
-  const [liveValue, setLiveValue] = useState(initialValue);
-  // prevLiveValue and liveValue will always be equal, but state is async
-  const prevLiveValue = useRef(initialValue);
-
-  // Reset values when tokenId changes.
-  useEffect(() => {
-    if (prevTokenId && prevTokenId !== tokenId) {
-      setLiveValue(initialValue);
-      prevLiveValue.current = initialValue;
-    }
-  }, [initialValue, prevTokenId, tokenId]);
-
-  const updateToken = useCallback(
-    (token: TokenData | undefined) => {
-      if (!token) return;
-
-      const newValue = selector(token);
-
-      if (toUnixTime(token.updateTime) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
-        setLiveValue(newValue);
-        prevLiveValue.current = newValue;
-      }
-    },
-    [initialValueLastUpdated, selector]
-  );
-
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
-
-  // Immediately update value when selector changes
-  useEffect(() => {
-    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
-  }, [selector, tokenId, updateToken]);
+}: LiveTokenValueParams): (state: { tokens: LiveTokensData }) => string {
+  const { name: route } = useRoute();
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;
+    return useLiveTokensStore.getState().subscribeToToken(route, tokenId);
+  }, [autoSubscriptionEnabled, route, tokenId]);
 
-    addSubscribedToken({ route: routeName, tokenId });
+  return useMemo(() => {
+    let previousToken: TokenData | undefined;
+    let value = initialValue;
 
-    return () => {
-      removeSubscribedToken({ route: routeName, tokenId });
+    return (s: { tokens: LiveTokensData }) => {
+      const token = s.tokens[tokenId];
+      if (token !== previousToken) {
+        previousToken = token;
+        value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
+      }
+      return value;
     };
-  }, [autoSubscriptionEnabled, routeName, tokenId]);
-
-  return liveValue;
+  }, [initialValue, initialValueLastUpdated, selector, tokenId]);
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
