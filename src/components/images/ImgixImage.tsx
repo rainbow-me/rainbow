@@ -42,9 +42,10 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
     if (shouldUseFasterImage) {
       const fasterImageStyle = StyleSheet.flatten(props.style);
       let url: string | undefined;
+
       if (typeof props.source === 'number') {
-        url = Image.resolveAssetSource(props.source).uri;
-        if (Platform.OS === 'android' && !url.includes(':')) {
+        url = Image.resolveAssetSource(props.source)?.uri;
+        if (Platform.OS === 'android' && url && !url.includes(':')) {
           url = `android.resource://${VersionNumber.bundleIdentifier}/drawable/${url}`;
         }
       } else {
