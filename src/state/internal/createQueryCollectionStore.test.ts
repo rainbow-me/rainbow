@@ -37,6 +37,132 @@ it('shares a batch across readers and publishes independent keyed values', async
   bob();
 });
 
+it('publishes successful members and preserves each rejected outcome', async () => {
+  const { store, requests } = createFixture();
+  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
+  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
+  await flush();
+  const reason = new Error('Bob failed');
+  requests[0].resolve(null);
+  requests[1].reject(reason);
+  await flush();
+  expect(store.getState().status).toBe('success');
+  expect(store.getState().get(ALICE)).toBeNull();
+  expect(store.getState().getFailure(ALICE)).toBeUndefined();
+  expect(store.getState().get(BOB)).toBeUndefined();
+  expect(store.getState().getFailure(BOB)).toEqual({ status: 'rejected', reason });
+  alice();
+  bob();
+});
+
+it('retains a failed refresh’s data without extending its retention', async () => {
+  const { store, requests } = createFixture();
+  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
+  const bob = store.subscribe(s => s.get(BOB), jest.fn());
+  await flush();
+  requests[0].resolve('old');
+  requests[1].resolve('bob');
+  await flush();
+
+  jest.advanceTimersByTime(1000);
+  await flush();
+  requests[2].reject(new Error('Refresh failed'));
+  requests[3].resolve('updated bob');
+  await flush();
+  expect(store.getState().get(ALICE)).toBe('old');
+  expect(store.getState().get(BOB)).toBe('updated bob');
+  expect(store.getState().getFailure(ALICE)?.status).toBe('rejected');
+  alice();
+  bob();
+  await flush();
+  jest.advanceTimersByTime(4000);
+  expect(store.getState().get(ALICE)).toBeUndefined();
+  expect(store.getState().get(BOB)).toBe('updated bob');
+});
+
+it('uses native failure and retry handling when every member rejects', async () => {
+  const { store, requests } = createFixture();
+  const aliceListener = jest.fn();
+  const alice = store.subscribe(s => s.getFailure(ALICE), aliceListener);
+  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
+  await flush();
+  requests[0].reject(undefined);
+  const reason = new Error('Bob failed');
+  requests[1].reject(reason);
+  await flush();
+  expect(store.getState().status).toBe('error');
+  expect(store.getState().getFailure(ALICE)).toEqual({ status: 'rejected', reason: undefined });
+  expect(aliceListener).toHaveBeenCalledTimes(1);
+  expect(aliceListener.mock.calls[0][0]).toEqual({ status: 'rejected', reason: undefined });
+  expect(store.getState().getFailure(BOB)).toEqual({ status: 'rejected', reason });
+
+  jest.advanceTimersByTime(30_000);
+  await flush();
+  expect(requests).toHaveLength(4);
+  requests[2].resolve('alice');
+  requests[3].resolve('bob');
+  await flush();
+  expect(store.getState().get(ALICE)).toBe('alice');
+  expect(store.getState().getFailure(ALICE)).toBeUndefined();
+  expect(store.getState().getFailure(BOB)).toBeUndefined();
+  alice();
+  bob();
+});
+
+it('isolates a synchronous fetcher throw and accepts an empty explicit batch', async () => {
+  const reason = new Error('Invalid input');
+  const store = createQueryCollectionStore({
+    key: (input: string) => input,
+    fetcher: input => {
+      if (input === 'bad') throw reason;
+      return Promise.resolve(input);
+    },
+    staleTime: 1000,
+    cacheTime: 5000,
+  });
+  const good = store.subscribe(s => s.get('good'), jest.fn());
+  const bad = store.subscribe(s => s.getFailure('bad'), jest.fn());
+  await flush();
+  expect(store.getState().get('good')).toBe('good');
+  expect(store.getState().getFailure('bad')).toEqual({ status: 'rejected', reason });
+  good();
+  bad();
+  await flush();
+  await expect(store.getState().fetch({ inputs: [] }, { force: true })).resolves.toEqual([]);
+});
+
+it('keeps continuous zero-retention demand through a synchronous conditional-read change', async () => {
+  const { store, requests } = createFixture(0);
+  let enabled = true;
+  const stop = store.subscribe(s => (enabled ? s.get(ALICE) : undefined), jest.fn());
+  await flush();
+  requests[0].resolve('continuous');
+  await flush();
+
+  enabled = false;
+  store.setState(s => ({ ...s }));
+  enabled = true;
+  store.setState(s => ({ ...s }));
+  await flush();
+  expect(store.getState().get(ALICE)).toBe('continuous');
+  expect(requests).toHaveLength(1);
+  stop();
+});
+
+it('releases reads removed before demand is published', async () => {
+  const { store, requests } = createFixture(0);
+  const stop = store.subscribe(s => s.get(ALICE), jest.fn());
+  stop();
+  await flush();
+  expect(requests).toHaveLength(0);
+
+  const pending = store.getState().fetch({ inputs: [ALICE] }, { force: true });
+  await flush();
+  requests[0].resolve('unobserved');
+  await pending;
+  expect(store.getState().get(ALICE)).toBeUndefined();
+});
+
 it('changes the requested batch with demand while retaining previous values', async () => {
   const { store, requests } = createFixture();
   const alice = store.subscribe(s => s.get(ALICE), jest.fn());
@@ -133,6 +259,22 @@ it('lets the query store cancel replaced work and rejects its late result', asyn
   bob();
 });
 
+it('discards every outcome of a cancelled batch, including late rejections', async () => {
+  const { store, requests } = createFixture();
+  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
+  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
+  await flush();
+  alice();
+  bob();
+  await flush();
+  expect(requests[0].signal?.aborted).toBe(true);
+  requests[0].resolve('cancelled');
+  requests[1].reject(new Error('Cancelled failure'));
+  await flush();
+  expect(store.getState().get(ALICE)).toBeUndefined();
+  expect(store.getState().getFailure(BOB)).toBeUndefined();
+});
+
 it('supports derived consumers without creating another request lifecycle', async () => {
   const { store, requests } = createFixture();
   const input = createBaseStore(() => ({ chainId: 1 }));
@@ -158,7 +300,7 @@ it('supports derived consumers without creating another request lifecycle', asyn
 });
 
 function createFixture(cacheTime = 5000): {
-  store: QueryStore<(string | null)[], { inputs: Input[] }, QueryCollectionState<Input, string | null>>;
+  store: QueryStore<PromiseSettledResult<string | null>[], { inputs: Input[] }, QueryCollectionState<Input, string | null>>;
   requests: Request[];
 } {
   const requests: Request[] = [];

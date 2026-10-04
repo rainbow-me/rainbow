@@ -650,8 +650,10 @@ async function refreshAccountInfo(
       return null;
     }
 
-    const names = await useEnsNameStore.getState().fetch({ inputs: [getAddress(account.address)] }, { force: true, throwOnError: true });
-    const ens = names?.[0];
+    const address = getAddress(account.address);
+    const names = useEnsNameStore.getState();
+    await names.fetch({ inputs: [address] }, { force: true, throwOnError: true });
+    const ens = names.get(address);
 
     if (ens) {
       // Only fetch avatar if ENS changed or we don't have an image

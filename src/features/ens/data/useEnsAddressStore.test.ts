@@ -31,7 +31,7 @@ afterAll(() => {
 it.each([ADDRESS, ADDRESS.toLowerCase()])('preserves the raw profile address %s without an ENS request', async addressOrName => {
   await expect(
     useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName, chainId: ChainId.mainnet }] }, { force: true })
-  ).resolves.toEqual([ADDRESS]);
+  ).resolves.toEqual([{ status: 'fulfilled', value: ADDRESS }]);
 
   expect(fetchMock).not.toHaveBeenCalled();
 });
@@ -55,7 +55,7 @@ it('resolves profile names and shares the result with imperative prefetchers', a
 
   await expect(
     useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName: 'alice.eth', chainId: ChainId.mainnet }] }, { force: true })
-  ).resolves.toEqual([ADDRESS]);
+  ).resolves.toEqual([{ status: 'fulfilled', value: ADDRESS }]);
 
   const input = { addressOrName: 'alice.eth', chainId: ChainId.mainnet };
   await useEnsAddressStore.getState().fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });

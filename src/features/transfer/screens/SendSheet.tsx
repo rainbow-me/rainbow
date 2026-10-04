@@ -206,7 +206,11 @@ export function SendSheet() {
   const destinationChainId = selected?.chainId ?? chainId;
   const isNameRecipient = isRecipientInputValid && address === null;
   const resolvedRecipient = useRecipientStore(s => (isNameRecipient ? s.get({ input, chainId: destinationChainId }) : undefined));
-  const recipientStatus = useRecipientStore(s => (isNameRecipient ? s.status : undefined));
+  const recipientStatus = useRecipientStore(s => {
+    if (!isNameRecipient) return undefined;
+    const failure = s.getFailure({ input, chainId: destinationChainId });
+    return s.status === 'loading' ? s.status : failure ? 'error' : s.status;
+  });
   const toAddress = address ?? (recipientStatus === 'success' ? (resolvedRecipient ?? '') : '');
   const isValidAddress = Boolean(toAddress);
   const isResolvingAddress = isNameRecipient && (recipientStatus === 'idle' || recipientStatus === 'loading');
