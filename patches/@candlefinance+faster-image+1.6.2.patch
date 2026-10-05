@@ -1,3 +1,21 @@
+# PATCH CONTEXT
+# Align rounded corners with the scaled image in `contain` mode on iOS and
+# Android. Update the clipping when the image changes, and clear old rounding
+# when corner settings change.
+#
+# On iOS:
+# - Add `topContain` for browser screenshots: fit to the view's width,
+#   preserve the image's proportions, and align it to the top.
+# - Remove the default gray loading background. Show a spinner only when
+#   requested, and remove it when disabled.
+# - Defer success and error events until React finishes setting the view's
+#   props, so immediate cache hits and invalid sources still notify the caller.
+# - Skip fades for local images and images ready before the view's first frame.
+#   Honor zero transition durations without starting an animation. Cancel old
+#   fades so they cannot leave a replacement image partly transparent.
+#   Immediate memory-cache hits skip fading. Disk-cache hits also skip it when
+#   ready before the first frame; later arrivals can use the configured fade.
+
 diff --git a/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt b/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
 --- a/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
 +++ b/node_modules/@candlefinance/faster-image/android/src/main/java/com/candlefinance/fasterimage/FasterImageViewManager.kt
