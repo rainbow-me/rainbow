@@ -13,6 +13,7 @@ import LeagueOfLegendsIcon from '@/features/sports/assets/lol.png';
 import MlbIcon from '@/features/sports/assets/mlb.png';
 import MobileLegendsIcon from '@/features/sports/assets/mlbb.png';
 import MlsIcon from '@/features/sports/assets/mls.png';
+import MmaIcon from '@/features/sports/assets/mma.png';
 import NbaIcon from '@/features/sports/assets/nba.png';
 import NflIcon from '@/features/sports/assets/nfl.png';
 import NhlIcon from '@/features/sports/assets/nhl.png';
@@ -42,6 +43,7 @@ export const sportsIcons: Partial<Record<string, SportsIcon>> = {
   mlb: { source: MlbIcon, color: '#004685', darken: 0.3 },
   mlbb: { source: MobileLegendsIcon, color: '#FF4E00', darken: 0.4 },
   mls: { source: MlsIcon, color: '#E2231A', darken: 0.3 },
+  mma: { source: MmaIcon, color: '#FD595C', darken: 0.3 },
   nba: { source: NbaIcon, color: '#0B5CBD', darken: 0.3 },
   nfl: { source: NflIcon, color: '#004590', darken: 0.4 },
   nhl: { source: NhlIcon, color: '#9BA2A6', darken: 0.4 },
