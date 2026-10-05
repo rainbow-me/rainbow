@@ -199,29 +199,28 @@ export function SendSheet() {
 
   const input = recipient.trim();
   const address = useMemo(() => (isAddress(input) ? getAddress(input) : null), [input]);
-  const isRecipientInputValid = useMemo(
-    () => address !== null || (input === debouncedRecipient.trim() && checkIsValidAddressOrDomainFormat(input)),
+  const shouldResolveName = useMemo(
+    () => address === null && input === debouncedRecipient.trim() && checkIsValidAddressOrDomainFormat(input),
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
-  const isNameRecipient = isRecipientInputValid && address === null;
-  const resolvedRecipient = useRecipientStore(s => (isNameRecipient ? s.get({ input, chainId: destinationChainId }) : undefined));
+  const resolvedRecipient = useRecipientStore(s => (shouldResolveName ? s.get({ input, chainId: destinationChainId }) : undefined));
   const recipientStatus = useRecipientStore(s => {
-    if (!isNameRecipient) return undefined;
+    if (!shouldResolveName) return undefined;
     const failure = s.getFailure({ input, chainId: destinationChainId });
     return s.status === 'loading' ? s.status : failure ? 'error' : s.status;
   });
   const toAddress = address ?? (recipientStatus === 'success' ? (resolvedRecipient ?? '') : '');
   const isValidAddress = Boolean(toAddress);
-  const isResolvingAddress = isNameRecipient && (recipientStatus === 'idle' || recipientStatus === 'loading');
+  const isResolvingAddress = shouldResolveName && (recipientStatus === 'idle' || recipientStatus === 'loading');
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
   const { nativeCurrencyInputRef, setLastFocusedInputHandle, assetInputRef } = useSendSheetInputRefs();
 
-  const showEmptyState = !isRecipientInputValid;
-  const showAssetList = isRecipientInputValid && isEmpty(selected);
-  const showAssetForm = isRecipientInputValid && !isEmpty(selected);
+  const showEmptyState = !isValidAddress;
+  const showAssetList = isValidAddress && isEmpty(selected);
+  const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
@@ -442,25 +441,13 @@ export function SendSheet() {
   });
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
-    if (!toAddress) {
-      return {
-        buttonDisabled: recipientStatus !== 'error',
-        buttonLabel:
-          recipientStatus === 'error'
-            ? i18n.t(i18n.l.send.retry_recipient)
-            : recipientStatus === 'success'
-              ? i18n.t(i18n.l.send.no_address_on_network)
-              : i18n.t(i18n.l.button.confirm_exchange.loading),
-      };
-    }
-    if (currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
+    if (!toAddress || currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
       return { buttonDisabled: true, buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading) };
     }
     const isGasFeeReady =
       !isEmpty(gasFeeParamsBySpeed) &&
       Boolean(selectedGasFee) &&
       !isEmpty(selectedGasFee?.gasFee) &&
-      Boolean(toAddress) &&
       (!useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId) || l1GasFeeOptimism !== null);
 
     return getSendSubmitButtonState({
@@ -481,7 +468,6 @@ export function SendSheet() {
   }, [
     currentProvider,
     destinationChainId,
-    recipientStatus,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
@@ -685,7 +671,6 @@ export function SendSheet() {
           contacts={contacts}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
-          isRecipientInputValid={isRecipientInputValid}
           isResolvingAddress={isResolvingAddress}
           toAddress={toAddress}
           nickname={nickname}
@@ -753,15 +738,7 @@ export function SendSheet() {
                   disabled={buttonDisabled}
                   forceShadows
                   label={buttonLabel}
-                  onPress={
-                    recipientStatus === 'error'
-                      ? () =>
-                          useRecipientStore
-                            .getState()
-                            .fetch(undefined, { force: true })
-                            .catch(() => undefined)
-                      : showConfirmationSheet
-                  }
+                  onPress={showConfirmationSheet}
                   scaleTo={buttonDisabled ? 1.025 : 0.9}
                   size="big"
                   testID="send-sheet-confirm"

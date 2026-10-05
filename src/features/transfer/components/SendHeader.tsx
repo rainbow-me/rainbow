@@ -76,7 +76,6 @@ const defaultContactItem = {
 type SendHeaderProps = {
   contacts: ReturnType<typeof useContacts>['contacts'];
   hideDivider: boolean;
-  isRecipientInputValid: boolean;
   isResolvingAddress: boolean;
   toAddress: string;
   fromProfile?: boolean;
@@ -96,7 +95,6 @@ type SendHeaderProps = {
 export function SendHeader({
   contacts,
   hideDivider,
-  isRecipientInputValid,
   isResolvingAddress,
   toAddress,
   fromProfile = false,
@@ -112,6 +110,7 @@ export function SendHeader({
   userAccounts,
   watchedAccounts,
 }: SendHeaderProps) {
+  const isValidAddress = Boolean(toAddress);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
@@ -195,14 +194,14 @@ export function SendHeader({
           address={recipient}
           autoFocus={!showAssetList}
           editable={!fromProfile}
-          isValid={isRecipientInputValid}
+          isValid={isValidAddress}
           name={name}
           onChangeText={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {Boolean(toAddress) && (
+        {isValidAddress && (
           <ButtonPressAnimation onPress={isPreExistingContact ? handleOpenContactActionSheet : handleNavigateToContact}>
             <Text
               align="right"
@@ -217,7 +216,7 @@ export function SendHeader({
           </ButtonPressAnimation>
         )}
         {isResolvingAddress ? <LoadingSpinner /> : null}
-        {!isRecipientInputValid && <PasteAddressButton onPress={onPressPaste} />}
+        {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}
     </Fragment>
