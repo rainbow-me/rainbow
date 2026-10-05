@@ -1,10 +1,11 @@
-import { CASH_BALANCE_USDC_BY_CHAIN_ID } from '@/features/cash-balance/constants';
+import { CASH_USDC_BY_NETWORK } from '@/features/cash/constants';
+import { RampNetwork } from '@/features/cash/services/rampClient';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const CASH_BALANCE_ASSET = CASH_BALANCE_USDC_BY_CHAIN_ID[ChainId.base];
+const CASH_BALANCE_ASSET = CASH_USDC_BY_NETWORK[RampNetwork.Base];
 // Lowercased once here since nothing guarantees userAssetsStore's own keys are lowercased —
 // the address casing addys returns for a given asset isn't normalized before that store builds
 // its map keys, so an exact-casing key lookup could silently miss a checksummed match.
