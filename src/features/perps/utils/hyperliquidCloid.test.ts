@@ -1,4 +1,5 @@
 import { isHex } from 'viem';
+import { describe, expect, it } from 'vitest';
 
 import { decodeLeverageFromCloid, generateCloid } from '@/features/perps/utils/hyperliquidCloid';
 

@@ -1,56 +1,59 @@
 import { Wallet } from '@ethersproject/wallet';
 import { Wallet as EthersWallet } from 'ethers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SwapType, type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 
 import { executeDepositRap } from './depositRapExecution';
 
-const mockContractTransfer = jest.fn();
-const mockEncodeFunctionData = jest.fn();
-const mockEstimateGasWithPadding = jest.fn();
-const mockExecuteCalls = jest.fn();
-const mockGetProvider = jest.fn();
-const mockResolveManagedExecutionFailure = jest.fn();
-const mockToHex = jest.fn();
-const mockWalletExecuteRap = jest.fn();
+const mockContractTransfer = vi.fn();
+const mockEncodeFunctionData = vi.fn();
+const mockEstimateGasWithPadding = vi.fn();
+const mockExecuteCalls = vi.fn();
+const mockGetProvider = vi.fn();
+const mockResolveManagedExecutionFailure = vi.fn();
+const mockToHex = vi.fn();
+const mockWalletExecuteRap = vi.fn();
 
-jest.mock('ethers', () => ({
+vi.mock('ethers', () => ({
   ethers: {
-    Contract: jest.fn(() => ({
-      interface: {
-        encodeFunctionData: (...args: unknown[]) => mockEncodeFunctionData(...args),
-      },
-      transfer: (...args: unknown[]) => mockContractTransfer(...args),
-    })),
+    Contract: vi.fn(function () {
+      return {
+        interface: {
+          encodeFunctionData: (...args: unknown[]) => mockEncodeFunctionData(...args),
+        },
+        transfer: (...args: unknown[]) => mockContractTransfer(...args),
+      };
+    }),
   },
   Wallet: class MockWallet {},
 }));
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (...args: unknown[]) => mockExecuteCalls(...args),
   },
 }));
 
-jest.mock('@/raps/execute', () => ({
+vi.mock('@/raps/execute', () => ({
   walletExecuteRap: (...args: unknown[]) => mockWalletExecuteRap(...args),
 }));
 
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
+vi.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
   resolveManagedExecutionFailure: (...args: unknown[]) => mockResolveManagedExecutionFailure(...args),
 }));
 
-jest.mock('@/features/delegation/utils/sponsoredCalls', () => ({
+vi.mock('@/features/delegation/utils/sponsoredCalls', () => ({
   isInsufficientSponsorBalanceError: (message: string) => message.includes('INSUFFICIENT_SPONSOR_BALANCE'),
 }));
 
-jest.mock('@/handlers/web3', () => ({
+vi.mock('@/handlers/web3', () => ({
   estimateGasWithPadding: (...args: unknown[]) => mockEstimateGasWithPadding(...args),
   getProvider: (...args: unknown[]) => mockGetProvider(...args),
   toHex: (...args: unknown[]) => mockToHex(...args),
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   useBackendNetworksStore: {
     getState: () => ({
       getChainsName: () => ({
@@ -61,7 +64,7 @@ jest.mock('@/features/network/stores/backendNetworksStore', () => ({
   },
 }));
 
-jest.mock('@/state/performance/performance', () => ({
+vi.mock('@/state/performance/performance', () => ({
   Screens: {
     FUNDING_DEPOSIT: 'FUNDING_DEPOSIT',
   },
@@ -71,7 +74,7 @@ jest.mock('@/state/performance/performance', () => ({
   executeFn: (fn: (...args: unknown[]) => unknown) => fn,
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
@@ -157,7 +160,7 @@ const MOCK_CONNECTED_WALLET = { signer: 'connected' };
 
 describe('executeDepositRap', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockContractTransfer.mockResolvedValue({ hash: '0xtransfer' });
     mockEncodeFunctionData.mockReturnValue('0xtransferdata');
     mockEstimateGasWithPadding.mockResolvedValue('21000');
@@ -245,8 +248,8 @@ describe('executeDepositRap', () => {
 
   it('executes wallet-paid direct transfers without RAP when prepared calls are unavailable', async () => {
     const wallet = {
-      connect: jest.fn(() => MOCK_CONNECTED_WALLET),
-      getAddress: jest.fn(() => Promise.resolve(buildQuote().from)),
+      connect: vi.fn(() => MOCK_CONNECTED_WALLET),
+      getAddress: vi.fn(() => Promise.resolve(buildQuote().from)),
     };
 
     const result = await executeDepositRap({

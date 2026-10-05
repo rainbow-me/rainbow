@@ -1,12 +1,12 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
+import { beforeEach, expect, test, vi } from 'vitest';
 
 import { logger } from '@/logger';
 
 import { getLegacyAsyncStorageValue } from './legacyAsyncStorage';
 
-const load = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const remove = jest.fn<(...args: unknown[]) => Promise<void>>();
-const loggerError = jest.spyOn(logger, 'error').mockImplementation(() => undefined);
+const load = vi.fn<(...args: unknown[]) => Promise<unknown>>();
+const remove = vi.fn<(...args: unknown[]) => Promise<void>>();
+const loggerError = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
 
 beforeEach(() => {
   load.mockReset();

@@ -1,15 +1,16 @@
 import { get } from 'react-native-passkeys';
+import { beforeEach, expect, test, vi, type Mock } from 'vitest';
 
 import { getPasskeyAssertion } from './cashPasskeyService';
 
-jest.mock('react-native-device-info', () => ({ getModel: jest.fn() }));
-jest.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
-jest.mock('react-native-passkeys', () => ({
-  create: jest.fn(),
-  get: jest.fn(),
+vi.mock('react-native-device-info', () => ({ getModel: vi.fn() }));
+vi.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
+vi.mock('react-native-passkeys', () => ({
+  create: vi.fn(),
+  get: vi.fn(),
 }));
 
-const mockGet = get as jest.Mock;
+const mockGet = get as Mock;
 
 beforeEach(() => {
   mockGet.mockReset();

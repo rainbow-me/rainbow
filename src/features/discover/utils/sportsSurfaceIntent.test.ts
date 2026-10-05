@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 
 import { selectSportsEventsForIntent } from './sportsSurfaceIntent';

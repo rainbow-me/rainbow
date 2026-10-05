@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+
 import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
@@ -5,17 +7,17 @@ import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 import { fetchPolymarketSportsEvents } from './polymarketSportsEventsStore';
 
-jest.mock('@/features/config/constants/experimental', () => ({
+vi.mock('@/features/config/constants/experimental', () => ({
   POLYMARKET: 'polymarket',
 }));
 
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
   useExperimentalConfigStore: mockStore({
-    getFlag: jest.fn(() => false),
+    getFlag: vi.fn(() => false),
   }),
 }));
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   DEFAULT_SPORTS_LEAGUE_KEY: 'all',
   POLYMARKET_GAMMA_API_URL: 'https://gamma-api.polymarket.com',
   POLYMARKET_SPORTS_MARKET_TYPE: {
@@ -23,32 +25,32 @@ jest.mock('@/features/polymarket/constants', () => ({
   },
 }));
 
-jest.mock('@/features/polymarket/stores/polymarketTeamMetadataStore', () => ({
-  fetchPolymarketTeamMetadataForGameEvents: jest.fn(),
+vi.mock('@/features/polymarket/stores/polymarketTeamMetadataStore', () => ({
+  fetchPolymarketTeamMetadataForGameEvents: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/transforms', () => ({
-  processRawPolymarketEvent: jest.fn(),
+vi.mock('@/features/polymarket/utils/transforms', () => ({
+  processRawPolymarketEvent: vi.fn(),
 }));
 
-jest.mock('@/framework/data/http/rainbowFetch', () => ({
-  rainbowFetch: jest.fn(),
+vi.mock('@/framework/data/http/rainbowFetch', () => ({
+  rainbowFetch: vi.fn(),
 }));
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 
 function mockStore<T>(state: T) {
-  return Object.assign(jest.fn(), {
-    getState: jest.fn(() => state),
-    subscribe: jest.fn(() => jest.fn()),
+  return Object.assign(vi.fn(), {
+    getState: vi.fn(() => state),
+    subscribe: vi.fn(() => vi.fn()),
   });
 }
 
-const mockFetchPolymarketTeamMetadataForGameEvents = fetchPolymarketTeamMetadataForGameEvents as jest.MockedFunction<
+const mockFetchPolymarketTeamMetadataForGameEvents = fetchPolymarketTeamMetadataForGameEvents as MockedFunction<
   typeof fetchPolymarketTeamMetadataForGameEvents
 >;
-const mockProcessRawPolymarketEvent = processRawPolymarketEvent as jest.MockedFunction<typeof processRawPolymarketEvent>;
-const mockRainbowFetch = rainbowFetch as jest.MockedFunction<typeof rainbowFetch>;
+const mockProcessRawPolymarketEvent = processRawPolymarketEvent as MockedFunction<typeof processRawPolymarketEvent>;
+const mockRainbowFetch = rainbowFetch as MockedFunction<typeof rainbowFetch>;
 
 type EventOptions = {
   id: string;
@@ -93,8 +95,8 @@ function makeEvent({
 
 describe('fetchPolymarketSportsEvents', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-06-15T12:00:00Z'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-15T12:00:00Z'));
 
     mockRainbowFetch.mockResolvedValue({
       data: [],
@@ -106,8 +108,8 @@ describe('fetchPolymarketSportsEvents', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   it('keeps the primary game event and drops companion, derivative, and resolved events', async () => {

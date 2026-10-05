@@ -6,7 +6,7 @@ import { IS_TEST } from '@/env';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { colors as globalColors } from '@/styles';
+import globalColors from '@/styles/colors';
 
 import { fetchBackendNetworks, type BackendNetworksResponse } from '../api/fetchBackendNetworks';
 import buildTimeNetworks from '../constants/networks.json';

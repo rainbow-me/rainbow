@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { Address } from 'viem';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
@@ -18,35 +18,34 @@ import { watchAssetUpdates } from './useWatchAssetUpdates';
 
 const TEST_ADDRESS = '0x123';
 
-const mockGetAssetUpdates = jest.fn<() => Promise<{ data: { result: Record<string, UserAsset> } }>>(async () => ({
+const mockGetAssetUpdates = vi.fn<() => Promise<{ data: { result: Record<string, UserAsset> } }>>(async () => ({
   data: {
     result: {},
   },
 }));
 
-const mockGetTokenAddresses = jest.fn(() => new Set<string>());
-const mockClaimablesFetch = jest.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
-const mockRewardsFetch = jest.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
-const mockPositionsFetch = jest.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
-const mockUserAssetsFetch = jest.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
+const mockGetTokenAddresses = vi.fn(() => new Set<string>());
+const mockClaimablesFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
+const mockRewardsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
+const mockPositionsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
+const mockUserAssetsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
 
-jest.mock('@/resources/platform/client', () => ({
+vi.mock('@/resources/platform/client', () => ({
   getPlatformClient: () => ({
     get: mockGetAssetUpdates,
   }),
 }));
 
-jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/features/config/hooks/experimentalHooks', () => ({}));
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
 
-jest.mock('@/resources/nfts', () => ({
-  invalidateAddressNftsQueries: jest.fn(),
+vi.mock('@/resources/nfts', () => ({
+  invalidateAddressNftsQueries: vi.fn(),
 }));
 
-jest.mock('@/redux/store', () => ({
-  __esModule: true,
+vi.mock('@/redux/store', () => ({
   default: {
     getState: () => ({
       settings: {
@@ -56,18 +55,18 @@ jest.mock('@/redux/store', () => ({
   },
 }));
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   getAccountAddress: () => '0x123',
   useAccountAddress: () => '0x123',
   useWalletsStore: {
     getState: () => ({
       accountAddress: '0x123',
     }),
-    subscribe: jest.fn(),
+    subscribe: vi.fn(),
   },
 }));
 
-jest.mock('@/state/swaps/swapsStore', () => ({
+vi.mock('@/state/swaps/swapsStore', () => ({
   useSwapsStore: {
     getState: () => ({
       preferredNetwork: undefined,
@@ -75,13 +74,13 @@ jest.mock('@/state/swaps/swapsStore', () => ({
   },
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
   },
 }));
 
@@ -91,9 +90,9 @@ const MAINNET_TOKEN_ADDRESS = '0xcccccccccccccccccccccccccccccccccccccccc' as Ad
 
 describe('watchAssetUpdates', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    vi.useFakeTimers();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
     resetStores();
 
     userAssetsStore.getState(TEST_ADDRESS);
@@ -118,13 +117,13 @@ describe('watchAssetUpdates', () => {
       ...state,
       fetch: async (params, options) => mockRewardsFetch(params, options),
     }));
-    jest.mocked(invalidateAddressNftsQueries).mockImplementation(async () => undefined);
+    vi.mocked(invalidateAddressNftsQueries).mockImplementation(async () => undefined);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.restoreAllMocks();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it('deduplicates watched hashes and preserves the watched array reference when nothing new is added', () => {

@@ -1,34 +1,12 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { transformPositions } from '.';
 import { FIXTURE_PARAMS } from '../../__fixtures__/ListPositions';
 import { createMockAsset } from '../../__fixtures__/mocks/assets';
 import { createMockPosition, createMockResponse } from '../../__fixtures__/mocks/positions';
+import { preparePositionsStore } from '../../__fixtures__/positionsStore';
 import { DetailType, PositionName } from '../../types/generated/positions/positions';
 import { usePositionsStore } from '../positionsStore';
-
-// Mock config to avoid React Native gesture handler imports
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
-}));
-
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
-  useBackendNetworksStore: {
-    getState: () => ({
-      getSupportedPositionsChainIds: () => [1, 10, 137],
-    }),
-    subscribe: jest.fn(),
-  },
-}));
-jest.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
-  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    jest.requireActual<typeof import('../../__fixtures__/ListPositions')>('../../__fixtures__/ListPositions');
-  return {
-    userAssetsStoreManager: createZustandStore(() => ({
-      address,
-      currency: params.currency,
-    })),
-  };
-});
 
 /**
  * Integration Tests for Complete Wallet Balance Calculation
@@ -39,13 +17,7 @@ jest.mock('@/state/assets/userAssetsStoreManager', () => {
  * and proper aggregation across multiple protocols.
  */
 describe('Wallet Balance Integration', () => {
-  beforeEach(() => {
-    // Reset store state before each test
-    usePositionsStore.setState({
-      queryCache: {},
-      queryKey: '',
-    });
-  });
+  beforeEach(preparePositionsStore);
 
   it('should calculate correct wallet balance with all position types', () => {
     // Comprehensive test with all position types and edge cases

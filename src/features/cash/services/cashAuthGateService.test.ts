@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { logger } from '@/logger';
 
 import { useCashAuthGateStore } from '../stores/cashAuthGateStore';
@@ -7,26 +9,26 @@ import { openCashAuthGate, reauthenticateCashGate } from './cashAuthGateService'
 import { isPasskeyCancellation } from './cashPasskeyService';
 import { ensureAccessToken } from './cashSignInService';
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('./cardListService', () => ({
-  loadLinkedCards: jest.fn(),
+vi.mock('./cardListService', () => ({
+  loadLinkedCards: vi.fn(),
 }));
 
-jest.mock('./cashPasskeyService', () => ({
-  isPasskeyCancellation: jest.fn(),
+vi.mock('./cashPasskeyService', () => ({
+  isPasskeyCancellation: vi.fn(),
 }));
 
-jest.mock('./cashSignInService', () => ({
-  ensureAccessToken: jest.fn(),
+vi.mock('./cashSignInService', () => ({
+  ensureAccessToken: vi.fn(),
 }));
 
-const mockLoadLinkedCards = jest.mocked(loadLinkedCards);
-const mockEnsureAccessToken = jest.mocked(ensureAccessToken);
-const mockIsPasskeyCancellation = jest.mocked(isPasskeyCancellation);
+const mockLoadLinkedCards = vi.mocked(loadLinkedCards);
+const mockEnsureAccessToken = vi.mocked(ensureAccessToken);
+const mockIsPasskeyCancellation = vi.mocked(isPasskeyCancellation);
 
 const LOAD_CARDS = { kind: 'loadCards' } as const;
 
@@ -59,7 +61,7 @@ function deferCeremony() {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCashAuthGateStore.getState().clear();
   mockEnsureAccessToken.mockResolvedValue('token');
   mockLoadLinkedCards.mockResolvedValue('completed');

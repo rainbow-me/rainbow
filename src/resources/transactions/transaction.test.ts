@@ -1,47 +1,52 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 
 import { RainbowFetchClient, RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 
 import { fetchRawTransaction } from './transaction';
 
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   IS_TEST: false,
+  IS_DEV: false,
+  IS_PROD: false,
+  IS_STORE_INSTALL: false,
+  RPC_PROXY_API_KEY: undefined,
+  RPC_PROXY_BASE_URL: undefined,
 }));
 
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
+  getExperimentalFlag: vi.fn(() => false),
 }));
 
-jest.mock('@/features/cash/utils/mockCashTransactionByHash', () => ({
-  getMockCashTransactionByHash: jest.fn(),
+vi.mock('@/features/cash/utils/mockCashTransactionByHash', () => ({
+  getMockCashTransactionByHash: vi.fn(),
 }));
 
-jest.mock('@/parsers/transactions', () => ({
-  parseTransaction: jest.fn(),
+vi.mock('@/parsers/transactions', () => ({
+  parseTransaction: vi.fn(),
 }));
 
-jest.mock('@/resources/platform/client', () => ({
-  getPlatformClient: jest.fn(),
+vi.mock('@/resources/platform/client', () => ({
+  getPlatformClient: vi.fn(),
 }));
 
-jest.mock('@/state/assets/userAssetsStoreManager', () => ({
-  userAssetsStoreManager: jest.fn(),
+vi.mock('@/state/assets/userAssetsStoreManager', () => ({
+  userAssetsStoreManager: vi.fn(),
 }));
 
-jest.mock('@/state/wallets/walletsStore', () => ({
-  useAccountAddress: jest.fn(),
+vi.mock('@/state/wallets/walletsStore', () => ({
+  useAccountAddress: vi.fn(),
 }));
 
-const mockGetPlatformClient = jest.mocked(getPlatformClient);
+const mockGetPlatformClient = vi.mocked(getPlatformClient);
 
 describe('fetchRawTransaction', () => {
-  let getSpy: jest.SpiedFunction<RainbowFetchClient['get']>;
+  let getSpy: MockInstance<RainbowFetchClient['get']>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     const client = new RainbowFetchClient();
-    getSpy = jest.spyOn(client, 'get');
+    getSpy = vi.spyOn(client, 'get');
     mockGetPlatformClient.mockReturnValue(client);
   });
 

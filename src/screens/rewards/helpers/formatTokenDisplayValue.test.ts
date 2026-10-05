@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest';
+
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 
 const TOKEN_SYMBOL = 'OP';

@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module';
+
+import { describe, expect, it } from 'vitest';
+
 import { GRAPHS, type Graph } from './internal/cruise';
 
 type RuleConfig = { name: string; from: { path?: string; pathNot?: string }; to: { path?: string; pathNot?: string; circular?: boolean } };
@@ -10,18 +14,19 @@ type Config = {
   };
 };
 
+const require = createRequire(import.meta.url);
+const CONFIG_PATH = require.resolve('../../.dependency-cruiser.cjs');
+
 function loadConfig(graph: string): Config {
   const previous = process.env.DEPCRUISE_GRAPH;
+  const cached = require.cache[CONFIG_PATH];
+  delete require.cache[CONFIG_PATH];
   process.env.DEPCRUISE_GRAPH = graph;
   try {
-    let config: Config | undefined;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      config = require('../../.dependency-cruiser.cjs') as Config;
-    });
-    if (!config) throw new Error('config did not load');
-    return config;
+    return require(CONFIG_PATH);
   } finally {
+    delete require.cache[CONFIG_PATH];
+    if (cached) require.cache[CONFIG_PATH] = cached;
     if (previous === undefined) delete process.env.DEPCRUISE_GRAPH;
     else process.env.DEPCRUISE_GRAPH = previous;
   }

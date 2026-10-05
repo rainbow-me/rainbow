@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useAnimatedTime } from './useAnimatedTime';
 
@@ -12,12 +12,12 @@ const mockTimingCallbacks: AnimationCallback[] = [];
 const mockUIWorkQueue: Array<() => void> = [];
 let mockAnimationStates = new WeakMap<object, MockAnimationState>();
 
-jest.mock('react', () => ({
+vi.mock('react', () => ({
   useCallback: (callback: unknown) => callback,
   useEffect: (effect: Effect) => mockEffects.push(effect),
 }));
 
-jest.mock('react-native-reanimated', () => ({
+vi.mock('react-native-reanimated', () => ({
   Easing: { linear: 'linear' },
   runOnUI: (worklet: () => void) => () => mockUIWorkQueue.push(worklet),
   useSharedValue: (initialValue: unknown) => {
@@ -58,8 +58,8 @@ describe('useAnimatedTime lifecycle', () => {
   });
 
   it('preserves start, stop, restart, and completion behavior while mounted', () => {
-    const onEndWorklet = jest.fn();
-    const onStartWorklet = jest.fn();
+    const onEndWorklet = vi.fn();
+    const onStartWorklet = vi.fn();
     const timer = useAnimatedTime({ onEndWorklet, onStartWorklet });
     const cleanups = setupEffects();
     const timerClock = timer.timeInSeconds;
@@ -82,8 +82,8 @@ describe('useAnimatedTime lifecycle', () => {
   });
 
   it("does not revive Reanimated's canceled timer after unmount", () => {
-    const onEndWorklet = jest.fn();
-    const onStartWorklet = jest.fn();
+    const onEndWorklet = vi.fn();
+    const onStartWorklet = vi.fn();
     const timer = useAnimatedTime({ onEndWorklet, onStartWorklet });
     const cleanups = setupEffects();
     const timerClock = timer.timeInSeconds;
@@ -104,7 +104,7 @@ describe('useAnimatedTime lifecycle', () => {
   });
 
   it('starts once after React Strict Mode effect replay', async () => {
-    const onStartWorklet = jest.fn();
+    const onStartWorklet = vi.fn();
     const timer = useAnimatedTime({ autoStart: true, onStartWorklet });
     const timerClock = timer.timeInSeconds;
 

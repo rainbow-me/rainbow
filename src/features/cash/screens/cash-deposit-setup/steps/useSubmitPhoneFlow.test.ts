@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { logger } from '@/logger';
@@ -9,9 +11,9 @@ import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore'
 import { useVerifyPhoneFlowStore } from '../../../stores/verifyPhoneFlowStore';
 import { useSubmitPhoneFlowStore } from './useSubmitPhoneFlow';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashPhoneSubmitted: 'cash.phone_submitted',
       cashPhoneSubmitFailed: 'cash.phone_submit_failed',
@@ -21,33 +23,33 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../../../services/userClient', () => ({
+vi.mock('../../../services/userClient', () => ({
   US_COUNTRY_CALLING_CODE: '1',
-  createUserWithPhone: jest.fn(),
-  resendPhoneCode: jest.fn(),
-  startRecovery: jest.fn(),
-  startSignupResume: jest.fn(),
-  verifyPhone: jest.fn(),
+  createUserWithPhone: vi.fn(),
+  resendPhoneCode: vi.fn(),
+  startRecovery: vi.fn(),
+  startSignupResume: vi.fn(),
+  verifyPhone: vi.fn(),
 }));
 
-jest.mock('../../../services/cashSignInService', () => ({
-  signInWithPhone: jest.fn(),
+vi.mock('../../../services/cashSignInService', () => ({
+  signInWithPhone: vi.fn(),
 }));
 
-jest.mock('../../../services/cashPasskeyService', () => ({
-  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+vi.mock('../../../services/cashPasskeyService', () => ({
+  isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
 
-const mockCreateUserWithPhone = jest.mocked(createUserWithPhone);
-const mockStartRecovery = jest.mocked(startRecovery);
-const mockStartSignupResume = jest.mocked(startSignupResume);
-const mockSignInWithPhone = jest.mocked(signInWithPhone);
-const track = jest.mocked(analytics.track);
+const mockCreateUserWithPhone = vi.mocked(createUserWithPhone);
+const mockStartRecovery = vi.mocked(startRecovery);
+const mockStartSignupResume = vi.mocked(startSignupResume);
+const mockSignInWithPhone = vi.mocked(signInWithPhone);
+const track = vi.mocked(analytics.track);
 
 const DIGITS = '4155550100';
 const RESPONSE: Extract<CreateUserWithPhoneResult, { outcome: 'created' }> = {
@@ -60,7 +62,7 @@ const flow = () => useSubmitPhoneFlowStore.getState();
 const session = () => useCashSetupSessionStore.getState().session;
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCashSetupSessionStore.getState().reset();
   flow().reset();
   useVerifyPhoneFlowStore.getState().reset();
@@ -259,7 +261,7 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     await flow().submit();
     const pending = session();
     useVerifyPhoneFlowStore.setState({ state: 'error' });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     await expect(flow().submit()).resolves.toBe(true);
 
@@ -299,7 +301,7 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     const OTHER_DIGITS = '4155550199';
     flow().setDigits(DIGITS);
     await flow().submit();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCreateUserWithPhone.mockResolvedValue({ ...RESPONSE, userId: 'user-2' });
 
     flow().setDigits(OTHER_DIGITS);

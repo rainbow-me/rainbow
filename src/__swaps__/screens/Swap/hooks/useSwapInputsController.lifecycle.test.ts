@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useSwapInputsController } from './useSwapInputsController';
 
@@ -31,9 +31,9 @@ type TestQuote = {
 };
 
 const mockEffectCleanups: Array<() => void> = [];
-const mockGetQuote = jest.fn<(...args: unknown[]) => Promise<TestQuote>>();
+const mockGetQuote = vi.fn<(...args: unknown[]) => Promise<TestQuote>>();
 const mockSharedValues: MockSharedValue[] = [];
-const mockTrack = jest.fn();
+const mockTrack = vi.fn();
 const mockUIWorkQueue: Array<() => void> = [];
 const mockSwapState: { quote: TestQuote | null; slippage: string; source: string } = {
   quote: null,
@@ -75,20 +75,20 @@ function mockScheduleUI(work: () => void): void {
   }
 }
 
-jest.mock('react', () => ({
+vi.mock('react', () => ({
   useCallback: (callback: unknown) => callback,
   useEffect: (effect: Effect) => mockRegisterEffect(effect),
   useRef: <T>(initialValue: T) => ({ current: initialValue }),
 }));
 
-jest.mock('react-native-reanimated', () => ({
+vi.mock('react-native-reanimated', () => ({
   Easing: { linear: 'linear' },
   runOnJS: (callback: unknown) => callback,
   runOnUI:
     (callback: (...args: unknown[]) => void) =>
     (...args: unknown[]) =>
       mockScheduleUI(() => callback(...args)),
-  useAnimatedReaction: jest.fn(),
+  useAnimatedReaction: vi.fn(),
   useDerivedValue: (derive: () => unknown) => ({
     get value() {
       return derive();
@@ -129,13 +129,13 @@ jest.mock('react-native-reanimated', () => ({
   withTiming: (value: unknown) => ({ __animation: 'timing', value }),
 }));
 
-jest.mock('react-native-turbo-haptics', () => ({ triggerHaptics: jest.fn() }));
+vi.mock('react-native-turbo-haptics', () => ({ triggerHaptics: vi.fn() }));
 
-jest.mock('use-debounce', () => ({
+vi.mock('use-debounce', () => ({
   useDebouncedCallback: (callback: unknown) => callback,
 }));
 
-jest.mock('@/__swaps__/screens/Swap/constants', () => ({
+vi.mock('@/__swaps__/screens/Swap/constants', () => ({
   SCRUBBER_WIDTH: 100,
   SLIDER_COLLAPSED_HEIGHT: 1,
   SLIDER_HEIGHT: 1,
@@ -145,11 +145,11 @@ jest.mock('@/__swaps__/screens/Swap/constants', () => ({
   snappySpringConfig: {},
 }));
 
-jest.mock('@/__swaps__/utils/decimalFormatter', () => ({
+vi.mock('@/__swaps__/utils/decimalFormatter', () => ({
   valueBasedDecimalFormatter: ({ amount }: { amount: unknown }) => String(amount),
 }));
 
-jest.mock('@/__swaps__/utils/flipAssets', () => ({
+vi.mock('@/__swaps__/utils/flipAssets', () => ({
   getInputValuesForSliderPositionWorklet: () => ({
     inputAmount: 0,
     inputNativeValue: 0,
@@ -158,30 +158,30 @@ jest.mock('@/__swaps__/utils/flipAssets', () => ({
   }),
 }));
 
-jest.mock('@/__swaps__/utils/swaps', () => ({
+vi.mock('@/__swaps__/utils/swaps', () => ({
   buildQuoteParams: (params: unknown) => ({ params }),
   clamp: (value: number, minimum: number, maximum: number) => Math.min(Math.max(value, minimum), maximum),
   getQuotePrice: () => 1,
   trimTrailingZeros: (value: unknown) => String(value),
 }));
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
     event: { swapsReceivedQuote: 'swaps.received_quote' },
     track: (...args: unknown[]) => mockTrack(...args),
   },
 }));
 
-jest.mock('@/components/animations/animationConfigs', () => ({
+vi.mock('@/components/animations/animationConfigs', () => ({
   SPRING_CONFIGS: { sliderConfig: {} },
 }));
 
-jest.mock('@/features/currency/utils/nativeDisplay', () => ({
+vi.mock('@/features/currency/utils/nativeDisplay', () => ({
   addSymbolToNativeDisplayWorklet: (value: unknown) => String(value),
   convertAmountToNativeDisplayWorklet: (value: unknown) => String(value),
 }));
 
-jest.mock('@/framework/core/safeMath', () => ({
+vi.mock('@/framework/core/safeMath', () => ({
   divWorklet: (left: unknown, right: unknown) => Number(left) / Number(right),
   equalWorklet: (left: unknown, right: unknown) => Number(left) === Number(right),
   greaterThanWorklet: (left: unknown, right: unknown) => Number(left) > Number(right),
@@ -190,36 +190,36 @@ jest.mock('@/framework/core/safeMath', () => ({
   toFixedWorklet: (value: unknown) => String(value),
 }));
 
-jest.mock('@/framework/ui/utils/addCommasToNumber', () => ({
+vi.mock('@/framework/ui/utils/addCommasToNumber', () => ({
   addCommasToNumber: (value: unknown) => String(value),
 }));
 
-jest.mock('@/helpers/utilities', () => ({
+vi.mock('@/helpers/utilities', () => ({
   convertRawAmountToDecimalFormat: (value: unknown) => String(value),
   handleSignificantDecimalsWorklet: (value: unknown) => String(value),
 }));
 
-jest.mock('@/logger', () => ({ logger: { debug: jest.fn() } }));
+vi.mock('@/logger', () => ({ logger: { debug: vi.fn() } }));
 
-jest.mock('@/state/swaps/swapsStore', () => ({
+vi.mock('@/state/swaps/swapsStore', () => ({
   swapsStore: {
     getState: () => mockSwapState,
     setState: (update: Partial<typeof mockSwapState>) => Object.assign(mockSwapState, update),
   },
 }));
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   getAccountAddress: () => '0x0000000000000000000000000000000000000001',
 }));
 
-jest.mock('@rainbow-me/swaps', () => ({
-  getCrosschainQuote: jest.fn(),
+vi.mock('@rainbow-me/swaps', () => ({
+  getCrosschainQuote: vi.fn(),
   getQuote: (...args: unknown[]) => mockGetQuote(...args),
 }));
 
-jest.mock('./analyticsTrackQuoteFailed', () => ({ analyticsTrackQuoteFailed: jest.fn() }));
+vi.mock('./analyticsTrackQuoteFailed', () => ({ analyticsTrackQuoteFailed: vi.fn() }));
 
-jest.mock('./useSwapNavigation', () => ({
+vi.mock('./useSwapNavigation', () => ({
   NavigationSteps: { INPUT_ELEMENT_FOCUSED: 1 },
 }));
 

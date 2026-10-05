@@ -1,5 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
@@ -7,18 +8,18 @@ import { SwapType, type Quote } from '@rainbow-me/swaps';
 
 import { prepareSponsoredDepositExecution } from './prepareSponsoredDepositExecution';
 
-const mockCreateDelegationPublicClient = jest.fn<unknown, [ChainId]>();
-const mockPredictSponsoredCallsExecution = jest.fn<boolean, [unknown]>();
-const mockPrepareAtomicSwapCalls = jest.fn<Promise<Call[]>, [unknown]>();
-const mockPrepareCalls = jest.fn<Promise<PreparedCallsExecution>, [unknown]>();
-const mockSupportsDelegatedExecution = jest.fn<Promise<boolean>, [unknown]>();
+const mockCreateDelegationPublicClient = vi.fn<(...args: [ChainId]) => unknown>();
+const mockPredictSponsoredCallsExecution = vi.fn<(...args: [unknown]) => boolean>();
+const mockPrepareAtomicSwapCalls = vi.fn<(...args: [unknown]) => Promise<Call[]>>();
+const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<PreparedCallsExecution>>();
+const mockSupportsDelegatedExecution = vi.fn<(...args: [unknown]) => Promise<boolean>>();
 
 const mockSponsoredCallsRequirements = {
   atomic: 'required',
   fees: { payer: 'sponsor' },
 };
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
       calls: (params: unknown) => mockPrepareCalls(params),
@@ -26,7 +27,7 @@ jest.mock('@rainbow-me/sdk', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/utils/calls', () => ({
+vi.mock('@/features/delegation/utils/calls', () => ({
   createDelegationPublicClient: (chainId: ChainId) => mockCreateDelegationPublicClient(chainId),
   SPONSORED_CALLS_REQUIREMENTS: {
     atomic: 'required',
@@ -34,15 +35,15 @@ jest.mock('@/features/delegation/utils/calls', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/utils/sponsoredCalls', () => ({
+vi.mock('@/features/delegation/utils/sponsoredCalls', () => ({
   predictSponsoredCallsExecution: (params: unknown) => mockPredictSponsoredCallsExecution(params),
 }));
 
-jest.mock('@/features/delegation/utils/willDelegate', () => ({
+vi.mock('@/features/delegation/utils/willDelegate', () => ({
   supportsDelegatedExecution: (params: unknown) => mockSupportsDelegatedExecution(params),
 }));
 
-jest.mock('@/raps/atomicSwapPreparation', () => ({
+vi.mock('@/raps/atomicSwapPreparation', () => ({
   prepareAtomicSwapCalls: (params: unknown) => mockPrepareAtomicSwapCalls(params),
 }));
 
@@ -91,7 +92,7 @@ function buildQuote(overrides: Partial<Quote> = {}): Quote {
 
 describe('prepareSponsoredDepositExecution', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCreateDelegationPublicClient.mockReturnValue({ name: 'public-client' });
     mockPredictSponsoredCallsExecution.mockReturnValue(true);
     mockPrepareCalls.mockResolvedValue(PREPARED_CALLS);

@@ -6,6 +6,7 @@ import { resolveProperties, type Deferrable } from '@ethersproject/properties';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { encodeFunctionData, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { time } from '@/framework/core/utils/time';
@@ -22,17 +23,17 @@ import {
 } from '../constants';
 import { executeUnstakeRnbw } from './executeUnstakeRnbw';
 
-const mockExecuteCalls = jest.fn<Promise<unknown>, [unknown, unknown?]>();
-const mockPrepareCalls = jest.fn<Promise<unknown>, [unknown]>();
-const mockBuildUnstakeRnbwExecutionPlan = jest.fn<Promise<{ calls: Call[]; requirements?: CallsRequirements }>, [unknown]>();
-const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockResolveManagedExecutionFailure = jest.fn<Promise<string | null>, [unknown]>();
-const mockTrackCallsExecution = jest.fn<void, [unknown]>();
-const mockWaitForManagedExecutionConfirmation = jest.fn<Promise<void>, [string]>();
-const mockBuildSyntheticRnbwSourceAsset = jest.fn<ExtendedAnimatedAssetWithColors | null, []>();
-const mockAddNewTransaction = jest.fn<void, [unknown]>();
+const mockExecuteCalls = vi.fn<(...args: [unknown, unknown?]) => Promise<unknown>>();
+const mockPrepareCalls = vi.fn<(...args: [unknown]) => Promise<unknown>>();
+const mockBuildUnstakeRnbwExecutionPlan = vi.fn<(...args: [unknown]) => Promise<{ calls: Call[]; requirements?: CallsRequirements }>>();
+const mockCanUseDelegatedExecution = vi.fn<(...args: [Address]) => boolean>();
+const mockResolveManagedExecutionFailure = vi.fn<(...args: [unknown]) => Promise<string | null>>();
+const mockTrackCallsExecution = vi.fn<(...args: [unknown]) => void>();
+const mockWaitForManagedExecutionConfirmation = vi.fn<(...args: [string]) => Promise<void>>();
+const mockBuildSyntheticRnbwSourceAsset = vi.fn<(...args: []) => ExtendedAnimatedAssetWithColors | null>();
+const mockAddNewTransaction = vi.fn<(...args: [unknown]) => void>();
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     calls: (params: unknown, clients?: unknown) => mockExecuteCalls(params, clients),
     prepare: {
@@ -47,41 +48,41 @@ jest.mock('@rainbow-me/sdk', () => ({
   },
 }));
 
-jest.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
+vi.mock('@/features/delegation/utils/managedExecutionFailure', () => ({
   resolveManagedExecutionFailure: (params: unknown) => mockResolveManagedExecutionFailure(params),
 }));
 
-jest.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
+vi.mock('@/features/delegation/utils/callsExecutionTracking', () => ({
   trackCallsExecution: (params: unknown) => mockTrackCallsExecution(params),
 }));
 
-jest.mock('@/features/delegation/utils/waitForManagedExecution', () => ({
+vi.mock('@/features/delegation/utils/waitForManagedExecution', () => ({
   waitForManagedExecutionConfirmation: (executionId: string) => mockWaitForManagedExecutionConfirmation(executionId),
 }));
 
-jest.mock('@/state/pendingTransactions/addNewTransaction', () => ({
+vi.mock('@/state/pendingTransactions/addNewTransaction', () => ({
   addNewTransaction: (params: unknown) => mockAddNewTransaction(params),
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     getChainsName: () => ({ 8453: 'Base' }),
   },
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
-jest.mock('./unstakeRnbwCalls', () => ({
+vi.mock('./unstakeRnbwCalls', () => ({
   buildUnstakeRnbwExecutionPlan: (params: unknown) => mockBuildUnstakeRnbwExecutionPlan(params),
 }));
 
-jest.mock('@/features/delegation/utils/willDelegate', () => ({
+vi.mock('@/features/delegation/utils/willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
-jest.mock('./syntheticRnbwSourceAsset', () => ({
+vi.mock('./syntheticRnbwSourceAsset', () => ({
   buildSyntheticRnbwSourceAsset: () => mockBuildSyntheticRnbwSourceAsset(),
 }));
 
@@ -99,7 +100,7 @@ const signer = new Wallet(PRIVATE_KEY, provider);
 
 class TestHardwareSigner extends Signer {
   readonly provider: Provider;
-  readonly sendTransactionMock = jest.fn<Promise<TransactionResponse>, [Deferrable<TransactionRequest>]>();
+  readonly sendTransactionMock = vi.fn<(...args: [Deferrable<TransactionRequest>]) => Promise<TransactionResponse>>();
 
   constructor(provider: Provider) {
     super();
@@ -210,18 +211,18 @@ async function prepareCalls(plan: unknown): Promise<PreparedCallsExecution> {
 
 describe('executeUnstakeRnbw', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
     mockBuildUnstakeRnbwExecutionPlan.mockResolvedValue({ calls: [UNSTAKE_CALL] });
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockResolveManagedExecutionFailure.mockResolvedValue(null);
     mockWaitForManagedExecutionConfirmation.mockResolvedValue();
     mockBuildSyntheticRnbwSourceAsset.mockReturnValue(rnbwAsset);
-    jest.spyOn(provider, 'estimateGas').mockResolvedValue(BigNumber.from(ESTIMATED_GAS_LIMIT));
+    vi.spyOn(provider, 'estimateGas').mockResolvedValue(BigNumber.from(ESTIMATED_GAS_LIMIT));
   });
 
   it('tracks wallet exact-call execution when prepared calls resolve to a wallet-paid transaction', async () => {
-    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt());
+    const waitForTransaction = vi.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt());
     const preparedCalls = await prepareCalls({
       kind: 'calls.wallet',
       review: {
@@ -365,7 +366,7 @@ describe('executeUnstakeRnbw', () => {
   });
 
   it('executes unstaking through wallet exact calls when prepared calls are unavailable', async () => {
-    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
+    const waitForTransaction = vi.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
     mockExecuteCalls.mockResolvedValue({
       kind: 'calls.wallet',
       transactions: [
@@ -428,8 +429,8 @@ describe('executeUnstakeRnbw', () => {
 
   it('submits the unstakeAll transaction directly when delegation is unavailable', async () => {
     mockCanUseDelegatedExecution.mockReturnValue(false);
-    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
-    const sendTransaction = jest
+    const waitForTransaction = vi.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
+    const sendTransaction = vi
       .spyOn(signer, 'sendTransaction')
       .mockImplementationOnce(transaction => buildTransactionResponse({ hash: TX_HASH, nonce: 1, transaction }));
 
@@ -460,7 +461,7 @@ describe('executeUnstakeRnbw', () => {
 
   it('submits the unstakeAll transaction directly for hardware wallets', async () => {
     const hardwareSigner = new TestHardwareSigner(provider);
-    const waitForTransaction = jest.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
+    const waitForTransaction = vi.spyOn(provider, 'waitForTransaction').mockResolvedValue(buildReceipt(TX_HASH));
     hardwareSigner.sendTransactionMock.mockImplementation(transaction => buildTransactionResponse({ transaction }));
 
     const result = await executeUnstakeRnbw({
@@ -491,8 +492,8 @@ describe('executeUnstakeRnbw', () => {
 
   it('uses the fallback gas limit when manual unstake gas estimation fails', async () => {
     mockCanUseDelegatedExecution.mockReturnValue(false);
-    jest.spyOn(provider, 'estimateGas').mockRejectedValueOnce(new Error('estimate failed'));
-    const sendTransaction = jest
+    vi.spyOn(provider, 'estimateGas').mockRejectedValueOnce(new Error('estimate failed'));
+    const sendTransaction = vi
       .spyOn(signer, 'sendTransaction')
       .mockImplementationOnce(transaction => buildTransactionResponse({ hash: TX_HASH, nonce: 1, transaction }));
 

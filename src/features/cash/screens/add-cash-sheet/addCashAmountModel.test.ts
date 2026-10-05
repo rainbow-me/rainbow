@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import type { NumberPadCharacter } from '@/components/number-pad/NumberPadKey';
 
 import {

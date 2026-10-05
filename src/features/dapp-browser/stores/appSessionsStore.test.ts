@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { useAppSessionsStore } from './appSessionsStore';

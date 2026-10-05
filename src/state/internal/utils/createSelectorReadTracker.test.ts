@@ -1,4 +1,5 @@
 import { createBaseStore, type Store } from '@storesjs/stores';
+import { describe, expect, it } from 'vitest';
 
 import { createSelectorReadTracker } from './createSelectorReadTracker';
 

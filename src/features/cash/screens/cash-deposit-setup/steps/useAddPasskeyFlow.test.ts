@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
@@ -7,9 +9,9 @@ import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useAddPasskeyFlowStore } from './useAddPasskeyFlow';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashPasskeySubmitted: 'cash.passkey_submitted',
       cashPasskeyAdded: 'cash.passkey_added',
@@ -18,32 +20,32 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../../../services/userClient', () => ({
-  addPasskey: jest.fn(),
-  finishAddPasskey: jest.fn(),
+vi.mock('../../../services/userClient', () => ({
+  addPasskey: vi.fn(),
+  finishAddPasskey: vi.fn(),
 }));
 
-jest.mock('../../../services/cashPasskeyService', () => ({
-  createPasskeyCredential: jest.fn(),
-  getPasskeyName: jest.fn(() => 'iPhone 15 Pro'),
-  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+vi.mock('../../../services/cashPasskeyService', () => ({
+  createPasskeyCredential: vi.fn(),
+  getPasskeyName: vi.fn(() => 'iPhone 15 Pro'),
+  isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
 
-jest.mock('../../../stores/cashAccountStore', () => {
-  const state = { userId: null, setUserId: jest.fn(), clearUserId: jest.fn() };
-  return { useCashAccountStore: { getState: jest.fn(() => state) } };
+vi.mock('../../../stores/cashAccountStore', () => {
+  const state = { userId: null, setUserId: vi.fn(), clearUserId: vi.fn() };
+  return { useCashAccountStore: { getState: vi.fn(() => state) } };
 });
 
-const mockAddPasskey = jest.mocked(addPasskey);
-const mockFinishAddPasskey = jest.mocked(finishAddPasskey);
-const mockCreatePasskeyCredential = jest.mocked(createPasskeyCredential);
-const track = jest.mocked(analytics.track);
-const setUserId = jest.mocked(useCashAccountStore.getState().setUserId);
+const mockAddPasskey = vi.mocked(addPasskey);
+const mockFinishAddPasskey = vi.mocked(finishAddPasskey);
+const mockCreatePasskeyCredential = vi.mocked(createPasskeyCredential);
+const track = vi.mocked(analytics.track);
+const setUserId = vi.mocked(useCashAccountStore.getState().setUserId);
 
 const TOKEN = 'bst_1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
@@ -68,7 +70,7 @@ const verifyRecoverySession = () => {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });

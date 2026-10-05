@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
@@ -8,9 +10,9 @@ import { cancelPasskeyRequest, getPasskeyAssertion } from './cashPasskeyService'
 import { ensureAccessToken, signInWithPhone } from './cashSignInService';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashSignInSubmitted: 'cash.sign_in_submitted',
       cashSignInSucceeded: 'cash.sign_in_succeeded',
@@ -20,24 +22,24 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('./userClient', () => ({
-  startLogin: jest.fn(),
-  finishLogin: jest.fn(),
-  finalizeAuth: jest.fn(),
+vi.mock('./userClient', () => ({
+  startLogin: vi.fn(),
+  finishLogin: vi.fn(),
+  finalizeAuth: vi.fn(),
 }));
 
-jest.mock('./cashPasskeyService', () => ({
-  cancelPasskeyRequest: jest.fn(),
-  getPasskeyAssertion: jest.fn(),
-  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+vi.mock('./cashPasskeyService', () => ({
+  cancelPasskeyRequest: vi.fn(),
+  getPasskeyAssertion: vi.fn(),
+  isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
 
-const mockStartLogin = startLogin as jest.Mock;
-const mockFinishLogin = finishLogin as jest.Mock;
-const mockFinalizeAuth = finalizeAuth as jest.Mock;
-const mockCancelPasskeyRequest = cancelPasskeyRequest as jest.Mock;
-const mockGetPasskeyAssertion = getPasskeyAssertion as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockStartLogin = startLogin as Mock;
+const mockFinishLogin = finishLogin as Mock;
+const mockFinalizeAuth = finalizeAuth as Mock;
+const mockCancelPasskeyRequest = cancelPasskeyRequest as Mock;
+const mockGetPasskeyAssertion = getPasskeyAssertion as Mock;
+const track = analytics.track as Mock;
 
 const USER_ID = 'user-1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
@@ -46,7 +48,7 @@ const ASSERTION_JSON = '{"id":"cred-1"}';
 const tokenStore = () => useCashAuthTokenStore.getState();
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCashAccountStore.getState().setUserId(USER_ID);
   tokenStore().clearToken();
   mockStartLogin.mockResolvedValue({ sessionId: 'sess-1', sessionToken: 'tok-1', publicKeyOptionsJson: OPTIONS_JSON });
@@ -57,7 +59,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 describe('ensureAccessToken', () => {
@@ -151,7 +153,7 @@ describe('ensureAccessToken', () => {
   });
 
   it('times out a stuck passkey assertion and allows a fresh shared ceremony', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     let resolveStuckAssertion: (assertion: string) => void;
     let releaseNativeCancellation: () => void = () => {
       throw new Error('Native cancellation did not start');
@@ -173,7 +175,7 @@ describe('ensureAccessToken', () => {
     const concurrent = ensureAccessToken('cardLink');
     await Promise.resolve();
 
-    await jest.advanceTimersByTimeAsync(120_000);
+    await vi.advanceTimersByTimeAsync(120_000);
     expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
 
     const joinedDuringCancellation = ensureAccessToken('cardLink');
@@ -202,12 +204,12 @@ describe('ensureAccessToken', () => {
   });
 
   it('reports the original timeout when native cleanup fails', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     mockGetPasskeyAssertion.mockReturnValue(new Promise(() => undefined));
     mockCancelPasskeyRequest.mockRejectedValue(new Error('cleanup failed'));
 
     const result = Promise.allSettled([ensureAccessToken('cardLink')]);
-    await jest.advanceTimersByTimeAsync(120_000);
+    await vi.advanceTimersByTimeAsync(120_000);
     expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
     await expect(result).resolves.toEqual([
       { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },

@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { filterList } from './search';
 
 it('filterListSimpleArray', () => {

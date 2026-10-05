@@ -1,17 +1,18 @@
 import { type BivoSecureStore } from '@bivoglobal/payment-react-native';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { linkCardWithVault } from './cardLinkService';
 import { completeCardLinkSession, startCardLinkSession, type CardBrand } from './rampClient';
 
-const mockSubmit = jest.fn();
+const mockSubmit = vi.fn();
 
-jest.mock('./rampClient', () => ({
-  startCardLinkSession: jest.fn(),
-  completeCardLinkSession: jest.fn(),
+vi.mock('./rampClient', () => ({
+  startCardLinkSession: vi.fn(),
+  completeCardLinkSession: vi.fn(),
 }));
 
-const mockStart = startCardLinkSession as jest.Mock;
-const mockComplete = completeCardLinkSession as jest.Mock;
+const mockStart = startCardLinkSession as Mock;
+const mockComplete = completeCardLinkSession as Mock;
 
 const SESSION = { linkUrl: 'https://vault/link', token: 'tok-1', tokenExpiresTime: '2999-01-01T00:00:00.000Z' };
 const CARD = { id: 'card-1', brand: 'Visa', last4: '4242' };
@@ -19,7 +20,7 @@ const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const bivoStore = { submit: mockSubmit } as unknown as BivoSecureStore;
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mockStart.mockResolvedValue(SESSION);
   mockSubmit.mockResolvedValue({ success: true, data: { identifier: 'provider-card-1' } });
   mockComplete.mockResolvedValue(CARD);

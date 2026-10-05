@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import { gretch } from 'gretchen';
+import { beforeEach, describe, expect, test, vi, type Mock } from 'vitest';
 
 import { logger } from '@/logger';
 import { getFCMToken } from '@/notifications/tokens';
@@ -8,65 +9,65 @@ import { delay } from '@/utils/delay';
 import { getWalletKitClient } from '../services/client';
 import { initWalletConnectPushNotifications } from './listeners';
 
-jest.mock('@react-native-firebase/messaging', () => jest.fn());
-jest.mock('gretchen', () => ({
-  gretch: jest.fn(),
+vi.mock('@react-native-firebase/messaging', () => ({ default: vi.fn() }));
+vi.mock('gretchen', () => ({
+  gretch: vi.fn(),
 }));
-jest.mock('@/logger', () => ({
+vi.mock('@/logger', () => ({
   RainbowError: class RainbowError extends Error {},
   logger: {
     DebugContext: { walletconnect: 'walletconnect' },
-    error: jest.fn(),
-    warn: jest.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
 }));
-jest.mock('@/notifications/tokens', () => ({
-  getFCMToken: jest.fn(),
+vi.mock('@/notifications/tokens', () => ({
+  getFCMToken: vi.fn(),
 }));
-jest.mock('@/utils/delay', () => ({
-  delay: jest.fn(),
+vi.mock('@/utils/delay', () => ({
+  delay: vi.fn(),
 }));
-jest.mock('../services/client', () => ({
-  getWalletKitClient: jest.fn(),
+vi.mock('../services/client', () => ({
+  getWalletKitClient: vi.fn(),
 }));
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   IS_DEV: false,
 }));
-jest.mock('@/handlers/appEvents', () => ({
-  events: { emit: jest.fn() },
+vi.mock('@/handlers/appEvents', () => ({
+  events: { emit: vi.fn() },
 }));
-jest.mock('@/performance/tracking', () => ({
+vi.mock('@/performance/tracking', () => ({
   PerformanceReportSegments: { appStartup: { initWalletConnect: 'initWalletConnect' } },
   PerformanceReports: { appStartup: 'appStartup' },
   PerformanceTracking: {
-    finishReportSegment: jest.fn(),
-    startReportSegment: jest.fn(),
+    finishReportSegment: vi.fn(),
+    startReportSegment: vi.fn(),
   },
 }));
-jest.mock('../services/syncClient', () => ({
-  setSyncWalletKitClient: jest.fn(),
+vi.mock('../services/syncClient', () => ({
+  setSyncWalletKitClient: vi.fn(),
 }));
-jest.mock('./onSessionProposal', () => ({
-  onSessionProposal: jest.fn(),
+vi.mock('./onSessionProposal', () => ({
+  onSessionProposal: vi.fn(),
 }));
-jest.mock('./onSessionRequest', () => ({
-  onSessionRequest: jest.fn(),
+vi.mock('./onSessionRequest', () => ({
+  onSessionRequest: vi.fn(),
 }));
 
-const mockDelay = delay as jest.Mock;
-const mockGetClientId = jest.fn();
-const mockGetFCMToken = getFCMToken as jest.Mock;
-const mockGetWalletKitClient = getWalletKitClient as jest.Mock;
-const mockGretch = gretch as jest.Mock;
+const mockDelay = delay as Mock;
+const mockGetClientId = vi.fn();
+const mockGetFCMToken = getFCMToken as Mock;
+const mockGetWalletKitClient = getWalletKitClient as Mock;
+const mockGretch = gretch as Mock;
 const mockLogger = logger as unknown as {
-  error: jest.Mock;
-  warn: jest.Mock;
+  error: Mock;
+  warn: Mock;
 };
-const mockMessaging = messaging as unknown as jest.Mock;
-const mockOnTokenRefresh = jest.fn();
+const mockMessaging = messaging as unknown as Mock;
+const mockOnTokenRefresh = vi.fn();
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 
   mockMessaging.mockReturnValue({ onTokenRefresh: mockOnTokenRefresh });
   mockGetFCMToken.mockResolvedValue('fcm-token');
@@ -126,6 +127,6 @@ describe('initWalletConnectPushNotifications', () => {
 
 function mockEchoServerResponse({ error }: { error?: unknown } = {}) {
   mockGretch.mockReturnValueOnce({
-    json: jest.fn().mockResolvedValue(error ? { error } : { data: {} }),
+    json: vi.fn().mockResolvedValue(error ? { error } : { data: {} }),
   });
 }

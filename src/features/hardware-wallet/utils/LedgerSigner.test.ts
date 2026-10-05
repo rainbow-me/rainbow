@@ -1,5 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ledgerService } from '@ledgerhq/hw-app-eth';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { time } from '@/framework/core/utils/time';
 
@@ -11,37 +12,35 @@ type LedgerSignature = {
   v: string;
 };
 
-const mockSignTransaction = jest.fn<Promise<LedgerSignature>, [string, string, unknown]>();
-const mockGetEthApp = jest.fn();
+const mockSignTransaction = vi.fn<(...args: [string, string, unknown]) => Promise<LedgerSignature>>();
+const mockGetEthApp = vi.fn();
 
-jest.mock('@ledgerhq/hw-app-eth', () => ({
+vi.mock('@ledgerhq/hw-app-eth', () => ({
   ledgerService: {
-    resolveTransaction: jest.fn(),
+    resolveTransaction: vi.fn(),
   },
 }));
 
-jest.mock('./ledger', () => ({
+vi.mock('./ledger', () => ({
   getEthApp: (deviceId: string) => mockGetEthApp(deviceId),
 }));
 
-jest.mock('@/logger', () => ({
+vi.mock('@/logger', () => ({
   ensureError: (error: unknown) => (error instanceof Error ? error : new Error(String(error))),
   logger: {
     DebugContext: { ledger: 'ledger' },
-    debug: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
+    debug: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/navigation/Navigation', () => ({
-  __esModule: true,
-  default: { handleAction: jest.fn() },
+vi.mock('@/navigation/Navigation', () => ({
+  default: { handleAction: vi.fn() },
 }));
 
-jest.mock('@/navigation/routesNames', () => ({
-  __esModule: true,
+vi.mock('@/navigation/routesNames', () => ({
   default: {
     PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
     PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',
@@ -66,8 +65,8 @@ function buildSigner() {
 
 describe('LedgerSigner', () => {
   beforeEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
     mockGetEthApp.mockResolvedValue({
       loadConfig: {},
       signTransaction: mockSignTransaction,
@@ -80,11 +79,11 @@ describe('LedgerSigner', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('falls back to blind signing when Ledger transaction resolution fails', async () => {
-    jest.mocked(ledgerService.resolveTransaction).mockRejectedValue(new Error('resolution unavailable'));
+    vi.mocked(ledgerService.resolveTransaction).mockRejectedValue(new Error('resolution unavailable'));
 
     await expect(buildSigner().signTransaction(approvalTransaction)).resolves.toEqual(expect.stringMatching(/^0x/));
 
@@ -92,8 +91,8 @@ describe('LedgerSigner', () => {
   });
 
   it('falls back to blind signing when Ledger transaction resolution stalls', async () => {
-    jest.useFakeTimers();
-    jest.mocked(ledgerService.resolveTransaction).mockReturnValue(
+    vi.useFakeTimers();
+    vi.mocked(ledgerService.resolveTransaction).mockReturnValue(
       new Promise(() => {
         return;
       })
@@ -101,7 +100,7 @@ describe('LedgerSigner', () => {
 
     const signedTransaction = buildSigner().signTransaction(approvalTransaction);
     await Promise.resolve();
-    await jest.advanceTimersByTimeAsync(RESOLUTION_TIMEOUT_MS);
+    await vi.advanceTimersByTimeAsync(RESOLUTION_TIMEOUT_MS);
 
     await expect(signedTransaction).resolves.toEqual(expect.stringMatching(/^0x/));
     expect(mockSignTransaction).toHaveBeenCalledWith(LEDGER_PATH, expect.any(String), null);

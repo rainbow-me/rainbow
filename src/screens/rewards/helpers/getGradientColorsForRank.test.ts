@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import {
   DARK_RANK_1_GRADIENT_COLORS,
   DARK_RANK_2_GRADIENT_COLORS,

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
 

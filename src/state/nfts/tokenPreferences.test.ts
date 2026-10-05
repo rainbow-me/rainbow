@@ -1,54 +1,56 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { logger } from '@/logger';
 
 import { getHiddenTokenIds, getShowcaseTokenIds } from './tokenPreferences';
 
-const mockGetPreference = jest.fn();
-const mockGetWalletWithAccount = jest.fn();
-const mockIsDataComplete = jest.fn();
-const mockMigrateTokens = jest.fn();
-const mockSetCollectionOpen = jest.fn();
-const mockUpdateWebHidden = jest.fn();
-const mockUpdateWebShowcase = jest.fn();
+const mockGetPreference = vi.fn();
+const mockGetWalletWithAccount = vi.fn();
+const mockIsDataComplete = vi.fn();
+const mockMigrateTokens = vi.fn();
+const mockSetCollectionOpen = vi.fn();
+const mockUpdateWebHidden = vi.fn();
+const mockUpdateWebShowcase = vi.fn();
 
-jest.mock('@/helpers/webData', () => ({
+vi.mock('@/helpers/webData', () => ({
   updateWebHidden: (...args: unknown[]) => mockUpdateWebHidden(...args),
   updateWebShowcase: (...args: unknown[]) => mockUpdateWebShowcase(...args),
 }));
 
-jest.mock('@/model/preferences', () => ({
+vi.mock('@/model/preferences', () => ({
   getPreference: (...args: unknown[]) => mockGetPreference(...args),
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { error: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { error: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/react-query', () => ({
-  queryClient: { fetchQuery: jest.fn() },
+vi.mock('@/react-query', () => ({
+  queryClient: { fetchQuery: vi.fn() },
 }));
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   getWalletWithAccount: (...args: unknown[]) => mockGetWalletWithAccount(...args),
 }));
 
-jest.mock('./openCollectionsStore', () => ({
+vi.mock('./openCollectionsStore', () => ({
   useOpenCollectionsStore: {
     getState: () => ({ setCollectionOpen: mockSetCollectionOpen }),
   },
 }));
 
-jest.mock('./utils', () => ({
+vi.mock('./utils', () => ({
   isDataComplete: (...args: unknown[]) => mockIsDataComplete(...args),
   migrateTokens: (...args: unknown[]) => mockMigrateTokens(...args),
 }));
 
-const mockLoggerError = jest.mocked(logger.error);
+const mockLoggerError = vi.mocked(logger.error);
 
 describe('token preferences', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetWalletWithAccount.mockReturnValue({ type: EthereumWalletType.mnemonic });
   });
 
