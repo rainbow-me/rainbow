@@ -79,12 +79,14 @@ export function updateWalletUsage(state: WalletsState, previous: WalletsState): 
     }
   }
 
-  const isFirstVisit = isVisible && ((previous.walletReady && addressChanged) || usage[address] === undefined);
-  if (isFirstVisit) {
+  const shouldRecordVisit = isVisible && ((previous.walletReady && addressChanged) || usage[address] === undefined);
+  if (shouldRecordVisit) {
     usage = { ...usage };
     for (const key in usage) usage[key] *= PREVIOUS_USAGE_WEIGHT;
     usage[address] = (usage[address] ?? 0) + 1;
   }
 
-  if (usage !== previousUsage) walletUsageStore.setState({ usage });
+  if (usage === previousUsage) return;
+
+  walletUsageStore.setState({ usage });
 }
