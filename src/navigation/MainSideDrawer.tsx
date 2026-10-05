@@ -11,14 +11,14 @@ import { ControlPanelMenuItem, ListAvatar, ListEmojiAvatar } from '@/components/
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Box, globalColors, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
+import type { RainbowAccount, RainbowWallet } from '@/features/wallet/types';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { navigate } from '@/navigation/Navigation';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import {
   formatAccountLabel,
-  getIsDamagedWallet,
   getIsReadOnlyWallet,
   setSelectedWallet,
   useAccountProfileInfo,
@@ -85,16 +85,12 @@ export function MainSideDrawer({ children }: { children: React.ReactElement }) {
 
 function DrawerMenu({ drawerWidth, closeDrawer }: { drawerWidth: number; closeDrawer: CloseDrawer }) {
   const insets = useSafeAreaInsets();
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   const openWallet = useCallback(() => {
     closeDrawer();
     navigate(Routes.SWIPE_LAYOUT, { screen: Routes.WALLET_SCREEN });
   }, [closeDrawer]);
-
-  const openAddCash = useCallback(() => {
-    navigate(getIsDamagedWallet() ? Routes.WALLET_ERROR_SHEET : addCashRoute);
-  }, [addCashRoute]);
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.drawer}>
@@ -115,7 +111,7 @@ function DrawerMenu({ drawerWidth, closeDrawer }: { drawerWidth: number; closeDr
             <DrawerMenuItem icon="􁠱" label="Wallet" onPress={openWallet} />
             <DrawerMenuItem icon="􀈟" label="Send" onPress={openSend} />
             <DrawerMenuItem icon="􀫲" label="Trade" onPress={navigateToSwaps} />
-            <DrawerMenuItem icon="􀁌" label="Add Cash" onPress={openAddCash} />
+            <DrawerMenuItem icon="􀁌" label="Add Cash" onPress={navigateToAddCash} />
             <DrawerMenuItem icon="􀎹" label="Scan" onPress={openScanner} />
             <DrawerMenuItem icon="􀣋" label="Settings" onPress={openSettings} />
           </Stack>
@@ -150,13 +146,7 @@ function AccountName() {
   );
 }
 
-type DrawerMenuItemProps = {
-  icon: string;
-  label: string;
-  onPress(): void;
-};
-
-function DrawerMenuItem({ icon, label, onPress }: DrawerMenuItemProps) {
+function DrawerMenuItem({ icon, label, onPress }: { icon: string; label: string; onPress(): void }) {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.975} style={styles.menuItem}>
       <TextIcon color="labelTertiary" containerSize={40} size="17pt" weight="bold">
@@ -176,6 +166,20 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
   const recentWallets = useRecentWalletsStore();
   const selected = useStoreSharedValue(useWalletsStore, s => s.accountAddress.toLowerCase());
 
+  const switchWallet = useCallback(
+    (account: RainbowAccount, wallet: RainbowWallet) => {
+      const previousState = useWalletsStore.getState();
+      const alreadySelected = account.address.toLowerCase() === previousState.accountAddress.toLowerCase();
+      if (alreadySelected) closeDrawer();
+      else {
+        closeDrawer(() => updateWalletUsage(useWalletsStore.getState(), previousState));
+        void setSelectedWallet(wallet, account.address);
+        initializeWallet({ shouldRunMigrations: false, overwrite: false, switching: true });
+      }
+    },
+    [closeDrawer]
+  );
+
   return (
     <Box width="full">
       {recentWallets.map(({ account, wallet }) => (
@@ -189,16 +193,7 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
             )
           }
           label={removeFirstEmojiFromString(account.label) || address(account.address, 6, 4)}
-          onPress={() => {
-            const previous = useWalletsStore.getState();
-            closeDrawer(
-              account.address.toLowerCase() !== previous.accountAddress.toLowerCase()
-                ? () => updateWalletUsage(useWalletsStore.getState(), previous)
-                : undefined
-            );
-            void setSelectedWallet(wallet, account.address);
-            setIsSmallBalancesOpen(false);
-          }}
+          onPress={() => switchWallet(account, wallet)}
           selectedItemId={selected}
           uniqueId={account.address.toLowerCase()}
         />
@@ -207,16 +202,16 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
   );
 }
 
-function openSend() {
+function openSend(): void {
   if (getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet) return watchingAlert();
   navigate(Routes.SEND_FLOW);
 }
 
-function openScanner() {
+function openScanner(): void {
   navigate(Routes.QR_SCANNER_SCREEN);
 }
 
-function openSettings() {
+function openSettings(): void {
   navigate(Routes.SETTINGS_SHEET);
 }
 
@@ -224,18 +219,11 @@ function buildDrawerMotionConfig(dark: boolean): SideDrawerMotion {
   return {
     content: {
       border: dark
-        ? {
-            color: globalColors.white100,
-            opacity: { inputRange: [0, 1], outputRange: [0, 0.06] },
-            width: THICKER_BORDER_WIDTH,
-          }
+        ? { color: globalColors.white100, opacity: { inputRange: [0, 1], outputRange: [0, 0.06] }, width: THICKER_BORDER_WIDTH }
         : undefined,
       shadow: {
         color: globalColors.grey100,
-        ios: {
-          offset: { x: 0, y: 12 },
-          radius: 18,
-        },
+        ios: { offset: { x: 0, y: 12 }, radius: 18 },
         opacity: { inputRange: [0, 1], outputRange: [dark ? 0.2 : 0.08, dark ? 0.3 : 0.12] },
       },
     },
