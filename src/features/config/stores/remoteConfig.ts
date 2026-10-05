@@ -106,6 +106,7 @@ export interface RainbowConfig extends Record<
   sponsored_rnbw_unstaking_enabled: boolean;
   discover_placements_enabled: boolean;
   go_relay_backend_enabled: boolean;
+  solana_enabled: boolean;
 }
 
 const Bips = {
@@ -246,6 +247,7 @@ export const DEFAULT_CONFIG = {
   sponsored_rnbw_unstaking_enabled: true,
   discover_placements_enabled: true,
   go_relay_backend_enabled: true,
+  solana_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 export type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
