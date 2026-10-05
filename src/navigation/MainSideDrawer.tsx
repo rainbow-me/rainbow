@@ -19,6 +19,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import {
   formatAccountLabel,
+  getIsDamagedWallet,
   getIsReadOnlyWallet,
   setSelectedWallet,
   useAccountProfileInfo,
@@ -92,6 +93,13 @@ function DrawerMenu({ drawerWidth, closeDrawer }: { drawerWidth: number; closeDr
     navigate(Routes.SWIPE_LAYOUT, { screen: Routes.WALLET_SCREEN });
   }, [closeDrawer]);
 
+  const openAddCash = useCallback(() => {
+    navigateToAddCash(route => {
+      if (getIsDamagedWallet()) navigate(Routes.WALLET_ERROR_SHEET);
+      else navigate(route);
+    });
+  }, [navigateToAddCash]);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.drawer}>
       <View
@@ -111,7 +119,7 @@ function DrawerMenu({ drawerWidth, closeDrawer }: { drawerWidth: number; closeDr
             <DrawerMenuItem icon="􁠱" label="Wallet" onPress={openWallet} />
             <DrawerMenuItem icon="􀈟" label="Send" onPress={openSend} />
             <DrawerMenuItem icon="􀫲" label="Trade" onPress={navigateToSwaps} />
-            <DrawerMenuItem icon="􀁌" label="Add Cash" onPress={navigateToAddCash} />
+            <DrawerMenuItem icon="􀁌" label="Add Cash" onPress={openAddCash} />
             <DrawerMenuItem icon="􀎹" label="Scan" onPress={openScanner} />
             <DrawerMenuItem icon="􀣋" label="Settings" onPress={openSettings} />
           </Stack>
