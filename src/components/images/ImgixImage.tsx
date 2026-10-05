@@ -52,7 +52,7 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
         url = props.source && maybeSignSource(props.source, options)?.uri;
       }
 
-      return {
+      const source = {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
         borderRadius:
           !fasterImageStyle?.borderRadius || Platform.OS === 'ios'
@@ -62,6 +62,10 @@ const ImgixImage = React.memo(function ImgixImage(props: ImgixImageProps) {
         ...props.fasterImageConfig,
         url,
       };
+
+      // Bundled assets can resolve to HTTP URLs when served by Metro.
+      if (typeof props.source === 'number') source.transitionDuration = 0;
+      return source;
     } else {
       return props.source && typeof props.source === 'object' ? maybeSignSource(props.source, options) : props.source;
     }

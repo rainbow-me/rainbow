@@ -249,3 +249,30 @@ diff --git a/node_modules/@candlefinance/faster-image/src/index.tsx b/node_modul
    | 'topLeft'
    | 'topRight'
    | 'bottomLeft'
+diff --git a/node_modules/@candlefinance/faster-image/ios/NukeUI/LazyImageView.swift b/node_modules/@candlefinance/faster-image/ios/NukeUI/LazyImageView.swift
+--- a/node_modules/@candlefinance/faster-image/ios/NukeUI/LazyImageView.swift
++++ b/node_modules/@candlefinance/faster-image/ios/NukeUI/LazyImageView.swift
+@@ -235,6 +235,9 @@
+
+         imageView.image = nil
+         imageView.isHidden = true
++#if !os(macOS)
++        imageView.layer.removeAnimation(forKey: "opacity")
++#endif
+
+         customImageView?.removeFromSuperview()
+
+@@ -441,7 +444,12 @@
+     }
+ #else
+     private func runFadeInTransition(duration: TimeInterval) {
+-        guard !imageView.isHidden else { return }
++        // Local images and views not yet committed need no load transition.
++        guard duration > 0,
++              !imageView.isHidden,
++              request?.url?.isLocalResource != true,
++              window != nil,
++              layer.presentation() != nil else { return }
+         imageView.alpha = 0
+         UIView.animate(withDuration: duration, delay: 0, options: [.allowUserInteraction]) {
+             self.imageView.alpha = 1
