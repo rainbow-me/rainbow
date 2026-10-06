@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactElement } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import ImgixImage from '@/components/images/ImgixImage';
@@ -34,7 +34,7 @@ export const PolymarketOutcomeCard = memo(function PolymarketOutcomeCard({
   groupItemTitle,
   outcome,
   outcomeIndex,
-}: OutcomeCardProps): ReactElement {
+}: OutcomeCardProps) {
   const { isDarkMode } = useColorMode();
   const isOutcomeBadgeRepetitive = useMemo(() => outcomeSubtitle.toLowerCase().includes(outcome.toLowerCase()), [outcomeSubtitle, outcome]);
 
