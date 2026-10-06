@@ -33,6 +33,7 @@ export const GameBoxScore = memo(function GameBoxScore({ gameId, isDarkMode }: {
   const interruptionLabelKey = game ? INTERRUPTION_LABELS[game.interruption] : undefined;
   const statusLabelKey = interruptionLabelKey ?? (game ? STATUS_LABELS[game.status] : undefined);
   const live = game?.status === Game_Status.STATUS_LIVE;
+  const showStartTime = game?.status === Game_Status.STATUS_SCHEDULED || game?.status === Game_Status.STATUS_UNSPECIFIED;
 
   return (
     <Box gap={12}>
@@ -58,7 +59,7 @@ export const GameBoxScore = memo(function GameBoxScore({ gameId, isDarkMode }: {
             </Text>
           ) : null}
 
-          {game.status === Game_Status.STATUS_SCHEDULED && game.startsAt ? (
+          {showStartTime && game.startsAt ? (
             <Text color="labelQuaternary" size="15pt" weight="bold">
               {formatTimestamp(toUnixTime(game.startsAt))}
             </Text>
