@@ -12,8 +12,8 @@ export function createTimeStore(getNextUpdateAt: (time: number) => number): Quer
       fetcher: () => Date.now(),
       disableCache: true,
       staleTime: ($, store) => {
-        const currentTime = $(store, state => state.currentTime);
-        const lastFetchedAt = $(store, state => state.lastFetchedAt);
+        const currentTime = $(store, s => s.currentTime);
+        const lastFetchedAt = $(store, s => s.lastFetchedAt);
 
         return Math.max(0, getNextUpdateAt(currentTime) - (lastFetchedAt ?? currentTime));
       },
