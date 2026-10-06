@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useListen } from '@storesjs/stores';
 
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { deviceUtils } from '@/utils/deviceUtils';
-
-import useAppState from './useAppState';
 
 const listeners = new Set<React.Dispatch<React.SetStateAction<string>>>();
 
@@ -14,14 +14,11 @@ export function setClipboard(content: string) {
 }
 
 export default function useClipboard() {
-  const { justBecameActive } = useAppState();
   const [hasClipboardData, setHasClipboardData] = useState(false);
   const [clipboardData, updateClipboardData] = useState('');
 
-  const checkClipboard = useCallback(() => Clipboard.hasString().then(setHasClipboardData), [setHasClipboardData]);
-
   const getClipboard = useCallback(
-    (callback: (result: string) => void) =>
+    (callback?: (result: string) => void) =>
       Clipboard.getString().then((result: string) => {
         updateClipboardData(result);
         callback?.(result);
@@ -29,27 +26,19 @@ export default function useClipboard() {
     []
   );
 
-  // Get initial clipboardData
-  useLayoutEffect(() => {
-    if (deviceUtils.isIOS14) {
-      checkClipboard();
-    } else if (!deviceUtils.hasClipboardProtection) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
-      getClipboard();
-    }
-  }, [checkClipboard, getClipboard]);
-
-  // Get clipboardData when app just became foregrounded
-  useEffect(() => {
-    if (justBecameActive) {
+  useListen(
+    useAppStateStore,
+    s => s === 'active',
+    isActive => {
+      if (!isActive) return;
       if (deviceUtils.isIOS14) {
-        checkClipboard();
+        Clipboard.hasString().then(setHasClipboardData);
       } else if (!deviceUtils.hasClipboardProtection) {
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
         getClipboard();
       }
-    }
-  }, [checkClipboard, getClipboard, justBecameActive]);
+    },
+    { fireImmediately: true }
+  );
 
   // Listen for updates
   useEffect(() => {
