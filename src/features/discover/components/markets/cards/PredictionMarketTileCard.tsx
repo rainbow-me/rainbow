@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, type ReactElement } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -87,7 +87,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   event,
   onOrderPress,
   onPress,
-}: PredictionMarketTileCardProps): ReactElement {
+}: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
@@ -198,7 +198,7 @@ const OutcomeRow = memo(function OutcomeRow({
   isDarkMode: boolean;
   row: OutcomeRowData;
   onOrderPress: OrderPressHandler;
-}): ReactElement {
+}) {
   const handleBetPress = useCallback(() => {
     onOrderPress({ marketId: row.market.id, marketName: row.market.question, marketSlug: row.market.slug, outcome: row.title });
 
