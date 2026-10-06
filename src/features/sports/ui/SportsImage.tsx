@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -34,18 +34,15 @@ export const SportsImage = memo(function SportsImage({
   width?: number;
   borderRadius?: number;
 }) {
-  return imageUrl ? (
+  return (
     <RemoteImage
-      isDarkMode={isDarkMode}
       key={imageUrl}
       imageUrl={imageUrl}
-      name={name}
       width={width}
       height={size}
       borderRadius={borderRadius}
+      fallback={<ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, size)} />}
     />
-  ) : (
-    <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, size)} />
   );
 });
 
@@ -55,6 +52,7 @@ export const SportsImage = memo(function SportsImage({
 export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; size: 28 | 40 | 44; isDarkMode: boolean }) {
   const icon = sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
+  const imageSize = size * (20 / 28);
 
   const backgroundColor = color
     ? getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? (icon?.darken ?? 0.3) : 0.1 })
@@ -84,7 +82,14 @@ export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; s
       {icon ? (
         <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={size} style={{ width: size, height: size }} />
       ) : (
-        <SportsImage isDarkMode={isDarkMode} imageUrl={scope.imageUrl} name={scope.name} size={size * (20 / 28)} borderRadius={0} />
+        <RemoteImage
+          key={scope.imageUrl}
+          imageUrl={scope.imageUrl}
+          width={imageSize}
+          height={imageSize}
+          borderRadius={0}
+          fallback={<ImageInitials name={scope.name} />}
+        />
       )}
 
       <Border
@@ -98,23 +103,21 @@ export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; s
 }
 
 function RemoteImage({
-  isDarkMode,
   imageUrl,
-  name,
   width,
   height,
   borderRadius,
+  fallback,
 }: {
-  isDarkMode: boolean;
-  imageUrl: string;
-  name: string;
+  imageUrl?: string;
   width: number;
   height: number;
   borderRadius: number;
+  fallback: ReactNode;
 }) {
   const [failed, setFailed] = useState(false);
 
-  if (failed) return <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, height)} />;
+  if (!imageUrl || failed) return fallback;
 
   return (
     <ImgixImage
@@ -132,10 +135,16 @@ function ImageFallback({ name, size, isDarkMode }: { name: string; size: number;
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
     <View style={[styles.image, styles.fallback, { width: size, height: size, backgroundColor }]}>
-      <Text color="labelSecondary" size="13pt" weight="heavy">
-        {name.slice(0, 2).toUpperCase()}
-      </Text>
+      <ImageInitials name={name} />
     </View>
+  );
+}
+
+function ImageInitials({ name }: { name: string }) {
+  return (
+    <Text color="labelSecondary" size="13pt" weight="heavy">
+      {name.slice(0, 2).toUpperCase()}
+    </Text>
   );
 }
 
