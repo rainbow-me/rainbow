@@ -37,7 +37,7 @@ export function PredictionEventsSection({
   const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
 
-  const placement = usePlacementsStore(state => getPredictionPlacement(state, surface.placement));
+  const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
   const allItems = placement?.items ?? EMPTY_ITEMS;
   const isLoading = placement === undefined;
   const carousel = surface.display === 'prediction_event_card.carousel';

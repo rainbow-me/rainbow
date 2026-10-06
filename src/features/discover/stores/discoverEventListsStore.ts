@@ -57,10 +57,10 @@ export const discoverEventListsStore = createBaseStore<DiscoverEventListsState>(
  * The selected Discover page's rendered events, or no events while Search is open.
  */
 export const displayedDiscoverEventIdsStore = createDerivedStore($ => {
-  if ($(useDiscoverSearchQueryStore, state => state.isSearching)) return NO_IDS;
+  if ($(useDiscoverSearchQueryStore, s => s.isSearching)) return NO_IDS;
 
-  const section = $(useDiscoverNavigationStore, state => state.activeSection);
-  return $(discoverEventListsStore, state => state.sections[section]?.eventIds ?? NO_IDS);
+  const section = $(useDiscoverNavigationStore, s => s.activeSection);
+  return $(discoverEventListsStore, s => s.sections[section]?.eventIds ?? NO_IDS);
 });
 
 function collectEventIds(lists: readonly (readonly string[] | undefined)[]): Set<string> {

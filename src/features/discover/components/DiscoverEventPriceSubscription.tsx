@@ -27,7 +27,7 @@ const tokenIdsStore = createDerivedStore(
  */
 export function DiscoverEventPriceSubscription() {
   const subscribe = useLiveTokenListSubscription();
-  useListen(tokenIdsStore, state => state, subscribe, { fireImmediately: true });
+  useListen(tokenIdsStore, s => s, subscribe, { fireImmediately: true });
 
   return null;
 }

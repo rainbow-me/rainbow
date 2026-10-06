@@ -45,13 +45,13 @@ const DISCOVER_REFRESH_CONTROL = <RefreshControl onRefresh={() => refreshDiscove
 export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrollOffset }: DiscoverSectionsPagerProps) {
   const surface = useDiscoverSurface();
   const tabs = useMemo(() => surface?.tabs ?? [], [surface]);
-  const activeSectionId = useDiscoverNavigationStore(state => state.activeSection);
+  const activeSectionId = useDiscoverNavigationStore(s => s.activeSection);
   const sectionScrollOffsets = useRef<SectionScrollOffsets>({});
   const pagerKey = tabs.map(tab => tab.id).join('|');
 
   useListen(
     useDiscoverNavigationStore,
-    state => state.activeSection,
+    s => s.activeSection,
     section => {
       scrollOffset.value = sectionScrollOffsets.current[section] ?? 0;
     }
@@ -224,7 +224,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 });
 
 function DiscoverEventsError() {
-  const hasEvents = displayedDiscoverEventIdsStore(ids => ids.length > 0);
+  const hasEvents = displayedDiscoverEventIdsStore(s => s.length > 0);
   const error = useDiscoverEventsErrorStore();
   if (!hasEvents || !error) return null;
 
