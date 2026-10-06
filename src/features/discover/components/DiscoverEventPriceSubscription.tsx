@@ -25,7 +25,7 @@ const tokenIdsStore = createDerivedStore(
 /**
  * Subscribes Discover's displayed event cards to live prices without rerendering their lists.
  */
-export function DiscoverEventPriceSubscription(): null {
+export function DiscoverEventPriceSubscription() {
   const subscribe = useLiveTokenListSubscription();
   useListen(tokenIdsStore, state => state, subscribe, { fireImmediately: true });
 
