@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { Box, Separator, Text } from '@/design-system';
@@ -28,7 +28,7 @@ const SCORE_BACKGROUND_COLOR = white(0.02);
 /**
  * Displays a game's status, participants and scores.
  */
-export const GameBoxScore = memo(function GameBoxScore({ gameId, isDarkMode }: { gameId: string; isDarkMode: boolean }): ReactElement {
+export const GameBoxScore = memo(function GameBoxScore({ gameId, isDarkMode }: { gameId: string; isDarkMode: boolean }) {
   const game = useSportsStore(s => s.games[gameId]);
   const interruptionLabelKey = game ? INTERRUPTION_LABELS[game.interruption] : undefined;
   const statusLabelKey = interruptionLabelKey ?? (game ? STATUS_LABELS[game.status] : undefined);
@@ -93,7 +93,7 @@ const ParticipantScore = memo(function ParticipantScore({
   participant?: Participant;
   score?: ScoreColumn[];
   index: 0 | 1;
-}): ReactElement | null {
+}) {
   if (!participant) return null;
 
   return (

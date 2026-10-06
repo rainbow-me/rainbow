@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 /**
@@ -19,7 +19,7 @@ export const SurfaceShadow = memo(function SurfaceShadow({
   opacity: number;
   radius: number;
   y?: number;
-}): ReactElement | null {
+}) {
   if (Platform.OS === 'android') return null;
 
   return (
