@@ -108,7 +108,7 @@ function EventContent({
 }
 
 function EventDetailsStatus({ eventId }: { eventId: string }) {
-  const failed = usePolymarketEventStore(s => s.status !== 'loading' && Boolean(s.getCacheEntry({ eventId })?.errorInfo));
+  const failed = usePolymarketEventStore(s => s.getStatus('isError') && !s.getStatus('isLoading'));
   if (!failed) return <MarketRowLoadingSkeleton />;
 
   return (
