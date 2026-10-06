@@ -210,7 +210,7 @@ describe('submitBuyOrder', () => {
   });
 
   // An ambiguous failure (transport error, 408, 429, 5xx) leaves it unknown whether the order was created, so
-  // the same id is replayed silently, letting the backend match it to an order an earlier attempt created.
+  // the same id is replayed silently, preserving the order ID across attempts.
   it.each([
     { label: 'a transport error', failure: new Error('network down') },
     { label: 'a 408', failure: fetchError(408) },
@@ -282,6 +282,18 @@ describe('submitBuyOrder', () => {
       expect(new Set(createBuyOrder.mock.calls.map(([, params]) => params.id))).toEqual(new Set([SPEC.id]));
       expect(getOrder).toHaveBeenCalledWith(SPEC.id);
       expect(probedAt).toEqual([AFTER_EXPIRY]);
+    });
+
+    // The `Date` header has whole-second resolution, so a sub-second cutoff must not push the first probe's 404
+    // just below it.
+    it('settles the first probe after a sub-second expiry as not placed', async () => {
+      now = SUBMITTED_AT + 400;
+      getOrder.mockImplementation(notFoundWhenAnswered);
+
+      await getState().submitBuyOrder(SUBMIT_INPUT);
+
+      expect(getOrder).toHaveBeenCalledTimes(1);
+      expect(getState().status.step).toBe('notPlaced');
     });
 
     it('resumes polling when the probe finds the order', async () => {
@@ -1130,6 +1142,20 @@ describe('persistence', () => {
     if (!persisted) throw new Error('nothing persisted');
     return persisted.state;
   }
+
+  // A spec written before `expireTime` existed must still be settleable by a readback after an upgrade.
+  it('lets a 404 settle an unresolved spec persisted without an expiry', async () => {
+    const { name, storage } = store.persist.getOptions();
+    if (!name || !storage) throw new Error('store persistence is not configured');
+    const legacySpec = { cardId: SPEC.cardId, depositAmount: SPEC.depositAmount, id: SPEC.id, walletAddress: SPEC.walletAddress };
+    await storage.setItem(name, { status: { ...PAUSED, spec: legacySpec } } as never, 1);
+    await store.persist.rehydrate();
+    getOrder.mockImplementation(notFoundWhenAnswered);
+
+    await getState().resumeOrder();
+
+    expect(getState().status).toEqual({ step: 'notPlaced', spec: { ...legacySpec, expireTime: new Date(0).toISOString() } });
+  });
 
   it('keeps a mid-flight submission on disk (crash-during-submission recovery) — and never methods', async () => {
     store.setState({ status: SUBMITTING });

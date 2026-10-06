@@ -193,19 +193,26 @@ describe('listCardsWithCachedAuth', () => {
   });
 
   // Order expiry is enforced on the backend's clock, so a device clock set wrong must not shift the estimate.
-  it("anchors the server clock to the response's Date header and advances it monotonically", async () => {
+  it("anchors the server clock to the response's Date header, advances it monotonically, and never rewinds it", async () => {
     const serverTime = Date.parse('2026-10-06T12:00:00Z');
     let monotonic = 1_000;
     const performanceNow = vi.spyOn(performance, 'now').mockImplementation(() => monotonic);
     const dateNow = vi.spyOn(Date, 'now').mockReturnValue(serverTime + 3_600_000);
     get.mockResolvedValue({ headers: new Headers({ date: new Date(serverTime).toUTCString() }), data: {} });
 
-    await listCardsWithCachedAuth();
-    monotonic += 5_000;
+    try {
+      await listCardsWithCachedAuth();
+      monotonic += 5_000;
 
-    expect(getServerNow()).toBe(serverTime + 5_000);
-    performanceNow.mockRestore();
-    dateNow.mockRestore();
+      expect(getServerNow()).toBe(serverTime + 5_000);
+
+      // A response stamped earlier but delivered later is a staler reading.
+      await listCardsWithCachedAuth();
+      expect(getServerNow()).toBe(serverTime + 5_000);
+    } finally {
+      performanceNow.mockRestore();
+      dateNow.mockRestore();
+    }
   });
 
   it('clears a rejected cached token and returns authRequired without retrying', async () => {

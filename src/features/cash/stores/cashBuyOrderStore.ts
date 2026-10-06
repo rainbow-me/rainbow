@@ -106,9 +106,12 @@ function parkForReauth(): void {
   useCashAuthGateStore.getState().park({ kind: 'resumeOrder' });
 }
 
-/** From this instant on the backend's clock it can no longer create the spec's order, so its absence is final. */
+/**
+ * From this instant on the backend's clock it can no longer create the spec's order, so its absence is final.
+ * Rounded up to a whole second, the resolution of the `Date` header it is compared against.
+ */
 function getCreationClosedAt(spec: BuyOrderSpec): number {
-  return Date.parse(spec.expireTime) + ORDER_SERVER_CLOCK_MARGIN_MS;
+  return Math.ceil((Date.parse(spec.expireTime) + ORDER_SERVER_CLOCK_MARGIN_MS) / 1000) * 1000;
 }
 
 export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
@@ -331,7 +334,7 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
   },
   {
     storageKey: 'cashBuyOrder',
-    version: 1,
+    version: 2,
     // Flush the submit intent on the next tick rather than the default 3-5s debounce, so a kill shortly
     // after submit can still be recovered. (Not a hard guarantee: a same-frame crash can still beat it.)
     persistThrottleMs: 0,
@@ -345,6 +348,13 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     partialize: state => ({
       status: selectCashBuyPhase(state) === 'pending' || state.status.step === 'accessRefused' ? state.status : { step: 'idle' as const },
     }),
+    // v1 specs predate `expireTime`. The build that wrote them sent no expiry, but its requests ended with that
+    // app process, so an already-passed expiry lets a readback settle them.
+    migrate: persistedState => {
+      const { status } = persistedState as { status: CashBuyStatus };
+      if (!('spec' in status) || status.spec.expireTime) return { status };
+      return { status: { ...status, spec: { ...status.spec, expireTime: new Date(0).toISOString() } } };
+    },
   }
 );
 

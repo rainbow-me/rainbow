@@ -224,9 +224,11 @@ function parseServerTime(headers: Headers): number | undefined {
   return Number.isFinite(serverTime) ? serverTime : undefined;
 }
 
+// Every reading trails the backend by its transit, so a reading behind the current estimate is staler and is skipped.
 function recordServerTime(headers: Headers): void {
   const serverTime = parseServerTime(headers);
-  if (serverTime !== undefined) serverClock = { serverTime, readAt: performance.now() };
+  if (serverTime === undefined || (serverClock && serverTime <= getServerNow())) return;
+  serverClock = { serverTime, readAt: performance.now() };
 }
 
 async function readingServerTime<T extends { headers: Headers }>(request: Promise<T>): Promise<T> {
