@@ -48,7 +48,7 @@ function createPageRequestStore(host: SportsHost): DerivedStore<SportsPageReques
     if (destination === 'live') return { type: 'live' };
     if (destination === 'all') return { type: 'catalog' };
 
-    return { type: 'scope', scopeId: destination, window: $(sportsWindowStore, window => window) };
+    return { type: 'scope', scopeId: destination, window: $(sportsWindowStore, s => s) };
   });
 }
 
