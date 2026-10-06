@@ -49,7 +49,7 @@ export const globalColors = {
   red20: '#FFD4D1',
   red30: '#FFACA3',
   red40: '#FF887A',
-  red50: '#FF6257',
+  red50: '#FF584D',
   red60: '#FA423C',
   red70: '#D13732',
   red80: '#B22824',
