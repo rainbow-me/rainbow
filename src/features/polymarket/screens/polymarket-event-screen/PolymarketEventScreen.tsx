@@ -45,8 +45,8 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
   const eventId = 'gameId' in params ? params.gameId : params.eventId;
   const initialEvent = 'event' in params ? params.event : undefined;
   const { isDarkMode } = useColorMode();
-  const event = usePolymarketEventStore(state => state.getData({ eventId })) ?? initialEvent;
-  const gameId = useSportsStore(state => ('gameId' in params ? params.gameId : getGameId(state, eventId)));
+  const event = usePolymarketEventStore(s => s.getData({ eventId })) ?? initialEvent;
+  const gameId = useSportsStore(s => ('gameId' in params ? params.gameId : getGameId(s, eventId)));
   const eventColor = getColorValueForThemeWorklet(event?.color, isDarkMode);
   let screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
   if (isDarkMode && event) {
@@ -108,7 +108,7 @@ function EventContent({
 }
 
 function EventDetailsStatus({ eventId }: { eventId: string }) {
-  const failed = usePolymarketEventStore(state => state.status !== 'loading' && Boolean(state.getCacheEntry({ eventId })?.errorInfo));
+  const failed = usePolymarketEventStore(s => s.status !== 'loading' && Boolean(s.getCacheEntry({ eventId })?.errorInfo));
   if (!failed) return <MarketRowLoadingSkeleton />;
 
   return (
@@ -158,9 +158,9 @@ function SportsGameOverview({
   event?: PolymarketEvent | PolymarketMarketEvent;
   isDarkMode: boolean;
 }) {
-  const competition = useSportsStore(state => {
-    const id = state.games[gameId]?.competitionIds[0];
-    return id ? state.catalog?.scopes[id] : undefined;
+  const competition = useSportsStore(s => {
+    const id = s.games[gameId]?.competitionIds[0];
+    return id ? s.catalog?.scopes[id] : undefined;
   });
 
   return (
