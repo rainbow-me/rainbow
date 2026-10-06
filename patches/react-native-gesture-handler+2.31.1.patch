@@ -1,3 +1,26 @@
+# PATCH CONTEXT
+# On Android:
+# - Let Rainbow's native button extend RNGH's button and access the handler
+#   for its current gesture, so nested presses activate the correct button.
+# - Preserve native pointer IDs so buttons track the same finger through
+#   Android and RNGH event delivery.
+# - Report native scroll and pull-to-refresh gestures to RNGH so they cancel
+#   competing button presses and pager gestures.
+# - Keep delivering touches to a native scrolling view when RNGH intercepts
+#   normal Android delivery. Forward only after other handlers decide whether
+#   to intercept, so the same event is neither skipped nor delivered twice.
+# - Reset root interception before a new gesture, and clear native touches
+#   left unfinished when RNGH intercepted the previous gesture.
+# - Do not let handlers waiting for another gesture to fail cancel presses
+#   as though they were already active.
+#
+# On iOS:
+# - Deliver touches inside scroll views immediately, without the default delay.
+# - Reset manual-activation recognizers when the app loses focus, so they do not
+#   ignore the first interaction after the app returns to the foreground.
+#
+# Correct createNativeWrapper's ref type to the wrapped component instance.
+
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 +++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
