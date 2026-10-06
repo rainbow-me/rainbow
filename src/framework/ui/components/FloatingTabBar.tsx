@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, type ReactElement, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { PixelRatio, Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -67,7 +67,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   isDarkMode: boolean;
   shadowColor: string;
   onSearch?: () => void;
-}): ReactElement {
+}) {
   const positionsRef = useLazyRef(() => new Map<string, { x: number; width: number }>());
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
@@ -168,7 +168,7 @@ function TabBarFadeMask({
   contentWidth: SharedValue<number>;
   scrollOffset: SharedValue<number>;
   width: number;
-}): ReactElement {
+}) {
   const showLeft = useDerivedValue(() => scrollOffset.value > 0);
   const showRight = useDerivedValue(() => contentWidth.value === 0 || scrollOffset.value < Math.max(0, contentWidth.value - width));
 
@@ -218,7 +218,7 @@ function TabBarSurface({
   width: number;
   isDarkMode: boolean;
   shadowColor: string;
-}): ReactElement {
+}) {
   return (
     <View style={[styles.surface, { elevation: isDarkMode ? 10 : 3, shadowColor, width }]}>
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.clip]}>
@@ -262,7 +262,7 @@ function TabBarSurface({
   );
 }
 
-function TabBarInnerShadow({ width }: { width: number }): ReactElement {
+function TabBarInnerShadow({ width }: { width: number }) {
   const path = useMemo(() => getSquirclePath({ width, height: TAB_BAR_HEIGHT, borderRadius: TAB_BAR_BORDER_RADIUS }), [width]);
   return (
     <Canvas style={StyleSheet.absoluteFill}>

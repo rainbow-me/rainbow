@@ -1,4 +1,4 @@
-import { useMemo, type ReactElement } from 'react';
+import { useMemo } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 
 import { debounce } from 'lodash';
@@ -19,7 +19,7 @@ const SEARCH_DEBOUNCE_MS = 250;
 /**
  * Search input for games, sports, and competitions.
  */
-export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }): ReactElement {
+export function SportsSearch({ host, color, backgroundColor }: { host: SportsHost; color: string; backgroundColor: string }) {
   const navigationStore = sportsNavigationStores[host];
   const initialQuery = useStableValue(() => navigationStore.getState().query ?? '');
 

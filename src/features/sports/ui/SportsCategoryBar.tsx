@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactElement } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { globalColors } from '@/design-system/color/palettes';
@@ -28,7 +28,7 @@ export const SportsCategoryBar = memo(function SportsCategoryBar({
   width: number;
   isDarkMode: boolean;
   catalog?: SportsCatalog;
-}): ReactElement {
+}) {
   const tabs = useMemo(
     () =>
       categories.map(destination => ({

@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -32,7 +32,7 @@ export const SportsHeader = memo(function SportsHeader({
   scope: SportsScope | undefined;
   parent: SportsScope | undefined;
   back: SportsDestination | undefined;
-}): ReactElement {
+}) {
   const title =
     scope?.name ?? i18n.t(page === 'live' ? i18n.l.sports.live : page === 'sports' ? i18n.l.sports.all_sports : i18n.l.sports.title);
 

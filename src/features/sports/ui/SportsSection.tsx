@@ -1,4 +1,3 @@
-import { type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -44,7 +43,7 @@ export function SportsSectionHeading({
   host: SportsHost;
   scope?: SportsScope;
   isDarkMode: boolean;
-}): ReactElement {
+}) {
   const scopeId = section.scopeId;
 
   const title = scopeId ? (scope?.name ?? '') : i18n.t(SECTION_LABELS[section.type]);
@@ -104,7 +103,7 @@ export function SportsSectionHeading({
 /**
  * A loading placeholder for a section's title and count badge.
  */
-export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundColor: string }): ReactElement {
+export function SportsSectionHeadingSkeleton({ backgroundColor }: { backgroundColor: string }) {
   return (
     <View style={styles.heading}>
       <View style={[styles.skeletonTitle, { backgroundColor }]}>
@@ -132,7 +131,7 @@ export function SportsSectionToggle({
   remaining: number;
   onPress: () => void;
   isDarkMode: boolean;
-}): ReactElement {
+}) {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
       <View style={styles.expand}>

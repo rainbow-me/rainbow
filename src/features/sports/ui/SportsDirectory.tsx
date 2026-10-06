@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -26,7 +26,7 @@ export const SportsDirectoryRow = memo(function SportsDirectoryRow({
   competition: boolean;
   isDarkMode: boolean;
   style?: ViewStyle;
-}): ReactElement {
+}) {
   return (
     <View style={[styles.directory, style]}>
       <ButtonPressAnimation onPress={() => sportsNavigationStores[host].getState().open(scope.id)} scaleTo={0.98}>
@@ -51,7 +51,7 @@ export const SportsDirectoryRow = memo(function SportsDirectoryRow({
 /**
  * Heading or separator above the competition directory.
  */
-export function SportsDirectoryHeading({ showTitle, isDarkMode }: { showTitle: boolean; isDarkMode: boolean }): ReactElement {
+export function SportsDirectoryHeading({ showTitle, isDarkMode }: { showTitle: boolean; isDarkMode: boolean }) {
   return (
     <View style={styles.directory}>
       {showTitle ? (
