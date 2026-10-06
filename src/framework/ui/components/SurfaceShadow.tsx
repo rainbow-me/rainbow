@@ -2,7 +2,12 @@ import { memo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 /**
- * Renders a shadow behind its parent surface on iOS.
+ * Renders an efficient iOS shadow underlay.
+ *
+ * An opaque background lets React Native calculate `shadowPath` from the
+ * view's bounds and corner radius, avoiding expensive image-based shadows.
+ * Applying `opacity` to the whole view fades both the shadow and its
+ * background, avoiding rounded-corner artifacts from stacked opaque fills.
  */
 export const SurfaceShadow = memo(function SurfaceShadow({
   backdropColor,
@@ -12,7 +17,7 @@ export const SurfaceShadow = memo(function SurfaceShadow({
   radius,
   y = 0,
 }: {
-  /** Opaque color beneath the surface. */
+  /** Opaque color matching the surface beneath this layer. */
   backdropColor: string;
   borderRadius: number;
   color: string;
