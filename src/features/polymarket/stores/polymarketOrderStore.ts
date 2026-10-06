@@ -40,12 +40,12 @@ type FetchParams = { selection: Selection | null };
 export const usePolymarketOrderDetailsStore = createQueryStore<PolymarketOrderDetails | null, FetchParams>({
   fetcher: fetchOrderDetails,
   enabled: $ => {
-    const hasSelection = $(polymarketOrderParamsStore, state => state.params !== null && 'marketId' in state.params);
-    const activeRoute = $(useNavigationStore, state => state.activeRoute);
+    const hasSelection = $(polymarketOrderParamsStore, s => s.params !== null && 'marketId' in s.params);
+    const activeRoute = $(useNavigationStore, s => s.activeRoute);
     return activeRoute === Routes.POLYMARKET_NEW_POSITION_SHEET && hasSelection;
   },
   params: {
-    selection: $ => $(polymarketOrderParamsStore, state => (state.params && 'marketId' in state.params ? state.params : null)),
+    selection: $ => $(polymarketOrderParamsStore, s => (s.params && 'marketId' in s.params ? s.params : null)),
   },
   staleTime: time.minutes(2),
   cacheTime: time.minutes(10),
