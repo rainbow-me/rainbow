@@ -99,10 +99,12 @@ const WALLET_ADDRESS = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed';
 const RAMP_WALLET_ADDRESS = WALLET_ADDRESS.toLowerCase();
 
 const SUBMITTED_AT = 1750789885000;
+// The required request lifetime, pinned independently of ORDER_REQUEST_TTL_MS so a change to it fails here.
+const REQUEST_TTL_MS = 60_000;
 const SPEC: BuyOrderSpec = {
   cardId: 'card-1',
   depositAmount: '50',
-  expireTime: new Date(SUBMITTED_AT + ORDER_REQUEST_TTL_MS).toISOString(),
+  expireTime: new Date(SUBMITTED_AT + REQUEST_TTL_MS).toISOString(),
   id: 'order-1',
   walletAddress: WALLET_ADDRESS,
 };
@@ -404,7 +406,7 @@ describe('submitBuyOrder', () => {
 
     expect(createBuyOrder.mock.calls[0][1]).toMatchObject({
       id: SPEC.id,
-      expireTime: new Date(AFTER_EXPIRY + ORDER_REQUEST_TTL_MS).toISOString(),
+      expireTime: new Date(AFTER_EXPIRY + REQUEST_TTL_MS).toISOString(),
     });
   });
 

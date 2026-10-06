@@ -348,8 +348,9 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
     partialize: state => ({
       status: selectCashBuyPhase(state) === 'pending' || state.status.step === 'accessRefused' ? state.status : { step: 'idle' as const },
     }),
-    // v1 specs predate `expireTime`. The build that wrote them sent no expiry, but its requests ended with that
-    // app process, so an already-passed expiry lets a readback settle them.
+    // v1 specs predate `expireTime`. The build that wrote them sent no expiry, but this runs only after an upgrade
+    // replaced that build, long after its create requests settled, so an already-passed expiry lets a readback
+    // settle them.
     migrate: persistedState => {
       const { status } = persistedState as { status: CashBuyStatus };
       if (!('spec' in status) || status.spec.expireTime) return { status };
