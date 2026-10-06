@@ -1,4 +1,4 @@
-import { Fragment, memo, useMemo, useState, type ReactElement, type ReactNode } from 'react';
+import { Fragment, memo, useMemo, useState, type ReactNode } from 'react';
 
 import { Box, globalColors, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
@@ -23,7 +23,7 @@ import Routes from '@/navigation/routesNames';
 /**
  * Displays a Sports event's markets with bet type and line selection.
  */
-export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { event: PolymarketEvent }): ReactElement {
+export const SportsEventMarkets = memo(function SportsEventMarkets({ event }: { event: PolymarketEvent }) {
   const { isDarkMode } = useColorMode();
   const { width } = useDimensions();
 
@@ -84,7 +84,7 @@ const LineBasedMarkets = memo(function LineBasedMarkets({
   isSpread: boolean;
   width: number;
   event: PolymarketEvent;
-}): ReactElement | null {
+}) {
   const [selectedLineValue, setSelectedLineValue] = useState<number>(Math.abs(group.mainLine));
 
   const selectedMarket = useMemo(
@@ -144,7 +144,7 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
   group: MoneylineGroup;
   event: PolymarketEvent;
   isDarkMode: boolean;
-}): ReactElement {
+}) {
   return (
     <MarketGroup group={group}>
       {group.isThreeWay ? (
@@ -185,13 +185,7 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
   );
 });
 
-function MarketGroup({
-  group,
-  children,
-}: {
-  group: MoneylineGroup | LineBasedGroup | SingleMarketGroup;
-  children: ReactNode;
-}): ReactElement {
+function MarketGroup({ group, children }: { group: MoneylineGroup | LineBasedGroup | SingleMarketGroup; children: ReactNode }) {
   return (
     <Box gap={24}>
       <Box flexDirection="row" alignItems="center" gap={10}>

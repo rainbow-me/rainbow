@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@/design-system/components/Text/Text';
@@ -16,7 +16,7 @@ export const GameScore = memo(function GameScore({
   score?: ScoreColumn[];
   /** Index of the participant in `Game.participants`. */
   participantIndex: 0 | 1;
-}): ReactElement | null {
+}) {
   if (!score?.length) return null;
 
   const otherWinner = participantIndex === 0 ? ScoreColumn_Winner.WINNER_SECOND : ScoreColumn_Winner.WINNER_FIRST;

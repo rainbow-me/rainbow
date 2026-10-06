@@ -1,4 +1,4 @@
-import { memo, useState, type ReactElement } from 'react';
+import { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -33,7 +33,7 @@ export const SportsImage = memo(function SportsImage({
   size: number;
   width?: number;
   borderRadius?: number;
-}): ReactElement {
+}) {
   return imageUrl ? (
     <RemoteImage
       isDarkMode={isDarkMode}
@@ -52,7 +52,7 @@ export const SportsImage = memo(function SportsImage({
 /**
  * Displays a sport or competition badge with bundled or catalog artwork.
  */
-export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; size: 28 | 40 | 44; isDarkMode: boolean }): ReactElement {
+export function SportsBadge({ scope, size, isDarkMode }: { scope: SportsScope; size: 28 | 40 | 44; isDarkMode: boolean }) {
   const icon = sportsIcons[scope.id];
   const color = icon?.color ?? scope.color;
 
@@ -111,7 +111,7 @@ function RemoteImage({
   width: number;
   height: number;
   borderRadius: number;
-}): ReactElement {
+}) {
   const [failed, setFailed] = useState(false);
 
   if (failed) return <ImageFallback isDarkMode={isDarkMode} name={name} size={Math.min(width, height)} />;
@@ -128,7 +128,7 @@ function RemoteImage({
   );
 }
 
-function ImageFallback({ name, size, isDarkMode }: { name: string; size: number; isDarkMode: boolean }): ReactElement {
+function ImageFallback({ name, size, isDarkMode }: { name: string; size: number; isDarkMode: boolean }) {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
     <View style={[styles.image, styles.fallback, { width: size, height: size, backgroundColor }]}>
