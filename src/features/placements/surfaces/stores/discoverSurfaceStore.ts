@@ -17,8 +17,8 @@ const discoverSurfaceStore = getSurfaceStore('discover');
 
 export const useDiscoverSurfaceInput = createDerivedStore(
   $ => ({
-    surface: removeDiscoverSportsTab($(discoverSurfaceStore, state => state.getData())),
-    lastFetchedAt: $(discoverSurfaceStore, state => state.lastFetchedAt),
+    surface: removeDiscoverSportsTab($(discoverSurfaceStore, s => s.getData())),
+    lastFetchedAt: $(discoverSurfaceStore, s => s.lastFetchedAt),
   }),
   {
     equalityFn: (previous, next) => previous.lastFetchedAt === next.lastFetchedAt && deepEqual(previous.surface, next.surface),
@@ -29,9 +29,9 @@ export const useDiscoverSurfaceInput = createDerivedStore(
 export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
   $ => {
     const { surface, lastFetchedAt: surfaceLastFetchedAt } = $(useDiscoverSurfaceInput);
-    const placementsById = $(usePlacementsStore, state => state.placementsById);
-    const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
-    const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
+    const placementsById = $(usePlacementsStore, s => s.placementsById);
+    const placementsLastFetchedAt = $(usePlacementsStore, s => s.lastFetchedAt);
+    const placementsReady = $(usePlacementsStore, s => s.getStatus('isSuccess'));
 
     if (!surface) return undefined;
 
@@ -51,7 +51,7 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
 export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
   $ => {
     const surface = $(useDiscoverSurface);
-    const placementsById = $(usePlacementsStore, state => state.placementsById);
+    const placementsById = $(usePlacementsStore, s => s.placementsById);
 
     if (!surface) {
       return {
