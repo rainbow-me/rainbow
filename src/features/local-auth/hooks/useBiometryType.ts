@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
+import { useListen } from '@storesjs/stores';
 import { isNil } from 'lodash';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
 
-import useAppState from '@/hooks/useAppState';
-import useIsMounted from '@/hooks/useIsMounted';
-import usePrevious from '@/hooks/usePrevious';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 
 import * as keychain from '../keychain';
 import { BiometryTypes } from '../types/biometryTypes';
@@ -13,13 +12,13 @@ import { BiometryTypes } from '../types/biometryTypes';
 type BiometryType = keyof typeof BiometryTypes;
 
 export function useBiometryType(): BiometryType | null {
-  const { justBecameActive } = useAppState();
-  const isMounted = useIsMounted();
   const [biometryType, setBiometryType] = useState<BiometryType | null>(null);
-  const prevBiometricType = usePrevious(biometryType);
 
-  useEffect(() => {
-    const getSupportedBiometryType = async () => {
+  const listener = useListen(
+    useAppStateStore,
+    s => s === 'active',
+    async isActive => {
+      if (!isActive) return;
       let type = await keychain.getSupportedBiometryType();
 
       if (isNil(type)) {
@@ -32,16 +31,13 @@ export function useBiometryType(): BiometryType | null {
         );
       }
 
-      if (isMounted.current && type !== prevBiometricType) {
+      if (listener.current.isActive) {
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'BIOMETRY_TYPE | null' is not ass... Remove this comment to see the full error message
         setBiometryType(type);
       }
-    };
-
-    if (!biometryType || justBecameActive) {
-      getSupportedBiometryType();
-    }
-  }, [biometryType, isMounted, justBecameActive, prevBiometricType]);
+    },
+    { fireImmediately: true }
+  );
 
   return biometryType;
 }
