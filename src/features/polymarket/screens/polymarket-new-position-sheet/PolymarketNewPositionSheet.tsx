@@ -84,10 +84,10 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
 });
 
 function SelectedOutcomeForm({ selection, outcomeColor, fromRoute }: { selection: Selection; outcomeColor: string; fromRoute: Route }) {
-  const details = usePolymarketOrderDetailsStore(state => {
-    const data = state.getData({ selection });
+  const details = usePolymarketOrderDetailsStore(s => {
+    const data = s.getData({ selection });
     if (data) return data;
-    return state.getStatus('isInitialLoad') || state.getStatus('isLoading') ? undefined : null;
+    return s.getStatus('isInitialLoad') || s.getStatus('isLoading') ? undefined : null;
   });
 
   if (details === undefined) return <NewPositionSkeleton outcomeColor={outcomeColor} />;
@@ -130,7 +130,7 @@ function NewPositionForm({
 }: PolymarketOrderDetails & { outcomeColor: string; fromRoute: Route }) {
   const { isDarkMode } = useColorMode();
 
-  const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
+  const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
   const [processingStep, setProcessingStep] = useState<PolymarketBuyPositionStep | null>(null);
 
   const outcome = market.outcomes[outcomeIndex];
