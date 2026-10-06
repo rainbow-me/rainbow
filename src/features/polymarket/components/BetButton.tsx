@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactElement } from 'react';
+import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -62,7 +62,7 @@ export const BetButton = memo(function BetButton({
   color?: string;
   line?: number;
   onPress: (color: string) => void;
-}): ReactElement {
+}) {
   const price = useStoreSharedValue(useLiveTokensStore, state => state.tokens[liveTokenId]?.price);
 
   return (
@@ -85,7 +85,7 @@ export const BetButton = memo(function BetButton({
 
 // ============ Bet Content ==================================================== //
 
-function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps): ReactElement {
+function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps) {
   const backgroundColor = useMemo(
     () => getSolidColorEquivalent({ background: color, foreground: globalColors.grey100, opacity: isDarkMode ? 0.3 : 0.06 }),
     [color, isDarkMode]
@@ -116,7 +116,7 @@ function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps
   );
 }
 
-function SpreadBet({ color, isDarkMode, price, fallbackPrice, line }: BetContentProps & { line: number }): ReactElement {
+function SpreadBet({ color, isDarkMode, price, fallbackPrice, line }: BetContentProps & { line: number }) {
   const { backgroundColor, borderColor, gradient } = useMemo(() => {
     if (!isDarkMode) return { backgroundColor: undefined, borderColor: globalColors.white100, gradient: LIGHT_SPREAD_FILL };
 
