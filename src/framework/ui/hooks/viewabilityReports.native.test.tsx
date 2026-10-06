@@ -53,7 +53,7 @@ let eventTarget: NativeSyntheticEvent<unknown>['target'];
 let scrollProps: ScrollViewProps;
 let contentHeight: number;
 
-function Cell({ children, index, onLayout }: CellRendererProps<string>): ReactElement {
+function Cell({ children, index, onLayout }: CellRendererProps<string>) {
   useEffect(() => {
     onLayout?.(layoutEvent(index * ROW_HEIGHT));
   }, [index, onLayout]);
@@ -73,7 +73,7 @@ function renderScrollComponent(props: ScrollViewProps): ReactElement<ScrollViewP
   });
 }
 
-function List({ data, viewabilityConfig }: Pick<FlatListProps<string>, 'data' | 'viewabilityConfig'>): ReactElement {
+function List({ data, viewabilityConfig }: Pick<FlatListProps<string>, 'data' | 'viewabilityConfig'>) {
   const { onViewableItemsChanged } = useViewabilityTracker(SELECTORS, onChange);
 
   return (

@@ -43,7 +43,7 @@ describe.each(['shared', 'react'])('live token %s delivery', kind => {
   const useValue = kind === 'shared' ? useLiveTokenSharedValue : useLiveTokenValue;
   let value: string | SharedValue<string> = '';
 
-  function Probe(props: ValueParams): null {
+  function Probe(props: ValueParams) {
     value = useValue(props);
     return null;
   }

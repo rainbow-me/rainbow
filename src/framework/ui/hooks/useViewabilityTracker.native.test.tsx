@@ -22,12 +22,12 @@ function Tracker({
   onChange: (ids: readonly string[]) => void;
   select?: ViewabilitySelectors<Row>;
   child?: boolean;
-}): ReactElement | null {
+}) {
   handlers = useViewabilityTracker(select, onChange);
   return child ? <ChildReport /> : null;
 }
 
-function ChildReport(): null {
+function ChildReport() {
   useEffect(() => {
     handlers.onChildViewableItemsChanged('carousel', [{ item: 'a' }]);
     return () => handlers.onChildViewableItemsChanged('carousel', []);
@@ -115,12 +115,12 @@ it('keeps reports received during commit and publishes after the old consumer re
   const first = vi.fn<(ids: readonly string[]) => void>();
   const second = vi.fn((ids: readonly string[]) => events.push(ids));
 
-  function LayoutReport({ id }: { id: string }): null {
+  function LayoutReport({ id }: { id: string }) {
     useLayoutEffect(() => handlers.onViewableItemsChanged({ viewableItems: [{ id }] }), [id]);
     return null;
   }
 
-  function Consumer({ onChange, id }: { onChange: (ids: readonly string[]) => void; id: string }): ReactElement {
+  function Consumer({ onChange, id }: { onChange: (ids: readonly string[]) => void; id: string }) {
     useEffect(
       () => () => {
         events.push('release');
