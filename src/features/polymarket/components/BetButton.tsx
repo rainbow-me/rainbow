@@ -63,7 +63,7 @@ export const BetButton = memo(function BetButton({
   line?: number;
   onPress: (color: string) => void;
 }) {
-  const price = useStoreSharedValue(useLiveTokensStore, state => state.tokens[liveTokenId]?.price);
+  const price = useStoreSharedValue(useLiveTokensStore, s => s.tokens[liveTokenId]?.price);
 
   return (
     <ButtonPressAnimation
