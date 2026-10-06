@@ -49,7 +49,7 @@ const mockIsPasskeyCancellation = vi.mocked(isPasskeyCancellation);
 const LOAD_CARDS = { kind: 'loadCards' } as const;
 const RESUME_ORDER = { kind: 'resumeOrder' } as const;
 
-const SPEC = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: '0xabc' };
+const SPEC = { cardId: 'card-1', depositAmount: '50', expireTime: '2025-06-24T18:33:25.000Z', id: 'order-1', walletAddress: '0xabc' };
 const PROBING: CashBuyStatus = { step: 'probing', spec: SPEC, submittedAt: 1750789885000 };
 
 const gate = () => useCashAuthGateStore.getState().status;

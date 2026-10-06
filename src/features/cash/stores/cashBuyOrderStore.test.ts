@@ -6,7 +6,12 @@ import { logger } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { delay } from '@/utils/delay';
 
-import { CASH_BUY_DESTINATION_ASSET, ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS } from '../constants';
+import {
+  CASH_BUY_DESTINATION_ASSET,
+  ORDER_REQUEST_TTL_MS,
+  ORDER_SERVER_CLOCK_MARGIN_MS,
+  ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS,
+} from '../constants';
 import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import {
@@ -93,8 +98,15 @@ const PURCHASE_TRANSACTION = { hash: '0xtx', type: 'purchase' };
 const WALLET_ADDRESS = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed';
 const RAMP_WALLET_ADDRESS = WALLET_ADDRESS.toLowerCase();
 
-const SPEC: BuyOrderSpec = { cardId: 'card-1', depositAmount: '50', id: 'order-1', walletAddress: WALLET_ADDRESS };
 const SUBMITTED_AT = 1750789885000;
+const SPEC: BuyOrderSpec = {
+  cardId: 'card-1',
+  depositAmount: '50',
+  expireTime: new Date(SUBMITTED_AT + ORDER_REQUEST_TTL_MS).toISOString(),
+  id: 'order-1',
+  walletAddress: WALLET_ADDRESS,
+};
+const AFTER_EXPIRY = SUBMITTED_AT + ORDER_REQUEST_TTL_MS + ORDER_SERVER_CLOCK_MARGIN_MS;
 
 const PENDING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { id: 'order-1', status: OrderStatus.Pending };
 const PROCESSING_ORDER: Exclude<BuyOrder, TerminalBuyOrder> = { id: 'order-1', status: OrderStatus.Processing };
@@ -128,8 +140,14 @@ function orderResult(order: BuyOrder) {
   return { kind: 'success', data: order };
 }
 
-function fetchError(status: number): RainbowFetchError {
-  return new RainbowFetchError({ message: 'not found', response: { status } as Response });
+/** Stamped by default with the clock at the moment it is built, as the gateway's `Date` header would be. */
+function fetchError(status: number, serverTime: number | null = now): RainbowFetchError {
+  const headers = new Headers(serverTime === null ? {} : { date: new Date(serverTime).toUTCString() });
+  return new RainbowFetchError({ message: 'not found', response: { status, headers } as Response });
+}
+
+async function notFoundWhenAnswered(): Promise<never> {
+  throw fetchError(404);
 }
 
 function networkPolicyError(): CashAccessRefusedError {
@@ -141,15 +159,21 @@ const getState = () => store.getState();
 const phase = () => selectCashBuyPhase(getState());
 const gate = () => useCashAuthGateStore.getState().status;
 
+let now = SUBMITTED_AT;
+vi.spyOn(Date, 'now').mockImplementation(() => now);
+
 beforeEach(() => {
   vi.clearAllMocks();
+  now = SUBMITTED_AT;
   mockUuidCounter = 0;
   store.setState({ status: { step: 'idle' } });
   useCashAuthGateStore.getState().clear();
   useCashWalletStore.getState().clear();
   buildPurchaseTransaction.mockReturnValue(PURCHASE_TRANSACTION);
   createBuyOrder.mockResolvedValue(CREATE_SUCCESS);
-  mockDelay.mockResolvedValue(undefined);
+  mockDelay.mockImplementation(async ms => {
+    now += ms;
+  });
   mockIsPasskeyCancellation.mockReturnValue(false);
 });
 
@@ -209,8 +233,7 @@ describe('submitBuyOrder', () => {
   });
 
   it('backs off further on each replay', async () => {
-    createBuyOrder.mockRejectedValue(new Error('network down'));
-    getOrder.mockResolvedValue(orderResult(PENDING_ORDER));
+    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockRejectedValueOnce(new Error('network down'));
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
 
@@ -233,22 +256,33 @@ describe('submitBuyOrder', () => {
     expect(phase()).toBe('idle');
   });
 
-  // Once the replay budget is spent the write path is treated as unhealthy: the order is read back
-  // under its id, never written again.
-  describe('after the replay budget is spent', () => {
+  // Once the request expires a write can no longer create the order: it is read back under its id,
+  // never written again, after the backend can no longer create it either.
+  describe('after the request expires', () => {
+    let postedAt: number[];
+    let probedAt: number[];
+
     beforeEach(() => {
-      createBuyOrder.mockRejectedValue(new Error('network down'));
+      postedAt = [];
+      probedAt = [];
+      createBuyOrder.mockImplementation(async () => {
+        postedAt.push(now);
+        throw new Error('network down');
+      });
+      getOrder.mockImplementation(async () => {
+        probedAt.push(now);
+        return orderResult(PENDING_ORDER);
+      });
     });
 
-    it('never mints a new id and probes the same one', async () => {
-      getOrder.mockResolvedValue(orderResult(PENDING_ORDER));
-
+    it('replays the same id only before it expires, then probes it once creation closes', async () => {
       await getState().submitBuyOrder(SUBMIT_INPUT);
 
-      expect(createBuyOrder).toHaveBeenCalledTimes(3);
-      expect(createBuyOrder.mock.calls.map(([authMode]) => authMode)).toEqual(['interactive', 'cachedOnly', 'cachedOnly']);
+      expect(postedAt.length).toBeGreaterThan(3);
+      expect(postedAt.every(at => at < Date.parse(SPEC.expireTime))).toBe(true);
       expect(new Set(createBuyOrder.mock.calls.map(([, params]) => params.id))).toEqual(new Set([SPEC.id]));
       expect(getOrder).toHaveBeenCalledWith(SPEC.id);
+      expect(probedAt).toEqual([AFTER_EXPIRY]);
     });
 
     it('resumes polling when the probe finds the order', async () => {
@@ -269,8 +303,8 @@ describe('submitBuyOrder', () => {
       expect(getState().status).toEqual({ step: 'success', order: COMPLETED_ORDER });
     });
 
-    it('reports nothing was charged when the probe finds no order', async () => {
-      getOrder.mockRejectedValue(fetchError(404));
+    it('reports nothing was charged when the probe finds no order after the request expired', async () => {
+      getOrder.mockImplementation(notFoundWhenAnswered);
 
       await getState().submitBuyOrder(SUBMIT_INPUT);
 
@@ -351,12 +385,16 @@ describe('submitBuyOrder', () => {
     expect(createBuyOrder.mock.calls[1][1].id).toBe('order-2');
   });
 
-  it('replays the same order id when retrying an unplaced order with identical inputs', async () => {
+  it('replays the same order id with a fresh expiry when retrying an unplaced order with identical inputs', async () => {
     store.setState({ status: { step: 'notPlaced', spec: SPEC } });
+    now = AFTER_EXPIRY;
 
     await getState().submitBuyOrder(SUBMIT_INPUT);
 
-    expect(createBuyOrder.mock.calls[0][1].id).toBe(SPEC.id);
+    expect(createBuyOrder.mock.calls[0][1]).toMatchObject({
+      id: SPEC.id,
+      expireTime: new Date(AFTER_EXPIRY + ORDER_REQUEST_TTL_MS).toISOString(),
+    });
   });
 
   it('retains the order id for a manual retry after a network policy response', async () => {
@@ -389,9 +427,10 @@ describe('submitBuyOrder', () => {
           resolveRetry = () => resolve(CREATE_SUCCESS);
         })
       );
-    getOrder.mockRejectedValueOnce(fetchError(404));
+    getOrder.mockImplementationOnce(notFoundWhenAnswered);
 
     const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    now = AFTER_EXPIRY;
     await getState().resumeOrder();
     const retry = getState().submitBuyOrder(SUBMIT_INPUT);
 
@@ -402,6 +441,30 @@ describe('submitBuyOrder', () => {
     resolveRetry();
     await retry;
     expect(getState().status).toMatchObject({ step: 'polling', orderId: SPEC.id });
+  });
+
+  // The backend can still create the order while the original submit is in flight, so a 404 then must not
+  // invite a second submission that could charge the user again.
+  it('pauses instead of allowing a resubmit when the probe finds no order before the request expires', async () => {
+    let resolveOriginal: () => void = () => undefined;
+    createBuyOrder.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveOriginal = () => resolve(CREATE_SUCCESS);
+      })
+    );
+    getOrder.mockImplementationOnce(notFoundWhenAnswered);
+
+    const original = getState().submitBuyOrder(SUBMIT_INPUT);
+    await getState().resumeOrder();
+
+    expect(getState().status).toEqual(PAUSED);
+
+    await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '100' });
+    expect(createBuyOrder).toHaveBeenCalledTimes(1);
+
+    resolveOriginal();
+    await original;
+    expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: SUBMITTED_AT });
   });
 
   it('generates a fresh order id when the retried inputs differ from the unplaced spec', async () => {
@@ -737,13 +800,39 @@ describe('resumeOrder', () => {
     expect(getState().status).toEqual({ step: 'error', errorCode: 'PAYMENT_REJECTED', order: FAILED_PAYMENT_ORDER });
   });
 
-  it('reports nothing was charged when the probe finds no order', async () => {
+  it('reports nothing was charged when the probe finds no order after the request expired', async () => {
     store.setState({ status: PAUSED });
-    getOrder.mockRejectedValue(fetchError(404));
+    getOrder.mockImplementation(notFoundWhenAnswered);
+    now = AFTER_EXPIRY;
 
     await getState().resumeOrder();
 
     expect(getState().status).toEqual({ step: 'notPlaced', spec: SPEC });
+  });
+
+  // The device clock can be wrong in either direction; only the backend's own clock says creation has closed.
+  it.each([
+    {
+      label: 'an expired server clock despite a device clock behind it',
+      deviceTime: SUBMITTED_AT,
+      serverTime: AFTER_EXPIRY,
+      step: 'notPlaced',
+    },
+    {
+      label: 'an unexpired server clock despite a device clock past it',
+      deviceTime: AFTER_EXPIRY + ORDER_REQUEST_TTL_MS,
+      serverTime: AFTER_EXPIRY - 1000,
+      step: 'paused',
+    },
+    { label: 'no server clock reading', deviceTime: AFTER_EXPIRY, serverTime: null, step: 'paused' },
+  ])('settles a 404 with $label as $step', async ({ deviceTime, serverTime, step }) => {
+    store.setState({ status: PAUSED });
+    now = deviceTime;
+    getOrder.mockRejectedValue(fetchError(404, serverTime));
+
+    await getState().resumeOrder();
+
+    expect(getState().status.step).toBe(step);
   });
 
   it('stays paused when the probe is ambiguous', async () => {
@@ -898,11 +987,12 @@ describe('concurrent submission and probe of the same spec', () => {
           markReplayStarted();
         })
     );
-    getOrder.mockRejectedValueOnce(fetchError(404));
+    getOrder.mockImplementationOnce(notFoundWhenAnswered);
 
     const submission = getState().submitBuyOrder(SUBMIT_INPUT);
     await replayStarted;
     getState().suspendSubmission();
+    now = AFTER_EXPIRY;
     await getState().resumeOrder();
     resolveReplay(AUTH_REQUIRED);
     await submission;
@@ -924,11 +1014,12 @@ describe('concurrent submission and probe of the same spec', () => {
           markReplayStarted();
         })
     );
-    getOrder.mockRejectedValueOnce(fetchError(404));
+    getOrder.mockImplementationOnce(notFoundWhenAnswered);
 
     const submission = getState().submitBuyOrder(SUBMIT_INPUT);
     await replayStarted;
     getState().suspendSubmission();
+    now = AFTER_EXPIRY;
     await getState().resumeOrder();
     rejectReplay(fetchError(422));
     await submission;

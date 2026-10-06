@@ -8,12 +8,19 @@ import { logger, RainbowError } from '@/logger';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { delay } from '@/utils/delay';
 
-import { CASH_BUY_DESTINATION_ASSET, ORDER_SUBMISSION_MAX_REPLAYS, ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS } from '../constants';
+import {
+  CASH_BUY_DESTINATION_ASSET,
+  ORDER_REQUEST_TTL_MS,
+  ORDER_SERVER_CLOCK_MARGIN_MS,
+  ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS,
+} from '../constants';
 import { isCashAccessRefusedError } from '../services/cashAccessRefusal';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import {
   createBuyOrder,
+  getErrorServerTime,
   getOrderWithCachedAuth,
+  getServerNow,
   isDefinitiveRejection,
   isNotFoundError,
   isTerminalBuyOrder,
@@ -56,8 +63,9 @@ export type CashBuyStatus =
     }
   | { step: 'success'; order: Extract<BuyOrder, { status: OrderStatus.Completed }> }
   /**
-   * The backend has no order under this id, so nothing was charged. The spec is kept so a retry
-   * with the same inputs still replays the same id instead of risking a second order.
+   * The backend has no order under this id and its request has expired, so none can still be
+   * created and nothing was charged. The spec is kept so a retry with the same inputs still
+   * replays the same id instead of risking a second order.
    */
   | { step: 'notPlaced'; spec: BuyOrderSpec }
   | { step: 'error'; errorCode: CashBuyErrorCode; order: Extract<BuyOrder, { status: OrderStatus.Failed }> | null };
@@ -65,7 +73,7 @@ export type CashBuyStatus =
 type CashBuyOrderState = {
   status: CashBuyStatus;
 
-  submitBuyOrder: (input: Omit<BuyOrderSpec, 'id'>) => Promise<void>;
+  submitBuyOrder: (input: Omit<BuyOrderSpec, 'id' | 'expireTime'>) => Promise<void>;
   syncActiveOrder: (abortController?: AbortController) => Promise<void>;
   resumeOrder: () => Promise<CashBuyResumeResult>;
   suspendSubmission: () => void;
@@ -96,6 +104,11 @@ export function selectCashBuyPhase(state: Pick<CashBuyOrderState, 'status'>): Ca
 // user's Re-authenticate tap resumes the order from wherever it stopped.
 function parkForReauth(): void {
   useCashAuthGateStore.getState().park({ kind: 'resumeOrder' });
+}
+
+/** From this instant on the backend's clock it can no longer create the spec's order, so its absence is final. */
+function getCreationClosedAt(spec: BuyOrderSpec): number {
+  return Date.parse(spec.expireTime) + ORDER_SERVER_CLOCK_MARGIN_MS;
 }
 
 export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
@@ -150,7 +163,10 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         else set({ status: { step: 'polling', orderId: spec.id, order: result.data, submittedAt } });
       } catch (error) {
         if (get().status !== probing) return 'completed';
-        if (isNotFoundError(error)) {
+        // Until creation closes, an in-flight submit can still create the order after this read, so the 404 is
+        // only final when the backend's own clock says it answered after that.
+        const answeredAt = getErrorServerTime(error);
+        if (isNotFoundError(error) && answeredAt !== undefined && answeredAt >= getCreationClosedAt(spec)) {
           set({ status: { step: 'notPlaced', spec } });
         } else {
           logger.error(new RainbowError('[cashBuyOrderStore] buy order left unconfirmed', error), { orderId: spec.id });
@@ -172,9 +188,12 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
 
     async function submitBuyOrderSpec(submitting: Extract<CashBuyStatus, { step: 'submitting' }>): Promise<void> {
       const { spec, submittedAt } = submitting;
-      for (let replay = 0; replay <= ORDER_SUBMISSION_MAX_REPLAYS; replay++) {
+      const expiresAt = Date.parse(spec.expireTime);
+      for (let replay = 0; ; replay++) {
         if (replay > 0) {
-          await delay(ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS * replay);
+          const backoff = ORDER_SUBMISSION_REPLAY_BASE_DELAY_MS * replay;
+          if (getServerNow() + backoff >= expiresAt - ORDER_SERVER_CLOCK_MARGIN_MS) break;
+          await delay(backoff);
           if (get().status !== submitting) return;
         }
         try {
@@ -217,7 +236,13 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           logger.warn('[cashBuyOrderStore] createBuyOrder failed ambiguously', { orderId: spec.id, replay });
         }
       }
-      // Repeated ambiguous writes say the write path is unhealthy: stop writing, start reading.
+      // Once the request has expired a write could no longer create the order, so only a read can settle it,
+      // and that read is final once creation has closed.
+      const untilClosed = getCreationClosedAt(spec) - getServerNow();
+      if (untilClosed > 0) {
+        await delay(untilClosed);
+        if (get().status !== submitting) return;
+      }
       if ((await probeOrder({ step: 'probing', spec, submittedAt })) === 'authRequired') parkForReauth();
     }
 
@@ -237,11 +262,18 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
           status.spec.walletAddress === walletAddress
             ? status.spec
             : null;
+        const submittedAt = Date.now();
         const submitting = {
           step: 'submitting',
           // A same-ID retry is a new attempt; results from the earlier spec must not settle it.
-          spec: { cardId, depositAmount, walletAddress, id: retained?.id ?? uuidv4() },
-          submittedAt: Date.now(),
+          spec: {
+            cardId,
+            depositAmount,
+            walletAddress,
+            id: retained?.id ?? uuidv4(),
+            expireTime: new Date(getServerNow() + ORDER_REQUEST_TTL_MS).toISOString(),
+          },
+          submittedAt,
         } as const;
         set({ status: submitting });
         await submitBuyOrderSpec(submitting);

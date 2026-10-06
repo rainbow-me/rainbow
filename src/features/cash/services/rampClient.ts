@@ -64,6 +64,8 @@ export type BuyOrderSpec = {
   cardId: string;
   /** Fiat amount as a decimal string, e.g. "50". */
   depositAmount: string;
+  /** ISO 8601 instant after which the backend refuses to create this order; a request with the same id still returns an existing one. */
+  expireTime: string;
   /** Client-generated UUID. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
   id: string;
   walletAddress: string;
@@ -210,6 +212,47 @@ function handleRampError(error: unknown): never {
   throw error;
 }
 
+// ---- Server clock ------------------------------------------------------------
+// The backend enforces order expiry on its own clock. A response's `Date` header is the only reading of it, so the
+// latest one anchors a monotonic estimate that a wrong or adjusted device clock cannot skew.
+
+let serverClock: { serverTime: number; readAt: number } | null = null;
+
+function parseServerTime(headers: Headers): number | undefined {
+  const date = headers.get('date');
+  const serverTime = date ? Date.parse(date) : NaN;
+  return Number.isFinite(serverTime) ? serverTime : undefined;
+}
+
+function recordServerTime(headers: Headers): void {
+  const serverTime = parseServerTime(headers);
+  if (serverTime !== undefined) serverClock = { serverTime, readAt: performance.now() };
+}
+
+async function readingServerTime<T extends { headers: Headers }>(request: Promise<T>): Promise<T> {
+  try {
+    const response = await request;
+    recordServerTime(response.headers);
+    return response;
+  } catch (error) {
+    if (error instanceof RainbowFetchError && error.response) recordServerTime(error.response.headers);
+    throw error;
+  }
+}
+
+/**
+ * Estimate of the backend's clock in epoch ms. It trails the backend by up to the header's 1s resolution plus the
+ * response's transit; before any ramp response it falls back to the device clock.
+ */
+export function getServerNow(): number {
+  return serverClock ? serverClock.serverTime + (performance.now() - serverClock.readAt) : Date.now();
+}
+
+/** The backend's clock when it produced a failed response. */
+export function getErrorServerTime(error: unknown): number | undefined {
+  return error instanceof RainbowFetchError && error.response ? parseServerTime(error.response.headers) : undefined;
+}
+
 export type CashAuthResult<T> = { kind: 'success'; data: T } | { kind: 'authRequired' };
 
 type CashAuthMode = { kind: 'cachedOnly' } | { kind: 'interactive'; trigger: CashSignInTrigger };
@@ -284,7 +327,7 @@ export async function listCards({
   if (IS_TESTING === 'true') return selectCashLinkedCards(useCashPaymentMethodStore.getState());
 
   const data = await authorizedRequest({ kind: 'interactive', trigger }, async headers => {
-    const response = await getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers });
+    const response = await readingServerTime(getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers }));
     return response.data;
   });
   return parseLinkedCards(data);
@@ -297,7 +340,7 @@ export async function listCardsWithCachedAuth(abortController?: AbortController 
   }
 
   const result = await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
-    const response = await getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers });
+    const response = await readingServerTime(getCashPlatformClient().get('/ramp/payment-methods/cards', { abortController, headers }));
     return response.data;
   });
   if (result.kind === 'authRequired') return result;
@@ -359,7 +402,7 @@ export async function createBuyOrder(authMode: CashAuthMode['kind'], params: Cre
   }
 
   const send = async (headers: { Authorization: string }) => {
-    await getCashPlatformClient().post('/ramp/orders/buy', params, { headers });
+    await readingServerTime(getCashPlatformClient().post('/ramp/orders/buy', params, { headers }));
   };
   if (authMode === 'cachedOnly') return authorizedRequest({ kind: 'cachedOnly' }, send);
   await authorizedRequest({ kind: 'interactive', trigger: 'addCash' }, send);
@@ -373,7 +416,9 @@ export async function getOrderWithCachedAuth(orderId: string, abortController?: 
         ? { kind: 'success', data: e2eGetOrderResponse(orderId) }
         : { kind: 'authRequired' }
       : await authorizedRequest({ kind: 'cachedOnly' }, async headers => {
-          const response = await getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers });
+          const response = await readingServerTime(
+            getCashPlatformClient().get(`/ramp/orders/${encodeURIComponent(orderId)}`, { abortController, headers })
+          );
           return response.data;
         });
   if (result.kind === 'authRequired') return result;
