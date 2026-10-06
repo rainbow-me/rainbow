@@ -1,4 +1,3 @@
-import { type ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { foregroundColors } from '@/design-system/color/palettes';
@@ -9,7 +8,7 @@ import { SportsSectionHeadingSkeleton } from '@/features/sports/ui/SportsSection
 /**
  * Loading placeholders for Sports browse pages.
  */
-export function SportsSkeleton({ page, width, isDarkMode }: { page: SportsPage; width: number; isDarkMode: boolean }): ReactElement {
+export function SportsSkeleton({ page, width, isDarkMode }: { page: SportsPage; width: number; isDarkMode: boolean }) {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
 
   if (page === 'sports' || page === 'competitions') {
