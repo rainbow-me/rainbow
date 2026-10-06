@@ -17,8 +17,8 @@ export const usePolymarketFeeInfoStore = createQueryStore<PolymarketFeeInfo, Fet
   fetcher: fetchPolymarketFeeInfo,
   params: {
     conditionId: $ => {
-      const params = $(polymarketOrderParamsStore, state => state.params);
-      const conditionId = $(usePolymarketOrderDetailsStore, state => state.getData()?.market.conditionId ?? null);
+      const params = $(polymarketOrderParamsStore, s => s.params);
+      const conditionId = $(usePolymarketOrderDetailsStore, s => s.getData()?.market.conditionId ?? null);
       if (!params) return null;
       return 'conditionId' in params ? params.conditionId : conditionId;
     },

@@ -45,7 +45,7 @@ type FetchParams = {
  */
 export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams>({
   fetcher: fetchPolymarketOrderBook,
-  params: { tokenId: $ => $(polymarketOrderParamsStore, state => state.params?.tokenId ?? null) },
+  params: { tokenId: $ => $(polymarketOrderParamsStore, s => s.params?.tokenId ?? null) },
   cacheTime: time.minutes(1),
   staleTime: time.seconds(1),
 });
