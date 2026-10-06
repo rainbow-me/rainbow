@@ -19,7 +19,7 @@ const renderer = await vi.importActual<ReactNativeType>('react-native/Libraries/
 const fetchPrices = vi.spyOn(priceAdapter, 'fetchPolymarketPrices').mockResolvedValue({});
 let setPrices: (gameIds: readonly string[]) => void;
 
-function Prices(): null {
+function Prices() {
   setPrices = useSportsPriceSubscription();
   return null;
 }
