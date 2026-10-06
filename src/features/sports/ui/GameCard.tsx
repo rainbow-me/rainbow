@@ -1,4 +1,4 @@
-import { createContext, Fragment, memo, useContext, type ReactElement, type ReactNode } from 'react';
+import { createContext, Fragment, memo, useContext, type ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
@@ -85,7 +85,7 @@ export const GameCard = memo(function GameCard({
   width: number;
   onPress: SportsGamePress;
   style?: ViewStyle;
-}): ReactElement | null {
+}) {
   const game = useSportsStore(s => s.games[gameId]);
 
   if (!game) return null;
@@ -162,7 +162,7 @@ function GameCardSurface({
   threeWay?: boolean;
   testID: string;
   children: ReactNode;
-}): ReactElement {
+}) {
   const rows = threeWay ? 3 : 2;
   const height = styles.header.height + rows * (styles.row.height + styles.divider.height) + styles.surface.paddingBottom;
 
@@ -202,7 +202,7 @@ function GameCardSurface({
   );
 }
 
-const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width: number; height: number }): ReactElement {
+const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width: number; height: number }) {
   const paths = useContext(GameCardPathsContext);
   const key = `${width}:${height}`;
   let path = paths?.get(key);
@@ -224,7 +224,7 @@ const CardInnerShadow = memo(function CardInnerShadow({ width, height }: { width
 /**
  * A loading placeholder for a game card.
  */
-export function GameCardSkeleton({ width, isDarkMode }: { width: number; isDarkMode: boolean }): ReactElement {
+export function GameCardSkeleton({ width, isDarkMode }: { width: number; isDarkMode: boolean }) {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   return (
     <GameCardSurface isDarkMode={isDarkMode} width={width} testID="sports-game-skeleton">
@@ -242,7 +242,7 @@ export function GameCardSkeleton({ width, isDarkMode }: { width: number; isDarkM
   );
 }
 
-function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }): ReactElement {
+function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }) {
   return (
     <View style={styles.row}>
       <View style={[styles.skeletonLogo, { backgroundColor }]} />
@@ -255,7 +255,7 @@ function SkeletonParticipant({ backgroundColor }: { backgroundColor: string }): 
   );
 }
 
-const GameDivider = memo(function GameDivider({ header = false, isDarkMode }: { header?: boolean; isDarkMode: boolean }): ReactElement {
+const GameDivider = memo(function GameDivider({ header = false, isDarkMode }: { header?: boolean; isDarkMode: boolean }) {
   return (
     <View style={styles.divider}>
       {isDarkMode ? (
@@ -283,13 +283,7 @@ const GameDivider = memo(function GameDivider({ header = false, isDarkMode }: { 
 
 // ============ Game Header ==================================================== //
 
-const GameCompetition = memo(function GameCompetition({
-  competition,
-  isDarkMode,
-}: {
-  competition?: SportsScope;
-  isDarkMode: boolean;
-}): ReactElement {
+const GameCompetition = memo(function GameCompetition({ competition, isDarkMode }: { competition?: SportsScope; isDarkMode: boolean }) {
   return (
     <View style={styles.competition}>
       {competition ? (
@@ -312,7 +306,7 @@ const GameTime = memo(function GameTime({
   clock,
   period,
   startsAt,
-}: Pick<Game, 'status' | 'interruption' | 'clock' | 'period' | 'startsAt'> & { currentDay: string; isDarkMode: boolean }): ReactElement {
+}: Pick<Game, 'status' | 'interruption' | 'clock' | 'period' | 'startsAt'> & { currentDay: string; isDarkMode: boolean }) {
   const label =
     STATUS_LABELS[
       interruption === Game_Interruption.INTERRUPTION_DELAYED || interruption === Game_Interruption.INTERRUPTION_SUSPENDED
@@ -355,7 +349,7 @@ const GameTime = memo(function GameTime({
   );
 });
 
-const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: string; isDarkMode: boolean }): ReactElement {
+const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: string; isDarkMode: boolean }) {
   return (
     <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.lightPeriod]}>
       {isDarkMode ? null : (
@@ -400,7 +394,7 @@ const GameRowIdentity = memo(function GameRowIdentity({
   isDarkMode: boolean;
   identity: Participant | 'draw';
   sportId?: string;
-}): ReactElement {
+}) {
   const draw = identity === 'draw';
   const name = draw ? i18n.t(i18n.l.sports.draw) : identity.name;
   const shortName = draw ? undefined : identity.shortName;
@@ -456,7 +450,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   color?: string;
   isDarkMode: boolean;
   onPress: SportsGamePress;
-}): ReactElement {
+}) {
   const outcome = spread?.outcomes[participantIndex];
 
   return (
@@ -513,7 +507,7 @@ const GameDrawRow = memo(function GameDrawRow({
   selection?: Selection;
   isDarkMode: boolean;
   onPress: SportsGamePress;
-}): ReactElement {
+}) {
   return (
     <View style={styles.row}>
       <View style={styles.participant}>
@@ -532,7 +526,7 @@ const GameDrawRow = memo(function GameDrawRow({
   );
 });
 
-function DrawIcon({ isDarkMode }: { isDarkMode: boolean }): ReactElement {
+function DrawIcon({ isDarkMode }: { isDarkMode: boolean }) {
   const backgroundColor = isDarkMode ? foregroundColors.fillTertiary.dark : globalColors.white100;
 
   return (
