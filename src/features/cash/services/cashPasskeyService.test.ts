@@ -1,7 +1,7 @@
-import { get } from 'react-native-passkeys';
+import { create, get } from 'react-native-passkeys';
 import { beforeEach, expect, test, vi, type Mock } from 'vitest';
 
-import { getPasskeyAssertion } from './cashPasskeyService';
+import { createPasskeyCredential, getPasskeyAssertion } from './cashPasskeyService';
 
 vi.mock('react-native-device-info', () => ({ getModel: vi.fn() }));
 vi.mock('react-native-dotenv', () => ({ IS_TESTING: 'false' }));
@@ -10,10 +10,29 @@ vi.mock('react-native-passkeys', () => ({
   get: vi.fn(),
 }));
 
+const mockCreate = create as Mock;
 const mockGet = get as Mock;
 
 beforeEach(() => {
+  mockCreate.mockReset();
   mockGet.mockReset();
+});
+
+test('requests a discoverable passkey when the backend leaves residentKey unset', async () => {
+  mockCreate.mockResolvedValue({ id: 'credential-id' });
+  const publicKey = {
+    challenge: 'challenge',
+    rp: { id: 'rainbow.me', name: 'ZITADEL' },
+    user: { id: 'user-id', name: '+15555550100', displayName: '- -' },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+  };
+
+  await expect(createPasskeyCredential(JSON.stringify({ publicKey }))).resolves.toBe('{"id":"credential-id"}');
+  expect(mockCreate).toHaveBeenCalledWith({
+    ...publicKey,
+    authenticatorSelection: { ...publicKey.authenticatorSelection, residentKey: 'required', requireResidentKey: true },
+  });
 });
 
 test('passes validated request options to the native passkey module', async () => {

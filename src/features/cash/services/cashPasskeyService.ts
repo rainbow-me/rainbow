@@ -36,7 +36,12 @@ export async function createPasskeyCredential(publicKeyOptionsJson: string): Pro
 
   // The backend wraps the WebAuthn options in a `publicKey` envelope
   const { publicKey } = JSON.parse(publicKeyOptionsJson) as { publicKey: PasskeyCreationOptions };
-  const credential = await create(publicKey);
+  // Zitadel omits residentKey, which WebAuthn reads as "discouraged": Android then makes a device-bound,
+  // non-discoverable key outside Google Password Manager that phone sign-in (no allowCredentials) can't find.
+  const credential = await create({
+    ...publicKey,
+    authenticatorSelection: { ...publicKey.authenticatorSelection, residentKey: 'required', requireResidentKey: true },
+  });
   if (!credential) throw new Error('Passkey creation returned no credential');
   return JSON.stringify(credential);
 }
