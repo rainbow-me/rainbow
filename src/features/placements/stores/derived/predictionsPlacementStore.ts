@@ -34,14 +34,14 @@ const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 // ============ Event Stores =================================================== //
 
 const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
-  $ => new Set($(useDiscoverSurfacePlacementRefs, refs => refs.polymarket, areArraysEqual)),
+  $ => new Set($(useDiscoverSurfacePlacementRefs, s => s.polymarket, areArraysEqual)),
   { lockDependencies: true }
 );
 
 /**
  * Polymarket events used by Discover's tiles and widgets.
  */
-export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket));
+export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, s => s.polymarket));
 
 /**
  * Polymarket events for displayed cards that are not already requested by tiles.
@@ -60,8 +60,8 @@ export const predictionCardEventsStore = createPredictionEventsStore($ => {
 export const usePredictionEventsStore = createDerivedStore(
   $ => {
     const tileIds = $(predictionTileEventIdsStore);
-    const tileEvents = $(predictionTileEventsStore, state => state.getData());
-    const cardEvents = $(predictionCardEventsStore, state => state.getData());
+    const tileEvents = $(predictionTileEventsStore, s => s.getData());
+    const cardEvents = $(predictionCardEventsStore, s => s.getData());
 
     return (eventId: string): PolymarketEvent | undefined => (tileIds.has(eventId) ? tileEvents?.[eventId] : cardEvents?.[eventId]);
   },
@@ -78,8 +78,8 @@ export const usePredictionCardsStore = createDerivedStore(
   $ => {
     const getEvent = $(usePredictionEventsStore);
     const tileIds = $(predictionTileEventIdsStore);
-    const tilesPending = $(predictionTileEventsStore, state => !state.enabled || state.getStatus('isInitialLoad'));
-    const cardsPending = $(predictionCardEventsStore, state => !state.enabled || state.getStatus('isInitialLoad'));
+    const tilesPending = $(predictionTileEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
+    const cardsPending = $(predictionCardEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
 
     return (eventId: string) => {
       const isPending = tileIds.has(eventId) ? tilesPending : cardsPending;
@@ -95,8 +95,8 @@ export const usePredictionCardsStore = createDerivedStore(
  */
 export const useDiscoverEventsErrorStore = createDerivedStore(
   $ => {
-    const tileError = $(predictionTileEventsStore, state => (state.enabled ? state.error : null));
-    const cardError = $(predictionCardEventsStore, state => (state.enabled ? state.error : null));
+    const tileError = $(predictionTileEventsStore, s => (s.enabled ? s.error : null));
+    const cardError = $(predictionCardEventsStore, s => (s.enabled ? s.error : null));
 
     return tileError ?? cardError;
   },
@@ -122,8 +122,8 @@ export function getPredictionPlacement(
  * A placement's active events in placement order, with loading state while its events are first fetched.
  */
 export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
-  const placement = usePlacementsStore(state => getPredictionPlacement(state, placementId) ?? undefined);
-  const events = predictionTileEventsStore(state => state.getData());
+  const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId) ?? undefined);
+  const events = predictionTileEventsStore(s => s.getData());
   const items = useMemo(
     () =>
       placement && events
@@ -135,7 +135,7 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
         : EMPTY_ITEMS,
     [events, placement]
   );
-  const isLoading = predictionTileEventsStore(state => state.getStatus('isInitialLoad'));
+  const isLoading = predictionTileEventsStore(s => s.getStatus('isInitialLoad'));
 
   return { isLoading, items, placement: items.length ? placement : undefined };
 }
@@ -149,7 +149,7 @@ function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly 
     fetcher: fetchPredictionEvents,
     enabled: $ => {
       const enabled = $(usePolymarketEnabled);
-      const hasEvents = $(eventIds, ids => ids.length > 0);
+      const hasEvents = $(eventIds, s => s.length > 0);
       return enabled && hasEvents;
     },
     params: { eventIds: $ => $(eventIds) },
