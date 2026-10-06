@@ -44,7 +44,7 @@ export function WatchButton({ address, ensName, avatarUrl }: { address?: string;
     <ConditionalWrap
       condition={optimisticIsWatching}
       wrap={children => (
-        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressWatch}>
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressWatch} testID="profile-sheet-watch-button">
           {children}
         </ContextMenuButton>
       )}
@@ -53,7 +53,7 @@ export function WatchButton({ address, ensName, avatarUrl }: { address?: string;
         color="action (Deprecated)"
         onPress={!optimisticIsWatching ? handlePressWatch : undefined}
         paddingHorizontal={isWatching ? { custom: 11.25 } : undefined}
-        testID="profile-sheet-watch-button"
+        testID={optimisticIsWatching ? undefined : 'profile-sheet-watch-button'}
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
         {(optimisticIsWatching ? '' : '􀨭 ') +

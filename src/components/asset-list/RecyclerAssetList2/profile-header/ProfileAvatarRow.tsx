@@ -122,8 +122,12 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
     <AccentColorProvider color={accentColor}>
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
-          <ContextMenuButton testID="avatar-button" menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
-            <ButtonPressAnimation onPress={onAvatarPressProfile}>
+          <ContextMenuButton
+            testID={onAvatarPressProfile ? undefined : 'avatar-button'}
+            menuConfig={avatarContextMenuConfig}
+            onPressMenuItem={handlePressMenuItem}
+          >
+            <ButtonPressAnimation onPress={onAvatarPressProfile} testID={onAvatarPressProfile ? 'avatar-button' : undefined}>
               <Box
                 alignItems="center"
                 background="accent"

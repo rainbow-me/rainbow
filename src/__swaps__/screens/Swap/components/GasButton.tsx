@@ -187,12 +187,13 @@ const GasMenu = ({
       style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      <ContextMenuButton anchorAndroidMenuToRight={anchorAndroidMenuToRight} menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-        <ButtonPressAnimation
-          scaleTo={0.825}
-          style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
-          testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
-        >
+      <ContextMenuButton
+        anchorAndroidMenuToRight={anchorAndroidMenuToRight}
+        menuConfig={menuConfig}
+        onPressMenuItem={handlePressMenuItem}
+        testID="gas-speed-pager-button"
+      >
+        <ButtonPressAnimation scaleTo={0.825} style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}>
           {children}
         </ButtonPressAnimation>
       </ContextMenuButton>

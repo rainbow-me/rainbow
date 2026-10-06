@@ -138,10 +138,10 @@ const RegistrationAvatar = ({
           <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
         </Skeleton>
       ) : (
-        <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
+        <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu testID="use-select-image-avatar">{children}</ContextMenu>}>
           <ButtonPressAnimation
             onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : showMenu ? undefined : handleSelectImage}
-            testID="use-select-image-avatar"
+            testID={showMenu ? undefined : 'use-select-image-avatar'}
           >
             <AccentColorProvider color={accentColor + '10'}>
               <Box

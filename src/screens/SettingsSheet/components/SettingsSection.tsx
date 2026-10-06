@@ -191,6 +191,7 @@ export const SettingsSection = ({
           anchorAndroidMenuToRight
           onPressMenuItem={handleSelectTheme}
           key={`theme-menu-${language}`}
+          testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
         >
           <MenuItem
             hasChevron
@@ -199,7 +200,6 @@ export const SettingsSection = ({
               <MenuItem.Selection>{colorScheme ? i18n.t(i18n.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
             }
             size={60}
-            testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.theme)} />}
           />
         </ContextMenuButton>

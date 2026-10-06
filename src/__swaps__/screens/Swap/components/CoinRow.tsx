@@ -222,8 +222,8 @@ const InfoButton = ({
   };
 
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-      <CoinRowButton icon="􀅳" outline size="icon 14px" testID={`coin-row-info-button-${address}`} />
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} testID={`coin-row-info-button-${address}`}>
+      <CoinRowButton icon="􀅳" outline size="icon 14px" />
     </ContextMenuButton>
   );
 };

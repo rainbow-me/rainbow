@@ -137,11 +137,11 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu>{children}</ContextMenu>}>
+    <ConditionalWrap condition={showMenu} wrap={children => <ContextMenu testID="use-select-image-cover">{children}</ContextMenu>}>
       <ButtonPressAnimation
         onPress={!hasSeenExplainSheet ? onShowExplainSheet : showMenu ? undefined : handleSelectImage}
         scaleTo={1}
-        testID="use-select-image-cover"
+        testID={showMenu ? undefined : 'use-select-image-cover'}
       >
         <Box
           alignItems="center"

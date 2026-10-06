@@ -155,7 +155,7 @@ export default function useSelectImageMenu({
   );
 
   const ContextMenu = useCallback(
-    ({ children }: { children?: React.ReactNode }) => {
+    ({ children, testID }: { children?: React.ReactNode; testID?: string }) => {
       return (
         <ContextMenuButton
           menuConfig={{
@@ -163,6 +163,7 @@ export default function useSelectImageMenu({
             menuTitle: '',
           }}
           onPressMenuItem={({ nativeEvent: { actionKey } }) => handleSelectAction(actionKey)}
+          testID={testID}
         >
           {children}
         </ContextMenuButton>

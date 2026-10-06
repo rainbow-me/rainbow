@@ -440,9 +440,9 @@ export const ViewWalletBackup = () => {
                   anchorAndroidMenuToRight
                   menuConfig={menuConfig}
                   onPressMenuItem={e => onPressMenuItem({ ...e, account })}
+                  testID="wallet-backup-button"
                 >
                   <MenuItem
-                    testID={'wallet-backup-button'}
                     size={60}
                     disabled
                     leftComponent={<WalletAvatar account={account} />}
