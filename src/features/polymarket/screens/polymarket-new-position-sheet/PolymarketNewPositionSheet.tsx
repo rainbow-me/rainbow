@@ -1,4 +1,4 @@
-import { memo, useCallback, useState, type ReactElement } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -43,7 +43,7 @@ const BUTTON_BORDER_COLOR = { custom: white(0.08) };
 /**
  * The sheet for opening a Polymarket position.
  */
-export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet(): ReactElement {
+export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
@@ -83,15 +83,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   );
 });
 
-function SelectedOutcomeForm({
-  selection,
-  outcomeColor,
-  fromRoute,
-}: {
-  selection: Selection;
-  outcomeColor: string;
-  fromRoute: Route;
-}): ReactElement {
+function SelectedOutcomeForm({ selection, outcomeColor, fromRoute }: { selection: Selection; outcomeColor: string; fromRoute: Route }) {
   const details = usePolymarketOrderDetailsStore(state => {
     const data = state.getData({ selection });
     if (data) return data;
@@ -135,7 +127,7 @@ function NewPositionForm({
   outcomeIndex,
   outcomeColor,
   fromRoute,
-}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: Route }): ReactElement {
+}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: Route }) {
   const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(state => Number(state.getBalance()) > 0);
@@ -315,15 +307,7 @@ function NewPositionForm({
   );
 }
 
-function OrderSummary({
-  averagePrice,
-  spread,
-  amountToWin,
-}: {
-  averagePrice?: string;
-  spread?: string;
-  amountToWin?: string;
-}): ReactElement {
+function OrderSummary({ averagePrice, spread, amountToWin }: { averagePrice?: string; spread?: string; amountToWin?: string }) {
   const formattedAveragePrice =
     averagePrice === undefined ? '—' : `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
   const formattedSpread = spread === undefined ? '—' : `${trimTrailingZeros(toFixedWorklet(mulWorklet(spread, 100), 1))}¢`;
@@ -362,7 +346,7 @@ function OrderSummary({
   );
 }
 
-function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }): ReactElement {
+function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }) {
   const { isDarkMode } = useColorMode();
   const cardColor = isDarkMode ? opacity(outcomeColor, 0.08) : white(0.9);
 
