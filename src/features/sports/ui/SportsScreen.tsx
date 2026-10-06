@@ -1,4 +1,4 @@
-import { useRef, type ReactElement } from 'react';
+import { useRef } from 'react';
 import { Keyboard } from 'react-native';
 
 import { useSharedValue } from 'react-native-reanimated';
@@ -10,7 +10,7 @@ import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
 import { useOnTabReselect } from '@/navigation/tabEvents';
 
-export function SportsScreen(): ReactElement {
+export function SportsScreen() {
   const { top } = useSafeAreaInsets();
   const bottom = useTabBarOffset();
 
