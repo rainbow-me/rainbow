@@ -5744,9 +5744,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/sdk@file:./rainbow-me-sdk-0.5.0.tgz::locator=Rainbow%40workspace%3A.":
-  version: 0.5.0
-  resolution: "@rainbow-me/sdk@file:./rainbow-me-sdk-0.5.0.tgz#./rainbow-me-sdk-0.5.0.tgz::hash=b163b8&locator=Rainbow%40workspace%3A."
+"@rainbow-me/sdk@file:./rainbow-me-sdk-0.4.1.tgz::locator=Rainbow%40workspace%3A.":
+  version: 0.4.1
+  resolution: "@rainbow-me/sdk@file:./rainbow-me-sdk-0.4.1.tgz#./rainbow-me-sdk-0.4.1.tgz::hash=b567b8&locator=Rainbow%40workspace%3A."
   dependencies:
     "@noble/ed25519": "npm:3.1.0"
     "@noble/hashes": "npm:2.2.0"
@@ -5770,7 +5770,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/c1fb1b3b263e5c1b5eea2906939ec19a6c2792706883c2f0d2bb9844f01393e902ef58c34b1afff0c86a4b39a24f1781baa48180ccf340da1ba0bad53e7daeae
+  checksum: 10c0/5c6067d0b7fcaafcfc0703959f8d3c4a2fe8588550d347ec8d6180e9b2a1fc7da1b169a5a74a336d65750347ab85c7db4abd33e5e962067eb6d8bdfc0eced019
   languageName: node
   linkType: hard
 
@@ -9743,7 +9743,7 @@ __metadata:
     "@polymarket/clob-client-v2": "npm:1.1.0"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/sdk": "file:./rainbow-me-sdk-0.5.0.tgz"
+    "@rainbow-me/sdk": "file:./rainbow-me-sdk-0.4.1.tgz"
     "@rainbow-me/swaps": "npm:0.41.0"
     "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
