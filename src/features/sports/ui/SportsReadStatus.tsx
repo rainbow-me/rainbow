@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -24,7 +24,7 @@ export function SportsReadStatus({
   page: SportsPage;
   width: number;
   isDarkMode: boolean;
-}): ReactElement | null {
+}) {
   const getStatus = sportsPageStores[host](state => state.getStatus);
   const status = useSportsStore(getStatus);
 
@@ -44,7 +44,7 @@ export function SportsReadStatus({
   }
 }
 
-function EmptyGames({ message }: { message: string }): ReactElement {
+function EmptyGames({ message }: { message: string }) {
   return (
     <View style={styles.message}>
       <Text align="center" color="labelTertiary" size="17pt" weight="bold">
@@ -54,7 +54,7 @@ function EmptyGames({ message }: { message: string }): ReactElement {
   );
 }
 
-function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; isDarkMode: boolean }): ReactElement {
+function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; isDarkMode: boolean }) {
   const fill = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
   const [pending, setPending] = useState(false);
   const onPress = async (): Promise<void> => {
@@ -88,7 +88,7 @@ function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; is
   );
 }
 
-function LoadMoreGames({ host }: { host: SportsHost }): ReactElement {
+function LoadMoreGames({ host }: { host: SportsHost }) {
   const [pending, setPending] = useState(false);
   const onPress = async (): Promise<void> => {
     setPending(true);

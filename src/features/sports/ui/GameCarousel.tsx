@@ -1,4 +1,4 @@
-import { memo, useCallback, type ReactElement } from 'react';
+import { memo, useCallback } from 'react';
 import { FlatList, StyleSheet, View, type ViewToken } from 'react-native';
 
 import { type SportsCatalog } from '@/features/sports/core/catalog';
@@ -29,7 +29,7 @@ export const GameCarousel = memo(function GameCarousel({
   rowKey: string;
   onVisibleGamesChanged: (rowKey: string, items: readonly ViewToken<string>[]) => void;
   onGamePress: SportsGamePress;
-}): ReactElement {
+}) {
   const cardWidth = width - (section.gameIds.length === 1 ? 24 : 30);
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<string>[] }) => onVisibleGamesChanged(rowKey, viewableItems),
