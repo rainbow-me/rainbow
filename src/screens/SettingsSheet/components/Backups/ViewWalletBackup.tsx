@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -14,7 +14,6 @@ import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Stack } from '@/design-system';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
@@ -77,41 +76,6 @@ const WalletAvatar = ({ account }: WalletAvatarProps) => {
     <ImageAvatar image={ENSAvatar.imageUrl} marginRight={12} size="rewards" />
   ) : (
     <ContactAvatar alignSelf="center" color={account.color} marginRight={8} size="small" value={accountImage} />
-  );
-};
-
-type ContextMenuWrapperProps = {
-  children: React.ReactNode;
-  account: RainbowAccount;
-  menuConfig: {
-    menuTitle: string;
-    menuItems: {
-      actionKey: WalletMenuAction;
-      actionTitle: string;
-      icon: {
-        iconType: string;
-        iconValue: string;
-      };
-    }[];
-  };
-  onPressMenuItem: (e: MenuEvent) => void;
-};
-
-const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
-  return Platform.OS === 'ios' ? (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={e => onPressMenuItem({ ...e, account })}>
-      {children}
-    </ContextMenuButton>
-  ) : (
-    <ContextCircleButton
-      options={menuConfig.menuItems.map(item => item.actionTitle)}
-      onPressActionSheet={(buttonIndex: number) => {
-        const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
-        onPressMenuItem({ nativeEvent: { actionKey }, account });
-      }}
-    >
-      {children}
-    </ContextCircleButton>
   );
 };
 
@@ -471,9 +435,14 @@ export const ViewWalletBackup = () => {
               const title = nameOrENS || abbreviations.address(account.address, 4, 4);
 
               return (
-                <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
+                <ContextMenuButton
+                  key={account.address}
+                  anchorAndroidMenuToRight
+                  menuConfig={menuConfig}
+                  onPressMenuItem={e => onPressMenuItem({ ...e, account })}
+                  testID="wallet-backup-button"
+                >
                   <MenuItem
-                    testID={'wallet-backup-button'}
                     size={60}
                     disabled
                     leftComponent={<WalletAvatar account={account} />}
@@ -481,7 +450,7 @@ export const ViewWalletBackup = () => {
                     titleComponent={<MenuItem.Title text={title} weight="semibold" />}
                     rightComponent={<MenuItem.TextIcon disabled icon="􀍡" />}
                   />
-                </ContextMenuWrapper>
+                </ContextMenuButton>
               );
             })}
         </Menu>

@@ -30,7 +30,7 @@ export function ProfileScreen() {
         title={i18n.t(i18n.l.profile.title)}
         hasStatusBarInset
         leftComponent={
-          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
+          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
             {accountImage ? (
               <ImageAvatar image={accountImage} marginRight={10} size="header" />
             ) : (

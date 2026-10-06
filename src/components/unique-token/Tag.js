@@ -180,9 +180,7 @@ const Tag = ({
         menuConfig={menuConfig}
         {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
         enableContextMenu
-        isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
         <ButtonPressAnimation>{children}</ButtonPressAnimation>

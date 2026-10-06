@@ -50,7 +50,7 @@ export const KingOfTheHillScreen = () => {
           title={i18n.t(i18n.l.king_of_hill.title)}
           floating
           leftComponent={
-            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
+            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
               {accountImage ? (
                 <ImageAvatar image={accountImage} marginRight={10} size="header" />
               ) : (
@@ -64,7 +64,6 @@ export const KingOfTheHillScreen = () => {
                 Navigation.handleAction(Routes.AIRDROPS_SHEET);
               }}
               scaleTo={0.8}
-              overflowMargin={50}
               testID="koth-search-icon"
             >
               <View

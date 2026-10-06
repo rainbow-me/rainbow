@@ -98,7 +98,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
   return {
     menuConfig,
-    ...(Platform.OS === 'android' ? { isAnchoredToRight: true, onPress: onPressAndroid } : {}),
+    ...(Platform.OS === 'android' ? { anchorAndroidMenuToRight: true, onPress: onPressAndroid } : {}),
     onPressMenuItem: handlePressMenuItem,
   };
 }

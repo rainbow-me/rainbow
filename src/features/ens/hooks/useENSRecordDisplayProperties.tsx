@@ -195,10 +195,8 @@ export default function useENSRecordDisplayProperties({
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}
         {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
-        isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
-        useActionSheetFallback={false}
         {...props}
       >
         {children}

@@ -15,6 +15,7 @@ export const CoinRowButton = ({
   size,
   weight,
   disabled,
+  testID,
 }: {
   color?: string;
   icon: string;
@@ -23,6 +24,7 @@ export const CoinRowButton = ({
   size?: TextSize;
   weight?: TextWeight;
   disabled?: boolean;
+  testID?: string;
 }) => {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useForegroundColor('fillTertiary');
@@ -30,7 +32,7 @@ export const CoinRowButton = ({
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} disabled={disabled} testID={testID}>
       <Box
         alignItems="center"
         borderRadius={14}

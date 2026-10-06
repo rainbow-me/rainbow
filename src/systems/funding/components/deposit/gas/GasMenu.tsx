@@ -2,8 +2,6 @@ import React, { useCallback, useMemo, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { ContextMenu } from '@/components/context-menu';
-import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
 import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
@@ -17,30 +15,16 @@ import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 const GAS_BUTTON_HIT_SLOP = 16;
 const SWAP_GAS_ICONS = gasUtils.SWAP_GAS_ICONS;
 
+/** Shows the deposit gas options and reports the selected speed. */
 export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; onSelectGasSpeed: (speed: GasSpeed) => void }) {
   const { gasStores } = useDepositContext();
   const isGasSponsored = gasStores.useIsGasSponsored();
   const metereologySuggestions = gasStores.useMeteorologyStore(state => state.getGasSuggestions());
   const menuOptions = useMemo(() => keys(metereologySuggestions), [metereologySuggestions]);
 
-  const handlePressSpeedOption = useCallback(
-    (selectedGasSpeed: GasSpeed) => {
-      onSelectGasSpeed(selectedGasSpeed);
-    },
-    [onSelectGasSpeed]
-  );
-
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
-    [handlePressSpeedOption]
-  );
-
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number | undefined) => {
-      if (buttonIndex == null || buttonIndex < 0) return;
-      handlePressSpeedOption(menuOptions[buttonIndex]);
-    },
-    [handlePressSpeedOption, menuOptions]
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => onSelectGasSpeed(actionKey),
+    [onSelectGasSpeed]
   );
 
   const menuConfig = useMemo(() => {
@@ -67,27 +51,11 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
       testID="gas-speed-pager"
       pointerEvents={isGasSponsored ? 'none' : 'auto'}
     >
-      {Platform.OS === 'android' ? (
-        <ContextMenu
-          activeOpacity={0}
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={menuOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <Centered>
-            <ButtonPressAnimation scaleTo={0.825}>{children}</ButtonPressAnimation>
-          </Centered>
-        </ContextMenu>
-      ) : (
-        <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
-            {children}
-          </ButtonPressAnimation>
-        </ContextMenuButton>
-      )}
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+        <ButtonPressAnimation scaleTo={0.825} style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}>
+          {children}
+        </ButtonPressAnimation>
+      </ContextMenuButton>
     </Box>
   );
 }

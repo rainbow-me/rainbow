@@ -7,8 +7,7 @@ import { useDebounce } from 'use-debounce';
 
 import { analytics } from '@/analytics';
 import { Column } from '@/components/layout';
-import { NoResults } from '@/components/list';
-import { NoResultsType } from '@/components/list/NoResults';
+import NoResults, { NoResultsType } from '@/components/list/NoResults';
 import { SheetActionButton } from '@/components/sheet';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';

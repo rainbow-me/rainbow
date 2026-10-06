@@ -102,7 +102,7 @@ export function SendAssetForm({
       extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : Platform.OS === 'ios' ? 0 : -NAVIGATION_BAR_HEIGHT}
     >
       <Container>
-        <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
+        <ButtonPressAnimation onPress={onResetAssetSelection} scaleTo={0.925}>
           <ShadowStack
             alignSelf="center"
             backgroundColor={colors.white}
