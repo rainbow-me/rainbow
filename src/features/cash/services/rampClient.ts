@@ -66,7 +66,7 @@ export type BuyOrderSpec = {
   depositAmount: string;
   /** ISO 8601 instant after which the backend refuses to create this order; a request with the same id still returns an existing one. */
   expireTime: string;
-  /** Client-generated UUID. The backend adopts it as the order's id; a replay with the same id is idempotent (returns the existing order's status, never re-creates). */
+  /** Client-generated UUID the backend adopts as the order's id; it correlates a submission with its replays and recovery reads. */
   id: string;
   walletAddress: string;
 };
@@ -428,7 +428,7 @@ export async function getOrderWithCachedAuth(orderId: string, abortController?: 
 // ---- E2E buy orders ----------------------------------------------------------
 // In-memory stand-in for the two order endpoints: `getOrder` advances one scripted
 // step per call, and a `createBuyOrder` replay with a known id leaves the existing
-// order untouched — mirroring the backend's idempotency contract.
+// order untouched.
 
 const E2E_ORDER_PATH = [OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Processing, OrderStatus.Completed] as const;
 

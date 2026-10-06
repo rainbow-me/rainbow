@@ -210,8 +210,7 @@ describe('submitBuyOrder', () => {
   });
 
   // An ambiguous failure (transport error, 408, 429, 5xx) leaves it unknown whether the order was created, so
-  // the same id is replayed silently — the backend then returns the existing order instead of creating a
-  // second one.
+  // the same id is replayed silently, letting the backend match it to an order an earlier attempt created.
   it.each([
     { label: 'a transport error', failure: new Error('network down') },
     { label: 'a 408', failure: fetchError(408) },
