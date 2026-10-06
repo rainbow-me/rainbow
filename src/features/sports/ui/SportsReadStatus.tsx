@@ -25,7 +25,7 @@ export function SportsReadStatus({
   width: number;
   isDarkMode: boolean;
 }) {
-  const getStatus = sportsPageStores[host](state => state.getStatus);
+  const getStatus = sportsPageStores[host](s => s.getStatus);
   const status = useSportsStore(getStatus);
 
   switch (status) {
