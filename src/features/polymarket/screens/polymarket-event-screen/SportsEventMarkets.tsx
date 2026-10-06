@@ -87,7 +87,13 @@ const LineBasedMarkets = memo(function LineBasedMarkets({
 }): ReactElement | null {
   const [selectedLineValue, setSelectedLineValue] = useState<number>(Math.abs(group.mainLine));
 
-  const selectedMarket = group.markets.find(market => Math.abs(market.line) === selectedLineValue);
+  const selectedMarket = useMemo(
+    () =>
+      group.markets.find(market => Math.abs(market.line) === selectedLineValue) ??
+      group.markets.find(market => Math.abs(market.line) === Math.abs(group.mainLine)) ??
+      group.markets[0],
+    [group.markets, group.mainLine, selectedLineValue]
+  );
 
   const lineSelectorItems = useMemo(() => {
     if (group.markets.length < 2) return undefined;
@@ -112,7 +118,7 @@ const LineBasedMarkets = memo(function LineBasedMarkets({
           <ItemSelector
             accentColor={isDarkMode ? globalColors.white100 : globalColors.grey100}
             backgroundColor={isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT}
-            selectedValue={String(selectedLineValue)}
+            selectedValue={String(line)}
             onSelect={value => setSelectedLineValue(Number(value))}
             pillHeight={36}
             pillGap={7}
