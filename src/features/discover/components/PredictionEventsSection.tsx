@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { analytics } from '@/analytics';
@@ -33,7 +33,7 @@ export function PredictionEventsSection({
   sectionId: SectionId;
   surface: SurfaceLeaf & { placement: string };
   surfaceId: SurfaceId;
-}): ReactElement | null {
+}) {
   const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
 
@@ -134,7 +134,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
 }: {
   eventId: string;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
-}): ReactElement {
+}) {
   const event = usePredictionCardsStore(getCard => getCard(eventId));
 
   if (event) {
