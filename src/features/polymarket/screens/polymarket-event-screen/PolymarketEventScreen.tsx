@@ -62,7 +62,12 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
         <EventHeaderSection event={event} />
       ) : null}
       {event ? (
-        <EventContent event={event} gameId={gameId} eventColor={eventColor} backgroundColor={screenBackgroundColor} />
+        <EventContent
+          event={event}
+          isSportsEvent={Boolean(gameId) || event.gameId !== undefined}
+          eventColor={eventColor}
+          backgroundColor={screenBackgroundColor}
+        />
       ) : (
         <EventDetailsStatus eventId={eventId} />
       )}
@@ -74,21 +79,21 @@ export const PolymarketEventScreen = memo(function PolymarketEventScreen() {
 
 function EventContent({
   event,
-  gameId,
+  isSportsEvent,
   eventColor,
   backgroundColor,
 }: {
   event: PolymarketEvent | PolymarketMarketEvent;
-  gameId: string | null | undefined;
+  isSportsEvent: boolean;
   eventColor: string;
   backgroundColor: string;
 }) {
   return (
     <>
-      {!event.closed && !gameId ? <ChartSection event={event} backgroundColor={backgroundColor} /> : null}
+      {!event.closed && !isSportsEvent ? <ChartSection event={event} backgroundColor={backgroundColor} /> : null}
       <OpenPositionsSection eventId={event.id} eventColor={eventColor} />
       {'markets' in event ? (
-        gameId ? (
+        isSportsEvent ? (
           <SportsEventMarkets event={event} />
         ) : (
           <MarketsSection event={event} />
