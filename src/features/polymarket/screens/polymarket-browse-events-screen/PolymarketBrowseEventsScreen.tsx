@@ -67,7 +67,7 @@ const PolymarketBrowseEventsList = () => {
 const EventsList = ({ scrollOffset }: { scrollOffset: SharedValue<number> }) => {
   const onScroll = useScrollFadeHandler(scrollOffset);
   const { eventsListRef } = usePolymarketContext();
-  const events = usePolymarketEventsStore(state => state.getEvents());
+  const events = usePolymarketEventsStore(s => s.getEvents());
 
   return (
     <PolymarketEventsListBase
