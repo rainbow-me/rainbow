@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, Linking, Switch } from 'react-native';
 
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect } from '@react-navigation/native';
+import { useListen } from '@storesjs/stores';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 
 import { Box } from '@/design-system';
@@ -11,7 +12,6 @@ import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
-import useAppState from '@/hooks/useAppState';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -28,6 +28,7 @@ import {
 } from '@/notifications/settings/types';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import abbreviations from '@/utils/abbreviations';
 import { deviceUtils } from '@/utils/deviceUtils';
@@ -157,7 +158,6 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
 };
 
 export const NotificationsSection = () => {
-  const { justBecameActive } = useAppState();
   const { navigate } = useNavigation();
   const { chainId } = useAccountSettings();
   const isTestnet = isTestnetChain({ chainId });
@@ -290,15 +290,14 @@ export const NotificationsSection = () => {
     }
   }, [openSystemSettings]);
 
-  const checkPermissions = useCallback(async () => {
-    checkNotifications().then(({ status }) => {
-      setPermissionStatus(status);
-    });
-  }, []);
-
-  useEffect(() => {
-    checkPermissions();
-  }, [checkPermissions, justBecameActive]);
+  useListen(
+    useAppStateStore,
+    s => s === 'active',
+    isActive => {
+      if (isActive) checkNotifications().then(({ status }) => setPermissionStatus(status));
+    },
+    { fireImmediately: true }
+  );
 
   return (
     <Box>

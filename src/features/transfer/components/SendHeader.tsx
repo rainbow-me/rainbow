@@ -21,7 +21,7 @@ import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import type useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -111,7 +111,6 @@ export function SendHeader({
   watchedAccounts,
 }: SendHeaderProps) {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
@@ -202,17 +201,7 @@ export function SendHeader({
         }
       }
     );
-  }, [
-    hexAddress,
-    name,
-    removeContact,
-    onChangeAddressInput,
-    contact?.ens,
-    contact?.address,
-    handleNavigateToContact,
-    onRefocusInput,
-    setClipboard,
-  ]);
+  }, [hexAddress, name, removeContact, onChangeAddressInput, contact?.ens, contact?.address, handleNavigateToContact, onRefocusInput]);
 
   const onChange = useCallback(
     (text: string) => {

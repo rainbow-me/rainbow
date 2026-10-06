@@ -11,7 +11,7 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { buildUniqueTokenName } from '@/helpers/assets';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -187,7 +187,6 @@ const UniqueTokenExpandedStateHeader = ({
   rainbowWebUrl,
   isModificationActionsEnabled = true,
 }: UniqueTokenExpandedStateHeaderProps) => {
-  const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
@@ -353,7 +352,7 @@ const UniqueTokenExpandedStateHeader = ({
         goBack();
       }
     },
-    [asset, rainbowWebUrl, setClipboard, isHiddenAsset, goBack, removeHiddenToken, addHiddenToken, isShowcaseAsset, removeShowcaseToken]
+    [asset, rainbowWebUrl, isHiddenAsset, goBack, removeHiddenToken, addHiddenToken, isShowcaseAsset, removeShowcaseToken]
   );
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
