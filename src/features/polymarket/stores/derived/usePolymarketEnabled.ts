@@ -5,7 +5,7 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 
 export const usePolymarketEnabled = createDerivedStore($ => {
-  const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
-  const locallyEnabled = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
+  const remoteEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('polymarket_enabled'));
+  const locallyEnabled = $(useExperimentalConfigStore, s => s.getFlag(POLYMARKET));
   return remoteEnabled || locallyEnabled;
 });
