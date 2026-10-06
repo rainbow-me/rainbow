@@ -741,12 +741,6 @@ export function getValueForColorMode<Value>(value: Value | ContextualColorValue<
   return value;
 }
 
-export function getDefaultAccentColorForColorMode(colorMode: ColorMode) {
-  'worklet';
-  const defaultAccentColor = backgroundColors.blue;
-  return getValueForColorMode(defaultAccentColor, colorMode);
-}
-
 export type Palette = {
   backgroundColors: Record<BackgroundColor, BackgroundColorValue>;
   foregroundColors: Record<ForegroundColor, string>;
@@ -775,6 +769,20 @@ export const palettes: Record<ColorMode, Palette> = {
   light: createPalette('light'),
   lightTinted: createPalette('lightTinted'),
 };
+
+/** Default accent colors; keeps full palettes out of worklet closures. */
+const defaultAccentColors: Record<ColorMode, BackgroundColorValue> = {
+  dark: palettes.dark.backgroundColors.blue,
+  darkTinted: palettes.darkTinted.backgroundColors.blue,
+  light: palettes.light.backgroundColors.blue,
+  lightTinted: palettes.lightTinted.backgroundColors.blue,
+};
+
+/** Returns the default accent color for the given color mode. */
+export function getDefaultAccentColorForColorMode(colorMode: ColorMode): BackgroundColorValue {
+  'worklet';
+  return defaultAccentColors[colorMode];
+}
 
 function selectForegroundColors<SelectedColors extends readonly (ForegroundColor | 'accent')[]>(...colors: SelectedColors): SelectedColors {
   return colors;
