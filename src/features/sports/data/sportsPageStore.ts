@@ -76,7 +76,7 @@ function createSportsPageStore(host: SportsHost): DerivedStore<SportsPageState> 
 
   return createDerivedStore($ => {
     const { catalog, request, queryKey, navigation } = $(contextStore, s => s);
-    const currentDay = $(sportsWindowStore, state => new Date(state.from).toDateString());
+    const currentDay = $(sportsWindowStore, s => new Date(s.from).toDateString());
     const sections = request && queryKey ? getPageSections($, request, queryKey, catalog) : EMPTY_SECTIONS;
 
     return {
@@ -121,8 +121,8 @@ function getPageSections(
       return $(useSportsStore, s => s.results.live?.sections) ?? EMPTY_SECTIONS;
 
     case 'scope': {
-      const sections = $(useSportsStore, state => {
-        const result = state.results[request.scopeId];
+      const sections = $(useSportsStore, s => {
+        const result = s.results[request.scopeId];
         return result?.queryKey === queryKey ? result.sections : undefined;
       });
 
@@ -131,17 +131,14 @@ function getPageSections(
       const parentId = catalog?.scopes[request.scopeId]?.parentId;
       const gameIds = $(
         useSportsStore,
-        state =>
-          state.results[request.scopeId]?.gameIds ??
-          (parentId ? state.results[parentId]?.gameIds : undefined) ??
-          state.results.live?.gameIds
+        s => s.results[request.scopeId]?.gameIds ?? (parentId ? s.results[parentId]?.gameIds : undefined) ?? s.results.live?.gameIds
       );
 
       if (!gameIds) return EMPTY_SECTIONS;
 
       const games = $(
         useSportsStore,
-        state => state.games,
+        s => s.games,
         (previous, next) => areSectionInputsEqual(previous, next, gameIds)
       );
 
