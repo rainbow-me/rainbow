@@ -1,4 +1,4 @@
-import { useCallback, useImperativeHandle, useMemo, useRef, useState, type ReactElement, type Ref } from 'react';
+import { useCallback, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
 import { StyleSheet, View, type ViewStyle, type ViewToken } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
@@ -73,7 +73,7 @@ export function SportsGamesList({
   onGamePress: SportsGamePress;
   scrollOffset: SharedValue<number>;
   ref?: Ref<SportsGamesListHandle>;
-}): ReactElement {
+}) {
   const { width } = useDimensions();
   const { isDarkMode, foregroundColors } = useColorMode();
 

@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState, type ReactElement } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { RefreshControl as NativeRefreshControl, type RefreshControlProps as NativeRefreshControlProps } from 'react-native';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -15,12 +15,7 @@ type RefreshControlProps = Pick<NativeRefreshControlProps, 'children' | 'style'>
 /**
  * A themed pull-to-refresh control with a minimum refresh duration.
  */
-export const RefreshControl = memo(function RefreshControl({
-  children,
-  onRefresh,
-  minDuration = 600,
-  style,
-}: RefreshControlProps): ReactElement {
+export const RefreshControl = memo(function RefreshControl({ children, onRefresh, minDuration = 600, style }: RefreshControlProps) {
   const [refreshing, setRefreshing] = useState(false);
   const { foregroundColors, backgroundColors } = useColorMode();
 
