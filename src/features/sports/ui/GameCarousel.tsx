@@ -52,7 +52,7 @@ export const GameCarousel = memo(function GameCarousel({
     [cardWidth, catalog, currentDay, isDarkMode, onGamePress, section.scopeId]
   );
 
-  useCleanup(() => onVisibleGamesChanged(rowKey, []), [onVisibleGamesChanged, rowKey]);
+  useCleanup(() => onVisibleGamesChanged(rowKey, []));
 
   return (
     <FlatList
