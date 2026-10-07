@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
 import { Box, Text } from '@/design-system';
 import { CashActionButton } from '@/features/cash/components/CashActionButton';
 import * as i18n from '@/languages';
@@ -45,6 +46,12 @@ export function ReauthenticateContent({ status }: { status: OpenCashAuthGateStat
     }
   }, []);
 
+  const intentKind = status.intent.kind;
+  const handleRecoverLostPasskey = useCallback(() => {
+    analytics.track(analytics.event.cashLostPasskeyRecoverySelected, { intent: intentKind });
+    restoreAccessInSetup();
+  }, [intentKind]);
+
   const prompt = PROMPT_BY_INTENT[status.intent.kind][status.step];
   return (
     <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)}>
@@ -72,7 +79,7 @@ export function ReauthenticateContent({ status }: { status: OpenCashAuthGateStat
           <CashActionButton
             disabled={submitting}
             label={i18n.t(l.reauth_recover_lost_passkey)}
-            onPress={restoreAccessInSetup}
+            onPress={handleRecoverLostPasskey}
             testID="cash-reauth-recover-lost-passkey"
             textSize="17pt"
             textWeight="bold"

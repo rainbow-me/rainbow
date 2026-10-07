@@ -272,6 +272,20 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     expect(useVerifyPhoneFlowStore.getState().state).toBe('entry');
   });
 
+  it('advances without re-sending when a recovery code is already out for the same number', async () => {
+    mockStartRecovery.mockResolvedValue({ recoveryId: 'recovery-1', resendAfter: 1_750_000_060_000 });
+    flow().startRestoringAccess();
+    flow().setDigits(DIGITS);
+    await flow().submit();
+    const pending = session();
+    vi.clearAllMocks();
+
+    await expect(flow().submit()).resolves.toBe(true);
+
+    expect(mockStartRecovery).not.toHaveBeenCalled();
+    expect(session()).toBe(pending);
+  });
+
   it('preserves an accepted resume credential when returning to the same challenge', async () => {
     const resumeChallenge = { kind: 'resume', resumeId: 'rcv_1' } as const;
     const credential = { bootstrapToken: 'bst_1', expiresAt: 2_000_000_000_000 };
