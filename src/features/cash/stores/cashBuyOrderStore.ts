@@ -219,12 +219,16 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
             set({ status: { step: 'idle' } });
             return;
           }
+          // A refused replay says nothing about the earlier attempt, which may have landed, so keep its id for a readback.
+          if (replay > 0 && (isCashAccessRefusedError(error) || isDefinitiveRejection(error))) {
+            if (current === submitting) set({ status: { step: 'paused', spec, submittedAt } });
+            return;
+          }
           if (isCashAccessRefusedError(error)) {
             set({ status: { step: 'accessRefused', spec } });
             return;
           }
           if (isDefinitiveRejection(error)) {
-            if (replay > 0 && current !== submitting) return;
             logger.error(new RainbowError('[cashBuyOrderStore] createBuyOrder failed', error));
             analytics.track(analytics.event.cashBuyOrderFailed, { orderId: spec.id, failureReason: null, errorCode: 'GENERIC' });
             set({ status: { step: 'error', errorCode: 'GENERIC', order: null } });

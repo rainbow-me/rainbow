@@ -426,6 +426,22 @@ describe('submitBuyOrder', () => {
     expect(getState().status).toEqual({ step: 'polling', orderId: SPEC.id, order: null, submittedAt: expect.any(Number) });
   });
 
+  // The refusal may come before the backend looks the id up, so the earlier attempt may still have created the order.
+  it.each([
+    { label: 'access refusal', error: networkPolicyError },
+    { label: 'definitive rejection', error: () => fetchError(422) },
+  ])('pauses on a replay $label instead of releasing the order id', async ({ error }) => {
+    createBuyOrder.mockRejectedValueOnce(new Error('network down')).mockRejectedValueOnce(error());
+
+    await getState().submitBuyOrder(SUBMIT_INPUT);
+
+    expect(getState().status).toEqual({ step: 'paused', spec: SPEC, submittedAt: expect.any(Number) });
+
+    await getState().submitBuyOrder({ ...SUBMIT_INPUT, depositAmount: '100' });
+
+    expect(createBuyOrder).toHaveBeenCalledTimes(2);
+  });
+
   it('does not let an earlier submit settle a newer retry with the same order id', async () => {
     let resolveOriginal: () => void = () => undefined;
     let resolveRetry: () => void = () => undefined;
