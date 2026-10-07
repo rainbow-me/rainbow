@@ -24,7 +24,10 @@ export type SignInWithExistingPasskeyResult = 'signedIn' | 'cancelled' | 'failed
 type SubmitPhoneFlowStore = {
   state: SubmitPhoneState;
   digits: string;
+  // Entered from the sign-in gate: the device keeps its account, and the number goes straight to recovery.
+  restoringAccess: boolean;
   run: object | null;
+  startRestoringAccess: () => void;
   setDigits: (text: string) => void;
   submit: () => Promise<boolean>;
   signInWithExistingPasskey: () => Promise<SignInWithExistingPasskeyResult>;
@@ -81,7 +84,10 @@ async function advanceToChallenge(
 export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((set, get) => ({
   state: 'entry',
   digits: '',
+  restoringAccess: false,
   run: null,
+
+  startRestoringAccess: () => set({ restoringAccess: true }),
 
   setDigits: text => {
     const { state } = get();
@@ -111,6 +117,7 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
     const run = {};
     set({ run, state: 'submitting' });
     const isStale = () => get().run !== run;
+    if (get().restoringAccess) return advanceToChallenge(() => startAccountRecovery(digits), digits, isStale, set);
     try {
       const result = await createUserWithPhone({ nationalNumber: digits });
       if (isStale()) return false;
@@ -193,6 +200,6 @@ export const useSubmitPhoneFlowStore = createBaseStore<SubmitPhoneFlowStore>((se
 
   reset: () => {
     clearPhoneAlreadyRegistered();
-    set({ run: null, digits: '', state: 'entry' });
+    set({ run: null, digits: '', restoringAccess: false, state: 'entry' });
   },
 }));

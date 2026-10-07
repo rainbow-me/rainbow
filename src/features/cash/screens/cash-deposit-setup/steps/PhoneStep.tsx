@@ -19,6 +19,7 @@ const existingAccountL = i18n.l.cash.deposit_setup.phone.existing_account;
 export const PhoneStep = memo(function PhoneStep() {
   const state = useSubmitPhoneFlowStore(store => store.state);
   const digits = useSubmitPhoneFlowStore(store => store.digits);
+  const heading = useSubmitPhoneFlowStore(store => (store.restoringAccess ? l.restore_access : l));
   const alreadyRegistered = useCashSetupSessionStore(s => s.session.status === 'phoneAlreadyRegistered');
   const inputRef = useSetupInputRef();
 
@@ -27,7 +28,7 @@ export const PhoneStep = memo(function PhoneStep() {
 
   return (
     <>
-      <SetupStepLayout subtitle={i18n.t(l.subtitle)} title={i18n.t(l.title)}>
+      <SetupStepLayout subtitle={i18n.t(heading.subtitle)} title={i18n.t(heading.title)}>
         <Box gap={12} paddingTop="24px">
           <Box flexDirection="row" gap={12}>
             <Box background="fillTertiary" borderRadius={20} justifyContent="center" paddingHorizontal="16px">
