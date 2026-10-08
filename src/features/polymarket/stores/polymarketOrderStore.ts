@@ -41,8 +41,8 @@ export const usePolymarketOrderDetailsStore = createQueryStore<PolymarketOrderDe
   fetcher: fetchOrderDetails,
   enabled: $ => {
     const hasSelection = $(polymarketOrderParamsStore, s => s.params !== null && 'marketId' in s.params);
-    const activeRoute = $(useNavigationStore, s => s.activeRoute);
-    return activeRoute === Routes.POLYMARKET_NEW_POSITION_SHEET && hasSelection;
+    const isOrderSheetActive = $(useNavigationStore, s => s.isRouteActive(Routes.POLYMARKET_NEW_POSITION_SHEET));
+    return isOrderSheetActive && hasSelection;
   },
   params: {
     selection: $ => $(polymarketOrderParamsStore, s => (s.params && 'marketId' in s.params ? s.params : null)),
