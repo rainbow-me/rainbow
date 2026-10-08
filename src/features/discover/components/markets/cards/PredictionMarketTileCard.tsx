@@ -211,6 +211,7 @@ const OutcomeRow = memo(function OutcomeRow({
         outcome: row.market.outcomes[row.outcomeIndex] ?? row.title,
         outcomeIndex: row.outcomeIndex,
         isDarkMode,
+        teams: event.teams,
       }),
       fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
     });
