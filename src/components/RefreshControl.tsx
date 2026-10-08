@@ -4,6 +4,7 @@ import { RefreshControl as NativeRefreshControl, type RefreshControlProps as Nat
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { useColorMode } from '@/design-system/color/ColorMode';
+import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
 type RefreshControlProps = Pick<NativeRefreshControlProps, 'children' | 'style'> & {
@@ -28,6 +29,8 @@ export const RefreshControl = memo(function RefreshControl({ children, onRefresh
 
     try {
       await onRefresh();
+    } catch (error) {
+      logger.error(new RainbowError('[RefreshControl]: Error refreshing', error));
     } finally {
       await minimumDelay;
       setRefreshing(false);
