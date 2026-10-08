@@ -69,6 +69,16 @@ export async function submitPasskey(): Promise<void> {
   else if (result === 'recovered') completeSetup();
 }
 
+export async function signInWithPasskeyOnDevice(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PASSKEY)) return;
+  if (
+    (await useAddPasskeyFlowStore.getState().signInWithPasskeyOnDevice()) === 'signedIn' &&
+    CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PASSKEY)
+  ) {
+    completeSetup();
+  }
+}
+
 export async function submitReview(): Promise<void> {
   const result = await useSubmitReviewFlowStore.getState().submit();
   if (result === 'recovered') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);

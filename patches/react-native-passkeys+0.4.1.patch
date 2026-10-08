@@ -7,11 +7,14 @@
 #     cancellation and identify callbacks so a timed-out request releases the
 #     native slot without settling a newer request. Android implements the shared
 #     bridge method as a no-op because Cash only invokes cancellation on iOS.
+#   - iOS folds ASAuthorizationError 1006 (the device already holds a passkey the
+#     request excludes) into UnknownException. Give it a distinct code so Cash can
+#     offer sign-in with that passkey instead of a generic failure.
 # Upstream Issue: https://github.com/peterferguson/react-native-passkeys/issues/13
 #   (same missing-method symptom; the issue does not establish the root cause).
-# Linear Issue: APP-4117.
-# Remove when: react-native-passkeys exposes cancellation and no longer reads its
-#   own methods off the spread default export.
+# Linear Issues: APP-4117, APP-4138.
+# Remove when: react-native-passkeys exposes cancellation, no longer reads its own
+#   methods off the spread default export, and reports iOS error 1006 distinctly.
 
 diff --git a/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt b/node_modules/react-native-passkeys/android/src/main/java/expo/modules/passkeys/ReactNativePasskeysModule.kt
 index 42f67d0..2601d4b 100644
@@ -199,7 +202,7 @@ index 0138931..215b4b5 100644
    override var reason: String {
      "Passkeys are not supported on this iOS version. Please use iOS 15 or above"
 diff --git a/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift b/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
-index 06e9aa9..660c1f0 100644
+index 06e9aa9..42a4df6 100644
 --- a/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
 +++ b/node_modules/react-native-passkeys/ios/ReactNativePasskeysModule.swift
 @@ -3,8 +3,10 @@ import ExpoModulesCore
@@ -313,6 +316,17 @@ index 06e9aa9..660c1f0 100644
          promise.reject(
              handleASAuthorizationError(
                  errorCode: (error as NSError).code,
+@@ -441,6 +470,10 @@ func handleASAuthorizationError(errorCode: Int, localizedDescription: String = "
+     case 4004:
+         return NotConfiguredException(
+             name: "NotConfiguredException", description: localizedDescription)
++    case 1006:
++        return Exception(
++            name: "PasskeyExcludedCredentialException", description: localizedDescription,
++            code: "ERR_PASSKEY_EXCLUDED_CREDENTIAL")
+     default:
+         return UnknownException(name: "UnknownException", description: localizedDescription)
+     }
 diff --git a/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts b/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts
 index 22b8020..6d744de 100644
 --- a/node_modules/react-native-passkeys/src/ReactNativePasskeysModule.ts

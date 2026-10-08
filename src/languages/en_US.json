@@ -1695,7 +1695,12 @@
           "action": "Add Passkey",
           "error_title": "Error adding passkey",
           "error_description": "We couldn’t add your passkey. Please try again.",
-          "try_again": "Try Again"
+          "try_again": "Try Again",
+          "on_device": {
+            "title": "You already have a passkey",
+            "description": "This device already has a passkey for your account. Sign in with it to continue.",
+            "sign_in": "Sign in with Passkey"
+          }
         },
         "all_done": {
           "title": "You’re all done!",
