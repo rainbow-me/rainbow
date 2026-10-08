@@ -14,7 +14,8 @@
 
 ## Setup
 
-> [!TIP] > **Internal developers** can also use the [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
+> [!TIP]
+> **Internal developers** can also use the [`rainbow-me/rainbow-setup`](https://github.com/rainbow-me/rainbow-setup)
 > script to install all dependencies and configure the project in one step.
 
 ### Prerequisites
@@ -32,7 +33,9 @@ Set up these **before** running `yarn install`, as the postinstall script reads
 
 1. Authenticate the [GitHub CLI](https://cli.github.com/) (`gh auth login`), or
    export a `GITHUB_TOKEN` with access to our private repos.
-2. Run `yarn update-env` to install `.env` (overwrites any existing local `.env`).
+2. Run `./scripts/fetch-rainbow-env-file.sh dotenv .env` to install `.env`
+   (overwrites any existing local `.env`). This is what `yarn update-env` runs,
+   but Yarn won't run package scripts until the first `yarn install`.
 3. Clone [`rainbow-me/rainbow-scripts`](https://github.com/rainbow-me/rainbow-scripts)
    into the project root (the postinstall prebuild hooks depend on it).
 4. Install dependencies and run setup: `yarn install && yarn setup`.
@@ -82,20 +85,39 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
    ```sh
    brew install --cask zulu@17
    ```
+   On Linux, use your distro's JDK 17 package if it has one, or a tarball such as
+   [Azul Zulu 17](https://www.azul.com/downloads/?version=java-17-lts&os=linux&package=jdk)
+   (Debian 13 no longer packages `openjdk-17-jdk`).
 2. Add to your shell profile (`~/.zshrc` or `~/.bashrc`):
 
    ```sh
    export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+   # export JAVA_HOME=/path/to/your/jdk-17                # Linux
    export ANDROID_HOME=$HOME/Library/Android/sdk  # macOS
    # export ANDROID_HOME=$HOME/Android/Sdk        # Linux
    export PATH=$PATH:$ANDROID_HOME/emulator
    export PATH=$PATH:$ANDROID_HOME/platform-tools
    ```
 
-   On Linux, also install system dependencies: `sudo apt install libsecret-tools watchman`
+   On Linux, also install `libsecret-tools` (`sudo apt install libsecret-tools`)
+   and, if your distro packages it, Watchman (see the
+   [Watchman install docs](https://facebook.github.io/watchman/docs/install)).
+   Debian 13 has no `watchman` package, so combining both in one `apt install`
+   fails there; Metro still works without Watchman.
 
 3. Install [Android Studio](https://developer.android.com/studio) (the standard
    setup wizard is fine).
+   Without Android Studio (e.g. a headless Linux machine), install the
+   [command-line tools](https://developer.android.com/studio#command-line-tools-only)
+   to `$ANDROID_HOME/cmdline-tools/latest`, add its `bin` to `PATH`, then:
+   ```sh
+   sdkmanager --licenses
+   sdkmanager "platform-tools" "emulator" "platforms;android-36" "build-tools;36.0.0" \
+     "system-images;android-36;google_apis;x86_64"
+   avdmanager create avd -n rainbow -k "system-images;android-36;google_apis;x86_64" -d pixel_7
+   ```
+   The NDK and CMake versions the build needs are downloaded by Gradle on the
+   first build once the licenses are accepted.
 4. Increase the IDE memory: **Android Studio > Settings > Memory Settings** and
    set the heap to at least 4096 MB. This project is large enough that the
    default 2048 MB will cause slow syncs and builds.
