@@ -207,22 +207,6 @@ type CandlestickConfig = {
   };
 };
 
-type YAxisLayout = { width: number; decimals: number };
-
-const Y_AXIS_LABEL_SLOTS = ['yAxis0', 'yAxis1', 'yAxis2', 'yAxis3'] as const;
-
-type LabelSlot = 'startDate' | 'endDate' | 'currentPrice' | (typeof Y_AXIS_LABEL_SLOTS)[number];
-
-type LabelPicture = {
-  color: SkColor;
-  decimals: number;
-  height: number;
-  picture: SkPicture;
-  text: string;
-  value: string | number;
-  width: number;
-};
-
 export const DEFAULT_CANDLESTICK_CONFIG = deepFreeze({
   activeCandleCard: {
     height: 75,
@@ -313,11 +297,30 @@ function getYAxisLabelWidth(maxCharacters: number): number {
   return Math.ceil(maxCharacters * AVERAGE_CHARACTER_WIDTH);
 }
 
-const EMA_INDICATORS: IndicatorKey[] = ['EMA9', 'EMA20', 'EMA50'];
-const EMPTY_CANDLES: Bar[] = [];
 const LOAD_THRESHOLD_PX = DEVICE_WIDTH * 4;
 const LOADING_SPINNER_SIZE = 28;
 const MAX_CANDLES_TO_LOAD = 5000;
+
+const EMA_INDICATORS: IndicatorKey[] = ['EMA9', 'EMA20', 'EMA50'];
+const EMPTY_CANDLES: Bar[] = [];
+const Y_AXIS_LABEL_SLOTS = ['yAxis0', 'yAxis1', 'yAxis2', 'yAxis3'] as const;
+
+type LabelSlot = 'startDate' | 'endDate' | 'currentPrice' | (typeof Y_AXIS_LABEL_SLOTS)[number];
+
+type LabelPicture = {
+  color: SkColor;
+  decimals: number;
+  height: number;
+  picture: SkPicture;
+  text: string;
+  value: string | number;
+  width: number;
+};
+
+type YAxisLayout = {
+  width: number;
+  decimals: number;
+};
 
 class CandlestickChartManager {
   private __workletClass = true;
