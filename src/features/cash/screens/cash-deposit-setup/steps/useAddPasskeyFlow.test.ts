@@ -4,6 +4,7 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
 import { createPasskeyCredential } from '../../../services/cashPasskeyService';
+import { signInWithPhone } from '../../../services/cashSignInService';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
 import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../stores/cashSetupSessionStore';
@@ -34,6 +35,11 @@ vi.mock('../../../services/cashPasskeyService', () => ({
   createPasskeyCredential: vi.fn(),
   getPasskeyName: vi.fn(() => 'iPhone 15 Pro'),
   isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+  isPasskeyAlreadyOnDevice: vi.fn((error: unknown) => error instanceof Error && error.message === 'PasskeyOnDevice'),
+}));
+
+vi.mock('../../../services/cashSignInService', () => ({
+  signInWithPhone: vi.fn(),
 }));
 
 vi.mock('../../../stores/cashAccountStore', () => {
@@ -44,6 +50,7 @@ vi.mock('../../../stores/cashAccountStore', () => {
 const mockAddPasskey = vi.mocked(addPasskey);
 const mockFinishAddPasskey = vi.mocked(finishAddPasskey);
 const mockCreatePasskeyCredential = vi.mocked(createPasskeyCredential);
+const mockSignInWithPhone = vi.mocked(signInWithPhone);
 const track = vi.mocked(analytics.track);
 const setUserId = vi.mocked(useCashAccountStore.getState().setUserId);
 
@@ -182,5 +189,45 @@ describe('useAddPasskeyFlowStore.submit', () => {
 
     expect(mockAddPasskey).not.toHaveBeenCalled();
     expect(track).not.toHaveBeenCalled();
+  });
+});
+
+describe('passkey already on the device', () => {
+  beforeEach(() => {
+    verifyRecoverySession();
+    mockCreatePasskeyCredential.mockRejectedValue(new Error('PasskeyOnDevice'));
+  });
+
+  it('offers sign-in instead of reporting a failure', async () => {
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(mockFinishAddPasskey).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalledWith('cash.passkey_failed', expect.anything());
+  });
+
+  it('signs in with the verified phone number', async () => {
+    mockSignInWithPhone.mockResolvedValue(undefined);
+    await flow().submit();
+
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('signedIn');
+
+    expect(mockSignInWithPhone).toHaveBeenCalledWith('4155550100', 'passkeyOnDevicePrompt');
+    expect(flow().state).toBe('entry');
+  });
+
+  it('keeps the prompt when sign-in is cancelled or fails', async () => {
+    await flow().submit();
+
+    mockSignInWithPhone.mockRejectedValueOnce(new Error('UserCancelled'));
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('cancelled');
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(logger.error).not.toHaveBeenCalled();
+
+    mockSignInWithPhone.mockRejectedValueOnce(new Error('network down'));
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('failed');
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(logger.error).toHaveBeenCalled();
   });
 });
