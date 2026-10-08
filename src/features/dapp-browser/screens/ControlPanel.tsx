@@ -147,9 +147,7 @@ export const ControlPanel = () => {
       (wallet.addresses || [])
         .filter(account => account.visible)
         .forEach(account => {
-          const balanceText = account.balancesMinusHiddenBalances
-            ? account.balancesMinusHiddenBalances
-            : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+          const balanceText = account.balancesMinusHiddenBalances ?? '—';
 
           const item: ControlPanelMenuItemProps = {
             IconComponent: account.image ? (
@@ -165,7 +163,7 @@ export const ControlPanel = () => {
             selected: account.address === currentAddress,
           };
 
-          accountBalances[account.address] = account.balances?.totalBalanceAmount;
+          accountBalances[account.address] = account.balances?.totalBalanceAmount ?? '0';
 
           if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
             sortedWallets.push(item);

@@ -1,5 +1,6 @@
 import { createDerivedStore } from '@storesjs/stores';
 
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
@@ -9,15 +10,23 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { deepEqual } from '@/worklets/comparisons';
 
-export const useLiveWalletBalance = createDerivedStore(
+export const liveBalancesSummary = createDerivedStore(
   $ => {
     const liveTokens = $(useLiveTokensStore, state => state.tokens);
     const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
     const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
     const nativeCurrency = $(userAssetsStoreManager, state => state.currency);
+    const address = $(useUserAssetsStore, state => state.address);
+    const selectedAddress = $(useWalletsStore, state => state.accountAddress);
+    const hasLoadedAssets = $(useUserAssetsStore, state => state.status === 'success');
+    const hiddenAssetsBalance = $(useUserAssetsStore, state => state.hiddenAssetsBalance ?? '0');
+    const hasCurrentClaimables = $(useClaimablesStore, state => state.getData() === (state.getCacheEntry()?.data ?? null));
+    const hasCurrentPositions = $(usePositionsStore, state => state.getData() === (state.getCacheEntry()?.data ?? null));
+    const hasCurrencyRate = $(useCurrencyConversionStore, state => !!state.getData());
 
     const perpsBalanceNative = $(useHyperliquidBalance);
     const claimablesBalance = $(useClaimablesStore, state => state.getBalance());
@@ -50,8 +59,23 @@ export const useLiveWalletBalance = createDerivedStore(
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
     const isLoading = initialBalance === 0 && isFetching;
 
-    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
+    return {
+      address,
+      currency: nativeCurrency,
+      totalBalanceDisplay: isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency),
+      // Previous query data can belong to another wallet or currency during a switch.
+      cachedBalance:
+        address && address === selectedAddress && hasLoadedAssets && hasCurrentClaimables && hasCurrentPositions && hasCurrencyRate
+          ? {
+              totalBalanceAmount,
+              totalBalanceDisplay: convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency),
+              balanceMinusHiddenDisplay: convertAmountToNativeDisplay(subtract(totalBalanceAmount, hiddenAssetsBalance), nativeCurrency),
+            }
+          : null,
+    };
   },
 
   { debounce: 250, equalityFn: deepEqual, lockDependencies: true }
 );
+
+export const useLiveWalletBalance = createDerivedStore($ => $(liveBalancesSummary).totalBalanceDisplay);

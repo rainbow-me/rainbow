@@ -29,7 +29,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { updateWebProfile } from '@/helpers/webData';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
-import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
@@ -77,7 +76,6 @@ export function ChangeWalletSheet() {
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
-  const { transactionCounts, isLoading: isLoadingTransactionCounts } = useWalletTransactionCounts();
   const hasAutoPinnedAddresses = usePinnedWalletsStore(state => state.hasAutoPinnedAddresses);
 
   const featureHintTooltipRef = useRef<TooltipRef>(null);
@@ -116,9 +114,7 @@ export function ChangeWalletSheet() {
 
       visibleAccounts.forEach(account => {
         const isSelectedAddress = account.address === accountAddress;
-        const balanceText = account.balancesMinusHiddenBalances
-          ? account.balancesMinusHiddenBalances
-          : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+        const balanceText = account.balancesMinusHiddenBalances ?? '—';
 
         const item: AddressItem = {
           id: account.address,
@@ -149,28 +145,19 @@ export function ChangeWalletSheet() {
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
   }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance]);
 
-  // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
+  // If the user has never seen pinned addresses, auto-pin owned addresses in wallet order.
   useEffect(() => {
-    if (hasAutoPinnedAddresses || initialPinnedAddressCount > 0 || isLoadingTransactionCounts) return;
+    if (hasAutoPinnedAddresses || initialPinnedAddressCount > 0) return;
 
     const pinnableAddresses = allWalletItems.filter(item => !item.isReadOnly).map(item => item.address);
 
     // Do not auto-pin if user only has read-only wallets
     if (pinnableAddresses.length === 0) return;
 
-    const addressesToAutoPin = pinnableAddresses
-      .sort((a, b) => transactionCounts[b.toLowerCase()] - transactionCounts[a.toLowerCase()])
-      .slice(0, MAX_PINNED_ADDRESSES);
+    const addressesToAutoPin = pinnableAddresses.slice(0, MAX_PINNED_ADDRESSES);
 
     setPinnedAddresses(addressesToAutoPin);
-  }, [
-    allWalletItems,
-    setPinnedAddresses,
-    hasAutoPinnedAddresses,
-    initialPinnedAddressCount,
-    transactionCounts,
-    isLoadingTransactionCounts,
-  ]);
+  }, [allWalletItems, setPinnedAddresses, hasAutoPinnedAddresses, initialPinnedAddressCount]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: Address, fromDeletion = false) => {

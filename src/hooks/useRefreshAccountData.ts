@@ -16,7 +16,6 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { hiddenTokensQueryKey, showcaseTokensQueryKey } from '@/state/nfts/tokenPreferences';
-import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
@@ -26,7 +25,6 @@ export const refreshAccountData = async () => {
   const accountAddress = getAccountAddress();
 
   // These queries can take too long to fetch, so we do not wait for them
-  refetchWalletSummary();
   queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
   queryClient.invalidateQueries(showcaseTokensQueryKey({ address: accountAddress }));
   queryClient.invalidateQueries(hiddenTokensQueryKey({ address: accountAddress }));
