@@ -571,7 +571,6 @@ class CandlestickChartManager {
         chartWidth,
         isDarkMode,
         perpsIndicatorData,
-        yAxisWidth: this.yAxisWidth,
       });
       this.perpsIndicatorBuilder.updateData(perpsIndicatorData);
     }
@@ -876,6 +875,7 @@ class CandlestickChartManager {
         offsetX: currentOffset,
         startIndex,
         stride,
+        yAxisWidth: this.yAxisWidth,
       });
     }
 
