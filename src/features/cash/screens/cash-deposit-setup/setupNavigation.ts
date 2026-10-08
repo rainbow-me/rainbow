@@ -8,7 +8,7 @@ import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getNextSetupStep, isSetupEditDetour } from './steps';
-import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
+import { selectIsPasskeyCeremonyPending, useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 export function completeSetupStep(): void {
@@ -74,7 +74,7 @@ export function abandonSetupSession(): void {
 export function restartSetupWithoutCredential(): void {
   if (useCashSetupSessionStore.getState().session.status !== 'empty') return;
   if (useCashAccountStore.getState().userId != null) return;
-  if (useAddPasskeyFlowStore.getState().state === 'submitting') return;
+  if (selectIsPasskeyCeremonyPending(useAddPasskeyFlowStore.getState())) return;
   if (CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
 
   const isActive = selectIsSetupScreenActive(useNavigationStore.getState());

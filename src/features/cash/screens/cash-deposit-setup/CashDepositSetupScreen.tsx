@@ -36,7 +36,7 @@ import { PasskeyStep } from './steps/PasskeyStep';
 import { PhoneStep } from './steps/PhoneStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { SsnStep } from './steps/SsnStep';
-import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
+import { selectIsPasskeyCeremonyPending, useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
@@ -76,7 +76,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   );
 
   useListen(useCashSetupSessionStore, s => s.session.status === 'empty', restartSetupWithoutCredential);
-  useListen(useAddPasskeyFlowStore, s => s.state === 'submitting', restartSetupWithoutCredential);
+  useListen(useAddPasskeyFlowStore, selectIsPasskeyCeremonyPending, restartSetupWithoutCredential);
 
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();

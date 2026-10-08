@@ -28,14 +28,17 @@ type AddPasskeyFlowStore = {
   signInWithPasskeyOnDevice: () => Promise<'signedIn' | 'cancelled' | 'failed'>;
 };
 
+export function selectIsPasskeyCeremonyPending({ state }: { state: AddPasskeyState }): boolean {
+  return state === 'submitting' || state === 'signingIn';
+}
+
 export const useAddPasskeyFlowStore = createBaseStore<AddPasskeyFlowStore>((set, get) => ({
   state: 'entry',
 
   reset: () => set({ state: 'entry' }),
 
   submit: async () => {
-    const { state } = get();
-    if (state === 'submitting' || state === 'signingIn') return 'skipped';
+    if (selectIsPasskeyCeremonyPending(get())) return 'skipped';
     const { session } = useCashSetupSessionStore.getState();
     if (session.status !== 'phoneVerified') return 'skipped';
     const recovering = session.source === 'recovery';
