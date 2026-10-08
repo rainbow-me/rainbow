@@ -15,6 +15,8 @@ export type RainbowFetchResponse<T> = {
   status: number;
 };
 
+const ABORT_OPTIONS = { once: true } satisfies AddEventListenerOptions;
+
 export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchRequestOpts): Promise<RainbowFetchResponse<T>> {
   // eslint-disable-next-line no-param-reassign
   opts = {
@@ -26,13 +28,17 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
 
   if (!url) throw new Error('rainbowFetch: Missing url argument');
 
-  const { abortController: userAbortController, body, headers, params, ...otherOpts } = opts;
+  const { abortController: userAbortController, body, headers, params, signal, ...otherOpts } = opts;
 
   const abortController = userAbortController ?? new AbortController();
-  const timeoutId = setTimeout(() => abortController.abort(), opts.timeout);
+  const abort = (): void => abortController.abort();
+  const timeoutId = setTimeout(abort, opts.timeout);
   const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
   try {
+    if (signal?.aborted) abort();
+    else signal?.addEventListener('abort', abort, ABORT_OPTIONS);
+
     let response: Response;
     try {
       response = await fetch(`${url}${createParams(params)}`, {
@@ -76,6 +82,7 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
     }
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', abort);
   }
 }
 
