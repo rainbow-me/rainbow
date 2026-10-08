@@ -167,7 +167,7 @@ const buildBriefWalletSections = (
   // const polymarketFeatureCardSection = shouldShowPolymarketFeatureCard ? withPolymarketFeatureCardSection() : [];
   // NOTE: Only showing RNBW feature card for now. Polymarket logic preserved for future use.
   const featureCardSection = [...rnbwFeatureCardSection];
-  const cashBalanceSection = cashBalanceEnabled ? withCashBalanceSection() : EMPTY_ARRAY;
+  const cashBalanceSection = cashBalanceEnabled ? CASH_BALANCE_SECTION : EMPTY_ARRAY;
   const tokensHeaderSection = withTokensHeaderSection({ contentSection, perpsSection });
 
   // Sections above are fixed-position and unconditional relative to one another; only the
@@ -237,14 +237,12 @@ const withRnbwFeatureCardSection = (): CellTypes[] => {
   ];
 };
 
-const withCashBalanceSection = (): CellTypes[] => {
-  return [
-    {
-      type: CellType.CASH_BALANCE_HEADER,
-      uid: 'cash-balance-header',
-    },
-  ];
-};
+const CASH_BALANCE_SECTION: CellTypes[] = [
+  {
+    type: CellType.CASH_BALANCE_HEADER,
+    uid: 'cash-balance-header',
+  },
+];
 
 const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): CellTypes[] => {
   if (isLoadingUserAssets || !positions?.positions || Object.keys(positions.positions).length === 0) return [];

@@ -1,24 +1,21 @@
+import { createDerivedStore } from '@storesjs/stores';
+
+import { getUniqueId } from '@/entities/assetId';
 import { CASH_USDC_BY_NETWORK } from '@/features/cash/constants';
 import { RampNetwork } from '@/features/cash/services/rampClient';
-import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-const CASH_BALANCE_ASSET = CASH_USDC_BY_NETWORK[RampNetwork.Base];
-// Lowercased once here since nothing guarantees userAssetsStore's own keys are lowercased —
-// the address casing addys returns for a given asset isn't normalized before that store builds
-// its map keys, so an exact-casing key lookup could silently miss a checksummed match.
-const CASH_BALANCE_ADDRESS = CASH_BALANCE_ASSET?.address.toLowerCase();
+const BASE_USDC = CASH_USDC_BY_NETWORK[RampNetwork.Base];
+const BASE_USDC_ID = getUniqueId(BASE_USDC.address, BASE_USDC.chainId);
 
-export function useCashBalance(): string {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  return useUserAssetsStore(state => {
-    const asset = CASH_BALANCE_ADDRESS
-      ? Array.from(state.userAssets.values()).find(
-          userAsset => userAsset.chainId === ChainId.base && userAsset.address.toLowerCase() === CASH_BALANCE_ADDRESS
-        )
-      : undefined;
-    return asset?.native.balance.display ?? convertAmountToNativeDisplay(0, nativeCurrency);
-  });
-}
+export const useCashBalance = createDerivedStore<string>(
+  $ => {
+    const asset = $(useUserAssetsStore, state => state.getUserAsset(BASE_USDC_ID));
+    const currency = $(userAssetsStoreManager, state => state.currency);
+
+    return asset?.native.balance.display ?? convertAmountToNativeDisplayWorklet(0, currency);
+  },
+  { lockDependencies: true }
+);
