@@ -125,12 +125,14 @@ export const useSportsStore = createQueryStore<SportsResponse | null, SportsPara
       return appActive && hasRequest;
     },
     staleTime: ($, store) => {
-      const request = $(sportsRequestStore, s => s);
-      if (request?.type !== 'event') return STALE_TIME;
-
+      const eventId = $(sportsRequestStore, s => (s?.type === 'event' ? s.eventId : null));
       const queryFetchedAt = $(store, s => s.queryCache[s.queryKey]?.lastFetchedAt);
-      const eventDueAt = $(store, s => getEventDueAt(s, request.eventId));
-      return queryFetchedAt ? eventDueAt - queryFetchedAt : STALE_TIME;
+      const gameFetchedAt = $(store, s => s.gameFetchedAt);
+      const lookup = $(store, s => s.lookup);
+
+      if (eventId === null) return STALE_TIME;
+
+      return queryFetchedAt ? getEventDueAt({ gameFetchedAt, lookup }, eventId) - queryFetchedAt : STALE_TIME;
     },
     params: { request: $ => $(sportsRequestStore, s => s) },
   },
