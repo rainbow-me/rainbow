@@ -58,7 +58,7 @@ async function fetchOrderDetails(
   if (!selection) return null;
 
   const { data: event } = await rainbowFetch<RawPolymarketEvent>(`${POLYMARKET_GAMMA_API_URL}/events/${selection.eventId}`, {
-    abortController,
+    signal: abortController?.signal,
     timeout: time.seconds(15),
   });
   const rawMarket = event.markets.find(market => market.id === selection.marketId);
