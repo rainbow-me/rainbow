@@ -52,6 +52,15 @@ function settle(): Promise<void> {
   });
 }
 
+function stallOrderDetails(): void {
+  fetchMock.mockImplementation(async (url, options) => {
+    if (!String(url).includes('/events/')) return bookResponse(tokenId);
+    return new Promise<Response>((_, reject) => {
+      options?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+    });
+  });
+}
+
 beforeEach(() => {
   useNavigationStore.setState({ activeRoute: Routes.POLYMARKET_NEW_POSITION_SHEET });
   polymarketOrderParamsStore.setState({ params: null });
@@ -81,6 +90,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   for (const stop of stops.splice(0)) stop();
+  vi.useRealTimers();
 });
 afterAll(() => {
   for (const store of [usePolymarketOrderDetailsStore, usePolymarketOrderBookStore, usePolymarketFeeInfoStore])
@@ -142,4 +152,36 @@ it('rejects a token at a different outcome index', async () => {
   await settle();
   expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
   expect(marketInfo).not.toHaveBeenCalled();
+});
+
+it('reports a details timeout as an error and allows retrying', async () => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  stallOrderDetails();
+  polymarketOrderParamsStore.setState({ params: selection });
+  await settle();
+
+  await vi.advanceTimersByTimeAsync(15_000);
+  expect(usePolymarketOrderDetailsStore.getState().getStatus()).toMatchObject({
+    isError: true,
+    isInitialLoad: false,
+    isLoading: false,
+  });
+
+  fetchMock.mockResolvedValueOnce(eventResponse());
+  await usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true });
+  expect(usePolymarketOrderDetailsStore.getState().getStatus('isSuccess')).toBe(true);
+});
+
+it('cancels the details request without an error when the sheet closes', async () => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  stallOrderDetails();
+  polymarketOrderParamsStore.setState({ params: selection });
+  await settle();
+  const signal = fetchMock.mock.calls.find(([url]) => String(url).includes('/events/'))?.[1]?.signal;
+  expect(signal?.aborted).toBe(false);
+
+  useNavigationStore.setState({ activeRoute: Routes.WALLET_SCREEN });
+  await settle();
+  expect(signal?.aborted).toBe(true);
+  expect(usePolymarketOrderDetailsStore.getState().getStatus('isError')).toBe(false);
 });
