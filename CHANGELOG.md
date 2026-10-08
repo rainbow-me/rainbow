@@ -21,6 +21,45 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.46](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.46)
+
+### Added
+
+- Implement state coming soon sheet for NY (https://github.com/rainbow-me/rainbow/pull/7815)
+- Add `SkiaAnimatedNumber` (https://github.com/rainbow-me/rainbow/pull/7816)
+- Add rejection feedback and interruptible shakes to keypad (https://github.com/rainbow-me/rainbow/pull/7818)
+- Add fee policy and polish Add Cash flow (https://github.com/rainbow-me/rainbow/pull/7817)
+- Warn unsupported wallets before Cash setup (https://github.com/rainbow-me/rainbow/pull/7835)
+- Allow checking KYC fast if bootstrap token is still valid (https://github.com/rainbow-me/rainbow/pull/7827)
+- Handle VPN detection responses (https://github.com/rainbow-me/rainbow/pull/7832)
+- Prompt existing-passkey users to sign in before account recovery in Add Cash (https://github.com/rainbow-me/rainbow/pull/7822)
+- Show unavailable notice to blocked users (https://github.com/rainbow-me/rainbow/pull/7846)
+- Add remote flag to pause Cash sign-ups (https://github.com/rainbow-me/rainbow/pull/7845)
+- Add internal prototype for side drawer (https://github.com/rainbow-me/rainbow/pull/7829)
+- Set up feature flags for Solana (https://github.com/rainbow-me/rainbow/pull/7865)
+- Make order submission hardened against double spend (https://github.com/rainbow-me/rainbow/pull/7824)
+
+### Changed
+
+- Introduce market domain for price-change display (https://github.com/rainbow-me/rainbow/pull/7813)
+- Bump iOS and Android to v2.0.46 (https://github.com/rainbow-me/rainbow/pull/7830)
+- Remove Add Cash gear icon (https://github.com/rainbow-me/rainbow/pull/7834)
+- Bump `react-native-turbo-haptics` to `1.2.0` (https://github.com/rainbow-me/rainbow/pull/7840)
+- Bump `@storesjs/stores` to `0.12.0` (https://github.com/rainbow-me/rainbow/pull/7836)
+- Send analytics events directly to PostHog (https://github.com/rainbow-me/rainbow/pull/7842)
+- Bump `react-native-blur-view` (https://github.com/rainbow-me/rainbow/pull/7847)
+- Migrate tests from Jest to Vitest (https://github.com/rainbow-me/rainbow/pull/7864)
+
+### Fixed
+
+- Correct unequal continuous corners and animated text rendering on iOS (https://github.com/rainbow-me/rainbow/pull/7820)
+- Correct Android `SkiaAnimatedNumber` width style (https://github.com/rainbow-me/rainbow/pull/7833)
+- Fix stuck Cash passkey sign-ins (https://github.com/rainbow-me/rainbow/pull/7831)
+- Use backend unsupported state metadata (https://github.com/rainbow-me/rainbow/pull/7843)
+- Fix e2e failures and input bugs (https://github.com/rainbow-me/rainbow/pull/7863)
+- Support nested button presses on Android (https://github.com/rainbow-me/rainbow/pull/7848)
+- Fix Skia and image rendering bugs on native (https://github.com/rainbow-me/rainbow/pull/7849)
+
 ## [2.0.45](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.45)
 
 ### Added
