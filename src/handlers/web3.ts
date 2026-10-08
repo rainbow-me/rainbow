@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
-import { type Contract } from '@ethersproject/contracts';
+import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther, parseUnits } from '@ethersproject/units';
@@ -16,7 +16,7 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { isBankrAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -459,11 +459,41 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
  * @param nameOrAddress The name or address to resolve.
  * @return The address, or null if one could not be resolved.
  */
+/**
+ * BankrNS UniversalResolver on Base (verified on Basescan).
+ * `resolve(name)` returns the zero address for unregistered, expired or unset names.
+ */
+const BANKRNS_UNIVERSAL_RESOLVER = '0xc21096Ce632428BB6d028fb8512583eB52f46301';
+const BANKRNS_RESOLVER_ABI = ['function resolve(string name) view returns (address)'];
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+/**
+ * @desc Resolves a BankrNS (`.bankr`) name, e.g. `alice.bankr`, on Base.
+ * @param  {String} name
+ * @return {Promise<String | null>} the checksummed address, or null if it doesn't resolve
+ */
+export const resolveBankrName = async (name: string): Promise<string | null> => {
+  try {
+    const provider = getProvider({ chainId: ChainId.base });
+    const resolver = new Contract(BANKRNS_UNIVERSAL_RESOLVER, BANKRNS_RESOLVER_ABI, provider);
+    const address: string = await resolver.resolve(name.toLowerCase());
+    return !address || address === ZERO_ADDRESS ? null : getAddress(address);
+  } catch (error) {
+    logger.error(new RainbowError(`[web3]: resolveBankrName error`), {
+      message: (error as Error)?.message,
+    });
+    return null;
+  }
+};
+
 export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
       return resolvedAddress;
+    }
+    if (isBankrAddressFormat(nameOrAddress)) {
+      return resolveBankrName(nameOrAddress);
     }
     const p = getProvider({ chainId: ChainId.mainnet });
     const resolvedAddress = await p?.resolveName(nameOrAddress);
