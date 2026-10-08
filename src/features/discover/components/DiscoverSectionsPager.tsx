@@ -225,8 +225,9 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 
 function DiscoverEventsError() {
   const hasEvents = displayedDiscoverEventIdsStore(s => s.length > 0);
-  const error = useDiscoverEventsErrorStore();
-  if (!hasEvents || !error) return null;
+  const hasError = useDiscoverEventsErrorStore(s => Boolean(s));
+
+  if (!hasEvents || !hasError) return null;
 
   return (
     <ButtonPressAnimation onPress={refreshDiscoverEvents} scaleTo={0.98}>
