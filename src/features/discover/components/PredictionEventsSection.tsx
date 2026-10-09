@@ -11,7 +11,7 @@ import { resolveSectionTitle } from '@/features/discover/components/SectionLayou
 import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
-import { getPredictionPlacement, usePredictionCardsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { getPredictionPlacement, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
@@ -135,7 +135,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
   eventId: string;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
 }) {
-  const event = usePredictionCardsStore(getCard => getCard(eventId));
+  const event = usePredictionEventsStore(getEvent => getEvent(eventId));
 
   if (event) {
     return (
