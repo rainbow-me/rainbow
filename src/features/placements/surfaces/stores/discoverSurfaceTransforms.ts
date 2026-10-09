@@ -4,10 +4,8 @@ import {
   type DiscoverSurface,
   type DiscoverSurfacePlacementRefs,
   type DiscoverTab,
-  type SurfaceTree,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceDocument, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
-import { filterSurfaceTree, walkSurfaceLeaves } from '@/features/placements/surfaces/utils/filterSurface';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { logger } from '@/logger';
 
@@ -20,42 +18,20 @@ export function removeDiscoverSportsTab(surface: SurfaceDocument | null | undefi
   return items.length === surface.items.length ? surface : { ...surface, items };
 }
 
-export function isSurfaceWaitingForPlacements(
-  surface: SurfaceDocument,
-  placementsById: PlacementsById,
-  surfaceLastFetchedAt: number | null,
-  placementsLastFetchedAt: number | null
-): boolean {
-  if (!isSurfaceNewerThanPlacements(surfaceLastFetchedAt, placementsLastFetchedAt)) return false;
-  return getMissingSurfacePlacementIds(surface, placementsById).length > 0;
-}
-
 export function isSurfaceNewerThanPlacements(surfaceLastFetchedAt: number | null, placementsLastFetchedAt: number | null): boolean {
   return !!surfaceLastFetchedAt && (!placementsLastFetchedAt || surfaceLastFetchedAt > placementsLastFetchedAt);
 }
 
-export function surfaceContainsPlacement(surface: SurfaceTree, placementId: string): boolean {
-  let containsPlacement = false;
-
-  walkSurfaceLeaves(surface, leaf => {
-    if (leaf.placement === placementId) containsPlacement = true;
-  });
-
-  return containsPlacement;
-}
-
-export function getMissingSurfacePlacementIds(surface: SurfaceTree, placementsById: PlacementsById): string[] {
+export function getMissingSurfacePlacementIds(surface: DiscoverSurface, placementsById: PlacementsById): string[] {
   const missingPlacementIds = new Set<string>();
 
-  walkSurfaceLeaves(surface, leaf => {
-    if (leaf.placement && !placementsById[leaf.placement]) missingPlacementIds.add(leaf.placement);
-  });
+  for (const tab of surface.tabs) {
+    for (const section of tab.sections) {
+      if (section.placement && !placementsById[section.placement]) missingPlacementIds.add(section.placement);
+    }
+  }
 
-  return missingPlacementIds.size ? [...missingPlacementIds].sort() : [];
-}
-
-export function filterMissingPlacementSurface(surface: SurfaceDocument, placementsById: PlacementsById): SurfaceDocument | undefined {
-  return filterSurfaceTree(surface, item => 'items' in item || !item.placement || placementsById[item.placement] !== undefined);
+  return [...missingPlacementIds].sort();
 }
 
 export function getDiscoverSurfacePlacementRefs(surface: DiscoverSurface, placementsById: PlacementsById): DiscoverSurfacePlacementRefs {
