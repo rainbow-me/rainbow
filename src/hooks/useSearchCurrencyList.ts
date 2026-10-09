@@ -3,9 +3,10 @@ import { useCallback, useMemo } from 'react';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { type SearchAsset, type TokenSearchAssetKey, type TokenSearchThreshold } from '@/__swaps__/types/search';
 import { getUniqueId } from '@/entities/assetId';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
