@@ -8,8 +8,8 @@ import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenLis
 
 const tokenIdsStore = createDerivedStore(
   $ => {
-    const eventIds = $(displayedDiscoverEventIdsStore);
-    const getEvent = $(usePredictionEventsStore);
+    const eventIds = $(displayedDiscoverEventIdsStore, s => s);
+    const getEvent = $(usePredictionEventsStore, s => s);
     const tokenIds: string[] = [];
 
     for (const id of eventIds) {
