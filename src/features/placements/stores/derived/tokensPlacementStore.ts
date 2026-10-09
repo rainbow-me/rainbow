@@ -5,12 +5,7 @@ import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import {
-  isPlacementHydrating,
-  selectPlacementItemsBySource,
-  usePlacementsStore,
-  type PlacementResult,
-} from '@/features/placements/stores/placementsStore';
+import { isPlacementHydrating, usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
 import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
@@ -18,7 +13,6 @@ import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -42,6 +36,8 @@ type TokenRefFetchResult = {
 };
 
 // ============ Constants ====================================================== //
+
+const EMPTY_ITEMS: PlacementItem[] = [];
 
 const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
@@ -130,13 +126,13 @@ async function fetchTokenRef(
 export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
   const enabled = useTokenRefsStore(s => s.enabled);
   const placement = usePlacementsStore(s => s.getPlacement(placementId));
-  const placementItems = usePlacementsStore(s => selectPlacementItemsBySource(s, placementId, 'rainbow'), shallowEqual);
-  const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId, 'rainbow'));
+  const placementItems = placement?.source === 'rainbow' ? placement.items : EMPTY_ITEMS;
+  const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId));
   const assetsByRef = useTokenRefsStore(s => s.getData());
-  const tokenRefsLoading = useTokenRefsStore(state => {
-    return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
-  });
   const items = useMemo(() => (assetsByRef ? parseTokenItems(placementItems, assetsByRef) : []), [assetsByRef, placementItems]);
+  const tokenRefsLoading = useTokenRefsStore(
+    s => placementItems.length > 0 && items.length === 0 && s.enabled && (s.getStatus('isIdle') || s.getStatus('isLoading'))
+  );
 
   return useMemo(
     () =>
