@@ -1,26 +1,22 @@
-import React, { Fragment, useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import React, { Fragment, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
-import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
+import { useTrackDiscoverCarouselScroll } from '@/features/discover/hooks/useTrackDiscoverCarouselScroll';
 import { type CardPressHandler, type CarouselSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
-import { trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
-import { time } from '@/framework/core/utils/time';
 
 import { computeSnapToOffsets } from './carouselLayout';
 
 const HORIZONTAL_PADDING = 12;
 const CARD_GAP = HORIZONTAL_PADDING;
-const SCROLL_DEBOUNCE_MS = time.ms(500);
-const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
 function noopPress(): undefined {
   return undefined;
@@ -116,25 +112,7 @@ export function MarketCarousel<T extends PlacementItem>({
     [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, renderItem, section, surfaceId, title]
   );
 
-  const onScrollSettle = useDebouncedCallback(
-    () => {
-      analytics.track(event.discoverCarouselScrolled, {
-        display: section.display,
-        sectionId: section.id,
-      });
-
-      trackSurfaceInteraction({
-        display: section.display,
-        id: surfaceId,
-        sectionId: section.id,
-        sectionTitle: title,
-      });
-    },
-    SCROLL_DEBOUNCE_MS,
-    SCROLL_DEBOUNCE_OPTIONS
-  );
-
-  useEffect(() => () => onScrollSettle.flush(), [onScrollSettle]);
+  const onScrollSettle = useTrackDiscoverCarouselScroll(section, surfaceId, title);
 
   if (!showSkeletons && data.length === 0) return null;
 
