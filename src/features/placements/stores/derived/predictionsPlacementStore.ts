@@ -78,14 +78,14 @@ export const usePredictionEventsStore = createDerivedStore(
 );
 
 /**
- * The first error from Discover's enabled Polymarket requests.
+ * Whether an enabled Discover prediction request has failed.
  */
-export const useDiscoverEventsErrorStore = createDerivedStore(
+export const useHasDiscoverEventsError = createDerivedStore(
   $ => {
-    const tileError = $(predictionTileEventsStore, s => (s.enabled ? s.error : null));
-    const cardError = $(predictionCardEventsStore, s => (s.enabled ? s.error : null));
+    const tileFailed = $(predictionTileEventsStore, s => s.enabled && Boolean(s.error));
+    const cardFailed = $(predictionCardEventsStore, s => s.enabled && Boolean(s.error));
 
-    return tileError ?? cardError;
+    return tileFailed || cardFailed;
   },
 
   { lockDependencies: true }
