@@ -15,7 +15,6 @@ import { Box } from '@/design-system';
 import { Text } from '@/design-system/components/Text/Text';
 import { DiscoverEventPriceSubscription } from '@/features/discover/components/DiscoverEventPriceSubscription';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
-import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import {
   DiscoverPagerNavigation,
   DiscoverSectionNavigation,
@@ -23,7 +22,7 @@ import {
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
 import { refreshDiscoverEvents, refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
-import { useDiscoverEventsErrorStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { useHasDiscoverEventsError } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
@@ -224,15 +223,14 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 });
 
 function DiscoverEventsError() {
-  const hasEvents = displayedDiscoverEventIdsStore(s => s.length > 0);
-  const hasError = useDiscoverEventsErrorStore(s => Boolean(s));
+  const hasError = useHasDiscoverEventsError();
 
-  if (!hasEvents || !hasError) return null;
+  if (!hasError) return null;
 
   return (
     <ButtonPressAnimation onPress={refreshDiscoverEvents} scaleTo={0.98}>
       <Text color="labelTertiary" align="center" size="15pt" weight="bold">
-        {i18n.t(i18n.l.sports.error)} · {i18n.t(i18n.l.sports.retry)}
+        {i18n.t(i18n.l.predictions.errors.failed_to_load)} · {i18n.t(i18n.l.button.try_again)}
       </Text>
     </ButtonPressAnimation>
   );
