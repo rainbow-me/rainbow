@@ -1,7 +1,25 @@
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+# Layout changes can emit new visible indices synchronously. Attach the new listener first
+# so those indices are resolved against the new row data.
 index 15e715a..4973d72 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+@@ -192,7 +192,6 @@
+     }
+     RecyclerListView.prototype.componentWillReceivePropsCompat = function (newProps) {
+         this._assertDependencyPresence(newProps);
+-        this._checkAndChangeLayouts(newProps);
+         if (!newProps.onVisibleIndicesChanged) {
+             this._virtualRenderer.removeVisibleItemsListener();
+         }
+@@ -202,6 +201,7 @@
+         if (newProps.onVisibleIndicesChanged) {
+             this._virtualRenderer.attachVisibleItemsListener(newProps.onVisibleIndicesChanged);
+         }
++        this._checkAndChangeLayouts(newProps);
+     };
+     RecyclerListView.prototype.componentDidUpdate = function () {
+         this._processInitialOffset();
 @@ -340,7 +340,7 @@ var RecyclerListView = /** @class */ (function (_super) {
              else {
                  offset_1.x = 0;
