@@ -370,7 +370,10 @@ function updateCatalog(catalog: SportsCatalog | undefined, revision: number, inc
   if (catalog && revision < catalog.revision) throw new Error('Sports response uses an older catalog.');
   if (catalog && revision === catalog.revision) return catalog;
   if (!incoming) throw new Error('Sports response is missing its catalog.');
-  return buildSportsCatalog(incoming, revision);
+
+  const next = buildSportsCatalog(incoming, revision);
+  next.prominentCategories = replaceEqualDeep(catalog?.prominentCategories, next.prominentCategories);
+  return next;
 }
 
 function getEmptyData(): SportsData {
