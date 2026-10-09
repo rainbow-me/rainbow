@@ -1,0 +1,134 @@
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { foregroundColors } from '@/design-system/color/palettes';
+import { Text } from '@/design-system/components/Text/Text';
+import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { type SportsHost } from '@/features/sports/core/browse';
+import { sportsPageStores, type SportsPage } from '@/features/sports/data/sportsPageStore';
+import { loadMoreSportsGames, retrySportsPage, useSportsStore } from '@/features/sports/data/sportsStore';
+import { SportsSkeleton } from '@/features/sports/ui/SportsSkeleton';
+import * as i18n from '@/languages';
+
+/**
+ * Shows the current page's loading, error, empty or load-more state.
+ */
+export function SportsReadStatus({
+  host,
+  page,
+  width,
+  isDarkMode,
+}: {
+  host: SportsHost;
+  page: SportsPage;
+  width: number;
+  isDarkMode: boolean;
+}) {
+  const getStatus = sportsPageStores[host](s => s.getStatus);
+  const status = useSportsStore(getStatus);
+
+  switch (status) {
+    case 'none':
+      return null;
+    case 'loading':
+      return <SportsSkeleton page={page} width={width} isDarkMode={isDarkMode} />;
+    case 'error':
+      return <SportsReadError isDarkMode={isDarkMode} retry={() => retrySportsPage(host)} />;
+    case 'more':
+      return <LoadMoreGames host={host} />;
+    case 'empty':
+      return <EmptyGames message={i18n.t(i18n.l.sports.empty)} />;
+    case 'search-empty':
+      return <EmptyGames message={i18n.t(i18n.l.sports.search_empty)} />;
+  }
+}
+
+function EmptyGames({ message }: { message: string }) {
+  return (
+    <View style={styles.message}>
+      <Text align="center" color="labelTertiary" size="17pt" weight="bold">
+        {message}
+      </Text>
+    </View>
+  );
+}
+
+function SportsReadError({ retry, isDarkMode }: { retry: () => Promise<void>; isDarkMode: boolean }) {
+  const fill = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
+  const [pending, setPending] = useState(false);
+  const onPress = async (): Promise<void> => {
+    setPending(true);
+    try {
+      await retry();
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <View style={styles.message}>
+      <TextIcon color="labelQuaternary" size="icon 34px" weight="regular" containerSize={40}>
+        {'􀇿'}
+      </TextIcon>
+      <Text align="center" color="labelSecondary" size="20pt" weight="bold">
+        {i18n.t(i18n.l.sports.error)}
+      </Text>
+      <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
+        <View style={[styles.retry, { backgroundColor: fill, opacity: pending ? 0.5 : 1 }]}>
+          <TextIcon color="accent" size="icon 15px" weight="bold" containerSize={20}>
+            {'􀅈'}
+          </TextIcon>
+          <Text color="accent" size="17pt" weight="bold">
+            {i18n.t(i18n.l.sports.retry)}
+          </Text>
+        </View>
+      </ButtonPressAnimation>
+    </View>
+  );
+}
+
+function LoadMoreGames({ host }: { host: SportsHost }) {
+  const [pending, setPending] = useState(false);
+  const onPress = async (): Promise<void> => {
+    setPending(true);
+    try {
+      await loadMoreSportsGames(host);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <View style={styles.loadMore}>
+      <ButtonPressAnimation disabled={pending} onPress={onPress} scaleTo={0.96}>
+        <Text color={pending ? 'labelTertiary' : 'accent'} size="17pt" weight="bold">
+          {i18n.t(i18n.l.sports.load_more)}
+        </Text>
+      </ButtonPressAnimation>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  message: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 24,
+    padding: 28,
+  },
+  retry: {
+    height: 44,
+    paddingHorizontal: 20,
+    borderRadius: 22,
+    borderCurve: 'continuous',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  loadMore: {
+    alignItems: 'center',
+    padding: 28,
+  },
+});
