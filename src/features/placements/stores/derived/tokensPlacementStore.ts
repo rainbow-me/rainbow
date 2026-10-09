@@ -73,9 +73,9 @@ const useTokensEnabled = createDerivedStore<boolean>(
 
 export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsParams>({
   fetcher: fetchTokenRefs,
-  enabled: $ => $(useTokensEnabled),
+  enabled: $ => $(useTokensEnabled, s => s),
   params: {
-    currency: $ => $(userAssetsStoreManager, state => state.currency),
+    currency: $ => $(userAssetsStoreManager, s => s.currency),
     tokenRefs: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow),
   },
   keepPreviousData: true,
@@ -136,10 +136,10 @@ async function fetchTokenRef(
 
 export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
   const enabled = useTokensEnabled();
-  const placement = usePlacementsStore(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'rainbow'), shallowEqual);
-  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'rainbow'));
-  const assetsByRef = useTokenRefsStore(state => state.getData());
+  const placement = usePlacementsStore(s => s.getPlacement(placementId));
+  const placementItems = usePlacementsStore(s => selectPlacementItemsBySource(s, placementId, 'rainbow'), shallowEqual);
+  const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId, 'rainbow'));
+  const assetsByRef = useTokenRefsStore(s => s.getData());
   const tokenRefsLoading = useTokenRefsStore(state => {
     return placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'));
   });

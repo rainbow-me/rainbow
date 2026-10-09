@@ -37,9 +37,9 @@ export const usePolymarketPositionsStore = createQueryStore<
   PolymarketPositionsStoreActions
 >(
   {
-    enabled: $ => $(usePolymarketClients, state => state.proxyAddress !== null),
+    enabled: $ => $(usePolymarketClients, s => s.proxyAddress !== null),
     fetcher: fetchPolymarketPositions,
-    params: { address: $ => $(usePolymarketClients).proxyAddress },
+    params: { address: $ => $(usePolymarketClients, s => s.proxyAddress) },
     staleTime: time.seconds(30),
   },
 

@@ -28,7 +28,7 @@ export const useDiscoverSurfaceInput = createDerivedStore(
 
 export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
   $ => {
-    const { surface, lastFetchedAt: surfaceLastFetchedAt } = $(useDiscoverSurfaceInput);
+    const { surface, lastFetchedAt: surfaceLastFetchedAt } = $(useDiscoverSurfaceInput, s => s);
     const placementsById = $(usePlacementsStore, s => s.placementsById);
     const placementsLastFetchedAt = $(usePlacementsStore, s => s.lastFetchedAt);
     const placementsReady = $(usePlacementsStore, s => s.getStatus('isSuccess'));
@@ -50,7 +50,7 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
 
 export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
   $ => {
-    const surface = $(useDiscoverSurface);
+    const surface = $(useDiscoverSurface, s => s);
     const placementsById = $(usePlacementsStore, s => s.placementsById);
 
     if (!surface) {
