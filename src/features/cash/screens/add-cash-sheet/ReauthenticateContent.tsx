@@ -75,17 +75,15 @@ export function ReauthenticateContent({ status }: { status: OpenCashAuthGateStat
           onPress={handleContinue}
           testID={TEST_ID_BY_STEP[status.step]}
         />
-        {status.step === 'authRequired' && (
-          <CashActionButton
-            disabled={submitting}
-            label={i18n.t(l.reauth_recover_lost_passkey)}
-            onPress={handleRecoverLostPasskey}
-            testID="cash-reauth-recover-lost-passkey"
-            textSize="17pt"
-            textWeight="bold"
-            variant="plain"
-          />
-        )}
+        <CashActionButton
+          disabled={submitting}
+          label={i18n.t(l.reauth_recover_lost_passkey)}
+          onPress={handleRecoverLostPasskey}
+          testID="cash-reauth-recover-lost-passkey"
+          textSize="17pt"
+          textWeight="bold"
+          variant="plain"
+        />
       </Box>
     </Box>
   );

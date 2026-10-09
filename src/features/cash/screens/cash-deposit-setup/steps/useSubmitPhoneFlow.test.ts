@@ -277,6 +277,9 @@ describe('useSubmitPhoneFlowStore.submit', () => {
     flow().startRestoringAccess();
     flow().setDigits(DIGITS);
     await flow().submit();
+    expect(mockCreateUserWithPhone).not.toHaveBeenCalled();
+    expect(mockStartRecovery).toHaveBeenCalledWith({ nationalNumber: DIGITS });
+    expect(session()).toMatchObject({ status: 'recovery', challenge: { kind: 'recovery', recoveryId: 'recovery-1' } });
     const pending = session();
     vi.clearAllMocks();
 
