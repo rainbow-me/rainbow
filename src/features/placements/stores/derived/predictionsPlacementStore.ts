@@ -47,10 +47,10 @@ export const predictionTileEventsStore = createPredictionEventsStore($ => $(useD
  * Polymarket events for displayed cards that are not already requested by tiles.
  */
 export const predictionCardEventsStore = createPredictionEventsStore($ => {
-  const eventIds = $(displayedDiscoverEventIdsStore);
+  const eventIds = $(displayedDiscoverEventIdsStore, s => s);
   if (!eventIds.length) return eventIds;
 
-  const tileIds = $(predictionTileEventIdsStore);
+  const tileIds = $(predictionTileEventIdsStore, s => s);
   return eventIds.filter(id => !tileIds.has(id));
 });
 
@@ -59,7 +59,7 @@ export const predictionCardEventsStore = createPredictionEventsStore($ => {
  */
 export const usePredictionEventsStore = createDerivedStore(
   $ => {
-    const tileIds = $(predictionTileEventIdsStore);
+    const tileIds = $(predictionTileEventIdsStore, s => s);
     const tileEvents = $(predictionTileEventsStore, s => s.getData());
     const cardEvents = $(predictionCardEventsStore, s => s.getData());
 
@@ -76,8 +76,8 @@ export const usePredictionEventsStore = createDerivedStore(
  */
 export const usePredictionCardsStore = createDerivedStore(
   $ => {
-    const getEvent = $(usePredictionEventsStore);
-    const tileIds = $(predictionTileEventIdsStore);
+    const getEvent = $(usePredictionEventsStore, s => s);
+    const tileIds = $(predictionTileEventIdsStore, s => s);
     const tilesPending = $(predictionTileEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
     const cardsPending = $(predictionCardEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
 
@@ -148,11 +148,11 @@ function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly 
   return createQueryStore<EventsById, PredictionEventsParams>({
     fetcher: fetchPredictionEvents,
     enabled: $ => {
-      const enabled = $(usePolymarketEnabled);
+      const enabled = $(usePolymarketEnabled, s => s);
       const hasEvents = $(eventIds, s => s.length > 0);
       return enabled && hasEvents;
     },
-    params: { eventIds: $ => $(eventIds) },
+    params: { eventIds: $ => $(eventIds, s => s) },
     keepPreviousData: true,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(15),
