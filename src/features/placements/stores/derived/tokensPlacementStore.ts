@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+import { createQueryStore } from '@storesjs/stores';
 import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
@@ -11,10 +11,9 @@ import {
   usePlacementsStore,
   type PlacementResult,
 } from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
+import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
-import { hasRefsOrPendingHydration } from '@/features/placements/utils/hasRefsOrPendingHydration';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
@@ -29,7 +28,7 @@ export type TokenPlacementItem = PlacementItem & {
 
 type TokenRefsParams = {
   currency: NativeCurrencyKey;
-  tokenRefs: string[];
+  tokenRefs: readonly string[];
 };
 
 type TokenAssetsByRef = Record<string, FormattedExternalAsset>;
@@ -48,7 +47,6 @@ const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
 // Keep object identity stable for Object.is store selectors; arrays are compared structurally downstream.
 const EMPTY_TOKEN_ASSETS_BY_REF: TokenAssetsByRef = Object.freeze({});
-const hasTokenRefsOrPendingHydration = hasRefsOrPendingHydration('rainbow', 'token');
 const tokenRefCache = new Map<string, TokenRefCacheEntry>();
 
 // ============ Cache Control ================================================== //
@@ -64,19 +62,14 @@ export function clearTokenRefCache(): void {
 
 // ============ Stores ========================================================= //
 
-const useTokensEnabled = createDerivedStore<boolean>(
-  $ => {
-    return hasTokenRefsOrPendingHydration($);
-  },
-  { lockDependencies: true }
-);
+export const discoverTokenRefsStore = createDiscoverPlacementRefsStore('rainbow');
 
 export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsParams>({
   fetcher: fetchTokenRefs,
-  enabled: $ => $(useTokensEnabled, s => s),
+  enabled: $ => $(discoverTokenRefsStore, s => s.length > 0),
   params: {
     currency: $ => $(userAssetsStoreManager, s => s.currency),
-    tokenRefs: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.rainbow),
+    tokenRefs: $ => $(discoverTokenRefsStore, s => s),
   },
   keepPreviousData: true,
   staleTime: TOKEN_REFS_STALE_TIME,
@@ -135,7 +128,7 @@ async function fetchTokenRef(
 // ============ Utilities ====================================================== //
 
 export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
-  const enabled = useTokensEnabled();
+  const enabled = useTokenRefsStore(s => s.enabled);
   const placement = usePlacementsStore(s => s.getPlacement(placementId));
   const placementItems = usePlacementsStore(s => selectPlacementItemsBySource(s, placementId, 'rainbow'), shallowEqual);
   const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId, 'rainbow'));
