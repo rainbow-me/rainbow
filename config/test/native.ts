@@ -2,25 +2,8 @@ import { vi } from 'vitest';
 
 // ============ Platform ======================================================= //
 
-vi.mock('react-native', () => {
-  const native = {
-    AppState: { addEventListener: vi.fn(() => ({ remove: vi.fn() })) },
-    Dimensions: { get: () => ({ width: 750, height: 1334, scale: 2, fontScale: 2 }) },
-    NativeModules: {},
-    Platform: { OS: 'ios', select: selectIOS },
-    unstable_batchedUpdates: (callback: () => unknown) => callback(),
-  };
-  return { default: native, ...native };
-});
-
 vi.mock('@/utils/deviceUtils', () => ({ deviceUtils: { dimensions: { height: 874, width: 402 } } }));
 vi.mock('react-native-device-info', () => ({ identify: () => null, reset: () => null, setup: () => null }));
-
-vi.mock('@react-navigation/native', () => ({
-  useRoute: () => {
-    throw new Error('Native navigation hooks require a mounted navigator; provide the route in the test');
-  },
-}));
 
 // ============ Native Services ================================================ //
 
@@ -70,14 +53,14 @@ vi.mock('react-native-reanimated', async () => {
   const { convertToRGBA, isColor } = await vi.importActual<Pick<typeof import('react-native-reanimated'), 'convertToRGBA' | 'isColor'>>(
     'react-native-reanimated/lib/module/Colors'
   );
-  return { convertToRGBA, isColor, makeMutable: <T>(value: T) => ({ value }) };
+  const { useRef } = await vi.importActual<typeof import('react')>('react');
+  return {
+    convertToRGBA,
+    isColor,
+    makeMutable: <T>(value: T) => ({ value }),
+    useSharedValue: <T>(value: T) => useRef({ value }).current,
+    runOnUI: (worklet: () => void) => worklet,
+  };
 });
 
 vi.mock('react-native-reanimated/lib/module/core', () => ({ makeShareable: <T>(value: T) => value }));
-
-// ============ Local Helpers ================================================== //
-
-function selectIOS<T>(values: { ios?: T; native?: T; default?: T }): T | undefined {
-  if ('ios' in values) return values.ios;
-  return 'native' in values ? values.native : values.default;
-}

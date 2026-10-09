@@ -9530,6 +9530,7 @@ __metadata:
     viem: "npm:2.55.10"
     vite: "npm:6.4.3"
     vitest: "npm:5.0.3"
+    vitest-native: "npm:0.13.0"
     vm-browserify: "npm:0.0.4"
     w2t: "npm:3.0.2"
     webpack: "npm:5.94.0"
@@ -14981,6 +14982,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flow-remove-types@npm:^2.325.0":
+  version: 2.334.0
+  resolution: "flow-remove-types@npm:2.334.0"
+  dependencies:
+    hermes-parser: "npm:0.36.1"
+    pirates: "npm:^3.0.2"
+    vlq: "npm:^0.2.1"
+  bin:
+    flow-node: flow-node
+    flow-remove-types: flow-remove-types
+  checksum: 10c0/0c98da5cd6d59e8c6b30401deca5c1c503a1c839ffb8f0c14a0f37c05a9dcf1a7681af103b3611d5d02e5b01837992dc55a770557b96550825870cb7b68c4713
+  languageName: node
+  linkType: hard
+
 "follow-redirects@npm:^1.16.0":
   version: 1.16.0
   resolution: "follow-redirects@npm:1.16.0"
@@ -15897,6 +15912,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hermes-estree@npm:0.36.1":
+  version: 0.36.1
+  resolution: "hermes-estree@npm:0.36.1"
+  checksum: 10c0/9f552e1f809e05a4ddc5dcc10c5d1d5e375eade985026c3f8876a227db76c33059d25f93f92628a0e43d29a6da6977fbb643fafc8830babad62c1b88b2b56739
+  languageName: node
+  linkType: hard
+
 "hermes-parser@npm:0.29.1, hermes-parser@npm:^0.29.1":
   version: 0.29.1
   resolution: "hermes-parser@npm:0.29.1"
@@ -15921,6 +15943,15 @@ __metadata:
   dependencies:
     hermes-estree: "npm:0.35.0"
   checksum: 10c0/49d98093a2094758db5b536627c6cf5146b140f66e63143acf471c62f1d3fd8bd6ae10a33f2372f72e3653deda5d4615c6dae89d01248849440916209901fc4a
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:0.36.1":
+  version: 0.36.1
+  resolution: "hermes-parser@npm:0.36.1"
+  dependencies:
+    hermes-estree: "npm:0.36.1"
+  checksum: 10c0/31f2b0a383e15a3cdd8f34bc11498a35504771b58f24db5694ea5013faf6dbe6b27a47f7825bae5494dd57afac4de54c05f750d4ad646ff6787bbba97dfbd8eb
   languageName: node
   linkType: hard
 
@@ -18185,6 +18216,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"magic-string@npm:^1.1.0":
+  version: 1.4.3
+  resolution: "magic-string@npm:1.4.3"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.6.0"
+  checksum: 10c0/857743a1e7039d2e867505bb272a57cc605f610b90f6bf9ef6cbf9654e9cd64330ec35e564a58ca455350529872c3ecc01f37da934da130391237f9f593cc565
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^1.2.3":
   version: 1.4.2
   resolution: "magic-string@npm:1.4.2"
@@ -19975,6 +20015,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-modules-regexp@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "node-modules-regexp@npm:1.0.0"
+  checksum: 10c0/d4a9b6425a18e9fadd38f21a7f7820b3bfda4663c7d3b9f80043e3f5f7e27a0a1e04f524077b00a15ae77148cd81319da5772900229d89541062f7e876b36763
+  languageName: node
+  linkType: hard
+
 "node-releases@npm:^2.0.19":
   version: 2.0.19
   resolution: "node-releases@npm:2.0.19"
@@ -20996,6 +21043,15 @@ __metadata:
   bin:
     pino: bin.js
   checksum: 10c0/4cc1ed9d25a4bc5d61c836a861279fa0039159b8f2f37ec337e50b0a61f3980dab5d2b1393daec26f68a19c423262649f0818654c9ad102c35310544a202c62c
+  languageName: node
+  linkType: hard
+
+"pirates@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "pirates@npm:3.0.2"
+  dependencies:
+    node-modules-regexp: "npm:^1.0.0"
+  checksum: 10c0/f71519f64abff750ad00398e7a0f724e7d3af0ce14c0cf149a47dd9e1fae5e9aea24cb3a63b4ce8dce8b051f7d44531af6743078e33f72cb8602c5a7365185d1
   languageName: node
   linkType: hard
 
@@ -26527,6 +26583,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vitest-native@npm:0.13.0":
+  version: 0.13.0
+  resolution: "vitest-native@npm:0.13.0"
+  dependencies:
+    flow-remove-types: "npm:^2.325.0"
+    magic-string: "npm:^1.1.0"
+  peerDependencies:
+    "@babel/core": "*"
+    "@react-native/babel-preset": "*"
+    "@testing-library/react-native": ">=12 <15"
+    react: ">=18"
+    vite: ^6.4.2 || ^7.3.2 || ^8.0.5
+    vitest: ">=4 <6"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@react-native/babel-preset":
+      optional: true
+    "@testing-library/react-native":
+      optional: true
+  bin:
+    vitest-native: dist/cli.mjs
+  checksum: 10c0/3363673055a096d12ffb03481af0598add08c0ab2b9674cf8439f37cd3a82571d786937b5a8a1e9b1a743f994ab9f2d95d3f0e44b4e2d7f3c0680f968cb69f8c
+  languageName: node
+  linkType: hard
+
 "vitest@npm:5.0.3":
   version: 5.0.3
   resolution: "vitest@npm:5.0.3"
@@ -26585,6 +26667,13 @@ __metadata:
   bin:
     vitest: ./vitest.mjs
   checksum: 10c0/eaafd4f1fac2c52f4609d8af8de20668a2140883cd19f79d991fd0a85f2774d099ba6973c0ef65b6a5aa320f6fd62ff7f9a60b1e9d5bc7e4b89dc914e65003d2
+  languageName: node
+  linkType: hard
+
+"vlq@npm:^0.2.1":
+  version: 0.2.3
+  resolution: "vlq@npm:0.2.3"
+  checksum: 10c0/d1557b404353ca75c7affaaf403d245a3273a7d1c6b3380ed7f04ae3f080e4658f41ac700d6f48acb3cd4875fe7bc7da4924b3572cd5584a5de83b35b1de5e12
   languageName: node
   linkType: hard
 
