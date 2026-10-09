@@ -94,22 +94,21 @@ export const useDiscoverEventsErrorStore = createDerivedStore(
 // ============ Placement ====================================================== //
 
 /**
- * Reads a prediction placement. Undefined means initial loading; null means no matching placement.
+ * Reads a Polymarket placement.
  */
 export function getPredictionPlacement(
   state: ReturnType<typeof usePlacementsStore.getState>,
   placementId: PlacementId
-): Placement | null | undefined {
+): Placement | undefined {
   const placement = state.getPlacement(placementId);
-  if (placement) return placement.source === 'polymarket' ? placement : null;
-  return state.getStatus('isInitialLoad') ? undefined : null;
+  return placement?.source === 'polymarket' ? placement : undefined;
 }
 
 /**
  * A placement's active events in placement order, with loading state while its events are first fetched.
  */
 export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
-  const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId) ?? undefined);
+  const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId));
   const events = predictionTileEventsStore(s => s.getData());
   const { items, hasUnresolvedItems } = useMemo(() => {
     const items: PredictionPlacementItem[] = [];
