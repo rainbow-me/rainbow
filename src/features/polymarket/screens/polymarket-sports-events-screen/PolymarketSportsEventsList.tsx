@@ -1,7 +1,6 @@
 import { memo, useCallback, useMemo, type RefObject } from 'react';
 import { StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent, type ViewToken } from 'react-native';
 
-import { debounce } from 'lodash';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,15 +18,17 @@ import { usePolymarketSportsEventsStore } from '@/features/polymarket/stores/pol
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { buildPolymarketSportsEventsListData, type SportsListItem } from '@/features/polymarket/utils/buildPolymarketSportsEventsListData';
 import { getSportsEventTokenIds } from '@/features/polymarket/utils/sportsEventBetData';
-import { useStableValue } from '@/hooks/useStableValue';
+import { useViewabilityTracker, type ViewabilitySelectors } from '@/framework/ui/hooks/useViewabilityTracker';
 import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import { addSubscribedTokens, removeSubscribedTokens, useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ITEM_GAP = 8;
 const EMPTY_EVENTS: PolymarketEvent[] = [];
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50, minimumViewTime: 100 };
+const TOKEN_SELECTORS: ViewabilitySelectors<string> = {
+  getId: tokenId => tokenId,
+};
 
 type SportsEventsListProps = {
   listRef?: RefObject<Animated.FlatList<unknown> | null>;
@@ -36,6 +37,8 @@ type SportsEventsListProps = {
 
 export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsList({ listRef, onScroll }: SportsEventsListProps) {
   const safeAreaInsets = useSafeAreaInsets();
+  const setSubscribedTokens = useLiveTokenListSubscription();
+  const { onViewableItemsChanged: reportVisibleTokens } = useViewabilityTracker(TOKEN_SELECTORS, setSubscribedTokens);
   const events = usePolymarketSportsEventsStore(state => state.getData() ?? EMPTY_EVENTS);
   const selectedLeagueId = usePolymarketSportsEventsStore(state => state.selectedLeagueId);
   const isLoading = usePolymarketSportsEventsStore(state => state.getStatus('isLoading'));
@@ -59,28 +62,11 @@ export const PolymarketSportsEventsList = memo(function PolymarketSportsEventsLi
     };
   }, [safeAreaInsets.bottom]);
 
-  const debouncedAddSubscribedTokens = useStableValue(() =>
-    debounce((viewableItems: Array<ViewToken<SportsListItem>>) => {
-      const viewableTokenIds = extractEventTokenIds(viewableItems);
-      if (viewableTokenIds.length > 0) {
-        addSubscribedTokens({ route: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN, tokenIds: viewableTokenIds });
-        useLiveTokensStore.getState().fetch(undefined, { force: true });
-      }
-    }, 250)
-  );
-
   const handleViewableItemsChanged = useCallback(
-    ({ viewableItems, changed }: { viewableItems: Array<ViewToken<SportsListItem>>; changed: Array<ViewToken<SportsListItem>> }) => {
-      const removedItems = changed.filter(item => !item.isViewable);
-      const removedTokenIds = extractEventTokenIds(removedItems);
-
-      if (removedTokenIds.length > 0) {
-        removeSubscribedTokens({ route: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN, tokenIds: removedTokenIds });
-      }
-
-      debouncedAddSubscribedTokens(viewableItems);
+    ({ viewableItems }: { viewableItems: Array<ViewToken<SportsListItem>> }) => {
+      reportVisibleTokens({ viewableItems: extractEventTokenIds(viewableItems) });
     },
-    [debouncedAddSubscribedTokens]
+    [reportVisibleTokens]
   );
 
   const renderItem = useCallback(({ item }: { item: SportsListItem }) => {
