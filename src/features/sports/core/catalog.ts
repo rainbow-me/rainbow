@@ -24,7 +24,7 @@ export type SportsCatalog = {
   sportIds: string[];
   /** Sport IDs followed by competition IDs. */
   scopeIds: string[];
-  categories: SportsDestination[];
+  prominentCategories: { key: SportsDestination; label: string }[];
   /** Curated Live groups followed by the remaining competitions. */
   liveGroupOrder: string[];
 };
@@ -78,7 +78,7 @@ export function buildSportsCatalog(catalog: CatalogMessage, revision: number): S
     scopes,
     sportIds,
     scopeIds: [...sportIds, ...competitionIds],
-    categories: ['live', ...catalog.prominentScopeIds, 'all'],
+    prominentCategories: catalog.prominentScopeIds.map(key => ({ key, label: scopes[key]?.name ?? '' })),
     liveGroupOrder: [...new Set([...catalog.liveGroupIds, ...competitionIds])],
   };
 }
