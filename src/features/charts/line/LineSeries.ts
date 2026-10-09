@@ -34,9 +34,7 @@ export type LineEffectsConfig = {
 
 export type InteractionConfig = {
   greyCirclePaint: SkPaint;
-  greyColor: SkColor;
   greyColorString: string;
-  greyLinePaint: SkPaint;
   normalizedSplitPoint: number;
   progress: number;
 };
@@ -114,6 +112,7 @@ export class LineSeries {
     width: 0,
   };
   private readonly sampleCursor = { index: 0 };
+  private readonly interactionPoints = { endX: 0, endY: 0, splitX: 0, splitY: 0 };
   private readonly splitLeftPath = Skia.Path.Make();
   private readonly splitRightPath = Skia.Path.Make();
 
@@ -526,7 +525,7 @@ export class LineSeries {
     const fullyGrey = clampedSplitX <= layout.startX;
 
     const t = interaction.progress;
-    const splitT = this.getTrimTAtXFromPath(path, clampedSplitX);
+    const splitT = this.measureInteractionPoints(path, clampedSplitX, this.getYAtIndex(params, this.prices.length - 1));
 
     this.splitLeftPath.reset();
     this.splitLeftPath.addPath(path);
@@ -595,45 +594,14 @@ export class LineSeries {
     }
   }
 
+  /** Draws markers using the geometry prepared by `drawLinesWithInteraction`. */
   public drawCirclesWithInteraction(
     canvas: SkCanvas,
-    params: DrawParams,
-    path: SkPath,
     effects: LineEffectsConfig | undefined,
     interaction: InteractionConfig,
-    progress = 1,
     entranceYOffset = 0
   ): void {
     if (!this.prices.length) return;
-
-    const { chartRegionHeight, maxPrice, minPrice } = params;
-    const priceRange = maxPrice - minPrice || 1;
-    const layout = this.computeLayout(params);
-
-    path.reset();
-    if (this.previousPath && this.targetPath) {
-      buildSmoothedPathAnimated(
-        path,
-        this.previousPath,
-        this.targetPath,
-        progress,
-        SAMPLE_COUNT,
-        this.smoothingMode,
-        this.smoothingTension
-      );
-    } else {
-      const points = new Float32Array(SAMPLE_COUNT * 2);
-      this.sampleCursor.index = 0;
-      for (let i = 0; i < SAMPLE_COUNT; i++) {
-        const normalized = i / (SAMPLE_COUNT - 1);
-        const targetTs = layout.startTs + normalized * layout.range;
-        const price = this.samplePriceAtTimestamp(targetTs);
-        const idx = i * 2;
-        points[idx] = layout.startX + normalized * layout.width;
-        points[idx + 1] = chartRegionHeight - ((price - minPrice) / priceRange) * chartRegionHeight;
-      }
-      buildSmoothedPath(path, points, SAMPLE_COUNT, this.smoothingMode, this.smoothingTension);
-    }
 
     const hasEntranceOffset = entranceYOffset !== 0;
     if (hasEntranceOffset) {
@@ -642,15 +610,7 @@ export class LineSeries {
     }
 
     const { progress: interactionProgress } = interaction;
-    const splitX = params.offsetX + interaction.normalizedSplitPoint * params.availableWidth;
-    const clampedSplitX = Math.min(Math.max(splitX, layout.startX), layout.endX);
-    const fallbackY = this.getYAtIndex(params, Math.max(0, this.prices.length - 1));
-    const splitY = this.getYAtXFromPath(path, clampedSplitX, fallbackY);
-
-    const lastPt = path.getLastPt();
-    const endX = lastPt.x;
-    const endY = lastPt.y;
-
+    const { endX, endY, splitX, splitY } = this.interactionPoints;
     const circleRadius = effects?.endCircleRadius ?? 0;
     const color = this.getColor();
 
@@ -670,12 +630,6 @@ export class LineSeries {
           }
         }
 
-        const interpolated = interpolateColor(interactionProgress, [0, 1], [this.getColorString(), interaction.greyColorString], 'LAB');
-        const rgba = convertToRGBA(interpolated);
-        this.interpolatedColor[0] = rgba[0];
-        this.interpolatedColor[1] = rgba[1];
-        this.interpolatedColor[2] = rgba[2];
-        this.interpolatedColor[3] = rgba[3];
         interaction.greyCirclePaint.setColor(this.interpolatedColor);
         canvas.drawCircle(endX, endY, scaledRadius, interaction.greyCirclePaint);
       }
@@ -687,13 +641,13 @@ export class LineSeries {
       if (effects.endCircleShadowPaint) {
         effects.endCircleShadowPaint.setColor(color);
         effects.endCircleShadowPaint.setAlphaf(effects.endCircleShadowAlpha);
-        const shadowX = clampedSplitX + (effects.endCircleShadowOffset?.x ?? 0) * interactionProgress;
+        const shadowX = splitX + (effects.endCircleShadowOffset?.x ?? 0) * interactionProgress;
         const shadowY = splitY + (effects.endCircleShadowOffset?.y ?? 0) * interactionProgress;
         canvas.drawCircle(shadowX, shadowY, scaledRadius, effects.endCircleShadowPaint);
       }
 
       effects.endCirclePaint.setColor(color);
-      canvas.drawCircle(clampedSplitX, splitY, scaledRadius, effects.endCirclePaint);
+      canvas.drawCircle(splitX, splitY, scaledRadius, effects.endCirclePaint);
     }
 
     if (hasEntranceOffset) {
@@ -701,7 +655,14 @@ export class LineSeries {
     }
   }
 
-  private getTrimTAtXFromPath(path: SkPath, desiredX: number): number {
+  private measureInteractionPoints(path: SkPath, desiredX: number, fallbackY: number): number {
+    const points = this.interactionPoints;
+    const endPoint = path.getLastPt();
+    points.endX = endPoint.x;
+    points.endY = endPoint.y;
+    points.splitX = desiredX;
+    points.splitY = fallbackY;
+
     const iter = Skia.ContourMeasureIter(path, false, 1);
     const contour = iter.next();
     if (!contour) return 0;
@@ -712,8 +673,14 @@ export class LineSeries {
     const [startPos] = contour.getPosTan(0);
     const [endPos] = contour.getPosTan(totalLength);
 
-    if (desiredX <= startPos.x) return 0;
-    if (desiredX >= endPos.x) return 1;
+    if (desiredX <= startPos.x) {
+      points.splitY = startPos.y;
+      return 0;
+    }
+    if (desiredX >= endPos.x) {
+      points.splitY = endPos.y;
+      return 1;
+    }
 
     let lo = 0;
     let hi = totalLength;
@@ -729,38 +696,8 @@ export class LineSeries {
     }
 
     const mid = (lo + hi) / 2;
+    points.splitY = contour.getPosTan(mid)[0].y;
     return Math.max(0, Math.min(1, mid / totalLength));
-  }
-
-  private getYAtXFromPath(path: SkPath, desiredX: number, fallbackY: number): number {
-    const iter = Skia.ContourMeasureIter(path, false, 1);
-    const contour = iter.next();
-    if (!contour) return fallbackY;
-
-    const totalLength = contour.length();
-    if (totalLength === 0) return fallbackY;
-
-    const [startPos] = contour.getPosTan(0);
-    const [endPos] = contour.getPosTan(totalLength);
-
-    if (desiredX <= startPos.x) return startPos.y;
-    if (desiredX >= endPos.x) return endPos.y;
-
-    let lo = 0;
-    let hi = totalLength;
-
-    for (let i = 0; i < 20; i++) {
-      const mid = (lo + hi) / 2;
-      const [pos] = contour.getPosTan(mid);
-      if (pos.x < desiredX) {
-        lo = mid;
-      } else {
-        hi = mid;
-      }
-    }
-
-    const [finalPos] = contour.getPosTan((lo + hi) / 2);
-    return finalPos.y;
   }
 
   /**

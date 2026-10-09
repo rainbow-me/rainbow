@@ -25,6 +25,9 @@ export type PerpsIndicatorConfig = {
   backgroundColor: SkColor;
   chartWidth: number;
   isDarkMode: boolean;
+};
+
+export type PerpsIndicatorDrawParams = DrawParams & {
   yAxisWidth: number;
 };
 
@@ -69,9 +72,23 @@ export type IndicatorStyle = {
 export interface PerpsIndicatorPlugin<K extends PerpsIndicatorKey> {
   readonly key: K;
   readonly shouldAdjustYAxis: boolean;
-  draw(canvas: SkCanvas, path: SkPath, params: DrawParams, yPosition: number, bubbleWidth: number, maxBubbleWidth: number): void;
+  draw(
+    canvas: SkCanvas,
+    path: SkPath,
+    params: PerpsIndicatorDrawParams,
+    yPosition: number,
+    bubbleWidth: number,
+    maxBubbleWidth: number
+  ): void;
   drawBubble(canvas: SkCanvas, yPosition: number, bubbleWidth: number): void;
-  drawLine(canvas: SkCanvas, path: SkPath, params: DrawParams, yPosition: number, bubbleWidth: number, maxBubbleWidth: number): void;
+  drawLine(
+    canvas: SkCanvas,
+    path: SkPath,
+    params: PerpsIndicatorDrawParams,
+    yPosition: number,
+    bubbleWidth: number,
+    maxBubbleWidth: number
+  ): void;
   getBubbleWidth(): number;
   getMinMaxInRange(): { max: number; min: number } | null;
   setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void;
@@ -134,7 +151,6 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
   private readonly chartWidth: number;
   private readonly labelPriceGap: number;
   private readonly style: IndicatorStyle;
-  private readonly yAxisWidth: number;
 
   // -- Injected Functions
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
@@ -163,7 +179,6 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
     this.chartWidth = config.chartWidth;
     this.isDarkMode = config.isDarkMode;
     this.labelPriceGap = typeConfig.labelPriceGap;
-    this.yAxisWidth = config.yAxisWidth;
 
     this.buildParagraph = buildParagraph;
     this.drawBubbleFn = drawIndicatorBubbleWithLabel;
@@ -241,7 +256,14 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
     return this.cachedBubbleWidth;
   }
 
-  public draw(canvas: SkCanvas, path: SkPath, params: DrawParams, yPosition: number, bubbleWidth: number, maxBubbleWidth: number): void {
+  public draw(
+    canvas: SkCanvas,
+    path: SkPath,
+    params: PerpsIndicatorDrawParams,
+    yPosition: number,
+    bubbleWidth: number,
+    maxBubbleWidth: number
+  ): void {
     if (this.price === null || !this.cachedLabelParagraph || !this.cachedPriceParagraph) return;
 
     const { candleRegionHeight, maxPrice, minPrice } = params;
@@ -259,7 +281,7 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
       maxBubbleWidth,
       priceY,
       this.chartWidth,
-      this.yAxisWidth,
+      params.yAxisWidth,
       this.style
     );
 
@@ -279,7 +301,7 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
   public drawLine(
     canvas: SkCanvas,
     path: SkPath,
-    params: DrawParams,
+    params: PerpsIndicatorDrawParams,
     yPosition: number,
     bubbleWidth: number,
     maxBubbleWidth: number
@@ -301,7 +323,7 @@ export class PerpsIndicator<K extends PerpsIndicatorKey> implements PerpsIndicat
       maxBubbleWidth,
       priceY,
       this.chartWidth,
-      this.yAxisWidth,
+      params.yAxisWidth,
       this.style
     );
   }
