@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore, parseQueryKey, type DeriveGetter, type QueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, parseQueryKey, type DerivedStore, type QueryStore } from '@storesjs/stores';
 
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
+import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
@@ -33,31 +33,30 @@ const EMPTY_ITEMS: PlacementItem[] = [];
 
 // ============ Event Stores =================================================== //
 
-const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
-  $ => new Set($(useDiscoverSurfacePlacementRefs, s => s.polymarket, areArraysEqual)),
-  { lockDependencies: true }
+const predictionTileEventIdsStore = createDiscoverPlacementRefsStore('polymarket');
+
+const predictionTileEventIdSetStore = createDerivedStore($ => new Set($(predictionTileEventIdsStore, s => s)), { lockDependencies: true });
+
+const predictionCardEventIdsStore = createDerivedStore(
+  $ => {
+    const eventIds = $(displayedDiscoverEventIdsStore, s => s);
+    const tileIds = $(predictionTileEventIdSetStore, s => s);
+
+    return tileIds.size ? eventIds.filter(id => !tileIds.has(id)) : eventIds;
+  },
+  { equalityFn: areArraysEqual, lockDependencies: true }
 );
 
-/**
- * Polymarket events used by Discover's tiles and widgets.
- */
-export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, s => s.polymarket));
+/** Polymarket events used by Discover's tiles and widgets. */
+export const predictionTileEventsStore = createPredictionEventsStore(predictionTileEventIdsStore);
 
-/**
- * Polymarket events for displayed cards that are not already requested by tiles.
- */
-export const predictionCardEventsStore = createPredictionEventsStore($ => {
-  const eventIds = $(displayedDiscoverEventIdsStore, s => s);
-  if (!eventIds.length) return eventIds;
-
-  const tileIds = $(predictionTileEventIdsStore, s => s);
-  return eventIds.filter(id => !tileIds.has(id));
-});
+/** Displayed card events that are not already requested by tiles. */
+export const predictionCardEventsStore = createPredictionEventsStore(predictionCardEventIdsStore);
 
 /** Reads an event from its owning request. Undefined means pending; null means unavailable. */
 export const usePredictionEventsStore = createDerivedStore(
   $ => {
-    const tileIds = $(predictionTileEventIdsStore, s => s);
+    const tileIds = $(predictionTileEventIdSetStore, s => s);
     const tileEvents = $(predictionTileEventsStore, s => s.getData());
     const cardEvents = $(predictionCardEventsStore, s => s.getData());
     const tileFailureKey = $(predictionTileEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
@@ -136,9 +135,7 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
 
 // ============ Fetching ======================================================= //
 
-function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]): QueryStore<EventsById, PredictionEventsParams> {
-  const eventIds = createDerivedStore(getEventIds, { equalityFn: areArraysEqual });
-
+function createPredictionEventsStore(eventIds: DerivedStore<readonly string[]>): QueryStore<EventsById, PredictionEventsParams> {
   return createQueryStore<EventsById, PredictionEventsParams>({
     fetcher: fetchPredictionEvents,
     enabled: $ => {

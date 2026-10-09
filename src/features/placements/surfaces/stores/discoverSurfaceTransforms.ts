@@ -1,12 +1,7 @@
 import { type usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { DISPLAY_VALUES, isEventCardDisplay } from '@/features/placements/surfaces/constants';
-import {
-  type DiscoverSurface,
-  type DiscoverSurfacePlacementRefs,
-  type DiscoverTab,
-} from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
+import { DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
+import { type DiscoverSurface, type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceDocument, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
-import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { logger } from '@/logger';
 
 type PlacementsById = ReturnType<typeof usePlacementsStore.getState>['placementsById'];
@@ -32,39 +27,6 @@ export function getMissingSurfacePlacementIds(surface: DiscoverSurface, placemen
   }
 
   return [...missingPlacementIds].sort();
-}
-
-export function getDiscoverSurfacePlacementRefs(surface: DiscoverSurface, placementsById: PlacementsById): DiscoverSurfacePlacementRefs {
-  const refIdsBySource: DiscoverSurfacePlacementRefs = {
-    hyperliquid: [],
-    polymarket: [],
-    rainbow: [],
-  };
-
-  for (const tab of surface.tabs) {
-    for (const section of tab.sections) {
-      collectDiscoverSurfacePlacementRefs(section, placementsById, refIdsBySource);
-    }
-  }
-
-  return {
-    hyperliquid: getConsistentArray(refIdsBySource.hyperliquid),
-    polymarket: getConsistentArray(refIdsBySource.polymarket),
-    rainbow: getConsistentArray(refIdsBySource.rainbow),
-  };
-}
-
-function collectDiscoverSurfacePlacementRefs(
-  surface: SurfaceLeafNode,
-  placementsById: PlacementsById,
-  refIdsBySource: DiscoverSurfacePlacementRefs
-): void {
-  if (!surface.placement) return;
-
-  const placement = placementsById[surface.placement];
-  if (!placement || (placement.source === 'polymarket' && isEventCardDisplay(surface.display))) return;
-
-  for (const item of placement.items) refIdsBySource[placement.source].push(item.id);
 }
 
 export function buildDiscoverSurface(surface: SurfaceDocument): DiscoverSurface | undefined {
