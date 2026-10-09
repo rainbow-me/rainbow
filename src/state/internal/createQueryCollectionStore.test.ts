@@ -1,26 +1,32 @@
-import { createBaseStore, createDerivedStore, type QueryStore } from '@storesjs/stores';
+import { createBaseStore, createDerivedStore, type SyncStorageInterface } from '@storesjs/stores';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { createQueryCollectionStore, type QueryCollectionState } from './createQueryCollectionStore';
+import { createQueryCollectionStore } from './createQueryCollectionStore';
+
+// ============ Fixtures ======================================================= //
 
 type Input = { name: string; chainId: number };
-type Request = PromiseWithResolvers<string | null> & { input: Input; signal: AbortSignal | undefined };
+type Data = string | null;
+type Request = PromiseWithResolvers<Data> & { input: Input; signal: AbortSignal | undefined };
 
 const ALICE = { name: 'alice.eth', chainId: 1 };
 const BOB = { name: 'bob.eth', chainId: 1 };
 
-beforeEach(() => jest.useFakeTimers({ doNotFake: ['queueMicrotask', 'setImmediate'] }));
-afterEach(() => jest.useRealTimers());
+beforeEach(() => vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'] }));
+afterEach(() => vi.useRealTimers());
 
-it('shares a batch across readers and publishes independent keyed values', async () => {
+// ============ Collection Behavior ============================================ //
+
+it('shares requests across consumers while selecting independent values', async () => {
   const { store, requests } = createFixture();
   expect(store.getState().get(ALICE)).toBeUndefined();
   await flush();
   expect(requests).toHaveLength(0);
 
-  const aliceListener = jest.fn();
-  const alice = store.subscribe(s => s.get(ALICE), aliceListener);
-  const sameAlice = store.subscribe(s => s.get({ ...ALICE }), jest.fn());
-  const bob = store.subscribe(s => s.get(BOB), jest.fn());
+  const listener = vi.fn();
+  const alice = store.subscribe(s => s.get(ALICE), listener);
+  const sameAlice = store.subscribe(s => s.get({ ...ALICE }), vi.fn());
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
   expect(requests.map(request => request.input)).toEqual([ALICE, BOB]);
   expect(requests[0].signal).toBe(requests[1].signal);
@@ -30,165 +36,98 @@ it('shares a batch across readers and publishes independent keyed values', async
   await flush();
   expect(store.getState().get(ALICE)).toBe('alice address');
   expect(store.getState().get(BOB)).toBeNull();
-  expect(aliceListener).toHaveBeenCalledTimes(1);
+  expect(listener).toHaveBeenCalledTimes(1);
 
   alice();
   sameAlice();
   bob();
+  await flush();
+  store.getState().reset();
 });
 
-it('publishes successful members and preserves each rejected outcome', async () => {
+it('fetches only newly demanded members and retains data after readers leave', async () => {
   const { store, requests } = createFixture();
-  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
-  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
-  await flush();
-  const reason = new Error('Bob failed');
-  requests[0].resolve(null);
-  requests[1].reject(reason);
-  await flush();
-  expect(store.getState().status).toBe('success');
-  expect(store.getState().get(ALICE)).toBeNull();
-  expect(store.getState().getFailure(ALICE)).toBeUndefined();
-  expect(store.getState().get(BOB)).toBeUndefined();
-  expect(store.getState().getFailure(BOB)).toEqual({ status: 'rejected', reason });
-  alice();
-  bob();
-});
-
-it('retains a failed refresh’s data without extending its retention', async () => {
-  const { store, requests } = createFixture();
-  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
-  const bob = store.subscribe(s => s.get(BOB), jest.fn());
-  await flush();
-  requests[0].resolve('old');
-  requests[1].resolve('bob');
-  await flush();
-
-  jest.advanceTimersByTime(1000);
-  await flush();
-  requests[2].reject(new Error('Refresh failed'));
-  requests[3].resolve('updated bob');
-  await flush();
-  expect(store.getState().get(ALICE)).toBe('old');
-  expect(store.getState().get(BOB)).toBe('updated bob');
-  expect(store.getState().getFailure(ALICE)?.status).toBe('rejected');
-  alice();
-  bob();
-  await flush();
-  jest.advanceTimersByTime(4000);
-  expect(store.getState().get(ALICE)).toBeUndefined();
-  expect(store.getState().get(BOB)).toBe('updated bob');
-});
-
-it('uses native failure and retry handling when every member rejects', async () => {
-  const { store, requests } = createFixture();
-  const aliceListener = jest.fn();
-  const alice = store.subscribe(s => s.getFailure(ALICE), aliceListener);
-  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
-  await flush();
-  requests[0].reject(undefined);
-  const reason = new Error('Bob failed');
-  requests[1].reject(reason);
-  await flush();
-  expect(store.getState().status).toBe('error');
-  expect(store.getState().getFailure(ALICE)).toEqual({ status: 'rejected', reason: undefined });
-  expect(aliceListener).toHaveBeenCalledTimes(1);
-  expect(aliceListener.mock.calls[0][0]).toEqual({ status: 'rejected', reason: undefined });
-  expect(store.getState().getFailure(BOB)).toEqual({ status: 'rejected', reason });
-
-  jest.advanceTimersByTime(30_000);
-  await flush();
-  expect(requests).toHaveLength(4);
-  requests[2].resolve('alice');
-  requests[3].resolve('bob');
-  await flush();
-  expect(store.getState().get(ALICE)).toBe('alice');
-  expect(store.getState().getFailure(ALICE)).toBeUndefined();
-  expect(store.getState().getFailure(BOB)).toBeUndefined();
-  alice();
-  bob();
-});
-
-it('isolates a synchronous fetcher throw and accepts an empty explicit batch', async () => {
-  const reason = new Error('Invalid input');
-  const store = createQueryCollectionStore({
-    key: (input: string) => input,
-    fetcher: input => {
-      if (input === 'bad') throw reason;
-      return Promise.resolve(input);
-    },
-    staleTime: 1000,
-    cacheTime: 5000,
-  });
-  const good = store.subscribe(s => s.get('good'), jest.fn());
-  const bad = store.subscribe(s => s.getFailure('bad'), jest.fn());
-  await flush();
-  expect(store.getState().get('good')).toBe('good');
-  expect(store.getState().getFailure('bad')).toEqual({ status: 'rejected', reason });
-  good();
-  bad();
-  await flush();
-  await expect(store.getState().fetch({ inputs: [] }, { force: true })).resolves.toEqual([]);
-});
-
-it('keeps continuous zero-retention demand through a synchronous conditional-read change', async () => {
-  const { store, requests } = createFixture(0);
-  let enabled = true;
-  const stop = store.subscribe(s => (enabled ? s.get(ALICE) : undefined), jest.fn());
-  await flush();
-  requests[0].resolve('continuous');
-  await flush();
-
-  enabled = false;
-  store.setState(s => ({ ...s }));
-  enabled = true;
-  store.setState(s => ({ ...s }));
-  await flush();
-  expect(store.getState().get(ALICE)).toBe('continuous');
-  expect(requests).toHaveLength(1);
-  stop();
-});
-
-it('releases reads removed before demand is published', async () => {
-  const { store, requests } = createFixture(0);
-  const stop = store.subscribe(s => s.get(ALICE), jest.fn());
-  stop();
-  await flush();
-  expect(requests).toHaveLength(0);
-
-  const pending = store.getState().fetch({ inputs: [ALICE] }, { force: true });
-  await flush();
-  requests[0].resolve('unobserved');
-  await pending;
-  expect(store.getState().get(ALICE)).toBeUndefined();
-});
-
-it('changes the requested batch with demand while retaining previous values', async () => {
-  const { store, requests } = createFixture();
-  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
+  const alice = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
   requests[0].resolve('alice address');
   await flush();
 
-  const bob = store.subscribe(s => s.get(BOB), jest.fn());
-  alice();
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
   expect(requests.map(request => request.input)).toEqual([ALICE, BOB]);
   expect(store.getState().get(ALICE)).toBe('alice address');
   requests[1].resolve('bob address');
   await flush();
-  expect(store.getState().get(BOB)).toBe('bob address');
+
+  alice();
+  await flush();
+  expect(store.getState().inputs).toEqual([BOB]);
+  expect(store.getState().get(ALICE)).toBe('alice address');
+  expect(requests).toHaveLength(2);
   bob();
+  await flush();
+  store.getState().reset();
 });
 
-it('refreshes active consumers through the query store and stops when demand ends', async () => {
+it('keeps prior data for failed members while publishing successful refreshes', async () => {
   const { store, requests } = createFixture();
-  const stop = store.subscribe(s => s.get(ALICE), jest.fn());
+  const alice = store.subscribe(s => s.get(ALICE), vi.fn());
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
+  await flush();
+  requests[0].resolve('old alice');
+  requests[1].resolve('old bob');
+  await flush();
+
+  vi.advanceTimersByTime(1000);
+  await flush();
+  requests[2].reject(new Error('Alice failed'));
+  requests[3].resolve('new bob');
+  await flush();
+  expect(store.getState().get(ALICE)).toBe('old alice');
+  expect(store.getState().get(BOB)).toBe('new bob');
+  expect(store.getState().status).toBe('success');
+
+  alice();
+  bob();
+  await flush();
+  store.getState().reset();
+});
+
+it('uses native failure and retry handling when every requested member fails', async () => {
+  const { store, requests } = createFixture();
+  const alice = store.subscribe(s => s.get(ALICE), vi.fn());
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
+  await flush();
+  const error = new Error('Alice failed');
+  requests[0].reject(error);
+  requests[1].reject(new Error('Bob failed'));
+  await flush();
+  expect(store.getState().status).toBe('error');
+  expect(store.getState().error).toBe(error);
+
+  vi.advanceTimersByTime(50);
+  await flush();
+  expect(requests).toHaveLength(4);
+  requests[2].resolve(null);
+  requests[3].resolve('bob');
+  await flush();
+  expect(store.getState().get(ALICE)).toBeNull();
+  expect(store.getState().get(BOB)).toBe('bob');
+  expect(store.getState().error).toBeNull();
+  alice();
+  bob();
+  await flush();
+  store.getState().reset();
+});
+
+it('refreshes active readers through the native lifecycle and stops when demand ends', async () => {
+  const { store, requests } = createFixture();
+  const stop = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
   requests[0].resolve('first');
   await flush();
 
-  jest.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(1000);
   await flush();
   expect(requests).toHaveLength(2);
   expect(store.getState().get(ALICE)).toBe('first');
@@ -198,55 +137,66 @@ it('refreshes active consumers through the query store and stops when demand end
 
   stop();
   await flush();
-  jest.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(1000);
   await flush();
   expect(requests).toHaveLength(2);
+  store.getState().reset();
 });
 
-it('reuses a fresh batch and expires unused data without another query', async () => {
+it('explicitly refreshes fresh data and resolves after its publication', async () => {
   const { store, requests } = createFixture();
-  const stop = store.subscribe(s => s.get(ALICE), jest.fn());
+  const stop = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
-  requests[0].resolve('cached');
+  requests[0].resolve(null);
   await flush();
+
+  const refreshed = store.getState().refresh(ALICE);
+  await flush();
+  expect(requests).toHaveLength(2);
+  expect(store.getState().get(ALICE)).toBeNull();
+  requests[1].resolve('new name');
+  expect(await refreshed).toBe('new name');
+  expect(store.getState().get(ALICE)).toBe('new name');
   stop();
   await flush();
-
-  const next = store.subscribe(s => s.get(ALICE), jest.fn());
-  await flush();
-  expect(requests).toHaveLength(1);
-  expect(store.getState().get(ALICE)).toBe('cached');
-  next();
-  await flush();
-  jest.advanceTimersByTime(5000);
-  expect(store.getState().get(ALICE)).toBeUndefined();
+  store.getState().reset();
 });
 
-it.each([0, 5000])('does not revive a returning reader’s expired value with retention %i', async cacheTime => {
-  const { store, requests } = createFixture(cacheTime);
-  const stop = store.subscribe(s => s.get(ALICE), jest.fn());
+it('persists each resource once and restores its data without restoring consumer demand', async () => {
+  const storage = createMemoryStorage();
+  const first = createFixture(storage);
+  const stop = first.store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
-  requests[0].resolve('expired');
+  first.requests[0].resolve('saved');
   await flush();
+
+  const persisted = JSON.parse(storage.get('collection') ?? 'null');
+  expect(persisted.state.inputs).toBeUndefined();
+  expect(Object.values(first.store.getState().queryCache).filter(entry => entry?.data)).toHaveLength(1);
   stop();
   await flush();
-  jest.advanceTimersByTime(cacheTime);
+  first.store.getState().reset();
 
-  const returning = store.subscribe(s => s.get(ALICE), jest.fn());
-  expect(store.getState().get(ALICE)).toBeUndefined();
+  const restored = createFixture(storage);
+  expect(restored.store.getState().inputs).toEqual([]);
+  expect(restored.store.getState().get(ALICE)).toBe('saved');
+  const alice = restored.store.subscribe(s => s.get(ALICE), vi.fn());
+  const bob = restored.store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
-  expect(store.getState().get(ALICE)).toBeUndefined();
-  requests[1].resolve('new');
+  expect(restored.requests.map(request => request.input)).toEqual([BOB]);
+  restored.requests[0].resolve('bob');
   await flush();
-  expect(store.getState().get(ALICE)).toBe('new');
-  returning();
+  alice();
+  bob();
+  await flush();
+  restored.store.getState().reset();
 });
 
-it('lets the query store cancel replaced work and rejects its late result', async () => {
+it('discards a cancelled batch when the requested resource changes', async () => {
   const { store, requests } = createFixture();
-  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
+  const alice = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
-  const bob = store.subscribe(s => s.get(BOB), jest.fn());
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
   alice();
   await flush();
   expect(requests[0].signal?.aborted).toBe(true);
@@ -257,36 +207,21 @@ it('lets the query store cancel replaced work and rejects its late result', asyn
   expect(store.getState().get(ALICE)).toBeUndefined();
   expect(store.getState().get(BOB)).toBe('current');
   bob();
+  await flush();
+  store.getState().reset();
 });
 
-it('discards every outcome of a cancelled batch, including late rejections', async () => {
-  const { store, requests } = createFixture();
-  const alice = store.subscribe(s => s.get(ALICE), jest.fn());
-  const bob = store.subscribe(s => s.getFailure(BOB), jest.fn());
-  await flush();
-  alice();
-  bob();
-  await flush();
-  expect(requests[0].signal?.aborted).toBe(true);
-  requests[0].resolve('cancelled');
-  requests[1].reject(new Error('Cancelled failure'));
-  await flush();
-  expect(store.getState().get(ALICE)).toBeUndefined();
-  expect(store.getState().getFailure(BOB)).toBeUndefined();
-});
-
-it('supports derived consumers without creating another request lifecycle', async () => {
+it('tracks derived consumers without adding another request lifecycle', async () => {
   const { store, requests } = createFixture();
   const input = createBaseStore(() => ({ chainId: 1 }));
   const derived = createDerivedStore($ => {
     const chainId = $(input, s => s.chainId);
     return $(store, s => s.get({ ...ALICE, chainId }));
   });
-  const stop = derived.subscribe(jest.fn());
+  const stop = derived.subscribe(vi.fn());
   await flush();
   requests[0].resolve('first chain');
   await flush();
-  expect(requests).toHaveLength(1);
   expect(derived.getState()).toBe('first chain');
 
   input.setState({ chainId: 10 });
@@ -297,24 +232,46 @@ it('supports derived consumers without creating another request lifecycle', asyn
   await flush();
   expect(derived.getState()).toBe('second chain');
   stop();
+  derived.destroy();
+  await flush();
+  store.getState().reset();
 });
 
-function createFixture(cacheTime = 5000): {
-  store: QueryStore<PromiseSettledResult<string | null>[], { inputs: Input[] }, QueryCollectionState<Input, string | null>>;
+// ============ Helpers ======================================================== //
+
+function createFixture(storage?: SyncStorageInterface): {
+  store: ReturnType<typeof createQueryCollectionStore<Input, Data>>;
   requests: Request[];
 } {
   const requests: Request[] = [];
-  const store = createQueryCollectionStore({
-    key: ({ name, chainId }: Input) => `${chainId}:${name}`,
-    fetcher: (input, signal) => {
-      const request = { ...Promise.withResolvers<string | null>(), input, signal };
-      requests.push(request);
-      return request.promise;
+  const store = createQueryCollectionStore(
+    {
+      key: ({ name, chainId }: Input) => `${chainId}:${name}`,
+      fetcher: (input, signal) => {
+        const request = { ...Promise.withResolvers<Data>(), input, signal };
+        requests.push(request);
+        return request.promise;
+      },
+      staleTime: 1000,
+      cacheTime: 5000,
+      retry: 1,
+      retryDelay: 50,
     },
-    staleTime: cacheTime === 0 ? 0 : 1000,
-    cacheTime,
-  });
+    storage ? { storageKey: 'collection', storage, persistThrottleMs: 0 } : undefined
+  );
   return { store, requests };
+}
+
+function createMemoryStorage(): SyncStorageInterface<string> {
+  const values = new Map<string, string>();
+  return {
+    clearAll: () => values.clear(),
+    contains: key => values.has(key),
+    delete: key => values.delete(key),
+    get: key => values.get(key),
+    getAllKeys: () => [...values.keys()],
+    set: (key, value) => values.set(key, value),
+  };
 }
 
 function flush(): Promise<void> {

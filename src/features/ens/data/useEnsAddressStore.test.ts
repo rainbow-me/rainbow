@@ -1,10 +1,11 @@
 import { encodeAbiParameters, encodeFunctionResult, parseAbi } from 'viem';
+import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { useEnsAddressStore } from './useEnsAddressStore';
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: { getChainDefaultRpc: () => 'https://fixture.invalid/rpc' },
 }));
 
@@ -12,16 +13,16 @@ const ADDRESS = '0x52908400098527886E0F7030069857D2E4169EE7';
 const RESOLVER_ABI = parseAbi([
   'function resolveWithGateways(bytes name,bytes data,string[] gateways) view returns(bytes result,address resolver)',
 ]);
-const fetchMock = jest.spyOn(global, 'fetch');
+const fetchMock = vi.spyOn(global, 'fetch');
 
 beforeEach(() => {
-  jest.useFakeTimers();
+  vi.useFakeTimers();
   fetchMock.mockReset().mockRejectedValue(new Error('Unexpected ENS request'));
 });
 
 afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
+  vi.runOnlyPendingTimers();
+  vi.useRealTimers();
 });
 
 afterAll(() => {
@@ -29,9 +30,7 @@ afterAll(() => {
 });
 
 it.each([ADDRESS, ADDRESS.toLowerCase()])('preserves the raw profile address %s without an ENS request', async addressOrName => {
-  await expect(
-    useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName, chainId: ChainId.mainnet }] }, { force: true })
-  ).resolves.toEqual([{ status: 'fulfilled', value: ADDRESS }]);
+  await expect(useEnsAddressStore.getState().refresh({ addressOrName, chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
 
   expect(fetchMock).not.toHaveBeenCalled();
 });
@@ -53,9 +52,7 @@ it('resolves profile names and shares the result with imperative prefetchers', a
     );
   });
 
-  await expect(
-    useEnsAddressStore.getState().fetch({ inputs: [{ addressOrName: 'alice.eth', chainId: ChainId.mainnet }] }, { force: true })
-  ).resolves.toEqual([{ status: 'fulfilled', value: ADDRESS }]);
+  await expect(useEnsAddressStore.getState().refresh({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
 
   const input = { addressOrName: 'alice.eth', chainId: ChainId.mainnet };
   await useEnsAddressStore.getState().fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });

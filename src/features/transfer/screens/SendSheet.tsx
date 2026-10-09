@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import { isEmpty, isEqual, isString } from 'lodash';
 import { useDebounce } from 'use-debounce';
-import { getAddress, isAddress, type Address } from 'viem';
+import { getAddress, isAddress } from 'viem';
 
 import { analytics } from '@/analytics';
 import { Column } from '@/components/layout';
@@ -53,7 +54,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { borders } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -137,13 +137,6 @@ const validateRecipientDamagedState = (toAddress?: string) => {
 const hasSufficientAssetBalance = (assetAmount: string, maxSendableBalance: string): boolean =>
   !assetAmount || greaterThanOrEqualTo(maxSendableBalance || '0', assetAmount);
 
-const useRecipientStore = createQueryCollectionStore({
-  key: ({ input, chainId }: { input: string; chainId: ChainId }) => `${chainId}:${input}`,
-  fetcher: ({ input, chainId }, signal): Promise<Address | null> => resolveNameOrAddress(input, chainId, signal),
-  staleTime: 0,
-  cacheTime: 0,
-});
-
 export function SendSheet() {
   const { navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
@@ -204,15 +197,19 @@ export function SendSheet() {
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
-  const resolvedRecipient = useRecipientStore(s => (shouldResolveName ? s.get({ input, chainId: destinationChainId }) : undefined));
-  const recipientStatus = useRecipientStore(s => {
-    if (!shouldResolveName) return undefined;
-    const failure = s.getFailure({ input, chainId: destinationChainId });
-    return s.status === 'loading' ? s.status : failure ? 'error' : s.status;
+  const recipientQuery = useQuery({
+    queryKey: ['sendRecipient', input, destinationChainId],
+    queryFn: ({ signal }) => resolveNameOrAddress(input, destinationChainId, signal),
+    enabled: shouldResolveName,
+    cacheTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
-  const toAddress = address ?? (recipientStatus === 'success' ? (resolvedRecipient ?? '') : '');
+  const toAddress = address ?? (shouldResolveName && recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
   const isValidAddress = Boolean(toAddress);
-  const isResolvingAddress = shouldResolveName && (recipientStatus === 'idle' || recipientStatus === 'loading');
+  const isResolvingAddress = shouldResolveName && recipientQuery.isFetching;
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
