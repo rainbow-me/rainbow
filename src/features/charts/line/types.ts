@@ -1,6 +1,3 @@
-import { type SkPicture } from '@shopify/react-native-skia';
-import { type SharedValue } from 'react-native-reanimated';
-
 // ============ Drawing Parameters ============================================= //
 
 /**
@@ -78,28 +75,6 @@ export type BaseChartConfig = {
   };
   crosshair: CrosshairConfig;
   grid: GridConfig;
-};
-
-// ============ Shared Values ================================================== //
-
-/** Shared values used by chart managers for reactive state. */
-export type ChartSharedValues = {
-  /** Main chart picture */
-  chartPicture: SharedValue<SkPicture>;
-  /** Maximum Y value (price) in visible range */
-  chartMaxY: SharedValue<number>;
-  /** Minimum Y value (price) in visible range */
-  chartMinY: SharedValue<number>;
-  /** Current zoom scale */
-  chartScale: SharedValue<number>;
-  /** Crosshair overlay picture */
-  crosshairPicture: SharedValue<SkPicture>;
-  /** Whether a gesture is currently active */
-  isChartGestureActive: SharedValue<boolean>;
-  /** Whether pan deceleration is active */
-  isDecelerating: SharedValue<boolean>;
-  /** Current X offset (pan position) */
-  offset: SharedValue<number>;
 };
 
 // ============ Bounds and Range =============================================== //
