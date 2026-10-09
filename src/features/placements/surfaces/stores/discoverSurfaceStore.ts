@@ -1,15 +1,18 @@
-import { createDerivedStore } from '@storesjs/stores';
+import { createDerivedStore, type DerivedStore } from '@storesjs/stores';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { isEventCardDisplay } from '@/features/placements/surfaces/constants';
 import {
   buildDiscoverSurface,
-  getDiscoverSurfacePlacementRefs,
   isSurfaceNewerThanPlacements,
   removeDiscoverSportsTab,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTransforms';
-import { type DiscoverSurface, type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
+import { type DiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
+import { type PlacementSource } from '@/features/placements/types';
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
+import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { deepEqual } from '@/worklets/comparisons';
 
 export const useDiscoverSurfaceStore = getSurfaceStore('discover');
@@ -38,20 +41,26 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
   { equalityFn: deepEqual, lockDependencies: true }
 );
 
-export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
-  $ => {
-    const surface = $(useDiscoverSurface, s => s);
-    const placementsById = $(usePlacementsStore, s => s.placementsById);
+/** Derives the item references needed by one Discover data source. */
+export function createDiscoverPlacementRefsStore(source: PlacementSource): DerivedStore<readonly string[]> {
+  return createDerivedStore<readonly string[]>(
+    $ => {
+      const tabs = $(useDiscoverSurface, s => s?.tabs);
+      const placementsById = $(usePlacementsStore, s => s.placementsById);
+      const refs: string[] = [];
 
-    if (!surface) {
-      return {
-        hyperliquid: [],
-        polymarket: [],
-        rainbow: [],
-      };
-    }
+      for (const tab of tabs ?? []) {
+        for (const section of tab.sections) {
+          if (!section.placement || (source === 'polymarket' && isEventCardDisplay(section.display))) continue;
+          const placement = placementsById[section.placement];
+          if (placement?.source !== source) continue;
 
-    return getDiscoverSurfacePlacementRefs(surface, placementsById);
-  },
-  { equalityFn: deepEqual, lockDependencies: true }
-);
+          for (const item of placement.items) refs.push(item.id);
+        }
+      }
+
+      return getConsistentArray(refs);
+    },
+    { equalityFn: areArraysEqual, lockDependencies: true }
+  );
+}
