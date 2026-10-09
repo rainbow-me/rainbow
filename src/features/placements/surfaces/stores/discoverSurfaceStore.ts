@@ -6,25 +6,36 @@ import {
   filterMissingPlacementSurface,
   getDiscoverSurfacePlacementRefs,
   isSurfaceWaitingForPlacements,
+  removeDiscoverSportsTab,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTransforms';
 import { type DiscoverSurface, type DiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { filterSurfaceTree, isSurfaceEnabled } from '@/features/placements/surfaces/utils/filterSurface';
 import { deepEqual } from '@/worklets/comparisons';
 
-export const useDiscoverSurfaceStore = getSurfaceStore('discover');
+const discoverSurfaceStore = getSurfaceStore('discover');
+
+export const useDiscoverSurfaceInput = createDerivedStore(
+  $ => ({
+    surface: removeDiscoverSportsTab($(discoverSurfaceStore, s => s.getData())),
+    lastFetchedAt: $(discoverSurfaceStore, s => s.lastFetchedAt),
+  }),
+  {
+    equalityFn: (previous, next) => previous.lastFetchedAt === next.lastFetchedAt && deepEqual(previous.surface, next.surface),
+    lockDependencies: true,
+  }
+);
 
 export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined>(
   $ => {
-    const rawSurface = $(useDiscoverSurfaceStore, state => state.getData());
-    const surfaceLastFetchedAt = $(useDiscoverSurfaceStore, state => state.lastFetchedAt);
-    const placementsById = $(usePlacementsStore, state => state.placementsById);
-    const placementsLastFetchedAt = $(usePlacementsStore, state => state.lastFetchedAt);
-    const placementsReady = $(usePlacementsStore, state => state.getStatus('isSuccess'));
+    const { surface, lastFetchedAt: surfaceLastFetchedAt } = $(useDiscoverSurfaceInput);
+    const placementsById = $(usePlacementsStore, s => s.placementsById);
+    const placementsLastFetchedAt = $(usePlacementsStore, s => s.lastFetchedAt);
+    const placementsReady = $(usePlacementsStore, s => s.getStatus('isSuccess'));
 
-    if (!rawSurface) return undefined;
+    if (!surface) return undefined;
 
-    const enabledSurface = filterSurfaceTree(rawSurface, surface => isSurfaceEnabled(surface.enabled, Date.now()));
+    const enabledSurface = filterSurfaceTree(surface, item => isSurfaceEnabled(item.enabled, Date.now()));
     if (!enabledSurface) return undefined;
     if (!placementsReady) return buildDiscoverSurface(enabledSurface);
     if (isSurfaceWaitingForPlacements(enabledSurface, placementsById, surfaceLastFetchedAt, placementsLastFetchedAt)) {
@@ -40,7 +51,7 @@ export const useDiscoverSurface = createDerivedStore<DiscoverSurface | undefined
 export const useDiscoverSurfacePlacementRefs = createDerivedStore<DiscoverSurfacePlacementRefs>(
   $ => {
     const surface = $(useDiscoverSurface);
-    const placementsById = $(usePlacementsStore, state => state.placementsById);
+    const placementsById = $(usePlacementsStore, s => s.placementsById);
 
     if (!surface) {
       return {

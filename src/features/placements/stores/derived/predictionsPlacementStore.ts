@@ -1,26 +1,18 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, type DeriveGetter, type QueryStore } from '@storesjs/stores';
 
-import { POLYMARKET } from '@/features/config/constants/experimental';
-import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import {
-  isPlacementHydrating,
-  selectPlacementItemsBySource,
-  usePlacementsStore,
-  type PlacementResult,
-} from '@/features/placements/stores/placementsStore';
+import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
+import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
-import { type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { finalizePlacementResult } from '@/features/placements/utils/finalizePlacementResult';
-import { hasRefsOrPendingHydration } from '@/features/placements/utils/hasRefsOrPendingHydration';
+import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
+import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
+import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
-import { fetchPolymarketTeamMetadataForGameEvents } from '@/features/polymarket/stores/polymarketTeamMetadataStore';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
-import { shallowEqual } from '@/worklets/comparisons';
 
 // ============ Types ========================================================== //
 
@@ -29,122 +21,158 @@ export type PredictionPlacementItem = PlacementItem & {
 };
 
 type PredictionEventsParams = {
-  eventIds: string[];
+  eventIds: readonly string[];
 };
 
-type PredictionEventsData = {
-  activeEventIds: string[];
-  eventsById: EventsById;
-};
-
-type EventsById = Record<string, PolymarketEvent>;
+type EventsById = Partial<Record<string, PolymarketEvent>>;
 
 // ============ Constants ====================================================== //
 
-const hasPredictionRefsOrPendingHydration = hasRefsOrPendingHydration('polymarket', 'prediction');
+const EMPTY_EVENTS: EventsById = {};
+const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 
-// ============ Stores ========================================================= //
+// ============ Event Stores =================================================== //
 
-const usePredictionsEnabled = createDerivedStore<boolean>(
-  $ => {
-    const polymarketEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('polymarket_enabled'));
-    const polymarketEnabledLocally = $(useExperimentalConfigStore, state => state.getFlag(POLYMARKET));
-
-    if (!hasPredictionRefsOrPendingHydration($)) return false;
-
-    return polymarketEnabled || polymarketEnabledLocally;
-  },
+const predictionTileEventIdsStore = createDerivedStore<ReadonlySet<string>>(
+  $ => new Set($(useDiscoverSurfacePlacementRefs, s => s.polymarket, areArraysEqual)),
   { lockDependencies: true }
 );
 
-export const usePredictionEventsStore = createQueryStore<PredictionEventsData, PredictionEventsParams>({
-  fetcher: fetchPredictionEvents,
-  enabled: $ => $(usePredictionsEnabled),
-  params: {
-    eventIds: $ => $(useDiscoverSurfacePlacementRefs, refs => refs.polymarket),
-  },
-  keepPreviousData: true,
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(15),
+/**
+ * Polymarket events used by Discover's tiles and widgets.
+ */
+export const predictionTileEventsStore = createPredictionEventsStore($ => $(useDiscoverSurfacePlacementRefs, s => s.polymarket));
+
+/**
+ * Polymarket events for displayed cards that are not already requested by tiles.
+ */
+export const predictionCardEventsStore = createPredictionEventsStore($ => {
+  const eventIds = $(displayedDiscoverEventIdsStore);
+  if (!eventIds.length) return eventIds;
+
+  const tileIds = $(predictionTileEventIdsStore);
+  return eventIds.filter(id => !tileIds.has(id));
 });
 
-// ============ Fetcher ======================================================== //
+/**
+ * Reads events loaded by either Discover request. Both queries retain their own data and status.
+ */
+export const usePredictionEventsStore = createDerivedStore(
+  $ => {
+    const tileIds = $(predictionTileEventIdsStore);
+    const tileEvents = $(predictionTileEventsStore, s => s.getData());
+    const cardEvents = $(predictionCardEventsStore, s => s.getData());
 
-async function fetchPredictionEvents(
-  { eventIds }: PredictionEventsParams,
-  abortController: AbortController | null
-): Promise<PredictionEventsData> {
-  const rawEvents = await fetchPolymarketEventsByIds(eventIds, abortController);
-  const teamsByTicker = await fetchPolymarketTeamMetadataForGameEvents(rawEvents, abortController);
+    return (eventId: string): PolymarketEvent | undefined => (tileIds.has(eventId) ? tileEvents?.[eventId] : cardEvents?.[eventId]);
+  },
 
-  const events = await Promise.all(
-    rawEvents.map(event => {
-      const teamMetadata = event.ticker ? teamsByTicker.get(event.ticker) : undefined;
-      return processRawPolymarketEvent(event, teamMetadata?.teams);
-    })
-  );
+  { lockDependencies: true }
+);
 
-  return normalizePredictionEvents(events);
+// ============ Card Projections =============================================== //
+
+/**
+ * Reads a card's event. Undefined means pending; null means unavailable.
+ */
+export const usePredictionCardsStore = createDerivedStore(
+  $ => {
+    const getEvent = $(usePredictionEventsStore);
+    const tileIds = $(predictionTileEventIdsStore);
+    const tilesPending = $(predictionTileEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
+    const cardsPending = $(predictionCardEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
+
+    return (eventId: string) => {
+      const isPending = tileIds.has(eventId) ? tilesPending : cardsPending;
+      return getEvent(eventId) ?? (isPending ? undefined : null);
+    };
+  },
+
+  { lockDependencies: true }
+);
+
+/**
+ * The first error from Discover's enabled Polymarket requests.
+ */
+export const useDiscoverEventsErrorStore = createDerivedStore(
+  $ => {
+    const tileError = $(predictionTileEventsStore, s => (s.enabled ? s.error : null));
+    const cardError = $(predictionCardEventsStore, s => (s.enabled ? s.error : null));
+
+    return tileError ?? cardError;
+  },
+
+  { lockDependencies: true }
+);
+
+// ============ Placement ====================================================== //
+
+/**
+ * Reads a prediction placement. Undefined means initial loading; null means no matching placement.
+ */
+export function getPredictionPlacement(
+  state: ReturnType<typeof usePlacementsStore.getState>,
+  placementId: PlacementId
+): Placement | null | undefined {
+  const placement = state.getPlacement(placementId);
+  if (placement) return placement.source === 'polymarket' ? placement : null;
+  return state.getStatus('isInitialLoad') ? undefined : null;
 }
 
-// ============ Utilities ====================================================== //
-
+/**
+ * A placement's active events in placement order, with loading state while its events are first fetched.
+ */
 export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
-  const enabled = usePredictionsEnabled();
-  const placement = usePlacementsStore(state => state.getPlacement(placementId));
-  const placementItems = usePlacementsStore(state => selectPlacementItemsBySource(state, placementId, 'polymarket'), shallowEqual);
-  const placementsLoading = usePlacementsStore(state => isPlacementHydrating(state, placementId, 'polymarket'));
-  const events = usePredictionEventsStore(state => state.getData());
-  const eventsLoading = usePredictionEventsStore(
-    state => placementItems.length > 0 && state.enabled && (state.getStatus('isIdle') || state.getStatus('isLoading'))
-  );
-  const activeEventIds = useMemo(() => (events ? new Set(events.activeEventIds) : undefined), [events]);
+  const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId) ?? undefined);
+  const events = predictionTileEventsStore(s => s.getData());
   const items = useMemo(
-    () => (events && activeEventIds ? parsePredictionItems(placementItems, events.eventsById, activeEventIds) : []),
-    [activeEventIds, events, placementItems]
-  );
-
-  return useMemo(
     () =>
-      finalizePlacementResult({
-        enabled,
-        hasRefs: placementItems.length > 0,
-        isInitialLoad: placementsLoading || eventsLoading,
-        items,
-        placement,
-      }),
-    [enabled, eventsLoading, items, placement, placementItems.length, placementsLoading]
+      placement && events
+        ? pairPlacementItems(
+            placement.items,
+            id => events[id],
+            (item, event) => ({ ...item, event })
+          )
+        : EMPTY_ITEMS,
+    [events, placement]
   );
+  const isLoading = predictionTileEventsStore(s => s.getStatus('isInitialLoad'));
+
+  return { isLoading, items, placement: items.length ? placement : undefined };
 }
 
-function parsePredictionItems(
-  placementItems: PlacementItem[],
-  eventsById: EventsById,
-  activeEventIds: ReadonlySet<string>
-): PredictionPlacementItem[] {
-  const items: PredictionPlacementItem[] = [];
+// ============ Fetching ======================================================= //
 
-  for (const item of placementItems) {
-    const event = eventsById[item.id];
-    if (event && activeEventIds.has(item.id)) items.push({ ...item, event });
-  }
+function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly string[]): QueryStore<EventsById, PredictionEventsParams> {
+  const eventIds = createDerivedStore(getEventIds, { equalityFn: areArraysEqual });
 
-  return items.length ? items : [];
+  return createQueryStore<EventsById, PredictionEventsParams>({
+    fetcher: fetchPredictionEvents,
+    enabled: $ => {
+      const enabled = $(usePolymarketEnabled);
+      const hasEvents = $(eventIds, s => s.length > 0);
+      return enabled && hasEvents;
+    },
+    params: { eventIds: $ => $(eventIds) },
+    keepPreviousData: true,
+    staleTime: time.minutes(2),
+    cacheTime: time.minutes(15),
+  });
 }
 
-function normalizePredictionEvents(events: PolymarketEvent[]): PredictionEventsData {
-  const activeEventIds: string[] = [];
+async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abortController: AbortController | null): Promise<EventsById> {
+  const rawEvents = (await fetchPolymarketEventsByIds(eventIds, abortController)).filter(isActivePredictionEvent);
+  if (!rawEvents.length) return EMPTY_EVENTS;
+
+  const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
+
   const eventsById: EventsById = {};
-
-  for (const event of events) {
-    eventsById[event.id] = event;
-    if (isActivePredictionEvent(event)) activeEventIds.push(event.id);
-  }
-
-  return { activeEventIds, eventsById };
+  for (const event of events) eventsById[event.id] = event;
+  return eventsById;
 }
 
-function isActivePredictionEvent(event: PolymarketEvent): boolean {
+// ============ Helpers ======================================================== //
+
+function isActivePredictionEvent(event: RawPolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;
 
   return event.markets.some(market => market.active !== false && market.closed !== true && market.umaResolutionStatus !== 'resolved');
