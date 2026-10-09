@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 
-import { createDerivedStore, createQueryStore, type DeriveGetter, type QueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, parseQueryKey, type DeriveGetter, type QueryStore } from '@storesjs/stores';
 
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurfacePlacementRefs } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
 import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -24,12 +23,13 @@ type PredictionEventsParams = {
   eventIds: readonly string[];
 };
 
-type EventsById = Partial<Record<string, PolymarketEvent>>;
+/** Null means requested but unavailable; undefined means no result for the ID yet. */
+type EventsById = Partial<Record<string, PolymarketEvent | null>>;
 
 // ============ Constants ====================================================== //
 
-const EMPTY_EVENTS: EventsById = {};
-const EMPTY_ITEMS: PredictionPlacementItem[] = [];
+const EMPTY_EVENT_IDS: readonly string[] = [];
+const EMPTY_ITEMS: PlacementItem[] = [];
 
 // ============ Event Stores =================================================== //
 
@@ -54,39 +54,26 @@ export const predictionCardEventsStore = createPredictionEventsStore($ => {
   return eventIds.filter(id => !tileIds.has(id));
 });
 
-/**
- * Reads events loaded by either Discover request. Both queries retain their own data and status.
- */
+/** Reads an event from its owning request. Undefined means pending; null means unavailable. */
 export const usePredictionEventsStore = createDerivedStore(
   $ => {
     const tileIds = $(predictionTileEventIdsStore, s => s);
     const tileEvents = $(predictionTileEventsStore, s => s.getData());
     const cardEvents = $(predictionCardEventsStore, s => s.getData());
+    const tileFailureKey = $(predictionTileEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
+    const cardFailureKey = $(predictionCardEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
+    const failedTileIds = tileFailureKey ? parseQueryKey<PredictionEventsParams>(tileFailureKey).eventIds : EMPTY_EVENT_IDS;
+    const failedCardIds = cardFailureKey ? parseQueryKey<PredictionEventsParams>(cardFailureKey).eventIds : EMPTY_EVENT_IDS;
 
-    return (eventId: string): PolymarketEvent | undefined => (tileIds.has(eventId) ? tileEvents?.[eventId] : cardEvents?.[eventId]);
-  },
+    return (eventId: string): PolymarketEvent | null | undefined => {
+      const fromTiles = tileIds.has(eventId);
+      const event = (fromTiles ? tileEvents : cardEvents)?.[eventId];
+      if (event !== undefined) return event;
 
-  { lockDependencies: true }
-);
-
-// ============ Card Projections =============================================== //
-
-/**
- * Reads a card's event. Undefined means pending; null means unavailable.
- */
-export const usePredictionCardsStore = createDerivedStore(
-  $ => {
-    const getEvent = $(usePredictionEventsStore, s => s);
-    const tileIds = $(predictionTileEventIdsStore, s => s);
-    const tilesPending = $(predictionTileEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
-    const cardsPending = $(predictionCardEventsStore, s => !s.enabled || s.getStatus('isInitialLoad'));
-
-    return (eventId: string) => {
-      const isPending = tileIds.has(eventId) ? tilesPending : cardsPending;
-      return getEvent(eventId) ?? (isPending ? undefined : null);
+      const failedIds = fromTiles ? failedTileIds : failedCardIds;
+      return failedIds.includes(eventId) ? null : undefined;
     };
   },
-
   { lockDependencies: true }
 );
 
@@ -124,18 +111,26 @@ export function getPredictionPlacement(
 export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
   const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId) ?? undefined);
   const events = predictionTileEventsStore(s => s.getData());
-  const items = useMemo(
-    () =>
-      placement && events
-        ? pairPlacementItems(
-            placement.items,
-            id => events[id],
-            (item, event) => ({ ...item, event })
-          )
-        : EMPTY_ITEMS,
-    [events, placement]
-  );
-  const isLoading = predictionTileEventsStore(s => s.getStatus('isInitialLoad'));
+  const { items, hasUnresolvedItems } = useMemo(() => {
+    const items: PredictionPlacementItem[] = [];
+    let hasUnresolvedItems = false;
+
+    for (const item of placement?.items ?? EMPTY_ITEMS) {
+      const event = events?.[item.id];
+      if (event === undefined) hasUnresolvedItems = true;
+      else if (event) items.push({ ...item, event });
+    }
+
+    return { items, hasUnresolvedItems };
+  }, [events, placement]);
+
+  const isLoading = predictionTileEventsStore(s => {
+    if (!hasUnresolvedItems || items.length > 0 || !placement || !s.enabled) return false;
+    if (!s.error) return true;
+
+    const failedIds = parseQueryKey<PredictionEventsParams>(s.queryKey).eventIds;
+    return placement.items.some(item => events?.[item.id] === undefined && !failedIds.includes(item.id));
+  });
 
   return { isLoading, items, placement: items.length ? placement : undefined };
 }
@@ -161,11 +156,11 @@ function createPredictionEventsStore(getEventIds: ($: DeriveGetter) => readonly 
 
 async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abortController: AbortController | null): Promise<EventsById> {
   const rawEvents = (await fetchPolymarketEventsByIds(eventIds, abortController)).filter(isActivePredictionEvent);
-  if (!rawEvents.length) return EMPTY_EVENTS;
 
   const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
 
   const eventsById: EventsById = {};
+  for (const id of eventIds) eventsById[id] = null;
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
 }
