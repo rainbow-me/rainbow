@@ -18,7 +18,6 @@ import { time } from '@/framework/core/utils/time';
 export type PlacementsState = {
   placementsById: PlacementsById;
   getPlacement: (id: PlacementId) => Placement | undefined;
-  getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem[];
 };
 
 export type PlacementResult<Hydrated> = {
@@ -58,34 +57,15 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
       getPlacement: id => {
         return get().placementsById[id];
       },
-
-      getItemsBySource: (id, source) => {
-        const placement = get().placementsById[id];
-        if (placement?.source !== source) return [];
-        return getItems(placement);
-      },
     };
   },
 
   { storageKey: 'placementsStore', version: 1 }
 );
 
-export function selectPlacementItemsBySource<Source extends PlacementSource>(
-  state: ReturnType<typeof usePlacementsStore.getState>,
-  placementId: PlacementId,
-  source: Source
-): PlacementItem[] {
-  return state.getItemsBySource(placementId, source);
-}
-
-export function isPlacementHydrating<Source extends PlacementSource>(
-  state: ReturnType<typeof usePlacementsStore.getState>,
-  placementId: PlacementId,
-  source: Source
-): boolean {
+export function isPlacementHydrating(state: ReturnType<typeof usePlacementsStore.getState>, placementId: PlacementId): boolean {
   const isInitialLoad = state.getStatus('isInitialLoad');
-  const isIdleWithoutCachedPlacement =
-    state.getStatus('isIdle') && state.getPlacement(placementId) === undefined && !state.getItemsBySource(placementId, source).length;
+  const isIdleWithoutCachedPlacement = state.getStatus('isIdle') && state.getPlacement(placementId) === undefined;
 
   return isInitialLoad || isIdleWithoutCachedPlacement;
 }
@@ -128,10 +108,6 @@ function buildPlacementsById(placements: PlacementDocumentSnapshot[]): Placement
   }
 
   return placementsById;
-}
-
-function getItems(placement: Placement | undefined): PlacementItem[] {
-  return placement?.items ?? [];
 }
 
 // ============ Type Guards ==================================================== //
