@@ -3503,6 +3503,7 @@
       },
       "errors": {
         "title": "Error",
+        "failed_to_load": "Unable to load predictions",
         "failed_to_place_bet": "Failed to place bet. Please try again.",
         "failed_to_cash_out": "Failed to cash out position. Please try again.",
         "failed_to_claim": "Failed to claim position. Please try again."
