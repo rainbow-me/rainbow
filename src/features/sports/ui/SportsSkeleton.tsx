@@ -11,7 +11,7 @@ import { SportsSectionHeadingSkeleton } from '@/features/sports/ui/SportsSection
 export function SportsSkeleton({ page, width, isDarkMode }: { page: SportsPage; width: number; isDarkMode: boolean }) {
   const backgroundColor = foregroundColors.fillTertiary[isDarkMode ? 'dark' : 'light'];
 
-  if (page === 'sports' || page === 'competitions') {
+  if (page === 'sports') {
     return (
       <View pointerEvents="none" testID="sports-loading">
         {[0, 1, 2, 3, 4, 5].map(index => (
