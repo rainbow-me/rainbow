@@ -78,7 +78,7 @@ export function SportsGamesList({
   const { isDarkMode, foregroundColors } = useColorMode();
 
   const [expanded, setExpanded] = useState(() => EMPTY_EXPANDED_SET);
-  const { page, scope, parent, back, selectedCategory, categories, directoryIds, sections, currentDay } = sportsPageStores[host]();
+  const { page, scope, parent, back, directoryIds, sections, currentDay } = sportsPageStores[host]();
   const catalog = useSportsStore(s => s.catalog);
 
   const listRef = useRef<Animated.FlatList<Row>>(null);
@@ -190,50 +190,42 @@ export function SportsGamesList({
 
   const refreshControl = useMemo(() => <RefreshControl onRefresh={() => refreshSportsPage(host)} />, [host]);
 
-  const { backgroundColor, containerStyle, contentContainerStyle, scrollIndicatorInsets, headerStyle, header, footer } = useMemo(() => {
-    const backgroundColor = customBackgroundColor ?? (isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT);
+  const backgroundColor = customBackgroundColor ?? (isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT);
 
+  const listStyles = useMemo(() => {
     let contentPaddingTop = 0;
     if (isSearching) contentPaddingTop = hasDirectory ? 12 : 20;
     else if (page === 'sports') contentPaddingTop = 5;
 
     return {
-      backgroundColor,
       containerStyle: [styles.container, { backgroundColor, paddingTop: topInset }],
       contentContainerStyle: [styles.content, { paddingTop: isMainScreen ? contentPaddingTop : 0, paddingBottom: bottomInset + 80 }],
       scrollIndicatorInsets: { bottom: bottomInset + 64 },
       headerStyle: isMainScreen ? undefined : { paddingBottom: contentPaddingTop },
-      header: (
-        <View style={styles.header}>
-          {isSearching ? (
-            <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
-          ) : (
-            <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
-          )}
-        </View>
-      ),
-      footer: <SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />,
     };
-  }, [
-    back,
-    bottomInset,
-    customBackgroundColor,
-    foregroundColors,
-    hasDirectory,
-    host,
-    isDarkMode,
-    isMainScreen,
-    isSearching,
-    page,
-    parent,
-    scope,
-    topInset,
-    width,
-  ]);
+  }, [backgroundColor, bottomInset, hasDirectory, isMainScreen, isSearching, page, topInset]);
+
+  const header = useMemo(
+    () => (
+      <View style={styles.header}>
+        {isSearching ? (
+          <SportsSearch host={host} color={foregroundColors.label} backgroundColor={foregroundColors.fillQuaternary} />
+        ) : (
+          <SportsHeader host={host} isDarkMode={isDarkMode} page={page} scope={scope} parent={parent} back={back} />
+        )}
+      </View>
+    ),
+    [back, foregroundColors.fillQuaternary, foregroundColors.label, host, isDarkMode, isSearching, page, parent, scope]
+  );
+
+  const footer = useMemo(
+    () => <SportsReadStatus host={host} isDarkMode={isDarkMode} width={width} page={page} />,
+    [host, isDarkMode, page, width]
+  );
 
   return (
     <GameCardPathsContext value={cardPathsRef.current}>
-      <View style={containerStyle}>
+      <View style={listStyles.containerStyle}>
         {isMainScreen ? (
           <>
             {header}
@@ -252,27 +244,17 @@ export function SportsGamesList({
           windowSize={3}
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={contentContainerStyle}
-          scrollIndicatorInsets={scrollIndicatorInsets}
+          contentContainerStyle={listStyles.contentContainerStyle}
+          scrollIndicatorInsets={listStyles.scrollIndicatorInsets}
           onScroll={onScroll}
           refreshControl={refreshControl}
           ListHeaderComponent={isMainScreen ? null : header}
-          ListHeaderComponentStyle={headerStyle}
+          ListHeaderComponentStyle={listStyles.headerStyle}
           ListFooterComponent={footer}
           ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
         />
 
-        {isSearching ? null : (
-          <SportsCategoryBar
-            categories={categories}
-            selectedCategory={selectedCategory}
-            isDarkMode={isDarkMode}
-            width={width}
-            catalog={catalog}
-            host={host}
-            bottom={bottomInset + 20}
-          />
-        )}
+        {isSearching ? null : <SportsCategoryBar host={host} isDarkMode={isDarkMode} width={width} bottom={bottomInset + 20} />}
       </View>
     </GameCardPathsContext>
   );
