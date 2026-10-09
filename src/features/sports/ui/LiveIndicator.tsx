@@ -11,21 +11,11 @@ import { time } from '@/framework/core/utils/time';
 const PULSE_CONFIG = { duration: time.seconds(1.8), easing: easing.inOut.ease };
 
 /**
- * Live dot indicator with an optional animated, pulsing ring.
+ * Live dot indicator with a pulsing ring.
  */
-export const LiveIndicator = memo(function LiveIndicator({ animated = true }: { animated?: boolean }) {
+export const LiveIndicator = memo(function LiveIndicator() {
   const red = useForegroundColor('red');
   const ringColor = opacity(red, 0.3);
-
-  return (
-    <View style={styles.icon}>
-      {animated ? <AnimatedRing color={ringColor} /> : <View style={[styles.ring, { borderColor: ringColor }]} />}
-      <View style={[styles.dot, { backgroundColor: red }]} />
-    </View>
-  );
-});
-
-function AnimatedRing({ color }: { color: string }) {
   const pulse = useSharedValue(0);
 
   const ringStyle = useAnimatedStyle(() => ({
@@ -38,8 +28,13 @@ function AnimatedRing({ color }: { color: string }) {
     return () => cancelAnimation(pulse);
   }, [pulse]);
 
-  return <Animated.View style={[styles.ring, { borderColor: color }, ringStyle]} />;
-}
+  return (
+    <View style={styles.icon}>
+      <Animated.View style={[styles.ring, { borderColor: ringColor }, ringStyle]} />
+      <View style={[styles.dot, { backgroundColor: red }]} />
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   dot: {
