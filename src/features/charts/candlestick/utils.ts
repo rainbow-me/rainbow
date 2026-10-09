@@ -8,6 +8,22 @@ import { CandleResolution } from '../types';
 import { type Bar, type CandlestickEndpointResponse, type Price } from './types';
 
 /**
+ * Returns the first candle index whose timestamp is at least `timestamp`.
+ */
+export function firstIndexAtOrAfterTimestamp(candles: readonly Bar[], timestamp: number): number {
+  'worklet';
+  let left = 0;
+  let right = candles.length;
+
+  while (left < right) {
+    const middle = (left + right) >>> 1;
+    if (candles[middle].t < timestamp) left = middle + 1;
+    else right = middle;
+  }
+  return left;
+}
+
+/**
  * Compares two candle `Bar` objects for equality.
  */
 export function areCandlesEqual(a: Bar | undefined, b: Bar | undefined): boolean {
