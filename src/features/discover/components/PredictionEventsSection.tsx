@@ -15,7 +15,10 @@ import { getPredictionPlacement, usePredictionEventsStore } from '@/features/pla
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
-import { PolymarketEventsListItem } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import {
+  PolymarketEventsListItem,
+  HEIGHT as PREDICTION_CARD_HEIGHT,
+} from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { useCleanup } from '@/hooks/useCleanup';
 import useDimensions from '@/hooks/useDimensions';
@@ -101,7 +104,7 @@ export function PredictionEventsSection({
       />
       {isLoading ? (
         <View style={styles.list}>
-          <Skeleton borderRadius={24} height={166} width="100%" />
+          <Skeleton borderRadius={24} height={PREDICTION_CARD_HEIGHT} width="100%" />
         </View>
       ) : carousel ? (
         <FlatList
@@ -151,7 +154,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
     );
   }
 
-  if (event === undefined) return <Skeleton borderRadius={24} height={166} width="100%" />;
+  if (event === undefined) return <Skeleton borderRadius={24} height={PREDICTION_CARD_HEIGHT} width="100%" />;
 
   return (
     <View style={styles.unavailable}>
@@ -168,6 +171,6 @@ const styles = StyleSheet.create({
   section: { gap: 20 },
   list: { marginHorizontal: 12, gap: 8 },
   carousel: { paddingHorizontal: 12, gap: 8 },
-  card: { width: '100%', height: 166 },
-  unavailable: { height: 166, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  card: { width: '100%', height: PREDICTION_CARD_HEIGHT },
+  unavailable: { height: PREDICTION_CARD_HEIGHT, alignItems: 'center', justifyContent: 'center', padding: 24 },
 });
