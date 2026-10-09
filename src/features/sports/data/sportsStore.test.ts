@@ -459,6 +459,50 @@ it('admits catalogs and Games together, retaining equal revisions and rejecting 
   expect(status()).toBe('none');
 });
 
+it('preserves unchanged categories and updates their labels and order across catalog revisions', async () => {
+  const initial = { ...catalog, prominentScopeIds: ['nba', 'tennis'] };
+  vi.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 1, catalog: initial, games: [first] });
+  showMain();
+  await settle();
+
+  const previous = useSportsStore.getState().catalog;
+  const categories = previous?.prominentCategories;
+  expect(categories).toEqual([
+    { key: 'nba', label: 'NBA' },
+    { key: 'tennis', label: 'Tennis' },
+  ]);
+
+  const unrelated = { ...initial, sports: initial.sports.map(sport => (sport.id === 'soccer' ? { ...sport, name: 'Football' } : sport)) };
+  vi.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 2, catalog: unrelated, games: [first] });
+  await refreshSportsPage('main');
+  expect(useSportsStore.getState().catalog).not.toBe(previous);
+  expect(useSportsStore.getState().catalog?.prominentCategories).toBe(categories);
+
+  const renamed = {
+    ...unrelated,
+    sports: unrelated.sports.map(sport => (sport.id === 'tennis' ? { ...sport, name: 'Tennis tours' } : sport)),
+  };
+  vi.mocked(sportsClient.getLiveGames).mockResolvedValue({ catalogRevision: 3, catalog: renamed, games: [first] });
+  await refreshSportsPage('main');
+  const renamedCategories = useSportsStore.getState().catalog?.prominentCategories;
+  expect(renamedCategories).not.toBe(categories);
+  expect(renamedCategories).toEqual([
+    { key: 'nba', label: 'NBA' },
+    { key: 'tennis', label: 'Tennis tours' },
+  ]);
+
+  vi.mocked(sportsClient.getLiveGames).mockResolvedValue({
+    catalogRevision: 4,
+    catalog: { ...renamed, prominentScopeIds: ['tennis', 'nba'] },
+    games: [first],
+  });
+  await refreshSportsPage('main');
+  expect(useSportsStore.getState().catalog?.prominentCategories).toEqual([
+    { key: 'tennis', label: 'Tennis tours' },
+    { key: 'nba', label: 'NBA' },
+  ]);
+});
+
 // ============ Days =========================================================== //
 
 it('shows the new day at midnight and requests the new week', async () => {
