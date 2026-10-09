@@ -14,6 +14,7 @@ import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/disc
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
 import { getPredictionPlacement, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import {
@@ -42,8 +43,8 @@ export function PredictionEventsSection({
   const { width } = useDimensions();
 
   const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
+  const isLoading = useIsDiscoverSurfacePlacementPending(surface.placement);
   const allItems = placement?.items ?? EMPTY_ITEMS;
-  const isLoading = placement === undefined;
   const carousel = surface.display === 'prediction_event_card.carousel';
   const limit = !carousel && expanded ? undefined : surface.limit;
   const items = useMemo(() => (limit !== undefined && allItems.length > limit ? allItems.slice(0, limit) : allItems), [allItems, limit]);
