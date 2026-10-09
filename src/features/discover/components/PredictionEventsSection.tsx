@@ -8,6 +8,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { ShowMoreButton } from '@/features/discover/components/markets/layouts/ShowMoreButton';
 import { resolveSectionTitle } from '@/features/discover/components/SectionLayout';
+import { useTrackDiscoverCarouselScroll } from '@/features/discover/hooks/useTrackDiscoverCarouselScroll';
 import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
@@ -48,6 +49,7 @@ export function PredictionEventsSection({
   const items = useMemo(() => (limit !== undefined && allItems.length > limit ? allItems.slice(0, limit) : allItems), [allItems, limit]);
   const cardWidth = width - (carousel && items.length !== 1 ? 30 : 24);
   const title = resolveSectionTitle(surface);
+  const onScrollSettle = useTrackDiscoverCarouselScroll(surface, surfaceId, title);
   const destination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : undefined;
 
   useEffect(() => {
@@ -111,6 +113,7 @@ export function PredictionEventsSection({
           horizontal
           data={items}
           renderItem={renderCard}
+          onMomentumScrollEnd={onScrollSettle}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.carousel}
           showsHorizontalScrollIndicator={false}
