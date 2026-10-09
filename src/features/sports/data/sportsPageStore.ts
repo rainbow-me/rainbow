@@ -23,7 +23,6 @@ type SportsPageState = {
   parent: SportsScope | undefined;
   back: SportsDestination | undefined;
   selectedCategory: SportsDestination;
-  categories: SportsDestination[];
   directoryIds: string[];
   currentDay: string;
   sections: SportsSection[];
@@ -35,7 +34,6 @@ type SportsPageState = {
 
 const EMPTY_IDS: string[] = [];
 const EMPTY_SECTIONS: SportsSection[] = [];
-const DEFAULT_CATEGORIES: SportsDestination[] = ['live', 'all'];
 
 // ============ Page Stores ==================================================== //
 
@@ -66,7 +64,6 @@ function createSportsPageStore(host: SportsHost): DerivedStore<SportsPageState> 
           parent: scope?.parentId ? catalog?.scopes[scope.parentId] : undefined,
           back: getSportsBackDestination(catalog, destination, category),
           selectedCategory: getSportsCategory(catalog, category),
-          categories: catalog?.categories ?? DEFAULT_CATEGORIES,
           directoryIds: getDirectoryIds(catalog, destination, query),
         },
       };

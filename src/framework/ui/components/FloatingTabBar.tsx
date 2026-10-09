@@ -35,7 +35,7 @@ import { white } from '@/worklets/colors';
 /**
  * A selectable tab in `FloatingTabBar`.
  */
-export type FloatingTab = { key: string; label: string; onPress: () => void };
+export type FloatingTab = { key: string; label: string };
 
 // ============ Constants ====================================================== //
 
@@ -58,6 +58,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   width,
   isDarkMode,
   shadowColor,
+  onSelect,
   onSearch,
 }: {
   tabs: readonly FloatingTab[];
@@ -66,6 +67,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   width: number;
   isDarkMode: boolean;
   shadowColor: string;
+  onSelect: (key: string) => void;
   onSearch?: () => void;
 }) {
   const positionsRef = useLazyRef(() => new Map<string, { x: number; width: number }>());
@@ -131,7 +133,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
                     if (selected) revealSelected(false);
                   }}
                 >
-                  <ButtonPressAnimation onPress={tab.onPress} scaleTo={0.88} style={styles.tab}>
+                  <ButtonPressAnimation onPress={() => onSelect(tab.key)} scaleTo={0.88} style={styles.tab}>
                     <Text color="label" size="20pt" weight="heavy" style={selected ? undefined : { opacity: isDarkMode ? 0.4 : 0.3 }}>
                       {tab.label}
                     </Text>

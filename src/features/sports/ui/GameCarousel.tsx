@@ -35,6 +35,7 @@ export const GameCarousel = memo(function GameCarousel({
     ({ viewableItems }: { viewableItems: ViewToken<string>[] }) => onVisibleGamesChanged(rowKey, viewableItems),
     [onVisibleGamesChanged, rowKey]
   );
+
   const renderItem = useCallback(
     ({ item }: { item: string }) => (
       <View style={{ width: cardWidth }}>
