@@ -5,7 +5,7 @@ import { upperFirst } from 'lodash';
 import URL from 'url-parse';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -165,7 +165,6 @@ export default function useENSRecordDisplayProperties({
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
-  const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
 
   const handlePressMenuItem = useCallback(
@@ -186,7 +185,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, setClipboard, startRegistration, url]
+    [ensName, navigate, recordKey, recordValue, startRegistration, url]
   );
 
   const Button = useCallback(

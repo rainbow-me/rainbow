@@ -40,6 +40,7 @@ const Routes = {
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
   IMPORT_SCREEN: 'ImportScreen',
   KING_OF_THE_HILL: 'KingOfTheHill',
+  SPORTS_SCREEN: 'SportsScreen',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   LOG_SHEET: 'LogSheet',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',

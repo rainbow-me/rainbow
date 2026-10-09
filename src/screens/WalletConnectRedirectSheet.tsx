@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useListen } from '@storesjs/stores';
 
 import { Centered } from '@/components/layout';
 import { Sheet } from '@/components/sheet';
 import { Text } from '@/components/text';
 import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import useAppState from '@/hooks/useAppState';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
@@ -61,16 +62,18 @@ const titlesMap = {
 function WalletConnectRedirectSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
-  const { appState } = useAppState();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_REDIRECT_SHEET>>();
 
   const type = params?.type;
 
-  useEffect(() => {
-    if (appState === 'background') {
-      goBack();
-    }
-  }, [goBack, appState]);
+  useListen(
+    useAppStateStore,
+    s => s === 'background',
+    isBackground => {
+      if (isBackground) goBack();
+    },
+    { fireImmediately: true }
+  );
 
   return (
     <Sheet hideHandle>

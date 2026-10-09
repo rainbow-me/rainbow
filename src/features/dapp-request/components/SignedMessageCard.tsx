@@ -13,7 +13,7 @@ import {
 } from '@/components/Transactions/constants';
 import { AnimatedCheckmark, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Bleed, Box, Inline, Text } from '@/design-system';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { sanitizeTypedData } from '@/utils/signingUtils';
@@ -29,8 +29,6 @@ type SignedMessageCardProps = {
 const headerHeight = CARD_ROW_HEIGHT * 2.5;
 
 function TransactionHeader({ message }: { message: string }) {
-  const { setClipboard } = useClipboard();
-
   const [didCopy, setDidCopy] = useState(false);
 
   const handleCopyPress = useCallback(
@@ -43,7 +41,7 @@ function TransactionHeader({ message }: { message: string }) {
       }, 2000);
       return () => clearTimeout(copyTimer);
     },
-    [didCopy, setClipboard]
+    [didCopy]
   );
 
   return (
