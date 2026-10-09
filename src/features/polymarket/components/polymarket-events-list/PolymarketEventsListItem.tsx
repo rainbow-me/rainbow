@@ -17,7 +17,7 @@ import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { formatOdds } from '@/features/polymarket/utils/sportsEventBetData';
+import { formatOdds } from '@/features/polymarket/utils/formatOdds';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
