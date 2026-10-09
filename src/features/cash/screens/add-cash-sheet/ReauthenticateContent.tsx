@@ -3,12 +3,14 @@ import { StyleSheet } from 'react-native';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
 import { Box, Text } from '@/design-system';
 import { CashActionButton } from '@/features/cash/components/CashActionButton';
 import * as i18n from '@/languages';
 
 import { reauthenticateCashGate } from '../../services/cashAuthGateService';
 import type { CashAuthIntent, OpenCashAuthGateStatus } from '../../stores/cashAuthGateStore';
+import { restoreAccessInSetup } from '../cash-deposit-setup/setupNavigation';
 
 const l = i18n.l.cash.add_cash_screen;
 
@@ -44,6 +46,12 @@ export function ReauthenticateContent({ status }: { status: OpenCashAuthGateStat
     }
   }, []);
 
+  const intentKind = status.intent.kind;
+  const handleRecoverLostPasskey = useCallback(() => {
+    analytics.track(analytics.event.cashLostPasskeyRecoverySelected, { intent: intentKind });
+    restoreAccessInSetup();
+  }, [intentKind]);
+
   const prompt = PROMPT_BY_INTENT[status.intent.kind][status.step];
   return (
     <Box as={Animated.View} entering={FadeIn.duration(160)} exiting={FadeOut.duration(160)}>
@@ -60,12 +68,21 @@ export function ReauthenticateContent({ status }: { status: OpenCashAuthGateStat
           </Text>
         </Box>
       </Box>
-      <Box paddingBottom="16px" paddingHorizontal="20px" paddingTop="44px">
+      <Box gap={12} paddingBottom="16px" paddingHorizontal="20px" paddingTop="44px">
         <CashActionButton
           label={i18n.t(prompt.action)}
           loading={submitting}
           onPress={handleContinue}
           testID={TEST_ID_BY_STEP[status.step]}
+        />
+        <CashActionButton
+          disabled={submitting}
+          label={i18n.t(l.reauth_recover_lost_passkey)}
+          onPress={handleRecoverLostPasskey}
+          testID="cash-reauth-recover-lost-passkey"
+          textSize="17pt"
+          textWeight="bold"
+          variant="plain"
         />
       </Box>
     </Box>
