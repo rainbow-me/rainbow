@@ -40,19 +40,19 @@ export interface Competition {
 
 /**
  * Game is one two-participant match with normalized status and display scores.
- * Offers identify exact Polymarket selections; they do not promise an executable quote.
+ * Offers identify exact Polymarket outcomes; they do not promise an executable quote.
  */
 export interface Game {
   /** Canonical primary Polymarket event ID, even when lookup used a child event. */
   id: string;
   /** Current catalog memberships, preferred badge first. Empty is valid for lookup. */
   competitionIds: string[];
-  startsAt?:
+  startTime?:
     | string
     | undefined;
   /** Exactly two distinct participants in the original source order used by scores. */
   participants: Participant[];
-  winner?: Winner | undefined;
+  moneyline?: Moneyline | undefined;
   spread?: Spread | undefined;
   status: Game_Status;
   interruption: Game_Interruption;
@@ -62,6 +62,11 @@ export interface Game {
     | undefined;
   /** Display order; empty when a reliable score is unavailable. */
   score: ScoreColumn[];
+  /**
+   * Total trading volume reported for the primary event, in USD.
+   * Absent when the source does not provide it.
+   */
+  volume?: number | undefined;
 }
 
 export enum Game_Status {
@@ -91,8 +96,8 @@ export interface Participant {
   role?:
     | Participant_Role
     | undefined;
-  /** Absent when this participant's full-match winner offer cannot be admitted. */
-  winner?: Selection | undefined;
+  /** Absent when no available outcome can be identified for this participant to win. */
+  moneyline?: PolymarketOutcome | undefined;
 }
 
 export enum Participant_Role {
@@ -101,20 +106,22 @@ export enum Participant_Role {
   ROLE_AWAY = "ROLE_AWAY",
 }
 
-export interface Winner {
+/** Moneyline describes two-way or three-way betting on the match result. */
+export interface Moneyline {
   /** Market structure is preserved even when an individual offer is unavailable. */
-  kind: Winner_Kind;
-  /** Only a three-way winner can contain a draw selection. */
-  draw?: Selection | undefined;
+  kind: Moneyline_Kind;
+  /** Only a three-way moneyline can contain a draw outcome. */
+  draw?: PolymarketOutcome | undefined;
 }
 
-export enum Winner_Kind {
+export enum Moneyline_Kind {
   KIND_UNSPECIFIED = "KIND_UNSPECIFIED",
   KIND_TWO_WAY = "KIND_TWO_WAY",
   KIND_THREE_WAY = "KIND_THREE_WAY",
 }
 
-export interface Selection {
+/** Identifies one Polymarket market outcome by its event, market, and token. */
+export interface PolymarketOutcome {
   /** Actual source event, which can differ from the canonical game ID. */
   eventId: string;
   /** Gamma numeric market ID as a string, not the market's condition ID. */
@@ -122,6 +129,8 @@ export interface Selection {
   /** Decimal token ID, preserved as a string beyond JavaScript integer precision. */
   tokenId: string;
   outcomeIndex: number;
+  /** Decimal outcome price in the game snapshot, from 0 to 1. Absent when unavailable. */
+  price?: string | undefined;
 }
 
 /** Spread is one complete full-match market. A half-present pair is not admitted. */
@@ -144,6 +153,8 @@ export interface SpreadOutcome {
    * Example: -2.5. This is a display handicap, not a monetary amount.
    */
   line: number;
+  /** Decimal outcome price in the game snapshot, from 0 to 1. Absent when unavailable. */
+  price?: string | undefined;
 }
 
 /** ScoreColumn contains one score for each participant in Game.participants order. */
@@ -193,13 +204,13 @@ export interface GetLiveGamesRequest {
 export interface GetGamesRequest {
   scopeId: string;
   /**
-   * All three local-calendar boundaries are required absolute timestamps: from < today_until <= until.
-   * Today selects scheduled starts in [from, today_until); Upcoming selects [today_until, until).
+   * All three local-calendar boundaries are required absolute timestamps: window_start_time < today_cutoff_time <= window_end_time.
+   * Today selects scheduled starts in [window_start_time, today_cutoff_time); Upcoming selects [today_cutoff_time, window_end_time).
    * Live games remain eligible outside these intervals. Directory sports select only live games.
    */
-  from?: string | undefined;
-  todayUntil?: string | undefined;
-  until?: string | undefined;
+  windowStartTime?: string | undefined;
+  todayCutoffTime?: string | undefined;
+  windowEndTime?: string | undefined;
   knownCatalogRevision?: number | undefined;
 }
 
@@ -215,8 +226,8 @@ export interface SearchGamesRequest {
     | string
     | undefined;
   /** Inclusive and exclusive scheduled-start boundaries. Live games remain eligible outside them. */
-  from?: string | undefined;
-  until?:
+  windowStartTime?: string | undefined;
+  windowEndTime?:
     | string
     | undefined;
   /** Opaque continuation bound to the query, scope, interval and policy revision. */
@@ -224,8 +235,16 @@ export interface SearchGamesRequest {
   knownCatalogRevision?: number | undefined;
 }
 
+export interface GetLiveGamesResponse {
+  result?: GamesResult | undefined;
+}
+
+export interface GetGamesResponse {
+  result?: GamesResult | undefined;
+}
+
 /**
- * GetGamesResponse contains at most thirty games per displayed Live group or
+ * GamesResult contains at most thirty games per displayed Live group or
  * per Live/Today/Upcoming scope section. Directory sports have one Live section.
  * Global Live assigns each game to the first applicable catalog live_group_ids entry,
  * or its first competition_ids entry when no curated group applies.
@@ -233,7 +252,7 @@ export interface SearchGamesRequest {
  * All relevant source pages are traversed before returning;
  * a source failure never returns a successful prefix.
  */
-export interface GetGamesResponse {
+export interface GamesResult {
   /** Identifies the editorial policy used for both the catalog and games. */
   catalogRevision: number;
   /** Omitted when the request already knows this revision. */
