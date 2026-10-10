@@ -62,6 +62,11 @@ export interface Game {
     | undefined;
   /** Display order; empty when a reliable score is unavailable. */
   score: ScoreColumn[];
+  /**
+   * Total trading volume reported for the primary event, in USD.
+   * Absent when the source does not provide it.
+   */
+  volume?: number | undefined;
 }
 
 export enum Game_Status {
