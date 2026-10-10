@@ -130,9 +130,7 @@ export function useTokensPlacement(placementId: PlacementId): PlacementResult<To
   const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId));
   const assetsByRef = useTokenRefsStore(s => s.getData());
   const items = useMemo(() => (assetsByRef ? parseTokenItems(placementItems, assetsByRef) : []), [assetsByRef, placementItems]);
-  const tokenRefsLoading = useTokenRefsStore(
-    s => placementItems.length > 0 && items.length === 0 && s.enabled && (s.getStatus('isIdle') || s.getStatus('isLoading'))
-  );
+  const tokenRefsLoading = useTokenRefsStore(s => placementItems.length > 0 && items.length === 0 && s.getStatus('isInitialLoad'));
 
   return useMemo(
     () =>
