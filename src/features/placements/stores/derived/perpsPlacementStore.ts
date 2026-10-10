@@ -27,9 +27,7 @@ export function usePerpsPlacement(placementId: PlacementId): PlacementResult<Per
   const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId));
   const markets = useHyperliquidMarketsStore(s => s.markets);
   const items = useMemo(() => buildPerpMarketPlacementItems(placementItems, markets), [markets, placementItems]);
-  const resolvedLoading = useHyperliquidMarketsStore(
-    s => placementItems.length > 0 && items.length === 0 && (s.getStatus('isIdle') || s.getStatus('isLoading')) && !s.getStatus('isError')
-  );
+  const resolvedLoading = useHyperliquidMarketsStore(s => placementItems.length > 0 && items.length === 0 && s.getStatus('isInitialLoad'));
 
   return useMemo(
     () =>
