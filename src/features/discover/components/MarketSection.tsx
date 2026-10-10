@@ -29,12 +29,13 @@ import {
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { maybeNavigateToPerpsExplainSheet } from '@/features/perps/utils/navigateToPerps';
-import { usePerpsPlacement, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
-import { useTokensPlacement, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
+import { usePerpsPlacementItems, type PerpMarketPlacementItem } from '@/features/placements/stores/derived/perpsPlacementStore';
+import { useTokensPlacementItems, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
+import { type Placement } from '@/features/placements/types';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -83,6 +84,7 @@ export function isMarketSurface(surface: SurfaceLeaf): surface is SurfaceLeafWit
 
 export function MarketSection({ surface, surfaceId }: { surface: SurfaceLeafWithDisplay<MarketDisplay>; surfaceId: SurfaceId }) {
   if (!hasPlacement(surface)) return null;
+
   return <MarketPlacementContent surface={surface} surfaceId={surfaceId} />;
 }
 
@@ -94,27 +96,22 @@ function MarketPlacementContent({
   surfaceId: SurfaceId;
 }) {
   const perpsEnabled = useRemoteConfig('perps_enabled').perps_enabled;
-  const placement = usePlacementsStore(state => state.getPlacement(surface.placement));
+  const placement = usePlacementsStore(s => s.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const isLoadingPlacementSource = usePlacementsStore(state => {
-    if (state.getPlacement(surface.placement) !== undefined) return false;
-    return state.getStatus('isInitialLoad') || state.getStatus('isIdle') || state.getStatus('isLoading');
-  });
 
   if (placement?.source === 'hyperliquid') {
     if (!perpsEnabled) return null;
-    return <PerpsMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+    return <PerpsMarketPlacementContent placement={placement} surface={surface} surfaceId={surfaceId} />;
   }
 
   if (placement?.source === 'rainbow') {
-    return <TokenMarketPlacementContent surface={surface} surfaceId={surfaceId} />;
+    return <TokenMarketPlacementContent placement={placement} surface={surface} surfaceId={surfaceId} />;
   }
 
-  if (isLoadingPlacementSource || isPendingSurfacePlacement) {
+  if (isPendingSurfacePlacement) {
     return renderSectionLayout({
-      data: [],
+      data: undefined,
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
-      loading: true,
       onPress: undefined,
       placement,
       section: surface,
@@ -126,13 +123,16 @@ function MarketPlacementContent({
 }
 
 function PerpsMarketPlacementContent({
+  placement,
   surface,
   surfaceId,
 }: {
+  placement: Placement;
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: SurfaceId;
 }) {
-  const perpsResult = usePerpsPlacement(surface.placement);
+  const items = usePerpsPlacementItems(placement.id);
+
   const perpDescriptor = useMemo<SectionDescriptor<PerpMarketPlacementItem>>(() => {
     switch (surface.display) {
       case 'market_pill.carousel':
@@ -166,6 +166,7 @@ function PerpsMarketPlacementContent({
         };
     }
   }, [surface.display]);
+
   // Perp "See All" routes to the CMS destination (perps -> perps screen), gated on
   // a perps destination existing.
   const perpsDestination = hasDestinationRoot(surface.destination, 'perps') ? surface.destination : null;
@@ -174,26 +175,28 @@ function PerpsMarketPlacementContent({
   }, [perpsDestination]);
 
   return renderSectionLayout({
-    data: perpsResult.items,
+    data: items,
     descriptor: perpDescriptor,
-    loading: perpsResult.isLoading,
-    onPress: perpsDestination && perpsResult.placement ? onPress : undefined,
-    placement: perpsResult.placement,
+    onPress: perpsDestination ? onPress : undefined,
+    placement,
     section: surface,
     surfaceId,
   });
 }
 
 function TokenMarketPlacementContent({
+  placement,
   surface,
   surfaceId,
 }: {
+  placement: Placement;
   surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
   surfaceId: SurfaceId;
 }) {
   const { onTapSearch } = useDiscoverScreenContext();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const tokensResult = useTokensPlacement(surface.placement);
+  const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const items = useTokensPlacementItems(placement.id);
+
   const tokenDescriptor = useMemo<SectionDescriptor<TokenPlacementItem>>(() => {
     switch (surface.display) {
       case 'market_pill.carousel':
@@ -227,14 +230,14 @@ function TokenMarketPlacementContent({
         };
     }
   }, [nativeCurrency, surface.display]);
+
   const onPress = useCallback(() => onTapSearch(), [onTapSearch]);
 
   return renderSectionLayout({
-    data: tokensResult.items,
+    data: items,
     descriptor: tokenDescriptor,
-    loading: tokensResult.isLoading,
-    onPress: hasDestinationRoot(surface.destination, 'tokens') && tokensResult.placement ? onPress : undefined,
-    placement: tokensResult.placement,
+    onPress: hasDestinationRoot(surface.destination, 'tokens') ? onPress : undefined,
+    placement,
     section: surface,
     surfaceId,
   });
