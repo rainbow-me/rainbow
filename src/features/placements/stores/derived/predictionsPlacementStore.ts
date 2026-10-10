@@ -28,7 +28,6 @@ type EventsById = Partial<Record<string, PolymarketEvent | null>>;
 
 // ============ Constants ====================================================== //
 
-const EMPTY_EVENT_IDS: readonly string[] = [];
 const EMPTY_ITEMS: PlacementItem[] = [];
 
 // ============ Event Stores =================================================== //
@@ -53,25 +52,17 @@ export const predictionTileEventsStore = createPredictionEventsStore(predictionT
 /** Displayed card events that are not already requested by tiles. */
 export const predictionCardEventsStore = createPredictionEventsStore(predictionCardEventIdsStore);
 
+const predictionTileResultsStore = createPredictionResultsStore(predictionTileEventsStore);
+const predictionCardResultsStore = createPredictionResultsStore(predictionCardEventsStore);
+
 /** Reads an event from its owning request. Undefined means pending; null means unavailable. */
 export const usePredictionEventsStore = createDerivedStore(
   $ => {
     const tileIds = $(predictionTileEventIdSetStore, s => s);
-    const tileEvents = $(predictionTileEventsStore, s => s.getData());
-    const cardEvents = $(predictionCardEventsStore, s => s.getData());
-    const tileFailureKey = $(predictionTileEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
-    const cardFailureKey = $(predictionCardEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
-    const failedTileIds = tileFailureKey ? parseQueryKey<PredictionEventsParams>(tileFailureKey).eventIds : EMPTY_EVENT_IDS;
-    const failedCardIds = cardFailureKey ? parseQueryKey<PredictionEventsParams>(cardFailureKey).eventIds : EMPTY_EVENT_IDS;
+    const tileEvents = $(predictionTileResultsStore, s => s);
+    const cardEvents = $(predictionCardResultsStore, s => s);
 
-    return (eventId: string): PolymarketEvent | null | undefined => {
-      const fromTiles = tileIds.has(eventId);
-      const event = (fromTiles ? tileEvents : cardEvents)?.[eventId];
-      if (event !== undefined) return event;
-
-      const failedIds = fromTiles ? failedTileIds : failedCardIds;
-      return failedIds.includes(eventId) ? null : undefined;
-    };
+    return (eventId: string): PolymarketEvent | null | undefined => (tileIds.has(eventId) ? tileEvents : cardEvents)?.[eventId];
   },
   { lockDependencies: true }
 );
@@ -108,7 +99,7 @@ export function getPredictionPlacement(
  */
 export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
   const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId));
-  const events = predictionTileEventsStore(s => s.getData());
+  const events = predictionTileResultsStore(s => s);
   const { items, hasUnresolvedItems } = useMemo(() => {
     const items: PredictionPlacementItem[] = [];
     let hasUnresolvedItems = false;
@@ -122,13 +113,8 @@ export function usePredictionsPlacement(placementId: PlacementId): PlacementResu
     return { items, hasUnresolvedItems };
   }, [events, placement]);
 
-  const isLoading = predictionTileEventsStore(s => {
-    if (!hasUnresolvedItems || items.length > 0 || !placement || !s.enabled) return false;
-    if (!s.error) return true;
-
-    const failedIds = parseQueryKey<PredictionEventsParams>(s.queryKey).eventIds;
-    return placement.items.some(item => events?.[item.id] === undefined && !failedIds.includes(item.id));
-  });
+  const enabled = predictionTileEventsStore(s => s.enabled);
+  const isLoading = enabled && hasUnresolvedItems && items.length === 0;
 
   return { isLoading, items, placement: items.length ? placement : undefined };
 }
@@ -162,6 +148,28 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
 }
 
 // ============ Helpers ======================================================== //
+
+/** Retains cached events and marks unanswered IDs from a failed request as unavailable. */
+function createPredictionResultsStore(query: QueryStore<EventsById, PredictionEventsParams>): DerivedStore<EventsById | null> {
+  return createDerivedStore(
+    $ => {
+      const events = $(query, s => s.getData());
+      const failureKey = $(query, s => (s.enabled && s.error ? s.queryKey : null));
+
+      if (!failureKey) return events;
+
+      let result: EventsById | undefined;
+      for (const id of parseQueryKey<PredictionEventsParams>(failureKey).eventIds) {
+        if (events?.[id] !== undefined) continue;
+        result ??= { ...events };
+        result[id] = null;
+      }
+
+      return result ?? events;
+    },
+    { lockDependencies: true }
+  );
+}
 
 function isActivePredictionEvent(event: RawPolymarketEvent): boolean {
   if (event.closed === true || event.ended === true) return false;
