@@ -3,9 +3,10 @@ import { useMemo } from 'react';
 import { createDerivedStore, createQueryStore, parseQueryKey, type DerivedStore, type QueryStore } from '@storesjs/stores';
 
 import { displayedDiscoverEventIdsStore } from '@/features/discover/stores/discoverEventListsStore';
-import { usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type Placement, type PlacementId, type PlacementItem } from '@/features/placements/types';
+import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
 import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -28,7 +29,7 @@ type EventsById = Partial<Record<string, PolymarketEvent | null>>;
 
 // ============ Constants ====================================================== //
 
-const EMPTY_ITEMS: PlacementItem[] = [];
+const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 
 // ============ Event Stores =================================================== //
 
@@ -94,29 +95,34 @@ export function getPredictionPlacement(
   return placement?.source === 'polymarket' ? placement : undefined;
 }
 
-/**
- * A placement's active events in placement order, with loading state while its events are first fetched.
- */
-export function usePredictionsPlacement(placementId: PlacementId): PlacementResult<PredictionPlacementItem> {
-  const placement = usePlacementsStore(s => getPredictionPlacement(s, placementId));
-  const events = predictionTileResultsStore(s => s);
-  const { items, hasUnresolvedItems } = useMemo(() => {
-    const items: PredictionPlacementItem[] = [];
-    let hasUnresolvedItems = false;
+/** Ordered prediction content; undefined means some IDs are unanswered and none have a usable event. */
+export function usePredictionsPlacementItems(placementId: PlacementId): PredictionPlacementItem[] | undefined {
+  const useItemsStore = useMemo(
+    () =>
+      createDerivedStore(
+        $ => {
+          const placementItems = $(usePlacementsStore, s => getPredictionPlacement(s, placementId)?.items ?? EMPTY_ITEMS);
+          const events = $(predictionTileResultsStore, s => s);
 
-    for (const item of placement?.items ?? EMPTY_ITEMS) {
-      const event = events?.[item.id];
-      if (event === undefined) hasUnresolvedItems = true;
-      else if (event) items.push({ ...item, event });
-    }
+          const items: PredictionPlacementItem[] = [];
+          let pending = false;
 
-    return { items, hasUnresolvedItems };
-  }, [events, placement]);
+          for (const item of placementItems) {
+            const event = events?.[item.id];
+            if (event === undefined) pending = true;
+            else if (event !== null) items.push({ ...item, event });
+          }
 
-  const enabled = predictionTileEventsStore(s => s.enabled);
-  const isLoading = enabled && hasUnresolvedItems && items.length === 0;
+          if (items.length) return items;
 
-  return { isLoading, items, placement: items.length ? placement : undefined };
+          return pending ? undefined : EMPTY_ITEMS;
+        },
+        { equalityFn: arePlacementItemsEqual, lockDependencies: true }
+      ),
+    [placementId]
+  );
+
+  return useItemsStore();
 }
 
 // ============ Fetching ======================================================= //
