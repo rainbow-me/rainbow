@@ -183,10 +183,12 @@ function SportsGameOverview({
   );
 }
 
-function EventVolume({ volume }: { volume: number }) {
+function EventVolume({ volume }: { volume?: number | null }) {
+  if (volume == null) return null;
+
   return (
     <Text color="labelQuaternary" size="15pt" weight="bold">
-      {`${formatNumber(String(volume), { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.market_data.vol)}`}
+      {`${formatNumber(volume, { useOrderSuffix: true, decimals: 1, style: '$' })} ${i18n.t(i18n.l.market_data.vol)}`}
     </Text>
   );
 }
