@@ -8,64 +8,85 @@
 
 export const protobufPackage = "sports";
 
-/** SportsCatalog describes editorial navigation. Its revision belongs to the enclosing response. */
+/** SportsCatalog defines navigation and featured games for the Sports API. */
 export interface SportsCatalog {
   sports: Sport[];
+  /** Sport or competition IDs featured in navigation, in display order. */
   prominentScopeIds: string[];
+  /** Sport or competition IDs used to group the global Live list, in display order. */
   liveGroupIds: string[];
+  /** Primary Polymarket event IDs, highest promotion priority first. */
   promotedGameIds: string[];
 }
 
 export interface Sport {
+  /** Catalog scope ID, such as "football"; independent of provider IDs. */
   id: string;
   name: string;
-  imageUrl?: string | undefined;
-  color?: string | undefined;
-  browse: Sport_Browse;
+  imageUrl?:
+    | string
+    | undefined;
+  /** Six-digit hex color, such as "#0080C0". */
+  color?:
+    | string
+    | undefined;
+  /** Whether opening the sport shows its games or its competitions. */
+  browseTarget: Sport_BrowseTarget;
   competitions: Competition[];
 }
 
-export enum Sport_Browse {
-  BROWSE_UNSPECIFIED = "BROWSE_UNSPECIFIED",
-  BROWSE_GAMES = "BROWSE_GAMES",
-  BROWSE_COMPETITIONS = "BROWSE_COMPETITIONS",
+export enum Sport_BrowseTarget {
+  BROWSE_TARGET_UNSPECIFIED = "BROWSE_TARGET_UNSPECIFIED",
+  BROWSE_TARGET_GAMES = "BROWSE_TARGET_GAMES",
+  BROWSE_TARGET_COMPETITIONS = "BROWSE_TARGET_COMPETITIONS",
 }
 
 export interface Competition {
+  /** Catalog scope ID, such as "nfl"; unique across sports and competitions. */
   id: string;
   name: string;
-  imageUrl?: string | undefined;
+  imageUrl?:
+    | string
+    | undefined;
+  /** Six-digit hex color, such as "#0080C0". */
   color?: string | undefined;
 }
 
-/**
- * Game is one two-participant match with normalized status and display scores.
- * Offers identify exact Polymarket selections; they do not promise an executable quote.
- */
+/** Game describes a two-participant match, its score and available betting outcomes. */
 export interface Game {
-  /** Canonical primary Polymarket event ID, even when lookup used a child event. */
+  /** Primary Polymarket event ID, including when lookup used a child event ID. */
   id: string;
-  /** Current catalog memberships, preferred badge first. Empty is valid for lookup. */
+  /** Catalog competition IDs, preferred badge first. May be empty in lookup results. */
   competitionIds: string[];
-  startsAt?:
+  /** Scheduled start, serialized as an RFC3339 timestamp, such as "2026-09-20T04:00:00Z". */
+  startTime?:
     | string
     | undefined;
-  /** Exactly two distinct participants in the original source order used by scores. */
+  /** Exactly two participants; scores and spread outcomes use this order. */
   participants: Participant[];
-  winner?: Winner | undefined;
+  moneyline?:
+    | Moneyline
+    | undefined;
+  /** Absent when no spread market is available. */
   spread?: Spread | undefined;
   status: Game_Status;
   interruption: Game_Interruption;
-  period?: string | undefined;
+  /** Display label, such as "Q2" or "Set 2". Absent when unavailable. */
+  period?:
+    | string
+    | undefined;
+  /** Display clock, such as "08:42" or "43′". Absent when unavailable. */
   clock?:
     | string
     | undefined;
-  /** Display order; empty when a reliable score is unavailable. */
-  score: ScoreColumn[];
+  /** Scores in display order. Empty when no reliable score is available. */
+  scoreColumns: ScoreColumn[];
+  /** Primary event trading volume for display and sorting. Absent when unavailable. */
+  volumeUsd?: number | undefined;
 }
 
 export enum Game_Status {
-  /** STATUS_UNSPECIFIED - Unknown match status. Never infer live or ended from its scheduled start. */
+  /** STATUS_UNSPECIFIED - Status is unknown; the scheduled start does not establish whether a game is live. */
   STATUS_UNSPECIFIED = "STATUS_UNSPECIFIED",
   STATUS_SCHEDULED = "STATUS_SCHEDULED",
   STATUS_LIVE = "STATUS_LIVE",
@@ -82,17 +103,20 @@ export enum Game_Interruption {
 }
 
 export interface Participant {
-  /** Event-scoped source identity, not a global team registry key. */
+  /** Gamma team ID. */
   id: string;
   name: string;
   shortName?: string | undefined;
-  imageUrl?: string | undefined;
+  imageUrl?:
+    | string
+    | undefined;
+  /** Display color supplied by the provider, such as "#0080C0". */
   color?: string | undefined;
   role?:
     | Participant_Role
     | undefined;
-  /** Absent when this participant's full-match winner offer cannot be admitted. */
-  winner?: Selection | undefined;
+  /** Outcome for this participant to win. Absent when unavailable. */
+  moneylineOutcome?: PolymarketOutcome | undefined;
 }
 
 export enum Participant_Role {
@@ -101,52 +125,60 @@ export enum Participant_Role {
   ROLE_AWAY = "ROLE_AWAY",
 }
 
-export interface Winner {
-  /** Market structure is preserved even when an individual offer is unavailable. */
-  kind: Winner_Kind;
-  /** Only a three-way winner can contain a draw selection. */
-  draw?: Selection | undefined;
+/**
+ * Moneyline describes bets on the match winner, without a score adjustment.
+ * Three-way markets also offer a draw.
+ */
+export interface Moneyline {
+  /** Market type, including when some outcomes are unavailable. */
+  kind: Moneyline_Kind;
+  /** Draw outcome, available only for a three-way moneyline. */
+  draw?: PolymarketOutcome | undefined;
 }
 
-export enum Winner_Kind {
+export enum Moneyline_Kind {
   KIND_UNSPECIFIED = "KIND_UNSPECIFIED",
   KIND_TWO_WAY = "KIND_TWO_WAY",
   KIND_THREE_WAY = "KIND_THREE_WAY",
 }
 
-export interface Selection {
-  /** Actual source event, which can differ from the canonical game ID. */
+/** PolymarketOutcome identifies a market outcome. Its price is not an execution quote. */
+export interface PolymarketOutcome {
+  /** Source event ID, which can differ from Game.id. */
   eventId: string;
-  /** Gamma numeric market ID as a string, not the market's condition ID. */
+  /** Gamma market ID as a decimal string; distinct from the condition ID. */
   marketId: string;
-  /** Decimal token ID, preserved as a string beyond JavaScript integer precision. */
+  /** Decimal token ID. String representation preserves IDs beyond JavaScript integer precision. */
   tokenId: string;
+  /** Zero-based index in the source market's outcomes. */
   outcomeIndex: number;
+  /** Snapshot price per share from 0 to 1, such as "0.52". Absent when unavailable. */
+  priceUsd?: string | undefined;
 }
 
-/** Spread is one complete full-match market. A half-present pair is not admitted. */
+/** Spread describes bets on the match winner after a score adjustment. */
 export interface Spread {
   eventId: string;
   marketId: string;
-  /**
-   * Exactly two outcomes bound to Game.participants in the same order.
-   * This is not necessarily provider outcome order.
-   */
+  /** Exactly two outcomes in Game.participants order, which may differ from market order. */
   outcomes: SpreadOutcome[];
 }
 
 export interface SpreadOutcome {
+  /** Decimal token ID, as in PolymarketOutcome.token_id. */
   tokenId: string;
-  /** Original source-market index, independent of participant position. */
+  /** Zero-based source-market index, independent of participant order. */
   outcomeIndex: number;
   /**
-   * Finite signed handicap; the other participant's line is its opposite.
-   * Example: -2.5. This is a display handicap, not a monetary amount.
+   * Added to this participant's final score before comparison with the opponent's score.
+   * The other participant has the opposite adjustment.
    */
-  line: number;
+  scoreAdjustment: number;
+  /** Snapshot price per share from 0 to 1, such as "0.52". Absent when unavailable. */
+  priceUsd?: string | undefined;
 }
 
-/** ScoreColumn contains one score for each participant in Game.participants order. */
+/** ScoreColumn pairs scores in Game.participants order. */
 export interface ScoreColumn {
   kind: ScoreColumn_Kind;
   first?: ScoreValue | undefined;
@@ -163,108 +195,147 @@ export enum ScoreColumn_Kind {
 }
 
 export enum ScoreColumn_Winner {
-  /** WINNER_UNSPECIFIED - No confirmed winner for this column, including an incomplete or tied score. */
+  /** WINNER_UNSPECIFIED - No confirmed winner, including incomplete and tied scores. */
   WINNER_UNSPECIFIED = "WINNER_UNSPECIFIED",
   WINNER_FIRST = "WINNER_FIRST",
   WINNER_SECOND = "WINNER_SECOND",
 }
 
 export interface ScoreValue {
-  /** Zero is a real score; an unavailable score has no ScoreColumn. */
+  /** Nonnegative score. Zero is a score; missing scores have no ScoreColumn. */
   value: number;
+  /** Nonnegative tennis tiebreak score, when reported. */
   tieBreak?: number | undefined;
 }
 
 export interface GetCatalogRequest {
-  /** Suppresses an unchanged catalog; it does not change selection or cursor identity. */
+  /** Known nonnegative revision. Omit to receive the catalog unconditionally. */
   knownCatalogRevision?: number | undefined;
 }
 
 export interface GetCatalogResponse {
+  /** Editorial policy revision used by this response. */
   catalogRevision: number;
-  /** Included when the request omits its known revision or supplies a different one. */
+  /** Included when known_catalog_revision is absent or differs from catalog_revision. */
   catalog?: SportsCatalog | undefined;
 }
 
-export interface GetLiveGamesRequest {
+export interface ListLiveGamesRequest {
+  /** Known nonnegative revision; suppresses the catalog when unchanged. */
   knownCatalogRevision?: number | undefined;
 }
 
-export interface GetGamesRequest {
+export interface ListGamesRequest {
+  /** Sport or competition ID from the catalog, such as "nfl". */
   scopeId: string;
+  /** Start of the schedule window, inclusive. Live games may start outside the window. */
+  windowStartTime?:
+    | string
+    | undefined;
   /**
-   * All three local-calendar boundaries are required absolute timestamps: from < today_until <= until.
-   * Today selects scheduled starts in [from, today_until); Upcoming selects [today_until, until).
-   * Live games remain eligible outside these intervals. Directory sports select only live games.
+   * Boundary between Today and Upcoming, usually the next midnight in the caller's timezone.
+   * Require window_start_time < today_cutoff_time <= window_end_time.
    */
-  from?: string | undefined;
-  todayUntil?: string | undefined;
-  until?: string | undefined;
+  todayCutoffTime?:
+    | string
+    | undefined;
+  /** End of the schedule window, exclusive. */
+  windowEndTime?:
+    | string
+    | undefined;
+  /** Known nonnegative revision; suppresses the catalog when unchanged. */
   knownCatalogRevision?: number | undefined;
 }
 
-export interface LookupGamesRequest {
-  /** Primary or child Polymarket event IDs. Duplicate inputs are treated as one ID. */
+export interface GetGamesForEventsRequest {
+  /**
+   * Between 1 and 100 primary or child Polymarket event IDs, as decimal strings.
+   * Repeated IDs count toward the limit but are resolved once.
+   */
   eventIds: string[];
+  /** Known nonnegative revision; suppresses the catalog when unchanged. */
   knownCatalogRevision?: number | undefined;
 }
 
 export interface SearchGamesRequest {
+  /** Nonempty search text, such as "New York". */
   query: string;
+  /** Catalog sport or competition ID. Omit to search all competitions. */
   scopeId?:
     | string
     | undefined;
-  /** Inclusive and exclusive scheduled-start boundaries. Live games remain eligible outside them. */
-  from?: string | undefined;
-  until?:
+  /** Inclusive scheduled-start boundary. Live games may start outside the window. */
+  windowStartTime?:
     | string
     | undefined;
-  /** Opaque continuation bound to the query, scope, interval and policy revision. */
-  cursor?: string | undefined;
+  /** Exclusive scheduled-start boundary; must follow window_start_time. */
+  windowEndTime?:
+    | string
+    | undefined;
+  /**
+   * Continuation from the preceding response. Query, scope and window must match.
+   * A catalog revision change invalidates the token; restart search without it.
+   */
+  pageToken?:
+    | string
+    | undefined;
+  /** Known nonnegative revision; suppresses the catalog when unchanged. */
   knownCatalogRevision?: number | undefined;
 }
 
+export interface ListLiveGamesResponse {
+  result?: GamesResult | undefined;
+}
+
+export interface ListGamesResponse {
+  result?: GamesResult | undefined;
+}
+
 /**
- * GetGamesResponse contains at most thirty games per displayed Live group or
- * per Live/Today/Upcoming scope section. Directory sports have one Live section.
- * Global Live assigns each game to the first applicable catalog live_group_ids entry,
- * or its first competition_ids entry when no curated group applies.
- * Games are returned as a flat list ordered by the service's ranking policy.
- * All relevant source pages are traversed before returning;
- * a source failure never returns a successful prefix.
+ * GamesResult contains up to 30 games per Live group or per Live/Today/Upcoming section.
+ * Sports that show a list of competitions return live games only.
+ * Global Live games are grouped by the first matching live_group_ids entry,
+ * falling back to their first competition_ids entry.
+ * Games are sorted by interruption status (no delay or suspension first),
+ * promoted_game_ids order, trading volume descending, start time ascending,
+ * and game ID lexicographically.
  */
-export interface GetGamesResponse {
-  /** Identifies the editorial policy used for both the catalog and games. */
+export interface GamesResult {
+  /** Editorial revision used for both the catalog and games. */
   catalogRevision: number;
-  /** Omitted when the request already knows this revision. */
+  /** Omitted when known_catalog_revision matches catalog_revision. */
   catalog?: SportsCatalog | undefined;
   games: Game[];
 }
 
-export interface LookupGamesResponse {
+export interface GetGamesForEventsResponse {
   catalogRevision: number;
-  /** Omitted when the request already knows this revision. */
+  /** Omitted when known_catalog_revision matches catalog_revision. */
   catalog?:
     | SportsCatalog
     | undefined;
-  /** Canonical games deduplicated across requested primary and child event IDs. */
+  /** Games deduplicated across requested primary and child event IDs. */
   games: Game[];
-  resolved: EventResolution[];
-  /** Not found or structurally unsupported. Upstream failures fail the entire read. */
+  eventGameMappings: EventGameMapping[];
+  /** IDs that were not found or could not form a supported game. */
   unavailableEventIds: string[];
 }
 
-export interface EventResolution {
+export interface EventGameMapping {
+  /** Requested primary or child event ID. */
   eventId: string;
+  /** Corresponding primary event ID, present in the response's games. */
   gameId: string;
 }
 
-/** SearchGamesResponse is a relevance page, independent of Browse's section limits. */
 export interface SearchGamesResponse {
   catalogRevision: number;
-  /** Omitted when the request already knows this revision. */
-  catalog?: SportsCatalog | undefined;
+  /** Omitted when known_catalog_revision matches catalog_revision. */
+  catalog?:
+    | SportsCatalog
+    | undefined;
+  /** One page in relevance order. Page sizes may vary. */
   games: Game[];
-  /** Continuation for the next relevance page; absent at source exhaustion. */
-  nextCursor?: string | undefined;
+  /** Use this token to request the next page. Absent when search is complete. */
+  nextPageToken?: string | undefined;
 }
