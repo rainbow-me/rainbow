@@ -8,6 +8,8 @@ import { type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type PlacementItem } from '@/features/placements/types';
 import * as i18n from '@/languages';
 
+const EMPTY_ITEMS: never[] = [];
+
 /**
  * Resolves a section's display title: a localized `discover.sections.<id>` label
  * when one exists, otherwise the server-provided label, falling back to the raw id.
@@ -22,29 +24,31 @@ export function renderSectionLayout<T extends PlacementItem>({
   headerCaret,
   headerCount,
   leadingAccessory,
-  loading,
   onPress,
   placement,
   section,
   surfaceId,
 }: SectionLayoutProps<T>) {
+  const items = data ?? EMPTY_ITEMS;
+  const loading = data === undefined;
   const hasLimit = section.limit !== undefined;
-  const renderedData = hasLimit ? data.slice(0, section.limit) : data;
+  const renderedData = hasLimit ? items.slice(0, section.limit) : items;
   const skeletonCount = hasLimit ? section.limit : undefined;
   const descriptorHeaderCaret = 'showHeaderCaret' in descriptor ? descriptor.showHeaderCaret?.(section) : undefined;
   const showHeaderCaret = headerCaret ?? descriptorHeaderCaret;
   const title = resolveSectionTitle(section);
-  const headerPress = onPress
-    ? () => {
-        analytics.track(event.discoverSectionPressed, {
-          destination: section.destination,
-          display: section.display,
-          sectionId: section.id,
-          sectionTitle: title,
-        });
-        onPress();
-      }
-    : undefined;
+  const headerPress =
+    onPress && items.length
+      ? () => {
+          analytics.track(event.discoverSectionPressed, {
+            destination: section.destination,
+            display: section.display,
+            sectionId: section.id,
+            sectionTitle: title,
+          });
+          onPress();
+        }
+      : undefined;
 
   switch (descriptor.layout) {
     case 'carousel':
@@ -93,7 +97,7 @@ export function renderSectionLayout<T extends PlacementItem>({
     case 'list':
       return (
         <MarketList
-          data={data}
+          data={items}
           headerCount={headerCount}
           initialVisibleItemCount={section.limit}
           leadingAccessory={leadingAccessory}
