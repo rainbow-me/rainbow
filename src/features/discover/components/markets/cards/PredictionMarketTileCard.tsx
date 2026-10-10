@@ -92,7 +92,10 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
   const rows = useMemo(() => getOutcomeRows(event), [event]);
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
-  const volumeText = useMemo(() => formatNumber(event.volume, { useOrderSuffix: true, style: '$' }), [event.volume]);
+  const volumeText = useMemo(
+    () => (event.volume == null ? null : formatNumber(event.volume, { useOrderSuffix: true, style: '$' })),
+    [event.volume]
+  );
   const priceChange = rows[0]?.market.oneDayPriceChange;
   const priceChangeText = formatPriceChange(priceChange);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
@@ -143,9 +146,11 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                   {event.title}
                 </Text>
                 <View style={styles.statsRow}>
-                  <Text color="labelTertiary" size="13pt" weight="bold">
-                    {volumeText} {i18n.t(i18n.l.market_data.vol)}
-                  </Text>
+                  {volumeText !== null ? (
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      {volumeText} {i18n.t(i18n.l.market_data.vol)}
+                    </Text>
+                  ) : null}
                   {priceChangeText ? (
                     <View style={styles.priceChangeRow}>
                       <TextIcon color={priceChangeColor} height={9} size="icon 10px" weight="heavy" width={11}>
