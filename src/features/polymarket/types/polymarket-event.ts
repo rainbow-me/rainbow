@@ -325,7 +325,7 @@ export type RawPolymarketEvent = {
   featured: boolean;
   restricted: boolean;
   liquidity: number;
-  volume: number;
+  volume?: number | null;
   openInterest: number;
   // TODO: Find out what the other possible values are
   sortBy?: 'price';
@@ -436,7 +436,7 @@ export type PolymarketMarketEvent = {
   featured: boolean;
   restricted: boolean;
   liquidity: number;
-  volume: number;
+  volume?: number | null;
   openInterest: number;
   sortBy: string;
   createdAt: string;
