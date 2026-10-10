@@ -21,7 +21,12 @@ import {
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import {
+  getPredictionPlacement,
+  usePredictionsPlacementItems,
+  type PredictionPlacementItem,
+} from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
@@ -37,6 +42,8 @@ import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateT
 import { logger } from '@/logger';
 import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
+const EMPTY_PREDICTION_ITEMS: PredictionPlacementItem[] = [];
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
@@ -99,6 +106,7 @@ export function PredictionsSection({
   surfaceId: SurfaceId;
 }) {
   const enabled = usePolymarketEnabled();
+
   if (!enabled) return null;
   if (!hasPlacement(surface)) return unsupportedUnplacedPredictionSurface(surface, surfaceId);
   if (isEventCardDisplay(surface.display)) return <PredictionEventsSection sectionId={sectionId} surface={surface} surfaceId={surfaceId} />;
@@ -150,23 +158,24 @@ function PredictionsPlacementSection({
   surface: PlacementBackedSurfaceLeafWithDisplay<keyof typeof PREDICTIONS_SECTION_DESCRIPTORS>;
   surfaceId: SurfaceId;
 }) {
-  const result = usePredictionsPlacement(surface.placement);
+  const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
+  const items = usePredictionsPlacementItems(surface.placement);
   const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
+
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
   const onPressSeeAll = useCallback(() => {
     if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
   }, [predictionsDestination]);
 
-  usePredictionTokenSubscription({ display: surface.display, items: result.items, limit: surface.limit });
+  usePredictionTokenSubscription({ display: surface.display, items: items ?? EMPTY_PREDICTION_ITEMS, limit: surface.limit });
 
   return renderSectionLayout({
-    data: result.items,
+    data: isPlacementPending ? undefined : items,
     descriptor,
-    loading: result.isLoading || isPlacementPending,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
-    onPress: predictionsDestination && result.placement ? onPressSeeAll : undefined,
-    placement: result.placement,
+    onPress: predictionsDestination ? onPressSeeAll : undefined,
+    placement,
     section: surface,
     surfaceId,
   });

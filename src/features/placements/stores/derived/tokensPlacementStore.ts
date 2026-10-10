@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 
-import { createQueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { isAddress, type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { isPlacementHydrating, usePlacementsStore, type PlacementResult } from '@/features/placements/stores/placementsStore';
+import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
-import { finalizePlacementResult, pairPlacementItems } from '@/features/placements/utils/finalizePlacementResult';
+import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
@@ -26,10 +26,12 @@ type TokenRefsParams = {
 };
 
 type TokenAssetsByRef = Record<string, FormattedExternalAsset>;
+
 type TokenRefCacheEntry = {
   asset: FormattedExternalAsset | null;
   fetchedAt: number;
 };
+
 type TokenRefFetchResult = {
   asset: FormattedExternalAsset | null;
   tokenRef: string;
@@ -37,7 +39,7 @@ type TokenRefFetchResult = {
 
 // ============ Constants ====================================================== //
 
-const EMPTY_ITEMS: PlacementItem[] = [];
+const EMPTY_ITEMS: TokenPlacementItem[] = [];
 
 const TOKEN_REF_FETCH_CONCURRENCY = 4;
 const TOKEN_REFS_STALE_TIME = time.minutes(2);
@@ -71,6 +73,37 @@ export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsPar
   staleTime: TOKEN_REFS_STALE_TIME,
   cacheTime: time.minutes(10),
 });
+
+// ============ Placement ====================================================== //
+
+/** Ordered token content; undefined means its initial request is pending. */
+export function useTokensPlacementItems(placementId: PlacementId): TokenPlacementItem[] | undefined {
+  const useItemsStore = useMemo(
+    () =>
+      createDerivedStore(
+        $ => {
+          const placementItems = $(usePlacementsStore, s => s.getPlacement(placementId)?.items ?? EMPTY_ITEMS);
+          const assets = $(useTokenRefsStore, s => s.getData());
+          const isInitialLoad = $(useTokenRefsStore, s => s.getStatus('isInitialLoad'));
+
+          const items: TokenPlacementItem[] = [];
+
+          for (const item of placementItems) {
+            const asset = assets?.[item.id];
+            if (asset) items.push({ ...item, asset });
+          }
+
+          if (items.length) return items;
+
+          return placementItems.length && isInitialLoad ? undefined : EMPTY_ITEMS;
+        },
+        { equalityFn: arePlacementItemsEqual, lockDependencies: true }
+      ),
+    [placementId]
+  );
+
+  return useItemsStore();
+}
 
 // ============ Fetcher ======================================================== //
 
@@ -122,36 +155,6 @@ async function fetchTokenRef(
 }
 
 // ============ Utilities ====================================================== //
-
-export function useTokensPlacement(placementId: PlacementId): PlacementResult<TokenPlacementItem> {
-  const enabled = useTokenRefsStore(s => s.enabled);
-  const placement = usePlacementsStore(s => s.getPlacement(placementId));
-  const placementItems = placement?.source === 'rainbow' ? placement.items : EMPTY_ITEMS;
-  const placementsLoading = usePlacementsStore(s => isPlacementHydrating(s, placementId));
-  const assetsByRef = useTokenRefsStore(s => s.getData());
-  const items = useMemo(() => (assetsByRef ? parseTokenItems(placementItems, assetsByRef) : []), [assetsByRef, placementItems]);
-  const tokenRefsLoading = useTokenRefsStore(s => placementItems.length > 0 && items.length === 0 && s.getStatus('isInitialLoad'));
-
-  return useMemo(
-    () =>
-      finalizePlacementResult({
-        enabled,
-        hasRefs: placementItems.length > 0,
-        isInitialLoad: placementsLoading || tokenRefsLoading,
-        items,
-        placement,
-      }),
-    [enabled, items, placement, placementItems.length, placementsLoading, tokenRefsLoading]
-  );
-}
-
-function parseTokenItems(placementItems: PlacementItem[], assetsByRef: TokenAssetsByRef): TokenPlacementItem[] {
-  return pairPlacementItems(
-    placementItems,
-    id => assetsByRef[id],
-    (item, asset) => ({ ...item, asset })
-  );
-}
 
 // CMS authors token refs as colon-delimited `address:chainId`, distinct from the app's
 // underscore-delimited `UniqueId` (`address_chainId`) — they are not interchangeable.

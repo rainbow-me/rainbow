@@ -48,12 +48,11 @@ export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { d
 export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
 export type SectionLayoutProps<T extends PlacementItem> = {
-  data: T[];
+  data: T[] | undefined;
   descriptor: SectionDescriptor<T>;
   headerCaret?: boolean;
   headerCount?: number;
   leadingAccessory?: ReactNode;
-  loading: boolean;
   onPress?: () => void;
   placement?: Placement;
   section: SurfaceLeaf;
