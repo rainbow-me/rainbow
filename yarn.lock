@@ -7542,9 +7542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storesjs/stores@npm:0.12.0":
-  version: 0.12.0
-  resolution: "@storesjs/stores@npm:0.12.0"
+"@storesjs/stores@npm:0.12.1":
+  version: 0.12.1
+  resolution: "@storesjs/stores@npm:0.12.1"
   peerDependencies:
     react: ">=18.0.0"
     react-native: ">=0.69.0"
@@ -7556,7 +7556,7 @@ __metadata:
       optional: true
     react-native-mmkv:
       optional: true
-  checksum: 10c0/cd2e18605bb3807f7b7fab0fd8681d26cff2141d5c54b44bab0cca147b39072ac07401db8109c4b6d7722c4d9e40f2bfd883b60afe3f21807928104e5c3e77e4
+  checksum: 10c0/09a16bbac23d429fcf199e08931f6d4006f59f64372fd740c1d8dbcad3f63e0aea9c5a9f6d3b760a8093ee2ea3efb910e97ca17455691ed044b8c67317679c47
   languageName: node
   linkType: hard
 
@@ -9321,7 +9321,7 @@ __metadata:
     "@shopify/flash-list": "npm:1.8.3"
     "@shopify/react-native-performance": "npm:4.1.2"
     "@shopify/react-native-skia": "npm:2.4.7"
-    "@storesjs/stores": "npm:0.12.0"
+    "@storesjs/stores": "npm:0.12.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@tradle/react-native-http": "npm:2.0.1"
