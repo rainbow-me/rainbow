@@ -1,3 +1,5 @@
+import { nullObject } from '@storesjs/stores';
+
 import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
 import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
@@ -136,8 +138,8 @@ export async function fetchTeamsForGameMarkets(
   markets: RawPolymarketMarket[],
   abortController: AbortController | null
 ): Promise<Partial<Record<string, PolymarketTeamInfo[]>>> {
-  const events: Record<string, GameTeamsSource> = {};
-  const teams: Partial<Record<string, PolymarketTeamInfo[]>> = {};
+  const events: Record<string, GameTeamsSource> = nullObject();
+  const teams: Partial<Record<string, PolymarketTeamInfo[]>> = nullObject();
 
   for (const market of markets) {
     const event = market.events[0];
