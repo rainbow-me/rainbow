@@ -73,14 +73,14 @@ describe.each(['shared', 'react'])('live token %s delivery', kind => {
     render();
     expect(readValue()).toBe('51');
     render({ tokenId: 'nfl' });
-    act(() => useLiveTokensStore.setState({ tokens: { mlb: token('51'), nfl: token('27') } }));
     expect(readValue()).toBe('27');
+    act(() => useLiveTokensStore.setState({ tokens: { nfl: token('51') } }));
+    expect(readValue()).toBe('51');
     render({ tokenId: 'nfl', selector: change });
     act(() => useLiveTokensStore.setState({ tokens: { nfl: token('27') } }));
     expect(readValue()).toBe('2');
 
     render({ tokenId: 'missing' });
-    act(() => useLiveTokensStore.setState({ tokens: {} }));
     expect(readValue()).toBe('—');
     act(() => useLiveTokensStore.setState({ tokens: { missing: token('19') } }));
     expect(readValue()).toBe('19');
