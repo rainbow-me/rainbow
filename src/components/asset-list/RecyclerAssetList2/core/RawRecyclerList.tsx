@@ -17,6 +17,7 @@ import {
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -127,8 +128,9 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
     [onViewableItemsChanged, briefSectionsData]
   );
 
-  // Row identities can change without a change to the visible indices.
-  useEffect(() => {
+  // RecyclerListView only reports when visible indices change, ignoring item changes.
+  // This compensates by firing when list data changes.
+  useOnChange(() => {
     handleViewableIndicesChanged(viewableIndicesRef.current);
   }, [handleViewableIndicesChanged]);
 
