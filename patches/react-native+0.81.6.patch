@@ -8,11 +8,15 @@
 #   follow the host, including native activation during additive resize animations.
 #   UIKit/React retain their layout timing. No Swift dependency, bitmap renderer,
 #   or approximated corner geometry is added; earlier iOS retains the scalar path.
-# Upstream Issue: none filed yet. Paper's unequal-radius raster paths use circular
-#   arcs; UIKit 26 native inner-border coverage differs with rendered subviews.
-# Linear Issue: FEPLAT-97
-# Remove when: upstream Paper supports continuous unequal corners, or
+#   Paper skips ending a refresh while the control is detached. End it when the
+#   control returns to the window so the indicator doesn't remain stuck.
+# Upstream Issue (corners): none filed yet. Paper's unequal-radius raster paths use
+#   circular arcs; UIKit 26 native inner-border coverage differs with rendered subviews.
+# Linear Issue (corners): FEPLAT-97
+# Remove corner changes when: upstream Paper supports continuous unequal corners, or
 #   on migration to Fabric after verifying the equivalent rendering paths.
+# Remove refresh-control changes when: upstream applies refreshing=false after
+#   the control returns to the window.
 
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 --- a/node_modules/react-native/React/Views/RCTView.m
@@ -181,8 +185,6 @@ diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/reac
    layer.mask = mask;
  }
 diff --git a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
-# A refresh stop is skipped while Paper's control is detached.
-# Apply that stop when the control is reattached.
 --- a/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
 +++ b/node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m
 @@ -64,6 +64,9 @@
