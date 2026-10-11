@@ -3,15 +3,15 @@ import React, { memo, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { CashBalanceHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/core/ViewDimensions';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { CashBalanceIcon } from '@/features/cash-balance/components/CashBalanceIcon';
 import { CASH_BALANCE_COLORS } from '@/features/cash-balance/constants';
 import { useCashBalance } from '@/features/cash-balance/hooks/useCashBalance';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
-import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 
@@ -19,17 +19,19 @@ const ADD_BUTTON_HEIGHT = 36;
 
 export const CashBalanceHeader = memo(function CashBalanceHeader() {
   const balanceDisplay = useCashBalance();
-  const navigate = useNavigationForNonReadOnlyWallets();
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   const handleAddPress = useCallback(() => {
-    if (getIsDamagedWallet()) {
-      navigate(Routes.WALLET_ERROR_SHEET);
-      return;
-    }
-    navigate(addCashRoute);
-    analytics.track(analytics.event.navigationAddCash, { category: 'cash balance widget' });
-  }, [addCashRoute, navigate]);
+    navigateToAddCash(route => {
+      if (getIsDamagedWallet()) {
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+        return;
+      }
+
+      analytics.track(analytics.event.navigationAddCash, { category: 'cash balance widget' });
+      Navigation.handleAction(route);
+    });
+  }, [navigateToAddCash]);
 
   return (
     <Box paddingHorizontal="12px" justifyContent="center" height={{ custom: CashBalanceHeaderHeight }}>
