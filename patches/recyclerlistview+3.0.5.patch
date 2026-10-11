@@ -1,6 +1,10 @@
+# PATCH CONTEXT
+# Why: Layout changes can emit visible indices synchronously. Attach the new
+#   listener first so it resolves those indices against the new row data.
+# Remove listener-order changes when: upstream attaches the visibility listener
+#   before updating layouts.
+
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
-# Layout changes can emit new visible indices synchronously. Attach the new listener first
-# so those indices are resolved against the new row data.
 index 15e715a..4973d72 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
