@@ -49,8 +49,8 @@ type LiveTokensResponse = {
 };
 
 type LiveTokensParams = {
-  tokenIds: readonly string[];
   currency: SupportedCurrencyKey;
+  tokenIds: readonly string[];
 };
 
 type LiveTokensStore = {
@@ -61,103 +61,75 @@ type LiveTokensStore = {
   replaceSubscribedTokens: (route: Route, previous: ReadonlySet<string>, next: ReadonlySet<string>) => void;
 };
 
-const fetchTokensData = async ({ tokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
-  if (tokenIds.length === 0) {
-    return null;
-  }
+async function fetchTokensData({ tokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> {
+  if (tokenIds.length === 0) return null;
 
-  // Separate tokens by type
-  const ethVariants: string[] = [];
-  const hyperliquidTokens: string[] = [];
-  const regularTokens: string[] = [];
-  const polymarketTokens: string[] = [];
+  let ethVariants: string[] | undefined;
+  let hyperliquidTokens: string[] | undefined;
+  let regularTokens: string[] | undefined;
+  let polymarketTokens: string[] | undefined;
 
   for (const id of tokenIds) {
     const tokenId = id.includes('_') ? convertLegacyTokenIdToTokenId(id) : id;
 
     if (isHyperliquidToken(tokenId)) {
-      hyperliquidTokens.push(tokenId);
+      const symbol = parseHyperliquidTokenId(tokenId)?.symbol;
+      if (symbol) (hyperliquidTokens ??= []).push(symbol);
     } else if (isPolymarketToken(tokenId)) {
-      polymarketTokens.push(tokenId);
+      (polymarketTokens ??= []).push(tokenId);
     } else if (isEthVariant(tokenId)) {
-      ethVariants.push(tokenId);
+      (ethVariants ??= []).push(tokenId);
     } else {
-      regularTokens.push(tokenId);
+      (regularTokens ??= []).push(tokenId);
     }
   }
 
   // Only subscribe to mainnet ETH if we have any ETH variants
-  if (ethVariants.length > 0) regularTokens.push(ETH_MAINNET_TOKEN_ID);
-
-  const regularTokensPromise =
-    regularTokens.length > 0
-      ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
-          params: {
-            tokenIds: regularTokens.join(','),
-            currency,
-          },
-        })
-      : null;
-
-  const hyperliquidPricesPromise =
-    hyperliquidTokens.length > 0
-      ? fetchHyperliquidPrices(
-          hyperliquidTokens
-            .map(tokenId => {
-              const parsed = parseHyperliquidTokenId(tokenId);
-              return parsed?.symbol || '';
-            })
-            .filter(Boolean)
-        )
-      : null;
-
-  const polymarketPricesPromise = polymarketTokens.length > 0 ? fetchPolymarketPrices(polymarketTokens) : null;
+  if (ethVariants) (regularTokens ??= []).push(ETH_MAINNET_TOKEN_ID);
 
   const [regularTokensResponse, hyperliquidPrices, polymarketPrices] = await Promise.all([
-    regularTokensPromise,
-    hyperliquidPricesPromise,
-    polymarketPricesPromise,
+    regularTokens
+      ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
+          params: { tokenIds: regularTokens.join(','), currency },
+        })
+      : null,
+    hyperliquidTokens ? fetchHyperliquidPrices(hyperliquidTokens) : null,
+    polymarketTokens ? fetchPolymarketPrices(polymarketTokens) : null,
   ]);
 
   const result: LiveTokensData = {};
   let hasResult = false;
 
   // Process regular tokens
-  if (regularTokensResponse?.data.result) {
-    Object.entries(regularTokensResponse.data.result).forEach(([tokenId, tokenData]) => {
-      if (tokenId !== ETH_MAINNET_TOKEN_ID) {
-        result[convertTokenIdToLegacyTokenId(tokenId)] = tokenData;
-        hasResult = true;
-      }
-    });
+  const tokens = regularTokensResponse?.data.result;
+  if (tokens) {
+    for (const tokenId in tokens) {
+      if (tokenId === ETH_MAINNET_TOKEN_ID || !Object.hasOwn(tokens, tokenId)) continue;
+      result[convertTokenIdToLegacyTokenId(tokenId)] = tokens[tokenId];
+      hasResult = true;
+    }
 
     // Map ETH data to all ETH variants
-    const ethMainnetData = regularTokensResponse.data.result[ETH_MAINNET_TOKEN_ID];
-    if (ethMainnetData) {
-      ethVariants.forEach(ethVariant => {
+    const ethMainnetData = tokens[ETH_MAINNET_TOKEN_ID];
+    if (ethMainnetData && ethVariants) {
+      for (const ethVariant of ethVariants) {
         result[convertTokenIdToLegacyTokenId(ethVariant)] = ethMainnetData;
         hasResult = true;
-      });
+      }
     }
   }
 
-  // Add Hyperliquid prices to result
   if (hyperliquidPrices) {
     Object.assign(result, hyperliquidPrices);
     hasResult = true;
   }
 
-  // Add Polymarket prices to result
   if (polymarketPrices) {
     Object.assign(result, polymarketPrices);
     hasResult = true;
   }
 
   return hasResult ? result : null;
-};
-
-function updateUserAssetsStore(tokens: LiveTokensData) {
-  useUserAssetsStore.getState().updateTokens(tokens);
 }
 
 const DEFAULT_STALE_TIME = time.seconds(5);
@@ -189,6 +161,7 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
       counts.delete(tokenId);
       if (!counts.size) subscriptionCountsByRoute.delete(route);
     }
+
     return previous === 0 || next === 0;
   }
 
@@ -206,31 +179,32 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
     {
       fetcher: fetchTokensData,
       enabled: $ => $(useAppStateStore, s => s === 'active'),
-      disableCache: true,
       staleTime: $ => $(useNavigationStore, determineStaleTime),
-      setData: ({ data, set }) => {
+      setData: context => {
+        const data = context.data;
         if (!data) return;
-        set(state => ({
-          ...state,
-          tokens: { ...state.tokens, ...data },
-        }));
+        context.set(state => ({ tokens: { ...state.tokens, ...data } }));
       },
-      onFetched: ({ data }) => {
+      onFetched: context => {
+        const data = context.data;
         if (data) updateUserAssetsStore(data);
       },
+
+      disableCache: true,
       paramChangeThrottle: time.ms(250),
       params: {
+        currency: $ => $(userAssetsStoreManager, s => s.currency),
         tokenIds: $ => {
           const route = $(useNavigationStore, s => s.activeRoute);
           const idsByRoute = $(tokenIdsByRoute, s => s);
           return idsByRoute[route] ?? EMPTY_TOKEN_IDS;
         },
-        currency: $ => $(userAssetsStoreManager, s => s.currency),
       },
     },
 
     () => ({
       tokens: {},
+
       subscribeToToken: (route, tokenId) => {
         if (updateSubscriptionCount(route, tokenId, 1)) publishTokens(route);
         return () => {
@@ -240,12 +214,10 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
 
       replaceSubscribedTokens: (route, previous, next) => {
         let changed = false;
-        for (const tokenId of next) {
-          if (!previous.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, 1) || changed;
-        }
-        for (const tokenId of previous) {
-          if (!next.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, -1) || changed;
-        }
+
+        for (const tokenId of next) if (!previous.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, 1) || changed;
+        for (const tokenId of previous) if (!next.has(tokenId)) changed = updateSubscriptionCount(route, tokenId, -1) || changed;
+
         if (changed) publishTokens(route);
       },
     })
@@ -264,23 +236,24 @@ export function getLiquidityCappedBalance({
   balance: string;
   isCapped: boolean;
 } {
-  const liquidityCap = token.reliability?.metadata?.liquidityCap ?? '';
+  const liquidityCap = token.reliability?.metadata?.liquidityCap;
   const balance = multiply(token.price, balanceAmount);
 
-  if (liquidityCap !== '' && greaterThan(balance, liquidityCap)) {
-    const cappedDisplay = convertAmountToNativeDisplayWorklet(liquidityCap, nativeCurrency);
+  if (liquidityCap && greaterThan(balance, liquidityCap)) {
     return {
-      balance: cappedDisplay,
+      balance: convertAmountToNativeDisplayWorklet(liquidityCap, nativeCurrency),
       isCapped: true,
     };
   }
 
-  const { display } = convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency);
-
   return {
-    balance: display,
+    balance: convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency).display,
     isCapped: false,
   };
+}
+
+function updateUserAssetsStore(tokens: LiveTokensData) {
+  useUserAssetsStore.getState().updateTokens(tokens);
 }
 
 /**
