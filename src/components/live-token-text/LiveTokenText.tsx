@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 
 import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import { useRoute } from '@/navigation/RouteContext';
-import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useStoreSharedValue, type ReadOnlySharedValue, type UseStoreSharedValueOptions } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
@@ -27,12 +27,20 @@ interface LiveTokenValueParams {
   testId?: string;
 }
 
+const LISTEN_HANDLE_OPTIONS = { returnListenHandle: true } satisfies UseStoreSharedValueOptions<string>;
+
 /**
  * Returns the selected token value as a shared value.
  */
 export function useLiveTokenSharedValue(params: LiveTokenValueParams): ReadOnlySharedValue<string> {
   const selector = useLiveTokenSelector(params);
-  return useStoreSharedValue(useLiveTokensStore, selector);
+  const [value, listenHandle] = useStoreSharedValue(useLiveTokensStore, selector, LISTEN_HANDLE_OPTIONS);
+
+  useLayoutEffect(() => {
+    listenHandle.current.refresh();
+  }, [listenHandle, params.tokenId]);
+
+  return value;
 }
 
 /**
@@ -50,7 +58,7 @@ function useLiveTokenSelector({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): (state: { tokens: LiveTokensData }) => string {
-  const { name: route } = useRoute();
+  const route = useRoute().name;
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;
