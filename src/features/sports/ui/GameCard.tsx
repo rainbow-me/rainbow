@@ -25,6 +25,7 @@ import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { badgeShadows } from '@/features/sports/ui/badgeShadows';
 import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
+import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
 import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
 import * as i18n from '@/languages';
@@ -128,7 +129,7 @@ export const GameCard = memo(function GameCard({
                     participantIndex={index}
                     spread={game.spread}
                     winner={participant.winner}
-                    color={participant.color}
+                    color={participant.color ?? sportsIcons[competitionId]?.color ?? competition?.color}
                     isDarkMode={isDarkMode}
                     onPress={onPress}
                   />
