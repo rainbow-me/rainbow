@@ -163,6 +163,8 @@ function SportsGameOverview({
     return id ? s.catalog?.scopes[id] : undefined;
   });
 
+  const volumeUsd = useSportsStore(s => event?.volume ?? s.games[gameId]?.volumeUsd);
+
   return (
     <>
       {competition ? (
@@ -173,7 +175,7 @@ function SportsGameOverview({
               {competition.name}
             </Text>
           </Box>
-          {event ? <EventVolume volumeUsd={event.volume} /> : null}
+          <EventVolume volumeUsd={volumeUsd} />
         </Box>
       ) : event ? (
         <EventHeaderSection event={event} />
