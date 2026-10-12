@@ -19,6 +19,8 @@ import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
+import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
+import { SolanaDerivationMenuItem } from '@/features/solana/ui/SolanaDerivationMenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -49,6 +51,7 @@ export const DevSection = () => {
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const cashUserId = useCashAccountStore(state => state.userId);
+  const solanaEnabled = useIsSolanaEnabled();
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -280,6 +283,7 @@ export const DevSection = () => {
       {!IS_STORE_INSTALL && (
         <>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
+            {solanaEnabled && <SolanaDerivationMenuItem />}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
