@@ -333,6 +333,14 @@ export function getRemoteConfig(): RainbowConfig {
   return useRemoteConfigStore.getState().config;
 }
 
+const testOverrides: Partial<RainbowConfig> = {};
+
+/** For E2E tests: pins a value that later fetches would otherwise replace. */
+export function overrideRemoteConfig<K extends RemoteConfigKey>(key: K, value: RainbowConfig[K]): void {
+  testOverrides[key] = value;
+  useRemoteConfigStore.setState(state => ({ config: { ...state.config, [key]: value } }));
+}
+
 export function useRemoteConfig(): RainbowConfig;
 export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): Pick<RainbowConfig, K[number]>;
 export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): RainbowConfig | Pick<RainbowConfig, K[number]> {
@@ -380,7 +388,7 @@ async function fetchRemoteConfig(): Promise<RainbowConfig> {
     if (configValue !== undefined) newConfig[key] = PARSERS[key](configValue);
   }
 
-  return newConfig;
+  return Object.assign(newConfig, testOverrides);
 }
 
 // ============ Helper Functions =============================================== //

@@ -15,6 +15,11 @@ tags:
     env:
       FLAG: Cash
       VALUE: 'true'
+- runFlow:
+    file: ../../utils/SetRemoteConfigFlag.yaml
+    env:
+      FLAG: cash_signup_enabled
+      VALUE: 'true'
 - tapOn:
     id: buy-button
 - assertVisible:

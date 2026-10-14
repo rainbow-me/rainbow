@@ -7,6 +7,7 @@ import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
 import { MOCK_LINKED_CARD, useCashPaymentMethodStore } from '@/features/cash/stores/cashPaymentMethodStore';
 import { type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { overrideRemoteConfig, type RemoteConfigKey } from '@/features/config/stores/remoteConfig';
 import { savePIN } from '@/features/local-auth/keychain';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
 import { logger } from '@/logger';
@@ -41,6 +42,9 @@ export function TestDeeplinkHandler() {
           break;
         case 'setExperimentalFlag':
           useExperimentalConfigStore.getState().setFlag(query.flag as ExperimentalConfigKey, query.value === 'true');
+          break;
+        case 'setRemoteConfigFlag':
+          overrideRemoteConfig(query.flag as RemoteConfigKey, query.value === 'true');
           break;
         case 'setCashAccount':
           if (query.value === 'true') {
