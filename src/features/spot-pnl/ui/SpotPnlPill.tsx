@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import { Platform } from 'react-native';
 
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
@@ -17,8 +16,6 @@ import { useTheme } from '@/theme/ThemeContext';
 
 import { calculateUnrealizedPnl } from '../core/unrealizedPnl';
 import { useTokenAcquisitionStore, type TokenAcquisitionParams } from '../data/tokenAcquisitionStore';
-
-const UP_ARROW = Platform.OS === 'android' ? '' : '↑';
 
 type SpotPnlPillProps = {
   asset: ParsedAddressAsset;
@@ -99,7 +96,7 @@ function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: Omit<SpotPnl
       <Box flexDirection="row" alignItems="center" gap={2}>
         {!isZero && (
           <Text color={color} size="15pt" weight="heavy" style={isLoss ? { transform: [{ rotate: '180deg' }] } : undefined}>
-            {UP_ARROW}
+            {'↑'}
           </Text>
         )}
         <Text color={color} size="15pt" weight="heavy" tabularNumbers>
