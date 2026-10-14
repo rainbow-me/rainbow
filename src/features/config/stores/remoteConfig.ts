@@ -4,7 +4,7 @@ import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-fire
 import { createQueryStore } from '@storesjs/stores';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
@@ -333,14 +333,6 @@ export function getRemoteConfig(): RainbowConfig {
   return useRemoteConfigStore.getState().config;
 }
 
-const testOverrides: Partial<RainbowConfig> = {};
-
-/** For E2E tests: pins a value that later fetches would otherwise replace. */
-export function overrideRemoteConfig<K extends RemoteConfigKey>(key: K, value: RainbowConfig[K]): void {
-  testOverrides[key] = value;
-  useRemoteConfigStore.setState(state => ({ config: { ...state.config, [key]: value } }));
-}
-
 export function useRemoteConfig(): RainbowConfig;
 export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): Pick<RainbowConfig, K[number]>;
 export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): RainbowConfig | Pick<RainbowConfig, K[number]> {
@@ -369,6 +361,8 @@ const PARSERS = buildParsers(DEFAULT_CONFIG);
 let hasInitializedRemoteConfig = false;
 
 async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  if (IS_TEST) return DEFAULT_CONFIG;
+
   const rc = remoteConfig();
   const newConfig: RainbowConfig = { ...DEFAULT_CONFIG };
 
@@ -388,7 +382,7 @@ async function fetchRemoteConfig(): Promise<RainbowConfig> {
     if (configValue !== undefined) newConfig[key] = PARSERS[key](configValue);
   }
 
-  return Object.assign(newConfig, testOverrides);
+  return newConfig;
 }
 
 // ============ Helper Functions =============================================== //

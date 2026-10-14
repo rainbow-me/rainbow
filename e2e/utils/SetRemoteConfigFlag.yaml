@@ -1,9 +1,0 @@
-appId: ${APP_ID}
----
-- openLink: rainbow://e2e/setRemoteConfigFlag?flag=${FLAG}&value=${VALUE}
-- runFlow:
-    when:
-      visible: 'Open in .*'
-      platform: iOS
-    commands:
-      - tapOn: 'Open'
