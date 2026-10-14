@@ -23,20 +23,25 @@ const UP_ARROW = Platform.OS === 'android' ? '' : '↑';
 type SpotPnlPillProps = {
   asset: ParsedAddressAsset;
   surfaceColor: string;
+  /** The metadata token type, since wallet assets do not carry it; the pill stays hidden until it is known. */
+  tokenType: string | undefined;
 };
 
-export function SpotPnlPill({ asset, surfaceColor }: SpotPnlPillProps) {
+export function SpotPnlPill({ asset, surfaceColor, tokenType }: SpotPnlPillProps) {
   const { spot_pnl_enabled } = useRemoteConfig('spot_pnl_enabled');
   const spotPnlExperimentalEnabled = useExperimentalFlag(SPOT_PNL);
   const walletAddress = userAssetsStoreManager(state => state.address);
   const isEligible =
-    (spot_pnl_enabled || spotPnlExperimentalEnabled) && asset.type !== 'stablecoin' && !isNativeAsset(asset.address, asset.chainId);
+    (spot_pnl_enabled || spotPnlExperimentalEnabled) &&
+    tokenType !== undefined &&
+    tokenType !== 'stablecoin' &&
+    !isNativeAsset(asset.address, asset.chainId);
 
   if (!isEligible || !walletAddress) return null;
   return <SpotPnlPillContent asset={asset} surfaceColor={surfaceColor} walletAddress={walletAddress} />;
 }
 
-function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: SpotPnlPillProps & { walletAddress: string }) {
+function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: Omit<SpotPnlPillProps, 'tokenType'> & { walletAddress: string }) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const params = useMemo<TokenAcquisitionParams>(
@@ -55,6 +60,8 @@ function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: SpotPnlPillP
     tokenId: asset.uniqueId,
     initialValue: asset.native?.price?.amount ?? '',
     initialValueLastUpdated: asset.price?.changed_at ?? 0,
+    // The sheet already subscribes this token on this route, and subscriptions do not stack: unmounting a second subscriber would unsubscribe the sheet
+    autoSubscriptionEnabled: false,
     selector: token => token.price,
   });
 
