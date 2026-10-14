@@ -22,29 +22,34 @@ const UP_ARROW = Platform.OS === 'android' ? '' : '↑';
 
 type SpotPnlPillProps = {
   asset: ParsedAddressAsset;
-  color: string;
+  surfaceColor: string;
 };
 
-export function SpotPnlPill({ asset, color: surfaceColor }: SpotPnlPillProps) {
-  const { colors } = useTheme();
+export function SpotPnlPill({ asset, surfaceColor }: SpotPnlPillProps) {
   const { spot_pnl_enabled } = useRemoteConfig('spot_pnl_enabled');
   const spotPnlExperimentalEnabled = useExperimentalFlag(SPOT_PNL);
+  const walletAddress = userAssetsStoreManager(state => state.address);
   const isEligible =
     (spot_pnl_enabled || spotPnlExperimentalEnabled) && asset.type !== 'stablecoin' && !isNativeAsset(asset.address, asset.chainId);
 
-  const walletAddress = userAssetsStoreManager(state => state.address);
+  if (!isEligible || !walletAddress) return null;
+  return <SpotPnlPillContent asset={asset} surfaceColor={surfaceColor} walletAddress={walletAddress} />;
+}
+
+function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: SpotPnlPillProps & { walletAddress: string }) {
+  const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const params = useMemo<TokenAcquisitionParams | null>(
-    () => (isEligible && walletAddress ? { walletAddress, tokenAddress: asset.address, chainId: asset.chainId } : null),
-    [asset.address, asset.chainId, isEligible, walletAddress]
+  const params = useMemo<TokenAcquisitionParams>(
+    () => ({ walletAddress, tokenAddress: asset.address, chainId: asset.chainId }),
+    [asset.address, asset.chainId, walletAddress]
   );
 
   useEffect(() => {
     // The store is disabled, so a plain fetch is a no-op; this fetches and caches by params
-    if (params) useTokenAcquisitionStore.getState().fetch(params, { skipStoreUpdates: 'withCache' });
+    useTokenAcquisitionStore.getState().fetch(params, { skipStoreUpdates: 'withCache' });
   }, [params]);
 
-  const acquisition = useTokenAcquisitionStore(state => (params ? state.getData(params) : null));
+  const acquisition = useTokenAcquisitionStore(state => state.getData(params));
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: asset.uniqueId,
