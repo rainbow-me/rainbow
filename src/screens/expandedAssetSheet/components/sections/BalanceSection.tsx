@@ -24,7 +24,7 @@ import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
-  const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, accountAsset: asset, basicAsset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
   const chartType = useChartType();
 
@@ -147,7 +147,7 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
-        <SpotPnlPill asset={asset} surfaceColor={accentColors.opacity6} />
+        <SpotPnlPill asset={asset} surfaceColor={accentColors.opacity6} tokenType={'type' in basicAsset ? basicAsset.type : undefined} />
       </Box>
       <SheetSeparator />
     </Box>
