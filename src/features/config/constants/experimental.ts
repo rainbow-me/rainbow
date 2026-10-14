@@ -38,6 +38,7 @@ export const RNBW_MEMBERSHIP = 'RNBW Membership';
 export const DELEGATION = '7702 Delegation';
 export const GO_RELAY_BACKEND = 'Go Relay Backend';
 export const SOLANA = 'Solana';
+export const SPOT_PNL = 'Spot P&L';
 
 export type ExperimentalValue = {
   settings: boolean;
@@ -80,6 +81,7 @@ const config = {
   [DELEGATION]: { settings: true, value: false },
   [GO_RELAY_BACKEND]: { needsRestart: true, settings: true, value: true },
   [SOLANA]: { settings: true, value: false },
+  [SPOT_PNL]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
