@@ -5,8 +5,10 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 import { useCashDepositSetupStatusStore } from '../../stores/cashDepositSetupStore';
 import { selectIsPhoneVerified, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
 import { getFirstSetupStep, SETUP_STEP_GROUP, SETUP_STEP_ORDER } from './steps';
+import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 
 function getEntryRoute(): CashDepositSetupRoute {
+  if (useSubmitPhoneFlowStore.getState().restoringAccess) return Routes.CASH_SETUP_PHONE;
   const status = useCashDepositSetupStatusStore.getState();
   const sessionStore = useCashSetupSessionStore.getState();
   if (status === 'needsIdentity' && selectIsPhoneVerified(sessionStore)) {

@@ -1,4 +1,4 @@
-import { goBack, navigate } from '@/navigation/Navigation';
+import { goBack, navigate, replace } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
@@ -9,6 +9,7 @@ import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { getNextSetupStep, isSetupEditDetour } from './steps';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
+import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
 import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 export function completeSetupStep(): void {
@@ -32,8 +33,14 @@ export function completeSetup(): void {
   navigate(Routes.ADD_CASH_SHEET);
 }
 
+// Replaces the current screen with Setup's phone step, recovering the account behind the entered number.
+export function restoreAccessInSetup(): void {
+  useSubmitPhoneFlowStore.getState().startRestoringAccess();
+  replace(Routes.CASH_DEPOSIT_SETUP_SCREEN);
+}
+
 export function cancelSetup(): void {
-  const hasPasskey = useCashAccountStore.getState().userId != null;
+  const hasPasskey = hasUsablePasskey();
   const { status } = useCashSetupSessionStore.getState().session;
   if (!hasPasskey && (status === 'phoneSubmitted' || status === 'recovery' || status === 'phoneVerified')) {
     navigate(Routes.CASH_SETUP_CANCEL_SHEET);
@@ -73,7 +80,7 @@ export function abandonSetupSession(): void {
 // The wizard would otherwise keep a step that needed it, whose action then silently no-ops.
 export function restartSetupWithoutCredential(): void {
   if (useCashSetupSessionStore.getState().session.status !== 'empty') return;
-  if (useCashAccountStore.getState().userId != null) return;
+  if (hasUsablePasskey()) return;
   if (useAddPasskeyFlowStore.getState().state === 'submitting') return;
   if (CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
 
@@ -91,6 +98,11 @@ export function restartSetupWithoutCredential(): void {
 /** Matches Setup's native screen on entry/dismissal, or its active step after virtual navigation. */
 export function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean {
   return isRouteActive(Routes.CASH_DEPOSIT_SETUP_SCREEN) || isRouteActive(useCashDepositSetupNavigationStore.getState().activeRoute);
+}
+
+// A stored account whose passkey is lost (restoring access) is treated like no account.
+function hasUsablePasskey(): boolean {
+  return useCashAccountStore.getState().userId != null && !useSubmitPhoneFlowStore.getState().restoringAccess;
 }
 
 function hasTerminalKycRejection(): boolean {

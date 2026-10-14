@@ -1578,6 +1578,7 @@
         "reauth_title": "Sign in to continue",
         "reauth_description": "Sign in with your passkey so you can finish adding cash to your balance.",
         "reauth_continue": "Continue",
+        "reauth_recover_lost_passkey": "Recover Lost Passkey",
         "reauth_error_title": "Something went wrong",
         "reauth_error_description": "We couldn’t load your cards. Please try again.",
         "reauth_try_again": "Try Again",
@@ -1626,6 +1627,10 @@
         "phone": {
           "title": "Connect your phone number",
           "subtitle": "This will be how you login in the future.",
+          "restore_access": {
+            "title": "Restore your access",
+            "subtitle": "Enter the phone number connected to your account. We’ll text you a code to set up a new passkey."
+          },
           "placeholder": "Phone Number",
           "error": "We couldn't send a code to that number. Please try again.",
           "already_registered": "This number is already connected to an account.",
