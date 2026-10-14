@@ -19,11 +19,21 @@ describe('useTokenAcquisitionStore', () => {
 
   afterEach(() => vi.restoreAllMocks());
 
-  it('returns the wallet acquisition, or null when Codex has none', async () => {
+  it('caches the wallet acquisition for getData and reuses it while fresh', async () => {
     const acquisition = { purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '100' };
+    const params = { ...PARAMS, tokenAddress: '0xcached' };
+    const store = useTokenAcquisitionStore.getState();
     respondWith({ data: { filterTokenWallets: { results: [acquisition] } } });
-    await expect(fetchAcquisition()).resolves.toEqual(acquisition);
 
+    await store.fetch(params, { skipStoreUpdates: 'withCache' });
+    await store.fetch(params, { skipStoreUpdates: 'withCache' });
+
+    expect(useTokenAcquisitionStore.getState().getData(params)).toEqual(acquisition);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({ wallet: '0xwallet', tokenId: '0xcached:8453' });
+  });
+
+  it('returns null when Codex has no acquisition', async () => {
     respondWith({ data: { filterTokenWallets: { results: [] } } });
     await expect(fetchAcquisition()).resolves.toBeNull();
   });

@@ -147,7 +147,7 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
-        <SpotPnlPill asset={asset} color={accentColors.opacity6} />
+        <SpotPnlPill asset={asset} surfaceColor={accentColors.opacity6} />
       </Box>
       <SheetSeparator />
     </Box>
