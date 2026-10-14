@@ -11,6 +11,7 @@ import { useChartType } from '@/features/charts/stores/chartsStore';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { SpotPnlPill } from '@/features/spot-pnl/ui/SpotPnlPill';
 import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
@@ -146,6 +147,7 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
+        <SpotPnlPill asset={asset} color={accentColors.opacity6} />
       </Box>
       <SheetSeparator />
     </Box>
