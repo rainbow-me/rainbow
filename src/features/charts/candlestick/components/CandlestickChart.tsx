@@ -59,6 +59,7 @@ import {
   type PerpsIndicatorData,
 } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { time } from '@/framework/core/utils/time';
 import { setSkiaPicture, SkiaPictureView, useSkiaRenderer, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
 import { useOnChange } from '@/hooks/useOnChange';
@@ -2159,7 +2160,7 @@ function prepareCandlestickData(): {
 }
 
 function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } {
-  const isHyperliquidChart = isHyperliquidToken(useChartsStore.getState().token);
+  const isHyperliquidChart = isHyperliquidToken(useViewedTokenStore.getState().token);
   const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : userAssetsStoreManager.getState().currency;
   return {
     currency,

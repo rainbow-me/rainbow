@@ -4,9 +4,9 @@ import { isHyperliquidToken } from '@/features/charts/utils';
 import { CANDLESTICK_CHARTS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { type Exact } from '@/types/objects';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 
-import { CandleResolution, ChartType, LineChartTimePeriod, type HyperliquidSymbol, type Token } from '../types';
+import { CandleResolution, ChartType, LineChartTimePeriod, type Token } from '../types';
 
 // ============ Charts Store =================================================== //
 
@@ -20,13 +20,11 @@ export type ChartsState = {
    * candle resolution button, used to snap the chart back to the current candle.
    */
   snapSignal: number;
-  token: Token | null;
   getChartType: () => ChartType;
   resetChartsState: () => void;
   setCandleResolution: (candleResolution: CandleResolution) => void;
   setChartType: (chartType: ChartType) => void;
   setLineChartTimePeriod: (lineChartTimePeriod: LineChartTimePeriod) => void;
-  setToken: <T extends Token>(token: Exact<T, Exclude<Token, HyperliquidSymbol>>) => void;
   toggleChartType: () => ChartType;
   togglePerpsIndicators: () => boolean;
 };
@@ -38,13 +36,8 @@ export const useChartsStore = createBaseStore<ChartsState>(
     enablePerpsIndicators: true,
     lineChartTimePeriod: LineChartTimePeriod.D1,
     snapSignal: 0,
-    token: null,
 
-    getChartType: () => {
-      const { chartType, token } = get();
-      const shouldForceCandlestick = isHyperliquidToken(token);
-      return shouldForceCandlestick ? ChartType.Candlestick : chartType;
-    },
+    getChartType: () => resolveChartType(get().chartType, useViewedTokenStore.getState().token),
 
     resetChartsState: () =>
       set(state => {
@@ -68,12 +61,6 @@ export const useChartsStore = createBaseStore<ChartsState>(
       set(state => {
         if (state.lineChartTimePeriod === lineChartTimePeriod) return state;
         return { lineChartTimePeriod };
-      }),
-
-    setToken: token =>
-      set(state => {
-        if (areTokensEqual(state.token, token)) return state;
-        return { token };
       }),
 
     toggleChartType: () => {
@@ -107,18 +94,13 @@ export const chartsActions = createStoreActions(useChartsStore);
 export function useChartType(): ChartType {
   const { candlestick_charts_enabled } = useRemoteConfig('candlestick_charts_enabled');
   const enableCandlestickCharts = useExperimentalFlag(CANDLESTICK_CHARTS) || candlestick_charts_enabled;
-  const chartType = useChartsStore(state => state.getChartType());
-  return enableCandlestickCharts ? chartType : ChartType.Line;
+  const chartType = useChartsStore(state => state.chartType);
+  const token = useViewedTokenStore(state => state.token);
+  return enableCandlestickCharts ? resolveChartType(chartType, token) : ChartType.Line;
 }
 
 // ============ Utilities ====================================================== //
 
-/**
- * Compares two token objects for equality.
- */
-function areTokensEqual(previousToken: Token | null, newToken: Token | null): boolean {
-  if (!previousToken && !newToken) return true;
-  if (!previousToken || !newToken) return false;
-  if (typeof previousToken === 'string' || typeof newToken === 'string') return previousToken === newToken;
-  return previousToken.address === newToken.address && previousToken.chainId === newToken.chainId;
+export function resolveChartType(chartType: ChartType, token: Token | null): ChartType {
+  return isHyperliquidToken(token) ? ChartType.Candlestick : chartType;
 }

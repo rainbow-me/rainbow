@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
@@ -15,7 +15,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { calculateUnrealizedPnl } from '../core/unrealizedPnl';
-import { useTokenAcquisitionStore, type TokenAcquisitionParams } from '../data/tokenAcquisitionStore';
+import { useTokenAcquisitionStore } from '../data/tokenAcquisitionStore';
 
 type SpotPnlPillProps = {
   asset: ParsedAddressAsset;
@@ -27,37 +27,27 @@ type SpotPnlPillProps = {
 export function SpotPnlPill({ asset, surfaceColor, tokenType }: SpotPnlPillProps) {
   const { spot_pnl_enabled } = useRemoteConfig('spot_pnl_enabled');
   const spotPnlExperimentalEnabled = useExperimentalFlag(SPOT_PNL);
-  const walletAddress = userAssetsStoreManager(state => state.address);
   const isEligible =
     (spot_pnl_enabled || spotPnlExperimentalEnabled) &&
     tokenType !== undefined &&
     tokenType !== 'stablecoin' &&
     !isNativeAsset(asset.address, asset.chainId);
 
-  if (!isEligible || !walletAddress) return null;
-  return <SpotPnlPillContent asset={asset} surfaceColor={surfaceColor} walletAddress={walletAddress} />;
+  if (!isEligible) return null;
+  return <SpotPnlPillContent asset={asset} surfaceColor={surfaceColor} />;
 }
 
-function SpotPnlPillContent({ asset, surfaceColor, walletAddress }: Omit<SpotPnlPillProps, 'tokenType'> & { walletAddress: string }) {
+function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tokenType'>) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const params = useMemo<TokenAcquisitionParams>(
-    () => ({ walletAddress, tokenAddress: asset.address, chainId: asset.chainId }),
-    [asset.address, asset.chainId, walletAddress]
-  );
-
-  useEffect(() => {
-    // The store is disabled, so a plain fetch is a no-op; this fetches and caches by params
-    useTokenAcquisitionStore.getState().fetch(params, { skipStoreUpdates: 'withCache' });
-  }, [params]);
-
-  const acquisition = useTokenAcquisitionStore(state => state.getData(params));
+  // Subscribing here, behind the eligibility gate, is what triggers the fetch
+  const acquisition = useTokenAcquisitionStore(state => state.getData());
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: asset.uniqueId,
     initialValue: asset.native?.price?.amount ?? '',
     initialValueLastUpdated: asset.price?.changed_at ?? 0,
-    // The sheet already subscribes this token on this route, and subscriptions do not stack: unmounting a second subscriber would unsubscribe the sheet
+    // TODO(APP-4147): The sheet already subscribes this token on this route, and subscriptions do not stack: unmounting a second subscriber would unsubscribe the sheet
     autoSubscriptionEnabled: false,
     selector: token => token.price,
   });
