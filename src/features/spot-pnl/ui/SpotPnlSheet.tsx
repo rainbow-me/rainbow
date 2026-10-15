@@ -59,40 +59,7 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
   const uniqueId = getUniqueId(tokenAddress, chainId);
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
-  const trades = useTokenTradesStore(state => state.getData());
-  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
-  const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
-  const price = useLiveTokenValue({
-    tokenId: uniqueId,
-    initialValue: accountAsset?.native?.price?.amount ?? '',
-    initialValueLastUpdated: accountAsset?.price?.changed_at ?? 0,
-    selector: token => token.price,
-  });
-  const balance = accountAsset?.balance?.amount || '0';
-
-  const pnl = useMemo(
-    () => (trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null),
-    [balance, price, trades, usdToNativeRate]
-  );
-
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
-  const decimals = accountAsset?.decimals ?? externalToken?.decimals;
-  const tokenName = accountAsset?.name ?? externalToken?.name;
-  const lastTradeAt = trades?.lastTransactionAt;
-  const hasTrackedView = useRef(false);
-
-  useEffect(() => {
-    if (hasTrackedView.current || !pnl || !tokenName || lastTradeAt === undefined) return;
-    hasTrackedView.current = true;
-    analytics.track(analytics.event.spotPnlSheetViewed, {
-      tokenName,
-      tokenAddress,
-      chainId,
-      variant: pnl.variant,
-      pnlUsd: Number(pnl.headlineUsd),
-      lastTradeAt,
-    });
-  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
 
   return (
     <Box paddingTop={{ custom: 22 }} paddingBottom={{ custom: 14 }}>
@@ -112,18 +79,90 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
         </Box>
         <WalletChip walletAddress={walletAddress} />
       </Box>
-      {pnl ? (
-        <SpotPnlBody asset={{ decimals: decimals ?? 18, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} />
+      <SpotPnlSection
+        balance={accountAsset?.balance?.amount || '0'}
+        chainId={chainId}
+        decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
+        initialPrice={accountAsset?.native?.price?.amount ?? ''}
+        initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
+        nativeCurrency={nativeCurrency}
+        symbol={symbol}
+        tokenAddress={tokenAddress}
+        tokenName={accountAsset?.name ?? externalToken?.name}
+        uniqueId={uniqueId}
+      />
+    </Box>
+  );
+}
+
+function SpotPnlSection({
+  balance,
+  chainId,
+  decimals,
+  initialPrice,
+  initialPriceUpdatedAt,
+  nativeCurrency,
+  symbol,
+  tokenAddress,
+  tokenName,
+  uniqueId,
+}: {
+  balance: string;
+  chainId: ChainId;
+  decimals: number;
+  initialPrice: string;
+  initialPriceUpdatedAt: number;
+  nativeCurrency: NativeCurrencyKey;
+  symbol: string;
+  tokenAddress: string;
+  tokenName: string | undefined;
+  uniqueId: string;
+}) {
+  const trades = useTokenTradesStore(state => state.getData());
+  const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
+  const price = useLiveTokenValue({
+    tokenId: uniqueId,
+    initialValue: initialPrice,
+    initialValueLastUpdated: initialPriceUpdatedAt,
+    selector: token => token.price,
+  });
+
+  const pnl = useMemo(
+    () => (trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null),
+    [balance, price, trades, usdToNativeRate]
+  );
+
+  const lastTradeAt = trades?.lastTransactionAt;
+  const hasTrackedView = useRef(false);
+
+  useEffect(() => {
+    if (hasTrackedView.current || !pnl || !tokenName || lastTradeAt === undefined) return;
+    hasTrackedView.current = true;
+    analytics.track(analytics.event.spotPnlSheetViewed, {
+      tokenName,
+      tokenAddress,
+      chainId,
+      variant: pnl.variant,
+      pnlUsd: Number(pnl.headlineUsd),
+      lastTradeAt,
+    });
+  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
+
+  return pnl ? <SpotPnlBody asset={{ decimals, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} /> : <SpotPnlPlaceholder />;
+}
+
+function SpotPnlPlaceholder() {
+  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
+
+  return (
+    <Box alignItems="center" justifyContent="center" height={{ custom: LOADING_HEIGHT }}>
+      {isSettled && hasUsdToNativeRate ? (
+        <Text color="labelTertiary" size="15pt" weight="semibold">
+          {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
+        </Text>
       ) : (
-        <Box alignItems="center" justifyContent="center" height={{ custom: LOADING_HEIGHT }}>
-          {isSettled && usdToNativeRate ? (
-            <Text color="labelTertiary" size="15pt" weight="semibold">
-              {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
-            </Text>
-          ) : (
-            <ActivityIndicator />
-          )}
-        </Box>
+        <ActivityIndicator />
       )}
     </Box>
   );
