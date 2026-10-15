@@ -31,7 +31,6 @@ export type NavigateToSwapsParams<
     goBackOnSwapSubmit?: boolean;
     inputAsset: AssetType;
     outputAsset: AssetType;
-    trackQuickBuyMetadata?: boolean;
   } & InputAmountRequest
 >;
 
@@ -48,7 +47,6 @@ export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
 
   const inputAmounts = getInputAmounts({ ...params, inputAsset, outputAsset });
   const inputChainId = inputAsset?.chainId || ChainId.mainnet;
-  const quickBuyMetadata = params.trackQuickBuyMetadata ? getQuickBuyMetadata({ inputAmounts, inputAsset, outputAsset }) : undefined;
   const slippage =
     params.slippage && !isNaN(+params.slippage)
       ? slippageInBipsToString(+params.slippage)
@@ -71,7 +69,6 @@ export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
     inputMethod,
     lastTypedInput: focusedInput,
     outputAsset,
-    quickBuyMetadata,
     slippage,
   } satisfies SwapsParams);
 }
@@ -85,14 +82,6 @@ export type SwapsParams = InputAmountsToSet & {
   inputMethod: InputMethods;
   lastTypedInput: InputKeys;
   outputAsset: ExtendedAnimatedAssetWithColors | null;
-  quickBuyMetadata:
-    | {
-        buyAmount: string;
-        inputAssetUniqueId: string;
-        nativeCurrencyBuyAmount: string;
-        outputAssetUniqueId: string;
-      }
-    | undefined;
   slippage: string;
 };
 
@@ -112,7 +101,6 @@ function getFallbackParams(): SwapsParams {
     inputMethod: 'inputAmount',
     lastTypedInput: 'inputAmount',
     outputAsset: null,
-    quickBuyMetadata: undefined,
     slippage: getDefaultSlippage(chainId, getRemoteConfig().default_slippage_bips_chainId),
     ...getInputAmounts({ inputAsset }),
   };
@@ -206,22 +194,5 @@ function getInputAmounts(params: NavigateToSwapsParams<ExtendedAnimatedAssetWith
       sliderXPosition: percentageToSell * SLIDER_WIDTH,
     }),
     percentageToSell,
-  };
-}
-
-function getQuickBuyMetadata({
-  inputAmounts,
-  inputAsset,
-  outputAsset,
-}: {
-  inputAmounts: InputAmountsToSet;
-  inputAsset: ExtendedAnimatedAssetWithColors | null;
-  outputAsset: ExtendedAnimatedAssetWithColors | null;
-}): Required<SwapsParams['quickBuyMetadata']> {
-  return {
-    buyAmount: inputAmounts.inputAmount.toString(),
-    inputAssetUniqueId: inputAsset?.uniqueId ?? 'None',
-    nativeCurrencyBuyAmount: inputAmounts.inputNativeValue.toString(),
-    outputAssetUniqueId: outputAsset?.uniqueId ?? 'None',
   };
 }
