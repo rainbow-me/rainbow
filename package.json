@@ -452,7 +452,7 @@
     "react-native-dotenv": "2.4.2",
     "rn-nodeify": "10.2.0",
     "rock": "0.9.2",
-    "stim": "1.14.0",
+    "stim": "1.20.2",
     "ts-loader": "9.5.1",
     "ts-migrate": "0.1.26",
     "tsx": "4.20.6",

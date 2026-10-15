@@ -1,8 +1,12 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { expect, test } from 'vitest';
+
+const require = createRequire(import.meta.url);
 const STIM_CLI = join(dirname(require.resolve('stim/package.json')), 'dist/cli.mjs');
 const EXCLUDED_FILES = [
   '.claude/notes.md',
@@ -30,7 +34,7 @@ test('Stim warms prepared inputs without copying scratch state or sharing writab
     write(source, 'package.json', JSON.stringify({ name: 'warm-fixture' }));
     write(source, 'android/app/build.gradle', '// Tracked native project');
     write(source, 'ios/Podfile.lock', 'installed pods');
-    copyFileSync(join(__dirname, '../../.worktreeexclude'), join(source, '.worktreeexclude'));
+    copyFileSync(join(import.meta.dirname, '../../.worktreeexclude'), join(source, '.worktreeexclude'));
     git(source, 'add', '.');
     git(
       source,
@@ -48,6 +52,8 @@ test('Stim warms prepared inputs without copying scratch state or sharing writab
 
     write(source, 'node_modules/package/installed.txt', 'installed dependency');
     write(source, 'ios/Pods/Manifest.lock', 'installed pods');
+    const podConfig = 'ios/Pods/Target Support Files/Fixture/Fixture.debug.xcconfig';
+    write(source, podConfig, `HEADER_SEARCH_PATHS = "${source}/node_modules/package"\n`);
     write(source, 'ios/debug.xcconfig', 'prepared configuration');
     write(source, '.env', 'SOURCE=fixture');
     write(target, '.env', 'TARGET=preserve');
@@ -56,13 +62,15 @@ test('Stim warms prepared inputs without copying scratch state or sharing writab
     const result = spawnSync(process.execPath, [STIM_CLI, 'worktree', 'warm'], {
       cwd: target,
       encoding: 'utf8',
-      env: { ...process.env, STIM_HOME: join(base, 'stim') },
+      env: { ...process.env, STIM_HOME: join(base, 'stim'), STIM_MAINTENANCE: 'off' },
       timeout: 30000,
     });
     expect({ status: result.status, error: result.error }).toEqual({ status: 0, error: undefined });
-    expect(result.stderr).toContain('3 ignored entries copied, 1 kept, 0 failed');
     expect(readFileSync(join(target, 'node_modules/package/installed.txt'), 'utf8')).toBe('installed dependency');
     expect(readFileSync(join(target, 'ios/Pods/Manifest.lock'), 'utf8')).toBe('installed pods');
+    expect(readFileSync(join(target, 'ios/Podfile.lock'), 'utf8')).toBe('installed pods');
+    expect(readFileSync(join(target, podConfig), 'utf8')).toBe(`HEADER_SEARCH_PATHS = "${target}/node_modules/package"\n`);
+    expect(readFileSync(join(source, podConfig), 'utf8')).toBe(`HEADER_SEARCH_PATHS = "${source}/node_modules/package"\n`);
     expect(readFileSync(join(target, 'ios/debug.xcconfig'), 'utf8')).toBe('prepared configuration');
     expect(readFileSync(join(target, '.env'), 'utf8')).toBe('TARGET=preserve');
     for (const file of EXCLUDED_FILES) expect(existsSync(join(target, file))).toBe(false);

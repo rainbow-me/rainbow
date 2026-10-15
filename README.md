@@ -127,11 +127,18 @@ patched by the postinstall script from `GOOGLE_SERVICE_API_KEY` in your `.env`.
 
 ### Isolated devices with Stim
 
+Stim enables automatic maintenance by default, including removal of eligible
+finished worktrees and idle build outputs. Gitignored files do not protect a
+worktree from removal. Inspect `yarn stim settings get maintenance.mode` before
+the first run. To keep cleanup report-only, run
+`yarn stim settings set maintenance.mode report --scope machine`; this applies to every
+project on the machine. `STIM_MAINTENANCE=off` disables maintenance for one command.
+
 After completing Setup in this checkout, use the pinned CLI:
 
 ```sh
-yarn stim ios --scheme Rainbow --configuration Debug
-yarn stim android --variant debug
+yarn stim ios --scheme Rainbow --configuration Debug --remote-build local
+yarn stim android --variant debug --remote-build local
 yarn stim status --json
 yarn stim logs --errors
 yarn stim stop
@@ -153,6 +160,8 @@ package, lockfile or patch inputs differ; rerun Pods when Podfile inputs differ,
 and regenerate native configuration when its environment inputs differ. Follow
 any mismatch reported by Stim. Use Setup when the source is not prepared.
 Never symlink `node_modules` between worktrees. The Android keystore directory is excluded.
+Stim relocates copied Pods to the new checkout's path when their inputs match;
+follow its reinstall guidance when relocation is unsafe.
 
 Before an agent's first native run, inspect `yarn stim status --json` and
 `yarn stim settings --json`. Use the checkout's owned simulator/emulator with

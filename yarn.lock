@@ -7583,31 +7583,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stim-cli/cache@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@stim-cli/cache@npm:1.14.0"
-  checksum: 10c0/c6f93adfec8ab00ac5169866e2762a9a4b1dc33362489908a80ed413440694c9511457ed7ffbeb2d421c8b281ba0d75d0db96ec33e73d073de433b401e12a6f3
+"@stim-cli/cache@npm:^1.20.2":
+  version: 1.20.2
+  resolution: "@stim-cli/cache@npm:1.20.2"
+  checksum: 10c0/6dc694d429f8c6148afdd9dc15fe2ad2a560064e35e60606479d34b4af1fd792e4914ac4033517f126b86b7706afe56c906e965795a7e7cfca19cfe0f37f3dc7
   languageName: node
   linkType: hard
 
-"@stim-cli/core@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@stim-cli/core@npm:1.14.0"
+"@stim-cli/core@npm:^1.20.2":
+  version: 1.20.2
+  resolution: "@stim-cli/core@npm:1.20.2"
   dependencies:
     unique-pid: "npm:0.1.1"
-  checksum: 10c0/e13dbf50626390d673500b0c0d1f202c757aaa2fc508eb0e78bc14a785c6e77d2ced3c110fdd9693097022b2e11a375167d56177261f182bfe3313121cdc9382
+  checksum: 10c0/2c91f684055cfc96019bf9dc9305a8dda845744209b410f458e91bf99cde9f3308c0e65737e370c5bbb4f9cb500223b8e724df027f06ef99180df364819789cc
   languageName: node
   linkType: hard
 
-"@stim-cli/metro@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@stim-cli/metro@npm:1.14.0"
+"@stim-cli/metro@npm:^1.20.2":
+  version: 1.20.2
+  resolution: "@stim-cli/metro@npm:1.20.2"
   dependencies:
-    "@stim-cli/cache": "npm:^1.14.0"
-    "@stim-cli/core": "npm:^1.14.0"
+    "@stim-cli/cache": "npm:^1.20.2"
+    "@stim-cli/core": "npm:^1.20.2"
   peerDependencies:
     metro-cache: "*"
-  checksum: 10c0/07d5e1a55093a9c7386a4fda25ed8bee02e780b17c040d37822770ddaded95e6e0bc37320f1c01e329859c5763efd27004a3b285a0ff968a2427f6615a17b72f
+  checksum: 10c0/5071c194b791529eef225ca29f626cdb78396600644eccd2dad2ab8c0d8ee68a1ceeaa08e840c4d8f9b30762f3cdb9e85b29afe6f3b7eafe380600785af7203c
   languageName: node
   linkType: hard
 
@@ -9250,6 +9250,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xmldom/xmldom@npm:0.9.12":
+  version: 0.9.12
+  resolution: "@xmldom/xmldom@npm:0.9.12"
+  checksum: 10c0/0a9ef38e203213717dde8d16c62743c26c37eb4195aeb4f286550a0aec2145c063a6c3633f253c29f75202f922d7c961d1acaad4dd93e5db1ef05c813354d178
+  languageName: node
+  linkType: hard
+
 "@xmldom/xmldom@npm:^0.8.8":
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
@@ -9580,7 +9587,7 @@ __metadata:
     rn-nodeify: "npm:10.2.0"
     rock: "npm:0.9.2"
     sonner-native: "npm:0.16.0"
-    stim: "npm:1.14.0"
+    stim: "npm:1.20.2"
     stream-browserify: "npm:1.0.0"
     string_decoder: "npm:0.10.31"
     styled-components: "npm:5.2.1"
@@ -24612,14 +24619,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stim@npm:1.14.0":
-  version: 1.14.0
-  resolution: "stim@npm:1.14.0"
+"stim@npm:1.20.2":
+  version: 1.20.2
+  resolution: "stim@npm:1.20.2"
   dependencies:
     "@expo/fingerprint": "npm:^0.20.10"
-    "@stim-cli/cache": "npm:^1.14.0"
-    "@stim-cli/core": "npm:^1.14.0"
-    "@stim-cli/metro": "npm:^1.14.0"
+    "@stim-cli/cache": "npm:^1.20.2"
+    "@stim-cli/core": "npm:^1.20.2"
+    "@stim-cli/metro": "npm:^1.20.2"
+    "@xmldom/xmldom": "npm:0.9.12"
     chalk: "npm:^6.0.0"
     commander: "npm:^15.0.0"
     cross-spawn: "npm:^7.0.6"
@@ -24627,7 +24635,7 @@ __metadata:
     ws: "npm:^8.21.3"
   bin:
     stim: dist/cli.mjs
-  checksum: 10c0/647171aaacd5043f23531f423fc5acc9ca07dd94c18848f78243085ca968a1d21b08c90257294dcea1d7cc007bf2f56178af919127b57b804517532c425b62ab
+  checksum: 10c0/4de13ff221f851445c4fe789a2faeda4301ec141f9f7d83c40c342dee56998a1aa2308529b07c321eaa6f7b60f3a12b84bd53062641f996fd2e09c6607474ae7
   languageName: node
   linkType: hard
 
