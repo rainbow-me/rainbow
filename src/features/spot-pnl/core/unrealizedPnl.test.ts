@@ -11,7 +11,7 @@ describe('calculateUnrealizedPnl', () => {
       balance: '10',
       price: '12',
       rate: 1,
-      expected: { amount: '20', percentage: '20' },
+      expected: { heldBalance: '10', cost: '100', value: '120', amount: '20', percentage: '20' },
     },
     {
       name: 'sent out tokens are not counted',
@@ -20,7 +20,7 @@ describe('calculateUnrealizedPnl', () => {
       balance: '4',
       price: '8',
       rate: 1,
-      expected: { amount: '-8', percentage: '-20' },
+      expected: { heldBalance: '4', cost: '40', value: '32', amount: '-8', percentage: '-20' },
     },
     {
       name: 'received tokens are not counted',
@@ -29,7 +29,7 @@ describe('calculateUnrealizedPnl', () => {
       balance: '9',
       price: '12',
       rate: 1,
-      expected: { amount: '8', percentage: '20' },
+      expected: { heldBalance: '4', cost: '40', value: '48', amount: '8', percentage: '20' },
     },
     {
       name: 'cost is converted to the native currency',
@@ -38,7 +38,7 @@ describe('calculateUnrealizedPnl', () => {
       balance: '10',
       price: '18',
       rate: 1.5,
-      expected: { amount: '30', percentage: '20' },
+      expected: { heldBalance: '10', cost: '150', value: '180', amount: '30', percentage: '20' },
     },
   ])('$name', ({ purchased, cost, balance, price, rate, expected }) => {
     expect(
