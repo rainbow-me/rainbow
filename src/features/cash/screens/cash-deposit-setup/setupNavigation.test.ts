@@ -212,9 +212,9 @@ describe('restartSetupWithoutCredential', () => {
     expect(CashDepositSetupNavigation.getActiveRoute()).toBe(Routes.CASH_SETUP_PASSKEY);
   });
 
-  it('waits for passkey enrollment to settle', () => {
+  it.each(['submitting', 'signingIn'] as const)('waits for a %s passkey ceremony to settle', state => {
     CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_REVIEW);
-    useAddPasskeyFlowStore.setState({ state: 'submitting' });
+    useAddPasskeyFlowStore.setState({ state });
 
     useCashSetupSessionStore.getState().reset();
     restartSetupWithoutCredential();

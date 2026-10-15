@@ -6,10 +6,11 @@ import { CashStatusHalfSheet } from '@/features/cash/components/CashStatusHalfSh
 import * as i18n from '@/languages';
 
 import { SetupStepLayout } from '../components/SetupStepLayout';
-import { submitPasskey } from '../setupAction';
+import { signInWithPasskeyOnDevice, submitPasskey } from '../setupAction';
 import { useAddPasskeyFlowStore } from './useAddPasskeyFlow';
 
 const l = i18n.l.cash.deposit_setup.passkey;
+const onDeviceL = i18n.l.cash.deposit_setup.passkey.on_device;
 
 const KEY_ICON = '􀟖';
 
@@ -35,6 +36,27 @@ export const PasskeyStep = memo(function PasskeyStep() {
           status="error"
           testID="cash-setup-passkey-error"
           title={i18n.t(l.error_title)}
+        />
+      )}
+
+      {(state === 'passkeyOnDevice' || state === 'signingIn') && (
+        <CashStatusHalfSheet
+          description={i18n.t(onDeviceL.description)}
+          primaryAction={{
+            label: i18n.t(onDeviceL.sign_in),
+            loading: state === 'signingIn',
+            onPress: signInWithPasskeyOnDevice,
+            testID: 'cash-setup-passkey-on-device-sign-in',
+          }}
+          secondaryAction={{
+            disabled: state === 'signingIn',
+            label: i18n.t(i18n.l.button.cancel),
+            onPress: reset,
+            testID: 'cash-setup-passkey-on-device-cancel',
+          }}
+          status="info"
+          testID="cash-setup-passkey-on-device"
+          title={i18n.t(onDeviceL.title)}
         />
       )}
     </>

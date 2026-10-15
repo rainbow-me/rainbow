@@ -64,6 +64,15 @@ export function isPasskeyCancellation(error: unknown): boolean {
   return code === 'ERR_USER_CANCELLED' || error.message === 'UserCancelled';
 }
 
+// Registration excludes the account's enrolled passkeys, so the platform refuses to create another one
+// when the device already holds one of them. The iOS code comes from our react-native-passkeys patch;
+// Android only reports WebAuthn's InvalidStateError in the message.
+export function isPasskeyAlreadyOnDevice(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
+  return code === 'ERR_PASSKEY_EXCLUDED_CREDENTIAL' || error.message.startsWith('DomError: InvalidStateError');
+}
+
 export function getPasskeyName(): string {
   return DeviceInfo.getModel() || 'passkey';
 }
