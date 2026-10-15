@@ -2,15 +2,15 @@ import { createDerivedStore } from '@storesjs/stores';
 
 import { type Price } from '@/features/charts/candlestick/types';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 
 import { calculatePercentChange, getTokenId, useCandlestickStore } from '../candlestickStore';
-import { useChartsStore } from '../chartsStore';
 
 type CandlestickPrice = Pick<Price, 'percentChange' | 'price'>;
 
 export const useCandlestickPrice = createDerivedStore<CandlestickPrice | undefined>(
   $ => {
-    const token = $(useChartsStore).token;
+    const token = $(useViewedTokenStore).token;
     const candles = $(useCandlestickStore, state => state.getData()?.candles);
     const price = $(useCandlestickStore, state => (token ? state.prices[getTokenId(token)]?.price : undefined));
 

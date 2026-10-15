@@ -4,6 +4,7 @@ import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import { PerpsIndicatorKey } from './PerpsIndicator';
@@ -28,7 +29,8 @@ const EMPTY_PERPS_INDICATOR_DATA: PerpsIndicatorData = Object.freeze({
  */
 export const usePerpsIndicatorData = createDerivedStore<PerpsIndicatorData | null>(
   $ => {
-    const { enablePerpsIndicators, token } = $(useChartsStore);
+    const { enablePerpsIndicators } = $(useChartsStore);
+    const token = $(useViewedTokenStore).token;
     const symbol = isHyperliquidToken(token) ? token : '';
     const position = $(useHyperliquidAccountStore, state => state.getPosition(symbol));
     const openOrders = $(useHlOpenOrdersStore, state => state.getData()?.ordersBySymbol[symbol]);
