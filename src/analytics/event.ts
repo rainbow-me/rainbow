@@ -18,6 +18,7 @@ import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/t
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
 import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -329,6 +330,9 @@ export const event = {
   perpsAddedToPosition: 'perps.added_to_position',
   perpsAddedToPositionFailed: 'perps.added_to_position.failed',
   perpsTradeDetailsSharePressed: 'perps.trade_details.share_pressed',
+
+  // spot p&l
+  spotPnlSheetViewed: 'spot_pnl.sheet.viewed',
 
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
@@ -1287,6 +1291,18 @@ export type EventProperties = {
     shared: boolean;
     success: boolean;
     message: string;
+  };
+
+  // spot p&l
+  [event.spotPnlSheetViewed]: {
+    tokenName: string;
+    tokenAddress: string;
+    chainId: number;
+    variant: SpotPnlVariant;
+    /** Unrealized P&L, Total Return or Realized Return, depending on the variant. */
+    pnlUsd: number;
+    /** Unix seconds of the wallet's last trade or transfer of the token. */
+    lastTradeAt: number;
   };
 
   // predictions

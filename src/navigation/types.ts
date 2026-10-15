@@ -78,6 +78,8 @@ export type ExplainSheetType =
   | 'maxBaseFee'
   | 'minerTip'
   | 'sending_funds_to_contract'
+  | 'spot_pnl_excluded_tokens'
+  | 'spot_pnl_realized_window'
   | 'verified'
   | 'unverified'
   | 'failed_wc_connection'
@@ -187,6 +189,8 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   maxBaseFee: Record<string, never>;
   minerTip: Record<string, never>;
   sending_funds_to_contract: Record<string, never>;
+  spot_pnl_excluded_tokens: Record<string, never>;
+  spot_pnl_realized_window: Record<string, never>;
   verified: Record<string, never>;
   unverified: { asset: ParsedAddressAsset | UniqueAsset };
   failed_wc_connection: Record<string, never>;
@@ -727,6 +731,10 @@ type ParamsByRoute = {
   [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
   [Routes.RNBW_STAKING_SCREEN]: undefined;
   [Routes.RNBW_UNSTAKE_SHEET]: undefined;
+  [Routes.SPOT_PNL_SHEET]: {
+    address: string;
+    chainId: ChainId;
+  };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
     delegationsToRevoke: Array<{
