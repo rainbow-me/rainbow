@@ -10,7 +10,9 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import { IS_STORE_INSTALL } from '@/env';
+import { setCashStagingPlatform } from '@/features/cash/services/cashPlatformSwitch';
 import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
+import { useCashPlatformSettingStore } from '@/features/cash/stores/cashPlatformSettingStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/types/revokeReason';
@@ -49,6 +51,7 @@ export const DevSection = () => {
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const cashUserId = useCashAccountStore(state => state.userId);
+  const cashUsesStagingPlatform = useCashPlatformSettingStore(state => state.useStagingPlatform);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -62,6 +65,12 @@ export const DevSection = () => {
       Navigation.handleAction(Routes.WALLET_SCREEN);
       setTimeout(Restart.Restart, 1000);
     }
+  }, []);
+
+  const toggleCashStagingPlatform = useCallback(() => {
+    setCashStagingPlatform(!useCashPlatformSettingStore.getState().useStagingPlatform);
+    Navigation.handleAction(Routes.WALLET_SCREEN);
+    setTimeout(Restart.Restart, 1000);
   }, []);
 
   const connectToAnvil = useCallback(async () => {
@@ -486,6 +495,12 @@ export const DevSection = () => {
               onPress={() => useCashAccountStore.getState().clearUserId()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
+            />
+            <MenuItem
+              onPress={toggleCashStagingPlatform}
+              rightComponent={cashUsesStagingPlatform && <MenuItem.StatusIcon status="selected" />}
+              size={52}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_use_staging_platform)} />}
             />
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>

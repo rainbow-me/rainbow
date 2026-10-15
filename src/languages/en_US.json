@@ -492,6 +492,7 @@
       "reset_experimental_config": "Reset Experimental Config",
       "cash_set_user_id_from_clipboard": "Set cash user id from clipboard",
       "cash_clear_account": "Clear cash account",
+      "cash_use_staging_platform": "Use cash staging backend",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
