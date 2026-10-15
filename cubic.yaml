@@ -1,0 +1,18 @@
+version: 1
+reviews:
+  custom_instructions: |
+    Severity
+    - Report P0/P1 only with a concrete, reachable trigger in this repo: name the call path and the state that produces the failure. If the claim depends on backend behavior or on code outside this repository, post it as a question at P2 or lower, not as a bug.
+    - Before reporting a race, stale async completion or teardown bug, confirm the interleaving can happen: check whether the UI can trigger it (disabled controls, covering sheets, screens that can't be dismissed) and whether the state survives an app restart. Don't report states that types or callers already rule out, and don't propose defensive guards for them.
+
+    Scope
+    - Flag only what the PR introduces, worsens or newly exposes. Don't ask a PR to handle a service, flow or case its linked ticket excludes, to add follow-up features (reconciliation, new copy, rerouted CTAs), or to fix pre-existing code it touches.
+
+    Repository conventions (don't flag these)
+    - Feature PRs add strings to src/languages/en_US.json only. Other locales come from Crowdin syncs, and i18n falls back to English.
+    - The repo has no component render-test harness, so don't request render tests for screens or components.
+    - NATIVE_ROUTES (src/navigation/routesNames.ts) is opt-in; a new sheet route doesn't need to be added to it.
+    - @storesjs/stores catches errors in persisted-state hydration and migrate, and keeps the initial state. Don't request extra guards in migrate functions.
+
+    Low-value comments
+    - Don't comment on test names, comment wording or duplicate it.each titles, unless a name misstates what the test proves.
