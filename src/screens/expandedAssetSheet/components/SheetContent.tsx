@@ -8,14 +8,12 @@ import {
   AboutPlacement,
   AboutSection,
   BalanceSection,
-  BuySection,
   ChartSection,
   ClaimSection,
   DetailsSection,
   HistorySection,
   MarketStatsSection,
 } from './sections';
-import { Placement } from './sections/BuySection';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 
@@ -40,11 +38,9 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
             </Box>
             <Box gap={28}>
               <BalanceSection />
-              <BuySection placement={Placement.AFTER_BALANCE} />
               <ClaimSection />
               <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
-              <BuySection placement={Placement.AFTER_MARKET_STATS} />
               {/* BACKLOGGED */}
               {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />

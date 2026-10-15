@@ -343,7 +343,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           errorMessage,
           isHardwareWallet,
           parameters,
-          quickBuyMetadata: initialValues.quickBuyMetadata,
           type,
         });
 
@@ -397,7 +396,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       trackSwapEvent(analytics.event.swapsSubmitted, {
         isHardwareWallet,
         parameters,
-        quickBuyMetadata: initialValues.quickBuyMetadata,
         type,
       });
     } catch (error) {

@@ -1,4 +1,3 @@
-import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { type SwapAssetType } from '@/__swaps__/types/swap';
 import { type CardType } from '@/components/cards/GenericCard';
@@ -376,7 +375,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
   isHardwareWallet: boolean;
-  quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {

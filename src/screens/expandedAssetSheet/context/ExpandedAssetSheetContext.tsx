@@ -26,7 +26,6 @@ import { useTheme } from '@/theme/ThemeContext';
 export enum SectionId {
   PROFIT = 'profit',
   MARKET_STATS = 'marketStats',
-  BUY = 'buy',
   BRIDGE = 'bridge',
   CLAIM = 'claim',
   HISTORY = 'history',
@@ -38,7 +37,6 @@ export enum SectionId {
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.PROFIT]: true,
   [SectionId.MARKET_STATS]: true,
-  [SectionId.BUY]: true,
   [SectionId.BRIDGE]: true,
   [SectionId.CLAIM]: true,
   [SectionId.HISTORY]: true,

@@ -709,13 +709,6 @@
           "volume_24_hours": "24h Volume",
           "rank": "Rank"
         },
-        "buy": {
-          "title": "Buy",
-          "pay_with": "Buy with",
-          "available_balance": "Available Balance",
-          "open_swaps": "Open Swaps",
-          "low_balance": "Low Balance"
-        },
         "claim": {
           "claim_button": "Claim Airdrop",
           "created_by": "Created by %{creator}",
