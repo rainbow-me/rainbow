@@ -4,7 +4,7 @@ import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-fire
 import { createQueryStore } from '@storesjs/stores';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
@@ -361,6 +361,8 @@ const PARSERS = buildParsers(DEFAULT_CONFIG);
 let hasInitializedRemoteConfig = false;
 
 async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  if (IS_TEST) return DEFAULT_CONFIG;
+
   const rc = remoteConfig();
   const newConfig: RainbowConfig = { ...DEFAULT_CONFIG };
 
