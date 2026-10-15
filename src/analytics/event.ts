@@ -7,6 +7,7 @@ import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
+import { type CashAuthIntent } from '@/features/cash/stores/cashAuthGateStore';
 import { type TelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
@@ -134,6 +135,7 @@ export const event = {
   cashPhoneResendFailed: 'cash.phone_resend_failed',
   cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
   cashExistingAccountRecoverySelected: 'cash.existing_account_recovery_selected',
+  cashLostPasskeyRecoverySelected: 'cash.lost_passkey_recovery_selected',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
   cashKycSubmitted: 'cash.kyc_submitted',
@@ -576,6 +578,9 @@ export type EventProperties = {
     outcome: 'alreadyRegistered' | 'registeredWithPasskey';
   };
   [event.cashExistingAccountRecoverySelected]: undefined;
+  [event.cashLostPasskeyRecoverySelected]: {
+    intent: CashAuthIntent['kind'];
+  };
   [event.cashPhoneVerified]: {
     mode: 'signup' | 'resume' | 'recovery';
   };
