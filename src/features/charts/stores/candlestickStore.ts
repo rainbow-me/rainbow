@@ -7,9 +7,10 @@ import {
   MAX_HYPERLIQUID_CANDLES_PER_REQUEST,
   type HyperliquidChartParams,
 } from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
-import { chartsActions, useChartsStore, type ChartsState } from '@/features/charts/stores/chartsStore';
+import { chartsActions, resolveChartType, useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { time } from '@/framework/core/utils/time';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -66,12 +67,12 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
   {
     fetcher: fetchCandlestickData,
     setData: setCandlestickData,
-    enabled: $ => $(useChartsStore, shouldEnable),
-    staleTime: $ => $(useChartsStore, getStaleTime),
+    enabled: $ => resolveChartType($(useChartsStore).chartType, $(useViewedTokenStore).token) === ChartType.Candlestick,
+    staleTime: $ => (isHyperliquidToken($(useViewedTokenStore).token) ? HYPERLIQUID_STALE_TIME : DEFAULT_STALE_TIME),
     params: {
       candleResolution: $ => $(useChartsStore).candleResolution,
       currency: $ => $(userAssetsStoreManager).currency,
-      token: $ => $(useChartsStore).token,
+      token: $ => $(useViewedTokenStore).token,
     },
     cacheTime: CACHE_TIME,
   },
@@ -129,7 +130,7 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
  */
 export function prefetchCandlestickData(asset: Token | ExpandedSheetParamAsset): void {
   const token = typeof asset === 'string' ? asset : { address: asset.address, chainId: asset.chainId };
-  chartsActions.setToken(token);
+  useViewedTokenStore.getState().setToken(token);
 
   const chartType = chartsActions.getChartType();
   if (chartType === ChartType.Line) return;
@@ -554,16 +555,4 @@ function prunePrices(
     }
   }
   return didPrune ? prices : originalPrices;
-}
-
-function getStaleTime(state: ChartsState): number {
-  return isHyperliquidToken(state.token) ? HYPERLIQUID_STALE_TIME : DEFAULT_STALE_TIME;
-}
-
-/**
- * Determines whether to enable the candlestick store.
- * @returns `true` if the current chart type is `Candlestick`, `false` otherwise.
- */
-function shouldEnable(state: ChartsState): boolean {
-  return state.getChartType() === ChartType.Candlestick;
 }
