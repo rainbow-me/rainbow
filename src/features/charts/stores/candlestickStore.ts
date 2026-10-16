@@ -25,7 +25,7 @@ import {
   type GetCandlestickChartRequest,
   type Price,
 } from '../candlestick/types';
-import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
+import { areCandlesEqual, firstIndexAtOrAfterTimestamp, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
 import { INITIAL_BAR_COUNT } from '../constants';
 import { ChartType, type CandleResolution, type HyperliquidSymbol, type Token } from '../types';
 
@@ -496,20 +496,6 @@ function buildBaseParams({ candleResolution, currency, token }: BaseParams): Can
  */
 function buildBaseQueryKey(params: BaseParams): string {
   return getQueryKey(buildBaseParams(params));
-}
-
-/**
- * Runs an O(log n) binary search for the first index whose `t ≥ timestamp`.
- */
-function firstIndexAtOrAfterTimestamp(candles: readonly Bar[], timestamp: number): number {
-  let left = 0;
-  let right = candles.length;
-  while (left < right) {
-    const middle = (left + right) >>> 1;
-    if (candles[middle].t < timestamp) left = middle + 1;
-    else right = middle;
-  }
-  return left;
 }
 
 /**
