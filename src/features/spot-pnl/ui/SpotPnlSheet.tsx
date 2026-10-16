@@ -30,7 +30,14 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
-import { calculateSpotPnl, type PnlReturn, type SpotPnl, type SpotPnlHolder, type TokenTrades } from '../core/spotPnl';
+import {
+  calculateSpotPnl,
+  type PnlReturn,
+  type SpotPnl,
+  type SpotPnlHolder,
+  type SpotPnlWalletSource,
+  type TokenTrades,
+} from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { useTokenTradesStore } from '../data/tokenTradesStore';
 import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
@@ -75,7 +82,7 @@ function SpotPnlSheetContent({
   const token: PnlToken = {
     chainId,
     decimals: accountAsset?.decimals ?? externalToken?.decimals ?? 18,
-    initialPrice: accountAsset?.native?.price?.amount ?? '',
+    initialPrice: accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? '',
     initialPriceUpdatedAt: accountAsset?.price?.changed_at ?? 0,
     nativeCurrency,
     symbol,
@@ -107,7 +114,7 @@ function SpotPnlSheetContent({
         )}
       </Box>
       {holder ? (
-        <SpotPnlSection balance={holder.balance} isSettled token={token} trades={holder.trades} />
+        <SpotPnlSection balance={holder.balance} isSettled token={token} trades={holder.trades} walletSource="top_holder" />
       ) : (
         <SelectedWalletSpotPnlSection balance={accountAsset?.balance?.amount || '0'} token={token} />
       )}
@@ -130,7 +137,7 @@ type PnlToken = {
 function SelectedWalletSpotPnlSection({ balance, token }: { balance: string; token: PnlToken }) {
   const trades = useTokenTradesStore(state => state.getData());
   const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
-  return <SpotPnlSection balance={balance} isSettled={isSettled} token={token} trades={trades} />;
+  return <SpotPnlSection balance={balance} isSettled={isSettled} token={token} trades={trades} walletSource="selected" />;
 }
 
 function SpotPnlSection({
@@ -138,12 +145,14 @@ function SpotPnlSection({
   isSettled,
   token: { chainId, decimals, initialPrice, initialPriceUpdatedAt, nativeCurrency, symbol, tokenAddress, tokenName, uniqueId },
   trades,
+  walletSource,
 }: {
   balance: string;
   /** Whether `trades` is final rather than still loading. */
   isSettled: boolean;
   token: PnlToken;
   trades: TokenTrades | null;
+  walletSource: SpotPnlWalletSource;
 }) {
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
@@ -171,8 +180,9 @@ function SpotPnlSection({
       variant: pnl.variant,
       pnlUsd: Number(pnl.headlineUsd),
       lastTradeAt,
+      walletSource,
     });
-  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
+  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName, walletSource]);
 
   return pnl ? (
     <SpotPnlBody asset={{ decimals, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} />

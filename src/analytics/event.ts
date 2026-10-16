@@ -18,7 +18,7 @@ import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/t
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
+import { type SpotPnlVariant, type SpotPnlWalletSource } from '@/features/spot-pnl/core/spotPnl';
 import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -1303,6 +1303,7 @@ export type EventProperties = {
     pnlUsd: number;
     /** Unix seconds of the wallet's last trade or transfer of the token. */
     lastTradeAt: number;
+    walletSource: SpotPnlWalletSource;
   };
 
   // predictions

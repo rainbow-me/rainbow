@@ -3,11 +3,8 @@ import React, { memo } from 'react';
 import Animated from 'react-native-reanimated';
 
 import { Box } from '@/design-system';
-import { TOP_HOLDERS } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
-import { useTopHoldersStore } from '@/features/top-holders/data/topHoldersStore';
+import { useTopHoldersEnabledStore, useTopHoldersStore } from '@/features/top-holders/data/topHoldersStore';
 import { TopHolders } from '@/features/top-holders/ui/TopHolders';
 import * as i18n from '@/languages';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '@/screens/expandedAssetSheet/components/shared/CollapsibleSection';
@@ -15,18 +12,10 @@ import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/S
 import { SectionId } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 export const TopHoldersSection = memo(function TopHoldersSection() {
-  const { top_holders_enabled } = useRemoteConfig('top_holders_enabled');
-  const topHoldersExperimentalEnabled = useExperimentalFlag(TOP_HOLDERS);
-
-  if (!top_holders_enabled && !topHoldersExperimentalEnabled) return null;
-  return <TopHoldersSectionContent />;
-});
-
-function TopHoldersSectionContent() {
-  // Subscribing here, behind the feature gate, is what triggers the fetch
-  const hasHolders = useTopHoldersStore(topHolders => topHolders !== null);
+  const isEnabled = useTopHoldersEnabledStore();
+  const hasHolders = useTopHoldersStore(state => !!state.getData());
   const token = useViewedTokenStore(state => (state.token && typeof state.token !== 'string' ? state.token : null));
-  if (!hasHolders || !token) return null;
+  if (!isEnabled || !hasHolders || !token) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
@@ -40,4 +29,4 @@ function TopHoldersSectionContent() {
       <SheetSeparator />
     </Box>
   );
-}
+});

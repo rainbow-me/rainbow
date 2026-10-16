@@ -4,12 +4,13 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
-import { lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -19,7 +20,7 @@ import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/a
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 import { type ProfitHolderRow, type StakeHolderRow, type TokenHolder } from '../core/topHolders';
-import { useTopHolderNamesStore, useTopHoldersStore } from '../data/topHoldersStore';
+import { useTopHoldersStore } from '../data/topHoldersStore';
 
 type Tab = 'stake' | 'profit';
 
@@ -30,7 +31,7 @@ const RANK_WIDTH = 40;
 /** The Top Holders lists for the viewed token. Renders nothing until there is a holder to show. */
 export const TopHolders = memo(function TopHolders({ token }: { token: { address: string; chainId: ChainId } }) {
   const [selectedTab, setSelectedTab] = useState<Tab>('stake');
-  const hasProfitHolders = useTopHoldersStore(topHolders => !!topHolders?.byProfit.length);
+  const hasProfitHolders = useTopHoldersStore(state => !!state.getData()?.byProfit.length);
   const tab = hasProfitHolders ? selectedTab : 'stake';
 
   return (
@@ -104,8 +105,9 @@ function TabButton({ label, onSelect, selectedTab, tab }: { label: string; onSel
 }
 
 function StakeList({ token }: { token: { address: string; chainId: ChainId } }) {
-  const rows = useTopHoldersStore(topHolders => topHolders?.byStake);
+  const rows = useTopHoldersStore(state => state.getData()?.byStake);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
   if (!rows) return null;
 
   return (
@@ -113,7 +115,7 @@ function StakeList({ token }: { token: { address: string; chainId: ChainId } }) 
       {rows.map((row, index) => (
         <React.Fragment key={row.holder.address}>
           {index > 0 && <RowSeparator />}
-          <StakeRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} />
+          <StakeRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} usdToNativeRate={usdToNativeRate} />
         </React.Fragment>
       ))}
     </Box>
@@ -121,8 +123,9 @@ function StakeList({ token }: { token: { address: string; chainId: ChainId } }) 
 }
 
 function ProfitList({ token }: { token: { address: string; chainId: ChainId } }) {
-  const rows = useTopHoldersStore(topHolders => topHolders?.byProfit);
+  const rows = useTopHoldersStore(state => state.getData()?.byProfit);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
   if (!rows) return null;
 
   return (
@@ -130,16 +133,22 @@ function ProfitList({ token }: { token: { address: string; chainId: ChainId } })
       {rows.map((row, index) => (
         <React.Fragment key={row.holder.address}>
           {index > 0 && <RowSeparator />}
-          <ProfitRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} />
+          <ProfitRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} usdToNativeRate={usdToNativeRate} />
         </React.Fragment>
       ))}
     </Box>
   );
 }
 
-type RowProps<T> = { nativeCurrency: NativeCurrencyKey; rank: number; row: T; token: { address: string; chainId: ChainId } };
+type RowProps<T> = {
+  nativeCurrency: NativeCurrencyKey;
+  rank: number;
+  row: T;
+  token: { address: string; chainId: ChainId };
+  usdToNativeRate: number;
+};
 
-const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token }: RowProps<StakeHolderRow>) {
+const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<StakeHolderRow>) {
   const supply = lessThanWorklet(row.supplyPercentage, 0.01) ? '<0.01%' : `${toFixedWorklet(row.supplyPercentage, 2)}%`;
 
   return (
@@ -150,22 +159,22 @@ const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token }: Ro
       token={token}
     >
       <Text color="label" size="17pt" weight="semibold" tabularNumbers>
-        {convertAmountToNativeDisplay(row.value, nativeCurrency, undefined, undefined, true)}
+        {convertAmountToNativeDisplay(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, undefined, undefined, true)}
       </Text>
     </HolderRow>
   );
 });
 
-const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token }: RowProps<ProfitHolderRow>) {
+const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<ProfitHolderRow>) {
   const { colors } = useTheme();
-  const { direction } = formatPnlAmount(row.pnl.amount, nativeCurrency);
+  const { direction } = formatPnlAmount(mulWorklet(row.pnl.amount, usdToNativeRate), nativeCurrency);
   const color = pnlColor(direction, colors);
 
   return (
     <HolderRow holder={row.holder} rank={rank} token={token}>
       <Box alignItems="flex-end" gap={10}>
         <Text color="label" size="17pt" weight="semibold" tabularNumbers>
-          {convertAmountToNativeDisplay(row.value, nativeCurrency, undefined, undefined, true)}
+          {convertAmountToNativeDisplay(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, undefined, undefined, true)}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />
@@ -191,7 +200,7 @@ function HolderRow({
   subtitle?: string;
   token: { address: string; chainId: ChainId };
 }) {
-  const ensName = useTopHolderNamesStore(state => state.getData()?.[holder.address.toLowerCase()] ?? null);
+  const ensName = useTopHoldersStore(state => state.getData()?.ensNames[holder.address.toLowerCase()] ?? null);
 
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {

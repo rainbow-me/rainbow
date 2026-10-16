@@ -17,6 +17,7 @@ export type TokenHolder = {
 };
 
 export type TokenHolders = {
+  /** Ordered by balance, descending. */
   holders: TokenHolder[];
   /** USD per token. */
   priceUsd: string;
@@ -32,16 +33,16 @@ export type HolderWalletFilter = {
 
 export type StakeHolderRow = {
   holder: TokenHolder;
-  /** Native currency. */
-  value: string;
+  valueUsd: string;
   /** Where 1 is 1%. */
   supplyPercentage: string;
 };
 
 export type ProfitHolderRow = {
   holder: TokenHolder;
-  /** Native currency, of the whole balance rather than only its purchased part. */
-  value: string;
+  /** Of the whole balance rather than only its purchased part. */
+  valueUsd: string;
+  /** In USD. */
   pnl: UnrealizedPnl;
 };
 
@@ -59,33 +60,24 @@ export function isRealUser(holder: TokenHolder, filter: HolderWalletFilter): boo
 }
 
 /**
- * The largest real-user holders, and among them the ones with the largest unrealized P&L in the native currency.
- * `holders` must be ordered by balance, descending. Holders without a swap cost basis cannot rank by profit.
+ * The largest real-user holders, and among them the ones with the largest unrealized P&L in USD. Holders without
+ * a swap cost basis cannot rank by profit.
  */
-export function rankTopHolders({
-  data: { holders, priceUsd, totalSupply },
-  filter,
-  usdToNativeRate,
-}: {
-  data: TokenHolders;
-  filter: HolderWalletFilter;
-  usdToNativeRate: number;
-}): TopHolders {
-  const price = mulWorklet(priceUsd, usdToNativeRate);
+export function rankTopHolders({ holders, priceUsd, totalSupply }: TokenHolders, filter: HolderWalletFilter): TopHolders {
   const hasSupply = greaterThanWorklet(totalSupply, 0);
   const realUsers = holders.filter(holder => isRealUser(holder, filter));
 
   const byStake = realUsers.slice(0, TOP_HOLDERS_LIMIT).map(holder => ({
     holder,
-    value: mulWorklet(holder.balance, price),
+    valueUsd: mulWorklet(holder.balance, priceUsd),
     supplyPercentage: hasSupply ? mulWorklet(divWorklet(holder.balance, totalSupply), 100) : '0',
   }));
 
   const byProfit: ProfitHolderRow[] = [];
   for (const holder of realUsers) {
     if (!holder.trades) continue;
-    const pnl = calculateUnrealizedPnl({ acquisition: holder.trades, balance: holder.balance, price, usdToNativeRate });
-    if (pnl) byProfit.push({ holder, value: mulWorklet(holder.balance, price), pnl });
+    const pnl = calculateUnrealizedPnl({ acquisition: holder.trades, balance: holder.balance, price: priceUsd, usdToNativeRate: 1 });
+    if (pnl) byProfit.push({ holder, valueUsd: mulWorklet(holder.balance, priceUsd), pnl });
   }
   byProfit.sort((a, b) => (greaterThanWorklet(b.pnl.amount, a.pnl.amount) ? 1 : greaterThanWorklet(a.pnl.amount, b.pnl.amount) ? -1 : 0));
 

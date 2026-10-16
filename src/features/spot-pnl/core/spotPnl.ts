@@ -11,6 +11,9 @@ export type TokenTrades = TokenAcquisition & {
   lastTransactionAt: number;
 };
 
+/** Whose P&L the sheet shows: the selected wallet's, or a Top Holders row's. */
+export type SpotPnlWalletSource = 'selected' | 'top_holder';
+
 /** A wallet other than the selected one, with the Codex data it was listed with. */
 export type SpotPnlHolder = {
   address: string;

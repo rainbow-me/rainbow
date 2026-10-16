@@ -1,8 +1,9 @@
 import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { getAddress } from 'viem';
 
+import { TOP_HOLDERS } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type TokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
@@ -13,11 +14,17 @@ import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 
-import { rankTopHolders, type TokenHolder, type TokenHolders, type TopHolders } from '../core/topHolders';
+import { rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
 
-type TopHoldersParams = {
+export type TopHoldersData = TopHolders & {
+  /** Lowercased address to ENS name, for the listed holders that have a reverse record. */
+  ensNames: Record<string, string>;
+};
+
+export type TopHoldersParams = {
   /** `null` when no token is viewed or it is a perps market. */
   token: { address: string; chainId: ChainId } | null;
+  filter: HolderWalletFilter;
 };
 
 type CodexResponse<T> = { data?: T; errors?: { message: string }[] };
@@ -45,7 +52,7 @@ const HOLDERS_SCANNED = 200;
 const NAME_LOOKUP_CONCURRENCY = 6;
 
 const HOLDERS_QUERY = `query TopHolders($tokenId: String!, $address: String!, $networkId: Int!) {
-  holders(input: { tokenId: $tokenId, limit: ${HOLDERS_SCANNED} }) {
+  holders(input: { tokenId: $tokenId, limit: ${HOLDERS_SCANNED}, sort: { attribute: BALANCE, direction: DESC } }) {
     status
     items {
       address
@@ -79,44 +86,27 @@ const TOKEN_WALLETS_QUERY = `query TopHolderTrades($wallets: [String], $tokenId:
   }
 }`;
 
+export const useTopHoldersEnabledStore = createDerivedStore($ => {
+  const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('top_holders_enabled'));
+  const experimentalEnabled = $(useExperimentalConfigStore, state => state.getFlag(TOP_HOLDERS));
+  return remoteEnabled || experimentalEnabled;
+});
+
 /**
- * The viewed token's largest holders by balance, with each one's swap history. Codex returns at most
- * {@link HOLDERS_SCANNED}, which bounds which holders can rank by profit.
+ * The viewed token's Top Holders lists, with ENS names for the listed wallets. Codex returns at most
+ * {@link HOLDERS_SCANNED} holders, which bounds which holders can rank by profit. `null` when there is no holder to show.
  */
-export const useTopHoldersDataStore = createQueryStore<TokenHolders | null, TopHoldersParams>({
+export const useTopHoldersStore = createQueryStore<TopHoldersData | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
+  enabled: $ => $(useTopHoldersEnabledStore),
   params: {
     token: $ =>
       $(useViewedTokenStore, ({ token }) =>
         token && typeof token !== 'string' ? { address: token.address, chainId: token.chainId } : null
       ),
+    filter: $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('top_holders_wallet_filter')),
   },
   staleTime: time.minutes(5),
-  cacheTime: time.hours(1),
-});
-
-/** The ranked lists shown by the Top Holders section; `null` until there is a holder to show. */
-export const useTopHoldersStore = createDerivedStore<TopHolders | null>($ => {
-  const data = $(useTopHoldersDataStore).getData();
-  const filter = $(useRemoteConfigStore, state => state.getRemoteConfigKey('top_holders_wallet_filter'));
-  const usdToNativeRate = $(useCurrencyConversionStore).getData()?.usdToNativeCurrencyConversionRate;
-  if (!data || !usdToNativeRate) return null;
-
-  const topHolders = rankTopHolders({ data, filter, usdToNativeRate });
-  return topHolders.byStake.length ? topHolders : null;
-});
-
-/** Lowercased address to ENS name, for the holders currently listed. Addresses without a reverse record are absent. */
-export const useTopHolderNamesStore = createQueryStore<Record<string, string>, { addresses: string[] }>({
-  fetcher: fetchNames,
-  params: {
-    addresses: $ =>
-      $(useTopHoldersStore, topHolders =>
-        topHolders ? [...new Set([...topHolders.byStake, ...topHolders.byProfit].map(row => row.holder.address))].sort() : []
-      ),
-  },
-  keepPreviousData: true,
-  staleTime: time.hours(1),
   cacheTime: time.hours(1),
 });
 
@@ -130,7 +120,10 @@ async function postCodex<T>(query: string, variables: Record<string, unknown>, a
   return data.data;
 }
 
-async function fetchTopHolders({ token }: TopHoldersParams, abortController: AbortController | null): Promise<TokenHolders | null> {
+async function fetchTopHolders(
+  { token, filter }: TopHoldersParams,
+  abortController: AbortController | null
+): Promise<TopHoldersData | null> {
   if (!token) return null;
   // Codex network ids are EVM chain ids
   const tokenId = `${token.address}:${token.chainId}`;
@@ -151,31 +144,39 @@ async function fetchTopHolders({ token }: TopHoldersParams, abortController: Abo
     const tradesByAddress = new Map(filterTokenWallets.results.map(({ address, ...trades }) => [address.toLowerCase(), trades]));
     const unit = powWorklet(10, codexToken.decimals);
 
-    return {
-      holders: holders.items.map(
-        (item): TokenHolder => ({
-          address: item.address,
-          balance: divWorklet(item.balance, unit),
-          category: item.wallet?.category ?? null,
-          identityLabels: item.wallet?.identityLabels ?? [],
-          trades: tradesByAddress.get(item.address.toLowerCase()) ?? null,
-        })
-      ),
-      priceUsd,
-      totalSupply: codexToken.info?.totalSupply ?? '0',
-    };
+    const topHolders = rankTopHolders(
+      {
+        holders: holders.items.map(
+          (item): TokenHolder => ({
+            address: item.address,
+            balance: divWorklet(item.balance, unit),
+            category: item.wallet?.category ?? null,
+            identityLabels: item.wallet?.identityLabels ?? [],
+            trades: tradesByAddress.get(item.address.toLowerCase()) ?? null,
+          })
+        ),
+        priceUsd,
+        totalSupply: codexToken.info?.totalSupply ?? '0',
+      },
+      filter
+    );
+    if (!topHolders.byStake.length) return null;
+
+    const listed = [...new Set([...topHolders.byStake, ...topHolders.byProfit].map(row => row.holder.address.toLowerCase()))];
+    return { ...topHolders, ensNames: await fetchEnsNames(listed) };
   } catch (error) {
     logger.error(new RainbowError('[topHoldersStore] Codex top holders fetch failed', error), { tokenId });
     throw error;
   }
 }
 
-async function fetchNames({ addresses }: { addresses: string[] }): Promise<Record<string, string>> {
+/** Addresses without a reverse record, or whose lookup fails, are left out. */
+async function fetchEnsNames(addresses: string[]): Promise<Record<string, string>> {
   const provider = getProvider({ chainId: ChainId.mainnet });
   const results = await mapWithConcurrency(addresses, NAME_LOOKUP_CONCURRENCY, address => provider.lookupAddress(getAddress(address)));
   const names: Record<string, string> = {};
   results.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) names[addresses[index].toLowerCase()] = result.value;
+    if (result.status === 'fulfilled' && result.value) names[addresses[index]] = result.value;
   });
   return names;
 }
