@@ -30,7 +30,14 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
-import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
+import {
+  calculateSpotPnl,
+  type PnlReturn,
+  type SpotPnl,
+  type SpotPnlHolder,
+  type SpotPnlWalletSource,
+  type TokenTrades,
+} from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { useTokenTradesStore } from '../data/tokenTradesStore';
 import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
@@ -43,23 +50,46 @@ type SpotPnlExplainType = 'spot_pnl_excluded_tokens' | 'spot_pnl_realized_window
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
-    params: { address, chainId },
+    params: { address, chainId, holder },
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
-  const walletAddress = userAssetsStoreManager(state => state.address);
+  const selectedWalletAddress = userAssetsStoreManager(state => state.address);
 
   return (
     <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
-      {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} />}
+      {(holder || selectedWalletAddress) && (
+        <SpotPnlSheetContent tokenAddress={address} chainId={chainId} holder={holder} selectedWalletAddress={selectedWalletAddress} />
+      )}
     </PanelSheet>
   );
 });
 
-function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAddress: string; chainId: ChainId; walletAddress: string }) {
+function SpotPnlSheetContent({
+  tokenAddress,
+  chainId,
+  holder,
+  selectedWalletAddress,
+}: {
+  tokenAddress: string;
+  chainId: ChainId;
+  holder: SpotPnlHolder | undefined;
+  selectedWalletAddress: string | null;
+}) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const uniqueId = getUniqueId(tokenAddress, chainId);
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
+  const token: PnlToken = {
+    chainId,
+    decimals: accountAsset?.decimals ?? externalToken?.decimals ?? 18,
+    initialPrice: accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? '',
+    initialPriceUpdatedAt: accountAsset?.price?.changed_at ?? 0,
+    nativeCurrency,
+    symbol,
+    tokenAddress,
+    tokenName: accountAsset?.name ?? externalToken?.name,
+    uniqueId,
+  };
 
   return (
     <Box paddingTop={{ custom: 22 }} paddingBottom={{ custom: 14 }}>
@@ -77,37 +107,22 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
             {symbol}
           </Text>
         </Box>
-        <WalletChip walletAddress={walletAddress} />
+        {holder ? (
+          <WalletChip ensName={holder.ensName} walletAddress={holder.address} />
+        ) : (
+          selectedWalletAddress && <SelectedWalletChip walletAddress={selectedWalletAddress} />
+        )}
       </Box>
-      <SpotPnlSection
-        balance={accountAsset?.balance?.amount || '0'}
-        chainId={chainId}
-        decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
-        initialPrice={accountAsset?.native?.price?.amount ?? ''}
-        initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
-        nativeCurrency={nativeCurrency}
-        symbol={symbol}
-        tokenAddress={tokenAddress}
-        tokenName={accountAsset?.name ?? externalToken?.name}
-        uniqueId={uniqueId}
-      />
+      {holder ? (
+        <SpotPnlSection balance={holder.balance} isSettled token={token} trades={holder.trades} walletSource="top_holder" />
+      ) : (
+        <SelectedWalletSpotPnlSection balance={accountAsset?.balance?.amount || '0'} token={token} />
+      )}
     </Box>
   );
 }
 
-function SpotPnlSection({
-  balance,
-  chainId,
-  decimals,
-  initialPrice,
-  initialPriceUpdatedAt,
-  nativeCurrency,
-  symbol,
-  tokenAddress,
-  tokenName,
-  uniqueId,
-}: {
-  balance: string;
+type PnlToken = {
   chainId: ChainId;
   decimals: number;
   initialPrice: string;
@@ -117,8 +132,28 @@ function SpotPnlSection({
   tokenAddress: string;
   tokenName: string | undefined;
   uniqueId: string;
-}) {
+};
+
+function SelectedWalletSpotPnlSection({ balance, token }: { balance: string; token: PnlToken }) {
   const trades = useTokenTradesStore(state => state.getData());
+  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  return <SpotPnlSection balance={balance} isSettled={isSettled} token={token} trades={trades} walletSource="selected" />;
+}
+
+function SpotPnlSection({
+  balance,
+  isSettled,
+  token: { chainId, decimals, initialPrice, initialPriceUpdatedAt, nativeCurrency, symbol, tokenAddress, tokenName, uniqueId },
+  trades,
+  walletSource,
+}: {
+  balance: string;
+  /** Whether `trades` is final rather than still loading. */
+  isSettled: boolean;
+  token: PnlToken;
+  trades: TokenTrades | null;
+  walletSource: SpotPnlWalletSource;
+}) {
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: uniqueId,
@@ -145,14 +180,18 @@ function SpotPnlSection({
       variant: pnl.variant,
       pnlUsd: Number(pnl.headlineUsd),
       lastTradeAt,
+      walletSource,
     });
-  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
+  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName, walletSource]);
 
-  return pnl ? <SpotPnlBody asset={{ decimals, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} /> : <SpotPnlPlaceholder />;
+  return pnl ? (
+    <SpotPnlBody asset={{ decimals, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} />
+  ) : (
+    <SpotPnlPlaceholder isSettled={isSettled} />
+  );
 }
 
-function SpotPnlPlaceholder() {
-  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+function SpotPnlPlaceholder({ isSettled }: { isSettled: boolean }) {
   const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
 
   return (
@@ -168,8 +207,12 @@ function SpotPnlPlaceholder() {
   );
 }
 
-function WalletChip({ walletAddress }: { walletAddress: string }) {
+function SelectedWalletChip({ walletAddress }: { walletAddress: string }) {
   const { accountENS } = useAccountProfileInfo(walletAddress as Address);
+  return <WalletChip ensName={accountENS ?? null} walletAddress={walletAddress} />;
+}
+
+function WalletChip({ ensName: accountENS, walletAddress }: { ensName: string | null; walletAddress: string }) {
   const { data: avatar } = useENSAvatar(accountENS ?? '', { enabled: !!accountENS });
 
   return (
@@ -192,7 +235,7 @@ function WalletChip({ walletAddress }: { walletAddress: string }) {
         </Box>
       )}
       <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
-        {abbreviateEnsForDisplay(accountENS) ?? abbreviateAddress(walletAddress, 4, 6)}
+        {abbreviateEnsForDisplay(accountENS ?? undefined) ?? abbreviateAddress(walletAddress, 4, 6)}
       </Text>
     </Box>
   );

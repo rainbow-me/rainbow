@@ -28,6 +28,7 @@ import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSou
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { type RainbowPosition } from '@/features/positions/types';
+import { type SpotPnlHolder } from '@/features/spot-pnl/core/spotPnl';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
 import { type RainbowWallet } from '@/features/wallet/types';
@@ -734,6 +735,8 @@ type ParamsByRoute = {
   [Routes.SPOT_PNL_SHEET]: {
     address: string;
     chainId: ChainId;
+    /** Shows this wallet instead of the selected one. */
+    holder?: SpotPnlHolder;
   };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;

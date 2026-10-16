@@ -1,0 +1,116 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { TOP_HOLDERS } from '@/features/config/constants/experimental';
+import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
+
+import { useTopHoldersStore } from './topHoldersStore';
+
+const { fetchReverseRecord } = vi.hoisted(() => ({ fetchReverseRecord: vi.fn<(address: string) => Promise<string>>() }));
+vi.mock('@/features/ens/utils/handlers', () => ({ fetchReverseRecord }));
+vi.mock('@/features/config/stores/remoteConfig', async () => {
+  const { setRemoteConfig } = await import('@/features/config/testing/mockRemoteConfig');
+  setRemoteConfig({ top_holders_enabled: false, top_holders_wallet_filter: { categories: ['NORMIE'], excludedLabels: [] } });
+  return import('@/features/config/stores/__mocks__/remoteConfig');
+});
+
+const WHALE = '0xAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa';
+const EXCHANGE = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+function respondWith(body: unknown) {
+  vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } }));
+}
+
+function requestBodies() {
+  return vi.mocked(fetch).mock.calls.map(call => JSON.parse(String(call[1]?.body)));
+}
+
+async function loadViewedToken(address: string) {
+  useViewedTokenStore.getState().setToken({ address, chainId: 8453 });
+  const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
+  await vi.waitFor(() => expect(useTopHoldersStore.getState().getStatus('isSuccess')).toBe(true));
+  unsubscribe();
+  return useTopHoldersStore.getState().getData();
+}
+
+describe('useTopHoldersStore', () => {
+  beforeEach(() => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected request'));
+    fetchReverseRecord.mockResolvedValue('');
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, false);
+  });
+
+  it('does not request Codex while the feature is off', async () => {
+    useViewedTokenStore.getState().setToken({ address: '0xtoken', chainId: 8453 });
+    const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
+    await new Promise(resolve => {
+      setTimeout(resolve, 50);
+    });
+    unsubscribe();
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('joins swap history to holders across address casing, in token units, with ENS names', async () => {
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    fetchReverseRecord.mockImplementation(async address => (address === WHALE.toLowerCase() ? 'whale.eth' : ''));
+    respondWith({
+      data: {
+        holders: {
+          status: 'ENABLED',
+          items: [
+            {
+              address: EXCHANGE,
+              balance: '5000000000000000000000',
+              tokenPriceUsd: '2',
+              wallet: { category: 'EXCHANGE', identityLabels: null },
+            },
+            { address: WHALE, balance: '100000000000000000000', tokenPriceUsd: '2', wallet: { category: 'NORMIE', identityLabels: null } },
+          ],
+        },
+        token: { decimals: 18, info: { totalSupply: '1000' } },
+      },
+    });
+    respondWith({
+      data: {
+        filterTokenWallets: {
+          results: [
+            {
+              address: WHALE.toLowerCase(),
+              purchasedTokenBalance: '100',
+              tokenAcquisitionCostUsd: '50',
+              tokenAmountSold1y: '0',
+              amountSoldUsd1y: '0',
+              realizedProfitUsd1y: '0',
+              lastTransactionAt: 0,
+            },
+          ],
+        },
+      },
+    });
+
+    const data = await loadViewedToken('0xtoken');
+
+    expect(requestBodies().map(body => body.variables)).toEqual([
+      { tokenId: '0xtoken:8453', address: '0xtoken', networkId: 8453 },
+      { wallets: [EXCHANGE, WHALE], tokenId: '0xtoken:8453' },
+    ]);
+    expect(data?.byStake.map(row => [row.holder.address, row.holder.balance, row.valueUsd, row.supplyPercentage])).toEqual([
+      [WHALE, '100', '200', '10'],
+    ]);
+    expect(data?.byProfit.map(row => [row.holder.address, row.pnl.amount])).toEqual([[WHALE, '150']]);
+    expect(data?.ensNames).toEqual({ [WHALE.toLowerCase()]: 'whale.eth' });
+  });
+
+  it('hides the section when Codex does not track holders for the token', async () => {
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    respondWith({ data: { holders: { status: 'DISABLED', items: [] }, token: null } });
+
+    await expect(loadViewedToken('0xuntracked')).resolves.toBeNull();
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+});
