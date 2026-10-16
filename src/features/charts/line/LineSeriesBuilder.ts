@@ -191,12 +191,12 @@ export class LineSeriesBuilder {
 
     for (const s of this.series) {
       if (s.key !== this.highlightedKey) {
-        s.drawCirclesWithInteraction(canvas, params, this.drawPath, effects, interaction, progress, entranceYOffset);
+        s.drawCirclesWithInteraction(canvas, effects, interaction, entranceYOffset);
       }
     }
     if (this.highlightedKey) {
       const highlighted = this.series.find(s => s.key === this.highlightedKey);
-      highlighted?.drawCirclesWithInteraction(canvas, params, this.drawPath, effects, interaction, progress, entranceYOffset);
+      highlighted?.drawCirclesWithInteraction(canvas, effects, interaction, entranceYOffset);
     }
   }
 

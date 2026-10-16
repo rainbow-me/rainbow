@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Canvas, Picture, type SkPicture } from '@shopify/react-native-skia';
 import { useListen } from '@storesjs/stores';
 import { cloneDeep, merge } from 'lodash';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -19,15 +18,13 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { opacity } from '@/design-system/utils/opacity';
-import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
-import { useCleanup } from '@/hooks/useCleanup';
+import { SkiaPictureView, useSkiaRenderer } from '@/framework/ui/components/SkiaPictureView';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { createBlankPicture } from '@/worklets/skia';
 
 import { NoChartData } from '../../components/NoChartData';
 import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
@@ -59,14 +56,6 @@ enum ChartStatus {
 
 const DEFAULT_CHART_HEIGHT = 272;
 const SPINNER_SIZE = 28;
-
-type PreparedChartConfig = {
-  chartHeight: number;
-  chartWidth: number;
-  config: PolymarketChartConfig;
-  initialPicture: SkPicture;
-  initialStatus: ChartStatus;
-};
 
 export const DEFAULT_POLYMARKET_CHART_CONFIG = deepFreeze({
   animation: {
@@ -133,36 +122,20 @@ export const PolymarketChart = memo(function PolymarketChart({
   const backgroundColor = providedBackgroundColor ?? (isDarkMode ? '#141619' : '#FFFFFF');
 
   const xAxisAreaHeight = DEFAULT_POLYMARKET_CHART_CONFIG.chart.xAxisHeight + DEFAULT_POLYMARKET_CHART_CONFIG.chart.xAxisGap * 2;
-  const baseChartHeight = providedChartHeight - xAxisAreaHeight;
-
-  const {
-    chartHeight,
-    chartWidth: preparedChartWidth,
-    config,
-    initialPicture,
-    initialStatus,
-  } = useStableValue<PreparedChartConfig>(() =>
-    prepareChartConfig({
-      backgroundColor,
-      baseChartHeight,
-      chartWidth,
-      isMarketChart,
-      providedChartHeight,
-      providedConfig,
-    })
-  );
+  const chartHeight = providedChartHeight - xAxisAreaHeight;
+  const initialStatus = useStableValue(() => {
+    const data = (isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore).getState().getData();
+    return data ? (data.series.length ? ChartStatus.Loaded : ChartStatus.Empty) : ChartStatus.Loading;
+  });
 
   const internalIsChartGestureActive = useSharedValue(false);
   const isChartGestureActive = providedIsChartGestureActive ?? internalIsChartGestureActive;
 
   const animationProgress = useSharedValue(100);
-  const chartMaxY = useSharedValue(1);
-  const chartMinY = useSharedValue(0);
   const chartStatus = useSharedValue<ChartStatus>(initialStatus);
   const interactionProgress = useSharedValue(0);
 
-  const chartPicture = useSharedValue(initialPicture);
-  const crosshairPicture = useSharedValue(initialPicture);
+  const renderer = useSkiaRenderer<PolymarketChartManager>({ deferred: true });
 
   const buildParagraph = useSkiaText({
     align: 'left',
@@ -172,30 +145,10 @@ export const PolymarketChart = memo(function PolymarketChart({
     weight: 'bold',
   });
 
-  const chartManager = useWorkletClass(() => {
-    'worklet';
-    return new PolymarketChartManager({
-      activeInteraction,
-      animationProgress,
-      buildParagraph,
-      chartHeight,
-      chartMaxY,
-      chartMinY,
-      chartPicture,
-      chartWidth: preparedChartWidth,
-      config,
-      crosshairPicture,
-      interactionProgress,
-      isChartGestureActive,
-      isDarkMode,
-      smoothingMode,
-    });
-  }, true);
-
   const updateChart = useCallback(
     (newData: PolymarketChartData) => {
       runOnUI(() => {
-        if (!chartManager.value) return;
+        if (!renderer.manager) return;
 
         if (newData === null) {
           chartStatus.value = ChartStatus.Loading;
@@ -203,44 +156,51 @@ export const PolymarketChart = memo(function PolymarketChart({
         }
 
         if (newData.series.length > 0) {
-          chartManager.value.setSeriesData(newData.series, isDarkMode);
+          renderer.manager.setSeriesData(newData.series, isDarkMode);
           chartStatus.value = ChartStatus.Loaded;
         } else {
-          chartManager.value.clearData();
+          renderer.manager.clearData();
           chartStatus.value = ChartStatus.Empty;
         }
       })();
     },
-    [chartManager, chartStatus, isDarkMode]
+    [renderer, chartStatus, isDarkMode]
   );
 
-  useListenerRouteGuard(
-    useListen(isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore, state => state.getData(), updateChart, {
-      fireImmediately: true,
-    })
+  const dataListener = useListen(
+    isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore,
+    state => state.getData(),
+    updateChart,
+    { fireImmediately: true }
   );
+  useListenerRouteGuard(dataListener);
 
   const updateHighlightedSeries = useCallback(
     (highlightedSeriesId: string | null) => {
       runOnUI(() => {
-        chartManager.value?.setHighlightedSeries?.(highlightedSeriesId);
+        renderer.manager?.setHighlightedSeries(highlightedSeriesId);
       })();
     },
-    [chartManager]
+    [renderer]
   );
 
-  useListen(usePolymarketStore, state => state.highlightedSeriesId, updateHighlightedSeries, { fireImmediately: true });
+  useListen(usePolymarketStore, state => state.highlightedSeriesId, updateHighlightedSeries, {
+    fireImmediately: true,
+  });
 
   useOnChange(() => {
     runOnUI(() => {
-      chartManager.value?.setColorMode?.(isDarkMode, backgroundColor);
+      renderer.manager?.setColorMode(isDarkMode);
     })();
-  }, [backgroundColor, chartManager, isDarkMode]);
+  }, [renderer, isDarkMode]);
 
-  useOnChange(() => {
-    if (Platform.OS === 'ios') return;
-    runOnUI(() => chartManager.value?.setBuildParagraph?.(buildParagraph))();
-  }, [buildParagraph, chartManager]);
+  const updateParagraphBuilder = useCallback(
+    (manager: PolymarketChartManager) => {
+      'worklet';
+      manager.setBuildParagraph(buildParagraph);
+    },
+    [buildParagraph]
+  );
 
   const chartGesture = useMemo(() => {
     return Gesture.LongPress()
@@ -248,15 +208,15 @@ export const PolymarketChart = memo(function PolymarketChart({
       .minDuration(160)
       .numberOfPointers(1)
       .shouldCancelWhenOutside(true)
-      .onStart(e => chartManager.value?.onLongPressStart?.(e.x))
+      .onStart(e => renderer.manager?.onLongPressStart(e.x))
       .onTouchesMove(e => {
         const touch = e.allTouches[0];
         if (touch) {
-          chartManager.value?.onLongPressMove?.(touch.x, e.state);
+          renderer.manager?.onLongPressMove(touch.x, e.state);
         }
       })
-      .onFinalize(e => chartManager.value?.onLongPressEnd?.(e.state));
-  }, [chartManager]);
+      .onFinalize(e => renderer.manager?.onLongPressEnd(e.state));
+  }, [renderer]);
 
   const isLoading = useDerivedValue(() => chartStatus.value === ChartStatus.Loading);
   const isEmpty = useDerivedValue(() => chartStatus.value === ChartStatus.Empty);
@@ -275,22 +235,34 @@ export const PolymarketChart = memo(function PolymarketChart({
     opacity: withSpring(isEmpty.value ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig),
   }));
 
-  useCleanup(() => {
-    initialPicture.dispose();
-    runOnUI(() => {
-      chartManager.value?.dispose?.();
-      chartManager.value = undefined;
-    })();
-  });
-
   return (
     <View style={[styles.container, { height: providedChartHeight, width: chartWidth }]}>
       <GestureDetector gesture={chartGesture}>
         <Animated.View style={[styles.chartContainer, chartOpacity]}>
-          <Canvas style={styles.canvas}>
-            <Picture picture={chartPicture} />
-            <Picture picture={crosshairPicture} />
-          </Canvas>
+          <SkiaPictureView
+            onUpdate={updateParagraphBuilder}
+            prepare={() => {
+              const config = buildChartConfig(backgroundColor, providedConfig);
+              return output => {
+                'worklet';
+                return new PolymarketChartManager({
+                  activeInteraction,
+                  animationProgress,
+                  buildParagraph,
+                  chartHeight,
+                  chartWidth,
+                  config,
+                  interactionProgress,
+                  isChartGestureActive,
+                  isDarkMode,
+                  output,
+                  smoothingMode,
+                });
+              };
+            }}
+            renderer={renderer}
+            style={styles.canvas}
+          />
         </Animated.View>
       </GestureDetector>
 
@@ -315,39 +287,11 @@ export const PolymarketChart = memo(function PolymarketChart({
   );
 });
 
-function prepareChartConfig({
-  backgroundColor,
-  baseChartHeight,
-  chartWidth,
-  isMarketChart,
-  providedChartHeight,
-  providedConfig,
-}: {
-  backgroundColor: string;
-  baseChartHeight: number;
-  chartWidth: number;
-  isMarketChart: boolean;
-  providedChartHeight: number;
-  providedConfig: PolymarketChartProps['config'];
-}): PreparedChartConfig {
-  const store = (isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore).getState();
-  const cachedData = store.getData();
-
-  let mergedConfig = cloneDeep<PolymarketChartConfig>(DEFAULT_POLYMARKET_CHART_CONFIG);
-  if (providedConfig) mergedConfig = merge(mergedConfig, providedConfig);
-  mergedConfig.chart.backgroundColor = backgroundColor;
-
-  const height = baseChartHeight;
-  const width = chartWidth;
-  const status = cachedData ? (cachedData.series.length ? ChartStatus.Loaded : ChartStatus.Empty) : ChartStatus.Loading;
-
-  return {
-    chartHeight: height,
-    chartWidth: width,
-    config: mergedConfig,
-    initialPicture: createBlankPicture(width, providedChartHeight),
-    initialStatus: status,
-  };
+function buildChartConfig(backgroundColor: string, providedConfig: PolymarketChartProps['config']): PolymarketChartConfig {
+  let config = cloneDeep<PolymarketChartConfig>(DEFAULT_POLYMARKET_CHART_CONFIG);
+  if (providedConfig) config = merge(config, providedConfig);
+  config.chart.backgroundColor = backgroundColor;
+  return config;
 }
 
 const styles = StyleSheet.create({
