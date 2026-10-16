@@ -6,8 +6,8 @@ import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenSto
 
 import { useTopHoldersStore } from './topHoldersStore';
 
-const lookupAddress = vi.fn<(address: string) => Promise<string | null>>();
-vi.mock('@/handlers/web3', () => ({ getProvider: () => ({ lookupAddress }) }));
+const { fetchReverseRecord } = vi.hoisted(() => ({ fetchReverseRecord: vi.fn<(address: string) => Promise<string>>() }));
+vi.mock('@/features/ens/utils/handlers', () => ({ fetchReverseRecord }));
 vi.mock('@/features/config/stores/remoteConfig', async () => {
   const { setRemoteConfig } = await import('@/features/config/testing/mockRemoteConfig');
   setRemoteConfig({ top_holders_enabled: false, top_holders_wallet_filter: { categories: ['NORMIE'], excludedLabels: [] } });
@@ -36,7 +36,7 @@ async function loadViewedToken(address: string) {
 describe('useTopHoldersStore', () => {
   beforeEach(() => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected request'));
-    lookupAddress.mockResolvedValue(null);
+    fetchReverseRecord.mockResolvedValue('');
   });
 
   afterEach(() => {
@@ -57,7 +57,7 @@ describe('useTopHoldersStore', () => {
 
   it('joins swap history to holders across address casing, in token units, with ENS names', async () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
-    lookupAddress.mockImplementation(async address => (address.toLowerCase() === WHALE.toLowerCase() ? 'whale.eth' : null));
+    fetchReverseRecord.mockImplementation(async address => (address === WHALE.toLowerCase() ? 'whale.eth' : ''));
     respondWith({
       data: {
         holders: {

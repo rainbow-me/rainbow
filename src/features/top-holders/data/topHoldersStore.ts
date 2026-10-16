@@ -1,16 +1,15 @@
 import { createDerivedStore, createQueryStore } from '@storesjs/stores';
-import { getAddress } from 'viem';
 
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type TokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { divWorklet, powWorklet } from '@/framework/core/safeMath';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
-import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 
@@ -172,8 +171,7 @@ async function fetchTopHolders(
 
 /** Addresses without a reverse record, or whose lookup fails, are left out. */
 async function fetchEnsNames(addresses: string[]): Promise<Record<string, string>> {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const results = await mapWithConcurrency(addresses, NAME_LOOKUP_CONCURRENCY, address => provider.lookupAddress(getAddress(address)));
+  const results = await mapWithConcurrency(addresses, NAME_LOOKUP_CONCURRENCY, fetchReverseRecord);
   const names: Record<string, string> = {};
   results.forEach((result, index) => {
     if (result.status === 'fulfilled' && result.value) names[addresses[index]] = result.value;

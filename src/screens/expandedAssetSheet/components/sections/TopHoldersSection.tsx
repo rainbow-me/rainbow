@@ -13,7 +13,7 @@ import { SectionId } from '@/screens/expandedAssetSheet/context/ExpandedAssetShe
 
 export const TopHoldersSection = memo(function TopHoldersSection() {
   const isEnabled = useTopHoldersEnabledStore();
-  const hasHolders = useTopHoldersStore(state => !!state.getData());
+  const hasHolders = useTopHoldersStore(state => !state.getStatus('isError') && !!state.getData());
   const token = useViewedTokenStore(state => (state.token && typeof state.token !== 'string' ? state.token : null));
   if (!isEnabled || !hasHolders || !token) return null;
 

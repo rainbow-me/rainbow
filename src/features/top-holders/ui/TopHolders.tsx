@@ -37,7 +37,7 @@ export const TopHolders = memo(function TopHolders({ token }: { token: { address
   return (
     <Box gap={8}>
       {hasProfitHolders && <TabToggle selectedTab={tab} onSelect={setSelectedTab} />}
-      {tab === 'stake' ? <StakeList token={token} /> : <ProfitList token={token} />}
+      <HolderList tab={tab} token={token} />
     </Box>
   );
 });
@@ -104,36 +104,41 @@ function TabButton({ label, onSelect, selectedTab, tab }: { label: string; onSel
   );
 }
 
-function StakeList({ token }: { token: { address: string; chainId: ChainId } }) {
-  const rows = useTopHoldersStore(state => state.getData()?.byStake);
+function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainId: ChainId } }) {
+  const topHolders = useTopHoldersStore(state => state.getData());
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
-  if (!rows) return null;
+  if (!topHolders) return null;
+
+  const rows =
+    tab === 'stake'
+      ? topHolders.byStake.map((row, index) => (
+          <StakeRow
+            key={row.holder.address}
+            nativeCurrency={nativeCurrency}
+            rank={index + 1}
+            row={row}
+            token={token}
+            usdToNativeRate={usdToNativeRate}
+          />
+        ))
+      : topHolders.byProfit.map((row, index) => (
+          <ProfitRow
+            key={row.holder.address}
+            nativeCurrency={nativeCurrency}
+            rank={index + 1}
+            row={row}
+            token={token}
+            usdToNativeRate={usdToNativeRate}
+          />
+        ));
 
   return (
     <Box>
       {rows.map((row, index) => (
-        <React.Fragment key={row.holder.address}>
+        <React.Fragment key={row.key}>
           {index > 0 && <RowSeparator />}
-          <StakeRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} usdToNativeRate={usdToNativeRate} />
-        </React.Fragment>
-      ))}
-    </Box>
-  );
-}
-
-function ProfitList({ token }: { token: { address: string; chainId: ChainId } }) {
-  const rows = useTopHoldersStore(state => state.getData()?.byProfit);
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
-  if (!rows) return null;
-
-  return (
-    <Box>
-      {rows.map((row, index) => (
-        <React.Fragment key={row.holder.address}>
-          {index > 0 && <RowSeparator />}
-          <ProfitRow nativeCurrency={nativeCurrency} rank={index + 1} row={row} token={token} usdToNativeRate={usdToNativeRate} />
+          {row}
         </React.Fragment>
       ))}
     </Box>
