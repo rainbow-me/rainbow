@@ -11,6 +11,15 @@ export type TokenTrades = TokenAcquisition & {
   lastTransactionAt: number;
 };
 
+/** A wallet other than the selected one, with the Codex data it was listed with. */
+export type SpotPnlHolder = {
+  address: string;
+  ensName: string | null;
+  /** Token units. */
+  balance: string;
+  trades: TokenTrades | null;
+};
+
 export type SpotPnlVariant = 'unrealized' | 'partiallyRealized' | 'fullyRealized';
 
 export type PnlReturn = {

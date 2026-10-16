@@ -17,6 +17,7 @@ import {
 } from './sections';
 import { Placement } from './sections/BuySection';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
+import { TopHoldersSection } from './sections/TopHoldersSection';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 
 export const SheetContent = memo(function SheetContent({ accentColor }: { accentColor: string }) {
@@ -44,6 +45,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <ClaimSection />
               <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
+              <TopHoldersSection />
               <BuySection placement={Placement.AFTER_MARKET_STATS} />
               {/* BACKLOGGED */}
               {/* {isOwnedAsset && (
