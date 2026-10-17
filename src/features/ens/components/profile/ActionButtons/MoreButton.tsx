@@ -4,7 +4,7 @@ import { Keyboard, Platform, Share } from 'react-native';
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
 import * as i18n from '@/languages';
@@ -32,7 +32,6 @@ export function MoreButton({ address, ensName }: { address?: string; ensName?: s
   const selectedWallet = useSelectedWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
-  const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
     if (!selectedWallet?.addresses) return false;
@@ -142,7 +141,7 @@ export function MoreButton({ address, ensName }: { address?: string; ensName?: s
         Share.share(Platform.OS === 'android' ? { message: shareLink } : { url: shareLink });
       }
     },
-    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard]
+    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(Platform.OS === 'ios' && { menuTitle: '' }) }), [menuItems]);
