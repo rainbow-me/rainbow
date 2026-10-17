@@ -403,6 +403,15 @@ export async function finalizeAuth({
   return parseAccessCredential(data);
 }
 
+export async function logout(accessToken: string): Promise<void> {
+  await userServiceRequest(() => getCashPlatformClient().post('/auth/Logout', {}, { headers: buildAuthenticatedHeader(accessToken) }));
+}
+
+/** Staging only: other platforms reject it. */
+export async function hardDeleteSelf(accessToken: string): Promise<void> {
+  await userServiceRequest(() => getCashPlatformClient().delete('/dev/HardDeleteSelf', { headers: buildAuthenticatedHeader(accessToken) }));
+}
+
 export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
