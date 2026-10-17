@@ -50,7 +50,7 @@ const CONTENT_WIDTH = PILL.width * Object.keys(TABS).length + PILL.gap * (Object
 
 export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   const { isDarkMode } = useColorMode();
-  const { accountScrollRef, eventsListRef } = usePolymarketContext();
+  const { accountScrollRef, scrollBrowseToTop } = usePolymarketContext();
 
   const buttonWidth = useDerivedValue<number>(() => PILL.width);
   const initialIndex = TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0;
@@ -76,7 +76,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       if (PolymarketNavigation.isRouteActive(tab)) {
         switch (tab) {
           case Routes.POLYMARKET_BROWSE_EVENTS_SCREEN:
-            eventsListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+            scrollBrowseToTop();
             break;
           case Routes.POLYMARKET_ACCOUNT_SCREEN:
             accountScrollRef.current?.scrollTo({ animated: true, y: 0 });
@@ -86,7 +86,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
         PolymarketNavigation.navigate(tab);
       }
     },
-    [accountScrollRef, eventsListRef]
+    [accountScrollRef, scrollBrowseToTop]
   );
 
   const onPress = useCallback(
