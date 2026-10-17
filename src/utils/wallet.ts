@@ -43,14 +43,16 @@ export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string,
   };
 };
 
-export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromMnemonic> => {
-  let seed;
+export const mnemonicToSeedBytes = async (mnemonic: string): Promise<Buffer> => {
   if (Platform.OS === 'ios') {
-    seed = await mnemonicToSeed(mnemonic);
-  } else {
-    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
-    seed = new Buffer(res, 'base64');
+    return mnemonicToSeed(mnemonic);
   }
+  const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
+  return Buffer.from(res, 'base64');
+};
+
+export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromMnemonic> => {
+  const seed = await mnemonicToSeedBytes(mnemonic);
   const hdWallet = hdkey.fromMasterSeed(seed);
   const root = hdWallet.derivePath(DEFAULT_HD_PATH);
   const child = root.deriveChild(index);
