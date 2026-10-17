@@ -349,6 +349,20 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return { emoji: '⛏', extraHeight: -31, text: MINER_TIP_EXPLAINER, title: i18n.t(i18n.l.explain.miner_tip.title) };
     case 'sending_funds_to_contract':
       return { emoji: '✋', extraHeight: 80, text: SENDING_FUNDS_TO_CONTRACT, title: i18n.t(i18n.l.explain.sending_to_contract.title) };
+    case 'spot_pnl_excluded_tokens':
+      return {
+        emoji: '🎁',
+        extraHeight: -60,
+        text: i18n.t(i18n.l.explain.spot_pnl_excluded_tokens.text),
+        title: i18n.t(i18n.l.explain.spot_pnl_excluded_tokens.title),
+      };
+    case 'spot_pnl_realized_window':
+      return {
+        emoji: '🗓️',
+        extraHeight: -90,
+        text: i18n.t(i18n.l.explain.spot_pnl_realized_window.text),
+        title: i18n.t(i18n.l.explain.spot_pnl_realized_window.title),
+      };
     case 'unverified': {
       const { asset } = params;
       const handlePress = () => {
