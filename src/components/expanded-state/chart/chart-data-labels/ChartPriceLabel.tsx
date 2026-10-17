@@ -4,8 +4,8 @@ import { useDerivedValue, type DerivedValue, type SharedValue } from 'react-nati
 
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
-import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
+import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -23,7 +23,7 @@ type ChartPriceLabelProps = {
 
 export function ChartPriceLabel({ price, backgroundColor, isLineChartGestureActive }: ChartPriceLabelProps) {
   const currency = useStoreSharedValue(userAssetsStoreManager, state => state.currency);
-  const isHyperliquidChart = useStoreSharedValue(useChartsStore, state => isHyperliquidToken(state.token));
+  const isHyperliquidChart = useStoreSharedValue(useViewedTokenStore, state => isHyperliquidToken(state.token));
 
   const formattedPrice = useDerivedValue(() => {
     if (!price.value) return translations.noPriceData;
