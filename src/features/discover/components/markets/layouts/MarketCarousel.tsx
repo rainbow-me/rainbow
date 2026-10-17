@@ -1,25 +1,22 @@
-import React, { Fragment, useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import React, { Fragment, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
-import { useDebouncedCallback } from 'use-debounce';
 
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { Box } from '@/design-system';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
+import { useTrackDiscoverCarouselScroll } from '@/features/discover/hooks/useTrackDiscoverCarouselScroll';
 import { type CardPressHandler, type CarouselSectionDescriptor, type OrderPressHandler } from '@/features/discover/types/sectionLayout';
-import { trackPlacementInteraction, trackSurfaceInteraction } from '@/features/placements/engagement/trackInteraction';
+import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
-import { time } from '@/framework/core/utils/time';
 
 import { computeSnapToOffsets } from './carouselLayout';
 
 const HORIZONTAL_PADDING = 12;
 const CARD_GAP = HORIZONTAL_PADDING;
-const SCROLL_DEBOUNCE_MS = time.ms(500);
-const SCROLL_DEBOUNCE_OPTIONS = Object.freeze({ leading: false, trailing: true });
 
 function noopPress(): undefined {
   return undefined;
@@ -82,31 +79,7 @@ export function MarketCarousel<T extends PlacementItem>({
     ({ item, index }: { item: T; index: number }) => {
       const onCardPress: CardPressHandler = placement
         ? metadata => {
-            analytics.track(event.discoverCardPressed, {
-              placementId: placement.id,
-              placementSource: placement.source,
-              placementTitle: title,
-              itemOrder: index,
-              itemId: item.id,
-              marketId: metadata.marketId,
-              marketName: metadata.marketName,
-              marketSlug: metadata.marketSlug,
-              marketSymbol: metadata.marketSymbol,
-              marketType: placement.type,
-            });
-            trackPlacementInteraction({
-              display: section.display,
-              id: placement.id,
-              interactionType: 'card_press',
-              itemId: item.id,
-              itemOrder: index,
-              sectionId: section.id,
-              sectionTitle: title,
-              source: placement.source,
-              surfaceId,
-              type: placement.type,
-              version: placement.version,
-            });
+            trackDiscoverCardPress({ placement, section, surfaceId, title, itemId: item.id, itemOrder: index, metadata });
           }
         : noopPress;
       const onOrderPress: OrderPressHandler = placement
@@ -136,28 +109,10 @@ export function MarketCarousel<T extends PlacementItem>({
         </View>
       );
     },
-    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, renderItem, section.display, section.id, surfaceId, title]
+    [defaultItemWidth, itemHeight, itemVerticalBleed, itemWidths, placement, renderItem, section, surfaceId, title]
   );
 
-  const onScrollSettle = useDebouncedCallback(
-    () => {
-      analytics.track(event.discoverCarouselScrolled, {
-        display: section.display,
-        sectionId: section.id,
-      });
-
-      trackSurfaceInteraction({
-        display: section.display,
-        id: surfaceId,
-        sectionId: section.id,
-        sectionTitle: title,
-      });
-    },
-    SCROLL_DEBOUNCE_MS,
-    SCROLL_DEBOUNCE_OPTIONS
-  );
-
-  useEffect(() => () => onScrollSettle.flush(), [onScrollSettle]);
+  const onScrollSettle = useTrackDiscoverCarouselScroll(section, surfaceId, title);
 
   if (!showSkeletons && data.length === 0) return null;
 
