@@ -1,0 +1,58 @@
+# On iOS, RNGH can block a native gesture that is allowed to recognize alongside
+# a scroll view's pan. RNGH attaches a RNDummyGestureRecognizer to React Native's
+# scroll wrapper and copies the underlying UIScrollView pan's state. UIKit treats
+# the dummy as a separate recognizer. RNGH permits the dummy and its own pan to
+# recognize together, but does not preserve the pan's compatibility with other
+# native recognizers. The dummy can therefore prevent an otherwise compatible
+# gesture if it activates first.
+#
+# Extend the existing scroll compatibility check to honor permission from either
+# native delegate for the scroll pan and a recognizer outside RNGH to recognize
+# together. This keeps the dummy consistent with the pan it represents while
+# preserving explicit RNGH relationships. Exclude macOS, where the dummy begins
+# on mouse-down instead of mirroring the scroll pan.
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+@@ -594,13 +594,36 @@
+ - (BOOL)areScrollViewRecognizersCompatible:(UIGestureRecognizer *)gestureRecognizer
+                            otherRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+ {
+-  if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] &&
+-      [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+-    RNGHUIScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
+-    if (scrollView && scrollView == otherGestureRecognizer.view) {
++  if (![gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
++    return NO;
++  }
++
++  RNGHUIScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
++  if (scrollView == nil) {
++    return NO;
++  }
++
++  if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] && scrollView == otherGestureRecognizer.view) {
++    return YES;
++  }
++
++#if !TARGET_OS_OSX
++  // Preserve explicit RNGH relationships. For external recognizers, the native
++  // scroll proxy must honor simultaneity granted to the pan it represents.
++  if ([RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer] == nil) {
++    UIPanGestureRecognizer *pan = scrollView.panGestureRecognizer;
++    SEL simultaneous = @selector(gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:);
++    if ([pan.delegate respondsToSelector:simultaneous] &&
++        [pan.delegate gestureRecognizer:pan shouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer]) {
+       return YES;
+     }
+-  }
++    if ([otherGestureRecognizer.delegate respondsToSelector:simultaneous] &&
++        [otherGestureRecognizer.delegate gestureRecognizer:otherGestureRecognizer
++            shouldRecognizeSimultaneouslyWithGestureRecognizer:pan]) {
++      return YES;
++    }
++  }
++#endif
+ 
+   return NO;
+ }
