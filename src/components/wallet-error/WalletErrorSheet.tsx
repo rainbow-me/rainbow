@@ -1,5 +1,5 @@
 import React from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
 
@@ -61,12 +61,9 @@ export function WalletErrorSheet() {
               <ButtonPressAnimation
                 style={{ padding: 21 }}
                 onPress={() => {
-                  navigation.goBack();
-                  InteractionManager.runAfterInteractions(() => {
-                    navigation.navigate(Routes.ADD_WALLET_NAVIGATOR, {
-                      flowContext: 'in_app',
-                      isFirstWallet: true,
-                    });
+                  navigation.replace(Routes.ADD_WALLET_NAVIGATOR, {
+                    flowContext: 'in_app',
+                    isFirstWallet: true,
                   });
                 }}
               >

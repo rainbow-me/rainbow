@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert } from 'react-native';
 
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
@@ -26,7 +26,6 @@ import { TriggerOrderType } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
-import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -162,14 +161,10 @@ function PanelContent({ symbol }: PanelContentProps) {
         orderId: getOrderIdFromCloseStatus(closeStatus),
       });
 
-      navigation.goBack();
-
       if (closedTrade) {
-        setTimeout(() => {
-          InteractionManager.runAfterInteractions(() => {
-            Navigation.handleAction(Routes.PERPS_TRADE_DETAILS_SHEET, { trade: closedTrade });
-          });
-        }, time.ms(250));
+        Navigation.replace(Routes.PERPS_TRADE_DETAILS_SHEET, { trade: closedTrade });
+      } else {
+        navigation.goBack();
       }
     } catch (e) {
       const errorMessage = parseHyperliquidErrorMessage(e);

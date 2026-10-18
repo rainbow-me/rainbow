@@ -1,5 +1,4 @@
 import React from 'react';
-import { InteractionManager } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
@@ -36,7 +35,7 @@ export const AddWalletSheet = () => {
     params: { flowContext = 'in_app', isFirstWallet },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
-  const { goBack, navigate } = useNavigation();
+  const { navigate, replace } = useNavigation();
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
@@ -99,13 +98,10 @@ export const AddWalletSheet = () => {
       isFirstWallet: false,
       type: 'ledger_nano_x',
     });
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-        entryPoint: Routes.ADD_WALLET_SHEET,
-        flowContext,
-        isFirstWallet,
-      });
+    replace(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+      entryPoint: Routes.ADD_WALLET_SHEET,
+      flowContext,
+      isFirstWallet,
     });
   };
 
@@ -159,10 +155,8 @@ export const AddWalletSheet = () => {
     icon: BackupWarning,
     iconColor: globalColors.yellow60,
     onPress: () => {
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.MODAL_SCREEN, {
-          type: 'dev_test_backup',
-        });
+      navigate(Routes.MODAL_SCREEN, {
+        type: 'dev_test_backup',
       });
     },
   };
