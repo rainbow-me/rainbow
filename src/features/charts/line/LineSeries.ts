@@ -84,7 +84,7 @@ export class LineSeries {
   private readonly __workletClass = true;
 
   public readonly key: string;
-  public readonly label: string;
+  public label: string;
 
   private readonly lineWidth: number;
   private readonly paint: SkPaint;
@@ -722,13 +722,20 @@ export class LineSeries {
     }
   }
 
-  public setColor(colors: ResponseByTheme<string>): void {
+  public setColor(colors: ResponseByTheme<string>, isDarkMode: boolean): void {
+    if (this.isDarkMode === isDarkMode && this.colorString.dark === colors.dark && this.colorString.light === colors.light) return;
+
+    this.isDarkMode = isDarkMode;
     this.color = { dark: Skia.Color(colors.dark), light: Skia.Color(colors.light) };
     this.colorString = colors;
     const newColor = this.getColor();
+    const alpha = this.paint.getAlphaf();
     this.paint.setColor(newColor);
+    this.paint.setAlphaf(alpha);
     if (this.highlightPaint) {
+      const highlightAlpha = this.highlightPaint.getAlphaf();
       this.highlightPaint.setColor(newColor);
+      this.highlightPaint.setAlphaf(highlightAlpha);
     }
   }
 

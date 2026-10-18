@@ -32,7 +32,6 @@ export class LineSeriesBuilder {
   private highlightedKey: string | null = null;
   private readonly lineWidth: number;
   private series: LineSeries[] = [];
-  private previousSeriesKeys: string[] = [];
 
   constructor(lineWidth = 2) {
     this.drawPath = Skia.Path.Make();
@@ -52,24 +51,8 @@ export class LineSeriesBuilder {
     return max;
   }
 
-  public getSeriesKeys(): string[] {
-    return this.series.map(s => s.key);
-  }
-
   public getSeries(key: string): LineSeries | undefined {
     return this.series.find(s => s.key === key);
-  }
-
-  /**
-   * Captures the current visual state as animation starting point.
-   * Supports smooth interruption - if called mid-animation, captures the
-   * interpolated visual at current progress.
-   */
-  public captureStartState(progress: number, params: DrawParams): void {
-    for (const s of this.series) {
-      s.captureStartState(progress, params);
-    }
-    this.previousSeriesKeys = this.series.map(s => s.key);
   }
 
   /**
@@ -82,15 +65,24 @@ export class LineSeriesBuilder {
     }
   }
 
-  public setSeriesData(seriesData: SeriesDataInput[], isDarkMode: boolean): void {
-    const newKeys = seriesData.map(d => d.key);
-    const keysMatch = this.previousSeriesKeys.length === newKeys.length && this.previousSeriesKeys.every((k, i) => k === newKeys[i]);
+  /**
+   * Returns true if the series IDs or their order changed.
+   */
+  public setSeriesData(
+    seriesData: SeriesDataInput[],
+    isDarkMode: boolean,
+    animationStart?: { params: DrawParams; progress: number }
+  ): boolean {
+    const didSeriesChange = seriesData.length !== this.series.length || seriesData.some((data, i) => data.key !== this.series[i].key);
 
-    if (keysMatch && this.series.length === seriesData.length) {
+    if (!didSeriesChange) {
       for (let i = 0; i < seriesData.length; i++) {
         const data = seriesData[i];
         const existing = this.series[i];
+        if (animationStart) existing.captureStartState(animationStart.progress, animationStart.params);
+        existing.label = data.label;
         existing.setData(data.prices, data.timestamps);
+        existing.setColor(data.color, isDarkMode);
       }
     } else {
       for (const s of this.series) {
@@ -114,13 +106,13 @@ export class LineSeriesBuilder {
         return series;
       });
     }
+    return didSeriesChange;
   }
 
   public clearAnimationState(): void {
     for (const s of this.series) {
       s.clearAnimationState();
     }
-    this.previousSeriesKeys = [];
   }
 
   public clearSeries(): void {
@@ -129,7 +121,6 @@ export class LineSeriesBuilder {
     }
     this.series = [];
     this.highlightedKey = null;
-    this.previousSeriesKeys = [];
   }
 
   public getMinMaxForRange(endIndex: number, startIndex: number): MinMax | null {
@@ -279,6 +270,5 @@ export class LineSeriesBuilder {
     this.series = [];
     this.drawPath.dispose();
     this.highlightedKey = null;
-    this.previousSeriesKeys = [];
   }
 }
