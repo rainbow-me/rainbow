@@ -157,7 +157,7 @@ const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext) as unknown as string;
+  const initialRoute = useContext(InitialRouteContext);
 
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
