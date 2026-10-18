@@ -4966,7 +4966,7 @@ DEPENDENCIES:
   - nanopb
   - NitroMmkv (from `../node_modules/react-native-mmkv`)
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
-  - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
+  - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `32cfb38913027b80d5ea7162487dcf0392d70ee5`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
@@ -5204,7 +5204,7 @@ EXTERNAL SOURCES:
   NitroModules:
     :path: "../node_modules/react-native-nitro-modules"
   PanModal:
-    :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
+    :commit: 32cfb38913027b80d5ea7162487dcf0392d70ee5
     :git: https://github.com/rainbow-me/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera"
@@ -5479,7 +5479,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
+    :commit: 32cfb38913027b80d5ea7162487dcf0392d70ee5
     :git: https://github.com/rainbow-me/PanModal
 
 SPEC CHECKSUMS:
@@ -5540,7 +5540,7 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroMmkv: 88922f1b56c9e785c87ec57aeec8149999e5fcea
   NitroModules: 7cc0b0ac6a04460182d6fe0bf859381a06862087
-  PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
+  PanModal: 01aab752499421df00faea07230bcc60ea43ae86
   Permission-Camera: cf14fb2d76432ee0f36546249ee608ef6037a23e
   Permission-FaceID: 57f30c981224753654df9350828dfbfc75dc5e83
   Permission-Notifications: e254bc5abf9c33a6ac6b9f68f4c406d5bf7ab46e
@@ -5685,6 +5685,6 @@ SPEC CHECKSUMS:
   VisionCamera: b51af005669c6642dd1b4fca434eda4c1778de87
   Yoga: 3196a843cc5f4bc433f1a41cf17cdf804a01a529
 
-PODFILE CHECKSUM: 3f08f6fceded05dc4f4dda9eb79d6f9bb063e13b
+PODFILE CHECKSUM: 109c7e1f78e65c0f7b4e5c57148f2f1745fc98d5
 
 COCOAPODS: 1.16.2

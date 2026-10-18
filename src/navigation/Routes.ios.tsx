@@ -111,6 +111,7 @@ import {
   claimAirdropSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
+  depositSheetConfig,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -154,7 +155,7 @@ import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackCoolModalNavigator();
+const NativeStack = createNativeStackCoolModalNavigator<RootStackParamList>();
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
@@ -293,8 +294,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
-      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...depositSheetConfig} />
+      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...depositSheetConfig} />
       <NativeStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...perpsDepositWithdrawalConfig} />
       <NativeStack.Screen
