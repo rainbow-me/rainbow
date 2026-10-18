@@ -19,7 +19,6 @@ import { globalColors, useColorMode, useForegroundColor } from '@/design-system'
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { opacity } from '@/design-system/utils/opacity';
 import { SkiaPictureView, useSkiaRenderer } from '@/framework/ui/components/SkiaPictureView';
-import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
@@ -30,7 +29,7 @@ import { NoChartData } from '../../components/NoChartData';
 import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
 import { PolymarketChartManager, type ActiveInteractionData, type PolymarketChartConfig } from '../classes/PolymarketChartManager';
 import { usePolymarketChartStore, usePolymarketMarketChartStore } from '../stores/polymarketChartStore';
-import { usePolymarketStore } from '../stores/polymarketStore';
+import { usePolymarketStore, type PolymarketStoreState } from '../stores/polymarketStore';
 import { EntranceAnimation, SERIES_PALETTES, SeriesPalette, type PolymarketChartData } from '../types';
 
 export type PartialPolymarketChartConfig = DeepPartial<
@@ -120,11 +119,14 @@ export const PolymarketChart = memo(function PolymarketChart({
   const { isDarkMode } = useColorMode();
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const backgroundColor = providedBackgroundColor ?? (isDarkMode ? '#141619' : '#FFFFFF');
+  const lineColors = providedConfig?.line?.colors ?? DEFAULT_POLYMARKET_CHART_CONFIG.line.colors;
+  const overrideSeriesColors = providedConfig?.line?.overrideSeriesColors ?? DEFAULT_POLYMARKET_CHART_CONFIG.line.overrideSeriesColors;
 
   const xAxisAreaHeight = DEFAULT_POLYMARKET_CHART_CONFIG.chart.xAxisHeight + DEFAULT_POLYMARKET_CHART_CONFIG.chart.xAxisGap * 2;
   const chartHeight = providedChartHeight - xAxisAreaHeight;
+  const chartStore = isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore;
   const initialStatus = useStableValue(() => {
-    const data = (isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore).getState().getData();
+    const data = chartStore.getState().getData();
     return data ? (data.series.length ? ChartStatus.Loaded : ChartStatus.Empty) : ChartStatus.Loading;
   });
 
@@ -145,35 +147,26 @@ export const PolymarketChart = memo(function PolymarketChart({
     weight: 'bold',
   });
 
+  const selectChartId = useCallback(
+    (state: PolymarketStoreState) => (isMarketChart ? (state.selectedMarketFilter?.tokenIds.join(',') ?? null) : state.selectedEventSlug),
+    [isMarketChart]
+  );
+
   const updateChart = useCallback(
     (newData: PolymarketChartData) => {
+      const chartId = selectChartId(usePolymarketStore.getState());
       runOnUI(() => {
-        if (!renderer.manager) return;
-
-        if (newData === null) {
-          chartStatus.value = ChartStatus.Loading;
-          return;
-        }
-
-        if (newData.series.length > 0) {
-          renderer.manager.setSeriesData(newData.series, isDarkMode);
-          chartStatus.value = ChartStatus.Loaded;
-        } else {
-          renderer.manager.clearData();
-          chartStatus.value = ChartStatus.Empty;
-        }
+        renderer.manager?.setSeriesData(newData?.series ?? null, chartId);
+        chartStatus.value = newData === null ? ChartStatus.Loading : newData.series.length ? ChartStatus.Loaded : ChartStatus.Empty;
       })();
     },
-    [renderer, chartStatus, isDarkMode]
+    [chartStatus, renderer, selectChartId]
   );
 
-  const dataListener = useListen(
-    isMarketChart ? usePolymarketMarketChartStore : usePolymarketChartStore,
-    state => state.getData(),
-    updateChart,
-    { fireImmediately: true }
-  );
+  const dataListener = useListen(chartStore, state => state.getData(), updateChart, { fireImmediately: true });
   useListenerRouteGuard(dataListener);
+
+  useListen(usePolymarketStore, selectChartId, chartId => runOnUI(() => renderer.manager?.setSeriesData(null, chartId))());
 
   const updateHighlightedSeries = useCallback(
     (highlightedSeriesId: string | null) => {
@@ -188,18 +181,12 @@ export const PolymarketChart = memo(function PolymarketChart({
     fireImmediately: true,
   });
 
-  useOnChange(() => {
-    runOnUI(() => {
-      renderer.manager?.setColorMode(isDarkMode);
-    })();
-  }, [renderer, isDarkMode]);
-
-  const updateParagraphBuilder = useCallback(
+  const updateAppearance = useCallback(
     (manager: PolymarketChartManager) => {
       'worklet';
-      manager.setBuildParagraph(buildParagraph);
+      manager.updateAppearance({ buildParagraph, isDarkMode, lineColors, overrideSeriesColors });
     },
-    [buildParagraph]
+    [buildParagraph, isDarkMode, lineColors, overrideSeriesColors]
   );
 
   const chartGesture = useMemo(() => {
@@ -240,7 +227,7 @@ export const PolymarketChart = memo(function PolymarketChart({
       <GestureDetector gesture={chartGesture}>
         <Animated.View style={[styles.chartContainer, chartOpacity]}>
           <SkiaPictureView
-            onUpdate={updateParagraphBuilder}
+            onUpdate={updateAppearance}
             prepare={() => {
               const config = buildChartConfig(backgroundColor, providedConfig);
               return output => {
