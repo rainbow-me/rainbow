@@ -1,12 +1,13 @@
 #import <React/RCTViewManager.h>
-#import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTInvalidating.h>
+
+@class RNCMScreenView;
 
 @interface RNCMScreenStackView : UIView <RCTInvalidating>
 
-@property (nonatomic, copy) RCTDirectEventBlock onFinishTransitioning;
-
-- (void)markChildUpdated;
-- (void)didUpdateChildren;
+- (void)updateContainer;
+- (void)setNeedsContainerUpdate;
+- (void)screenDidDisappear:(RNCMScreenView *)screen;
 
 @end
 

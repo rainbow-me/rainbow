@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RNCMScreen.h"
+#import "RNCMScreenStack.h"
 
 #import <React/RCTUIManager.h>
 #import <React/RCTShadowView.h>
@@ -16,6 +17,10 @@
   __weak RCTBridge *_bridge;
   RNCMScreen *_controller;
   RCTTouchHandler *_touchHandler;
+  NSNumber *_dismissalRequest;
+  BOOL _presentationChanged;
+  BOOL _layoutChanged;
+  BOOL _heightChanged;
 }
 
 @synthesize controller = _controller;
@@ -40,8 +45,7 @@
     _anchorModalToLongForm = false;
     _allowsDragToDismiss = true;
     _allowsTapToDismiss = true;
-    _showDragIndicator = true;
-    _blocksBackgroundTouches = true;
+    _inStack = YES;
     _headerHeight = [[NSNumber alloc] initWithInt:0];
     _shortFormHeight = [[NSNumber alloc] initWithInt:300];;
     _startFromShortForm = false;
@@ -50,52 +54,70 @@
     _dismissable = YES;
     _ignoreBottomOffset = NO;
     _interactWithScrollView = true;
-    _hidden = false;
     _disableShortFormAfterTransitionToLongForm = false;
-    _relevantScrollViewDepth = @1;
   }
   
   return self;
 }
 
 - (void)willDismiss {
-  _onWillDismiss(nil);
-}
-
-- (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
-  _isShortFormEnabled = isShortFormEnabled;
-  [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
-}
-
-- (void) layout {
-  [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
-}
-
-- (void) setHidden:(BOOL)hidden {
-  if (hidden) {
-    _hidden = hidden;
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC);
-    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
-      if (self.superview.superview.subviews.count > 0) {
-        self.superview.superview.subviews[0].backgroundColor = [UIColor.whiteColor colorWithAlphaComponent:0];
-      }
-      [(PanModalViewController*) [_controller parentVC] hide];
-    });
+  _dismissalRequest = @(_presentationRequest);
+  if (_onWillDismiss) {
+    _onWillDismiss(nil);
   }
+  [(RNCMScreenStackView *)_reactSuperview setNeedsContainerUpdate];
 }
 
-- (void)jumpTo:(nonnull NSNumber*)point {
-  [(PanModalViewController*) [_controller parentVC] jumpToLong:point];
+- (void)setPresentationRequest:(NSInteger)presentationRequest {
+  if (_presentationRequest == presentationRequest) return;
+  _presentationRequest = presentationRequest;
+  _presentationChanged = YES;
 }
 
--(void)setLongFormHeight:(NSNumber *)longFormHeight {
-  _longFormHeight = longFormHeight;
-  [(PanModalViewController*) [_controller parentVC] rejump];
+- (void)setIsShortFormEnabled:(BOOL)isShortFormEnabled {
+  if (_isShortFormEnabled == isShortFormEnabled) return;
+  _isShortFormEnabled = isShortFormEnabled;
+  _layoutChanged = YES;
 }
 
--(void)setShortFormHeight:(NSNumber *)shortFormHeight {
-  _shortFormHeight = shortFormHeight;
-  [(PanModalViewController*) [_controller parentVC] rejump];
+- (void)setLongFormHeight:(NSNumber *)height {
+  if ([_longFormHeight isEqualToNumber:height]) return;
+  _longFormHeight = height;
+  _heightChanged = YES;
+}
+
+- (void)setShortFormHeight:(NSNumber *)height {
+  if ([_shortFormHeight isEqualToNumber:height]) return;
+  _shortFormHeight = height;
+  _heightChanged = YES;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps {
+  [super didSetProps:changedProps];
+  [(RNCMScreenStackView *)_reactSuperview setNeedsContainerUpdate];
+}
+
+- (void)applyConfiguration {
+  PanModalViewController *presenter = (PanModalViewController *)[_controller parentVC];
+  BOOL restore = _presentationChanged && _inStack;
+  if (_presentationChanged) {
+    _dismissed = NO;
+    _skipsOnReturn = NO;
+  }
+  if (_skipsOnReturn && !_limitActiveModals) {
+    _skipsOnReturn = NO;
+    restore = _inStack;
+  }
+  if (restore) {
+    [presenter panModalSetNeedsLayoutUpdateWrapper];
+    [presenter restorePresentation];
+  } else if (_inStack && !_skipsOnReturn && !presenter.dismissing && !presenter.hiding) {
+    if (_heightChanged) [presenter rejump];
+    else if (_layoutChanged) [presenter panModalSetNeedsLayoutUpdateWrapper];
+  }
+  _presentationChanged = NO;
+  _layoutChanged = NO;
+  _heightChanged = NO;
 }
 
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
@@ -190,7 +212,7 @@
       break;
     case RNSScreenStackAnimationNone:
     case RNSScreenStackAnimationDefault:
-      // Default
+      _controller.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
       break;
   }
 }
@@ -215,18 +237,16 @@
 //  }
 //}
 
-- (void)notifyFinishTransitioning
-{
-  [_controller notifyFinishTransitioning];
-}
-
 - (void)notifyDismissed
 {
-  _dismissed = YES;
+  if (_dismissed) return;
+  NSNumber *request = _dismissalRequest ?: @(_presentationRequest);
+  _dismissalRequest = nil;
+  _dismissed = request.integerValue == _presentationRequest;
   if (self.onDismissed) {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (self.onDismissed) {
-        self.onDismissed(nil);
+        self.onDismissed(@{ @"presentationRequest": request });
       }
     });
   }
@@ -234,6 +254,8 @@
 
 - (void)notifyAppear
 {
+  _dismissalRequest = nil;
+  [(RNCMScreenStackView *)_reactSuperview setNeedsContainerUpdate];
   if (self.onAppear) {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (self.onAppear) {
@@ -299,20 +321,13 @@
 
 - (void)invalidate
 {
-  if (self.stackPresentation != RNSScreenStackPresentationModal) {
-    _controller = nil;
-  }
-}
-
-- (void)removeController {
-  //_controller = nil;
+  _controller = nil;
 }
 
 @end
 
 @implementation RNCMScreen {
-  __weak id _previousFirstResponder;
-  CGRect _lastViewFrame;
+  CGSize _lastViewSize;
   UIViewController *_parentVC;
 }
 
@@ -352,10 +367,9 @@
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
-  [_parentVC viewDidLayoutSubviews];
   
-  if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
-    _lastViewFrame = self.view.frame;
+  if (!CGSizeEqualToSize(_lastViewSize, self.view.bounds.size)) {
+    _lastViewSize = self.view.bounds.size;
     [((RNCMScreenView *)self.viewIfLoaded) updateBounds];
   }
 }
@@ -370,49 +384,19 @@
   }
 }
 
-- (id)findFirstResponder:(UIView*)parent
-{
-  if (parent.isFirstResponder) {
-    return parent;
-  }
-  for (UIView *subView in parent.subviews) {
-    id responder = [self findFirstResponder:subView];
-    if (responder != nil) {
-      return responder;
-    }
-  }
-  return nil;
-}
-
-- (void)willMoveToParentViewController:(UIViewController *)parent
-{
-  [super willMoveToParentViewController:parent];
-  if (parent == nil) {
-    id responder = [self findFirstResponder:self.view];
-    if (responder != nil) {
-      _previousFirstResponder = responder;
-    }
-  }
-}
-
 - (void)viewDidDisappear:(BOOL)animated
 {
   [super viewDidDisappear:animated];
-  if (self.parentViewController == nil && self.presentingViewController == nil) {
-    [((RNCMScreenView *)self.view) notifyDismissed];
+  RNCMScreenView *screen = (RNCMScreenView *)self.view;
+  if (screen.stackPresentation == RNSScreenStackPresentationPush &&
+      self.parentViewController == nil && self.presentingViewController == nil) {
+    [screen notifyDismissed];
   }
-  _parentVC = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
   [super viewDidAppear:animated];
-}
-
-- (void)notifyFinishTransitioning
-{
-  [_previousFirstResponder becomeFirstResponder];
-  _previousFirstResponder = nil;
 }
 
 - (PanModalViewController*) parentVC {
@@ -423,32 +407,9 @@
 
 @implementation RNCMScreenManager
 
-RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactTag) {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
-      RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
-      return;
-    }
-    [(RNCMScreenView *) view jumpTo:point];
-  }];
-}
-
-RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    if (!view || ![view isKindOfClass:[RNCMScreenView class]]) {
-      RCTLogError(@"Cannot find RNCMScreenView with tag #%@", reactTag);
-      return;
-    }
-    [(RNCMScreenView *) view layout];
-  }];
-}
-
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(showDragIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(customStack, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(dismissable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(interactWithScrollView, BOOL)
@@ -461,6 +422,7 @@ RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTouchTop, RCTDirectEventBlock)
 
 RCT_EXPORT_VIEW_PROPERTY(onWillDismiss, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(presentationRequest, NSInteger);
 RCT_EXPORT_VIEW_PROPERTY(springDamping, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(transitionDuration, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(modalBackgroundColor, UIColor)
@@ -468,16 +430,15 @@ RCT_EXPORT_VIEW_PROPERTY(backgroundOpacity, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(longFormHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(headerHeight, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(shortFormHeight, NSNumber)
-RCT_EXPORT_VIEW_PROPERTY(relevantScrollViewDepth, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(isShortFormEnabled, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(blocksBackgroundTouches, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(anchorModalToLongForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(disableShortFormAfterTransitionToLongForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsTapToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsDragToDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(inStack, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(limitActiveModals, BOOL)
 
 - (UIView *)view
 {

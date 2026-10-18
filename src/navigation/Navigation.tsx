@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import {
   CommonActions,
@@ -174,70 +175,43 @@ function assertRoute(route: Route | string): asserts route is Route {
 
 /**
  * Internal helper for dispatching navigation actions.
- * Handles sheet coordination.
  */
 function dispatchAction<RouteName extends Route>(
   action: DispatchActionParam,
   routeName: RouteName,
   params: RootStackParamList[RouteName]
 ): void {
-  function dispatch(): void {
-    if (navigationRef?.isReady()) {
-      cancelPendingRouteChange();
-      prefetchRoute(routeName, params);
-      setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
-      navigationRef.dispatch(action);
-    }
+  if (Platform.OS !== 'ios' && NATIVE_ROUTES.has(routeName)) {
+    const wasBlocked = blocked;
+    block();
+    if (wasBlocked) return;
   }
 
-  if (!NATIVE_ROUTES.has(routeName)) {
-    dispatch();
-    return;
+  if (navigationRef?.isReady()) {
+    pendingRouteChangeId += 1;
+    prefetchRoute(routeName, params);
+    setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
+    navigationRef.dispatch(action);
   }
-
-  const wasBlocked = blocked;
-  block();
-  if (wasBlocked) return;
-
-  runAfterSheetDismissal(dispatch);
 }
 
 // ============ Sheet Handling ================================================= //
-
-type SheetCoordinator = {
-  isClosing: boolean;
-  pendingActions: (() => void)[];
-};
-
-const sheetCoordinator: SheetCoordinator = {
-  isClosing: false,
-  pendingActions: [],
-};
 
 let blocked = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let pendingRouteChangeId = 0;
 
 /**
- * Called when a sheet dismissal is triggered.
- */
-export function onWillPop(): void {
-  sheetCoordinator.isClosing = true;
-}
-
-/**
  * Called after a sheet has finished closing.
- * Executes any pending actions scheduled during dismissal.
  */
 export function onDidPop(): void {
-  sheetCoordinator.isClosing = false;
-  if (sheetCoordinator.pendingActions.length) {
-    setImmediate(() => {
-      for (const action of sheetCoordinator.pendingActions) action();
-      sheetCoordinator.pendingActions = [];
-    });
-  }
-  scheduleRouteChange();
+  pendingRouteChangeId += 1;
+  const requestId = pendingRouteChangeId;
+  queueMicrotask(() => {
+    if (requestId !== pendingRouteChangeId) return;
+    const newActiveRoute = getActiveRouteName();
+    if (newActiveRoute) setActiveRoute(newActiveRoute);
+  });
 }
 
 /**
@@ -250,32 +224,6 @@ function block(): void {
     timeout = null;
   }
   timeout = setTimeout(() => (blocked = false), 200);
-}
-
-/**
- * Schedules an action to be executed after sheet dismissal,
- * or runs it immediately if no sheet is currently closing.
- */
-function runAfterSheetDismissal(action: () => void): void {
-  if (sheetCoordinator.isClosing) {
-    sheetCoordinator.pendingActions.push(action);
-  } else {
-    action();
-  }
-}
-
-function cancelPendingRouteChange(): void {
-  pendingRouteChangeId += 1;
-}
-
-function scheduleRouteChange(): void {
-  pendingRouteChangeId += 1;
-  const requestId = pendingRouteChangeId;
-  queueMicrotask(() => {
-    if (requestId !== pendingRouteChangeId) return;
-    const newActiveRoute = getActiveRouteName();
-    if (newActiveRoute) setActiveRoute(newActiveRoute);
-  });
 }
 
 // ============ Navigation Service ============================================= //

@@ -8,7 +8,6 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Panel, PANEL_COLOR_DARK, PANEL_COLOR_LIGHT } from '@/components/SmoothPager/ListPanel';
 import {
   Box,
@@ -83,7 +82,6 @@ export const AirdropsSheet = () => {
           style={styles.footerGradient}
         />
       </Panel>
-      <DecoyScrollView />
     </View>
   );
 };

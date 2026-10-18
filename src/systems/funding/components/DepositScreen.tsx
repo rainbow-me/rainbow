@@ -19,7 +19,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { NumberPad } from '@/components/number-pad/NumberPad';
-import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
@@ -301,7 +300,6 @@ const DepositInput = ({ inputProgress }: { inputProgress: SharedValue<number> })
             handleSelectAsset(token);
           }}
         />
-        <DecoyScrollView />
       </TokenListOverlay>
     );
   }, [handleSelectAsset, inputProgress, isSourceSelectable]);

@@ -17,7 +17,6 @@ import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -87,7 +86,6 @@ export function SwapScreen() {
         </Box>
         <SwapNavbar />
       </Box>
-      <DecoyScrollView />
       <AbsolutePortalRoot />
       <NavigateToSwapSettingsTrigger />
       <WalletAddressObserver />

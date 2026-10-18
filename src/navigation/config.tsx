@@ -18,13 +18,13 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '@/features/tra
 import styled from '@/framework/ui/styled-thing';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { type BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
-import { onWillPop } from '@/navigation/Navigation';
 import {
   type ExplainSheetRouteParams,
   type ExplainSheetType,
   type PartialNavigatorConfigOptions,
   type RootStackParamList,
 } from '@/navigation/types';
+import { type NativeStackOptions } from '@/react-native-cool-modals/types';
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { fonts } from '@/styles';
@@ -37,44 +37,22 @@ import type Routes from './routesNames';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
-export type CoolModalConfigOptions = StackNavigationOptions & {
-  allowsDragToDismiss?: boolean;
-  allowsTapToDismiss?: boolean;
-  backgroundColor?: string;
-  backgroundOpacity?: number;
-  blocksBackgroundTouches?: boolean;
-  cornerRadius?: number;
-  customStack?: boolean;
-  disableShortFormAfterTransitionToLongForm?: boolean;
-  headerHeight?: number;
-  ignoreBottomOffset?: boolean;
-  isShortFormEnabled?: boolean;
-  longFormHeight?: number;
-  onAppear?: () => void;
-  onWillDismiss?: () => void;
-  scrollEnabled?: boolean;
-  single?: boolean;
-  springDamping?: number;
-  startFromShortForm?: boolean;
-  topOffset?: number;
-  transitionDuration?: number;
-};
+export type CoolModalConfigOptions = NativeStackOptions & { scrollEnabled?: boolean };
 
 export type CoolModalConfigParams = {
   type?: ExplainSheetType;
   backgroundColor?: string;
   backgroundOpacity?: number;
-  blocksBackgroundTouches?: boolean;
   cornerRadius?: string | number;
   disableShortFormAfterTransitionToLongForm?: boolean;
   gestureEnabled?: boolean;
   headerHeight?: number;
+  interactWithScrollView?: boolean;
   isShortFormEnabled?: boolean;
   longFormHeight?: number;
   height?: number;
   onAppear?: () => void;
   scrollEnabled?: boolean;
-  single?: boolean;
   springDamping?: number;
   startFromShortForm?: boolean;
   topOffset?: number;
@@ -86,7 +64,6 @@ const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOpt
   allowsTapToDismiss: true,
   backgroundColor: params.backgroundColor || colors.themedColors?.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
-  blocksBackgroundTouches: true,
   cornerRadius:
     params.cornerRadius === 'device'
       ? Platform.OS === 'android'
@@ -102,11 +79,11 @@ const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOpt
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
+  interactWithScrollView: params.interactWithScrollView,
   isShortFormEnabled: params.isShortFormEnabled,
   longFormHeight: params.longFormHeight,
   onAppear: params.onAppear || undefined,
   scrollEnabled: params.scrollEnabled,
-  single: params.single,
   springDamping: params.springDamping || 0.8,
   startFromShortForm: params.startFromShortForm || false,
   topOffset: params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
@@ -241,6 +218,7 @@ export const airdropsSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      interactWithScrollView: false,
       backgroundOpacity: 0.7,
       cornerRadius: 0,
       headerHeight: safeAreaInsetValues.top + 70,
@@ -282,6 +260,7 @@ export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      interactWithScrollView: false,
       backgroundOpacity: 0.9,
       cornerRadius: 0,
       springDamping: 1,
@@ -305,7 +284,7 @@ export const signTransactionSheetConfig = {
 };
 
 export const walletDiagnosticsSheetConfig = {
-  options: ({ route }: { route: { params: any } }) => {
+  options: ({ route }: { route: RouteProp<RootStackParamList, typeof Routes.DIAGNOSTICS_SHEET> }) => {
     return buildCoolModalConfig({
       ...route.params,
       scrollEnabled: true,
@@ -678,7 +657,7 @@ export const cashDepositSetupConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const perpsDepositWithdrawalConfig: PartialNavigatorConfigOptions = {
+export const perpsDepositWithdrawalConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -689,6 +668,13 @@ export const perpsDepositWithdrawalConfig: PartialNavigatorConfigOptions = {
       topOffset: 0,
       transitionDuration: 0.3,
     }),
+  }),
+} satisfies PartialNavigatorConfigOptions;
+
+export const depositSheetConfig: PartialNavigatorConfigOptions = {
+  options: props => ({
+    ...perpsDepositWithdrawalConfig.options(props),
+    interactWithScrollView: false,
   }),
 };
 
@@ -732,13 +718,6 @@ export const nativeStackDefaultConfig: CoolModalConfigOptions = {
   springDamping: 1,
   topOffset: 0,
   transitionDuration: 0.3,
-};
-
-export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions = {
-  ...nativeStackDefaultConfig,
-  onWillDismiss: () => {
-    onWillPop();
-  },
 };
 
 const BackArrow = styled(Icon).attrs({
