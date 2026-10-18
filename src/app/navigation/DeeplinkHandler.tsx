@@ -11,7 +11,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { branchListener } from '@/utils/branch';
 
 type DeeplinkHandlerProps = {
-  initialRoute: InitialRoute;
+  initialRoute: InitialRoute | null;
 };
 
 export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
