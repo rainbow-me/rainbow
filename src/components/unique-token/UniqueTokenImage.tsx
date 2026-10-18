@@ -63,7 +63,13 @@ export const UniqueTokenName = React.memo(function UniqueTokenName({
   );
 });
 
-export const UniqueTokenImage = React.memo(function UniqueTokenImage({
+export const UniqueTokenImage = React.memo(function UniqueTokenImage(props: UniqueTokenImageProps) {
+  // Loading and failure belong to the requested image, not the containing screen.
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <TokenImage key={props.imageUrl} {...props} />;
+});
+
+function TokenImage({
   backgroundColor,
   imageUrl,
   lowResImageUrl,
@@ -116,4 +122,4 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
     </Centered>
   );
-});
+}
