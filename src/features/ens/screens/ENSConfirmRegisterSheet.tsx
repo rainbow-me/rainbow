@@ -148,12 +148,10 @@ export function ENSConfirmRegisterSheet() {
   const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      goBack();
-      setTimeout(() => {
-        navigate(Routes.PROFILE_SCREEN);
-      }, 100);
+    goBack();
+    navigate(Routes.PROFILE_SCREEN);
 
+    InteractionManager.runAfterInteractions(() => {
       // revalidate nft data for ens collection
       const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
       useNftsStore.getState().fetchNftCollection(ensCollectionId, true);

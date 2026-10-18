@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, Platform, type LayoutChangeEvent } from 'react-native';
+import { Alert, Platform, type LayoutChangeEvent } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -71,7 +71,7 @@ export function ChangeWalletSheet() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate, replace } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const liveWalletBalance = useLiveWalletBalance();
 
@@ -239,46 +239,38 @@ export function ChangeWalletSheet() {
       if (!wallet) return;
       const account = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
 
-      InteractionManager.runAfterInteractions(() => {
-        goBack();
-      });
+      replace(Routes.MODAL_SCREEN, {
+        address,
+        asset: [],
+        onCloseModal: async props => {
+          const { name = '', color: colorProp = null } = props;
+          if (!isValidHex(address)) return;
 
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          navigate(Routes.MODAL_SCREEN, {
+          const color = colorProp || account?.accountColor || 0;
+
+          updateAccountInfo({
             address,
-            asset: [],
-            onCloseModal: async props => {
-              const { name = '', color: colorProp = null } = props;
-              if (!isValidHex(address)) return;
-
-              const color = colorProp || account?.accountColor || 0;
-
-              updateAccountInfo({
-                address,
-                label: name || undefined,
-                walletId,
-              });
-
-              if (name) {
-                analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                await updateWebProfile(address, name, colors.avatarBackgrounds[color], null);
-              } else {
-                analytics.track(analytics.event.tappedCancelEditingWallet);
-              }
-            },
-            profile: {
-              color: account?.accountColor,
-              image: account?.accountImage || ``,
-              name: account?.accountName || ``,
-            },
-            type: 'wallet_profile',
-            actionType: 'Switch',
+            label: name || undefined,
+            walletId,
           });
-        }, 50);
+
+          if (name) {
+            analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
+            await updateWebProfile(address, name, colors.avatarBackgrounds[color], null);
+          } else {
+            analytics.track(analytics.event.tappedCancelEditingWallet);
+          }
+        },
+        profile: {
+          color: account?.accountColor,
+          image: account?.accountImage || ``,
+          name: account?.accountName || ``,
+        },
+        type: 'wallet_profile',
+        actionType: 'Switch',
       });
     },
-    [wallets, goBack, navigate, colors.avatarBackgrounds]
+    [colors.avatarBackgrounds, replace, wallets]
   );
 
   const onPressEdit = useCallback(
@@ -381,13 +373,11 @@ export function ChangeWalletSheet() {
         return;
       }
 
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SETTINGS_SHEET, {
-          params: {
-            walletId: wallet.id,
-          },
-          screen: SettingsPages.backup.key,
-        });
+      navigate(Routes.SETTINGS_SHEET, {
+        params: {
+          walletId: wallet.id,
+        },
+        screen: SettingsPages.backup.key,
       });
     },
     [navigate, walletsByAddress]
@@ -398,14 +388,11 @@ export function ChangeWalletSheet() {
       buttonName: 'AddAnotherWalletButton',
       action: 'Navigates from WalletList to AddWalletSheet',
     });
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.ADD_WALLET_NAVIGATOR, {
-        flowContext: 'in_app',
-        isFirstWallet: false,
-      });
+    replace(Routes.ADD_WALLET_NAVIGATOR, {
+      flowContext: 'in_app',
+      isFirstWallet: false,
     });
-  }, [goBack, navigate]);
+  }, [replace]);
 
   const onPressEditMode = useCallback(() => {
     analytics.track(analytics.event.tappedEdit);
