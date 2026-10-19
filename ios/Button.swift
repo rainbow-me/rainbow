@@ -6,11 +6,11 @@
 //
 
 class Button : RCTView {
-  @objc lazy var onPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onCancel: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onPressStart: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onLongPress: RCTBubblingEventBlock = { _ in };
-  @objc lazy var onLongPressEnded: RCTBubblingEventBlock = { _ in };
+  @objc lazy var onPress: RCTDirectEventBlock = { _ in }
+  @objc lazy var onCancel: RCTDirectEventBlock = { _ in }
+  @objc lazy var onPressStart: RCTDirectEventBlock = { _ in }
+  @objc lazy var onLongPress: RCTDirectEventBlock = { _ in };
+  @objc lazy var onLongPressEnded: RCTDirectEventBlock = { _ in };
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
