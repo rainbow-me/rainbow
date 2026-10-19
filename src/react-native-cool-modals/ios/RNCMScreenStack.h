@@ -8,6 +8,7 @@
 - (void)updateContainer;
 - (void)setNeedsContainerUpdate;
 - (void)screenDidDisappear:(RNCMScreenView *)screen;
+- (void)cancelTouchesBelowScreen:(RNCMScreenView *)screen completion:(void (^)(void))completion;
 
 @end
 

@@ -15,6 +15,7 @@ import { useCallbackOne } from 'use-memo-one';
 
 import { IS_DEV } from '@/env';
 import { prefetchRoute } from '@/navigation/prefetchRegistry';
+import { type NativeStackState } from '@/react-native-cool-modals/types';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 
 import Routes, { NATIVE_ROUTES, type Route } from './routesNames';
@@ -158,7 +159,8 @@ export function setParams<RouteName extends Route>(params: RootStackParamList[Ro
 /**
  * Sets the top-level `navigationRef`.
  */
-export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList>): void {
+export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList> | null): void {
+  if (navigationRef !== ref) pendingRouteKey = null;
   navigationRef = ref;
 }
 
@@ -187,11 +189,28 @@ function dispatchAction<RouteName extends Route>(
     if (wasBlocked) return;
   }
 
-  if (navigationRef?.isReady()) {
+  const navigation = navigationRef;
+  if (!navigation?.isReady()) return;
+
+  const state = Platform.OS === 'ios' ? (navigation.getRootState() as NativeStackState) : undefined;
+  const source = state?.routes[state.index];
+  const requestsPresentation = state?.routeNames.includes(routeName) ?? false;
+  if (requestsPresentation && source) {
+    if (pendingRouteKey === source.key) return;
+    pendingRouteKey = source.key;
+  }
+
+  try {
     pendingRouteChangeId += 1;
     prefetchRoute(routeName, params);
     setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
-    navigationRef.dispatch(action);
+    navigation.dispatch(action);
+  } finally {
+    if (requestsPresentation && navigationRef === navigation) {
+      const next = navigation.getRootState() as NativeStackState;
+      const destination = next.routes[next.index];
+      pendingRouteKey = destination.presentationRequest !== source?.presentationRequest ? destination.key : null;
+    }
   }
 }
 
@@ -200,6 +219,16 @@ function dispatchAction<RouteName extends Route>(
 let blocked = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let pendingRouteChangeId = 0;
+let pendingRouteKey: string | null = null;
+
+export function acknowledgePresentation(navigatorKey: string, routeKey: string, presentationRequest: number): void {
+  if (pendingRouteKey !== routeKey) return;
+  const state = navigationRef?.getRootState() as NativeStackState | undefined;
+  const route = state?.routes[state.index];
+  if (state?.key === navigatorKey && route?.key === routeKey && route.presentationRequest === presentationRequest) {
+    pendingRouteKey = null;
+  }
+}
 
 /**
  * Called after a sheet has finished closing.

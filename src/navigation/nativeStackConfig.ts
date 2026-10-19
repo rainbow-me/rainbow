@@ -1,11 +1,12 @@
 import { Keyboard } from 'react-native';
 
-import { type NativeStackOptions } from '@/react-native-cool-modals/types';
+import { type NativeStackNavigatorProps } from '@/react-native-cool-modals/types';
 
 import { appearListener } from './nativeStackHelpers';
-import { onDidPop } from './Navigation';
+import { acknowledgePresentation, onDidPop } from './Navigation';
 
-export const nativeStackConfig: { screenOptions: NativeStackOptions } = {
+export const nativeStackConfig = {
+  onPresentationApplied: acknowledgePresentation,
   screenOptions: {
     contentStyle: {
       backgroundColor: 'transparent',
@@ -25,4 +26,4 @@ export const nativeStackConfig: { screenOptions: NativeStackOptions } = {
     stackPresentation: 'modal',
     transitionDuration: 0.35,
   },
-};
+} satisfies Pick<NativeStackNavigatorProps, 'onPresentationApplied' | 'screenOptions'>;
