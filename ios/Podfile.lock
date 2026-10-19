@@ -4966,7 +4966,7 @@ DEPENDENCIES:
   - nanopb
   - NitroMmkv (from `../node_modules/react-native-mmkv`)
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
-  - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `32cfb38913027b80d5ea7162487dcf0392d70ee5`)
+  - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `b956b3f7c30ff6694c948c83947784a07e1640ec`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
@@ -5204,7 +5204,7 @@ EXTERNAL SOURCES:
   NitroModules:
     :path: "../node_modules/react-native-nitro-modules"
   PanModal:
-    :commit: 32cfb38913027b80d5ea7162487dcf0392d70ee5
+    :commit: b956b3f7c30ff6694c948c83947784a07e1640ec
     :git: https://github.com/rainbow-me/PanModal
   Permission-Camera:
     :path: "../node_modules/react-native-permissions/ios/Camera"
@@ -5479,7 +5479,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PanModal:
-    :commit: 32cfb38913027b80d5ea7162487dcf0392d70ee5
+    :commit: b956b3f7c30ff6694c948c83947784a07e1640ec
     :git: https://github.com/rainbow-me/PanModal
 
 SPEC CHECKSUMS:
@@ -5685,6 +5685,6 @@ SPEC CHECKSUMS:
   VisionCamera: b51af005669c6642dd1b4fca434eda4c1778de87
   Yoga: 3196a843cc5f4bc433f1a41cf17cdf804a01a529
 
-PODFILE CHECKSUM: 109c7e1f78e65c0f7b4e5c57148f2f1745fc98d5
+PODFILE CHECKSUM: aff482594fdfed0c715432d2297a0be5a1af73b2
 
 COCOAPODS: 1.16.2

@@ -37,14 +37,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
   @objc func restorePresentation() {
     guard presentationController is PanModalPresentationController else { return }
-    hiding = false
-    let target: PanModalPresentationController.PresentationState = state == .hidden ? (config?.startFromShortForm == true ? .shortForm : .longForm) : state ?? .longForm
-    panModalTransition(to: target)
-  }
-
-  @objc func rejump() {
-    self.panModalSetNeedsLayoutUpdate()
-    self.panModalTransition(to: self.state!)
+    panModalSetNeedsLayoutUpdate(transitionTo: {
+      hiding = false
+      return state == .hidden ? (config?.startFromShortForm == true ? .shortForm : .longForm) : state ?? .longForm
+    })
   }
 
   @objc func panModalSetNeedsLayoutUpdateWrapper() {
@@ -54,7 +50,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var forceDisableShortForm = false
   
   func willTransition(to state: PanModalPresentationController.PresentationState) {
-    if state == .longForm && config?.disableShortFormAfterTransitionToLongForm ?? false {
+    if state == .longForm, !forceDisableShortForm, config?.disableShortFormAfterTransitionToLongForm == true {
       forceDisableShortForm = true
       self.panModalSetNeedsLayoutUpdate()
     }
@@ -143,10 +139,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     config?.willDismiss()
   }
 
-  func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
+  func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer, isPrioritized: Bool) -> Bool {
     guard !hiding, let config = config else { return false }
     guard config.inStack, !config.skipsOnReturn else { return false }
-    return config.dismissable || shouldPrioritize(panModalGestureRecognizer: panModalGestureRecognizer)
+    return config.dismissable || isPrioritized
   }
 
   var allowsDragToDismiss: Bool {
@@ -190,23 +186,8 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     )
   }
 
-  func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
-    let headerHeight: CGFloat = CGFloat(truncating: self.config!.headerHeight)
-
-    var locationY = panModalGestureRecognizer.location(in: view).y
-
-    /// HACK
-
-    let initialLocationAbsY = (panModalGestureRecognizer as! UIPanGestureRecognizerWithInitialPosition).initialTouchLocation.y;
-    let currLocationAbsY = panModalGestureRecognizer.location(in: view.superview!.superview).y
-
-    let displacementY = currLocationAbsY - initialLocationAbsY
-
-    locationY -= displacementY
-
-    // END HACK
-
-    return locationY < headerHeight
+  func shouldPrioritizePan(at location: CGPoint) -> Bool {
+    return location.y < CGFloat(truncating: config?.headerHeight ?? 0)
   }
 
   var isShortFormEnabledInternal = 2
