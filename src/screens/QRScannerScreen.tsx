@@ -56,9 +56,7 @@ export function QRScannerScreen() {
   const { hasPermission, requestPermission } = useCameraPermission();
   const isFocused = useIsFocused();
   const isForeground = useIsForeground();
-  const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
-  const navigation = useNavigation();
 
   const [flashEnabled, setFlashEnabled] = useState(false);
 
@@ -79,27 +77,13 @@ export function QRScannerScreen() {
 
   useHardwareBack(hideCamera);
 
-  // cleanup for swiping away
   useEffect(() => {
-    const unsubscribeBeforeRemove = navigation.addListener('beforeRemove', e => {
-      e.preventDefault();
-      setCameraActive(false);
-      setFlashEnabled(false);
-      setTimeout(() => {
-        navigation.dispatch(e.data.action);
-      }, 0);
-    });
+    if (!isFocused) setFlashEnabled(false);
+  }, [isFocused]);
 
-    return unsubscribeBeforeRemove;
-  }, [navigation]);
-
-  // cleanup for using the back button
   const handleCloseScanner = useCallback(() => {
     setFlashEnabled(false);
-    setCameraActive(false);
-    setTimeout(() => {
-      navigate(Routes.WALLET_SCREEN);
-    }, 0);
+    navigate(Routes.WALLET_SCREEN);
   }, [navigate]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -171,7 +155,7 @@ export function QRScannerScreen() {
                 codeScanner={codeScanner}
                 hasPermission={hasPermission}
                 requestPermission={requestPermission}
-                isActive={isActive && cameraActive}
+                isActive={isActive}
               />
             </CameraDimmer>
           </ScannerContainer>
