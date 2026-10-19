@@ -1,12 +1,20 @@
-import React, { useMemo, type LegacyRef } from 'react';
-import { requireNativeComponent, View, type ViewStyle } from 'react-native';
+import React, { useMemo, type Component } from 'react';
+import { requireNativeComponent, View, type NativeMethods, type ViewStyle } from 'react-native';
 
 import styled from '@/framework/ui/styled-thing';
 
 import { normalizeTransformOrigin } from './normalizeTransformOrigin';
 import { type ButtonPressAnimationProps, type TransformOrigin } from './types';
 
-interface SpecificRawNativeButtonProps extends ButtonPressAnimationProps {
+interface SpecificRawNativeButtonProps extends Omit<
+  ButtonPressAnimationProps,
+  'onCancel' | 'onLongPress' | 'onLongPressEnded' | 'onPress' | 'onPressStart'
+> {
+  onButtonCancel?: ButtonPressAnimationProps['onCancel'];
+  onButtonLongPress?: ButtonPressAnimationProps['onLongPress'];
+  onButtonLongPressEnded?: ButtonPressAnimationProps['onLongPressEnded'];
+  onButtonPress?: ButtonPressAnimationProps['onPress'];
+  onButtonPressStart?: ButtonPressAnimationProps['onPressStart'];
   transformOrigin?: TransformOrigin;
 }
 
@@ -32,7 +40,7 @@ const ButtonWithTransformOrigin = styled(RawNativeButton)(({ transformOrigin }: 
   return styles;
 });
 
-export const NativeButton = React.forwardRef(
+export const NativeButton = React.forwardRef<Component<SpecificRawNativeButtonProps> & NativeMethods, ButtonPressAnimationProps>(
   (
     {
       duration = 160,
@@ -42,6 +50,11 @@ export const NativeButton = React.forwardRef(
       minLongPressDuration = 500,
       enableHapticFeedback = true,
       compensateForTransformOrigin,
+      onCancel,
+      onLongPress,
+      onLongPressEnded,
+      onPress,
+      onPressStart,
       transformOrigin,
       testID,
       ...props
@@ -63,6 +76,11 @@ export const NativeButton = React.forwardRef(
           enableHapticFeedback={enableHapticFeedback}
           hapticType={hapticType}
           minLongPressDuration={minLongPressDuration}
+          onButtonCancel={onCancel}
+          onButtonLongPress={onLongPress}
+          onButtonLongPressEnded={onLongPressEnded}
+          onButtonPress={onPress}
+          onButtonPressStart={onPressStart}
           ref={ref}
           scaleTo={scaleTo}
           testID={testID}
@@ -77,7 +95,12 @@ export const NativeButton = React.forwardRef(
         enableHapticFeedback={enableHapticFeedback}
         hapticType={hapticType}
         minLongPressDuration={minLongPressDuration}
-        ref={ref as LegacyRef<any>}
+        onButtonCancel={onCancel}
+        onButtonLongPress={onLongPress}
+        onButtonLongPressEnded={onLongPressEnded}
+        onButtonPress={onPress}
+        onButtonPressStart={onPressStart}
+        ref={ref}
         scaleTo={scaleTo}
         testID={testID}
         useLateHaptic={useLateHaptic}

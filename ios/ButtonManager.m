@@ -10,11 +10,11 @@
 
 @interface RCT_EXTERN_MODULE(ButtonManager, RCTViewManager)
 
-RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onPressStart, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onLongPressEnded, RCTBubblingEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onButtonPress, onPress, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onButtonCancel, onCancel, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onButtonPressStart, onPressStart, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onButtonLongPress, onLongPress, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onButtonLongPressEnded, onLongPressEnded, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(shouldLongPressHoldPress, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(disabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(duration, NSTimeInterval)
