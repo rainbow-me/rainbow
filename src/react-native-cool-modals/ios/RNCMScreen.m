@@ -20,7 +20,6 @@
   NSNumber *_dismissalRequest;
   BOOL _presentationChanged;
   BOOL _layoutChanged;
-  BOOL _heightChanged;
 }
 
 @synthesize controller = _controller;
@@ -83,13 +82,13 @@
 - (void)setLongFormHeight:(NSNumber *)height {
   if ([_longFormHeight isEqualToNumber:height]) return;
   _longFormHeight = height;
-  _heightChanged = YES;
+  _layoutChanged = YES;
 }
 
 - (void)setShortFormHeight:(NSNumber *)height {
   if ([_shortFormHeight isEqualToNumber:height]) return;
   _shortFormHeight = height;
-  _heightChanged = YES;
+  _layoutChanged = YES;
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps {
@@ -109,15 +108,12 @@
     restore = _inStack;
   }
   if (restore) {
-    [presenter panModalSetNeedsLayoutUpdateWrapper];
     [presenter restorePresentation];
   } else if (_inStack && !_skipsOnReturn && !presenter.dismissing && !presenter.hiding) {
-    if (_heightChanged) [presenter rejump];
-    else if (_layoutChanged) [presenter panModalSetNeedsLayoutUpdateWrapper];
+    if (_layoutChanged) [presenter panModalSetNeedsLayoutUpdateWrapper];
   }
   _presentationChanged = NO;
   _layoutChanged = NO;
-  _heightChanged = NO;
 }
 
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
