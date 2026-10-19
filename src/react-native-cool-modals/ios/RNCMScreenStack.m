@@ -180,6 +180,35 @@
   [self setNeedsContainerUpdate];
 }
 
+- (void)cancelTouchesBelowScreen:(RNCMScreenView *)screen completion:(void (^)(void))completion
+{
+  if (_invalidated) {
+    completion();
+    return;
+  }
+  // Keep the traversal pending while screens without active touches complete inline
+  __block NSUInteger pending = 1;
+  void (^didCancel)(void) = ^{
+    if (--pending == 0) completion();
+  };
+  for (UIViewController *controller in _controller.viewControllers) {
+    if (controller == screen.controller) {
+      didCancel();
+      return;
+    }
+    if ([controller isKindOfClass:[RNCMScreen class]]) {
+      pending++;
+      [(RNCMScreenView *)controller.view cancelTouchesWithCompletion:didCancel];
+    }
+  }
+  for (UIViewController *controller in _presentedModals) {
+    if (controller == screen.controller) break;
+    pending++;
+    [(RNCMScreenView *)controller.view cancelTouchesWithCompletion:didCancel];
+  }
+  didCancel();
+}
+
 - (void)dismissScreen:(RNCMScreenView *)screen
 {
   UIViewController *controller = screen.controller;

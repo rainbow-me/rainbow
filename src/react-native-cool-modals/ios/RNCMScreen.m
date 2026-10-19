@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RNCMScreen.h"
 #import "RNCMScreenStack.h"
@@ -10,6 +11,10 @@
 // lib
 #import "Rainbow-Swift.h"
 
+@interface RNCMScreenTouchRecognizer : UIGestureRecognizer
+- (void)cancelTouchesWithCompletion:(void (^)(void))completion;
+@end
+
 @interface RNCMScreenView () <UIAdaptivePresentationControllerDelegate, RCTInvalidating>
 @end
 
@@ -17,6 +22,8 @@
   __weak RCTBridge *_bridge;
   RNCMScreen *_controller;
   RCTTouchHandler *_touchHandler;
+  RNCMScreenTouchRecognizer *_screenTouchRecognizer;
+  NSInteger _acknowledgedPresentationRequest;
   NSNumber *_dismissalRequest;
   BOOL _presentationChanged;
   BOOL _layoutChanged;
@@ -29,6 +36,9 @@
   if (self = [super init]) {
     _bridge = bridge;
     _controller = [[RNCMScreen alloc] initWithView:self];
+    _screenTouchRecognizer = [RNCMScreenTouchRecognizer new];
+    [self addGestureRecognizer:_screenTouchRecognizer];
+    _acknowledgedPresentationRequest = -1;
     _stackPresentation = RNSScreenStackPresentationPush;
     _stackAnimation = RNSScreenStackAnimationDefault;
     _gestureEnabled = YES;
@@ -109,6 +119,13 @@
   }
   if (restore) {
     [presenter restorePresentation];
+    if (presenter.presentingViewController != nil && presenter.presentationController.containerView.window != nil &&
+        !presenter.isBeingPresented && !presenter.dismissing && _onPresentationApplied) {
+      NSNumber *request = @(_presentationRequest);
+      [self cancelCoveredTouchesForRequest:request.integerValue completion:^{
+        if (self.onPresentationApplied) self.onPresentationApplied(@{ @"presentationRequest": request });
+      }];
+    }
   } else if (_inStack && !_skipsOnReturn && !presenter.dismissing && !presenter.hiding) {
     if (_layoutChanged) [presenter panModalSetNeedsLayoutUpdateWrapper];
   }
@@ -251,14 +268,33 @@
 - (void)notifyAppear
 {
   _dismissalRequest = nil;
+  NSNumber *request = @(_presentationRequest);
   [(RNCMScreenStackView *)_reactSuperview setNeedsContainerUpdate];
   if (self.onAppear) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (self.onAppear) {
-        self.onAppear(nil);
-      }
+      [self cancelCoveredTouchesForRequest:request.integerValue completion:^{
+        if (self.onAppear) self.onAppear(@{ @"presentationRequest": request });
+      }];
     });
   }
+}
+
+- (void)cancelCoveredTouchesForRequest:(NSInteger)request completion:(void (^)(void))completion
+{
+  if (request != _presentationRequest || request == _acknowledgedPresentationRequest ||
+      !_inStack || _dismissalRequest != nil || _reactSuperview == nil) {
+    completion();
+    return;
+  }
+  [(RNCMScreenStackView *)_reactSuperview cancelTouchesBelowScreen:self completion:^{
+    if (request == self->_presentationRequest) self->_acknowledgedPresentationRequest = request;
+    completion();
+  }];
+}
+
+- (void)cancelTouchesWithCompletion:(void (^)(void))completion
+{
+  [_screenTouchRecognizer cancelTouchesWithCompletion:completion];
 }
 
 - (BOOL)isMountedUnderScreenOrReactRoot
@@ -318,6 +354,84 @@
 - (void)invalidate
 {
   _controller = nil;
+}
+
+@end
+
+@implementation RNCMScreenTouchRecognizer {
+  NSMutableSet<UITouch *> *_touches;
+  NSMutableArray<void (^)(void)> *_completions;
+}
+
+- (instancetype)init
+{
+  if (self = [super initWithTarget:nil action:nil]) {
+    self.delaysTouchesBegan = NO;
+    self.delaysTouchesEnded = NO;
+    _touches = [NSMutableSet new];
+  }
+  return self;
+}
+
+- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)recognizer
+{
+  // Keep observing while a child gesture is active
+  return NO;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  [_touches unionSet:touches];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [_touches minusSet:touches];
+  if (_touches.count == 0) self.state = UIGestureRecognizerStateFailed;
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_touches minusSet:touches];
+  if (_touches.count == 0) self.state = UIGestureRecognizerStateFailed;
+}
+
+- (void)cancelTouchesWithCompletion:(void (^)(void))completion
+{
+  if (_completions != nil) {
+    [_completions addObject:completion];
+    return;
+  }
+  if (_touches.count == 0) {
+    completion();
+    return;
+  }
+  _completions = [NSMutableArray arrayWithObject:completion];
+  NSMutableSet<UIGestureRecognizer *> *recognizers = [NSMutableSet new];
+  for (UITouch *touch in _touches) [recognizers addObjectsFromArray:touch.gestureRecognizers];
+  [recognizers removeObject:self];
+  for (UIGestureRecognizer *recognizer in recognizers) {
+    if (!recognizer.enabled) continue;
+    // UIKit can prevent pending gestures, but active gestures need cancellation
+    if (![recognizer isKindOfClass:[RCTTouchHandler class]] &&
+        recognizer.state != UIGestureRecognizerStateBegan && recognizer.state != UIGestureRecognizerStateChanged) continue;
+    recognizer.enabled = NO;
+    recognizer.enabled = YES;
+  }
+  self.state = UIGestureRecognizerStateRecognized;
+}
+
+- (void)reset
+{
+  [super reset];
+  [_touches removeAllObjects];
+  // Acknowledge after UIKit has delivered the source touch cancellations
+  NSArray<void (^)(void)> *completions = _completions;
+  _completions = nil;
+  for (void (^completion)(void) in completions) completion();
 }
 
 @end
@@ -414,6 +528,7 @@ RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
 RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
 RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onPresentationApplied, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTouchTop, RCTDirectEventBlock)
 

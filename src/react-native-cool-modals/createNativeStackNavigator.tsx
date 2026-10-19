@@ -3,7 +3,6 @@ import React from 'react';
 import {
   createNavigatorFactory,
   useNavigationBuilder,
-  type DefaultNavigatorOptions,
   type ParamListBase,
   type StackActionHelpers,
   type StackRouterOptions,
@@ -11,11 +10,16 @@ import {
 
 import { createNativeStackRouter } from './createNativeStackRouter';
 import NativeStackView from './NativeStackView';
-import { type NativeStackEvents, type NativeStackOptions, type NativeStackState } from './types';
+import { type NativeStackEvents, type NativeStackNavigatorProps, type NativeStackOptions, type NativeStackState } from './types';
 
-type NavigatorProps = DefaultNavigatorOptions<ParamListBase, NativeStackState, NativeStackOptions, NativeStackEvents> & StackRouterOptions;
-
-function NativeStackNavigator({ children, id, initialRouteName, screenListeners, screenOptions }: NavigatorProps) {
+function NativeStackNavigator({
+  children,
+  id,
+  initialRouteName,
+  onPresentationApplied,
+  screenListeners,
+  screenOptions,
+}: NativeStackNavigatorProps) {
   const { descriptors, navigation, NavigationContent, state } = useNavigationBuilder<
     NativeStackState,
     StackRouterOptions,
@@ -26,7 +30,7 @@ function NativeStackNavigator({ children, id, initialRouteName, screenListeners,
 
   return (
     <NavigationContent>
-      <NativeStackView descriptors={descriptors} navigation={navigation} state={state} />
+      <NativeStackView descriptors={descriptors} navigation={navigation} onPresentationApplied={onPresentationApplied} state={state} />
     </NavigationContent>
   );
 }

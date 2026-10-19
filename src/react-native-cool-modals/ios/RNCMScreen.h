@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @interface RNCMScreenView : RCTView
 
 @property (nonatomic, copy) RCTDirectEventBlock onAppear;
+@property (nonatomic, copy) RCTDirectEventBlock onPresentationApplied;
 @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
 @property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
 @property (nonatomic, copy) RCTDirectEventBlock onTouchTop;
@@ -81,6 +82,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 - (void)notifyDismissed;
 - (void)notifyAppear;
 - (void)applyConfiguration;
+- (void)cancelTouchesWithCompletion:(void (^)(void))completion;
 @end
 
 @interface UIView (RNSScreen)
