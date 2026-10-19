@@ -7,10 +7,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { Border } from '@/design-system/components/Border/Border';
+import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 import { BetButton } from '@/features/polymarket/components/BetButton';
+import { formatProbability } from '@/features/polymarket/utils/formatProbability';
 import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
 import {
   Game_Interruption,
@@ -22,13 +24,14 @@ import {
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
-import { badgeShadows } from '@/features/sports/ui/badgeShadows';
 import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
 import { SurfaceShadow } from '@/framework/ui/components/SurfaceShadow';
 import * as i18n from '@/languages';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { black, white } from '@/worklets/colors';
@@ -43,6 +46,7 @@ export type SportsGamePress = (gameId: string, offer?: { selection: Selection; o
 // ============ Constants ====================================================== //
 
 const CARD_BORDER_RADIUS = 24;
+const CARD_BOTTOM_PADDING = 6;
 const PARTICIPANT_INDICES: readonly (0 | 1)[] = [0, 1];
 
 const STATUS_LABELS: Partial<
@@ -120,7 +124,7 @@ export const GameCard = memo(function GameCard({
               {participant ? (
                 <View style={styles.row}>
                   <View style={styles.participant}>
-                    <GameRowIdentity identity={participant} sportId={sportId} isDarkMode={isDarkMode} />
+                    <GameParticipant participant={participant} sportId={sportId} isDarkMode={isDarkMode} />
                     <GameScore score={game.score} participantIndex={index} />
                   </View>
 
@@ -141,7 +145,7 @@ export const GameCard = memo(function GameCard({
         {threeWay ? (
           <>
             <GameDivider isDarkMode={isDarkMode} />
-            <GameDrawRow isDarkMode={isDarkMode} gameId={gameId} sportId={sportId} selection={game.winner?.draw} onPress={onPress} />
+            <GameDrawRow isDarkMode={isDarkMode} tokenId={game.winner?.draw?.tokenId} />
           </>
         ) : null}
       </GameCardSurface>
@@ -164,8 +168,10 @@ function GameCardSurface({
   testID: string;
   children: ReactNode;
 }) {
-  const rows = threeWay ? 3 : 2;
-  const height = styles.header.height + rows * (styles.row.height + styles.divider.height) + styles.surface.paddingBottom;
+  const height =
+    styles.header.height +
+    2 * (styles.row.height + styles.divider.height) +
+    (threeWay ? styles.divider.height + styles.drawRow.height : CARD_BOTTOM_PADDING);
 
   const backgroundColor = isDarkMode ? globalColors.grey100 : undefined;
   const backdropColor = backgroundColor ?? SPORTS_BACKGROUND_COLOR_LIGHT;
@@ -282,6 +288,39 @@ const GameDivider = memo(function GameDivider({ header = false, isDarkMode }: { 
   );
 });
 
+function GameBadge({ children, isDarkMode }: { children: ReactNode; isDarkMode: boolean }) {
+  return (
+    <View style={[styles.badge, isDarkMode ? styles.darkBadge : styles.lightBadge]}>
+      {isDarkMode ? null : (
+        <>
+          <SurfaceShadow
+            backdropColor={globalColors.white100}
+            borderRadius={8}
+            color={globalColors.grey100}
+            opacity={0.06}
+            radius={8}
+            y={2}
+          />
+          <SurfaceShadow
+            backdropColor={globalColors.white100}
+            borderRadius={8}
+            color={globalColors.grey100}
+            opacity={0.02}
+            radius={3}
+            y={2}
+          />
+          <View pointerEvents="none" style={styles.badgeBackground}>
+            <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
+          </View>
+        </>
+      )}
+
+      {children}
+      <Border borderRadius={8} borderWidth={THICK_BORDER_WIDTH} borderColor={{ custom: white(isDarkMode ? 0.06 : 1) }} enableInLightMode />
+    </View>
+  );
+}
+
 // ============ Game Header ==================================================== //
 
 const GameCompetition = memo(function GameCompetition({ competition, isDarkMode }: { competition?: SportsScope; isDarkMode: boolean }) {
@@ -352,53 +391,26 @@ const GameTime = memo(function GameTime({
 
 const GamePeriod = memo(function GamePeriod({ period, isDarkMode }: { period: string; isDarkMode: boolean }) {
   return (
-    <View style={[styles.period, isDarkMode ? styles.darkPeriod : styles.lightPeriod]}>
-      {isDarkMode ? null : (
-        <>
-          <SurfaceShadow
-            backdropColor={globalColors.white100}
-            borderRadius={8}
-            color={globalColors.grey100}
-            opacity={0.06}
-            radius={8}
-            y={2}
-          />
-          <SurfaceShadow
-            backdropColor={globalColors.white100}
-            borderRadius={8}
-            color={globalColors.grey100}
-            opacity={0.02}
-            radius={3}
-            y={2}
-          />
-          <View pointerEvents="none" style={styles.periodBackground}>
-            <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
-          </View>
-        </>
-      )}
-
+    <GameBadge isDarkMode={isDarkMode}>
       <Text align="center" color="labelTertiary" size="13pt" weight="bold">
         {period}
       </Text>
-      <Border borderRadius={8} borderWidth={THICK_BORDER_WIDTH} borderColor={{ custom: white(isDarkMode ? 0.06 : 1) }} enableInLightMode />
-    </View>
+    </GameBadge>
   );
 });
 
 // ============ Game Rows ====================================================== //
 
-const GameRowIdentity = memo(function GameRowIdentity({
+const GameParticipant = memo(function GameParticipant({
   isDarkMode,
-  identity,
+  participant,
   sportId,
 }: {
   isDarkMode: boolean;
-  identity: Participant | 'draw';
+  participant: Participant;
   sportId?: string;
 }) {
-  const draw = identity === 'draw';
-  const name = draw ? i18n.t(i18n.l.sports.draw) : identity.name;
-  const shortName = draw ? undefined : identity.shortName;
+  const { name, shortName } = participant;
   const compact = sportId === 'tennis' || sportId === 'esports';
   const imageSize = sportId === 'tennis' ? 24 : sportId === 'esports' ? 32 : 36;
   const hasPrefix = shortName && name.endsWith(` ${shortName}`);
@@ -407,17 +419,13 @@ const GameRowIdentity = memo(function GameRowIdentity({
   return (
     <>
       <View style={[styles.logo, compact ? styles.compactLogo : undefined]}>
-        {draw ? (
-          <DrawIcon isDarkMode={isDarkMode} />
-        ) : (
-          <SportsImage
-            isDarkMode={isDarkMode}
-            imageUrl={identity.imageUrl}
-            name={name}
-            size={imageSize}
-            width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
-          />
-        )}
+        <SportsImage
+          isDarkMode={isDarkMode}
+          imageUrl={participant.imageUrl}
+          name={name}
+          size={imageSize}
+          width={sportId === 'tennis' ? 24 : compact ? 28 : 42}
+        />
       </View>
 
       <View style={styles.name}>
@@ -427,7 +435,7 @@ const GameRowIdentity = memo(function GameRowIdentity({
           </Text>
         ) : null}
 
-        <Text color={draw ? 'labelSecondary' : 'label'} size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
+        <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
           {hasPrefix ? shortName : name}
         </Text>
       </View>
@@ -496,51 +504,37 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   );
 });
 
-const GameDrawRow = memo(function GameDrawRow({
-  isDarkMode,
-  gameId,
-  sportId,
-  selection,
-  onPress,
-}: {
-  gameId: string;
-  sportId?: string;
-  selection?: Selection;
-  isDarkMode: boolean;
-  onPress: SportsGamePress;
-}) {
+const GameDrawRow = memo(function GameDrawRow({ isDarkMode, tokenId }: { isDarkMode: boolean; tokenId?: string }) {
+  const liveTokenId = tokenId ? getPolymarketTokenId(tokenId, 'midpoint') : undefined;
+  const price = useStoreSharedValue(useLiveTokensStore, s => (liveTokenId ? s.tokens[liveTokenId]?.price : undefined));
+
   return (
-    <View style={styles.row}>
-      <View style={styles.participant}>
-        <GameRowIdentity identity="draw" sportId={sportId} isDarkMode={isDarkMode} />
+    <View style={styles.drawRow}>
+      <View style={styles.drawLabel}>
+        <GameBadge isDarkMode={isDarkMode}>
+          <AnimatedText
+            align="center"
+            color="labelTertiary"
+            size="13pt"
+            weight="bold"
+            selector={price => {
+              'worklet';
+              return formatProbability(price.value);
+            }}
+          >
+            {price}
+          </AnimatedText>
+        </GameBadge>
+        <Text color="labelQuaternary" size="13pt" weight="bold">
+          {i18n.t(i18n.l.sports.chance_of_draw)}
+        </Text>
       </View>
-      {selection ? (
-        <BetButton
-          isDarkMode={isDarkMode}
-          key={selection.tokenId}
-          liveTokenId={getPolymarketTokenId(selection.tokenId, 'midpoint')}
-          color={isDarkMode ? globalColors.blueGrey90 : globalColors.blueGrey70}
-          onPress={outcomeColor => onPress(gameId, { selection, outcomeColor })}
-        />
-      ) : null}
+      <TextIcon color="labelQuaternary" containerSize={10} size="icon 10px" weight="bold">
+        {'􀆊'}
+      </TextIcon>
     </View>
   );
 });
-
-function DrawIcon({ isDarkMode }: { isDarkMode: boolean }) {
-  const backgroundColor = isDarkMode ? foregroundColors.fillTertiary.dark : globalColors.white100;
-
-  return (
-    <View style={[styles.drawIconCorners, isDarkMode ? undefined : badgeShadows.soft]}>
-      <View style={[styles.drawIcon, styles.drawIconCorners, { backgroundColor }, isDarkMode ? undefined : badgeShadows.tight]}>
-        <TextIcon color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="icon 17px" weight="semibold">
-          {'􀆄'}
-        </TextIcon>
-        {isDarkMode ? <Border borderRadius={10} borderWidth={THICK_BORDER_WIDTH} borderColor="separatorSecondary" /> : null}
-      </View>
-    </View>
-  );
-}
 
 // ============ Utilities ====================================================== //
 
@@ -555,7 +549,6 @@ function formatStartTime(value: string, currentDay: string): string {
 
 const styles = StyleSheet.create({
   surface: {
-    paddingBottom: 6,
     borderRadius: CARD_BORDER_RADIUS,
     borderCurve: 'continuous',
     elevation: 6,
@@ -588,21 +581,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  period: {
+  badge: {
     paddingHorizontal: 5,
     height: 19,
+    minWidth: 19,
     justifyContent: 'center',
     borderRadius: 8,
     borderCurve: 'continuous',
   },
-  periodBackground: {
+  badgeBackground: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 8,
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
-  darkPeriod: { backgroundColor: white(0.07) },
-  lightPeriod: { elevation: 4 },
+  darkBadge: { backgroundColor: white(0.07) },
+  lightBadge: { elevation: 4 },
   dot: { opacity: 0.7 },
   row: {
     height: 52,
@@ -638,8 +632,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  drawIcon: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  drawIconCorners: { borderRadius: 10, borderCurve: 'continuous' },
+  drawRow: {
+    height: 39,
+    paddingTop: 8,
+    paddingBottom: 12,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  drawLabel: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   divider: { height: 2, paddingLeft: 2 },
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },
