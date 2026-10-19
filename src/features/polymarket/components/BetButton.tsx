@@ -10,7 +10,7 @@ import { Border } from '@/design-system/components/Border/Border';
 import { AnimatedText } from '@/design-system/components/Text/AnimatedText';
 import { Text } from '@/design-system/components/Text/Text';
 import { textSizes } from '@/design-system/typography/typography';
-import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { formatProbability } from '@/features/polymarket/utils/formatProbability';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -91,7 +91,7 @@ function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps
     [color, isDarkMode]
   );
 
-  const probability = useDerivedValue(() => formatProbability(price, fallbackPrice));
+  const probability = useDerivedValue(() => formatProbability(price.value ?? fallbackPrice));
   const probabilityStyle = useAnimatedStyle(() => (probability.value === '100%' ? SMALL_PROBABILITY_STYLE : PROBABILITY_STYLE));
 
   return (
@@ -159,7 +159,7 @@ function SpreadBet({ color, isDarkMode, price, fallbackPrice, scoreAdjustment }:
             weight="heavy"
             selector={price => {
               'worklet';
-              return formatProbability(price, fallbackPrice);
+              return formatProbability(price.value ?? fallbackPrice);
             }}
           >
             {price}
@@ -175,14 +175,6 @@ function SpreadBet({ color, isDarkMode, price, fallbackPrice, scoreAdjustment }:
       </View>
     </View>
   );
-}
-
-// ============ Formatting ===================================================== //
-
-function formatProbability(price: ReadOnlySharedValue<string | undefined>, fallbackPrice?: string | number): string {
-  'worklet';
-  const value = price.value ?? fallbackPrice;
-  return value === undefined ? '–' : `${roundWorklet(toPercentageWorklet(value))}%`;
 }
 
 // ============ Styles ========================================================= //
