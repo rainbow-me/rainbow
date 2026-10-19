@@ -22,8 +22,6 @@ export interface ButtonPressAnimationProps
   shouldLongPressHoldPress?: boolean;
 
   /** @platform ios */
-  compensateForTransformOrigin?: boolean;
-  /** @platform ios */
   onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
   /** @platform ios */
   pressOutDuration?: number;

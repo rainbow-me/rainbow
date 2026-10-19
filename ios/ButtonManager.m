@@ -5,6 +5,7 @@
 //  Created by Alexey Kureev on 16/01/2020.
 //
 
+#import "React/RCTConvert.h"
 #import "React/RCTViewManager.h"
 #import "Rainbow-Swift.h"
 
@@ -21,7 +22,10 @@ RCT_EXPORT_VIEW_PROPERTY(duration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(pressOutDuration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(enableHapticFeedback, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hapticType, NSString)
-RCT_EXPORT_VIEW_PROPERTY(transformOrigin, CGPoint)
+RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, Button)
+{
+  view.transformOrigin = json ? [RCTConvert CGPoint:json] : defaultView.transformOrigin;
+}
 RCT_EXPORT_VIEW_PROPERTY(minLongPressDuration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(scaleTo, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(useLateHaptic, BOOL)
