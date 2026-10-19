@@ -5,8 +5,8 @@ import '../../../../config/test/storeEnvironment';
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
 import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
 import { usePolymarketOrderBookStore, type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
-import { polymarketOrderParamsStore, usePolymarketOrderDetailsStore } from '@/features/polymarket/stores/polymarketOrderStore';
-import { type Selection } from '@/features/sports/core/generated/sports';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/sports';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -14,12 +14,12 @@ import { predictionEvent } from '../../../../config/test/predictionEvent';
 
 const tokenId = '61682588409713156892865066024379723903051700030517382076759724382208757063880';
 const otherTokenId = '61682588409713156892865066024379723903051700030517382076759724382208757063881';
-const selection: Selection = { eventId: '980884', marketId: '4322152', tokenId, outcomeIndex: 1 };
+const outcome: PolymarketOutcome = { eventId: '980884', marketId: '4322152', tokenId, outcomeIndex: 1 };
 const fetchMock = vi.spyOn(global, 'fetch');
 const marketInfo = vi.spyOn(polymarketClobDataClient, 'getClobMarketInfo');
 const stops: (() => void)[] = [];
 
-function eventResponse(selected: Selection = selection): Response {
+function eventResponse(selected: PolymarketOutcome = outcome): Response {
   const event = predictionEvent(selected.eventId);
   Object.assign(event.markets[0], {
     id: selected.marketId,
@@ -63,8 +63,7 @@ function stallOrderDetails(): void {
 
 beforeEach(() => {
   useNavigationStore.setState({ activeRoute: Routes.POLYMARKET_NEW_POSITION_SHEET });
-  polymarketOrderParamsStore.setState({ params: null });
-  usePolymarketOrderDetailsStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  usePolymarketOrderStore.setState({ params: null, queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   usePolymarketOrderBookStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   usePolymarketFeeInfoStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   marketInfo.mockReset().mockImplementation(async condition => ({
@@ -83,7 +82,7 @@ beforeEach(() => {
     return request.pathname.endsWith('/book') ? bookResponse(request.searchParams.get('token_id') ?? '') : eventResponse();
   });
   stops.push(
-    usePolymarketOrderDetailsStore.subscribe(() => undefined),
+    usePolymarketOrderStore.subscribe(() => undefined),
     usePolymarketOrderBookStore.subscribe(() => undefined),
     usePolymarketFeeInfoStore.subscribe(() => undefined)
   );
@@ -93,19 +92,18 @@ afterEach(() => {
   vi.useRealTimers();
 });
 afterAll(() => {
-  for (const store of [usePolymarketOrderDetailsStore, usePolymarketOrderBookStore, usePolymarketFeeInfoStore])
-    store.getState().reset(true);
+  for (const store of [usePolymarketOrderStore, usePolymarketOrderBookStore, usePolymarketFeeInfoStore]) store.getState().reset(true);
   fetchMock.mockRestore();
   marketInfo.mockRestore();
 });
 
-it.each(['known', 'selected'])('keeps a cold selection’s book and fees consistent after a %s order', async previous => {
-  polymarketOrderParamsStore.setState({ params: previous === 'known' ? { tokenId, conditionId: 'known' } : selection });
+it.each(['known', 'selected'])('keeps a cold outcome’s book and fees consistent after a %s order', async previous => {
+  usePolymarketOrderStore.setState({ params: previous === 'known' ? { tokenId, conditionId: 'known' } : outcome });
   await settle();
   expect(usePolymarketOrderBookStore.getState().getData()?.asset_id).toBe(tokenId);
   expect(usePolymarketFeeInfoStore.getState().getData()?.platformFeeRate).toBe(0.02);
 
-  const next: Selection = { eventId: '980885', marketId: '4322153', tokenId: '200', outcomeIndex: 1 };
+  const next: PolymarketOutcome = { eventId: '980885', marketId: '4322153', tokenId: '200', outcomeIndex: 1 };
   const metadata = Promise.withResolvers<Response>();
   marketInfo.mockClear();
   fetchMock.mockImplementation(async url => {
@@ -114,15 +112,15 @@ it.each(['known', 'selected'])('keeps a cold selection’s book and fees consist
     if (request.pathname.endsWith('/book')) return bookResponse(request.searchParams.get('token_id') ?? '');
     throw new Error(`Unexpected order request: ${request.pathname}`);
   });
-  polymarketOrderParamsStore.setState({ params: next });
+  usePolymarketOrderStore.setState({ params: next });
   await settle();
   expect(usePolymarketOrderBookStore.getState().getData()?.asset_id).toBe('200');
-  expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+  expect(usePolymarketOrderStore.getState().getData()).toBeNull();
   expect(marketInfo).not.toHaveBeenCalled();
 
   metadata.resolve(eventResponse(next));
   await settle();
-  expect(usePolymarketOrderDetailsStore.getState().getData()).toMatchObject({
+  expect(usePolymarketOrderStore.getState().getData()).toMatchObject({
     market: { conditionId: 'condition-4322153', clobTokenIds: [otherTokenId, '200'] },
     outcomeIndex: 1,
   });
@@ -130,52 +128,68 @@ it.each(['known', 'selected'])('keeps a cold selection’s book and fees consist
   expect(usePolymarketFeeInfoStore.getState().getData()?.platformFeeRate).toBe(0.02);
 });
 
+it('reuses order details when only the snapshot price changes', async () => {
+  const store = usePolymarketOrderStore.getState();
+  store.setBuyParams({ outcome: { ...outcome, priceUsd: '0' } });
+  await settle();
+
+  const details = usePolymarketOrderStore.getState().getData();
+  expect(details?.market.conditionId).toBe(`condition-${outcome.marketId}`);
+  fetchMock.mockClear();
+
+  store.setBuyParams({ outcome: { ...outcome, priceUsd: '0.6' } });
+  await settle();
+
+  expect(usePolymarketOrderStore.getState().getData()).toBe(details);
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
 it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }])(
   'rejects an unavailable market: %j',
   async flags => {
-    const event = predictionEvent(selection.eventId);
-    Object.assign(event.markets[0], { id: selection.marketId, clobTokenIds: JSON.stringify([otherTokenId, tokenId]), ...flags });
+    const event = predictionEvent(outcome.eventId);
+    Object.assign(event.markets[0], { id: outcome.marketId, clobTokenIds: JSON.stringify([otherTokenId, tokenId]), ...flags });
     fetchMock.mockImplementation(async url =>
       String(url).includes('/events/')
         ? new Response(JSON.stringify(event), { headers: { 'Content-Type': 'application/json' } })
         : bookResponse(tokenId)
     );
-    polymarketOrderParamsStore.setState({ params: selection });
+    usePolymarketOrderStore.setState({ params: outcome });
     await settle();
-    expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+    expect(usePolymarketOrderStore.getState().getData()).toBeNull();
     expect(marketInfo).not.toHaveBeenCalled();
   }
 );
 
 it('rejects a token at a different outcome index', async () => {
-  polymarketOrderParamsStore.setState({ params: { ...selection, outcomeIndex: 0 } });
+  usePolymarketOrderStore.setState({ params: { ...outcome, outcomeIndex: 0 } });
   await settle();
-  expect(usePolymarketOrderDetailsStore.getState().getData()).toBeNull();
+  expect(usePolymarketOrderStore.getState().getData()).toBeNull();
   expect(marketInfo).not.toHaveBeenCalled();
 });
 
 it('reports a details timeout as an error and allows retrying', async () => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   stallOrderDetails();
-  polymarketOrderParamsStore.setState({ params: selection });
+  usePolymarketOrderStore.setState({ params: outcome });
   await settle();
 
   await vi.advanceTimersByTimeAsync(15_000);
-  expect(usePolymarketOrderDetailsStore.getState().getStatus()).toMatchObject({
+  expect(usePolymarketOrderStore.getState().getStatus()).toMatchObject({
     isError: true,
     isInitialLoad: false,
     isLoading: false,
   });
 
   fetchMock.mockResolvedValueOnce(eventResponse());
-  await usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true });
-  expect(usePolymarketOrderDetailsStore.getState().getStatus('isSuccess')).toBe(true);
+  await usePolymarketOrderStore.getState().fetch({ outcome }, { force: true });
+  expect(usePolymarketOrderStore.getState().getStatus('isSuccess')).toBe(true);
 });
 
 it('cancels the details request without an error when the sheet closes', async () => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   stallOrderDetails();
-  polymarketOrderParamsStore.setState({ params: selection });
+  usePolymarketOrderStore.setState({ params: outcome });
   await settle();
   const signal = fetchMock.mock.calls.find(([url]) => String(url).includes('/events/'))?.[1]?.signal;
   expect(signal?.aborted).toBe(false);
@@ -183,5 +197,5 @@ it('cancels the details request without an error when the sheet closes', async (
   useNavigationStore.setState({ activeRoute: Routes.WALLET_SCREEN });
   await settle();
   expect(signal?.aborted).toBe(true);
-  expect(usePolymarketOrderDetailsStore.getState().getStatus('isError')).toBe(false);
+  expect(usePolymarketOrderStore.getState().getStatus('isError')).toBe(false);
 });
