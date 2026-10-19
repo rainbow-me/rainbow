@@ -145,7 +145,7 @@ export const GameCard = memo(function GameCard({
         {threeWay ? (
           <>
             <GameDivider isDarkMode={isDarkMode} />
-            <GameDrawRow isDarkMode={isDarkMode} tokenId={game.moneyline?.draw?.tokenId} />
+            <GameDrawRow isDarkMode={isDarkMode} tokenId={game.moneyline?.draw?.tokenId} fallbackPrice={game.moneyline?.draw?.priceUsd} />
           </>
         ) : null}
       </GameCardSurface>
@@ -469,6 +469,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
           isDarkMode={isDarkMode}
           key={outcome.tokenId}
           liveTokenId={getPolymarketTokenId(outcome.tokenId, 'midpoint')}
+          fallbackPrice={outcome.priceUsd}
           color={color}
           scoreAdjustment={Number(outcome.scoreAdjustment)}
           onPress={outcomeColor =>
@@ -490,6 +491,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
           isDarkMode={isDarkMode}
           key={moneylineOutcome.tokenId}
           liveTokenId={getPolymarketTokenId(moneylineOutcome.tokenId, 'midpoint')}
+          fallbackPrice={moneylineOutcome.priceUsd}
           color={color}
           onPress={outcomeColor => onPress(gameId, { outcome: moneylineOutcome, outcomeColor })}
         />
@@ -504,7 +506,15 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   );
 });
 
-const GameDrawRow = memo(function GameDrawRow({ isDarkMode, tokenId }: { isDarkMode: boolean; tokenId?: string }) {
+const GameDrawRow = memo(function GameDrawRow({
+  isDarkMode,
+  tokenId,
+  fallbackPrice,
+}: {
+  isDarkMode: boolean;
+  tokenId?: string;
+  fallbackPrice?: string;
+}) {
   const liveTokenId = tokenId ? getPolymarketTokenId(tokenId, 'midpoint') : undefined;
   const price = useStoreSharedValue(useLiveTokensStore, s => (liveTokenId ? s.tokens[liveTokenId]?.price : undefined));
 
@@ -519,7 +529,7 @@ const GameDrawRow = memo(function GameDrawRow({ isDarkMode, tokenId }: { isDarkM
             weight="bold"
             selector={price => {
               'worklet';
-              return formatProbability(price.value);
+              return formatProbability(price.value ?? fallbackPrice);
             }}
           >
             {price}
