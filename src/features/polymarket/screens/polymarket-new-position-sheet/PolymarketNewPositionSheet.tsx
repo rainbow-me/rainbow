@@ -24,11 +24,11 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { usePolymarketOrderDetailsStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
+import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { type Selection } from '@/features/sports/core/generated/sports';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/sports';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -66,8 +66,8 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Text size="26pt" weight="heavy" color="label">
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
-          {'selection' in params ? (
-            <SelectedOutcomeForm selection={params.selection} outcomeColor={outcomeColor} fromRoute={params.fromRoute} />
+          {'outcome' in params ? (
+            <OrderDetailsLoader outcome={params.outcome} outcomeColor={outcomeColor} fromRoute={params.fromRoute} />
           ) : (
             <NewPositionForm
               event={params.event}
@@ -83,9 +83,9 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   );
 });
 
-function SelectedOutcomeForm({ selection, outcomeColor, fromRoute }: { selection: Selection; outcomeColor: string; fromRoute: Route }) {
-  const details = usePolymarketOrderDetailsStore(s => {
-    const data = s.getData({ selection });
+function OrderDetailsLoader({ outcome, outcomeColor, fromRoute }: { outcome: PolymarketOutcome; outcomeColor: string; fromRoute: Route }) {
+  const details = usePolymarketOrderStore(s => {
+    const data = s.getData({ outcome });
     if (data) return data;
     return s.getStatus('isInitialLoad') || s.getStatus('isLoading') ? undefined : null;
   });
@@ -98,7 +98,7 @@ function SelectedOutcomeForm({ selection, outcomeColor, fromRoute }: { selection
         <Text align="center" color="labelSecondary" size="17pt" weight="bold">
           {i18n.t(i18n.l.sports.entry_error)}
         </Text>
-        <ButtonPressAnimation onPress={() => usePolymarketOrderDetailsStore.getState().fetch({ selection }, { force: true })}>
+        <ButtonPressAnimation onPress={() => usePolymarketOrderStore.getState().fetch({ outcome }, { force: true })}>
           <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
             <Text color="accent" size="17pt" weight="bold">
               {i18n.t(i18n.l.sports.retry)}
@@ -111,7 +111,7 @@ function SelectedOutcomeForm({ selection, outcomeColor, fromRoute }: { selection
 
   return (
     <NewPositionForm
-      key={selection.tokenId}
+      key={outcome.tokenId}
       event={details.event}
       market={details.market}
       outcomeIndex={details.outcomeIndex}
