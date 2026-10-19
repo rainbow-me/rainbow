@@ -28,11 +28,11 @@ export const SimpleSheet = ({
 }: SimpleSheetProps) => {
   const insets = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const fullSheetHeight = deviceHeight - insets.top;
+  const sheetHeight = customHeight ?? deviceHeight - insets.top;
   return (
     <SlackSheet
       additionalTopPadding={useAdditionalTopPadding}
-      contentHeight={customHeight ?? fullSheetHeight}
+      contentHeight={sheetHeight}
       height="100%"
       removeTopPadding
       scrollEnabled={scrollEnabled}
@@ -40,7 +40,7 @@ export const SimpleSheet = ({
       onDismiss={onDismiss}
       testID={testID}
     >
-      <View style={{ minHeight: customHeight ?? fullSheetHeight }}>{children}</View>
+      <View style={{ flexBasis: sheetHeight, minHeight: sheetHeight }}>{children}</View>
     </SlackSheet>
   );
 };
