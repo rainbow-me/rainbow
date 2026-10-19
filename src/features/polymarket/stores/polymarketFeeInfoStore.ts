@@ -2,7 +2,7 @@ import { type MarketDetails } from '@polymarket/clob-client-v2';
 import { createQueryStore } from '@storesjs/stores';
 
 import { polymarketClobDataClient } from '@/features/polymarket/polymarket-clob-data-client';
-import { polymarketOrderParamsStore, usePolymarketOrderDetailsStore } from '@/features/polymarket/stores/polymarketOrderStore';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { EMPTY_POLYMARKET_FEE_INFO, type PolymarketFeeInfo } from '@/features/polymarket/utils/fees';
 import { time } from '@/framework/core/utils/time';
 
@@ -16,12 +16,7 @@ type FetchParams = {
 export const usePolymarketFeeInfoStore = createQueryStore<PolymarketFeeInfo, FetchParams>({
   fetcher: fetchPolymarketFeeInfo,
   params: {
-    conditionId: $ => {
-      const params = $(polymarketOrderParamsStore, s => s.params);
-      const conditionId = $(usePolymarketOrderDetailsStore, s => s.getData()?.market.conditionId ?? null);
-      if (!params) return null;
-      return 'conditionId' in params ? params.conditionId : conditionId;
-    },
+    conditionId: $ => $(usePolymarketOrderStore, s => s.getConditionId()),
   },
   cacheTime: time.minutes(10),
   staleTime: time.minutes(1),

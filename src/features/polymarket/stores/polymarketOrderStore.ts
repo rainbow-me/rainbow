@@ -1,23 +1,14 @@
-import { createBaseStore, createQueryStore } from '@storesjs/stores';
+import { createQueryStore, queryParam } from '@storesjs/stores';
 
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { type Selection } from '@/features/sports/core/generated/sports';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/sports';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-// ============ Order Parameters =============================================== //
-
-/**
- * The outcome selected for a Polymarket buy or sell order.
- */
-export const polymarketOrderParamsStore = createBaseStore<{
-  params: { tokenId: string; conditionId: string } | Selection | null;
-}>(() => ({ params: null }));
-
-// ============ Selected Outcome =============================================== //
+// ============ Types ========================================================== //
 
 /**
  * Details needed to open a Polymarket position.
@@ -31,43 +22,82 @@ export type PolymarketOrderDetails = {
   outcomeIndex: number;
 };
 
-type FetchParams = { selection: Selection | null };
+type OrderState = {
+  params: { tokenId: string; conditionId: string } | PolymarketOutcome | null;
+  getConditionId: () => string | null;
+  setBuyParams: (input: PolymarketOrderDetails | { outcome: PolymarketOutcome }) => void;
+  setSellParams: (position: { asset: string; conditionId: string }) => void;
+};
+
+type FetchParams = { outcome: PolymarketOutcome | null };
+
+// ============ Order Store ==================================================== //
 
 /**
- * Loads Polymarket order details for a Sports selection.
- * Unavailable selections resolve to `null`.
+ * Stores the outcome for a Polymarket buy or sell order and loads missing order details.
+ * Unavailable outcomes resolve to `null`.
  */
-export const usePolymarketOrderDetailsStore = createQueryStore<PolymarketOrderDetails | null, FetchParams>({
-  fetcher: fetchOrderDetails,
-  enabled: $ => {
-    const hasSelection = $(polymarketOrderParamsStore, s => s.params !== null && 'marketId' in s.params);
-    const isOrderSheetActive = $(useNavigationStore, s => s.isRouteActive(Routes.POLYMARKET_NEW_POSITION_SHEET));
-    return isOrderSheetActive && hasSelection;
+export const usePolymarketOrderStore = createQueryStore<
+  PolymarketOrderDetails | null,
+  FetchParams,
+  OrderState,
+  PolymarketOrderDetails | null
+>(
+  {
+    fetcher: fetchOrderDetails,
+    enabled: ($, store) => {
+      const hasOutcome = $(store, hasOutcomeReference);
+      const isOrderSheetActive = $(useNavigationStore, s => s.isRouteActive(Routes.POLYMARKET_NEW_POSITION_SHEET));
+      return isOrderSheetActive && hasOutcome;
+    },
+    params: {
+      outcome: queryParam(($, store) => $(store, s => (hasOutcomeReference(s) ? s.params : null)), { key: buildOutcomeKey }),
+    },
+    staleTime: time.minutes(2),
+    cacheTime: time.minutes(10),
   },
-  params: {
-    selection: $ => $(polymarketOrderParamsStore, s => (s.params && 'marketId' in s.params ? s.params : null)),
-  },
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(10),
-});
 
-async function fetchOrderDetails(
-  { selection }: FetchParams,
-  abortController: AbortController | null
-): Promise<PolymarketOrderDetails | null> {
-  if (!selection) return null;
+  (set, get) => ({
+    params: null,
 
-  const { data: event } = await rainbowFetch<RawPolymarketEvent>(`${POLYMARKET_GAMMA_API_URL}/events/${selection.eventId}`, {
+    getConditionId: () => {
+      const state = get();
+      const params = state.params;
+      if (!params) return null;
+
+      return 'conditionId' in params ? params.conditionId : (state.getData()?.market.conditionId ?? null);
+    },
+
+    setBuyParams: input =>
+      set({
+        params:
+          'outcome' in input
+            ? input.outcome
+            : { tokenId: input.market.clobTokenIds[input.outcomeIndex], conditionId: input.market.conditionId },
+      }),
+
+    setSellParams: position => set({ params: { tokenId: position.asset, conditionId: position.conditionId } }),
+  })
+);
+
+// ============ Order Details Fetcher ========================================== //
+
+async function fetchOrderDetails(params: FetchParams, abortController: AbortController | null): Promise<PolymarketOrderDetails | null> {
+  const outcome = params.outcome;
+  if (!outcome) return null;
+
+  const { data: event } = await rainbowFetch<RawPolymarketEvent>(`${POLYMARKET_GAMMA_API_URL}/events/${outcome.eventId}`, {
     signal: abortController?.signal,
     timeout: time.seconds(15),
   });
-  const rawMarket = event.markets.find(market => market.id === selection.marketId);
+
+  const rawMarket = event.markets.find(market => market.id === outcome.marketId);
   if (!rawMarket || !rawMarket.active || rawMarket.closed || rawMarket.archived || rawMarket.acceptingOrders === false) {
     return null;
   }
 
   const clobTokenIds: string[] = JSON.parse(rawMarket.clobTokenIds);
-  if (clobTokenIds[selection.outcomeIndex] !== selection.tokenId) {
+  if (clobTokenIds[outcome.outcomeIndex] !== outcome.tokenId) {
     return null;
   }
 
@@ -84,6 +114,18 @@ async function fetchOrderDetails(
       outcomes: JSON.parse(rawMarket.outcomes),
       clobTokenIds,
     },
-    outcomeIndex: selection.outcomeIndex,
+    outcomeIndex: outcome.outcomeIndex,
   };
+}
+
+// ============ Utilities ====================================================== //
+
+function buildOutcomeKey(outcome: PolymarketOutcome | null): string | null {
+  if (!outcome) return null;
+  return `${outcome.eventId}:${outcome.marketId}:${outcome.tokenId}:${outcome.outcomeIndex}`;
+}
+
+function hasOutcomeReference(state: OrderState): state is OrderState & { params: PolymarketOutcome } {
+  if (!state.params) return false;
+  return 'marketId' in state.params;
 }
