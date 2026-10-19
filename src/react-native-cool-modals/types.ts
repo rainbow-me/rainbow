@@ -1,7 +1,13 @@
 import { type ReactNode } from 'react';
 import { type ColorValue, type NativeSyntheticEvent, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 
-import { type NavigationHelpers, type ParamListBase, type StackNavigationState } from '@react-navigation/native';
+import {
+  type DefaultNavigatorOptions,
+  type NavigationHelpers,
+  type ParamListBase,
+  type StackNavigationState,
+  type StackRouterOptions,
+} from '@react-navigation/native';
 import { type StackNavigationOptions } from '@react-navigation/stack';
 
 export type NativeScreenProps = ViewProps & {
@@ -22,8 +28,9 @@ export type NativeScreenProps = ViewProps & {
   limitActiveModals?: boolean;
   longFormHeight?: number;
   modalBackgroundColor?: ColorValue;
-  onAppear?: () => void;
+  onAppear?: (event: NativeSyntheticEvent<{ presentationRequest: number }>) => void;
   onDismissed?: (event: NativeSyntheticEvent<{ presentationRequest: number }>) => void;
+  onPresentationApplied?: (event: NativeSyntheticEvent<{ presentationRequest: number }>) => void;
   onTouchTop?: (event: NativeSyntheticEvent<{ dismissing: boolean }>) => void;
   onWillDismiss?: () => void;
   presentationRequest: number;
@@ -44,7 +51,10 @@ export type NativeScreenProps = ViewProps & {
 };
 
 export type NativeStackOptions = StackNavigationOptions &
-  Omit<NativeScreenProps, keyof ViewProps | 'inStack' | 'modalBackgroundColor' | 'onAppear' | 'onDismissed' | 'presentationRequest'> & {
+  Omit<
+    NativeScreenProps,
+    keyof ViewProps | 'inStack' | 'modalBackgroundColor' | 'onAppear' | 'onDismissed' | 'onPresentationApplied' | 'presentationRequest'
+  > & {
     backgroundColor?: ColorValue;
     contentStyle?: StyleProp<ViewStyle>;
     onAppear?: (() => void) | null;
@@ -52,7 +62,6 @@ export type NativeStackOptions = StackNavigationOptions &
   };
 
 export type NativeStackEvents = {
-  appear: { data: undefined };
   dismiss: { data: undefined };
 };
 
@@ -61,3 +70,8 @@ export type NativeStackState = Omit<StackNavigationState<ParamListBase>, 'routes
 export type NativeStackNavigation = NavigationHelpers<ParamListBase, NativeStackEvents>;
 export type NativeStackDescriptor = { options: NativeStackOptions; render: () => ReactNode; route: NativeStackRoute };
 export type NativeStackDescriptors = Record<string, NativeStackDescriptor>;
+
+export type NativeStackNavigatorProps = DefaultNavigatorOptions<ParamListBase, NativeStackState, NativeStackOptions, NativeStackEvents> &
+  StackRouterOptions & {
+    onPresentationApplied?: (navigatorKey: string, routeKey: string, presentationRequest: number) => void;
+  };

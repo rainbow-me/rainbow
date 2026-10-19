@@ -6,9 +6,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeScreen, NativeScreenStack } from './screens';
 import {
+  type NativeScreenProps,
   type NativeStackDescriptor,
   type NativeStackDescriptors,
   type NativeStackNavigation,
+  type NativeStackNavigatorProps,
   type NativeStackRoute,
   type NativeStackState,
 } from './types';
@@ -16,14 +18,16 @@ import {
 type StackProps = {
   descriptors: NativeStackDescriptors;
   navigation: NativeStackNavigation;
+  onPresentationApplied?: NativeStackNavigatorProps['onPresentationApplied'];
   state: NativeStackState;
 };
 type ScreenProps = {
   colors: { background: string };
   descriptor: NativeStackDescriptor;
   inStack: boolean;
-  navigation: NativeStackNavigation;
+  navigatorKey: string;
   onDismissed: (descriptor: NativeStackDescriptor, request: number) => void;
+  onPresentationApplied?: NativeStackNavigatorProps['onPresentationApplied'];
 };
 
 const sx = StyleSheet.create({
@@ -32,7 +36,7 @@ const sx = StyleSheet.create({
   },
 });
 
-function ScreenView({ colors, descriptor, inStack, navigation, onDismissed }: ScreenProps) {
+function ScreenView({ colors, descriptor, inStack, navigatorKey, onDismissed, onPresentationApplied }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const { options, render: renderScene, route } = descriptor;
   const {
@@ -64,6 +68,10 @@ function ScreenView({ colors, descriptor, inStack, navigation, onDismissed }: Sc
     transitionDuration,
   } = options;
 
+  const acknowledgePresentation: NonNullable<NativeScreenProps['onPresentationApplied']> = ({ nativeEvent: { presentationRequest } }) => {
+    onPresentationApplied?.(navigatorKey, route.key, presentationRequest);
+  };
+
   return (
     <NativeScreen
       allowsDragToDismiss={allowsDragToDismiss}
@@ -84,14 +92,12 @@ function ScreenView({ colors, descriptor, inStack, navigation, onDismissed }: Sc
       // PanModal adds the bottom inset internally
       longFormHeight={longFormHeight != null ? longFormHeight - insets.bottom : undefined}
       modalBackgroundColor={backgroundColor}
-      onAppear={() => {
+      onAppear={event => {
+        acknowledgePresentation(event);
         options.onAppear?.();
-        navigation.emit({
-          target: route.key,
-          type: 'appear',
-        });
       }}
       onDismissed={({ nativeEvent: { presentationRequest } }) => onDismissed(descriptor, presentationRequest)}
+      onPresentationApplied={acknowledgePresentation}
       onTouchTop={onTouchTop}
       onWillDismiss={onWillDismiss}
       presentationRequest={route.presentationRequest ?? 0}
@@ -187,7 +193,7 @@ class MountedStack extends React.Component<StackProps & { colors: { background: 
   };
 
   render(): React.JSX.Element {
-    const { colors, descriptors, navigation } = this.props;
+    const { colors, descriptors, onPresentationApplied, state } = this.props;
     return (
       <NativeScreenStack style={sx.container}>
         {this.state.routes.map(route => (
@@ -196,8 +202,9 @@ class MountedStack extends React.Component<StackProps & { colors: { background: 
             descriptor={this.state.descriptors[route.key]}
             inStack={Object.hasOwn(descriptors, route.key)}
             key={route.key}
-            navigation={navigation}
+            navigatorKey={state.key}
             onDismissed={this.handleDismissed}
+            onPresentationApplied={onPresentationApplied}
           />
         ))}
       </NativeScreenStack>
@@ -207,5 +214,13 @@ class MountedStack extends React.Component<StackProps & { colors: { background: 
 
 export default function NativeStackView(props: StackProps): React.JSX.Element {
   const { colors } = useTheme();
-  return <MountedStack colors={colors} descriptors={props.descriptors} navigation={props.navigation} state={props.state} />;
+  return (
+    <MountedStack
+      colors={colors}
+      descriptors={props.descriptors}
+      navigation={props.navigation}
+      onPresentationApplied={props.onPresentationApplied}
+      state={props.state}
+    />
+  );
 }
