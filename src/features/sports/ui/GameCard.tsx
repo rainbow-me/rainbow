@@ -17,10 +17,10 @@ import { type SportsCatalog, type SportsScope } from '@/features/sports/core/cat
 import {
   Game_Interruption,
   Game_Status,
-  Winner_Kind,
+  Moneyline_Kind,
   type Game,
   type Participant,
-  type Selection,
+  type PolymarketOutcome,
   type Spread,
 } from '@/features/sports/core/generated/sports';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
@@ -41,7 +41,7 @@ import { black, white } from '@/worklets/colors';
 /**
  * Callback provided to game card and bet badge press handlers.
  */
-export type SportsGamePress = (gameId: string, offer?: { selection: Selection; outcomeColor: string }) => void;
+export type SportsGamePress = (gameId: string, bet?: { outcome: PolymarketOutcome; outcomeColor: string }) => void;
 
 // ============ Constants ====================================================== //
 
@@ -98,7 +98,7 @@ export const GameCard = memo(function GameCard({
   const competitionId = scopeId && game.competitionIds.includes(scopeId) ? scopeId : game.competitionIds[0];
   const competition = catalog?.scopes[competitionId];
   const sportId = catalog?.scopes[game.competitionIds[0]]?.parentId;
-  const threeWay = game.winner?.kind === Winner_Kind.KIND_THREE_WAY;
+  const threeWay = game.moneyline?.kind === Moneyline_Kind.KIND_THREE_WAY;
 
   return (
     <ButtonPressAnimation onPress={() => onPress(gameId)} scaleTo={0.98} style={style}>
@@ -132,7 +132,7 @@ export const GameCard = memo(function GameCard({
                     gameId={gameId}
                     participantIndex={index}
                     spread={game.spread}
-                    winner={participant.winner}
+                    moneylineOutcome={participant.moneylineOutcome}
                     color={participant.color ?? sportsIcons[competitionId]?.color ?? competition?.color}
                     isDarkMode={isDarkMode}
                     onPress={onPress}
@@ -145,7 +145,7 @@ export const GameCard = memo(function GameCard({
         {threeWay ? (
           <>
             <GameDivider isDarkMode={isDarkMode} />
-            <GameDrawRow isDarkMode={isDarkMode} tokenId={game.winner?.draw?.tokenId} />
+            <GameDrawRow isDarkMode={isDarkMode} tokenId={game.moneyline?.draw?.tokenId} />
           </>
         ) : null}
       </GameCardSurface>
@@ -448,14 +448,14 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
   gameId,
   participantIndex,
   spread,
-  winner,
+  moneylineOutcome,
   color,
   onPress,
 }: {
   gameId: string;
   participantIndex: 0 | 1;
   spread?: Spread;
-  winner?: Selection;
+  moneylineOutcome?: PolymarketOutcome;
   color?: string;
   isDarkMode: boolean;
   onPress: SportsGamePress;
@@ -473,7 +473,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
           scoreAdjustment={outcome.scoreAdjustment}
           onPress={outcomeColor =>
             onPress(gameId, {
-              selection: {
+              outcome: {
                 eventId: spread.eventId,
                 marketId: spread.marketId,
                 tokenId: outcome.tokenId,
@@ -485,13 +485,13 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
         />
       ) : null}
 
-      {winner ? (
+      {moneylineOutcome ? (
         <BetButton
           isDarkMode={isDarkMode}
-          key={winner.tokenId}
-          liveTokenId={getPolymarketTokenId(winner.tokenId, 'midpoint')}
+          key={moneylineOutcome.tokenId}
+          liveTokenId={getPolymarketTokenId(moneylineOutcome.tokenId, 'midpoint')}
           color={color}
-          onPress={outcomeColor => onPress(gameId, { selection: winner, outcomeColor })}
+          onPress={outcomeColor => onPress(gameId, { outcome: moneylineOutcome, outcomeColor })}
         />
       ) : (
         <View style={styles.unavailable}>
