@@ -31,16 +31,21 @@ describe('useTokenTradesStore', () => {
       amountSoldUsd1y: '30',
       realizedProfitUsd1y: '10',
       lastTransactionAt: 1790000000,
+      tokenBalanceLive: '12',
     };
     useViewedTokenStore.getState().setToken({ address: '0xviewed', chainId: 8453 });
-    respondWith({ data: { filterTokenWallets: { results: [trades] } } });
+    respondWith({ data: { filterTokenWallets: { results: [{ address: '0xWallet', ...trades }] } } });
 
     const unsubscribe = useTokenTradesStore.subscribe(() => undefined);
     await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(trades));
     unsubscribe();
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({ wallet: '0xwallet', tokenId: '0xviewed:8453' });
+    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({
+      wallets: ['0xwallet'],
+      tokenId: '0xviewed:8453',
+      limit: 1,
+    });
   });
 
   it('does not request a perps market', async () => {
