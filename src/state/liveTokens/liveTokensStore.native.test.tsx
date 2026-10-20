@@ -6,11 +6,12 @@ import { NavigationRouteContext } from '@react-navigation/native';
 import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useAppStateStore } from '@/state/appState/appStateStore';
-import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import * as priceAdapter from '@/state/liveTokens/polymarketAdapter';
+import { type LiveTokensData } from '@/state/liveTokens/types';
 import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -19,10 +20,9 @@ const fetchPrices = vi.spyOn(priceAdapter, 'fetchPolymarketPrices').mockResolved
 const FIRST_TOKEN = '1:polymarket:midpoint';
 const SECOND_TOKEN = '2:polymarket:midpoint';
 const THIRD_TOKEN = '3:polymarket:midpoint';
-const price = (token: TokenData): string => token.price;
 
 function Token({ id = FIRST_TOKEN, enabled = true }: { id?: string; enabled?: boolean }) {
-  useLiveTokenValue({ tokenId: id, initialValue: '0', selector: price, autoSubscriptionEnabled: enabled });
+  useLiveTokenValue({ tokenId: id, fallback: '0', autoSubscribe: enabled });
   return null;
 }
 
@@ -96,7 +96,7 @@ it('retains an overlapping token until its last component unmounts', async () =>
   await expectRequestedTokens();
 });
 
-it('balances changes to the token and automatic subscription setting', async () => {
+it('balances changes to the requested token', async () => {
   render(<Token />);
   render(<Token id={SECOND_TOKEN} />);
   await expectRequestedTokens(SECOND_TOKEN);
@@ -107,15 +107,6 @@ it('balances changes to the token and automatic subscription setting', async () 
   render(<Token id={THIRD_TOKEN} enabled={false} />);
   render(<Token id={THIRD_TOKEN} />);
   await expectRequestedTokens(THIRD_TOKEN);
-});
-
-it('does not acquire a subscription for disabled price displays', () => {
-  const subscribe = vi.spyOn(useLiveTokensStore.getState(), 'subscribeToToken');
-  render(<Token enabled={false} />);
-  render(<Token id={SECOND_TOKEN} enabled={false} />);
-  render(null);
-  expect(subscribe).not.toHaveBeenCalled();
-  subscribe.mockRestore();
 });
 
 it('replaces list contents without disturbing another list or a single-token subscriber', async () => {
@@ -223,4 +214,22 @@ it('fetches the new route when navigation shortens the refresh interval', async 
   });
   expect(fetchPrices).toHaveBeenCalledTimes(1);
   expect(fetchPrices).toHaveBeenCalledWith([SECOND_TOKEN]);
+});
+
+it('does not acquire demand when disabled or missing a token ID', async () => {
+  const subscribe = vi.spyOn(useLiveTokensStore.getState(), 'subscribeToToken');
+  function Missing({ id }: { id: string | undefined }) {
+    useLiveTokenValue({ tokenId: id, fallback: '—' });
+    return null;
+  }
+  try {
+    render(<Token enabled={false} />);
+    render(<Token id={SECOND_TOKEN} enabled={false} />);
+    render(<Missing id={undefined} />);
+    render(<Missing id="" />);
+    expect(subscribe).not.toHaveBeenCalled();
+    await expectRequestedTokens();
+  } finally {
+    subscribe.mockRestore();
+  }
 });
