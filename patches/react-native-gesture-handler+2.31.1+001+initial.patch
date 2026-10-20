@@ -412,3 +412,143 @@ new file mode 100644
 +    if (event.actionMasked == MotionEvent.ACTION_UP) end()
 +  }
 +}
+# PATCH CONTEXT
+# blocksHandlers accepts refs, but filterConfig forwards them unchanged to
+# native code, which expects numeric handler IDs. Convert them through
+# transformIntoHandlerTags, as waitFor and simultaneousHandlers already do.
+#
+# Include blocksHandlers in the existing bounded retries when a ref's current
+# value is null or undefined, so refs set later during mounting can be
+# resolved. Check only objects: string handler IDs have no current property
+# and would otherwise trigger unnecessary retries.
+#
+# Apply the change to source and the shipped CommonJS and ES module builds.
+
+diff --git a/node_modules/react-native-gesture-handler/src/handlers/utils.ts b/node_modules/react-native-gesture-handler/src/handlers/utils.ts
+--- a/node_modules/react-native-gesture-handler/src/handlers/utils.ts
++++ b/node_modules/react-native-gesture-handler/src/handlers/utils.ts
+@@ -26,7 +26,11 @@
+   for (const key of validProps) {
+     let value = props[key];
+     if (isConfigParam(value, key)) {
+-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
++      if (
++        key === 'simultaneousHandlers' ||
++        key === 'waitFor' ||
++        key === 'blocksHandlers'
++      ) {
+         value = transformIntoHandlerTags(props[key]);
+       } else if (key === 'hitSlop' && typeof value !== 'object') {
+         value = { top: value, left: value, bottom: value, right: value };
+diff --git a/node_modules/react-native-gesture-handler/src/handlers/createHandler.tsx b/node_modules/react-native-gesture-handler/src/handlers/createHandler.tsx
+--- a/node_modules/react-native-gesture-handler/src/handlers/createHandler.tsx
++++ b/node_modules/react-native-gesture-handler/src/handlers/createHandler.tsx
+@@ -124,11 +124,15 @@
+   // TODO(TS) - add type for extract arg
+   const extract = (refs: any | any[]) => {
+     if (!Array.isArray(refs)) {
+-      return refs && refs.current === null;
+-    }
+-    return refs.some((r) => r && r.current === null);
++      return refs && typeof refs === 'object' && refs.current == null;
++    }
++    return refs.some((r) => r && typeof r === 'object' && r.current == null);
+   };
+-  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
++  return (
++    extract(props['simultaneousHandlers']) ||
++    extract(props['waitFor']) ||
++    extract(props['blocksHandlers'])
++  );
+ }
+ 
+ const stateToPropMappings = {
+@@ -223,7 +227,7 @@
+       }
+       if (hasUnresolvedRefs(props)) {
+         // If there are unresolved refs (e.g. ".current" has not yet been set)
+-        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
++        // passed as external gesture relationships, we enqueue a call to
+         // _update method that will try to update native handler props using
+         // queueMicrotask. This makes it so update() function gets called after all
+         // react components are mounted and we expect the missing ref object to
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/utils.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/utils.js
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/utils.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/utils.js
+@@ -25,7 +25,7 @@
+   for (const key of validProps) {
+     let value = props[key];
+     if (isConfigParam(value, key)) {
+-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
++      if (key === 'simultaneousHandlers' || key === 'waitFor' || key === 'blocksHandlers') {
+         value = transformIntoHandlerTags(props[key]);
+       } else if (key === 'hitSlop' && typeof value !== 'object') {
+         value = {
+diff --git a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
+--- a/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/commonjs/handlers/createHandler.js
+@@ -98,11 +98,11 @@
+   // TODO(TS) - add type for extract arg
+   const extract = refs => {
+     if (!Array.isArray(refs)) {
+-      return refs && refs.current === null;
+-    }
+-    return refs.some(r => r && r.current === null);
++      return refs && typeof refs === 'object' && refs.current == null;
++    }
++    return refs.some(r => r && typeof r === 'object' && r.current == null);
+   };
+-  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
++  return extract(props['simultaneousHandlers']) || extract(props['waitFor']) || extract(props['blocksHandlers']);
+ }
+ const stateToPropMappings = {
+   [_State.State.UNDETERMINED]: undefined,
+@@ -157,7 +157,7 @@
+       }
+       if (hasUnresolvedRefs(props)) {
+         // If there are unresolved refs (e.g. ".current" has not yet been set)
+-        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
++        // passed as external gesture relationships, we enqueue a call to
+         // _update method that will try to update native handler props using
+         // queueMicrotask. This makes it so update() function gets called after all
+         // react components are mounted and we expect the missing ref object to
+diff --git a/node_modules/react-native-gesture-handler/lib/module/handlers/utils.js b/node_modules/react-native-gesture-handler/lib/module/handlers/utils.js
+--- a/node_modules/react-native-gesture-handler/lib/module/handlers/utils.js
++++ b/node_modules/react-native-gesture-handler/lib/module/handlers/utils.js
+@@ -17,7 +17,7 @@
+   for (const key of validProps) {
+     let value = props[key];
+     if (isConfigParam(value, key)) {
+-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
++      if (key === 'simultaneousHandlers' || key === 'waitFor' || key === 'blocksHandlers') {
+         value = transformIntoHandlerTags(props[key]);
+       } else if (key === 'hitSlop' && typeof value !== 'object') {
+         value = {
+diff --git a/node_modules/react-native-gesture-handler/lib/module/handlers/createHandler.js b/node_modules/react-native-gesture-handler/lib/module/handlers/createHandler.js
+--- a/node_modules/react-native-gesture-handler/lib/module/handlers/createHandler.js
++++ b/node_modules/react-native-gesture-handler/lib/module/handlers/createHandler.js
+@@ -92,11 +92,11 @@
+   // TODO(TS) - add type for extract arg
+   const extract = refs => {
+     if (!Array.isArray(refs)) {
+-      return refs && refs.current === null;
+-    }
+-    return refs.some(r => r && r.current === null);
++      return refs && typeof refs === 'object' && refs.current == null;
++    }
++    return refs.some(r => r && typeof r === 'object' && r.current == null);
+   };
+-  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
++  return extract(props['simultaneousHandlers']) || extract(props['waitFor']) || extract(props['blocksHandlers']);
+ }
+ const stateToPropMappings = {
+   [State.UNDETERMINED]: undefined,
+@@ -151,7 +151,7 @@
+       }
+       if (hasUnresolvedRefs(props)) {
+         // If there are unresolved refs (e.g. ".current" has not yet been set)
+-        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
++        // passed as external gesture relationships, we enqueue a call to
+         // _update method that will try to update native handler props using
+         // queueMicrotask. This makes it so update() function gets called after all
+         // react components are mounted and we expect the missing ref object to

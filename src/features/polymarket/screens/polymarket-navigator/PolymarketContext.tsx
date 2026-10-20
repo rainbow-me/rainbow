@@ -3,12 +3,14 @@ import { createContext, useContext, useMemo, useRef, type ReactNode, type RefObj
 import { type ScrollView } from 'react-native-gesture-handler';
 import type Animated from 'react-native-reanimated';
 
+import { usePagerGestureRefs } from '@/components/SmoothPager/SmoothPager';
 import { type SportsGamesListHandle } from '@/features/sports/ui/SportsGamesList';
 
 type PolymarketContextType = {
   accountScrollRef: RefObject<Animated.ScrollView | null>;
   categorySelectorRef: RefObject<ScrollView | null>;
   eventsListRef: RefObject<Animated.FlatList<unknown> | null>;
+  pagerGestureRefs: ReturnType<typeof usePagerGestureRefs>;
   sportsGamesListRef: RefObject<SportsGamesListHandle | null>;
   /** Animates the mounted Sports or event browse list back to the top. */
   scrollBrowseToTop: () => void;
@@ -21,19 +23,21 @@ export function PolymarketProvider({ children }: { children: ReactNode }) {
   const categorySelectorRef = useRef<ScrollView>(null);
   const eventsListRef = useRef<Animated.FlatList<unknown>>(null);
   const sportsGamesListRef = useRef<SportsGamesListHandle>(null);
+  const pagerGestureRefs = usePagerGestureRefs();
 
   const value = useMemo(
     () => ({
       accountScrollRef,
       categorySelectorRef,
       eventsListRef,
+      pagerGestureRefs,
       sportsGamesListRef,
       scrollBrowseToTop: () => {
         sportsGamesListRef.current?.scrollToTop();
         eventsListRef.current?.scrollToOffset({ offset: 0, animated: true });
       },
     }),
-    []
+    [pagerGestureRefs]
   );
 
   return <PolymarketContext.Provider value={value}>{children}</PolymarketContext.Provider>;
