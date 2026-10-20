@@ -7,7 +7,7 @@ import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'r
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { TapToDismiss } from '@/components/TapToDismiss';
@@ -32,6 +32,7 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { selectMidPrice } from '@/state/liveTokens/selectors';
 import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -100,10 +101,12 @@ function PanelContent({ symbol }: PanelContentProps) {
     [position]
   );
 
+  const tokenId = getHyperliquidTokenId(symbol);
+
   const liveTokenPrice = useLiveTokenValue({
-    tokenId: getHyperliquidTokenId(symbol),
-    initialValue: '0',
-    selector: state => state.midPrice ?? state.price,
+    tokenId,
+    fallback: '0',
+    selector: selectMidPrice,
   });
 
   const positionEquity = position ? position.equity : '0';

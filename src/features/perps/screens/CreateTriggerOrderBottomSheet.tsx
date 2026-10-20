@@ -7,7 +7,7 @@ import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { TapToDismiss } from '@/components/TapToDismiss';
@@ -130,10 +130,11 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
   const inputValue = useSharedValue(initialPrice);
 
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
   const liveTokenPrice = useLiveTokenSharedValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: market.price,
-    selector: state => state.price,
+    tokenId,
+    fallback: market.price,
   });
 
   const liquidationPrice = useDerivedValue(() => {

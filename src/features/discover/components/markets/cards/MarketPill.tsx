@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Skeleton } from '@/components/Skeleton';
 import { AnimatedText, globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
@@ -15,6 +15,7 @@ import { MarketPriceChange } from '@/features/discover/components/markets/cards/
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
 import { parseNormalizedPercentChange } from '@/features/market/ui/utils/formatPriceChange';
+import { select24hChange } from '@/state/liveTokens/selectors';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { measureTextSync, type MeasureTextProps } from '@/utils/measureText';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -83,13 +84,20 @@ const PILL_COLORS = {
 export const MarketPill = memo(function MarketPill({ item, onPress }: MarketPillProps) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
+  const livePriceChange = useLiveTokenSharedValue({
+    tokenId: item.liveTokenId,
+    fallback: item.initialPriceChange,
+    selector: select24hChange,
+    format: item.priceChangeFormatter,
+  });
 
   const { accentColor, badgeTextColor, iconUrl, pillColors } = useMemo(() => buildMarketPillDisplay(item, colorMode), [colorMode, item]);
 
   const livePrice = useLiveTokenSharedValue({
-    initialValue: item.initialPrice,
-    initialValueLastUpdated: item.initialPriceLastUpdated,
+    fallback: item.initialPrice,
+    fallbackUpdatedAt: item.initialPriceLastUpdated,
     selector: item.priceSelector,
+    format: item.priceFormatter,
     tokenId: item.liveTokenId,
   });
 
@@ -135,11 +143,9 @@ export const MarketPill = memo(function MarketPill({ item, onPress }: MarketPill
                     arrowHeight={7}
                     arrowSize="icon 10px"
                     arrowWidth={UP_DOWN_ARROW_WIDTH}
-                    initialPriceChange={item.initialPriceChange}
-                    priceChangeSelector={item.priceChangeSelector}
+                    priceChange={livePriceChange}
                     priceChangeColors={priceChangeColors}
                     textSize="13pt"
-                    tokenId={item.liveTokenId}
                   />
                 </View>
               </View>
