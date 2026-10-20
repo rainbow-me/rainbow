@@ -522,8 +522,6 @@
       "cash_sign_out": "Sign out of cash",
       "cash_sign_out_and_delete_account": "Sign out and delete cash account",
       "cash_account_action_failed": "Cash account action failed",
-      "spot_pnl_open_sheet_from_clipboard": "Open P&L sheet from clipboard",
-      "spot_pnl_invalid_clipboard": "Copy a token as address:chainId, e.g. 0x4200000000000000000000000000000000000006:8453",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -532,8 +530,7 @@
         "rainbow_developer_settings": "Rainbow Developer Settings",
         "feature_flags": "Feature Flags",
         "delegation_settings": "Delegation Settings",
-        "cash_settings": "Cash Settings",
-        "spot_pnl_settings": "Spot P&L Settings"
+        "cash_settings": "Cash Settings"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
@@ -721,7 +718,9 @@
         },
         "spot_pnl": {
           "profit": "Profit",
-          "loss": "Loss"
+          "loss": "Loss",
+          "realized_profit": "Realized Profit",
+          "realized_loss": "Realized Loss"
         },
         "menu": {
           "view_on": "View on %{blockExplorerName}",

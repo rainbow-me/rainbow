@@ -86,7 +86,25 @@ export function BalanceSection() {
     return tokenBalanceData.value.displayValue;
   });
 
-  if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
+  const tokenType = 'type' in basicAsset ? basicAsset.type : undefined;
+
+  if (!isOwnedAsset) {
+    return (
+      <SpotPnlPill
+        surfaceColor={accentColors.opacity6}
+        token={{
+          address: basicAsset.address,
+          balance: '0',
+          chainId: basicAsset.chainId,
+          initialPrice: '',
+          initialPriceUpdatedAt: 0,
+          uniqueId: basicAsset.uniqueId,
+        }}
+        tokenType={tokenType}
+      />
+    );
+  }
+  if (!asset?.balance || !asset?.native?.balance) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
@@ -146,7 +164,18 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
-        <SpotPnlPill asset={asset} surfaceColor={accentColors.opacity6} tokenType={'type' in basicAsset ? basicAsset.type : undefined} />
+        <SpotPnlPill
+          surfaceColor={accentColors.opacity6}
+          token={{
+            address: asset.address,
+            balance: balanceAmount,
+            chainId: asset.chainId,
+            initialPrice: asset.native.price?.amount ?? '',
+            initialPriceUpdatedAt: asset.price?.changed_at ?? 0,
+            uniqueId: asset.uniqueId,
+          }}
+          tokenType={tokenType}
+        />
       </Box>
       <SheetSeparator />
     </Box>
