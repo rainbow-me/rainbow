@@ -4,7 +4,7 @@ import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withT
 
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import { useRoute } from '@/navigation/RouteContext';
-import { useStoreSharedValue, type ReadOnlySharedValue, type UseStoreSharedValueOptions } from '@/state/internal/hooks/useStoreSharedValue';
+import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { toUnixTime } from '@/worklets/dates';
@@ -27,7 +27,7 @@ interface LiveTokenValueParams {
   testId?: string;
 }
 
-const LISTEN_HANDLE_OPTIONS = { returnListenHandle: true } satisfies UseStoreSharedValueOptions<string>;
+const LISTEN_HANDLE_OPTIONS = Object.freeze({ returnListenHandle: true });
 
 /**
  * Returns the selected token value as a shared value.
@@ -38,7 +38,7 @@ export function useLiveTokenSharedValue(params: LiveTokenValueParams): ReadOnlyS
 
   useLayoutEffect(() => {
     listenHandle.current.refresh();
-  }, [listenHandle, params.tokenId]);
+  }, [listenHandle, selector]);
 
   return value;
 }
@@ -61,7 +61,7 @@ function useLiveTokenSelector({
   const route = useRoute().name;
 
   useEffect(() => {
-    if (!autoSubscriptionEnabled) return;
+    if (!autoSubscriptionEnabled || !tokenId) return;
     return useLiveTokensStore.getState().subscribeToToken(route, tokenId);
   }, [autoSubscriptionEnabled, route, tokenId]);
 
@@ -70,11 +70,11 @@ function useLiveTokenSelector({
     let value = initialValue;
 
     return (s: { tokens: LiveTokensData }) => {
-      const token = s.tokens[tokenId];
-      if (token !== previousToken) {
-        previousToken = token;
-        value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
-      }
+      const token = tokenId ? s.tokens[tokenId] : undefined;
+      if (token === previousToken) return value;
+
+      value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
+      previousToken = token;
       return value;
     };
   }, [initialValue, initialValueLastUpdated, selector, tokenId]);
