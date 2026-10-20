@@ -27,6 +27,7 @@ import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-eve
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
+import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsImage } from '@/features/sports/ui/SportsImage';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
@@ -164,13 +165,18 @@ function SportsGameOverview({
   });
 
   const volumeUsd = useSportsStore(s => event?.volume ?? s.games[gameId]?.volumeUsd);
+  const icon = competition ? sportsIcons[competition.id] : undefined;
 
   return (
     <>
       {competition ? (
         <Box gap={12}>
           <Box flexDirection="row" alignItems="center" gap={8}>
-            <SportsImage isDarkMode={isDarkMode} imageUrl={competition.imageUrl} name={competition.name} size={28} />
+            {icon ? (
+              <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={28} style={{ width: 28, height: 28 }} />
+            ) : (
+              <SportsImage isDarkMode={isDarkMode} imageUrl={competition.imageUrl} name={competition.name} size={28} />
+            )}
             <Text color="label" size="20pt" weight="bold">
               {competition.name}
             </Text>
