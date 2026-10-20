@@ -92,7 +92,7 @@ async function fetchOrderDetails(params: FetchParams, abortController: AbortCont
   });
 
   const rawMarket = event.markets.find(market => market.id === outcome.marketId);
-  if (!rawMarket || !rawMarket.active || rawMarket.closed || rawMarket.archived || rawMarket.acceptingOrders === false) {
+  if (!rawMarket || !rawMarket.active || rawMarket.closed || rawMarket.archived || !rawMarket.acceptingOrders) {
     return null;
   }
 

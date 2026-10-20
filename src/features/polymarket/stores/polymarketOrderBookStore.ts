@@ -50,6 +50,15 @@ export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchPara
   staleTime: time.seconds(1),
 });
 
+/**
+ * Compares `OrderBook` snapshots by their provider hash.
+ */
+export function isSameOrderBook(previousOrderBook: OrderBook | null, nextOrderBook: OrderBook | null): boolean {
+  if (previousOrderBook === nextOrderBook) return true;
+  if (!previousOrderBook || !nextOrderBook) return false;
+  return previousOrderBook.hash === nextOrderBook.hash;
+}
+
 async function fetchPolymarketOrderBook({ tokenId }: FetchParams): Promise<OrderBook> {
   if (!tokenId) return EMPTY_ORDER_BOOK;
   const { data } = await rainbowFetch<OrderBook>(`${POLYMARKET_CLOB_PROXY_URL}/book?token_id=${tokenId}`, {
