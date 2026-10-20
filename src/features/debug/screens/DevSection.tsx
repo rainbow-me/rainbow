@@ -7,22 +7,18 @@ import FastImage from 'react-native-fast-image';
 import { getAllInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
 // @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
-import { isAddress } from 'viem';
 
 import { ImgixImage } from '@/components/images';
 import { IS_STORE_INSTALL } from '@/env';
 import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
-import { defaultConfig, defaultConfigValues, SPOT_PNL, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/types/revokeReason';
 import { getDelegationContractAddress, isRainbowDelegated, isThirdPartyDelegated } from '@/features/delegation/utils/status';
 import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
-import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
-import { useViewedTokenStore } from '@/features/token/data/stores/viewedTokenStore';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -53,7 +49,6 @@ export const DevSection = () => {
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const cashUserId = useCashAccountStore(state => state.userId);
-  const isSpotPnlEnabled = useExperimentalFlag(SPOT_PNL);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -493,25 +488,6 @@ export const DevSection = () => {
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
             />
           </Menu>
-          {isSpotPnlEnabled && (
-            <Menu header={i18n.t(i18n.l.developer_settings.headers.spot_pnl_settings)}>
-              <MenuItem
-                onPress={async () => {
-                  const [address, chainIdText] = (await Clipboard.getString()).trim().split(':');
-                  const chainId = Number(chainIdText);
-                  if (!isAddress(address) || !useBackendNetworksStore.getState().getSupportedChainIds().includes(chainId)) {
-                    Alert.alert(i18n.t(i18n.l.developer_settings.spot_pnl_invalid_clipboard));
-                    return;
-                  }
-                  const token = { address: address.toLowerCase(), chainId };
-                  useViewedTokenStore.getState().setToken(token);
-                  Navigation.handleAction(Routes.SPOT_PNL_SHEET, token);
-                }}
-                size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.spot_pnl_open_sheet_from_clipboard)} />}
-              />
-            </Menu>
-          )}
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {(Object.keys(defaultConfig) as ExperimentalConfigKey[])
               .sort()
