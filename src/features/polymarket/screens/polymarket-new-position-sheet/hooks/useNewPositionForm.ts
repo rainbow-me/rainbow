@@ -8,23 +8,18 @@ import { createOrderExecutionStore } from '../stores/createOrderExecutionStore';
 import { createOrderFormStore } from '../stores/createOrderFormStore';
 import { useOrderValidation } from './useOrderValidation';
 
-type UseNewPositionFormParams = {
-  conditionId: string;
-  tokenId: string;
-};
-
-export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormParams) {
-  const liveAvailableBalance = usePolymarketBalanceStore(state => state.getBalance());
+export function useNewPositionForm() {
+  const liveAvailableBalance = usePolymarketBalanceStore(s => s.getBalance());
   const availableBalance = useStableValue(() => liveAvailableBalance);
 
   const { orderFormStore, executionStore } = useStableValue(() => {
     const orderFormStore = createOrderFormStore();
-    const executionStore = createOrderExecutionStore(orderFormStore, tokenId, conditionId);
+    const executionStore = createOrderExecutionStore(orderFormStore);
     return { orderFormStore, executionStore };
   });
 
-  const buyAmount = orderFormStore(state => state.buyAmount);
-  const setBuyAmount = orderFormStore(state => state.setBuyAmount);
+  const buyAmount = orderFormStore(s => s.buyAmount);
+  const setBuyAmount = orderFormStore(s => s.setBuyAmount);
 
   const {
     bestPrice,
@@ -39,7 +34,7 @@ export function useNewPositionForm({ tokenId, conditionId }: UseNewPositionFormP
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
     isQuoteReady,
-  } = executionStore(state => state);
+  } = executionStore(s => s);
 
   const minBuyAmountUsd = executionMinBuyAmountUsd === '0' ? '1' : executionMinBuyAmountUsd;
 
