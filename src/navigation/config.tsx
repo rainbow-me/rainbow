@@ -49,6 +49,7 @@ export type CoolModalConfigParams = {
   headerHeight?: number;
   interactWithScrollView?: boolean;
   isShortFormEnabled?: boolean;
+  /** iOS sheet height in its expanded state. */
   longFormHeight?: number;
   height?: number;
   onAppear?: () => void;
@@ -187,18 +188,10 @@ export const opRewardsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const appIconUnlockSheetConfig = {
-  options: ({
-    route: {
-      params: { longFormHeight, ...params },
-    },
-  }: {
-    route: { params: any };
-  }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: longFormHeight || -1 * safeAreaInsetValues.bottom,
+  options: () =>
+    buildCoolModalConfig({
+      longFormHeight: -safeAreaInsetValues.bottom,
     }),
-  }),
 };
 
 export const panelConfig = {

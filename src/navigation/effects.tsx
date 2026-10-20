@@ -419,7 +419,7 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 1,
   enableContentPanningGesture: false,
   backdropPressBehavior: 'none',
-  height: '100%',
+  screenContainerHeight: '100%',
 };
 
 export const swapSheetPreset: BottomSheetNavigationOptions = {
@@ -427,7 +427,7 @@ export const swapSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 0.9,
   enableContentPanningGesture: Platform.OS === 'android',
   backdropPressBehavior: 'none',
-  height: '100%',
+  screenContainerHeight: '100%',
 };
 
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions & BottomSheetNavigationOptions = {
@@ -436,13 +436,13 @@ export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOpti
 };
 
 export const addWalletNavigatorPreset = ({ route }: any) => ({
-  height: route.params?.sheetHeight,
+  screenContainerHeight: route.params?.sheetHeight,
 });
 
-export const appIconUnlockSheetPreset = ({ route }: any) => ({
+export const appIconUnlockSheetPreset = {
   ...bottomSheetPreset,
-  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
-});
+  screenContainerHeight: initialWindowMetrics?.insets?.bottom || 0,
+};
 
 export const tokenLauncherSheetPreset = {
   enablePanDownToClose: false,
@@ -453,7 +453,7 @@ export const cashDepositSetupSheetPreset = {
 };
 
 export const hardwareWalletTxNavigatorPreset = {
-  height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
+  screenContainerHeight: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   backdropOpacity: 1,
 };
 

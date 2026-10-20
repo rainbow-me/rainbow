@@ -26,6 +26,7 @@ import { RegisterENSNavigator } from '@/features/ens/navigation/RegisterENSNavig
 import { ENSAdditionalRecordsSheet } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
+import CustomGasState from '@/features/gas/components/CustomGasState';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
@@ -239,7 +240,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
       <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen component={CustomGasState} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
       <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
       <NativeStack.Screen
         component={PairHardwareWalletNavigator}

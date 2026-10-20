@@ -26,6 +26,7 @@ import { RegisterENSNavigator } from '@/features/ens/navigation/RegisterENSNavig
 import { ENSAdditionalRecordsSheet } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
+import CustomGasState from '@/features/gas/components/CustomGasState';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { PinAuthenticationScreen } from '@/features/local-auth/screens/PinAuthenticationScreen';
@@ -182,7 +183,7 @@ function BSNavigator() {
           enableContentPanningGesture: false,
           enableHandlePanningGesture: false,
           enablePanDownToClose: false,
-          height: '100%',
+          screenContainerHeight: '100%',
         }}
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
@@ -222,7 +223,7 @@ function BSNavigator() {
           <BSStack.Screen
             component={SelectUniqueTokenSheet}
             name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-            options={{ ...bottomSheetPreset, height: '95%' }}
+            options={{ ...bottomSheetPreset, screenContainerHeight: '95%' }}
           />
           <BSStack.Screen component={SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
         </>
@@ -232,7 +233,7 @@ function BSNavigator() {
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
       <BSStack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
+        component={CustomGasState}
         name={Routes.CUSTOM_GAS_SHEET}
         options={{
           backdropOpacity: 1,
@@ -251,7 +252,7 @@ function BSNavigator() {
             heightForStep = backupSheetSizes.medium;
           }
 
-          return { ...bottomSheetPreset, height: heightForStep };
+          return { ...bottomSheetPreset, screenContainerHeight: heightForStep };
         }}
       />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />

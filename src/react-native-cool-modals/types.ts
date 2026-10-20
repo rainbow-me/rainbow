@@ -26,6 +26,7 @@ export type NativeScreenProps = ViewProps & {
   interactWithScrollView?: boolean;
   isShortFormEnabled?: boolean;
   limitActiveModals?: boolean;
+  /** iOS sheet height in its expanded state. */
   longFormHeight?: number;
   modalBackgroundColor?: ColorValue;
   onAppear?: (event: NativeSyntheticEvent<{ presentationRequest: number }>) => void;
@@ -34,6 +35,7 @@ export type NativeScreenProps = ViewProps & {
   onTouchTop?: (event: NativeSyntheticEvent<{ dismissing: boolean }>) => void;
   onWillDismiss?: () => void;
   presentationRequest: number;
+  /** iOS sheet height in its shorter open state. */
   shortFormHeight?: number;
   springDamping?: number;
   stackAnimation?: 'default' | 'none' | 'fade' | 'flip';
