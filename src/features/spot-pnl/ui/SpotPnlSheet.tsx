@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Text as NativeText, StyleSheet } from 'react-native';
 
 import { type Address } from 'viem';
 
@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Separator, Text, TextShadow } from '@/design-system';
+import { Box, Separator, Text, TextShadow, useTextStyle } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';
 import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
@@ -265,8 +265,8 @@ function SpotPnlBody({
       )}
       {excludedDisplay && (
         <ButtonPressAnimation onPress={() => openExplainSheet('spot_pnl_excluded_tokens')}>
-          <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} paddingVertical="8px">
-            <Text color="labelTertiary" size="15pt / 135%" weight="medium">
+          <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} paddingHorizontal="16px" paddingVertical="8px">
+            <Text align="center" color="labelTertiary" size="15pt / 135%" weight="medium">
               <Text color="labelSecondary" size="15pt / 135%" weight="bold">
                 {excludedDisplay}
               </Text>
@@ -286,14 +286,14 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
   const color = pnlColor(direction, colors);
 
   return (
-    <Box flexDirection="row" flexWrap="wrap" alignItems="flex-end" justifyContent="space-between" gap={16} paddingHorizontal="16px">
-      <Box gap={16}>
+    <Box flexDirection="row" alignItems="flex-end" justifyContent="space-between" gap={16} paddingHorizontal="16px">
+      <Box flexShrink={1} gap={16}>
         <Text color="labelTertiary" size="15pt" weight="bold">
           {i18n.t(i18n.l.spot_pnl_sheet.unrealized_position)}
         </Text>
-        <Text color="label" size="30pt" weight="heavy" tabularNumbers>
+        <FitText color="label" size="30pt" weight="heavy">
           {value}
-        </Text>
+        </FitText>
       </Box>
       <Box alignItems="flex-end" gap={12}>
         <Box flexDirection="row" alignItems="center" gap={2}>
@@ -376,7 +376,7 @@ function ReturnRow({
   const amount = value && formatPnlAmount(value.amount, nativeCurrency);
 
   return (
-    <Box flexDirection="row" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap={10}>
+    <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
       {explain ? (
         <ExplainLabel explain={explain} label={label} weight="semibold" />
       ) : (
@@ -385,18 +385,18 @@ function ReturnRow({
         </Text>
       )}
       {amount && value ? (
-        <Box flexDirection="row" flexGrow={1} alignItems="center" justifyContent="flex-end" gap={8}>
+        <Box flexDirection="row" flexGrow={1} flexShrink={1} alignItems="center" justifyContent="flex-end" gap={8}>
           {value.percentage !== null && (
-            <Box flexDirection="row" alignItems="center" gap={3}>
+            <Box flexDirection="row" flexShrink={1} alignItems="center" gap={3}>
               <PnlArrow color="labelTertiary" direction={amount.direction} size="10pt" weight="heavy" />
-              <Text color="labelTertiary" size="15pt" weight="bold" tabularNumbers>
+              <FitText color="labelTertiary" size="15pt" weight="bold">
                 {formatPnlPercentage(value.percentage)}
-              </Text>
+              </FitText>
             </Box>
           )}
-          <Text color={pnlColor(amount.direction, colors)} size="15pt" weight="bold" tabularNumbers>
+          <FitText color={pnlColor(amount.direction, colors)} size="15pt" weight="bold">
             {`${pnlSign(amount.direction)}${amount.display}`}
-          </Text>
+          </FitText>
         </Box>
       ) : (
         <Text color="labelQuaternary" size="15pt" weight="bold">
@@ -404,6 +404,17 @@ function ReturnRow({
         </Text>
       )}
     </Box>
+  );
+}
+
+/** Shrinks to stay on one line, which the design-system Text can't do. */
+function FitText({ children, color, size, weight }: Pick<TextProps, 'color' | 'size' | 'weight'> & { children: string }) {
+  const textStyle = useTextStyle({ color, size, weight, tabularNumbers: true });
+
+  return (
+    <NativeText adjustsFontSizeToFit allowFontScaling={false} minimumFontScale={0.5} numberOfLines={1} style={[textStyle, styles.fitText]}>
+      {children}
+    </NativeText>
   );
 }
 
@@ -441,3 +452,7 @@ function InfoIcon() {
 function openExplainSheet(type: SpotPnlExplainType) {
   Navigation.handleAction(Routes.EXPLAIN_SHEET, { type });
 }
+
+const styles = StyleSheet.create({
+  fitText: { flexShrink: 1 },
+});
