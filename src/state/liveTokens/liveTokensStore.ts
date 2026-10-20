@@ -5,53 +5,15 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorkl
 import { time } from '@/framework/core/utils/time';
 import { greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
-import { getPlatformClient } from '@/resources/platform/client';
 import { useAppStateStore } from '@/state/appState/appStateStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { fetchPolymarketPrices, isPolymarketToken } from '@/state/liveTokens/polymarketAdapter';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
 import { useUserAssetsStore } from '../assets/userAssets';
-import { isHyperliquidToken, parseHyperliquidTokenId } from './hyperliquidAdapter';
-import { fetchHyperliquidPrices } from './hyperliquidPriceService';
+import { fetchLiveTokens, type LiveTokensParams } from './fetchLiveTokens';
 import { type LiveTokensData, type TokenData } from './types';
 
 export type { TokenData, LiveTokensData, PriceReliabilityStatus } from './types';
-
-const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
-const EMPTY_TOKEN_IDS: readonly string[] = [];
-
-function convertLegacyTokenIdToTokenId(tokenId: string): string {
-  const [tokenAddress, chainId] = tokenId.split('_');
-  return `${tokenAddress}:${chainId}`;
-}
-
-function convertTokenIdToLegacyTokenId(tokenId: string): string {
-  const [tokenAddress, chainId] = tokenId.split(':');
-  return `${tokenAddress}_${chainId}`;
-}
-
-// Only works for tokens the user owns
-function isEthVariant(tokenId: string) {
-  const userAsset = useUserAssetsStore.getState().getUserAsset(convertTokenIdToLegacyTokenId(tokenId));
-  return userAsset && (userAsset.mainnetAddress === ETH_ADDRESS || userAsset.mainnetAddress === WETH_ADDRESS);
-}
-
-type LiveTokensResponse = {
-  metadata: {
-    currency: string;
-    requestId: string;
-    requestTime: string;
-  };
-  result?: LiveTokensData;
-  errors?: string[];
-};
-
-type LiveTokensParams = {
-  currency: SupportedCurrencyKey;
-  tokenIds: readonly string[];
-};
 
 type LiveTokensStore = {
   tokens: LiveTokensData;
@@ -61,79 +23,9 @@ type LiveTokensStore = {
   replaceSubscribedTokens: (route: Route, previous: ReadonlySet<string>, next: ReadonlySet<string>) => void;
 };
 
-async function fetchTokensData({ tokenIds, currency }: LiveTokensParams): Promise<LiveTokensData | null> {
-  if (tokenIds.length === 0) return null;
-
-  let ethVariants: string[] | undefined;
-  let hyperliquidTokens: string[] | undefined;
-  let regularTokens: string[] | undefined;
-  let polymarketTokens: string[] | undefined;
-
-  for (const id of tokenIds) {
-    const tokenId = id.includes('_') ? convertLegacyTokenIdToTokenId(id) : id;
-
-    if (isHyperliquidToken(tokenId)) {
-      const symbol = parseHyperliquidTokenId(tokenId)?.symbol;
-      if (symbol) (hyperliquidTokens ??= []).push(symbol);
-    } else if (isPolymarketToken(tokenId)) {
-      (polymarketTokens ??= []).push(tokenId);
-    } else if (isEthVariant(tokenId)) {
-      (ethVariants ??= []).push(tokenId);
-    } else {
-      (regularTokens ??= []).push(tokenId);
-    }
-  }
-
-  // Only subscribe to mainnet ETH if we have any ETH variants
-  if (ethVariants) (regularTokens ??= []).push(ETH_MAINNET_TOKEN_ID);
-
-  const [regularTokensResponse, hyperliquidPrices, polymarketPrices] = await Promise.all([
-    regularTokens
-      ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
-          params: { tokenIds: regularTokens.join(','), currency },
-        })
-      : null,
-    hyperliquidTokens ? fetchHyperliquidPrices(hyperliquidTokens) : null,
-    polymarketTokens ? fetchPolymarketPrices(polymarketTokens) : null,
-  ]);
-
-  const result: LiveTokensData = {};
-  let hasResult = false;
-
-  // Process regular tokens
-  const tokens = regularTokensResponse?.data.result;
-  if (tokens) {
-    for (const tokenId in tokens) {
-      if (tokenId === ETH_MAINNET_TOKEN_ID || !Object.hasOwn(tokens, tokenId)) continue;
-      result[convertTokenIdToLegacyTokenId(tokenId)] = tokens[tokenId];
-      hasResult = true;
-    }
-
-    // Map ETH data to all ETH variants
-    const ethMainnetData = tokens[ETH_MAINNET_TOKEN_ID];
-    if (ethMainnetData && ethVariants) {
-      for (const ethVariant of ethVariants) {
-        result[convertTokenIdToLegacyTokenId(ethVariant)] = ethMainnetData;
-        hasResult = true;
-      }
-    }
-  }
-
-  if (hyperliquidPrices) {
-    Object.assign(result, hyperliquidPrices);
-    hasResult = true;
-  }
-
-  if (polymarketPrices) {
-    Object.assign(result, polymarketPrices);
-    hasResult = true;
-  }
-
-  return hasResult ? result : null;
-}
-
 const DEFAULT_STALE_TIME = time.seconds(5);
 const FAST_REFRESH_STALE_TIME = time.seconds(2);
+const EMPTY_TOKEN_IDS: readonly string[] = [];
 
 /**
  * Polls subscribed tokens on the active route while the app is active.
@@ -167,27 +59,27 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
 
   function publishTokens(route: Route): void {
     const counts = subscriptionCountsByRoute.get(route);
-    const next = { ...tokenIdsByRoute.getState() };
 
-    if (counts) next[route] = Array.from(counts.keys()).sort();
-    else delete next[route];
-
-    tokenIdsByRoute.setState(next, true);
+    tokenIdsByRoute.setState(state => {
+      const next = { ...state };
+      if (counts) next[route] = Array.from(counts.keys()).sort();
+      else delete next[route];
+      return next;
+    }, true);
   }
 
   return createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
     {
-      fetcher: fetchTokensData,
+      fetcher: fetchLiveTokens,
       enabled: $ => $(useAppStateStore, s => s === 'active'),
       staleTime: $ => $(useNavigationStore, determineStaleTime),
       setData: context => {
         const data = context.data;
-        if (!data) return;
-        context.set(state => ({ tokens: { ...state.tokens, ...data } }));
+        if (data) context.set(state => ({ tokens: { ...state.tokens, ...data } }));
       },
       onFetched: context => {
         const data = context.data;
-        if (data) updateUserAssetsStore(data);
+        if (data) useUserAssetsStore.getState().updateTokens(data);
       },
 
       disableCache: true,
@@ -250,10 +142,6 @@ export function getLiquidityCappedBalance({
     balance: convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency).display,
     isCapped: false,
   };
-}
-
-function updateUserAssetsStore(tokens: LiveTokensData) {
-  useUserAssetsStore.getState().updateTokens(tokens);
 }
 
 /**

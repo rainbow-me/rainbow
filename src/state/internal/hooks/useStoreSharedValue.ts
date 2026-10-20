@@ -11,7 +11,7 @@ export type ListenHandleTuple<Selected> = [ReadOnlySharedValue<Selected>, RefObj
 
 export type ReadOnlySharedValue<T> = DerivedValue<T>;
 
-export type UseStoreSharedValueOptions<Selected, ReturnListenHandle extends true | undefined = true | undefined> =
+type UseStoreSharedValueOptions<Selected, ReturnListenHandle extends true | undefined = true | undefined> =
   | (UseListenOptions<Selected> & {
       /**
        * Whether to return a `ListenHandle` that can be used to manually pause or resume the listener.
