@@ -1,4 +1,4 @@
-import { useCallback, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
+import { useCallback, useImperativeHandle, useMemo, useRef, useState, type ComponentProps, type Ref } from 'react';
 import { StyleSheet, View, type ViewStyle, type ViewToken } from 'react-native';
 
 import { useListen } from '@storesjs/stores';
@@ -62,6 +62,7 @@ export function SportsGamesList({
   backgroundColor: customBackgroundColor,
   topInset = 0,
   bottomInset,
+  horizontalScrollBlocks,
   onGamePress,
   scrollOffset,
   ref,
@@ -70,6 +71,10 @@ export function SportsGamesList({
   backgroundColor?: string;
   topInset?: number;
   bottomInset: number;
+  /**
+   * Gestures that must wait for this list's horizontal scrolls to fail.
+   */
+  horizontalScrollBlocks?: ComponentProps<typeof GameCarousel>['blocksHandlers'];
   onGamePress: SportsGamePress;
   scrollOffset: SharedValue<number>;
   ref?: Ref<SportsGamesListHandle>;
@@ -160,6 +165,7 @@ export function SportsGamesList({
         case 'carousel':
           return (
             <GameCarousel
+              blocksHandlers={horizontalScrollBlocks}
               catalog={catalog}
               currentDay={currentDay}
               width={width}
@@ -181,7 +187,7 @@ export function SportsGamesList({
           );
       }
     },
-    [catalog, currentDay, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
+    [catalog, currentDay, horizontalScrollBlocks, host, isDarkMode, onCarouselVisibleGamesChanged, onGamePress, toggleSection, width]
   );
 
   const isSearching = page === 'search';
@@ -254,7 +260,15 @@ export function SportsGamesList({
           ListFooterComponentStyle={sections.length === 0 ? styles.footer : undefined}
         />
 
-        {isSearching ? null : <SportsCategoryBar host={host} isDarkMode={isDarkMode} width={width} bottom={bottomInset + 20} />}
+        {isSearching ? null : (
+          <SportsCategoryBar
+            blocksHandlers={horizontalScrollBlocks}
+            host={host}
+            isDarkMode={isDarkMode}
+            width={width}
+            bottom={bottomInset + 20}
+          />
+        )}
       </View>
     </GameCardPathsContext>
   );
