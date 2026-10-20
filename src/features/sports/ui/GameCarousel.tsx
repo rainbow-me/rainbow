@@ -1,6 +1,8 @@
 import { memo, useCallback } from 'react';
 import { FlatList, StyleSheet, View, type ViewToken } from 'react-native';
 
+import { FlatList as GestureHandlerFlatList, type NativeViewGestureHandlerProps } from 'react-native-gesture-handler';
+
 import { type SportsCatalog } from '@/features/sports/core/catalog';
 import { type SportsSection } from '@/features/sports/core/sections';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
@@ -12,6 +14,7 @@ const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
  * A snapping carousel of game cards.
  */
 export const GameCarousel = memo(function GameCarousel({
+  blocksHandlers,
   section,
   catalog,
   currentDay,
@@ -21,6 +24,8 @@ export const GameCarousel = memo(function GameCarousel({
   onVisibleGamesChanged,
   onGamePress,
 }: {
+  /** Gestures that should wait for the carousel's scroll gesture to fail. */
+  blocksHandlers?: NativeViewGestureHandlerProps['blocksHandlers'];
   section: SportsSection;
   catalog?: SportsCatalog;
   currentDay: string;
@@ -30,7 +35,9 @@ export const GameCarousel = memo(function GameCarousel({
   onVisibleGamesChanged: (rowKey: string, items: readonly ViewToken<string>[]) => void;
   onGamePress: SportsGamePress;
 }) {
+  const List = blocksHandlers ? GestureHandlerFlatList : FlatList;
   const cardWidth = width - (section.gameIds.length === 1 ? 24 : 30);
+
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<string>[] }) => onVisibleGamesChanged(rowKey, viewableItems),
     [onVisibleGamesChanged, rowKey]
@@ -56,7 +63,8 @@ export const GameCarousel = memo(function GameCarousel({
   useCleanup(() => onVisibleGamesChanged(rowKey, []));
 
   return (
-    <FlatList
+    <List
+      blocksHandlers={blocksHandlers}
       horizontal
       data={section.gameIds}
       renderItem={renderItem}

@@ -4,6 +4,7 @@ import { PixelRatio, Platform, StyleSheet, View, type StyleProp, type ViewStyle 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { BlurView } from 'react-native-blur-view';
+import { ScrollView as GestureHandlerScrollView, type NativeViewGestureHandlerProps } from 'react-native-gesture-handler';
 import Animated, {
   runOnUI,
   scrollTo,
@@ -46,12 +47,15 @@ const TAB_BAR_HEIGHT = 46;
 const TAB_BAR_COLOR_DARK = '#070707';
 const TAB_BAR_COLOR_LIGHT = globalColors.white100;
 
+const AnimatedGestureScrollView = Animated.createAnimatedComponent(GestureHandlerScrollView);
+
 // ============ FloatingTabBar ================================================= //
 
 /**
  * Scrollable tabs that center the selected item, with an optional search button.
  */
 export const FloatingTabBar = memo(function FloatingTabBar({
+  blocksHandlers,
   tabs,
   style,
   selectedKey,
@@ -61,6 +65,10 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   onSelect,
   onSearch,
 }: {
+  /**
+   * Gestures that must wait for the tab strip's scroll gesture to fail.
+   */
+  blocksHandlers?: NativeViewGestureHandlerProps['blocksHandlers'];
   tabs: readonly FloatingTab[];
   style?: StyleProp<ViewStyle>;
   selectedKey: string;
@@ -70,6 +78,8 @@ export const FloatingTabBar = memo(function FloatingTabBar({
   onSelect: (key: string) => void;
   onSearch?: () => void;
 }) {
+  const ScrollView = blocksHandlers ? AnimatedGestureScrollView : Animated.ScrollView;
+
   const positionsRef = useLazyRef(() => new Map<string, { x: number; width: number }>());
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
@@ -111,7 +121,8 @@ export const FloatingTabBar = memo(function FloatingTabBar({
           style={styles.scrollMask}
           maskElement={<TabBarFadeMask contentWidth={contentWidth} scrollOffset={scrollOffset} width={railWidth} />}
         >
-          <Animated.ScrollView
+          <ScrollView
+            blocksHandlers={blocksHandlers}
             ref={scrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -141,7 +152,7 @@ export const FloatingTabBar = memo(function FloatingTabBar({
                 </View>
               );
             })}
-          </Animated.ScrollView>
+          </ScrollView>
         </MaskedView>
       </TabBarSurface>
 

@@ -28,7 +28,7 @@ export const PolymarketNavigator = memo(function PolymarketNavigator() {
 
 const PolymarketNavigatorContent = () => {
   const { isDarkMode } = useColorMode();
-  const { categorySelectorRef, scrollBrowseToTop } = usePolymarketContext();
+  const { categorySelectorRef, pagerGestureRefs, scrollBrowseToTop } = usePolymarketContext();
 
   const screenBackgroundColor = isDarkMode ? POLYMARKET_BACKGROUND_DARK : POLYMARKET_BACKGROUND_LIGHT;
 
@@ -58,6 +58,7 @@ const PolymarketNavigatorContent = () => {
 
         {useStableValue(() => (
           <SmoothPager
+            gestureRefs={pagerGestureRefs}
             enableSwipeToGoBack
             enableSwipeToGoForward="always"
             navigation={PolymarketPager}
