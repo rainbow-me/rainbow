@@ -18,6 +18,7 @@ import { prefetchRoute } from '@/navigation/prefetchRegistry';
 import { type NativeStackState } from '@/react-native-cool-modals/types';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 
+import { type BottomSheetNavigationOptions } from './bottom-sheet/types';
 import Routes, { NATIVE_ROUTES, type Route } from './routesNames';
 import { type RootStackParamList, type RoutesWithOptionalParams } from './types';
 import { VIRTUAL_NAVIGATORS } from './virtualNavigators';
@@ -45,8 +46,12 @@ type DispatchActionParam = NavigationAction | ((state: NavigationState) => Navig
  * Extended navigation options with custom sheet properties.
  */
 type ExtendedStackNavigationOptions = Partial<StackNavigationOptions> & {
+  /** Android screen container height, independent of snap points. */
+  screenContainerHeight?: BottomSheetNavigationOptions['screenContainerHeight'];
   limitActiveModals?: boolean;
+  /** iOS sheet height in its expanded state. */
   longFormHeight?: number;
+  /** iOS sheet height in its shorter open state. */
   shortFormHeight?: number;
   onWillDismiss?: () => void;
 };

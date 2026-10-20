@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { type Source } from 'react-native-fast-image';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
@@ -17,6 +18,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { useTheme } from '@/theme/ThemeContext';
 import { delay } from '@/utils/delay';
+import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { unlockableAppIcons } from '../models/appIcons';
 
@@ -24,7 +26,7 @@ const APP_ICON_SIZE = 64;
 
 export function AppIconUnlockSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
-  const { goBack, navigate, setParams } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
+  const { goBack, navigate, setOptions } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
   const { colors } = useTheme();
 
   const { appIconKey } = params;
@@ -45,7 +47,16 @@ export function AppIconUnlockSheet() {
 
   return (
     <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')} scrollEnabled={false}>
-      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height })}>
+      <View
+        onLayout={e => {
+          const height = e.nativeEvent.layout.height;
+          setOptions(
+            Platform.OS === 'ios'
+              ? { longFormHeight: height || -safeAreaInsetValues.bottom }
+              : { screenContainerHeight: height + (initialWindowMetrics?.insets?.bottom || 0) }
+          );
+        }}
+      >
         <Inset top="36px" bottom="20px" horizontal="20px">
           <Stack space="36px">
             <Inset horizontal="20px">
