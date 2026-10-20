@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { rankTopHolders, type TokenHolder } from './topHolders';
+import { isHolderWalletFilter, rankTopHolders, type TokenHolder } from './topHolders';
 
 const FILTER = { categories: ['NORMIE'], excludedLabels: ['BRIDGE'] };
 const NOTHING_SOLD = { tokenAmountSold1y: '0', amountSoldUsd1y: '0', realizedProfitUsd1y: '0', lastTransactionAt: 0 };
@@ -56,5 +56,18 @@ describe('rankTopHolders', () => {
     expect(byStake).toHaveLength(10);
     expect(byStake[0].supplyPercentage).toBe('0');
     expect(byProfit).toHaveLength(10);
+  });
+});
+
+describe('isHolderWalletFilter', () => {
+  it.each([
+    [{ categories: ['NORMIE'], excludedLabels: [] }, true],
+    [{ categories: ['NORMIE'] }, false],
+    [{ categories: 'NORMIE', excludedLabels: [] }, false],
+    [{ categories: ['NORMIE'], excludedLabels: [1] }, false],
+    [null, false],
+    ['NORMIE', false],
+  ])('accepts %j: %s', (value, expected) => {
+    expect(isHolderWalletFilter(value)).toBe(expected);
   });
 });

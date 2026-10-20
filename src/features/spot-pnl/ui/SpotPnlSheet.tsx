@@ -31,6 +31,7 @@ import { type TokenData } from '@/state/liveTokens/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
@@ -70,7 +71,8 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
 
-  const isSelectedWallet = userAssetsStoreManager(state => state.address === walletAddress);
+  // Codex returns lowercased addresses, so a Top Holders row for the selected wallet differs in case
+  const isSelectedWallet = userAssetsStoreManager(state => isLowerCaseMatch(walletAddress, state.address ?? undefined));
   const otherWalletTradesStore = useStableValue(() =>
     createTokenTradesStore({ params: { walletAddress, codexTokenId: getCodexTokenId(tokenAddress, chainId), heldBalance: null } })
   );

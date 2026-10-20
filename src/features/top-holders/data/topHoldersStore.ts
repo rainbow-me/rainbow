@@ -3,7 +3,7 @@ import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
+import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { fetchWalletsTokenTrades } from '@/features/spot-pnl/data/tokenTradesStore';
@@ -13,7 +13,7 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
 
-import { rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
+import { isHolderWalletFilter, rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
 
 export type TopHoldersData = TopHolders & {
   /** Lowercased address to ENS name, for the listed holders that have a reverse record. */
@@ -81,7 +81,11 @@ export const useTopHoldersStore = createQueryStore<TopHoldersData | null, TopHol
   params: {
     token: $ =>
       $(useChartsStore, ({ token }) => (token && typeof token !== 'string' ? { address: token.address, chainId: token.chainId } : null)),
-    filter: $ => $(useRemoteConfigStore, state => state.getRemoteConfigKey('top_holders_wallet_filter')),
+    filter: $ =>
+      $(useRemoteConfigStore, state => {
+        const filter = state.getRemoteConfigKey('top_holders_wallet_filter');
+        return isHolderWalletFilter(filter) ? filter : DEFAULT_CONFIG.top_holders_wallet_filter;
+      }),
   },
   staleTime: time.minutes(5),
   cacheTime: time.hours(1),
