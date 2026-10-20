@@ -2,7 +2,7 @@ import { POLYMARKET_CLOB_URL, POLYMARKET_TOKEN_ID_SUFFIX } from '@/features/poly
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 
-import { type PriceReliabilityStatus, type TokenData } from './liveTokensStore';
+import { type PriceReliabilityStatus, type TokenData } from './types';
 
 const SUFFIX_BASE = `:${POLYMARKET_TOKEN_ID_SUFFIX}:`;
 

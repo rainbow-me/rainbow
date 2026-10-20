@@ -1,9 +1,6 @@
 import { createBaseStore, createQueryStore, type QueryStore } from '@storesjs/stores';
 
-import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { time } from '@/framework/core/utils/time';
-import { greaterThan, multiply } from '@/helpers/utilities';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useAppStateStore } from '@/state/appState/appStateStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -11,9 +8,7 @@ import { useNavigationStore, type NavigationState } from '@/state/navigation/nav
 
 import { useUserAssetsStore } from '../assets/userAssets';
 import { fetchLiveTokens, type LiveTokensParams } from './fetchLiveTokens';
-import { type LiveTokensData, type TokenData } from './types';
-
-export type { TokenData, LiveTokensData, PriceReliabilityStatus } from './types';
+import { type LiveTokensData } from './types';
 
 type LiveTokensStore = {
   tokens: LiveTokensData;
@@ -114,34 +109,6 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
       },
     })
   );
-}
-
-export function getLiquidityCappedBalance({
-  token,
-  balanceAmount,
-  nativeCurrency,
-}: {
-  token: TokenData;
-  balanceAmount: string;
-  nativeCurrency: SupportedCurrencyKey;
-}): {
-  balance: string;
-  isCapped: boolean;
-} {
-  const liquidityCap = token.reliability?.metadata?.liquidityCap;
-  const balance = multiply(token.price, balanceAmount);
-
-  if (liquidityCap && greaterThan(balance, liquidityCap)) {
-    return {
-      balance: convertAmountToNativeDisplayWorklet(liquidityCap, nativeCurrency),
-      isCapped: true,
-    };
-  }
-
-  return {
-    balance: convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency).display,
-    isCapped: false,
-  };
 }
 
 /**

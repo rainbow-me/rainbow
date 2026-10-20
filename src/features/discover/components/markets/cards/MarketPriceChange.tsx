@@ -3,23 +3,20 @@ import React, { memo } from 'react';
 import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { AnimatedText } from '@/design-system';
 import { type TextSize } from '@/design-system/components/Text/Text';
 import { DOWN_ARROW, formatNormalizedPercentChange, UP_ARROW } from '@/features/market/ui/utils/formatPriceChange';
 import { getPriceChangeColor, type PriceChangeColors } from '@/features/market/ui/utils/priceChangeColors';
-import { type TokenData } from '@/state/liveTokens/types';
+import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 type MarketPriceChangeProps = {
   arrowHeight: number;
   arrowSize: TextSize;
   arrowWidth: number;
   colorSharedValue?: SharedValue<string>;
-  initialPriceChange: string;
+  priceChange: ReadOnlySharedValue<string>;
   priceChangeColors: PriceChangeColors;
-  priceChangeSelector: (token: TokenData) => string;
   textSize: TextSize;
-  tokenId: string;
 };
 
 export const MarketPriceChange = memo(function MarketPriceChange({
@@ -27,20 +24,12 @@ export const MarketPriceChange = memo(function MarketPriceChange({
   arrowSize,
   arrowWidth,
   colorSharedValue,
-  initialPriceChange,
+  priceChange,
   priceChangeColors,
-  priceChangeSelector,
   textSize,
-  tokenId,
 }: MarketPriceChangeProps) {
-  const livePriceChange = useLiveTokenSharedValue({
-    initialValue: initialPriceChange,
-    selector: priceChangeSelector,
-    tokenId,
-  });
-
   const priceChangeStyle = useAnimatedStyle(() => ({
-    color: colorSharedValue?.value ?? getPriceChangeColor(livePriceChange.value, priceChangeColors),
+    color: colorSharedValue?.value ?? getPriceChangeColor(priceChange.value, priceChangeColors),
   }));
 
   return (
@@ -54,11 +43,11 @@ export const MarketPriceChange = memo(function MarketPriceChange({
         weight="heavy"
         width={arrowWidth}
       >
-        {livePriceChange}
+        {priceChange}
       </AnimatedTextIcon>
 
       <AnimatedText numberOfLines={1} selector={selectPriceChangeText} size={textSize} style={priceChangeStyle} weight="bold">
-        {livePriceChange}
+        {priceChange}
       </AnimatedText>
     </>
   );
@@ -71,6 +60,5 @@ function selectPriceChangeArrow(priceChange: SharedValue<string>): string {
 
 function selectPriceChangeText(priceChange: SharedValue<string>): string {
   'worklet';
-  // initialPriceChange is already in percent units — no 10_000 factor here.
   return formatNormalizedPercentChange(priceChange.value);
 }

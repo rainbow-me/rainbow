@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -10,12 +10,15 @@ import { Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { formatLiquidityCappedBalance } from '@/features/token/ui/utils/formatLiquidityCappedBalance';
+import { memoizeLast } from '@/framework/core/utils/memoizeLast';
 import { toSignificantDigits } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getLiquidityCappedBalance, type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { select24hChange } from '@/state/liveTokens/selectors';
+import { type TokenData } from '@/state/liveTokens/types';
 import { borders, colors, padding, shadow } from '@/styles';
 
 import { type ExtendedState } from '../core/RawRecyclerList';
@@ -69,10 +72,6 @@ function formatPercentChange(percentChange: string | undefined) {
   return formatPercentageString(toSignificantDigits({ value: percentChange, minDecimalPlaces: 2, minRepresentable: 0.01 }));
 }
 
-function tokenPriceChangeSelector(token: TokenData) {
-  return formatPercentChange(token.change.change24hPct);
-}
-
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
@@ -100,11 +99,12 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [item, maybeCallback]);
 
-    const tokenBalanceSelector = useCallback(
-      (token: TokenData) => {
-        const { balance, isCapped } = getLiquidityCappedBalance({ token, balanceAmount: tokenBalanceAmount, nativeCurrency });
-        return `${isCapped ? '~' : ''}${balance}`;
-      },
+    const tokenBalanceSelector = useMemo(
+      () =>
+        memoizeLast((token: TokenData) => {
+          const result = formatLiquidityCappedBalance(token, tokenBalanceAmount, nativeCurrency);
+          return `${result.isCapped ? '~' : ''}${result.balance}`;
+        }),
       [nativeCurrency, tokenBalanceAmount]
     );
 
@@ -129,17 +129,17 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
                 <LiveTokenText
+                  autoSubscribe={false}
                   selector={tokenBalanceSelector}
                   tokenId={uniqueId}
                   // Because we need to this update if the balance changes regardless of if the price is newer, we set this to 0
-                  initialValueLastUpdated={0}
-                  initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                  autoSubscriptionEnabled={false}
+                  fallbackUpdatedAt={0}
+                  fallback={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                   color={{ custom: theme.colors.dark }}
                   size={'16px / 22px (Deprecated)'}
                   weight="bold"
                   align="right"
-                  testId={`balance-coin-row-value-${item?.name}`}
+                  testID={`balance-coin-row-value-${item?.name}`}
                 />
               </View>
 
@@ -150,13 +150,13 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
                 <LiveTokenText
-                  selector={tokenPriceChangeSelector}
+                  autoSubscribe={false}
+                  selector={select24hChange}
+                  format={formatPercentChange}
                   tokenId={uniqueId}
-                  initialValueLastUpdated={priceUpdatedAt}
-                  initialValue={formatPercentChange(percentChange)}
-                  autoSubscriptionEnabled={false}
-                  isPriceChangeColorEnabled
-                  priceChangeChangeColors={{
+                  fallbackUpdatedAt={priceUpdatedAt}
+                  fallback={formatPercentChange(percentChange)}
+                  priceChangeColors={{
                     positive: theme.colors.green,
                     negative: theme.colors.blueGreyDark50,
                     neutral: theme.colors.blueGreyDark50,

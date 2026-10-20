@@ -8,12 +8,15 @@ import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 import { formatPriceChange } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { select24hChange, selectMidPrice } from '@/state/liveTokens/selectors';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
 };
 
 export const MarketInfoSection = memo(function MarketInfoSection({ market }: MarketInfoSectionProps) {
+  const tokenId = `${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
+
   const priceChangeColors = usePriceChangeColors();
 
   return (
@@ -27,26 +30,22 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
         </Box>
         <Box flexDirection="row" alignItems="center" gap={8}>
           <LiveTokenText
-            tokenId={`${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`}
-            initialValue={formatPerpAssetPrice(market.midPrice ?? market.price)}
-            initialValueLastUpdated={0}
-            selector={token => {
-              return formatPerpAssetPrice(token.midPrice ?? token.price);
-            }}
+            tokenId={tokenId}
+            fallback={formatPerpAssetPrice(market.midPrice ?? market.price)}
+            fallbackUpdatedAt={0}
+            selector={selectMidPrice}
+            format={formatPerpAssetPrice}
             size="15pt"
             weight="bold"
             color="labelSecondary"
           />
           <LiveTokenText
-            selector={state => {
-              return formatPriceChange(state.change.change24hPct);
-            }}
-            tokenId={`${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`}
-            initialValueLastUpdated={0}
-            initialValue={formatPriceChange(market.priceChange['24h'])}
-            autoSubscriptionEnabled={false}
-            isPriceChangeColorEnabled={true}
-            priceChangeChangeColors={priceChangeColors}
+            selector={select24hChange}
+            format={formatPriceChange}
+            tokenId={tokenId}
+            fallbackUpdatedAt={0}
+            fallback={formatPriceChange(market.priceChange['24h'])}
+            priceChangeColors={priceChangeColors}
             color={'label'}
             size="15pt"
             weight="bold"

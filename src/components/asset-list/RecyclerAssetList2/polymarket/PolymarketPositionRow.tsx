@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,7 +7,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
@@ -26,11 +26,16 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
   const { isDarkMode } = useColorMode();
   const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
 
+  const tokenId = getPositionTokenId(position);
+
+  const minTickSize = position.market.orderPriceMinTickSize;
+  const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
+
   const livePrice = useLiveTokenValue({
-    tokenId: getPositionTokenId(position),
-    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
-    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
-    autoSubscriptionEnabled: !position.redeemable,
+    tokenId,
+    fallback: formatLivePrice(position.curPrice),
+    autoSubscribe: !position.redeemable,
+    format: formatLivePrice,
   });
 
   const livePositionValue = useMemo(() => {

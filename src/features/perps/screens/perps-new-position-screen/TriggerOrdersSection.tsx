@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import Animated from 'react-native-reanimated';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box } from '@/design-system';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
@@ -13,6 +13,7 @@ import { PerpPositionSide, TriggerOrderSource, TriggerOrderType } from '@/featur
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import { mulWorklet } from '@/framework/core/safeMath';
+import { selectMidPrice } from '@/state/liveTokens/selectors';
 
 export const TriggerOrdersSection = function TriggerOrdersSection() {
   const market = useHlNewPositionStore(state => state.market);
@@ -21,10 +22,12 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
   const leverage = useHlNewPositionStore(state => state.leverage);
   const positionSide = useHlNewPositionStore(state => state.positionSide);
 
+  const tokenId = getHyperliquidTokenId(market?.symbol);
+
   const liveEntryPrice = useLiveTokenValue({
-    tokenId: getHyperliquidTokenId(market?.symbol),
-    initialValue: market?.midPrice ?? market?.price ?? '0',
-    selector: state => state.midPrice ?? state.price,
+    tokenId,
+    fallback: market?.midPrice ?? market?.price ?? '0',
+    selector: selectMidPrice,
   });
 
   const projectedPnlById = useMemo(() => {

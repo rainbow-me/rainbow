@@ -3,7 +3,7 @@ import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { logger, RainbowError } from '@/logger';
 
 import { transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
-import { type TokenData } from './liveTokensStore';
+import { type TokenData } from './types';
 
 /**
  * Fetches live Hyperliquid prices through the market store's `allMids` refresh.

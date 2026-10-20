@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Skeleton } from '@/components/Skeleton';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
@@ -13,9 +14,9 @@ import { opacity } from '@/design-system/utils/opacity';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
+import { select24hChange } from '@/state/liveTokens/selectors';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 const TOKEN_SPARKLINE_LAYOUT = { height: 34, width: 64 };
@@ -49,7 +50,12 @@ export function MarketCellSkeleton() {
 export const MarketCell = memo(function MarketCell({ item, onPress }: { item: MarketDisplayItem; onPress?: () => void }) {
   const { colorMode, isDarkMode } = useColorMode();
   const priceChangeColors = usePriceChangeColors();
-  const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
+  const livePriceChange = useLiveTokenSharedValue({
+    tokenId: item.liveTokenId,
+    fallback: item.initialPriceChange,
+    selector: select24hChange,
+    format: item.priceChangeFormatter,
+  });
   const tokenCardColors = getValueForColorMode(TOKEN_CARD_COLORS, colorMode);
   const leverageBadgeTextColor = useMemo(() => getHighContrastTextColorWorklet(item.accentColor, 4), [item.accentColor]);
   const gradientColors = isDarkMode
@@ -100,9 +106,10 @@ export const MarketCell = memo(function MarketCell({ item, onPress }: { item: Ma
               <View style={styles.priceRow}>
                 <LiveTokenText
                   tokenId={item.liveTokenId}
-                  initialValueLastUpdated={item.initialPriceLastUpdated}
-                  initialValue={item.initialPrice}
+                  fallbackUpdatedAt={item.initialPriceLastUpdated}
+                  fallback={item.initialPrice}
                   selector={item.priceSelector}
+                  format={item.priceFormatter}
                   color="labelSecondary"
                   numberOfLines={1}
                   size="15pt"
@@ -112,12 +119,9 @@ export const MarketCell = memo(function MarketCell({ item, onPress }: { item: Ma
                   arrowHeight={8}
                   arrowSize="icon 12px"
                   arrowWidth={12}
-                  colorSharedValue={chartColorSharedValue}
-                  initialPriceChange={item.initialPriceChange}
-                  priceChangeSelector={item.priceChangeSelector}
+                  priceChange={livePriceChange}
                   priceChangeColors={priceChangeColors}
                   textSize="15pt"
-                  tokenId={item.liveTokenId}
                 />
               </View>
             </View>

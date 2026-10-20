@@ -8,7 +8,8 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
@@ -17,12 +18,12 @@ import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { type PolymarketPosition } from '@/features/polymarket/types';
+import { formatOutcomePercentage } from '@/features/polymarket/utils/formatOutcomePercentage';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
-import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
-import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
+import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
 import { greaterThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -92,6 +93,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return tokenId;
   }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
 
+  const priceTokenId = getPolymarketTokenId(outcomeTokenId, 'buy');
+  const oddsTokenId = getPolymarketTokenId(outcomeTokenId, 'sell');
+
   const outcomeTitle = useMemo(() => {
     const { subtitle } = getOutcomeDescriptions({
       eventTitle,
@@ -102,11 +106,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return subtitle;
   }, [eventTitle, position.market, position.outcome, position.outcomeIndex]);
 
+  const minTickSize = position.market.orderPriceMinTickSize;
+  const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
+
   const livePrice = useLiveTokenValue({
-    tokenId: getPositionTokenId(position),
-    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
-    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
-    autoSubscriptionEnabled: !redeemable,
+    tokenId: priceTokenId,
+    fallback: formatLivePrice(position.curPrice),
+    autoSubscribe: !redeemable,
+    format: formatLivePrice,
   });
 
   const livePositionValue = useMemo(() => {
@@ -257,9 +264,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                         size="15pt"
                         weight="bold"
                         color="labelSecondary"
-                        tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
-                        selector={token => `${toPercentageWorklet(token.price)}%`}
-                        initialValue={`${toPercentageWorklet(position.curPrice)}%`}
+                        tokenId={oddsTokenId}
+                        format={formatOutcomePercentage}
+                        fallback={formatOutcomePercentage(position.curPrice)}
                       />
                     </Box>
                     <Box flexDirection="row" alignItems="center" gap={3}>

@@ -1,6 +1,6 @@
 import { Fragment, memo, useMemo } from 'react';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Separator, Text, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
@@ -88,10 +88,12 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
   const liquidationPrice = position.liquidationPrice
     ? formatPerpAssetPrice(position.liquidationPrice)
     : i18n.t(i18n.l.perps.common.not_available);
+
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
   const liveMarkPrice = useLiveTokenValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: market.price,
-    selector: state => state.price,
+    tokenId,
+    fallback: market.price,
   });
   const targetPriceDifferential = useMemo(() => {
     if (!position.liquidationPrice) return null;
