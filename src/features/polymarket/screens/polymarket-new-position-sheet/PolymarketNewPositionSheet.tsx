@@ -154,7 +154,7 @@ function NewPositionForm({
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
     isQuoteReady,
-  } = useNewPositionForm({ tokenId, conditionId: market.conditionId });
+  } = useNewPositionForm();
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
