@@ -6,7 +6,6 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ImgixImage } from '@/components/images';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
@@ -15,7 +14,6 @@ import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
@@ -25,6 +23,7 @@ import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
@@ -169,8 +168,7 @@ function SpotPnlPlaceholder() {
 }
 
 function WalletChip({ walletAddress }: { walletAddress: string }) {
-  const { accountENS } = useAccountProfileInfo(walletAddress as Address);
-  const { data: avatar } = useENSAvatar(accountENS ?? '', { enabled: !!accountENS });
+  const { accountColor, accountENS, accountImage, accountName, accountSymbol } = useAccountProfileInfo(walletAddress as Address);
 
   return (
     <Box
@@ -182,15 +180,20 @@ function WalletChip({ walletAddress }: { walletAddress: string }) {
       flexShrink={1}
       alignItems="center"
       gap={6}
-      paddingLeft={{ custom: accountENS && avatar?.imageUrl ? 6 : 12 }}
+      paddingLeft={{ custom: 6 }}
       paddingRight={{ custom: 12 }}
       paddingVertical={{ custom: 10 }}
     >
-      {accountENS && avatar?.imageUrl && (
-        <Box height={{ custom: 10 }} justifyContent="center">
-          <ImgixImage size={18} source={{ uri: avatar.imageUrl }} style={{ borderRadius: 9, height: 18, width: 18 }} />
-        </Box>
-      )}
+      <Box height={{ custom: 10 }} justifyContent="center">
+        <AddressAvatar
+          address={walletAddress}
+          color={accountColor}
+          emoji={accountSymbol || undefined}
+          label={accountName ?? ''}
+          size={18}
+          url={accountImage}
+        />
+      </Box>
       <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
         {abbreviateEnsForDisplay(accountENS) ?? abbreviateAddress(walletAddress, 4, 6)}
       </Text>
