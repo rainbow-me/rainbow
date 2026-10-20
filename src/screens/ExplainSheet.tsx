@@ -352,14 +352,14 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'spot_pnl_excluded_tokens':
       return {
         emoji: '🎁',
-        extraHeight: -60,
+        extraHeight: -115,
         text: i18n.t(i18n.l.explain.spot_pnl_excluded_tokens.text),
         title: i18n.t(i18n.l.explain.spot_pnl_excluded_tokens.title),
       };
     case 'spot_pnl_realized_window':
       return {
         emoji: '🗓️',
-        extraHeight: -90,
+        extraHeight: -140,
         text: i18n.t(i18n.l.explain.spot_pnl_realized_window.text),
         title: i18n.t(i18n.l.explain.spot_pnl_realized_window.title),
       };

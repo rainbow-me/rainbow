@@ -16,6 +16,7 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import * as i18n from '@/languages';
@@ -211,6 +212,7 @@ function SpotPnlBody({
   pnl: SpotPnl;
 }) {
   const format = (amount: string) => convertAmountToNativeDisplay(amount, nativeCurrency);
+  const formatPrice = (price: string) => formatAssetPrice({ value: price, currency: nativeCurrency });
   const excludedDisplay = greaterThanWorklet(pnl.excludedBalance, 0) ? convertAmountToBalanceDisplay(pnl.excludedBalance, asset) : null;
 
   return (
@@ -231,11 +233,11 @@ function SpotPnlBody({
         paddingVertical="20px"
       >
         <Figure label={i18n.t(i18n.l.spot_pnl_sheet.invested)} value={format(pnl.invested)} />
-        <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_entry)} value={format(pnl.avgEntry)} />
+        <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_entry)} value={formatPrice(pnl.avgEntry)} />
         {pnl.variant === 'fullyRealized' ? (
-          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_exit)} value={format(pnl.avgExit)} />
+          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_exit)} value={formatPrice(pnl.avgExit)} />
         ) : (
-          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.current)} value={format(pnl.current)} />
+          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.current)} value={formatPrice(pnl.current)} />
         )}
       </Box>
       {pnl.variant !== 'fullyRealized' && (
