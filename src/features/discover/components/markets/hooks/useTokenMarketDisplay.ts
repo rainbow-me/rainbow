@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { globalColors } from '@/design-system/color/palettes';
 import { opacity } from '@/design-system/utils/opacity';
@@ -48,6 +48,8 @@ export function useTokenMarketDisplay({
     symbol: asset.symbol,
   });
 
+  const formatPrice = useCallback((price: string) => formatCurrency(price, { currency: nativeCurrency }), [nativeCurrency]);
+
   return useMemo<MarketDisplayItem>(() => {
     // `asset.price` may be absent for newly-listed or low-liquidity tokens.
     const initialPriceChange = normalizeTokenPercentChange(asset.price?.relativeChange24h);
@@ -61,15 +63,15 @@ export function useTokenMarketDisplay({
       chartStore: useTokenLineChartsStore,
       displayName: asset.name,
       iconUrl: asset.iconUrl ?? undefined,
-      initialPrice: formatCurrency(asset.price?.value ? String(asset.price.value) : '0', { currency: nativeCurrency }),
+      initialPrice: formatPrice(asset.price?.value ? String(asset.price.value) : '0'),
       initialPriceLastUpdated: asset.price?.updatedAt,
       initialPriceChange,
       leverage: undefined,
       liveTokenId,
-      priceChangeSelector: token => normalizeTokenPercentChange(token.change.change24hPct),
-      priceSelector: token => formatCurrency(token.price, { currency: nativeCurrency }),
+      priceChangeFormatter: normalizeTokenPercentChange,
+      priceFormatter: formatPrice,
     };
-  }, [accentColor, asset, item.id, nativeCurrency]);
+  }, [accentColor, asset, formatPrice, item.id, nativeCurrency]);
 }
 
 export function tokenToMarketPillWidthInput({

@@ -174,9 +174,9 @@ const BetCell = memo(function BetCell({
         weight="heavy"
         numberOfLines={1}
         tokenId={tokenId}
-        initialValue={data.odds}
-        selector={token => formatOdds(token.price)}
-        autoSubscriptionEnabled={false}
+        fallback={data.odds}
+        format={formatOdds}
+        autoSubscribe={false}
       />
     </View>
   );

@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle, useDerivedValue, type DerivedValue } from '
 
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { useChartType } from '@/features/charts/stores/chartsStore';
@@ -28,18 +28,17 @@ export function BalanceSection() {
   const chartType = useChartType();
 
   const balanceAmount = asset?.balance?.amount ?? '0';
-  const tokenId = asset?.uniqueId ?? '';
+  const tokenId = asset?.uniqueId;
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId,
-    initialValue: asset?.native?.price?.amount ?? '0',
-    initialValueLastUpdated: asset?.price?.changed_at ?? 0,
-    selector: token => token.price,
+    fallback: asset?.native?.price?.amount ?? '0',
+    fallbackUpdatedAt: asset?.price?.changed_at ?? 0,
   });
 
   const liveTokenLiquidityCap = useLiveTokenValue({
     tokenId,
-    initialValue: '',
+    fallback: '',
     selector: token => token.reliability.metadata.liquidityCap,
   });
 

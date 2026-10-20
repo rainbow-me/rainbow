@@ -134,10 +134,10 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               />
               <View style={styles.row}>
                 <LiveTokenText
-                  autoSubscriptionEnabled={false}
                   color={colors.textColor}
-                  initialValue={markets[0].odds}
-                  selector={token => formatOdds(token.price)}
+                  fallback={markets[0].odds}
+                  format={formatOdds}
+                  autoSubscribe={false}
                   size="13pt"
                   tokenId={markets[0].tokenId ?? ''}
                   weight="heavy"
@@ -154,10 +154,10 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               {markets[1] ? (
                 <View style={styles.row}>
                   <LiveTokenText
-                    autoSubscriptionEnabled={false}
                     color={colors.textColor}
-                    initialValue={markets[1].odds}
-                    selector={token => formatOdds(token.price)}
+                    fallback={markets[1].odds}
+                    format={formatOdds}
+                    autoSubscribe={false}
                     size="13pt"
                     tokenId={markets[1].tokenId ?? ''}
                     weight="heavy"

@@ -11,7 +11,7 @@ import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { select24hChange, selectMidPrice } from '@/state/liveTokens/selectors';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
@@ -21,6 +21,7 @@ type PerpMarketRowProps = {
 
 export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
+
   const priceChangeColors = usePriceChangeColors();
   const volume = useMemo(() => {
     return formatNumber(market.volume['24h'], { useOrderSuffix: true, decimals: 1, style: '$' });
@@ -44,11 +45,11 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
             </Box>
             <LiveTokenText
               align="right"
-              selector={livePriceSelector}
+              selector={selectMidPrice}
+              format={formatPerpAssetPrice}
               tokenId={tokenId}
-              initialValueLastUpdated={0}
-              initialValue={formatPerpAssetPrice(market.midPrice ?? market.price)}
-              autoSubscriptionEnabled={true}
+              fallbackUpdatedAt={0}
+              fallback={formatPerpAssetPrice(market.midPrice ?? market.price)}
               color={'label'}
               size="17pt"
               weight="bold"
@@ -73,13 +74,12 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
               </Box>
             </Box>
             <LiveTokenText
-              selector={livePriceChangeSelector}
+              selector={select24hChange}
+              format={formatPriceChange}
               tokenId={tokenId}
-              initialValueLastUpdated={0}
-              initialValue={formatPriceChange(market.priceChange['24h'])}
-              autoSubscriptionEnabled={false}
-              isPriceChangeColorEnabled={true}
-              priceChangeChangeColors={priceChangeColors}
+              fallbackUpdatedAt={0}
+              fallback={formatPriceChange(market.priceChange['24h'])}
+              priceChangeColors={priceChangeColors}
               color={'label'}
               size="11pt"
               weight="heavy"
@@ -91,11 +91,3 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
     </ButtonPressAnimation>
   );
 };
-
-function livePriceChangeSelector(state: TokenData): string {
-  return formatPriceChange(state.change.change24hPct);
-}
-
-function livePriceSelector(state: TokenData): string {
-  return formatPerpAssetPrice(state.midPrice ?? state.price);
-}

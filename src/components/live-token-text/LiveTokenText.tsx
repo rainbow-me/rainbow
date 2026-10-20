@@ -1,211 +1,59 @@
-import React, { useEffect, useLayoutEffect, useMemo } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { memo } from 'react';
 
-import { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle } from 'react-native-reanimated';
 
-import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
-import { useRoute } from '@/navigation/RouteContext';
-import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { useLiveTokensStore, type LiveTokensData, type TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useTheme } from '@/theme/ThemeContext';
-import { toUnixTime } from '@/worklets/dates';
+import { useLiveTokenSharedValue, type LiveTokenValueOptions } from '@/components/live-token-text/useLiveTokenValue';
+import { AnimatedText } from '@/design-system';
+import { type AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
+import { type PriceChangeColors } from '@/features/market/ui/utils/priceChangeColors';
+import { type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
-interface LiveTokenValueParams {
-  tokenId: string;
-  /**
-   * Timestamp of the initial value, in Unix seconds. Defaults to `0`.
-   * Live quotes take precedence when timestamps match.
-   */
-  initialValueLastUpdated?: number;
-  /** Display value used when the live quote is absent or older than the initial value. */
-  initialValue: string;
-  /**
-   * Subscribes to this token on the current route. Disable when the caller manages
-   * the price subscription. Defaults to `true`.
-   */
-  autoSubscriptionEnabled?: boolean;
-  selector: (token: TokenData) => string;
-  testId?: string;
-}
+type LiveTokenTextProps = LiveTokenValueOptions &
+  Omit<AnimatedTextProps, 'children' | 'ref' | 'selector'> & {
+    priceChangeColors?: PriceChangeColors;
+  };
 
-const LISTEN_HANDLE_OPTIONS = Object.freeze({ returnListenHandle: true });
-
-/**
- * Returns the selected token value as a shared value.
- */
-export function useLiveTokenSharedValue(params: LiveTokenValueParams): ReadOnlySharedValue<string> {
-  const selector = useLiveTokenSelector(params);
-  const [value, listenHandle] = useStoreSharedValue(useLiveTokensStore, selector, LISTEN_HANDLE_OPTIONS);
-
-  useLayoutEffect(() => {
-    listenHandle.current.refresh();
-  }, [listenHandle, selector]);
-
-  return value;
-}
-
-/**
- * Returns the selected token value as React state.
- */
-export function useLiveTokenValue(params: LiveTokenValueParams): string {
-  const selector = useLiveTokenSelector(params);
-  return useLiveTokensStore(selector);
-}
-
-function useLiveTokenSelector({
+/** Displays a live value and requests prices unless autoSubscribe is false. */
+export const LiveTokenText = memo(function LiveTokenText({
   tokenId,
-  initialValue,
-  initialValueLastUpdated = 0,
-  autoSubscriptionEnabled = true,
   selector,
-}: LiveTokenValueParams): (state: { tokens: LiveTokensData }) => string {
-  const route = useRoute().name;
-
-  useEffect(() => {
-    if (!autoSubscriptionEnabled || !tokenId) return;
-    return useLiveTokensStore.getState().subscribeToToken(route, tokenId);
-  }, [autoSubscriptionEnabled, route, tokenId]);
-
-  return useMemo(() => {
-    let previousToken: TokenData | undefined;
-    let value = initialValue;
-
-    return (s: { tokens: LiveTokensData }) => {
-      const token = tokenId ? s.tokens[tokenId] : undefined;
-      if (token === previousToken) return value;
-
-      value = token && toUnixTime(token.updateTime) >= initialValueLastUpdated ? selector(token) : initialValue;
-      previousToken = token;
-      return value;
-    };
-  }, [initialValue, initialValueLastUpdated, selector, tokenId]);
-}
-
-type LiveTokenTextProps = LiveTokenValueParams &
-  Omit<TextProps, 'children' | 'ref'> & {
-    animateTrendChange?: boolean;
-  } & (
-    | {
-        isPriceChangeColorEnabled?: boolean;
-        priceChangeChangeColors?: {
-          positive?: string;
-          negative?: string;
-          neutral?: string;
-        };
-      }
-    | {
-        isPriceChangeColorEnabled?: false;
-        priceChangeChangeColors?: undefined;
-      }
-  );
-
-export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
-  tokenId,
-  initialValueLastUpdated,
-  initialValue,
-  autoSubscriptionEnabled = true,
-  selector,
-  animateTrendChange = false,
-  isPriceChangeColorEnabled = false,
-  priceChangeChangeColors,
-  testId,
+  format,
+  fallback,
+  fallbackUpdatedAt,
+  autoSubscribe,
+  priceChangeColors,
   ...textProps
-}) {
-  const liveValue = useLiveTokenSharedValue({
-    tokenId,
-    initialValueLastUpdated,
-    initialValue,
-    autoSubscriptionEnabled,
-    selector,
-    testId,
-  });
+}: LiveTokenTextProps) {
+  const liveValue = useLiveTokenSharedValue({ tokenId, selector, format, fallback, fallbackUpdatedAt, autoSubscribe });
 
-  const theme = useTheme();
-  const positiveThemeColor = theme.colors.green;
-  const negativeThemeColor = theme.colors.red;
-  const positivePriceChangeColor = priceChangeChangeColors?.positive;
-  const negativePriceChangeColor = priceChangeChangeColors?.negative;
-  const neutralPriceChangeColor = priceChangeChangeColors?.neutral;
+  if (priceChangeColors) {
+    return (
+      <PriceChangeText {...textProps} priceChangeColors={priceChangeColors}>
+        {liveValue}
+      </PriceChangeText>
+    );
+  }
 
-  const baseColor = useForegroundColor(textProps.color ?? 'label');
-  const textColor = useSharedValue(baseColor);
+  return <AnimatedText {...textProps}>{liveValue}</AnimatedText>;
+});
 
-  useAnimatedReaction(
-    () => liveValue.value,
-    (value, previousValue) => {
-      if (isPriceChangeColorEnabled) {
-        if (parseFloat(value) > 0) {
-          textColor.value = positivePriceChangeColor ?? positiveThemeColor;
-        } else if (parseFloat(value) < 0) {
-          textColor.value = negativePriceChangeColor ?? negativeThemeColor;
-        } else {
-          textColor.value = neutralPriceChangeColor ?? baseColor;
-        }
-        return;
-      }
-
-      if (!animateTrendChange || !previousValue || value === previousValue) return;
-
-      let animateToColor = baseColor;
-      if (value > previousValue) {
-        animateToColor = positiveThemeColor;
-      } else if (value < previousValue) {
-        animateToColor = negativeThemeColor;
-      }
-
-      textColor.value = withTiming(animateToColor, { duration: 150 }, () => {
-        textColor.value = withDelay(50, withTiming(baseColor, { duration: 150 }));
-      });
-    },
-    [
-      animateTrendChange,
-      baseColor,
-      negativePriceChangeColor,
-      negativeThemeColor,
-      neutralPriceChangeColor,
-      positivePriceChangeColor,
-      positiveThemeColor,
-      isPriceChangeColorEnabled,
-    ]
-  );
-
-  useEffect(() => {
-    if (isPriceChangeColorEnabled) {
-      const numericValue = parseFloat(liveValue.value);
-
-      if (numericValue > 0) {
-        textColor.value = positivePriceChangeColor ?? positiveThemeColor;
-      } else if (numericValue < 0) {
-        textColor.value = negativePriceChangeColor ?? negativeThemeColor;
-      } else {
-        textColor.value = neutralPriceChangeColor ?? baseColor;
-      }
-
-      return;
-    }
-
-    textColor.value = baseColor;
-  }, [
-    baseColor,
-    liveValue,
-    negativePriceChangeColor,
-    negativeThemeColor,
-    neutralPriceChangeColor,
-    positivePriceChangeColor,
-    positiveThemeColor,
-    textColor,
-    isPriceChangeColorEnabled,
-  ]);
+function PriceChangeText({
+  children,
+  priceChangeColors,
+  style,
+  ...textProps
+}: Omit<AnimatedTextProps, 'selector'> & { children: ReadOnlySharedValue<string>; priceChangeColors: PriceChangeColors }) {
+  const { positive, negative, neutral } = priceChangeColors;
 
   const textStyle = useAnimatedStyle(() => {
-    return {
-      color: textColor.value,
-    };
+    const change = parseFloat(children.value);
+    return { color: change > 0 ? positive : change < 0 ? negative : neutral };
   });
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <AnimatedText testID={testId} {...textProps} style={textProps.style ? [textStyle, textProps.style] : textStyle}>
-      {liveValue}
+    <AnimatedText {...textProps} style={style ? [textStyle, style] : textStyle}>
+      {children}
     </AnimatedText>
   );
-});
+}

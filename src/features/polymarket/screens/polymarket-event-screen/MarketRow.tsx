@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactNode } from 'react';
+import { memo, useCallback, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
@@ -56,10 +56,14 @@ export const MarketRow = memo(function MarketRow({
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
   const isResolutionInReview = umaResolutionStatus && umaResolutionStatus !== 'resolved';
 
+  const liveTokenId = getPolymarketTokenId(tokenId, 'sell');
+
+  const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
+
   const livePrice = useLiveTokenValue({
-    tokenId: getPolymarketTokenId(tokenId, 'sell'),
-    initialValue: price ? formatPrice(price, minTickSize) : '0',
-    selector: token => formatPrice(token.price, minTickSize),
+    tokenId: liveTokenId,
+    fallback: price ? formatLivePrice(price) : '0',
+    format: formatLivePrice,
   });
 
   const priceChangePercentage = useMemo(() => {

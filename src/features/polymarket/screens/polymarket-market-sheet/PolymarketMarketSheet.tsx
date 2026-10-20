@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -15,18 +15,25 @@ import { PolymarketChart } from '@/features/charts/polymarket/components/Polymar
 import { PolymarketTimeframeSelector } from '@/features/charts/polymarket/components/PolymarketTimeframeSelector';
 import { getChartLineColors } from '@/features/charts/polymarket/utils/getChartLineColors';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { toPercentageWorklet } from '@/framework/core/safeMath';
+import { formatOutcomePercentage } from '@/features/polymarket/utils/formatOutcomePercentage';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { getPolymarketTokenId } from '@/state/liveTokens/polymarketAdapter';
+import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
   const {
     params: { market, event },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MARKET_SHEET>>();
+
+  const setSubscribedTokens = useLiveTokenListSubscription();
+
+  useEffect(() => {
+    setSubscribedTokens(market.outcomes.map((_, index) => getPolymarketTokenId(market.clobTokenIds[index], 'sell')));
+  }, [market.clobTokenIds, market.outcomes, setSubscribedTokens]);
 
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
@@ -99,12 +106,13 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                   {/* TODO: Causing issues */}
                   {/* <TextShadow blur={40} shadowOpacity={0.6}> */}
                   <LiveTokenText
+                    autoSubscribe={false}
                     size="22pt"
                     weight="heavy"
                     color={{ custom: buttonColor }}
                     tokenId={getPolymarketTokenId(market.clobTokenIds[index], 'sell')}
-                    selector={token => `${toPercentageWorklet(token.price)}%`}
-                    initialValue={`${toPercentageWorklet(market.outcomePrices[index] ?? 0)}%`}
+                    format={formatOutcomePercentage}
+                    fallback={formatOutcomePercentage(market.outcomePrices[index] ?? 0)}
                   />
                   {/* </TextShadow> */}
                 </Box>
