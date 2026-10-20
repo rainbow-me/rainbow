@@ -14,16 +14,8 @@ const selectors: ViewabilitySelectors<Row> = {
 };
 let handlers: ReturnType<typeof useViewabilityTracker<Row>>;
 
-function Tracker({
-  onChange,
-  select = selectors,
-  child = false,
-}: {
-  onChange: (ids: readonly string[]) => void;
-  select?: ViewabilitySelectors<Row>;
-  child?: boolean;
-}) {
-  handlers = useViewabilityTracker(select, onChange);
+function Tracker({ onChange, child = false }: { onChange: (ids: readonly string[]) => void; child?: boolean }) {
+  handlers = useViewabilityTracker(selectors, onChange);
   return child ? <ChildReport /> : null;
 }
 
@@ -53,7 +45,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-it('projects only the latest report and suppresses unchanged membership', () => {
+it('publishes the latest report and suppresses unchanged membership', () => {
   const onChange = vi.fn<(ids: readonly string[]) => void>();
   render(<Tracker onChange={onChange} />);
   onChange.mockClear();
@@ -105,6 +97,7 @@ it('clears immediately and cancels an older pending report', () => {
   report({ id: 'b' });
   report();
   expect(onChange).toHaveBeenLastCalledWith([]);
+  expect(vi.getTimerCount()).toBe(0);
   const calls = onChange.mock.calls.length;
   settle();
   expect(onChange).toHaveBeenCalledTimes(calls);
@@ -143,7 +136,7 @@ it('keeps reports received during commit and publishes after the old consumer re
   expect(replacement).toHaveBeenLastCalledWith(['b']);
 });
 
-it('cancels pending work before child cleanup can schedule it again', () => {
+it('cancels pending work and does not deliver after unmount', () => {
   const onChange = vi.fn<(ids: readonly string[]) => void>();
   render(<Tracker onChange={onChange} child />);
   report({ childKey: 'carousel' });
@@ -152,6 +145,7 @@ it('cancels pending work before child cleanup can schedule it again', () => {
   report({ id: 'pending' });
   onChange.mockClear();
   act(() => renderer.unmountComponentAtNode(111));
+  expect(vi.getTimerCount()).toBe(0);
   settle();
   expect(onChange).not.toHaveBeenCalled();
 });
