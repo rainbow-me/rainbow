@@ -51,6 +51,16 @@ export type TopHolders = {
   byProfit: ProfitHolderRow[];
 };
 
+export function isHolderWalletFilter(value: unknown): value is HolderWalletFilter {
+  if (typeof value !== 'object' || value === null) return false;
+  const { categories, excludedLabels } = value as Record<keyof HolderWalletFilter, unknown>;
+  return isStringArray(categories) && isStringArray(excludedLabels);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
 export function isRealUser(holder: TokenHolder, filter: HolderWalletFilter): boolean {
   return (
     holder.category !== null &&
