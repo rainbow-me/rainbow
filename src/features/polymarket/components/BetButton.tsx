@@ -117,8 +117,8 @@ function PrimaryBet({ color, isDarkMode, price, fallbackPrice }: BetContentProps
 }
 
 function SpreadBet({ color, isDarkMode, price, fallbackPrice, scoreAdjustment }: BetContentProps & { scoreAdjustment: number }) {
-  const { backgroundColor, borderColor, gradient } = useMemo(() => {
-    if (!isDarkMode) return { backgroundColor: undefined, borderColor: globalColors.white100, gradient: LIGHT_SPREAD_FILL };
+  const colors = useMemo(() => {
+    if (!isDarkMode) return { background: undefined, border: globalColors.white100, gradient: LIGHT_SPREAD_FILL };
 
     const palette = createOpacityPalette(color, [0, 6, 8, 18, 20]);
     const outer = palette.opacity18;
@@ -126,20 +126,24 @@ function SpreadBet({ color, isDarkMode, price, fallbackPrice, scoreAdjustment }:
     const inner = palette.opacity0;
 
     return {
-      backgroundColor: palette.opacity20,
-      borderColor: palette.opacity6,
+      background: palette.opacity20,
+      border: palette.opacity6,
       gradient: [outer, middle, inner, inner, middle, outer] as const,
     };
   }, [color, isDarkMode]);
 
   return (
     <View style={isDarkMode ? undefined : styles.spreadShadow}>
-      <View style={[styles.surface, { backgroundColor }, isDarkMode ? undefined : styles.tightShadow]}>
+      <View style={[styles.surface, { backgroundColor: colors.background }, isDarkMode ? undefined : styles.tightShadow]}>
         <View pointerEvents="none" style={styles.background}>
-          <LinearGradient colors={gradient} locations={isDarkMode ? SPREAD_VERTICAL_STOPS : undefined} style={StyleSheet.absoluteFill} />
+          <LinearGradient
+            colors={colors.gradient}
+            locations={isDarkMode ? SPREAD_VERTICAL_STOPS : undefined}
+            style={StyleSheet.absoluteFill}
+          />
           {isDarkMode ? (
             <LinearGradient
-              colors={gradient}
+              colors={colors.gradient}
               locations={SPREAD_HORIZONTAL_STOPS}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -169,7 +173,7 @@ function SpreadBet({ color, isDarkMode, price, fallbackPrice, scoreAdjustment }:
         <Border
           borderRadius={BUTTON_BORDER_RADIUS}
           borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
-          borderColor={{ custom: borderColor }}
+          borderColor={{ custom: colors.border }}
           enableInLightMode
         />
       </View>
@@ -221,7 +225,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.02,
     shadowRadius: 3,
   },
-  content: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 6 },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+  },
   primaryText: {
     textShadowColor: black(0.15),
     textShadowOffset: { width: 0, height: 1 },
