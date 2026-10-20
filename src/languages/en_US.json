@@ -745,6 +745,13 @@
           "volume_24_hours": "24h Volume",
           "rank": "Rank"
         },
+        "top_holders": {
+          "title_top": "Top",
+          "title_holders": "Holders",
+          "by_stake": "By Stake",
+          "by_profit": "By Profit",
+          "of_supply": "%{percentage} of supply"
+        },
         "claim": {
           "claim_button": "Claim Airdrop",
           "created_by": "Created by %{creator}",

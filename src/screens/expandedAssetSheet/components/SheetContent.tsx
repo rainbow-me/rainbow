@@ -15,6 +15,7 @@ import {
   MarketStatsSection,
 } from './sections';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
+import { TopHoldersSection } from './sections/TopHoldersSection';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 
 export const SheetContent = memo(function SheetContent({ accentColor }: { accentColor: string }) {
@@ -41,6 +42,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <ClaimSection />
               <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
+              <TopHoldersSection />
               {/* BACKLOGGED */}
               {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
