@@ -291,14 +291,8 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
         if (status.step !== 'polling' || abortController?.signal.aborted) return;
         const { orderId } = status;
 
-        // rainbowFetch arms its 30s timeout on the controller it is handed, so the watcher's
-        // long-lived controller must never reach it directly — one hung request would abort the
-        // whole poll loop. A request-scoped controller confines the timeout to this tick.
-        const requestController = new AbortController();
-        const propagateAbort = () => requestController.abort();
-        abortController?.signal.addEventListener('abort', propagateAbort);
         try {
-          const result = await getOrderWithCachedAuth(orderId, requestController);
+          const result = await getOrderWithCachedAuth(orderId, abortController);
           if (abortController?.signal.aborted) return;
           const current = get().status;
           if (current.step !== 'polling' || current.orderId !== orderId) return;
@@ -317,8 +311,6 @@ export const useCashBuyOrderStore = createBaseStore<CashBuyOrderState>(
             return;
           }
           throw error;
-        } finally {
-          abortController?.signal.removeEventListener('abort', propagateAbort);
         }
       },
 

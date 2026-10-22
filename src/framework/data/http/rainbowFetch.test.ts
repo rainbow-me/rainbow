@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { rainbowFetch, RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
@@ -8,6 +8,25 @@ global.fetch = mockFetch;
 beforeEach(() => {
   mockFetch.mockReset();
 });
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+function abortError() {
+  const error = new Error('The operation was aborted.');
+  error.name = 'AbortError';
+  return error;
+}
+
+function hangUntilAborted() {
+  mockFetch.mockImplementation(
+    (_url: string, init: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        init.signal?.addEventListener('abort', () => reject(abortError()));
+      })
+  );
+}
 
 describe('rainbowFetch', () => {
   test('throws RainbowFetchError with response for 5xx responses', async () => {
@@ -54,5 +73,30 @@ describe('rainbowFetch', () => {
     const promise = rainbowFetch('https://example.com', {});
     await expect(promise).rejects.toThrow(abortError);
     await expect(promise).rejects.not.toBeInstanceOf(RainbowFetchError);
+  });
+
+  test('times out without aborting the caller-owned controller', async () => {
+    vi.useFakeTimers();
+    hangUntilAborted();
+    const abortController = new AbortController();
+
+    const error = rainbowFetch('https://example.com', { abortController, timeout: 1000 }).catch(e => e);
+    await vi.advanceTimersByTimeAsync(1000);
+
+    expect(await error).toMatchObject({ name: 'AbortError' });
+    expect(abortController.signal.aborted).toBe(false);
+  });
+
+  test.each([
+    ['abortController', (controller: AbortController) => ({ abortController: controller })],
+    ['signal', (controller: AbortController) => ({ signal: controller.signal })],
+  ])('cancels the request when the caller aborts its %s', async (_name, toOpts) => {
+    hangUntilAborted();
+    const controller = new AbortController();
+
+    const promise = rainbowFetch('https://example.com', toOpts(controller));
+    controller.abort();
+
+    await expect(promise).rejects.toMatchObject({ name: 'AbortError' });
   });
 });
