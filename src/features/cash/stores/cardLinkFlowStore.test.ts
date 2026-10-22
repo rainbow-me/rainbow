@@ -122,6 +122,17 @@ describe('cardLinkFlowStore', () => {
     expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'unknown' });
   });
 
+  it('reports a timed-out request as a failure, not a cancellation', async () => {
+    const timeout = new Error('The operation was aborted.');
+    timeout.name = 'AbortError';
+    mockLinkCardWithVault.mockRejectedValue(timeout);
+
+    await expect(flow().submit(BIVO_STORE, CARD_BRAND)).resolves.toBe('failed');
+
+    expect(flow().state).toBe('submitError');
+    expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'unknown' });
+  });
+
   it('ignores a second submit while one is in flight', async () => {
     const settle = deferLink();
 

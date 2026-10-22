@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, expect, test, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { rainbowFetch, RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
@@ -28,24 +28,29 @@ test('reports network failures without a response', async () => {
   });
 });
 
-test.each(['abort', 'timeout', 'already aborted'])('preserves AbortError from %s', async reason => {
-  const controller = new AbortController();
-  const abortError = new Error('The operation was aborted.');
-  abortError.name = 'AbortError';
-  if (reason === 'already aborted') controller.abort();
+describe.each([
+  ['signal', (controller: AbortController) => ({ signal: controller.signal })],
+  ['abortController', (controller: AbortController) => ({ abortController: controller })],
+])('with a caller %s', (_option, toOptions) => {
+  test.each(['abort', 'timeout', 'already aborted'])('preserves AbortError from %s', async reason => {
+    const controller = new AbortController();
+    const abortError = new Error('The operation was aborted.');
+    abortError.name = 'AbortError';
+    if (reason === 'already aborted') controller.abort();
 
-  fetchMock.mockImplementationOnce(async (_, options) => {
-    if (reason === 'timeout')
-      await new Promise(resolve => {
-        setTimeout(resolve, 0);
-      });
-    else controller.abort();
-    expect(options?.signal?.aborted).toBe(true);
-    expect(controller.signal.aborted).toBe(reason !== 'timeout');
-    throw abortError;
+    fetchMock.mockImplementationOnce(async (_, options) => {
+      if (reason === 'timeout')
+        await new Promise(resolve => {
+          setTimeout(resolve, 0);
+        });
+      else controller.abort();
+      expect(options?.signal?.aborted).toBe(true);
+      expect(controller.signal.aborted).toBe(reason !== 'timeout');
+      throw abortError;
+    });
+
+    const request = rainbowFetch('https://example.test', { ...toOptions(controller), timeout: 0 });
+    await expect(request).rejects.toBe(abortError);
+    await expect(request).rejects.not.toBeInstanceOf(RainbowFetchError);
   });
-
-  const request = rainbowFetch('https://example.test', { signal: controller.signal, timeout: 0 });
-  await expect(request).rejects.toBe(abortError);
-  await expect(request).rejects.not.toBeInstanceOf(RainbowFetchError);
 });
