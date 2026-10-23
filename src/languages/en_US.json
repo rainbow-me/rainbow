@@ -1078,14 +1078,6 @@
         "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
         "title": "Hold your horses!"
       },
-      "spot_pnl_excluded_tokens": {
-        "title": "Excluded tokens",
-        "text": "Tokens received by transfer have no purchase price, so they're excluded from the calculation."
-      },
-      "spot_pnl_realized_window": {
-        "title": "Realized Return",
-        "text": "Realized figures cover the last 12 months."
-      },
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
         "title": "Verified Tokens"
@@ -3626,10 +3618,14 @@
       "avg_entry": "Avg. Entry",
       "current": "Current",
       "avg_exit": "Avg. Exit",
+      "avg_entry_mc": "Avg Entry MC",
+      "current_mc": "Current MC",
+      "avg_exit_mc": "Avg Exit MC",
       "realized_return": "Realized Return",
       "total_return": "Total Return",
       "nothing_sold_yet": "Nothing sold yet",
       "excluded_from_calculation": "excluded from calculation",
+      "excluded_tokens_info": "Tokens you received, like transfers from another wallet, airdrops, or rewards, aren’t counted in your profit and loss. They have no buy price to compare against.",
       "nothing_to_show": "No P&L to show"
     },
     "rnbw_rewards_estimate_sheet": {
