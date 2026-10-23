@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { getMarketsGroupedByBetType } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
@@ -141,7 +141,7 @@ const MoneylineOddsRatioBarContent = memo(function MoneylineOddsRatioBarContent(
 function useLiveMarketPrice(market: PolymarketMarket, outcomeIndex = 0) {
   return useLiveTokenValue({
     tokenId: getPolymarketTokenId(market.clobTokenIds[outcomeIndex], 'midpoint'),
-    initialValue: formatPrice(market.outcomePrices[outcomeIndex], market.orderPriceMinTickSize),
+    fallback: formatPrice(market.outcomePrices[outcomeIndex], market.orderPriceMinTickSize),
     selector: token => formatPrice(token.price, market.orderPriceMinTickSize),
   });
 }

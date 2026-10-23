@@ -9,7 +9,7 @@ import { type ChainId } from '@/features/network/types/backendNetworks';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { type LiveTokensData } from '@/state/liveTokens/liveTokensStore';
+import { type LiveTokensData } from '@/state/liveTokens/types';
 import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';

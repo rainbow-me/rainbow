@@ -354,11 +354,11 @@ const WidgetBetCell = memo(function WidgetBetCell({
       ) : null}
       <LiveTokenText
         align="center"
-        autoSubscriptionEnabled={false}
+        autoSubscribe={false}
         color={{ custom: globalColors.white100 }}
-        initialValue={data.odds}
+        fallback={data.odds}
         numberOfLines={1}
-        selector={token => formatOdds(token.price)}
+        format={formatOdds}
         size={oddsSize}
         style={isLine ? styles.lineOdds : styles.moneylineOdds}
         tokenId={tokenId}
