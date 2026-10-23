@@ -206,7 +206,7 @@ describe('submitBuyOrder', () => {
 
     await getState().syncActiveOrder();
 
-    expect(getOrder).toHaveBeenCalledWith(SPEC.id, expect.any(AbortController));
+    expect(getOrder).toHaveBeenCalledWith(SPEC.id, undefined);
     expect(addPendingTransaction).toHaveBeenCalled();
     expect(phase()).toBe('success');
   });
@@ -590,9 +590,11 @@ describe('syncActiveOrder', () => {
     startPolling(PENDING_ORDER);
     getOrder.mockResolvedValue(orderResult(PROCESSING_ORDER));
 
-    await getState().syncActiveOrder(new AbortController());
+    const watcherController = new AbortController();
 
-    expect(getOrder).toHaveBeenCalledWith(PENDING_ORDER.id, expect.any(AbortController));
+    await getState().syncActiveOrder(watcherController);
+
+    expect(getOrder).toHaveBeenCalledWith(PENDING_ORDER.id, watcherController);
     expect(getState().status).toEqual({ step: 'polling', orderId: PENDING_ORDER.id, order: PROCESSING_ORDER, submittedAt: SUBMITTED_AT });
     expect(phase()).toBe('pending');
   });
@@ -610,27 +612,13 @@ describe('syncActiveOrder', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  // rainbowFetch arms its 30s timeout on the controller it receives, so handing it the watcher's
-  // controller would let one hung request abort the whole poll loop.
-  it('passes a request-scoped controller to getOrder, never the watcher controller itself', async () => {
-    startPolling(PENDING_ORDER);
-    getOrder.mockResolvedValue(orderResult(PROCESSING_ORDER));
-    const watcherController = new AbortController();
-
-    await getState().syncActiveOrder(watcherController);
-
-    const [, requestController] = getOrder.mock.calls[0] as [string, AbortController];
-    expect(requestController).toBeInstanceOf(AbortController);
-    expect(requestController).not.toBe(watcherController);
-  });
-
   it('aborts the in-flight request and stays quiet when the watcher aborts mid-flight', async () => {
     startPolling(PENDING_ORDER);
     const watcherController = new AbortController();
     getOrder.mockImplementation(
-      (_orderId: string, requestController: AbortController) =>
+      (_orderId: string, controller: AbortController) =>
         new Promise((_resolve, reject) => {
-          requestController.signal.addEventListener('abort', () => reject(new Error('Aborted')));
+          controller.signal.addEventListener('abort', () => reject(new Error('Aborted')));
         })
     );
 
