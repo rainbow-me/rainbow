@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, Text as NativeText, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
 import { type Address } from 'viem';
 
@@ -8,17 +8,16 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Separator, Text, TextShadow, useTextStyle } from '@/design-system';
+import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';
 import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import type { ChainId } from '@/features/network/types/backendNetworks';
-import { greaterThanWorklet } from '@/framework/core/safeMath';
+import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
+import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
@@ -33,13 +32,19 @@ import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/a
 import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { useTokenTradesStore } from '../data/tokenTradesStore';
-import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
+import {
+  formatCompactTokenAmount,
+  formatNativeAmount,
+  formatPnlAmount,
+  formatPnlPercentage,
+  PnlArrow,
+  pnlColor,
+  pnlSign,
+} from './pnlDisplay';
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;
 const LOADING_HEIGHT = 120;
-
-type SpotPnlExplainType = 'spot_pnl_excluded_tokens' | 'spot_pnl_realized_window';
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
@@ -120,12 +125,27 @@ function SpotPnlSection({
 }) {
   const trades = useTokenTradesStore(state => state.getData());
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
+  const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
   const price = useLiveTokenValue({
     tokenId: uniqueId,
     initialValue: initialPrice,
     initialValueLastUpdated: initialPriceUpdatedAt,
     selector: token => token.price,
   });
+  const liveMarketCap = useLiveTokenValue({
+    tokenId: uniqueId,
+    initialValue: '0',
+    selector: token => token.marketData.circulatingMarketCap,
+  });
+  const marketCap = greaterThanWorklet(liveMarketCap, 0) ? liveMarketCap : String(metadata?.marketCap ?? 0);
+  // Tokens priced under $1 show entry and current market caps in place of prices
+  const circulatingSupply =
+    usdToNativeRate &&
+    greaterThanWorklet(price || '0', 0) &&
+    lessThanWorklet(divWorklet(price, usdToNativeRate), 1) &&
+    greaterThanWorklet(marketCap, 0)
+      ? divWorklet(marketCap, price)
+      : null;
 
   const pnl = useMemo(
     () => (trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null),
@@ -148,7 +168,11 @@ function SpotPnlSection({
     });
   }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
 
-  return pnl ? <SpotPnlBody asset={{ decimals, symbol }} nativeCurrency={nativeCurrency} pnl={pnl} /> : <SpotPnlPlaceholder />;
+  return pnl ? (
+    <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
+  ) : (
+    <SpotPnlPlaceholder />
+  );
 }
 
 function SpotPnlPlaceholder() {
@@ -204,16 +228,27 @@ function WalletChip({ walletAddress }: { walletAddress: string }) {
 
 function SpotPnlBody({
   asset,
+  circulatingSupply,
   nativeCurrency,
   pnl,
 }: {
   asset: { decimals: number; symbol: string };
+  /** Set when per-token figures show as market caps rather than prices. */
+  circulatingSupply: string | null;
   nativeCurrency: NativeCurrencyKey;
   pnl: SpotPnl;
 }) {
-  const format = (amount: string) => convertAmountToNativeDisplay(amount, nativeCurrency);
-  const formatPrice = (price: string) => formatAssetPrice({ value: price, currency: nativeCurrency });
-  const excludedDisplay = greaterThanWorklet(pnl.excludedBalance, 0) ? convertAmountToBalanceDisplay(pnl.excludedBalance, asset) : null;
+  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency, { compact: true });
+  const formatPerToken = (price: string) =>
+    circulatingSupply ? format(mulWorklet(price, circulatingSupply)) : formatAssetPrice({ value: price, currency: nativeCurrency });
+  const labels = circulatingSupply
+    ? {
+        avgEntry: i18n.l.spot_pnl_sheet.avg_entry_mc,
+        avgExit: i18n.l.spot_pnl_sheet.avg_exit_mc,
+        current: i18n.l.spot_pnl_sheet.current_mc,
+      }
+    : { avgEntry: i18n.l.spot_pnl_sheet.avg_entry, avgExit: i18n.l.spot_pnl_sheet.avg_exit, current: i18n.l.spot_pnl_sheet.current };
+  const excludedDisplay = greaterThanWorklet(pnl.excludedBalance, 0) ? formatCompactTokenAmount(pnl.excludedBalance, asset) : null;
 
   return (
     <Box gap={12} paddingHorizontal="16px" paddingTop={{ custom: 44 }}>
@@ -233,11 +268,11 @@ function SpotPnlBody({
         paddingVertical="20px"
       >
         <Figure label={i18n.t(i18n.l.spot_pnl_sheet.invested)} value={format(pnl.invested)} />
-        <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_entry)} value={formatPrice(pnl.avgEntry)} />
+        <Figure label={i18n.t(labels.avgEntry)} value={formatPerToken(pnl.avgEntry)} />
         {pnl.variant === 'fullyRealized' ? (
-          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.avg_exit)} value={formatPrice(pnl.avgExit)} />
+          <Figure label={i18n.t(labels.avgExit)} value={formatPerToken(pnl.avgExit)} />
         ) : (
-          <Figure label={i18n.t(i18n.l.spot_pnl_sheet.current)} value={formatPrice(pnl.current)} />
+          <Figure label={i18n.t(labels.current)} value={formatPerToken(pnl.current)} />
         )}
       </Box>
       {pnl.variant !== 'fullyRealized' && (
@@ -250,7 +285,6 @@ function SpotPnlBody({
           padding="16px"
         >
           <ReturnRow
-            explain="spot_pnl_realized_window"
             label={i18n.t(i18n.l.spot_pnl_sheet.realized_return)}
             nativeCurrency={nativeCurrency}
             value={pnl.variant === 'partiallyRealized' ? pnl.realized : null}
@@ -264,7 +298,7 @@ function SpotPnlBody({
         </Box>
       )}
       {excludedDisplay && (
-        <ButtonPressAnimation onPress={() => openExplainSheet('spot_pnl_excluded_tokens')}>
+        <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET)}>
           <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} paddingHorizontal="16px" paddingVertical="8px">
             <Text align="center" color="labelTertiary" size="15pt / 135%" weight="medium">
               <Text color="labelSecondary" size="15pt / 135%" weight="bold">
@@ -282,7 +316,7 @@ function SpotPnlBody({
 
 function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: NativeCurrencyKey; pnl: UnrealizedPnl; value: string }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency);
+  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency, { compact: true });
   const color = pnlColor(direction, colors);
 
   return (
@@ -291,15 +325,15 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
         <Text color="labelTertiary" size="15pt" weight="bold">
           {i18n.t(i18n.l.spot_pnl_sheet.unrealized_position)}
         </Text>
-        <FitText color="label" size="30pt" weight="heavy">
+        <Text color="label" size="30pt" weight="heavy" numberOfLines={1}>
           {value}
-        </FitText>
+        </Text>
       </Box>
       <Box alignItems="flex-end" gap={12}>
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
           <GlowText color={color} size="17pt" weight="heavy">
-            {formatPnlPercentage(pnl.percentage)}
+            {formatPnlPercentage(pnl.percentage, { compact: true })}
           </GlowText>
         </Box>
         <Box flexDirection="row" alignItems="center" gap={3}>
@@ -319,12 +353,14 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
 
 function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: NativeCurrencyKey; realized: PnlReturn }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency);
+  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency, { compact: true });
   const color = pnlColor(direction, colors);
 
   return (
     <Box alignItems="center" gap={16}>
-      <ExplainLabel explain="spot_pnl_realized_window" label={i18n.t(i18n.l.spot_pnl_sheet.realized_return)} weight="bold" />
+      <Text color="labelTertiary" size="15pt" weight="bold">
+        {i18n.t(i18n.l.spot_pnl_sheet.realized_return)}
+      </Text>
       <Box flexDirection="row" alignItems="center" gap={2}>
         {direction !== 'flat' && (
           <GlowText color={color} size="30pt" weight="heavy">
@@ -339,7 +375,7 @@ function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: Native
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
           <GlowText color={color} size="17pt" weight="heavy">
-            {formatPnlPercentage(realized.percentage)}
+            {formatPnlPercentage(realized.percentage, { compact: true })}
           </GlowText>
         </Box>
       )}
@@ -353,7 +389,7 @@ function Figure({ label, value }: { label: string; value: string }) {
       <Text align="center" color="labelTertiary" size="15pt" weight="semibold">
         {label}
       </Text>
-      <Text align="center" color="label" size="15pt" weight="bold" tabularNumbers>
+      <Text align="center" color="label" size="15pt" weight="bold">
         {value}
       </Text>
     </Box>
@@ -361,42 +397,36 @@ function Figure({ label, value }: { label: string; value: string }) {
 }
 
 function ReturnRow({
-  explain,
   label,
   nativeCurrency,
   value,
 }: {
-  explain?: SpotPnlExplainType;
   label: string;
   nativeCurrency: NativeCurrencyKey;
   /** `null` when nothing was sold. */
   value: PnlReturn | null;
 }) {
   const { colors } = useTheme();
-  const amount = value && formatPnlAmount(value.amount, nativeCurrency);
+  const amount = value && formatPnlAmount(value.amount, nativeCurrency, { compact: true });
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
-      {explain ? (
-        <ExplainLabel explain={explain} label={label} weight="semibold" />
-      ) : (
-        <Text color="labelTertiary" size="15pt" weight="semibold">
-          {label}
-        </Text>
-      )}
+      <Text color="labelTertiary" size="15pt" weight="semibold">
+        {label}
+      </Text>
       {amount && value ? (
         <Box flexDirection="row" flexGrow={1} flexShrink={1} alignItems="center" justifyContent="flex-end" gap={8}>
           {value.percentage !== null && (
-            <Box flexDirection="row" flexShrink={1} alignItems="center" gap={3}>
-              <PnlArrow color="labelTertiary" direction={amount.direction} size="10pt" weight="heavy" />
-              <FitText color="labelTertiary" size="15pt" weight="bold">
-                {formatPnlPercentage(value.percentage)}
-              </FitText>
+            <Box flexDirection="row" alignItems="center" gap={2}>
+              <PnlArrow color="labelTertiary" direction={amount.direction} size="11pt" weight="heavy" />
+              <Text color="labelTertiary" size="15pt" weight="bold">
+                {formatPnlPercentage(value.percentage, { compact: true })}
+              </Text>
             </Box>
           )}
-          <FitText color={pnlColor(amount.direction, colors)} size="15pt" weight="bold">
+          <Text color={pnlColor(amount.direction, colors)} size="15pt" weight="bold">
             {`${pnlSign(amount.direction)}${amount.display}`}
-          </FitText>
+          </Text>
         </Box>
       ) : (
         <Text color="labelQuaternary" size="15pt" weight="bold">
@@ -407,37 +437,13 @@ function ReturnRow({
   );
 }
 
-/** Shrinks to stay on one line, which the design-system Text can't do. */
-function FitText({ children, color, size, weight }: Pick<TextProps, 'color' | 'size' | 'weight'> & { children: string }) {
-  const textStyle = useTextStyle({ color, size, weight, tabularNumbers: true });
-
-  return (
-    <NativeText adjustsFontSizeToFit allowFontScaling={false} minimumFontScale={0.5} numberOfLines={1} style={[textStyle, styles.fitText]}>
-      {children}
-    </NativeText>
-  );
-}
-
 function GlowText({ children, color, size, weight }: Pick<TextProps, 'color' | 'size' | 'weight'> & { children: string }) {
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
-      <Text color={color} size={size} weight={weight} tabularNumbers>
+      <Text color={color} size={size} weight={weight}>
         {children}
       </Text>
     </TextShadow>
-  );
-}
-
-function ExplainLabel({ explain, label, weight }: { explain: SpotPnlExplainType; label: string; weight: TextProps['weight'] }) {
-  return (
-    <ButtonPressAnimation onPress={() => openExplainSheet(explain)}>
-      <Box flexDirection="row" alignItems="center" gap={4}>
-        <Text color="labelTertiary" size="15pt" weight={weight}>
-          {label}
-        </Text>
-        <InfoIcon />
-      </Box>
-    </ButtonPressAnimation>
   );
 }
 
@@ -448,11 +454,3 @@ function InfoIcon() {
     </Text>
   );
 }
-
-function openExplainSheet(type: SpotPnlExplainType) {
-  Navigation.handleAction(Routes.EXPLAIN_SHEET, { type });
-}
-
-const styles = StyleSheet.create({
-  fitText: { flexShrink: 1 },
-});
