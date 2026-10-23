@@ -73,6 +73,8 @@ type PagerGestureCandidates = readonly [
 ];
 
 type ExternalGesture = Parameters<ReturnType<typeof Gesture.Pan>['requireExternalGestureToFail']>[0];
+type SwipeGestureRef = Parameters<ReturnType<typeof Gesture.Pan>['withRef']>[0];
+type PagerGestureRefs = [SwipeGestureRef, SwipeGestureRef];
 
 type SmoothPagerProps<Page extends string = string> = {
   children: React.ReactElement<PageProps<Page>> | React.ReactElement<PageProps<Page>>[];
@@ -80,6 +82,10 @@ type SmoothPagerProps<Page extends string = string> = {
   /** `true` allows swiping to a previously reached forward page; `'always'` also allows the next declared page. */
   enableSwipeToGoForward?: boolean | 'always';
   fillHeight?: boolean;
+  /**
+   * Refs from usePagerGestureRefs for coordinating external gestures with pager swipes.
+   */
+  gestureRefs?: PagerGestureRefs;
   lazy?: boolean;
   /** Called when the destination page becomes interactive, before its transition finishes. */
   onPageActivated?: (page: Page) => void;
@@ -138,6 +144,14 @@ type PageRegistry<Page extends string = string> = {
 // ============ Hooks ========================================================== //
 
 /**
+ * Creates stable refs for one SmoothPager. Pass them to its gestureRefs prop and to
+ * external gesture relationships, such as a scroll view's blocksHandlers.
+ */
+export function usePagerGestureRefs(): PagerGestureRefs {
+  return useStableValue<PagerGestureRefs>(() => [{ current: undefined }, { current: undefined }]);
+}
+
+/**
  * Creates a stable navigation controller whose back and forward actions follow the pages actually visited.
  * Navigating to a new page records the current page and clears the forward history.
  */
@@ -192,6 +206,7 @@ const SmoothPagerComponent = <Page extends string>({
   enableSwipeToGoForward = true,
   fallbackPage,
   fillHeight = false,
+  gestureRefs,
   initialPage,
   lazy = false,
   navigation,
@@ -413,6 +428,12 @@ const SmoothPagerComponent = <Page extends string>({
     const backGesture = enableSwipeToGoBack ? gestureFor(-1) : undefined;
     const forwardGesture = enableSwipeToGoForward !== false ? gestureFor(1) : undefined;
 
+    if (gestureRefs) {
+      const [backGestureRef, forwardGestureRef] = gestureRefs;
+      backGesture?.withRef(backGestureRef);
+      forwardGesture?.withRef(forwardGestureRef);
+    }
+
     return backGesture && forwardGesture ? Gesture.Race(backGesture, forwardGesture) : (backGesture ?? forwardGesture);
   }, [
     activeIndex,
@@ -421,6 +442,7 @@ const SmoothPagerComponent = <Page extends string>({
     commitGestureNavigation,
     enableSwipeToGoBack,
     enableSwipeToGoForward,
+    gestureRefs,
     gestureState,
     onPagerSettled,
     pageGap,
