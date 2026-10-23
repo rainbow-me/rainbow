@@ -64,6 +64,8 @@ import { RnbwRewardsEstimateSheet } from '@/features/rnbw-rewards/screens/rnbw-r
 import { RnbwStakingLearnScreen } from '@/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen';
 import { RnbwStakingScreen } from '@/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen';
 import { RnbwUnstakeSheet } from '@/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet';
+import { SpotPnlExcludedTokensSheet } from '@/features/spot-pnl/ui/SpotPnlExcludedTokensSheet';
+import { SpotPnlSheet } from '@/features/spot-pnl/ui/SpotPnlSheet';
 import { SendConfirmationSheet } from '@/features/transfer/screens/SendConfirmationSheet';
 import { SendSheet } from '@/features/transfer/screens/SendSheet';
 import ConnectedDappsSheet from '@/features/wallet-connect/screens/ConnectedDappsSheet';
@@ -316,6 +318,8 @@ function BSNavigator() {
       <BSStack.Screen component={RnbwUnstakeSheet} name={Routes.RNBW_UNSTAKE_SHEET} />
       <BSStack.Screen component={WalletErrorSheet} name={Routes.WALLET_ERROR_SHEET} />
       <BSStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} />
+      <BSStack.Screen component={SpotPnlSheet} name={Routes.SPOT_PNL_SHEET} />
+      <BSStack.Screen component={SpotPnlExcludedTokensSheet} name={Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET} />
     </BSStack.Navigator>
   );
 }

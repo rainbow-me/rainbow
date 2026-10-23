@@ -727,6 +727,10 @@ type ParamsByRoute = {
   [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
   [Routes.RNBW_STAKING_SCREEN]: undefined;
   [Routes.RNBW_UNSTAKE_SHEET]: undefined;
+  [Routes.SPOT_PNL_SHEET]: {
+    address: string;
+    chainId: ChainId;
+  };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
     delegationsToRevoke: Array<{

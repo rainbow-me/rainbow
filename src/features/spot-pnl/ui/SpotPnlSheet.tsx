@@ -1,0 +1,456 @@
+import React, { memo, useEffect, useMemo, useRef } from 'react';
+import { ActivityIndicator } from 'react-native';
+
+import { type Address } from 'viem';
+
+import { analytics } from '@/analytics';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
+import { Box, Separator, Text, TextShadow } from '@/design-system';
+import { type TextProps } from '@/design-system/components/Text/Text';
+import { getUniqueId } from '@/entities/assetId';
+import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
+import type { NativeCurrencyKey } from '@/features/currency/types';
+import type { ChainId } from '@/features/network/types/backendNetworks';
+import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import useAccountAsset from '@/hooks/useAccountAsset';
+import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
+import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
+import Routes from '@/navigation/routesNames';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
+import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
+
+import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
+import { type UnrealizedPnl } from '../core/unrealizedPnl';
+import { useTokenTradesStore } from '../data/tokenTradesStore';
+import {
+  formatCompactTokenAmount,
+  formatNativeAmount,
+  formatPnlAmount,
+  formatPnlPercentage,
+  PnlArrow,
+  pnlColor,
+  pnlSign,
+} from './pnlDisplay';
+
+const SHEET_BORDER_RADIUS = 38;
+const CARD_BORDER_RADIUS = 22;
+const LOADING_HEIGHT = 120;
+
+export const SpotPnlSheet = memo(function SpotPnlSheet() {
+  const {
+    params: { address, chainId },
+  } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
+  const walletAddress = userAssetsStoreManager(state => state.address);
+
+  return (
+    <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
+      {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} />}
+    </PanelSheet>
+  );
+});
+
+function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAddress: string; chainId: ChainId; walletAddress: string }) {
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const uniqueId = getUniqueId(tokenAddress, chainId);
+  const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
+  const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
+  const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
+
+  return (
+    <Box paddingTop={{ custom: 22 }} paddingBottom={{ custom: 14 }}>
+      <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={12} paddingHorizontal={{ custom: 22 }}>
+        <Box flexDirection="row" alignItems="center" gap={12}>
+          <RainbowCoinIcon
+            size={30}
+            chainId={chainId}
+            color={accountAsset?.color ?? externalToken?.colors?.primary}
+            icon={accountAsset?.icon_url ?? externalToken?.iconUrl ?? undefined}
+            showBadge={false}
+            symbol={symbol}
+          />
+          <Text color="label" size="20pt" weight="heavy">
+            {symbol}
+          </Text>
+        </Box>
+        <WalletChip walletAddress={walletAddress} />
+      </Box>
+      <SpotPnlSection
+        balance={accountAsset?.balance?.amount || '0'}
+        chainId={chainId}
+        decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
+        initialPrice={accountAsset?.native?.price?.amount ?? ''}
+        initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
+        nativeCurrency={nativeCurrency}
+        symbol={symbol}
+        tokenAddress={tokenAddress}
+        tokenName={accountAsset?.name ?? externalToken?.name}
+        uniqueId={uniqueId}
+      />
+    </Box>
+  );
+}
+
+function SpotPnlSection({
+  balance,
+  chainId,
+  decimals,
+  initialPrice,
+  initialPriceUpdatedAt,
+  nativeCurrency,
+  symbol,
+  tokenAddress,
+  tokenName,
+  uniqueId,
+}: {
+  balance: string;
+  chainId: ChainId;
+  decimals: number;
+  initialPrice: string;
+  initialPriceUpdatedAt: number;
+  nativeCurrency: NativeCurrencyKey;
+  symbol: string;
+  tokenAddress: string;
+  tokenName: string | undefined;
+  uniqueId: string;
+}) {
+  const trades = useTokenTradesStore(state => state.getData());
+  const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
+  const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
+  const price = useLiveTokenValue({
+    tokenId: uniqueId,
+    initialValue: initialPrice,
+    initialValueLastUpdated: initialPriceUpdatedAt,
+    selector: token => token.price,
+  });
+  const liveMarketCap = useLiveTokenValue({
+    tokenId: uniqueId,
+    initialValue: '0',
+    selector: token => token.marketData.circulatingMarketCap,
+  });
+  const marketCap = greaterThanWorklet(liveMarketCap, 0) ? liveMarketCap : String(metadata?.marketCap ?? 0);
+  // Tokens priced under $1 show entry and current market caps in place of prices
+  const circulatingSupply =
+    usdToNativeRate &&
+    greaterThanWorklet(price || '0', 0) &&
+    lessThanWorklet(divWorklet(price, usdToNativeRate), 1) &&
+    greaterThanWorklet(marketCap, 0)
+      ? divWorklet(marketCap, price)
+      : null;
+
+  const pnl = useMemo(
+    () => (trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null),
+    [balance, price, trades, usdToNativeRate]
+  );
+
+  const lastTradeAt = trades?.lastTransactionAt;
+  const hasTrackedView = useRef(false);
+
+  useEffect(() => {
+    if (hasTrackedView.current || !pnl || !tokenName || lastTradeAt === undefined) return;
+    hasTrackedView.current = true;
+    analytics.track(analytics.event.spotPnlSheetViewed, {
+      tokenName,
+      tokenAddress,
+      chainId,
+      variant: pnl.variant,
+      pnlUsd: Number(pnl.headlineUsd),
+      lastTradeAt,
+    });
+  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
+
+  return pnl ? (
+    <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
+  ) : (
+    <SpotPnlPlaceholder />
+  );
+}
+
+function SpotPnlPlaceholder() {
+  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
+
+  return (
+    <Box alignItems="center" justifyContent="center" height={{ custom: LOADING_HEIGHT }}>
+      {isSettled && hasUsdToNativeRate ? (
+        <Text color="labelTertiary" size="15pt" weight="semibold">
+          {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
+        </Text>
+      ) : (
+        <ActivityIndicator />
+      )}
+    </Box>
+  );
+}
+
+function WalletChip({ walletAddress }: { walletAddress: string }) {
+  const { accountColor, accountENS, accountImage, accountName, accountSymbol } = useAccountProfileInfo(walletAddress as Address);
+
+  return (
+    <Box
+      backgroundColor="fillQuaternary"
+      borderColor="separatorTertiary"
+      borderRadius={CARD_BORDER_RADIUS}
+      borderWidth={1}
+      flexDirection="row"
+      flexShrink={1}
+      alignItems="center"
+      gap={6}
+      paddingLeft={{ custom: 6 }}
+      paddingRight={{ custom: 12 }}
+      paddingVertical={{ custom: 10 }}
+    >
+      <Box height={{ custom: 10 }} justifyContent="center">
+        <AddressAvatar
+          address={walletAddress}
+          color={accountColor}
+          emoji={accountSymbol || undefined}
+          label={accountName ?? ''}
+          size={18}
+          url={accountImage}
+        />
+      </Box>
+      <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
+        {abbreviateEnsForDisplay(accountENS) ?? abbreviateAddress(walletAddress, 4, 6)}
+      </Text>
+    </Box>
+  );
+}
+
+function SpotPnlBody({
+  asset,
+  circulatingSupply,
+  nativeCurrency,
+  pnl,
+}: {
+  asset: { decimals: number; symbol: string };
+  /** Set when per-token figures show as market caps rather than prices. */
+  circulatingSupply: string | null;
+  nativeCurrency: NativeCurrencyKey;
+  pnl: SpotPnl;
+}) {
+  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency, { compact: true });
+  const formatPerToken = (price: string) =>
+    circulatingSupply ? format(mulWorklet(price, circulatingSupply)) : formatAssetPrice({ value: price, currency: nativeCurrency });
+  const labels = circulatingSupply
+    ? {
+        avgEntry: i18n.l.spot_pnl_sheet.avg_entry_mc,
+        avgExit: i18n.l.spot_pnl_sheet.avg_exit_mc,
+        current: i18n.l.spot_pnl_sheet.current_mc,
+      }
+    : { avgEntry: i18n.l.spot_pnl_sheet.avg_entry, avgExit: i18n.l.spot_pnl_sheet.avg_exit, current: i18n.l.spot_pnl_sheet.current };
+  const excludedDisplay = greaterThanWorklet(pnl.excludedBalance, 0) ? formatCompactTokenAmount(pnl.excludedBalance, asset) : null;
+
+  return (
+    <Box gap={12} paddingHorizontal="16px" paddingTop={{ custom: 44 }}>
+      {pnl.variant === 'fullyRealized' ? (
+        <RealizedHeadline nativeCurrency={nativeCurrency} realized={pnl.realized} />
+      ) : (
+        <PositionHeadline nativeCurrency={nativeCurrency} pnl={pnl.position} value={format(pnl.position.value)} />
+      )}
+      <Box
+        backgroundColor="fillQuaternary"
+        borderColor="separatorTertiary"
+        borderRadius={CARD_BORDER_RADIUS}
+        borderWidth={1}
+        flexDirection="row"
+        marginTop={{ custom: pnl.variant === 'fullyRealized' ? 28 : 20 }}
+        paddingHorizontal={{ custom: 4 }}
+        paddingVertical="20px"
+      >
+        <Figure label={i18n.t(i18n.l.spot_pnl_sheet.invested)} value={format(pnl.invested)} />
+        <Figure label={i18n.t(labels.avgEntry)} value={formatPerToken(pnl.avgEntry)} />
+        {pnl.variant === 'fullyRealized' ? (
+          <Figure label={i18n.t(labels.avgExit)} value={formatPerToken(pnl.avgExit)} />
+        ) : (
+          <Figure label={i18n.t(labels.current)} value={formatPerToken(pnl.current)} />
+        )}
+      </Box>
+      {pnl.variant !== 'fullyRealized' && (
+        <Box
+          backgroundColor="fillQuaternary"
+          borderColor="separatorTertiary"
+          borderRadius={CARD_BORDER_RADIUS}
+          borderWidth={1}
+          gap={16}
+          padding="16px"
+        >
+          <ReturnRow
+            label={i18n.t(i18n.l.spot_pnl_sheet.realized_return)}
+            nativeCurrency={nativeCurrency}
+            value={pnl.variant === 'partiallyRealized' ? pnl.realized : null}
+          />
+          {pnl.variant === 'partiallyRealized' && (
+            <>
+              <Separator color="separatorTertiary" thickness={1} />
+              <ReturnRow label={i18n.t(i18n.l.spot_pnl_sheet.total_return)} nativeCurrency={nativeCurrency} value={pnl.total} />
+            </>
+          )}
+        </Box>
+      )}
+      {excludedDisplay && (
+        <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET)}>
+          <Box flexDirection="row" alignItems="center" justifyContent="center" gap={8} paddingHorizontal="16px" paddingVertical="8px">
+            <Text align="center" color="labelTertiary" size="15pt / 135%" weight="medium">
+              <Text color="labelSecondary" size="15pt / 135%" weight="bold">
+                {excludedDisplay}
+              </Text>
+              {` ${i18n.t(i18n.l.spot_pnl_sheet.excluded_from_calculation)}`}
+            </Text>
+            <InfoIcon />
+          </Box>
+        </ButtonPressAnimation>
+      )}
+    </Box>
+  );
+}
+
+function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: NativeCurrencyKey; pnl: UnrealizedPnl; value: string }) {
+  const { colors } = useTheme();
+  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency, { compact: true });
+  const color = pnlColor(direction, colors);
+
+  return (
+    <Box flexDirection="row" alignItems="flex-end" justifyContent="space-between" gap={16} paddingHorizontal="16px">
+      <Box flexShrink={1} gap={16}>
+        <Text color="labelTertiary" size="15pt" weight="bold">
+          {i18n.t(i18n.l.spot_pnl_sheet.unrealized_position)}
+        </Text>
+        <Text color="label" size="30pt" weight="heavy" numberOfLines={1}>
+          {value}
+        </Text>
+      </Box>
+      <Box alignItems="flex-end" gap={12}>
+        <Box flexDirection="row" alignItems="center" gap={2}>
+          <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
+          <GlowText color={color} size="17pt" weight="heavy">
+            {formatPnlPercentage(pnl.percentage, { compact: true })}
+          </GlowText>
+        </Box>
+        <Box flexDirection="row" alignItems="center" gap={3}>
+          {direction !== 'flat' && (
+            <GlowText color={color} size="20pt" weight="heavy">
+              {pnlSign(direction)}
+            </GlowText>
+          )}
+          <GlowText color={color} size="22pt" weight="heavy">
+            {display}
+          </GlowText>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: NativeCurrencyKey; realized: PnlReturn }) {
+  const { colors } = useTheme();
+  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency, { compact: true });
+  const color = pnlColor(direction, colors);
+
+  return (
+    <Box alignItems="center" gap={16}>
+      <Text color="labelTertiary" size="15pt" weight="bold">
+        {i18n.t(i18n.l.spot_pnl_sheet.realized_return)}
+      </Text>
+      <Box flexDirection="row" alignItems="center" gap={2}>
+        {direction !== 'flat' && (
+          <GlowText color={color} size="30pt" weight="heavy">
+            {pnlSign(direction)}
+          </GlowText>
+        )}
+        <GlowText color={color} size="34pt" weight="heavy">
+          {display}
+        </GlowText>
+      </Box>
+      {realized.percentage !== null && (
+        <Box flexDirection="row" alignItems="center" gap={2}>
+          <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
+          <GlowText color={color} size="17pt" weight="heavy">
+            {formatPnlPercentage(realized.percentage, { compact: true })}
+          </GlowText>
+        </Box>
+      )}
+    </Box>
+  );
+}
+
+function Figure({ label, value }: { label: string; value: string }) {
+  return (
+    <Box alignItems="center" flexBasis={0} flexGrow={1} gap={12}>
+      <Text align="center" color="labelTertiary" size="15pt" weight="semibold">
+        {label}
+      </Text>
+      <Text align="center" color="label" size="15pt" weight="bold">
+        {value}
+      </Text>
+    </Box>
+  );
+}
+
+function ReturnRow({
+  label,
+  nativeCurrency,
+  value,
+}: {
+  label: string;
+  nativeCurrency: NativeCurrencyKey;
+  /** `null` when nothing was sold. */
+  value: PnlReturn | null;
+}) {
+  const { colors } = useTheme();
+  const amount = value && formatPnlAmount(value.amount, nativeCurrency, { compact: true });
+
+  return (
+    <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
+      <Text color="labelTertiary" size="15pt" weight="semibold">
+        {label}
+      </Text>
+      {amount && value ? (
+        <Box flexDirection="row" flexGrow={1} flexShrink={1} alignItems="center" justifyContent="flex-end" gap={8}>
+          {value.percentage !== null && (
+            <Box flexDirection="row" alignItems="center" gap={2}>
+              <PnlArrow color="labelTertiary" direction={amount.direction} size="11pt" weight="heavy" />
+              <Text color="labelTertiary" size="15pt" weight="bold">
+                {formatPnlPercentage(value.percentage, { compact: true })}
+              </Text>
+            </Box>
+          )}
+          <Text color={pnlColor(amount.direction, colors)} size="15pt" weight="bold">
+            {`${pnlSign(amount.direction)}${amount.display}`}
+          </Text>
+        </Box>
+      ) : (
+        <Text color="labelQuaternary" size="15pt" weight="bold">
+          {i18n.t(i18n.l.spot_pnl_sheet.nothing_sold_yet)}
+        </Text>
+      )}
+    </Box>
+  );
+}
+
+function GlowText({ children, color, size, weight }: Pick<TextProps, 'color' | 'size' | 'weight'> & { children: string }) {
+  return (
+    <TextShadow blur={12} shadowOpacity={0.24}>
+      <Text color={color} size={size} weight={weight}>
+        {children}
+      </Text>
+    </TextShadow>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <Text color="labelQuaternary" size="15pt" weight="bold">
+      {'􀅴'}
+    </Text>
+  );
+}
