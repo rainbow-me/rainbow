@@ -10,7 +10,13 @@ import { isCashAccessRefusedError } from './cashAccessRefusal';
 import { cancelPasskeyRequest, getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen' | 'existingAccountPrompt' | 'passkeyOnDevicePrompt';
+export type CashSignInTrigger =
+  | 'cardLink'
+  | 'addCash'
+  | 'signInScreen'
+  | 'existingAccountPrompt'
+  | 'passkeyOnDevicePrompt'
+  | 'developerSettings';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
 const PASSKEY_ASSERTION_TIMEOUT = time.minutes(2);

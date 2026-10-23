@@ -10,7 +10,11 @@ import Restart from 'react-native-restart';
 
 import { ImgixImage } from '@/components/images';
 import { IS_STORE_INSTALL } from '@/env';
+import { deleteCashAccount, setCashStagingPlatform, signOutOfCash } from '@/features/cash/services/cashDevSettingsService';
+import { isHandledCashError } from '@/features/cash/services/cashHandledError';
+import { USES_STAGING_PLATFORM } from '@/features/cash/services/cashPlatformClient';
 import { useCashAccountStore } from '@/features/cash/stores/cashAccountStore';
+import { useCashPlatformSettingStore } from '@/features/cash/stores/cashPlatformSettingStore';
 import { defaultConfig, defaultConfigValues, type ExperimentalConfigKey } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { RevokeReason } from '@/features/delegation/types/revokeReason';
@@ -39,16 +43,20 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceActions } from '@/state/nonces';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { clearWalletState, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
 import { delegation, type DelegationWithChainId } from '@rainbow-me/sdk';
 
 import { analyzeUserAssets } from '../utils/analyzeUserAssets';
 
 export const DevSection = () => {
   const { navigate } = useNavigation();
+  const { colors } = useTheme();
   const config = useExperimentalConfigStore(state => state.config);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const cashUserId = useCashAccountStore(state => state.userId);
+  const cashUsesStagingPlatform = useCashPlatformSettingStore(state => state.useStagingPlatform);
+  const [pendingCashAccountAction, setPendingCashAccountAction] = useState<'signOut' | 'delete' | null>(null);
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -61,6 +69,26 @@ export const DevSection = () => {
     if (defaultConfig[value].needsRestart) {
       Navigation.handleAction(Routes.WALLET_SCREEN);
       setTimeout(Restart.Restart, 1000);
+    }
+  }, []);
+
+  const toggleCashStagingPlatform = useCallback(() => {
+    setCashStagingPlatform(!useCashPlatformSettingStore.getState().useStagingPlatform);
+    Navigation.handleAction(Routes.WALLET_SCREEN);
+    setTimeout(Restart.Restart, 1000);
+  }, []);
+
+  const runCashAccountAction = useCallback(async (kind: 'signOut' | 'delete') => {
+    setPendingCashAccountAction(kind);
+    try {
+      await (kind === 'signOut' ? signOutOfCash() : deleteCashAccount());
+    } catch (error) {
+      if (!isHandledCashError(error)) {
+        logger.error(new RainbowError(`[DevSection] cash ${kind} failed`, error));
+        Alert.alert(i18n.t(i18n.l.developer_settings.cash_account_action_failed));
+      }
+    } finally {
+      setPendingCashAccountAction(null);
     }
   }, []);
 
@@ -474,19 +502,31 @@ export const DevSection = () => {
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.cash_settings)}>
             <MenuItem
-              onPress={async () => {
-                const userId = (await Clipboard.getString()).trim();
-                if (userId) useCashAccountStore.getState().setUserId(userId);
-              }}
-              rightComponent={cashUserId != null && <MenuItem.StatusIcon status="selected" />}
+              onPress={toggleCashStagingPlatform}
+              rightComponent={cashUsesStagingPlatform && <MenuItem.StatusIcon status="selected" />}
               size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_set_user_id_from_clipboard)} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_use_staging_platform)} />}
             />
-            <MenuItem
-              onPress={() => useCashAccountStore.getState().clearUserId()}
-              size={52}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_clear_account)} />}
-            />
+            {cashUserId != null && (
+              <MenuItem
+                disabled={pendingCashAccountAction != null}
+                onPress={() => runCashAccountAction('signOut')}
+                rightComponent={pendingCashAccountAction === 'signOut' && <SettingsLoadingIndicator />}
+                size={52}
+                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.cash_sign_out)} />}
+              />
+            )}
+            {cashUserId != null && USES_STAGING_PLATFORM && (
+              <MenuItem
+                disabled={pendingCashAccountAction != null}
+                onPress={() => runCashAccountAction('delete')}
+                rightComponent={pendingCashAccountAction === 'delete' && <SettingsLoadingIndicator />}
+                size={52}
+                titleComponent={
+                  <MenuItem.Title customColor={colors.red} text={i18n.t(i18n.l.developer_settings.cash_sign_out_and_delete_account)} />
+                }
+              />
+            )}
           </Menu>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.feature_flags)}>
             {(Object.keys(defaultConfig) as ExperimentalConfigKey[])
