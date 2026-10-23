@@ -5,10 +5,9 @@ import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-s
 import { opacity } from '@/design-system/utils/opacity';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
+import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -160,11 +159,20 @@ const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdT
     <HolderRow
       holder={row.holder}
       rank={rank}
-      subtitle={i18n.t(i18n.l.expanded_state.sections.top_holders.of_supply, { percentage: supply })}
+      subtitle={
+        <Box flexDirection="row" gap={3}>
+          <Text color="labelQuaternary" size="13pt" weight="semibold">
+            {supply}
+          </Text>
+          <Text color="labelQuinary" size="13pt" weight="semibold" numberOfLines={1}>
+            {i18n.t(i18n.l.expanded_state.sections.top_holders.of_supply)}
+          </Text>
+        </Box>
+      }
       token={token}
     >
-      <Text color="label" size="17pt" weight="semibold" tabularNumbers>
-        {convertAmountToNativeDisplay(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, undefined, undefined, true)}
+      <Text color="label" size="17pt" weight="semibold">
+        {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
       </Text>
     </HolderRow>
   );
@@ -178,13 +186,13 @@ const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token, us
   return (
     <HolderRow holder={row.holder} rank={rank} token={token}>
       <Box alignItems="flex-end" gap={10}>
-        <Text color="label" size="17pt" weight="semibold" tabularNumbers>
-          {convertAmountToNativeDisplay(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, undefined, undefined, true)}
+        <Text color="label" size="17pt" weight="semibold">
+          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />
-          <Text color={color} size="15pt" weight="bold" tabularNumbers>
-            {formatPnlPercentage(row.pnl.percentage)}
+          <Text color={color} size="15pt" weight="bold">
+            {formatPnlPercentage(row.pnl.percentage, { compact: true })}
           </Text>
         </Box>
       </Box>
@@ -202,7 +210,7 @@ function HolderRow({
   children: React.ReactNode;
   holder: TokenHolder;
   rank: number;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
 }) {
   const ensName = useTopHoldersStore(state => state.getData()?.ensNames[holder.address.toLowerCase()] ?? null);
@@ -219,7 +227,7 @@ function HolderRow({
       <Box flexDirection="row" alignItems="center" height={{ custom: ROW_HEIGHT }}>
         <Box width={{ custom: RANK_WIDTH }}>
           <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text color="accent" size="22pt" weight="semibold" tabularNumbers>
+            <Text color="accent" size="22pt" weight="semibold">
               {String(rank)}
             </Text>
           </TextShadow>
@@ -230,11 +238,7 @@ function HolderRow({
             <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
               {abbreviateEnsForDisplay(ensName ?? undefined) ?? abbreviateAddress(holder.address, 4, 6)}
             </Text>
-            {subtitle && (
-              <Text color="labelTertiary" size="13pt" weight="semibold" numberOfLines={1}>
-                {subtitle}
-              </Text>
-            )}
+            {subtitle}
           </Box>
         </Box>
         <Box alignItems="flex-end" paddingLeft="12px">
