@@ -18,13 +18,6 @@ import { time } from '@/framework/core/utils/time';
 export type PlacementsState = {
   placementsById: PlacementsById;
   getPlacement: (id: PlacementId) => Placement | undefined;
-  getItemsBySource: <Source extends PlacementSource>(id: PlacementId, source: Source) => PlacementItem[];
-};
-
-export type PlacementResult<Hydrated> = {
-  isLoading: boolean;
-  items: Hydrated[];
-  placement: Placement | undefined;
 };
 
 type PlacementsById = Partial<Record<PlacementId, Placement>>;
@@ -58,37 +51,11 @@ export const usePlacementsStore = createQueryStore<PlacementsById, never, Placem
       getPlacement: id => {
         return get().placementsById[id];
       },
-
-      getItemsBySource: (id, source) => {
-        const placement = get().placementsById[id];
-        if (placement?.source !== source) return [];
-        return getItems(placement);
-      },
     };
   },
 
   { storageKey: 'placementsStore', version: 1 }
 );
-
-export function selectPlacementItemsBySource<Source extends PlacementSource>(
-  state: ReturnType<typeof usePlacementsStore.getState>,
-  placementId: PlacementId,
-  source: Source
-): PlacementItem[] {
-  return state.getItemsBySource(placementId, source);
-}
-
-export function isPlacementHydrating<Source extends PlacementSource>(
-  state: ReturnType<typeof usePlacementsStore.getState>,
-  placementId: PlacementId,
-  source: Source
-): boolean {
-  const isInitialLoad = state.getStatus('isInitialLoad');
-  const isIdleWithoutCachedPlacement =
-    state.getStatus('isIdle') && state.getPlacement(placementId) === undefined && !state.getItemsBySource(placementId, source).length;
-
-  return isInitialLoad || isIdleWithoutCachedPlacement;
-}
 
 // ============ Fetcher ======================================================== //
 
@@ -111,26 +78,23 @@ function buildPlacementsById(placements: PlacementDocumentSnapshot[]): Placement
   const placementsById: PlacementsById = {};
 
   for (const doc of placements) {
-    const placementDocument = doc.data();
-    if (!isPlacementDocument(doc.id, placementDocument)) continue;
+    const placement = doc.data();
+    if (!isPlacementDocument(doc.id, placement)) continue;
 
-    const placement = buildPlacement(doc.id, placementDocument);
-    placementsById[placement.id] = placement;
+    const items: PlacementItem[] = [];
+    const itemIds = new Set<string>();
+
+    for (const item of placement.items) {
+      if (!isPlacementItem(item) || itemIds.has(item.id)) continue;
+
+      itemIds.add(item.id);
+      items.push(item);
+    }
+
+    placementsById[placement.id] = { ...placement, items };
   }
 
   return placementsById;
-}
-
-function buildPlacement(id: PlacementId, placement: Placement): Placement {
-  return {
-    ...placement,
-    id,
-    items: placement.items.filter(isPlacementItem),
-  };
-}
-
-function getItems(placement: Placement | undefined): PlacementItem[] {
-  return placement?.items ?? [];
 }
 
 // ============ Type Guards ==================================================== //

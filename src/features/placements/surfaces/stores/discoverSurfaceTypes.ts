@@ -1,13 +1,4 @@
-import {
-  type SectionId,
-  type SurfaceDocument,
-  type SurfaceId,
-  type SurfaceLeafNode,
-  type SurfaceNode,
-} from '@/features/placements/surfaces/types';
-import { type PlacementSource } from '@/features/placements/types';
-
-export type DiscoverSurfacePlacementRefs = Record<PlacementSource, string[]>;
+import { type SectionId, type SurfaceId, type SurfaceLeafNode } from '@/features/placements/surfaces/types';
 
 export type DiscoverSurface = {
   id: SurfaceId;
@@ -19,5 +10,3 @@ export type DiscoverTab = {
   label?: string;
   sections: SurfaceLeafNode[];
 };
-
-export type SurfaceTree = SurfaceDocument | SurfaceNode;
