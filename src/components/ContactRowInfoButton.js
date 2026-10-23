@@ -9,7 +9,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';
 import abbreviations from '@/utils/abbreviations';
@@ -90,14 +90,10 @@ const buildBlockExplorerAction = chainId => {
 };
 
 const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
-  const { setClipboard } = useClipboard();
-  const handleCopyAddress = useCallback(
-    address => {
-      triggerHaptics('selection');
-      setClipboard(address);
-    },
-    [setClipboard]
-  );
+  const handleCopyAddress = useCallback(address => {
+    triggerHaptics('selection');
+    setClipboard(address);
+  }, []);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(chainId);
