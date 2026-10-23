@@ -720,7 +720,7 @@
           "title_holders": "Holders",
           "by_stake": "By Stake",
           "by_profit": "By Profit",
-          "of_supply": "%{percentage} of supply"
+          "of_supply": "of supply"
         },
         "claim": {
           "claim_button": "Claim Airdrop",
