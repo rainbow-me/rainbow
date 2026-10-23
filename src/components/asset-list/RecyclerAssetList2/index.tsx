@@ -11,7 +11,7 @@ import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/Navba
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -111,7 +111,7 @@ function handleNavigateToActivity(): void {
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useShowSportsTab();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
   const { language } = useAccountSettings();
@@ -237,7 +237,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
             </Navbar.Item>
           }
           rightComponent={
-            showKingOfTheHillTab ? (
+            showSportsTab ? (
               <Box flexDirection="row" gap={12}>
                 <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
