@@ -688,6 +688,10 @@
           "value_lower_than": "Value is lower than",
           "due_to_low_liquidity": "due to low liquidity"
         },
+        "spot_pnl": {
+          "profit": "Profit",
+          "loss": "Loss"
+        },
         "menu": {
           "view_on": "View on %{blockExplorerName}",
           "share": "Share",

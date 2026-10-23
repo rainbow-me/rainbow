@@ -338,6 +338,7 @@ query externalToken($address: String!, $chainId: Int!, $currency: String) {
       value
     }
     symbol
+    type
   }
 }
 

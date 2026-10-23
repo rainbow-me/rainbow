@@ -11,6 +11,7 @@ import { useChartType } from '@/features/charts/stores/chartsStore';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { SpotPnlPill } from '@/features/spot-pnl/ui/SpotPnlPill';
 import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
@@ -23,7 +24,7 @@ import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
-  const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, accountAsset: asset, basicAsset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
   const chartType = useChartType();
 
@@ -146,6 +147,7 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
+        <SpotPnlPill asset={asset} surfaceColor={accentColors.opacity6} tokenType={'type' in basicAsset ? basicAsset.type : undefined} />
       </Box>
       <SheetSeparator />
     </Box>
