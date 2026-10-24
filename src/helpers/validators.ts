@@ -1,8 +1,8 @@
 import { isValidAddress } from 'ethereumjs-util';
 
-import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { isBankrAddressFormat, isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveBankrName, resolveUnstoppableDomain } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 /**
@@ -16,8 +16,8 @@ export const isValidEmail = (email: any) =>
   );
 
 /**
- * @desc validate ethereum address, ENS, or Unstoppable name formatting
- * @param  {String} address, ENS, or Unstoppable
+ * @desc validate ethereum address, ENS, Unstoppable, or BankrNS (.bankr) name formatting
+ * @param  {String} address, ENS, Unstoppable, or .bankr
  * @return {Boolean}
  */
 export const checkIsValidAddressOrDomainFormat = (address: any) => {
@@ -27,12 +27,15 @@ export const checkIsValidAddressOrDomainFormat = (address: any) => {
   if (isUnstoppableAddressFormat(address)) {
     return true;
   }
+  if (isBankrAddressFormat(address)) {
+    return true;
+  }
   return isValidAddress(address);
 };
 
 /**
- * @desc validate ethereum address, ENS, or Unstoppable name
- * @param  {String} address, ENS, or Unstoppable
+ * @desc validate ethereum address, ENS, Unstoppable, or BankrNS (.bankr) name
+ * @param  {String} address, ENS, Unstoppable, or .bankr
  * @return {Boolean}
  */
 export const checkIsValidAddressOrDomain = async (address: any) => {
@@ -47,6 +50,10 @@ export const checkIsValidAddressOrDomain = async (address: any) => {
   }
   if (isUnstoppableAddressFormat(address)) {
     const resolvedAddress = await resolveUnstoppableDomain(address);
+    return !!resolvedAddress;
+  }
+  if (isBankrAddressFormat(address)) {
+    const resolvedAddress = await resolveBankrName(address);
     return !!resolvedAddress;
   }
   return isValidAddress(address);
