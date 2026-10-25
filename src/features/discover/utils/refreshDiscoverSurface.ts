@@ -1,6 +1,6 @@
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { predictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { clearTokenRefCache, discoverTokenRefsStore, useTokenRefsStore } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
@@ -35,15 +35,7 @@ export async function refreshDiscoverSurface(surfaceId: string): Promise<void> {
     refreshes.push(useTokenRefsStore.getState().fetch(undefined, { force: true }));
   }
 
-  refreshes.push(refreshDiscoverEvents());
+  refreshes.push(predictionEventsStore.getState().fetch(undefined, { staleTime: 0 }));
 
   await Promise.allSettled(refreshes);
-}
-
-/**
- * Refreshes Discover's Polymarket events when enabled.
- */
-export async function refreshDiscoverEvents(): Promise<void> {
-  const state = usePredictionEventsStore.getState();
-  if (state.enabled) await state.fetch(undefined, { force: true });
 }

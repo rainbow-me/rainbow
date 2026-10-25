@@ -5,14 +5,12 @@ import { useListen } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedScrollHandler, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { useDiscoverScreenContext, type DiscoverSectionScrollViewRef } from '@/components/Discover/DiscoverScreenContext';
 import { RefreshControl } from '@/components/RefreshControl';
 import { DEFAULT_SCROLL_FADE_DISTANCE } from '@/components/scroll-header-fade/ScrollHeaderFade';
 import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
-import { Text } from '@/design-system/components/Text/Text';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import {
   DiscoverPagerNavigation,
@@ -20,13 +18,11 @@ import {
   useDiscoverNavigationStore,
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
-import { refreshDiscoverEvents, refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
-import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
 import { useTabBarOffset } from '@/hooks/useTabBarOffset';
-import * as i18n from '@/languages';
 import { clamp } from '@/worklets/numbers';
 
 type DiscoverSectionsPagerProps = {
@@ -214,25 +210,10 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
     >
       <Box testID={`discover-section-${section.id}`}>
         <DiscoverSections items={section.sections} sectionId={section.id} surfaceId={surfaceId} />
-        {isActive && <DiscoverEventsError />}
       </Box>
     </SectionScrollView>
   );
 });
-
-function DiscoverEventsError() {
-  const hasError = usePredictionEventsStore(s => s.enabled && s.getStatus('isError'));
-
-  if (!hasError) return null;
-
-  return (
-    <ButtonPressAnimation onPress={refreshDiscoverEvents} scaleTo={0.98}>
-      <Text color="labelTertiary" align="center" size="15pt" weight="bold">
-        {i18n.t(i18n.l.predictions.errors.failed_to_load)} · {i18n.t(i18n.l.button.try_again)}
-      </Text>
-    </ButtonPressAnimation>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

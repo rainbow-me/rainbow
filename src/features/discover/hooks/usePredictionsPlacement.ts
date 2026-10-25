@@ -6,7 +6,7 @@ import { useDiscoverNavigationStore, type DiscoverSection } from '@/features/dis
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { type PlacementSurface } from '@/features/discover/types/sectionLayout';
 import { getPredictionTokenIds } from '@/features/discover/utils/getPredictionTokenIds';
-import { getPredictionPlacement, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { getPredictionPlacement, predictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type PlacementItem } from '@/features/placements/types';
 import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
@@ -37,8 +37,8 @@ export function usePredictionsPlacement(
       createDerivedStore(
         $ => {
           const placementItems = $(usePlacementsStore, s => getPredictionPlacement(s, placementId)?.items ?? EMPTY_ITEMS);
-          const events = $(usePredictionEventsStore, s => s.events);
-          const isInitialLoad = $(usePredictionEventsStore, s => s.getStatus('isInitialLoad'));
+          const events = $(predictionEventsStore, s => s.events);
+          const isInitialLoad = $(predictionEventsStore, s => s.getStatus('isInitialLoad'));
           const limit = $(limitStore, s => s);
 
           const items: PredictionPlacementItem[] = [];

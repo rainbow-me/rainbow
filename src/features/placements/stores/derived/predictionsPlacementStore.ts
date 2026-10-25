@@ -24,7 +24,7 @@ const predictionEventIdsStore = createDiscoverPlacementRefsStore('polymarket');
 /**
  * Polymarket events used by Discover's configured prediction sections.
  */
-export const usePredictionEventsStore = createQueryStore<EventsById, PredictionEventsParams, { events: EventsById }>(
+export const predictionEventsStore = createQueryStore<EventsById, PredictionEventsParams, { events: EventsById }>(
   {
     fetcher: fetchPredictionEvents,
     setData: ({ data, set }) => set({ events: data }),
