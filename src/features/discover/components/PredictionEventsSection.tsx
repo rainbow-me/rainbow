@@ -1,32 +1,28 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { analytics } from '@/analytics';
 import { event as analyticsEvent } from '@/analytics/event';
 import { Skeleton } from '@/components/Skeleton';
-import { Text } from '@/design-system/components/Text/Text';
 import { SectionHeader } from '@/features/discover/components/markets/layouts/SectionHeader';
 import { ShowMoreButton } from '@/features/discover/components/markets/layouts/ShowMoreButton';
 import { resolveSectionTitle } from '@/features/discover/components/SectionLayout';
+import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/discover/hooks/usePredictionsPlacement';
 import { useTrackDiscoverCarouselScroll } from '@/features/discover/hooks/useTrackDiscoverCarouselScroll';
-import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
+import { type PlacementSurface } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
-import { getPredictionPlacement, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { getPredictionPlacement } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
-import { type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
-import { type PlacementItem } from '@/features/placements/types';
+import { type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
 import {
   PolymarketEventsListItem,
   HEIGHT as PREDICTION_CARD_HEIGHT,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
+import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
-import { useCleanup } from '@/hooks/useCleanup';
 import useDimensions from '@/hooks/useDimensions';
-import * as i18n from '@/languages';
-
-const EMPTY_ITEMS: PlacementItem[] = [];
 
 // ============ PredictionEventsSection ======================================== //
 
@@ -36,28 +32,20 @@ export function PredictionEventsSection({
   surfaceId,
 }: {
   sectionId: SectionId;
-  surface: SurfaceLeaf & { placement: string };
+  surface: PlacementSurface;
   surfaceId: SurfaceId;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const { width } = useDimensions();
 
   const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
-  const isLoading = useIsDiscoverSurfacePlacementPending(surface.placement);
-  const allItems = placement?.items ?? EMPTY_ITEMS;
+  const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
+  const { items, hasMore, setLimit } = usePredictionsPlacement(surface, sectionId);
+
   const carousel = surface.display === 'prediction_event_card.carousel';
-  const limit = !carousel && expanded ? undefined : surface.limit;
-  const items = useMemo(() => (limit !== undefined && allItems.length > limit ? allItems.slice(0, limit) : allItems), [allItems, limit]);
-  const cardWidth = width - (carousel && items.length !== 1 ? 30 : 24);
+  const cardWidth = width - (carousel && items?.length !== 1 ? 30 : 24);
   const title = resolveSectionTitle(surface);
   const onScrollSettle = useTrackDiscoverCarouselScroll(surface, surfaceId, title);
   const destination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : undefined;
-
-  useEffect(() => {
-    const eventIds = items.map(item => item.id);
-    discoverEventListsStore.getState().setList(sectionId, surface.id, eventIds);
-  }, [items, sectionId, surface.id]);
-  useCleanup(() => discoverEventListsStore.getState().removeList(sectionId, surface.id), [sectionId, surface.id]);
 
   const recordPress = useCallback(
     (itemId: string, marketName: string, marketSlug?: string) => {
@@ -76,16 +64,15 @@ export function PredictionEventsSection({
   );
 
   const renderCard = useCallback(
-    ({ item }: { item: PlacementItem }) => {
-      const eventId = item.id;
-      const card = <PredictionEventCard key={eventId} eventId={eventId} onPress={recordPress} />;
+    ({ item }: { item: PredictionPlacementItem }) => {
+      const card = <PredictionEventCard key={item.id} event={item.event} onPress={recordPress} />;
 
       return carousel ? <View style={{ width: cardWidth }}>{card}</View> : card;
     },
     [cardWidth, carousel, recordPress]
   );
 
-  if (!allItems.length && !isLoading) return null;
+  if (items?.length === 0 && !isPlacementPending) return null;
 
   return (
     <View style={styles.section}>
@@ -105,7 +92,7 @@ export function PredictionEventsSection({
             : undefined
         }
       />
-      {isLoading ? (
+      {isPlacementPending || !items ? (
         <View style={styles.list}>
           <Skeleton borderRadius={24} height={PREDICTION_CARD_HEIGHT} width="100%" />
         </View>
@@ -126,7 +113,7 @@ export function PredictionEventsSection({
       ) : (
         <View style={styles.list}>
           {items.map(item => renderCard({ item }))}
-          {!expanded && items.length < allItems.length ? <ShowMoreButton onPress={() => setExpanded(true)} /> : null}
+          {hasMore ? <ShowMoreButton onPress={() => setLimit(undefined)} /> : null}
         </View>
       )}
     </View>
@@ -136,36 +123,22 @@ export function PredictionEventsSection({
 // ============ Event Cards ==================================================== //
 
 const PredictionEventCard = memo(function PredictionEventCard({
-  eventId,
+  event,
   onPress,
 }: {
-  eventId: string;
+  event: PolymarketEvent;
   onPress: (eventId: string, marketName: string, marketSlug?: string) => void;
 }) {
-  const event = usePredictionEventsStore(getEvent => getEvent(eventId));
-
-  if (event) {
-    return (
-      <PolymarketEventsListItem
-        event={event}
-        onPress={() => {
-          onPress(eventId, event.title, event.slug);
-          navigateToPolymarketEvent({ eventId, event });
-        }}
-        shouldActivateOnStart={false}
-        style={styles.card}
-      />
-    );
-  }
-
-  if (event === undefined) return <Skeleton borderRadius={24} height={PREDICTION_CARD_HEIGHT} width="100%" />;
-
   return (
-    <View style={styles.unavailable}>
-      <Text color="labelTertiary" align="center" size="15pt" weight="bold">
-        {i18n.t(i18n.l.sports.event_unavailable)}
-      </Text>
-    </View>
+    <PolymarketEventsListItem
+      event={event}
+      onPress={() => {
+        onPress(event.id, event.title, event.slug);
+        navigateToPolymarketEvent({ eventId: event.id, event });
+      }}
+      shouldActivateOnStart={false}
+      style={styles.card}
+    />
   );
 });
 
@@ -176,5 +149,4 @@ const styles = StyleSheet.create({
   list: { marginHorizontal: 12, gap: 8 },
   carousel: { paddingHorizontal: 12, gap: 8 },
   card: { width: '100%', height: PREDICTION_CARD_HEIGHT },
-  unavailable: { height: PREDICTION_CARD_HEIGHT, alignItems: 'center', justifyContent: 'center', padding: 24 },
 });

@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback } from 'react';
 import { Platform, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Skeleton } from '@/components/Skeleton';
 import { globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import {
-  getTileWidgetTokenIds,
   PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS,
   PREDICTION_MARKET_TILE_CARD_HEIGHT,
   PREDICTION_MARKET_TILE_CARD_WIDTH,
@@ -13,37 +12,29 @@ import {
 } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
 import { PredictionEventsSection } from '@/features/discover/components/PredictionEventsSection';
 import { renderSectionLayout } from '@/features/discover/components/SectionLayout';
+import { usePredictionsPlacement, type PredictionPlacementItem } from '@/features/discover/hooks/usePredictionsPlacement';
 import {
   type CardPressHandler,
   type OrderPressHandler,
-  type PlacementBackedSurfaceLeafWithDisplay,
+  type PlacementSurface,
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
 import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/discover/utils/navigation';
-import {
-  getPredictionPlacement,
-  usePredictionsPlacementItems,
-  type PredictionPlacementItem,
-} from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { getPredictionPlacement } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
 import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import {
-  getPolymarketEventsListTokenIds,
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
   PolymarketEventsListItem,
   PREDICTION_CARD_BORDER_RADIUS,
 } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
-import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { logger } from '@/logger';
-import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-
-const EMPTY_PREDICTION_ITEMS: PredictionPlacementItem[] = [];
 
 type PredictionsDisplay = (typeof PREDICTION_DISPLAY_VALUES)[number];
 
@@ -115,51 +106,22 @@ export function PredictionsSection({
     surface.display === 'prediction_tile.grid' ||
     surface.display === 'prediction_tile_widget.carousel'
   ) {
-    return <PredictionsPlacementSection surface={{ ...surface, display: surface.display }} surfaceId={surfaceId} />;
+    return <PredictionsPlacementSection sectionId={sectionId} surface={{ ...surface, display: surface.display }} surfaceId={surfaceId} />;
   }
   return null;
 }
 
-function getDisplayTokenIdExtractor(display: keyof typeof PREDICTIONS_SECTION_DESCRIPTORS): (event: PolymarketEvent) => string[] {
-  switch (display) {
-    case 'prediction_tile_widget.carousel':
-      // Tile widget renders outcome pills from getOutcomeRows.
-      return getTileWidgetTokenIds;
-    case 'prediction_tile.carousel':
-    case 'prediction_tile.grid':
-      // Tile renders via PolymarketEventsListItem's outcome selection.
-      return getPolymarketEventsListTokenIds;
-  }
-}
-
-function usePredictionTokenSubscription({
-  display,
-  items,
-  limit,
-}: {
-  display: keyof typeof PREDICTIONS_SECTION_DESCRIPTORS;
-  items: PredictionPlacementItem[];
-  limit: number | undefined;
-}) {
-  const setSubscribedTokens = useLiveTokenListSubscription();
-  const renderedItems = useMemo(() => (typeof limit !== 'number' ? items : items.slice(0, limit)), [items, limit]);
-
-  useEffect(() => {
-    const extractTokenIds = getDisplayTokenIdExtractor(display);
-    const tokenIds = renderedItems.flatMap(item => extractTokenIds(item.event));
-    setSubscribedTokens(tokenIds);
-  }, [display, renderedItems, setSubscribedTokens]);
-}
-
 function PredictionsPlacementSection({
+  sectionId,
   surface,
   surfaceId,
 }: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<keyof typeof PREDICTIONS_SECTION_DESCRIPTORS>;
+  sectionId: SectionId;
+  surface: PlacementSurface<keyof typeof PREDICTIONS_SECTION_DESCRIPTORS>;
   surfaceId: SurfaceId;
 }) {
   const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
-  const items = usePredictionsPlacementItems(surface.placement);
+  const { items } = usePredictionsPlacement(surface, sectionId);
   const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
 
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
@@ -167,8 +129,6 @@ function PredictionsPlacementSection({
   const onPressSeeAll = useCallback(() => {
     if (predictionsDestination) navigateDiscoverDestination(predictionsDestination);
   }, [predictionsDestination]);
-
-  usePredictionTokenSubscription({ display: surface.display, items: items ?? EMPTY_PREDICTION_ITEMS, limit: surface.limit });
 
   return renderSectionLayout({
     data: isPlacementPending ? undefined : items,
@@ -190,9 +150,7 @@ function unsupportedUnplacedPredictionSurface(surface: SurfaceLeafWithDisplay<Pr
   return null;
 }
 
-function hasPlacement<TDisplay extends Display>(
-  surface: SurfaceLeafWithDisplay<TDisplay>
-): surface is PlacementBackedSurfaceLeafWithDisplay<TDisplay> {
+function hasPlacement<TDisplay extends Display>(surface: SurfaceLeafWithDisplay<TDisplay>): surface is PlacementSurface<TDisplay> {
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 

@@ -1,7 +1,6 @@
 import { createDerivedStore, type DerivedStore } from '@storesjs/stores';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { isEventCardDisplay } from '@/features/placements/surfaces/constants';
 import {
   buildDiscoverSurface,
   isSurfaceNewerThanPlacements,
@@ -51,7 +50,7 @@ export function createDiscoverPlacementRefsStore(source: PlacementSource): Deriv
 
       for (const tab of tabs ?? []) {
         for (const section of tab.sections) {
-          if (!section.placement || (source === 'polymarket' && isEventCardDisplay(section.display))) continue;
+          if (!section.placement) continue;
           const placement = placementsById[section.placement];
           if (placement?.source !== source) continue;
 

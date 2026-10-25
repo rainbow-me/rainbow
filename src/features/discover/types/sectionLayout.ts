@@ -45,7 +45,7 @@ export type SectionDescriptor<T extends PlacementItem> = CarouselSectionDescript
 
 export type MarketDisplay = (typeof MARKET_DISPLAY_VALUES)[number];
 export type SurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeaf & { display: TDisplay };
-export type PlacementBackedSurfaceLeafWithDisplay<TDisplay extends Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
+export type PlacementSurface<TDisplay extends Display = Display> = SurfaceLeafWithDisplay<TDisplay> & { placement: string };
 
 export type SectionLayoutProps<T extends PlacementItem> = {
   data: T[] | undefined;

@@ -23,7 +23,7 @@ import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayI
 import {
   type CardPressHandler,
   type MarketDisplay,
-  type PlacementBackedSurfaceLeafWithDisplay,
+  type PlacementSurface,
   type SectionDescriptor,
   type SurfaceLeafWithDisplay,
 } from '@/features/discover/types/sectionLayout';
@@ -88,13 +88,7 @@ export function MarketSection({ surface, surfaceId }: { surface: SurfaceLeafWith
   return <MarketPlacementContent surface={surface} surfaceId={surfaceId} />;
 }
 
-function MarketPlacementContent({
-  surface,
-  surfaceId,
-}: {
-  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
-  surfaceId: SurfaceId;
-}) {
+function MarketPlacementContent({ surface, surfaceId }: { surface: PlacementSurface<MarketDisplay>; surfaceId: SurfaceId }) {
   const perpsEnabled = useRemoteConfig('perps_enabled').perps_enabled;
   const placement = usePlacementsStore(s => s.getPlacement(surface.placement));
   const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
@@ -128,7 +122,7 @@ function PerpsMarketPlacementContent({
   surfaceId,
 }: {
   placement: Placement;
-  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surface: PlacementSurface<MarketDisplay>;
   surfaceId: SurfaceId;
 }) {
   const items = usePerpsPlacementItems(placement.id);
@@ -190,7 +184,7 @@ function TokenMarketPlacementContent({
   surfaceId,
 }: {
   placement: Placement;
-  surface: PlacementBackedSurfaceLeafWithDisplay<MarketDisplay>;
+  surface: PlacementSurface<MarketDisplay>;
   surfaceId: SurfaceId;
 }) {
   const { onTapSearch } = useDiscoverScreenContext();
@@ -243,7 +237,7 @@ function TokenMarketPlacementContent({
   });
 }
 
-function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface is PlacementBackedSurfaceLeafWithDisplay<MarketDisplay> {
+function hasPlacement(surface: SurfaceLeafWithDisplay<MarketDisplay>): surface is PlacementSurface<MarketDisplay> {
   return typeof surface.placement === 'string' && surface.placement.length > 0;
 }
 

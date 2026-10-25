@@ -31,9 +31,7 @@ export function renderSectionLayout<T extends PlacementItem>({
 }: SectionLayoutProps<T>) {
   const items = data ?? EMPTY_ITEMS;
   const loading = data === undefined;
-  const hasLimit = section.limit !== undefined;
-  const renderedData = hasLimit ? items.slice(0, section.limit) : items;
-  const skeletonCount = hasLimit ? section.limit : undefined;
+  const renderedData = section.limit !== undefined && items.length > section.limit ? items.slice(0, section.limit) : items;
   const descriptorHeaderCaret = 'showHeaderCaret' in descriptor ? descriptor.showHeaderCaret?.(section) : undefined;
   const showHeaderCaret = headerCaret ?? descriptorHeaderCaret;
   const title = resolveSectionTitle(section);
@@ -69,7 +67,7 @@ export function renderSectionLayout<T extends PlacementItem>({
           renderSkeleton={descriptor.renderSkeleton}
           showHeaderCaret={showHeaderCaret}
           singleItemWidth={descriptor.singleItemWidth}
-          skeletonCount={skeletonCount}
+          skeletonCount={section.limit}
           section={section}
           surfaceId={surfaceId}
           title={title}
@@ -88,7 +86,7 @@ export function renderSectionLayout<T extends PlacementItem>({
           renderItem={descriptor.renderItem}
           renderSkeleton={descriptor.renderSkeleton}
           showHeaderCaret={showHeaderCaret}
-          skeletonCount={skeletonCount}
+          skeletonCount={section.limit}
           section={section}
           surfaceId={surfaceId}
           title={title}

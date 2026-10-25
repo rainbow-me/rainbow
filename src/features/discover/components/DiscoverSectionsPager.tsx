@@ -13,7 +13,6 @@ import { Skeleton } from '@/components/Skeleton';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box } from '@/design-system';
 import { Text } from '@/design-system/components/Text/Text';
-import { DiscoverEventPriceSubscription } from '@/features/discover/components/DiscoverEventPriceSubscription';
 import { DiscoverSections } from '@/features/discover/components/DiscoverSection';
 import {
   DiscoverPagerNavigation,
@@ -22,7 +21,7 @@ import {
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
 import { refreshDiscoverEvents, refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
-import { useHasDiscoverEventsError } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { predictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
@@ -73,7 +72,6 @@ export const DiscoverSectionsPager = memo(function DiscoverSectionsPager({ scrol
 
   return (
     <Box style={styles.container} testID="discover-sections-pager">
-      <DiscoverEventPriceSubscription />
       <SmoothPager
         enableSwipeToGoBack={false}
         enableSwipeToGoForward={false}
@@ -223,7 +221,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 });
 
 function DiscoverEventsError() {
-  const hasError = useHasDiscoverEventsError();
+  const hasError = predictionEventsStore(s => s.enabled && Boolean(s.error));
 
   if (!hasError) return null;
 
