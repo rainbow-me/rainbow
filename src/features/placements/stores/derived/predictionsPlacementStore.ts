@@ -1,4 +1,4 @@
-import { createDerivedStore, createQueryStore, parseQueryKey } from '@storesjs/stores';
+import { createQueryStore } from '@storesjs/stores';
 
 import { type usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
@@ -15,45 +15,30 @@ type PredictionEventsParams = {
   eventIds: readonly string[];
 };
 
-/** Null means requested but unavailable; undefined means no result for the ID yet. */
-type EventsById = Partial<Record<string, PolymarketEvent | null>>;
+type EventsById = Partial<Record<string, PolymarketEvent>>;
 
 // ============ Event Stores =================================================== //
 
 const predictionEventIdsStore = createDiscoverPlacementRefsStore('polymarket');
 
-/** Polymarket events used by Discover's configured prediction sections. */
-export const predictionEventsStore = createQueryStore<EventsById, PredictionEventsParams>({
-  fetcher: fetchPredictionEvents,
-  enabled: $ => {
-    const enabled = $(usePolymarketEnabled, s => s);
-    const hasEvents = $(predictionEventIdsStore, s => s.length > 0);
-    return enabled && hasEvents;
+/**
+ * Polymarket events used by Discover's configured prediction sections.
+ */
+export const usePredictionEventsStore = createQueryStore<EventsById, PredictionEventsParams, { events: EventsById }>(
+  {
+    fetcher: fetchPredictionEvents,
+    setData: ({ data, set }) => set({ events: data }),
+    enabled: $ => {
+      const enabled = $(usePolymarketEnabled, s => s);
+      const hasEvents = $(predictionEventIdsStore, s => s.length > 0);
+      return enabled && hasEvents;
+    },
+    params: { eventIds: $ => $(predictionEventIdsStore, s => s) },
+    disableCache: true,
+    staleTime: time.minutes(2),
   },
-  params: { eventIds: $ => $(predictionEventIdsStore, s => s) },
-  keepPreviousData: true,
-  staleTime: time.minutes(2),
-  cacheTime: time.minutes(15),
-});
 
-/** Retains cached events and marks unanswered IDs from a failed request as unavailable. */
-export const predictionEventResultsStore = createDerivedStore(
-  $ => {
-    const events = $(predictionEventsStore, s => s.getData());
-    const failureKey = $(predictionEventsStore, s => (s.enabled && s.error ? s.queryKey : null));
-
-    if (!failureKey) return events;
-
-    let result: EventsById | undefined;
-    for (const id of parseQueryKey<PredictionEventsParams>(failureKey).eventIds) {
-      if (events?.[id] !== undefined) continue;
-      result ??= { ...events };
-      result[id] = null;
-    }
-
-    return result ?? events;
-  },
-  { lockDependencies: true }
+  () => ({ events: {} })
 );
 
 // ============ Placement ====================================================== //
@@ -77,7 +62,6 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
   const events = await Promise.all(rawEvents.map(event => processRawPolymarketEvent(event)));
 
   const eventsById: EventsById = {};
-  for (const id of eventIds) eventsById[id] = null;
   for (const event of events) eventsById[event.id] = event;
   return eventsById;
 }

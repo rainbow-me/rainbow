@@ -6,7 +6,7 @@ import { useDiscoverNavigationStore, type DiscoverSection } from '@/features/dis
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { type PlacementSurface } from '@/features/discover/types/sectionLayout';
 import { getPredictionTokenIds } from '@/features/discover/utils/getPredictionTokenIds';
-import { getPredictionPlacement, predictionEventResultsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { getPredictionPlacement, usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { type PlacementItem } from '@/features/placements/types';
 import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
@@ -23,8 +23,8 @@ const EMPTY_ITEMS: PredictionPlacementItem[] = [];
 const EMPTY_TOKEN_IDS: readonly string[] = [];
 
 /**
- * Resolves and limits prediction items and requests prices while their Discover page is visible.
- * Items are undefined while IDs remain unanswered and none are available.
+ * Returns a Discover section's prediction items
+ * and subscribes to their live prices.
  */
 export function usePredictionsPlacement(
   { placement: placementId, limit, display }: PlacementSurface,
@@ -37,27 +37,22 @@ export function usePredictionsPlacement(
       createDerivedStore(
         $ => {
           const placementItems = $(usePlacementsStore, s => getPredictionPlacement(s, placementId)?.items ?? EMPTY_ITEMS);
-          const events = $(predictionEventResultsStore, s => s);
+          const events = $(usePredictionEventsStore, s => s.events);
+          const isInitialLoad = $(usePredictionEventsStore, s => s.getStatus('isInitialLoad'));
           const limit = $(limitStore, s => s);
 
           const items: PredictionPlacementItem[] = [];
-          let pending = false;
 
           for (const item of placementItems) {
-            const event = events?.[item.id];
-            if (event === null) continue;
-
-            if (event === undefined) {
-              pending = true;
-              continue;
-            }
+            const event = events[item.id];
+            if (!event) continue;
 
             if (items.length === limit) return { items, hasMore: true };
 
             items.push({ ...item, event });
           }
 
-          return { items: pending && !items.length ? undefined : items, hasMore: false };
+          return { items: isInitialLoad && !items.length ? undefined : items, hasMore: false };
         },
         {
           equalityFn: (previous, next) => previous.hasMore === next.hasMore && arePlacementItemsEqual(previous.items, next.items),

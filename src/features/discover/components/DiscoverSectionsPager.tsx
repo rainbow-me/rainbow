@@ -21,7 +21,7 @@ import {
   type DiscoverSection,
 } from '@/features/discover/stores/discoverNavigationStore';
 import { refreshDiscoverEvents, refreshDiscoverSurface } from '@/features/discover/utils/refreshDiscoverSurface';
-import { predictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
+import { usePredictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { useDiscoverSurface } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type DiscoverTab } from '@/features/placements/surfaces/stores/discoverSurfaceTypes';
 import { type SurfaceId } from '@/features/placements/surfaces/types';
@@ -221,7 +221,7 @@ const DiscoverSectionScrollView = memo(function DiscoverSectionScrollView({
 });
 
 function DiscoverEventsError() {
-  const hasError = predictionEventsStore(s => s.enabled && Boolean(s.error));
+  const hasError = usePredictionEventsStore(s => s.enabled && s.getStatus('isError'));
 
   if (!hasError) return null;
 
