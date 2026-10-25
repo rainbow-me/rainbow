@@ -6,6 +6,9 @@ import { type SportsSection } from '@/features/sports/core/sections';
 import { GameCard, type SportsGamePress } from '@/features/sports/ui/GameCard';
 import { useCleanup } from '@/hooks/useCleanup';
 
+const HORIZONTAL_INSET = 12;
+const CARD_GAP = 8;
+const NEXT_CARD_PEEK = 10;
 const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 1 };
 
 /**
@@ -30,7 +33,8 @@ export const GameCarousel = memo(function GameCarousel({
   onVisibleGamesChanged: (rowKey: string, items: readonly ViewToken<string>[]) => void;
   onGamePress: SportsGamePress;
 }) {
-  const cardWidth = width - (section.gameIds.length === 1 ? 24 : 30);
+  const cardWidth = width - (section.gameIds.length === 1 ? HORIZONTAL_INSET * 2 : HORIZONTAL_INSET + CARD_GAP + NEXT_CARD_PEEK);
+
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<string>[] }) => onVisibleGamesChanged(rowKey, viewableItems),
     [onVisibleGamesChanged, rowKey]
@@ -65,7 +69,7 @@ export const GameCarousel = memo(function GameCarousel({
       viewabilityConfig={VIEWABILITY_CONFIG}
       style={styles.list}
       contentContainerStyle={styles.content}
-      snapToInterval={cardWidth + 8}
+      snapToInterval={cardWidth + CARD_GAP}
       decelerationRate="fast"
       showsHorizontalScrollIndicator={false}
       initialNumToRender={3}
@@ -76,5 +80,5 @@ export const GameCarousel = memo(function GameCarousel({
 
 const styles = StyleSheet.create({
   list: { overflow: 'visible' },
-  content: { gap: 8, paddingHorizontal: 12, paddingBottom: 8 },
+  content: { gap: CARD_GAP, paddingHorizontal: HORIZONTAL_INSET, paddingBottom: 8 },
 });
