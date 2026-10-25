@@ -9,8 +9,10 @@ import {
   isSurfaceNewerThanPlacements,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTransforms';
 
-/** Whether a rendered Discover section is waiting for its placement. */
-export function useIsDiscoverSurfacePlacementPending(placementId: string): boolean {
+/**
+ * Whether a rendered Discover section is waiting for its placement.
+ */
+export function useIsDiscoverPlacementPending(placementId: string): boolean {
   const surfaceLastFetchedAt = useDiscoverSurfaceStore(s => s.lastFetchedAt);
 
   return usePlacementsStore(s => {

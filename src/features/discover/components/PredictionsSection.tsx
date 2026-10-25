@@ -24,7 +24,6 @@ import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/disc
 import { getPredictionPlacement } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { isEventCardDisplay, PREDICTION_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type Display, type SectionId, type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import {
   HEIGHT as POLYMARKET_EVENTS_LIST_ITEM_HEIGHT,
@@ -122,7 +121,6 @@ function PredictionsPlacementSection({
 }) {
   const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
   const { items } = usePredictionsPlacement(surface, sectionId);
-  const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
 
   const descriptor = PREDICTIONS_SECTION_DESCRIPTORS[surface.display];
   const predictionsDestination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : null;
@@ -131,7 +129,7 @@ function PredictionsPlacementSection({
   }, [predictionsDestination]);
 
   return renderSectionLayout({
-    data: isPlacementPending ? undefined : items,
+    data: items,
     descriptor,
     // Prediction "See All" routes to the CMS destination (predictions -> Polymarket).
     onPress: predictionsDestination ? onPressSeeAll : undefined,

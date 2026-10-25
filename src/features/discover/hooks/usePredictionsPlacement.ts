@@ -8,6 +8,7 @@ import { type PlacementSurface } from '@/features/discover/types/sectionLayout';
 import { getPredictionTokenIds } from '@/features/discover/utils/getPredictionTokenIds';
 import { getPredictionPlacement, predictionEventsStore } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
+import { useIsDiscoverPlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type PlacementItem } from '@/features/placements/types';
 import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
@@ -30,6 +31,7 @@ export function usePredictionsPlacement(
   { placement: placementId, limit, display }: PlacementSurface,
   sectionId: DiscoverSection
 ): { items: PredictionPlacementItem[] | undefined; hasMore: boolean; setLimit: BaseStore<number | undefined>['setState'] } {
+  const isPlacementPending = useIsDiscoverPlacementPending(placementId);
   const limitStore = useStore(limit);
 
   const useItemsStore = useMemo(
@@ -87,5 +89,7 @@ export function usePredictionsPlacement(
 
   useListen(tokenIdsStore, s => s, subscribe, { fireImmediately: true });
 
-  return { ...useItemsStore(), setLimit: limitStore.setState };
+  const { items, hasMore } = useItemsStore();
+
+  return { items: isPlacementPending ? undefined : items, hasMore, setLimit: limitStore.setState };
 }

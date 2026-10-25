@@ -14,7 +14,6 @@ import { hasDestinationRoot, navigateDiscoverDestination } from '@/features/disc
 import { trackDiscoverCardPress } from '@/features/discover/utils/trackDiscoverCardPress';
 import { getPredictionPlacement } from '@/features/placements/stores/derived/predictionsPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SectionId, type SurfaceId } from '@/features/placements/surfaces/types';
 import {
   PolymarketEventsListItem,
@@ -23,6 +22,10 @@ import {
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import useDimensions from '@/hooks/useDimensions';
+
+const HORIZONTAL_INSET = 12;
+const CARD_GAP = 8;
+const NEXT_CARD_PEEK = 10;
 
 // ============ PredictionEventsSection ======================================== //
 
@@ -38,11 +41,11 @@ export function PredictionEventsSection({
   const { width } = useDimensions();
 
   const placement = usePlacementsStore(s => getPredictionPlacement(s, surface.placement));
-  const isPlacementPending = useIsDiscoverSurfacePlacementPending(surface.placement);
   const { items, hasMore, setLimit } = usePredictionsPlacement(surface, sectionId);
 
   const carousel = surface.display === 'prediction_event_card.carousel';
-  const cardWidth = width - (carousel && items?.length !== 1 ? 30 : 24);
+  const isFullWidthCard = !carousel || items?.length === 1;
+  const cardWidth = width - (isFullWidthCard ? HORIZONTAL_INSET * 2 : HORIZONTAL_INSET + CARD_GAP + NEXT_CARD_PEEK);
   const title = resolveSectionTitle(surface);
   const onScrollSettle = useTrackDiscoverCarouselScroll(surface, surfaceId, title);
   const destination = hasDestinationRoot(surface.destination, 'predictions') ? surface.destination : undefined;
@@ -72,7 +75,7 @@ export function PredictionEventsSection({
     [cardWidth, carousel, recordPress]
   );
 
-  if (items?.length === 0 && !isPlacementPending) return null;
+  if (items?.length === 0) return null;
 
   return (
     <View style={styles.section}>
@@ -92,7 +95,7 @@ export function PredictionEventsSection({
             : undefined
         }
       />
-      {isPlacementPending || !items ? (
+      {!items ? (
         <View style={styles.list}>
           <Skeleton borderRadius={24} height={PREDICTION_CARD_HEIGHT} width="100%" />
         </View>
@@ -105,7 +108,7 @@ export function PredictionEventsSection({
           keyExtractor={item => item.id}
           contentContainerStyle={styles.carousel}
           showsHorizontalScrollIndicator={false}
-          snapToInterval={cardWidth + 8}
+          snapToInterval={cardWidth + CARD_GAP}
           decelerationRate="fast"
           initialNumToRender={3}
           windowSize={3}
@@ -146,7 +149,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
 
 const styles = StyleSheet.create({
   section: { gap: 20 },
-  list: { marginHorizontal: 12, gap: 8 },
-  carousel: { paddingHorizontal: 12, gap: 8 },
+  list: { marginHorizontal: HORIZONTAL_INSET, gap: CARD_GAP },
+  carousel: { paddingHorizontal: HORIZONTAL_INSET, gap: CARD_GAP },
   card: { width: '100%', height: PREDICTION_CARD_HEIGHT },
 });

@@ -33,7 +33,7 @@ import { usePerpsPlacementItems, type PerpMarketPlacementItem } from '@/features
 import { useTokensPlacementItems, type TokenPlacementItem } from '@/features/placements/stores/derived/tokensPlacementStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants';
-import { useIsDiscoverSurfacePlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
+import { useIsDiscoverPlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement } from '@/features/placements/types';
 import Navigation from '@/navigation/Navigation';
@@ -91,7 +91,7 @@ export function MarketSection({ surface, surfaceId }: { surface: SurfaceLeafWith
 function MarketPlacementContent({ surface, surfaceId }: { surface: PlacementSurface<MarketDisplay>; surfaceId: SurfaceId }) {
   const perpsEnabled = useRemoteConfig('perps_enabled').perps_enabled;
   const placement = usePlacementsStore(s => s.getPlacement(surface.placement));
-  const isPendingSurfacePlacement = useIsDiscoverSurfacePlacementPending(surface.placement);
+  const isPlacementPending = useIsDiscoverPlacementPending(surface.placement);
 
   if (placement?.source === 'hyperliquid') {
     if (!perpsEnabled) return null;
@@ -102,7 +102,7 @@ function MarketPlacementContent({ surface, surfaceId }: { surface: PlacementSurf
     return <TokenMarketPlacementContent placement={placement} surface={surface} surfaceId={surfaceId} />;
   }
 
-  if (isPendingSurfacePlacement) {
+  if (isPlacementPending) {
     return renderSectionLayout({
       data: undefined,
       descriptor: MARKET_SECTION_DESCRIPTORS[surface.display],
