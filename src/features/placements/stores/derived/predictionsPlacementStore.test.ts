@@ -10,7 +10,7 @@ import { type SurfaceDocument } from '@/features/placements/surfaces/types';
 import { type Placement } from '@/features/placements/types';
 
 import { predictionEvent } from '../../../../../config/test/predictionEvent';
-import { predictionEventResultsStore, predictionEventsStore } from './predictionsPlacementStore';
+import { predictionEventsStore } from './predictionsPlacementStore';
 
 const { mockFirestoreDocuments } = await vi.hoisted(() => import('../../../../../config/test/firebase'));
 
@@ -68,7 +68,7 @@ beforeEach(async () => {
   mockFirestoreDocuments.clear();
   mockFirestoreDocuments.set('surfaces/discover', surface);
   useExperimentalConfigStore.getState().setFlag(POLYMARKET, true);
-  predictionEventsStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  predictionEventsStore.setState({ events: {}, lastFetchedAt: null, error: null, status: 'idle' });
   fetchMock.mockReset().mockImplementation(
     async url =>
       new Response(JSON.stringify(new URL(String(url)).searchParams.getAll('id').map(predictionEvent)), {
@@ -91,10 +91,10 @@ test('shares events across prediction displays and retains them after a failed r
   await setPlacement('tiles', ['shared', 'tile']);
   await setPlacement('cards', ['shared', 'other']);
   await setPlacement('next_cards', ['hidden']);
-  stops.push(predictionEventResultsStore.subscribe(() => undefined));
+  stops.push(predictionEventsStore.subscribe(() => undefined));
   await settle();
   expect(requestedIds()).toEqual([['hidden', 'other', 'shared', 'tile']]);
-  const tile = predictionEventResultsStore.getState()?.tile;
+  const tile = predictionEventsStore.getState().events.tile;
   expect(tile?.markets[0].outcomes).toEqual(['Yes', 'No']);
 
   await setPlacement('cards', ['other', 'shared']);
@@ -103,77 +103,91 @@ test('shares events across prediction displays and retains them after a failed r
   fetchMock.mockRejectedValueOnce(new Error('Events unavailable'));
   await predictionEventsStore.getState().fetch(undefined, { force: true });
   expect(predictionEventsStore.getState().getStatus('isError')).toBe(true);
-  expect(predictionEventResultsStore.getState()?.tile).toBe(tile);
-  expect(predictionEventResultsStore.getState()?.unrequested).toBeUndefined();
+  expect(predictionEventsStore.getState().events.tile).toBe(tile);
+  expect(predictionEventsStore.getState().events.unrequested).toBeUndefined();
 });
 
-test('marks a cached event unavailable after it closes', async () => {
+test('removes a cached event after it closes', async () => {
   await setPlacement('cards', ['shared']);
-  stops.push(predictionEventResultsStore.subscribe(() => undefined));
+  stops.push(predictionEventsStore.subscribe(() => undefined));
   await settle();
-  expect(predictionEventResultsStore.getState()?.shared?.id).toBe('shared');
+  expect(predictionEventsStore.getState().events.shared?.id).toBe('shared');
 
   fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify([{ ...predictionEvent('shared'), closed: true }]), { headers: { 'Content-Type': 'application/json' } })
   );
   await predictionEventsStore.getState().fetch(undefined, { force: true });
-  expect(predictionEventResultsStore.getState()?.shared).toBeNull();
+  expect(predictionEventsStore.getState().events.shared).toBeUndefined();
   expect(requestedIds()).toEqual([['shared'], ['shared']]);
 });
 
-test('keeps an event pending until its request completes', async () => {
+test('distinguishes initial loading from an empty response', async () => {
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
-  stops.push(predictionEventResultsStore.subscribe(() => undefined));
-  expect(predictionEventResultsStore.getState()?.card).toBeUndefined();
+  stops.push(predictionEventsStore.subscribe(() => undefined));
+  expect(predictionEventsStore.getState().events.card).toBeUndefined();
   await setPlacement('cards', ['card']);
-  expect(predictionEventResultsStore.getState()?.card).toBeUndefined();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  expect(predictionEventsStore.getState().events.card).toBeUndefined();
 
   response.resolve(new Response('[]', { headers: { 'Content-Type': 'application/json' } }));
   await settle();
-  expect(predictionEventResultsStore.getState()?.card).toBeNull();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(predictionEventsStore.getState().events.card).toBeUndefined();
 });
 
-test('retains available and unavailable events while fetching new IDs', async () => {
+test('retains loaded events when a request for new IDs fails', async () => {
   await setPlacement('cards', ['loaded', 'unavailable']);
   fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify([predictionEvent('loaded')]), { headers: { 'Content-Type': 'application/json' } })
   );
-  stops.push(predictionEventResultsStore.subscribe(() => undefined));
+  stops.push(predictionEventsStore.subscribe(() => undefined));
   await settle();
-  const loaded = predictionEventResultsStore.getState()?.loaded;
+  const loaded = predictionEventsStore.getState().events.loaded;
   expect(loaded?.id).toBe('loaded');
-  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
+  expect(predictionEventsStore.getState().events.unavailable).toBeUndefined();
 
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
   await setPlacement('cards', ['loaded', 'unavailable', 'new']);
-  expect(predictionEventResultsStore.getState()?.loaded).toBe(loaded);
-  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
-  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  expect(predictionEventsStore.getState().events.loaded).toBe(loaded);
+  expect(predictionEventsStore.getState().events.unavailable).toBeUndefined();
+  expect(predictionEventsStore.getState().events.new).toBeUndefined();
 
-  response.resolve(
+  response.reject(new Error('Events unavailable'));
+  await settle();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(predictionEventsStore.getState().getStatus('isError')).toBe(true);
+  expect(predictionEventsStore.getState().events.loaded).toBe(loaded);
+  expect(predictionEventsStore.getState().events.unavailable).toBeUndefined();
+  expect(predictionEventsStore.getState().events.new).toBeUndefined();
+
+  fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify([predictionEvent('loaded'), predictionEvent('new')]), { headers: { 'Content-Type': 'application/json' } })
   );
-  await settle();
-  expect(predictionEventResultsStore.getState()?.new?.id).toBe('new');
-  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
+  await predictionEventsStore.getState().fetch(undefined, { force: true });
+  expect(predictionEventsStore.getState().events.new?.id).toBe('new');
+  expect(predictionEventsStore.getState().events.unavailable).toBeUndefined();
 });
 
-test('does not apply a failed request to new IDs', async () => {
+test('starts initial loading for new IDs after a failed request', async () => {
   await setPlacement('cards', ['failed']);
   fetchMock.mockRejectedValueOnce(new Error('Events unavailable'));
-  stops.push(predictionEventResultsStore.subscribe(() => undefined));
+  stops.push(predictionEventsStore.subscribe(() => undefined));
   await settle();
-  expect(predictionEventResultsStore.getState()?.failed).toBeNull();
-  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(false);
+  expect(predictionEventsStore.getState().getStatus('isError')).toBe(true);
+  expect(predictionEventsStore.getState().events.failed).toBeUndefined();
+  expect(predictionEventsStore.getState().events.new).toBeUndefined();
 
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
   await setPlacement('cards', ['new']);
-  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
+  expect(predictionEventsStore.getState().getStatus('isInitialLoad')).toBe(true);
+  expect(predictionEventsStore.getState().events.new).toBeUndefined();
 
   response.resolve(new Response(JSON.stringify([predictionEvent('new')]), { headers: { 'Content-Type': 'application/json' } }));
   await settle();
-  expect(predictionEventResultsStore.getState()?.new?.id).toBe('new');
+  expect(predictionEventsStore.getState().events.new?.id).toBe('new');
 });
