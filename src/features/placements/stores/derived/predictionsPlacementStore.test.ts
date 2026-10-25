@@ -4,20 +4,13 @@ import '../../../../../config/test/storeEnvironment';
 
 import { POLYMARKET } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { discoverEventListsStore } from '@/features/discover/stores/discoverEventListsStore';
-import { useDiscoverNavigationStore } from '@/features/discover/stores/discoverNavigationStore';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type SurfaceDocument } from '@/features/placements/surfaces/types';
 import { type Placement } from '@/features/placements/types';
 
 import { predictionEvent } from '../../../../../config/test/predictionEvent';
-import {
-  predictionCardEventsStore,
-  predictionTileEventsStore,
-  useHasDiscoverEventsError,
-  usePredictionEventsStore,
-} from './predictionsPlacementStore';
+import { predictionEventResultsStore, predictionEventsStore } from './predictionsPlacementStore';
 
 const { mockFirestoreDocuments } = await vi.hoisted(() => import('../../../../../config/test/firebase'));
 
@@ -38,7 +31,18 @@ const surface: SurfaceDocument = {
       id: 'featured',
       label: 'Featured',
       enabled: true,
-      items: [{ id: 'tiles', label: 'Predictions', enabled: true, placement: 'tiles', display: 'prediction_tile.grid', destination: null }],
+      items: [
+        { id: 'tiles', label: 'Predictions', enabled: true, placement: 'tiles', display: 'prediction_tile.grid', destination: null },
+        { id: 'cards', label: 'Events', enabled: true, placement: 'cards', display: 'prediction_event_card.list', destination: null },
+      ],
+    },
+    {
+      id: 'next',
+      label: 'Next',
+      enabled: true,
+      items: [
+        { id: 'cards', label: 'Events', enabled: true, placement: 'next_cards', display: 'prediction_event_card.list', destination: null },
+      ],
     },
   ],
 };
@@ -53,9 +57,9 @@ function settle(): Promise<void> {
   });
 }
 
-async function setTiles(ids: string[]): Promise<void> {
-  const placement: Placement = { id: 'tiles', version: 2, source: 'polymarket', type: 'prediction', items: ids.map(id => ({ id })) };
-  mockFirestoreDocuments.set('placements/tiles', placement);
+async function setPlacement(id: string, ids: string[]): Promise<void> {
+  const placement: Placement = { id, version: 2, source: 'polymarket', type: 'prediction', items: ids.map(id => ({ id })) };
+  mockFirestoreDocuments.set(`placements/${id}`, placement);
   await usePlacementsStore.getState().fetch(undefined, { force: true });
   await settle();
 }
@@ -63,18 +67,15 @@ async function setTiles(ids: string[]): Promise<void> {
 beforeEach(async () => {
   mockFirestoreDocuments.clear();
   mockFirestoreDocuments.set('surfaces/discover', surface);
-  discoverEventListsStore.setState(discoverEventListsStore.getInitialState());
-  useDiscoverNavigationStore.getState().navigate('featured');
   useExperimentalConfigStore.getState().setFlag(POLYMARKET, true);
-  for (const store of [predictionTileEventsStore, predictionCardEventsStore])
-    store.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
+  predictionEventsStore.setState({ queryCache: {}, lastFetchedAt: null, error: null, status: 'idle' });
   fetchMock.mockReset().mockImplementation(
     async url =>
       new Response(JSON.stringify(new URL(String(url)).searchParams.getAll('id').map(predictionEvent)), {
         headers: { 'Content-Type': 'application/json' },
       })
   );
-  await setTiles([]);
+  await setPlacement('tiles', []);
   await getSurfaceStore('discover').getState().fetch(undefined, { force: true });
 });
 
@@ -82,106 +83,97 @@ afterEach(() => {
   for (const stop of stops.splice(0)) stop();
 });
 afterAll(() => {
-  for (const store of [predictionTileEventsStore, predictionCardEventsStore, usePlacementsStore, getSurfaceStore('discover')])
-    store.getState().reset(true);
+  for (const store of [predictionEventsStore, usePlacementsStore, getSurfaceStore('discover')]) store.getState().reset(true);
   fetchMock.mockRestore();
 });
 
-test('shares tile requests while card sections change and fail independently', async () => {
-  await setTiles(['shared', 'tile']);
-  discoverEventListsStore.getState().setList('featured', 'cards', ['shared', 'other']);
-  discoverEventListsStore.getState().setList('next', 'cards', ['hidden']);
-  stops.push(usePredictionEventsStore.subscribe(() => undefined));
+test('shares events across prediction displays and retains them after a failed refresh', async () => {
+  await setPlacement('tiles', ['shared', 'tile']);
+  await setPlacement('cards', ['shared', 'other']);
+  await setPlacement('next_cards', ['hidden']);
+  stops.push(predictionEventResultsStore.subscribe(() => undefined));
   await settle();
-  expect(requestedIds()).toEqual(expect.arrayContaining([['shared', 'tile'], ['other']]));
-  expect(fetchMock).toHaveBeenCalledTimes(2);
-  const tile = usePredictionEventsStore.getState()('tile');
+  expect(requestedIds()).toEqual([['hidden', 'other', 'shared', 'tile']]);
+  const tile = predictionEventResultsStore.getState()?.tile;
   expect(tile?.markets[0].outcomes).toEqual(['Yes', 'No']);
 
-  discoverEventListsStore.getState().setList('featured', 'cards', ['other', 'shared']);
-  await settle();
-  expect(fetchMock).toHaveBeenCalledTimes(2);
-  fetchMock.mockRejectedValueOnce(new Error('Cards unavailable'));
-  useDiscoverNavigationStore.getState().navigate('next');
-  await settle();
-  expect(requestedIds().at(-1)).toEqual(['hidden']);
-  expect(useHasDiscoverEventsError.getState()).toBe(true);
-  expect(usePredictionEventsStore.getState()('hidden')).toBeNull();
-  expect(usePredictionEventsStore.getState()('unregistered')).toBeUndefined();
-  expect(usePredictionEventsStore.getState()('tile')).toBe(tile);
+  await setPlacement('cards', ['other', 'shared']);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+
+  fetchMock.mockRejectedValueOnce(new Error('Events unavailable'));
+  await predictionEventsStore.getState().fetch(undefined, { force: true });
+  expect(predictionEventsStore.getState().getStatus('isError')).toBe(true);
+  expect(predictionEventResultsStore.getState()?.tile).toBe(tile);
+  expect(predictionEventResultsStore.getState()?.unrequested).toBeUndefined();
 });
 
-test('a tile response retires an event previously loaded for a card', async () => {
-  discoverEventListsStore.getState().setList('featured', 'cards', ['shared']);
-  stops.push(usePredictionEventsStore.subscribe(() => undefined));
+test('marks a cached event unavailable after it closes', async () => {
+  await setPlacement('cards', ['shared']);
+  stops.push(predictionEventResultsStore.subscribe(() => undefined));
   await settle();
-  expect(usePredictionEventsStore.getState()('shared')?.id).toBe('shared');
+  expect(predictionEventResultsStore.getState()?.shared?.id).toBe('shared');
 
   fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify([{ ...predictionEvent('shared'), closed: true }]), { headers: { 'Content-Type': 'application/json' } })
   );
-  await setTiles(['shared']);
-  expect(usePredictionEventsStore.getState()('shared')).toBeNull();
+  await predictionEventsStore.getState().fetch(undefined, { force: true });
+  expect(predictionEventResultsStore.getState()?.shared).toBeNull();
   expect(requestedIds()).toEqual([['shared'], ['shared']]);
 });
 
-test('a card remains pending until registration and its response determine availability', async () => {
+test('keeps an event pending until its request completes', async () => {
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
-  stops.push(usePredictionEventsStore.subscribe(() => undefined));
-  expect(usePredictionEventsStore.getState()('card')).toBeUndefined();
-  discoverEventListsStore.getState().setList('featured', 'cards', ['card']);
-  await settle();
-  expect(usePredictionEventsStore.getState()('card')).toBeUndefined();
+  stops.push(predictionEventResultsStore.subscribe(() => undefined));
+  expect(predictionEventResultsStore.getState()?.card).toBeUndefined();
+  await setPlacement('cards', ['card']);
+  expect(predictionEventResultsStore.getState()?.card).toBeUndefined();
 
   response.resolve(new Response('[]', { headers: { 'Content-Type': 'application/json' } }));
   await settle();
-  expect(usePredictionEventsStore.getState()('card')).toBeNull();
+  expect(predictionEventResultsStore.getState()?.card).toBeNull();
 });
 
-test('retains available and unavailable cards while fetching newly displayed events', async () => {
-  discoverEventListsStore.getState().setList('featured', 'cards', ['loaded', 'unavailable']);
+test('retains available and unavailable events while fetching new IDs', async () => {
+  await setPlacement('cards', ['loaded', 'unavailable']);
   fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify([predictionEvent('loaded')]), { headers: { 'Content-Type': 'application/json' } })
   );
-  stops.push(usePredictionEventsStore.subscribe(() => undefined));
+  stops.push(predictionEventResultsStore.subscribe(() => undefined));
   await settle();
-  const loaded = usePredictionEventsStore.getState()('loaded');
+  const loaded = predictionEventResultsStore.getState()?.loaded;
   expect(loaded?.id).toBe('loaded');
-  expect(usePredictionEventsStore.getState()('unavailable')).toBeNull();
+  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
 
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
-  discoverEventListsStore.getState().setList('featured', 'cards', ['loaded', 'unavailable', 'new']);
-  await settle();
-  expect(usePredictionEventsStore.getState()('loaded')).toBe(loaded);
-  expect(usePredictionEventsStore.getState()('unavailable')).toBeNull();
-  expect(usePredictionEventsStore.getState()('new')).toBeUndefined();
+  await setPlacement('cards', ['loaded', 'unavailable', 'new']);
+  expect(predictionEventResultsStore.getState()?.loaded).toBe(loaded);
+  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
+  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
 
   response.resolve(
     new Response(JSON.stringify([predictionEvent('loaded'), predictionEvent('new')]), { headers: { 'Content-Type': 'application/json' } })
   );
   await settle();
-  expect(usePredictionEventsStore.getState()('new')?.id).toBe('new');
-  expect(usePredictionEventsStore.getState()('unavailable')).toBeNull();
+  expect(predictionEventResultsStore.getState()?.new?.id).toBe('new');
+  expect(predictionEventResultsStore.getState()?.unavailable).toBeNull();
 });
 
-test('does not apply a failed request to newly displayed events', async () => {
-  discoverEventListsStore.getState().setList('featured', 'cards', ['failed']);
-  fetchMock.mockRejectedValueOnce(new Error('Cards unavailable'));
-  stops.push(usePredictionEventsStore.subscribe(() => undefined));
+test('does not apply a failed request to new IDs', async () => {
+  await setPlacement('cards', ['failed']);
+  fetchMock.mockRejectedValueOnce(new Error('Events unavailable'));
+  stops.push(predictionEventResultsStore.subscribe(() => undefined));
   await settle();
-  expect(usePredictionEventsStore.getState()('failed')).toBeNull();
-  expect(usePredictionEventsStore.getState()('new')).toBeUndefined();
+  expect(predictionEventResultsStore.getState()?.failed).toBeNull();
+  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
 
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);
-  discoverEventListsStore.getState().setList('featured', 'cards', ['new']);
-  expect(usePredictionEventsStore.getState()('new')).toBeUndefined();
-  await settle();
-  expect(usePredictionEventsStore.getState()('new')).toBeUndefined();
+  await setPlacement('cards', ['new']);
+  expect(predictionEventResultsStore.getState()?.new).toBeUndefined();
 
   response.resolve(new Response(JSON.stringify([predictionEvent('new')]), { headers: { 'Content-Type': 'application/json' } }));
   await settle();
-  expect(usePredictionEventsStore.getState()('new')?.id).toBe('new');
+  expect(predictionEventResultsStore.getState()?.new?.id).toBe('new');
 });

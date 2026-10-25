@@ -83,9 +83,9 @@ afterAll(() => {
   getSurfaceStore('discover').getState().reset(true);
 });
 
-test('removes persisted Sports tabs and shares tile refs without hydrating event-card refs', () => {
+test('removes persisted Sports tabs and shares refs across prediction displays', () => {
   expect(useDiscoverSurface.getState()?.tabs.map(tab => tab.id)).toEqual(['featured']);
-  expect(predictionRefs.getState()).toEqual(['shared', 'tile-only']);
+  expect(predictionRefs.getState()).toEqual(['shared', 'teaser-only', 'tile-only']);
   expect(tokenRefs.getState()).toEqual([]);
 });
 
