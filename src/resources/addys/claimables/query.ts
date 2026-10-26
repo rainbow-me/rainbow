@@ -27,52 +27,38 @@ const STABLE_CLAIMABLES: ClaimablesStore = {
 };
 
 export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
-  try {
-    if (!address) {
-      abortController?.abort();
-      logger.warn('[getClaimables]: No address provided, returning stable claimables array');
+  const claimablesUrl = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
+
+  const claimables = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(claimablesUrl, {
+    params: {
+      currency: currency.toLowerCase(),
+    },
+    signal: abortController?.signal,
+    timeout: 20000,
+  });
+
+  if (claimables.data.metadata.status !== 'ok') {
+    logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (API error)'), {
+      message: claimables.data.metadata.errors,
+    });
+    if (!claimables.data.payload.claimables.length) {
       return STABLE_CLAIMABLES;
     }
-
-    const claimablesUrl = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
-
-    const claimables = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(claimablesUrl, {
-      params: {
-        currency: currency.toLowerCase(),
-      },
-      signal: abortController?.signal,
-      timeout: 20000,
-    });
-
-    if (claimables.data.metadata.status !== 'ok') {
-      logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (API error)'), {
-        message: claimables.data.metadata.errors,
-      });
-      if (!claimables.data.payload.claimables.length) {
-        return STABLE_CLAIMABLES;
-      }
-    }
-
-    const sortedClaimables = parseClaimables(claimables.data.payload.claimables, currency).sort((a, b) =>
-      greaterThan(a.totalCurrencyValue.amount || '0', b.totalCurrencyValue.amount || '0') ? -1 : 1
-    );
-
-    throttledClaimablesAnalytics(sortedClaimables);
-
-    const totalValueAmount = sortedClaimables.reduce((acc, claimable) => add(acc, claimable.totalCurrencyValue.amount || '0'), '0');
-
-    return {
-      claimables: sortedClaimables,
-      totalValue: convertAmountToNativeDisplay(totalValueAmount, currency),
-      totalValueAmount,
-    };
-  } catch (e) {
-    if (abortController?.signal.aborted) return STABLE_CLAIMABLES;
-    logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (client error)', e), {
-      message: (e as Error)?.message,
-    });
-    return STABLE_CLAIMABLES;
   }
+
+  const sortedClaimables = parseClaimables(claimables.data.payload.claimables, currency).sort((a, b) =>
+    greaterThan(a.totalCurrencyValue.amount || '0', b.totalCurrencyValue.amount || '0') ? -1 : 1
+  );
+
+  throttledClaimablesAnalytics(sortedClaimables);
+
+  const totalValueAmount = sortedClaimables.reduce((acc, claimable) => add(acc, claimable.totalCurrencyValue.amount || '0'), '0');
+
+  return {
+    claimables: sortedClaimables,
+    totalValue: convertAmountToNativeDisplay(totalValueAmount, currency),
+    totalValueAmount,
+  };
 }
 
 // user properties analytics for claimables that executes at max once every hour
