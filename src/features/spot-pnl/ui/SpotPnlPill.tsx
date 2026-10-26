@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Text } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { SPOT_PNL } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { DOWN_ARROW, UP_ARROW } from '@/features/market/ui/utils/formatPriceChange';
 import { lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { isNativeAsset } from '@/handlers/assets';
 import * as i18n from '@/languages';
@@ -15,7 +13,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { calculateUnrealizedPnl } from '../core/unrealizedPnl';
-import { useTokenAcquisitionStore } from '../data/tokenAcquisitionStore';
+import { useSpotPnlTokenId, useTokenAcquisitionStore } from '../data/tokenAcquisitionStore';
 
 type SpotPnlPillProps = {
   asset: ParsedAddressAsset;
@@ -25,13 +23,8 @@ type SpotPnlPillProps = {
 };
 
 export function SpotPnlPill({ asset, surfaceColor, tokenType }: SpotPnlPillProps) {
-  const { spot_pnl_enabled } = useRemoteConfig('spot_pnl_enabled');
-  const spotPnlExperimentalEnabled = useExperimentalFlag(SPOT_PNL);
-  const isEligible =
-    (spot_pnl_enabled || spotPnlExperimentalEnabled) &&
-    tokenType !== undefined &&
-    tokenType !== 'stablecoin' &&
-    !isNativeAsset(asset.address, asset.chainId);
+  const isEnabled = useSpotPnlTokenId(Boolean);
+  const isEligible = isEnabled && tokenType !== undefined && tokenType !== 'stablecoin' && !isNativeAsset(asset.address, asset.chainId);
 
   if (!isEligible) return null;
   return <SpotPnlPillContent asset={asset} surfaceColor={surfaceColor} />;
@@ -41,7 +34,14 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   // Subscribing here, behind the eligibility gate, is what triggers the fetch
-  const acquisition = useTokenAcquisitionStore(state => state.getData());
+  const fetchedAcquisition = useTokenAcquisitionStore(state => state.getData());
+  const isSettled = useTokenAcquisitionStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  const lastAcquisition = useRef(fetchedAcquisition);
+  useEffect(() => {
+    if (fetchedAcquisition) lastAcquisition.current = fetchedAcquisition;
+  }, [fetchedAcquisition]);
+  // A balance change re-keys the query, so keep the last cost basis on screen until the refetch settles
+  const acquisition = fetchedAcquisition ?? (isSettled ? null : lastAcquisition.current);
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: asset.uniqueId,
@@ -73,7 +73,7 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
       flexDirection="row"
       alignItems="center"
       gap={8}
-      height={{ custom: 36 }}
+      height={36}
       paddingHorizontal="16px"
     >
       <Text color="labelTertiary" size="15pt" weight="bold">
@@ -84,8 +84,8 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
       </Text>
       <Box flexDirection="row" alignItems="center" gap={2}>
         {!isZero && (
-          <Text color={color} size="15pt" weight="heavy" style={isLoss ? { transform: [{ rotate: '180deg' }] } : undefined}>
-            {'↑'}
+          <Text color={color} size="15pt" weight="heavy">
+            {isLoss ? DOWN_ARROW : UP_ARROW}
           </Text>
         )}
         <Text color={color} size="15pt" weight="heavy" tabularNumbers>
