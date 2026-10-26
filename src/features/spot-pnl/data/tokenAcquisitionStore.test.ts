@@ -39,7 +39,7 @@ function fetchAcquisition() {
   return useTokenAcquisitionStore.getState().fetch(PARAMS, { force: true, throwOnError: true });
 }
 
-// Derived stores re-derive asynchronously, so each state change settles before the query store reads it
+// With nothing else subscribed to the changed stores, as here, derived stores re-derive in a microtask, so each change settles before the query store is read
 async function viewToken(token: Token) {
   useChartsStore.getState().setToken(token);
   await settle();

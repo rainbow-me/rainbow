@@ -12,7 +12,7 @@ import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { calculateUnrealizedPnl } from '../core/unrealizedPnl';
+import { calculateUnrealizedPnl, type TokenAcquisition } from '../core/unrealizedPnl';
 import { useSpotPnlTokenId, useTokenAcquisitionStore } from '../data/tokenAcquisitionStore';
 
 type SpotPnlPillProps = {
@@ -36,12 +36,16 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
   // Subscribing here, behind the eligibility gate, is what triggers the fetch
   const fetchedAcquisition = useTokenAcquisitionStore(state => state.getData());
   const isSettled = useTokenAcquisitionStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
-  const lastAcquisition = useRef(fetchedAcquisition);
+  const walletAddress = userAssetsStoreManager(state => state.address);
+  const codexTokenId = useSpotPnlTokenId();
+  const position = `${walletAddress}:${codexTokenId}`;
+  const lastAcquisition = useRef<{ position: string; acquisition: TokenAcquisition } | null>(null);
   useEffect(() => {
-    if (fetchedAcquisition) lastAcquisition.current = fetchedAcquisition;
-  }, [fetchedAcquisition]);
-  // A balance change re-keys the query, so keep the last cost basis on screen until the refetch settles
-  const acquisition = fetchedAcquisition ?? (isSettled ? null : lastAcquisition.current);
+    if (fetchedAcquisition) lastAcquisition.current = { position, acquisition: fetchedAcquisition };
+  }, [fetchedAcquisition, position]);
+  // A balance change re-keys the query, so keep the same position's last cost basis on screen until the refetch settles
+  const retainedAcquisition = !isSettled && lastAcquisition.current?.position === position ? lastAcquisition.current.acquisition : null;
+  const acquisition = fetchedAcquisition ?? retainedAcquisition;
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: asset.uniqueId,
