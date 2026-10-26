@@ -12,9 +12,9 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-import { type TokenAcquisition } from '../core/unrealizedPnl';
+import { type TokenTrades } from '../core/spotPnl';
 
-export type TokenAcquisitionParams = {
+export type TokenTradesParams = {
   walletAddress: string | null;
   codexTokenId: string | null;
   /** Not sent: keys the cache to the position, so a trade refetches the cost basis instead of pairing the new balance with the old one. */
@@ -22,7 +22,7 @@ export type TokenAcquisitionParams = {
 };
 
 type FilterTokenWalletsResponse = {
-  data?: { filterTokenWallets: { results: TokenAcquisition[] } };
+  data?: { filterTokenWallets: { results: TokenTrades[] } };
   errors?: { message: string }[];
 };
 
@@ -31,6 +31,10 @@ const FILTER_TOKEN_WALLETS_QUERY = `query FilterTokenWallets($wallet: String!, $
     results {
       purchasedTokenBalance
       tokenAcquisitionCostUsd
+      tokenAmountSold1y
+      amountSoldUsd1y
+      realizedProfitUsd1y
+      lastTransactionAt
     }
   }
 }`;
@@ -69,10 +73,10 @@ const useViewedTokenBalance = createDerivedStore(
 );
 
 /**
- * Codex's swap-acquisition data for the current wallet and the viewed token.
+ * Codex's swap trades for the current wallet and the viewed token.
  */
-export const useTokenAcquisitionStore = createQueryStore<TokenAcquisition | null, TokenAcquisitionParams>({
-  fetcher: fetchTokenAcquisition,
+export const useTokenTradesStore = createQueryStore<TokenTrades | null, TokenTradesParams>({
+  fetcher: fetchTokenTrades,
   enabled: $ => $(useSpotPnlTokenId, Boolean),
   params: {
     walletAddress: $ => $(userAssetsStoreManager).address,
@@ -83,10 +87,10 @@ export const useTokenAcquisitionStore = createQueryStore<TokenAcquisition | null
   cacheTime: time.hours(1),
 });
 
-async function fetchTokenAcquisition(
-  { walletAddress, codexTokenId }: TokenAcquisitionParams,
+async function fetchTokenTrades(
+  { walletAddress, codexTokenId }: TokenTradesParams,
   abortController: AbortController | null
-): Promise<TokenAcquisition | null> {
+): Promise<TokenTrades | null> {
   if (!walletAddress || !codexTokenId) return null;
   try {
     const { data } = await getPlatformClient().post<FilterTokenWalletsResponse>(
@@ -104,7 +108,7 @@ async function fetchTokenAcquisition(
     return data.data.filterTokenWallets.results[0] ?? null;
   } catch (error) {
     if (!abortController?.signal.aborted) {
-      logger.error(new RainbowError('[tokenAcquisitionStore] Codex filterTokenWallets failed', error), { codexTokenId });
+      logger.error(new RainbowError('[tokenTradesStore] Codex filterTokenWallets failed', error), { codexTokenId });
     }
     throw error;
   }

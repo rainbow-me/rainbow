@@ -6,6 +6,12 @@ export type TokenAcquisition = {
 };
 
 export type UnrealizedPnl = {
+  /** Token units both purchased and still held. */
+  heldBalance: string;
+  /** Cost of the held tokens, in the native currency. */
+  cost: string;
+  /** Current value of the held tokens, in the native currency. */
+  value: string;
   /** Signed, in the native currency. */
   amount: string;
   /** Signed, relative to the cost of the held tokens, where 1 is 1%. */
@@ -34,12 +40,13 @@ export function calculateUnrealizedPnl({
 }): UnrealizedPnl | null {
   if (!greaterThanWorklet(purchasedTokenBalance, 0) || !greaterThanWorklet(balance, 0) || !greaterThanWorklet(price, 0)) return null;
 
-  const heldPurchased = minWorklet(purchasedTokenBalance, balance);
+  const heldPurchased = String(minWorklet(purchasedTokenBalance, balance));
   const heldCostUsd = divWorklet(mulWorklet(tokenAcquisitionCostUsd, heldPurchased), purchasedTokenBalance);
   if (!greaterThanWorklet(heldCostUsd, 0)) return null;
 
-  const heldCost = mulWorklet(heldCostUsd, usdToNativeRate);
-  const amount = subWorklet(mulWorklet(heldPurchased, price), heldCost);
+  const cost = mulWorklet(heldCostUsd, usdToNativeRate);
+  const value = mulWorklet(heldPurchased, price);
+  const amount = subWorklet(value, cost);
 
-  return { amount, percentage: mulWorklet(divWorklet(amount, heldCost), 100) };
+  return { heldBalance: heldPurchased, cost, value, amount, percentage: mulWorklet(divWorklet(amount, cost), 100) };
 }

@@ -522,6 +522,8 @@
       "cash_sign_out": "Sign out of cash",
       "cash_sign_out_and_delete_account": "Sign out and delete cash account",
       "cash_account_action_failed": "Cash account action failed",
+      "spot_pnl_open_sheet_from_clipboard": "Open P&L sheet from clipboard",
+      "spot_pnl_invalid_clipboard": "Copy a token as address:chainId, e.g. 0x4200000000000000000000000000000000000006:8453",
       "status": "Status",
       "sync_codepush": "Sync CodePush",
       "simulate_device_transfer": "Simulate Device Transfer",
@@ -530,7 +532,8 @@
         "rainbow_developer_settings": "Rainbow Developer Settings",
         "feature_flags": "Feature Flags",
         "delegation_settings": "Delegation Settings",
-        "cash_settings": "Cash Settings"
+        "cash_settings": "Cash Settings",
+        "spot_pnl_settings": "Spot P&L Settings"
       },
       "delegation_settings": {
         "simulate_disable_smart_wallet": "Simulate Disable Smart Wallet",
@@ -1105,6 +1108,14 @@
       "sending_to_contract": {
         "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
         "title": "Hold your horses!"
+      },
+      "spot_pnl_excluded_tokens": {
+        "title": "Excluded tokens",
+        "text": "Tokens received by transfer have no purchase price, so they're excluded from the calculation."
+      },
+      "spot_pnl_realized_window": {
+        "title": "Realized Return",
+        "text": "Realized figures cover the last 12 months."
       },
       "verified": {
         "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
@@ -3639,6 +3650,18 @@
       "cause_switched_devices": "It looks like you may have switched devices.",
       "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
       "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+    },
+    "spot_pnl_sheet": {
+      "unrealized_position": "Unrealized Position",
+      "invested": "Invested",
+      "avg_entry": "Avg. Entry",
+      "current": "Current",
+      "avg_exit": "Avg. Exit",
+      "realized_return": "Realized Return",
+      "total_return": "Total Return",
+      "nothing_sold_yet": "Nothing sold yet",
+      "excluded_from_calculation": "excluded from calculation",
+      "nothing_to_show": "No P&L to show"
     },
     "rnbw_rewards_estimate_sheet": {
       "earning_rewards": "Earning Rewards",
