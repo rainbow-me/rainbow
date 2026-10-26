@@ -28,16 +28,21 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
 
   if (!url) throw new Error('rainbowFetch: Missing url argument');
 
-  const { abortController: userAbortController, body, headers, params, signal, ...otherOpts } = opts;
-
-  const abortController = userAbortController ?? new AbortController();
-  const abort = (): void => abortController.abort();
-  const timeoutId = setTimeout(abort, opts.timeout);
+  const { abortController: userAbortController, body, headers, params, signal: userSignal, ...otherOpts } = opts;
   const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
+  // The timeout aborts only this request, never a controller the caller owns and may reuse.
+  const abortController = new AbortController();
+  const abort = (): void => abortController.abort();
+  const timeoutId = setTimeout(abort, opts.timeout);
+
   try {
-    if (signal?.aborted) abort();
-    else signal?.addEventListener('abort', abort, ABORT_OPTIONS);
+    if (userAbortController?.signal.aborted || userSignal?.aborted) {
+      abort();
+    } else {
+      userAbortController?.signal.addEventListener('abort', abort, ABORT_OPTIONS);
+      userSignal?.addEventListener('abort', abort, ABORT_OPTIONS);
+    }
 
     let response: Response;
     try {
@@ -82,7 +87,8 @@ export async function rainbowFetch<T>(url: RequestInfo, opts: RainbowFetchReques
     }
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
-    signal?.removeEventListener('abort', abort);
+    userAbortController?.signal.removeEventListener('abort', abort);
+    userSignal?.removeEventListener('abort', abort);
   }
 }
 
