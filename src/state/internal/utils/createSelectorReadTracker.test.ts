@@ -1,5 +1,5 @@
 import { createBaseStore, type Store } from '@storesjs/stores';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createSelectorReadTracker } from './createSelectorReadTracker';
 
@@ -94,21 +94,20 @@ describe('createSelectorReadTracker', () => {
     expect(store.getState().subscribedKeys).toEqual([]);
   });
 
-  it('moves tracked keys when selector reads change', () => {
+  it('moves tracked keys even when the selected value is unchanged', () => {
     const store = createTestStore();
+    const listener = vi.fn();
     let key = 'BTC';
 
-    const unsubscribe = store.subscribe(
-      state => state.read(key),
-      () => undefined
-    );
+    const unsubscribe = store.subscribe(state => state.read(key), listener);
 
     expect(store.getState().subscribedKeys).toEqual(['BTC']);
 
     key = 'ETH';
-    store.getState().tick();
+    store.setState({});
 
     expect(store.getState().subscribedKeys).toEqual(['ETH']);
+    expect(listener).not.toHaveBeenCalled();
 
     unsubscribe();
 

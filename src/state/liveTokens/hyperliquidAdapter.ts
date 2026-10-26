@@ -1,7 +1,7 @@
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 
-import { type PriceReliabilityStatus, type TokenData } from './liveTokensStore';
+import { type PriceReliabilityStatus, type TokenData } from './types';
 
 // Arbitrary value, only set for type compatibility
 const DEFAULT_LIQUIDITY_CAP = '1000000000';
@@ -33,19 +33,9 @@ export function transformHyperliquidMarketToTokenData(market: PerpMarket, update
   };
 }
 
-export function isHyperliquidToken(tokenId: string): boolean {
-  return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX);
-}
-
 /**
- * Parses a Hyperliquid token ID to extract the symbol
- * @param tokenId Hyperliquid token ID (e.g., "ETH:hl")
- * @returns The symbol or null if not a valid Hyperliquid token ID
+ * Returns the symbol from a Hyperliquid token ID (e.g. `ETH:hl`), or `null` for other token IDs.
  */
-export function parseHyperliquidTokenId(tokenId: string): { symbol: string } | null {
-  if (!isHyperliquidToken(tokenId)) {
-    return null;
-  }
-  const symbol = tokenId.slice(0, -HYPERLIQUID_TOKEN_SUFFIX.length);
-  return { symbol };
+export function parseHyperliquidTokenId(tokenId: string): string | null {
+  return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX) ? tokenId.slice(0, -HYPERLIQUID_TOKEN_SUFFIX.length) : null;
 }
