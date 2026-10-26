@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Text } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { SPOT_PNL } from '@/features/config/constants/experimental';
@@ -45,11 +45,10 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const price = useLiveTokenValue({
     tokenId: asset.uniqueId,
-    initialValue: asset.native?.price?.amount ?? '',
-    initialValueLastUpdated: asset.price?.changed_at ?? 0,
+    fallback: asset.native?.price?.amount ?? '',
+    fallbackUpdatedAt: asset.price?.changed_at ?? 0,
     // TODO(APP-4147): The sheet already subscribes this token on this route, and subscriptions do not stack: unmounting a second subscriber would unsubscribe the sheet
-    autoSubscriptionEnabled: false,
-    selector: token => token.price,
+    autoSubscribe: false,
   });
 
   const balance = asset.balance?.amount;
