@@ -6,7 +6,7 @@ import { type Address } from 'viem';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';
@@ -25,6 +25,7 @@ import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { type TokenData } from '@/state/liveTokens/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -128,14 +129,13 @@ function SpotPnlSection({
   const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
   const price = useLiveTokenValue({
     tokenId: uniqueId,
-    initialValue: initialPrice,
-    initialValueLastUpdated: initialPriceUpdatedAt,
-    selector: token => token.price,
+    fallback: initialPrice,
+    fallbackUpdatedAt: initialPriceUpdatedAt,
   });
   const liveMarketCap = useLiveTokenValue({
     tokenId: uniqueId,
-    initialValue: '0',
-    selector: token => token.marketData.circulatingMarketCap,
+    fallback: '0',
+    selector: selectCirculatingMarketCap,
   });
   const marketCap = greaterThanWorklet(liveMarketCap, 0) ? liveMarketCap : String(metadata?.marketCap ?? 0);
   // Tokens priced under $1 show entry and current market caps in place of prices
@@ -173,6 +173,10 @@ function SpotPnlSection({
   ) : (
     <SpotPnlPlaceholder />
   );
+}
+
+function selectCirculatingMarketCap(token: TokenData): string {
+  return token.marketData.circulatingMarketCap;
 }
 
 function SpotPnlPlaceholder() {
