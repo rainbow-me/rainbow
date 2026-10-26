@@ -2,8 +2,7 @@ import { polymarketChartsActions } from '@/features/charts/polymarket/stores/pol
 import { prefetchCandlestickData } from '@/features/charts/stores/candlestickStore';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { prefetchPolymarketEvent } from '@/features/polymarket/stores/polymarketEventIdStore';
-import { usePolymarketFeeInfoStore } from '@/features/polymarket/stores/polymarketFeeInfoStore';
-import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 
@@ -35,16 +34,10 @@ const prefetchRegistry: PrefetchRegistry = {
     }
   },
 
-  [Routes.POLYMARKET_NEW_POSITION_SHEET]: ({ market, outcomeIndex }) => {
-    const tokenId = market.clobTokenIds[outcomeIndex];
-    usePolymarketOrderBookStore.getState().setTokenId(tokenId);
-    usePolymarketFeeInfoStore.getState().setConditionId(market.conditionId);
-  },
+  [Routes.POLYMARKET_NEW_POSITION_SHEET]: usePolymarketOrderStore.getState().setBuyParams,
 
   [Routes.POLYMARKET_SELL_POSITION_SHEET]: ({ position }) => {
-    const tokenId = position.clobTokenIds[position.outcomes.indexOf(position.outcome)];
-    usePolymarketOrderBookStore.getState().setTokenId(tokenId);
-    usePolymarketFeeInfoStore.getState().setConditionId(position.conditionId);
+    usePolymarketOrderStore.getState().setSellParams(position);
   },
 };
 

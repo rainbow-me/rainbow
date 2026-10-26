@@ -1,5 +1,8 @@
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 
+/**
+ * Returns the title and subtitle displayed for a selected Polymarket outcome.
+ */
 export function getOutcomeDescriptions({
   eventTitle,
   market,
@@ -7,10 +10,10 @@ export function getOutcomeDescriptions({
   outcomeIndex,
 }: {
   eventTitle: string;
-  market: PolymarketMarket;
+  market: Pick<PolymarketMarket, 'question' | 'line' | 'groupItemTitle'>;
   outcome: string;
   outcomeIndex: number;
-}) {
+}): { title: string; subtitle: string } {
   const outcomeTitle = eventTitle || market.question;
   let outcomeSubtitle = outcome;
 
