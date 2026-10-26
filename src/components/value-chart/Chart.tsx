@@ -14,7 +14,7 @@ import Animated, {
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, useColorMode } from '@/design-system';
 import { IS_DEV } from '@/env';
 import { CandlestickChart, type PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
@@ -30,7 +30,8 @@ import Routes from '@/navigation/routesNames';
 import { type AssetAccentColors, type ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { selectMidPrice } from '@/state/liveTokens/selectors';
+import { type TokenData } from '@/state/liveTokens/types';
 
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
@@ -83,14 +84,14 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
     tokenId,
-    initialValue: asset?.price.relativeChange24h?.toString() ?? '0',
+    fallback: asset?.price.relativeChange24h?.toString() ?? '0',
     selector: liveTokenPercentageChangeSelector,
   });
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId,
-    initialValue: asset?.price.value?.toString() ?? '0',
-    selector: state => state.midPrice ?? state.price,
+    fallback: asset?.price.value?.toString() ?? '0',
+    selector: selectMidPrice,
   });
 
   const price = useDerivedValue(() => {

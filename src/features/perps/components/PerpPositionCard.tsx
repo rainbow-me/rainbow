@@ -17,7 +17,6 @@ import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { abs } from '@/helpers/utilities';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 type PerpPositionCardProps = {
@@ -25,6 +24,8 @@ type PerpPositionCardProps = {
 };
 
 export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
+  const tokenId = getHyperliquidTokenId(position.symbol);
+
   const { isDarkMode } = useColorMode();
   const isNegativePnl = position.unrealizedPnl.includes('-');
 
@@ -120,9 +121,9 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
               {i18n.t(i18n.l.perps.positions.mark_price)}
             </Text>
             <LiveTokenText
-              tokenId={getHyperliquidTokenId(position.symbol)}
-              selector={livePriceSelector}
-              initialValue={useStableValue(() => useHyperliquidMarketsStore.getState().getFormattedPrice(position.symbol) ?? '-')}
+              tokenId={tokenId}
+              format={formatPerpAssetPrice}
+              fallback={useStableValue(() => useHyperliquidMarketsStore.getState().getFormattedPrice(position.symbol) ?? '-')}
               size="15pt"
               weight="heavy"
               color="label"
@@ -141,7 +142,3 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
     </ShadowWrapper>
   );
 });
-
-function livePriceSelector(state: TokenData): string {
-  return formatPerpAssetPrice(state.price);
-}

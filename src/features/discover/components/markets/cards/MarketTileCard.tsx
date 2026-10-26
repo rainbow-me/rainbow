@@ -2,9 +2,11 @@ import React, { memo, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Skeleton } from '@/components/Skeleton';
 import { globalColors, Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, type ColorMode, type ContextualColorValue } from '@/design-system/color/palettes';
@@ -13,9 +15,10 @@ import { opacity } from '@/design-system/utils/opacity';
 import { SparklineChart } from '@/features/charts/line/components/SparklineChart';
 import { MarketIcon } from '@/features/discover/components/markets/cards/MarketIcon';
 import { MarketPriceChange } from '@/features/discover/components/markets/cards/MarketPriceChange';
-import { useLiveChartColorSharedValue } from '@/features/discover/components/markets/hooks/useLiveChartColorSharedValue';
 import { type MarketDisplayItem } from '@/features/discover/types/marketDisplayItem';
 import { usePriceChangeColors } from '@/features/market/ui/hooks/usePriceChangeColors';
+import { getPriceChangeColor } from '@/features/market/ui/utils/priceChangeColors';
+import { select24hChange } from '@/state/liveTokens/selectors';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
@@ -89,7 +92,13 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
     [colorMode, item]
   );
   const priceChangeColors = usePriceChangeColors();
-  const chartColorSharedValue = useLiveChartColorSharedValue(item, priceChangeColors);
+  const livePriceChange = useLiveTokenSharedValue({
+    tokenId: item.liveTokenId,
+    fallback: item.initialPriceChange,
+    selector: select24hChange,
+    format: item.priceChangeFormatter,
+  });
+  const chartColorSharedValue = useDerivedValue(() => getPriceChangeColor(livePriceChange.value, priceChangeColors));
 
   const chartWidth = width - CARD_LAYOUT.paddingHorizontal * 2;
 
@@ -127,11 +136,9 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
                 arrowSize="icon 12px"
                 arrowWidth={UP_DOWN_ARROW_WIDTH}
                 colorSharedValue={chartColorSharedValue}
-                initialPriceChange={item.initialPriceChange}
-                priceChangeSelector={item.priceChangeSelector}
+                priceChange={livePriceChange}
                 priceChangeColors={priceChangeColors}
                 textSize="15pt"
-                tokenId={item.liveTokenId}
               />
             </View>
           </View>
@@ -152,12 +159,12 @@ export const MarketTileCard = memo(function MarketTileCard({ item, onPress, widt
               {item.displayName}
             </Text>
             <LiveTokenText
-              autoSubscriptionEnabled
               color="labelSecondary"
-              initialValue={item.initialPrice}
-              initialValueLastUpdated={item.initialPriceLastUpdated}
+              fallback={item.initialPrice}
+              fallbackUpdatedAt={item.initialPriceLastUpdated}
               numberOfLines={1}
               selector={item.priceSelector}
+              format={item.priceFormatter}
               size={MARK_PRICE_TEXT_STYLE.size}
               tokenId={item.liveTokenId}
               weight={MARK_PRICE_TEXT_STYLE.weight}
