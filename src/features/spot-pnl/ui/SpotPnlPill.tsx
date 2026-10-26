@@ -51,8 +51,6 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
     tokenId: asset.uniqueId,
     fallback: asset.native?.price?.amount ?? '',
     fallbackUpdatedAt: asset.price?.changed_at ?? 0,
-    // TODO(APP-4147): The sheet already subscribes this token on this route, and subscriptions do not stack: unmounting a second subscriber would unsubscribe the sheet
-    autoSubscribe: false,
   });
 
   const balance = asset.balance?.amount;
