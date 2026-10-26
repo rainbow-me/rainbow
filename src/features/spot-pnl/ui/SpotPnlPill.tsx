@@ -91,29 +91,41 @@ function SpotPnlPillContent({
         entering={FadeIn.duration(160)}
         backgroundColor={surfaceColor}
         borderColor={{ custom: surfaceColor }}
-        borderRadius={18}
+        borderRadius={20}
         borderWidth={1}
         flexDirection="row"
         alignItems="center"
-        gap={8}
-        height={36}
-        paddingHorizontal="16px"
+        gap={10}
+        height={38}
+        paddingLeft="16px"
+        paddingRight="10px"
       >
-        <Text color="labelTertiary" size="15pt" weight="bold">
-          {i18n.t(pillLabel(isRealized, direction === 'loss'))}
-        </Text>
-        <Text color={color} size="15pt" weight="heavy" tabularNumbers>
-          {sign ? `${sign} ${display}` : display}
-        </Text>
-        {percentage !== null && (
-          <Box flexDirection="row" alignItems="center" gap={2}>
-            <PnlArrow color={color} direction={direction} size="15pt" weight="heavy" />
-            <Text color={color} size="15pt" weight="heavy" tabularNumbers>
-              {formatPnlPercentage(percentage)}
-            </Text>
+        <Box flexDirection="row" alignItems="center" gap={6}>
+          <Text color="labelTertiary" size="15pt" weight="bold">
+            {i18n.t(pillLabel(isRealized, direction === 'loss'))}
+          </Text>
+          <Box flexDirection="row" alignItems="center" gap={8}>
+            <Box flexDirection="row" alignItems="center" gap={3}>
+              {sign && (
+                <Text color={color} size="15pt" weight="bold">
+                  {sign}
+                </Text>
+              )}
+              <Text color={color} size="15pt" weight="bold">
+                {display}
+              </Text>
+            </Box>
+            {percentage !== null && (
+              <Box flexDirection="row" alignItems="center" gap={3}>
+                <PnlArrow color={color} direction={direction} size="11pt" weight="heavy" />
+                <Text color={color} size="15pt" weight="bold">
+                  {formatPnlPercentage(percentage)}
+                </Text>
+              </Box>
+            )}
           </Box>
-        )}
-        <Text color="labelQuaternary" size="13pt" weight="heavy">
+        </Box>
+        <Text color="labelQuaternary" size="11pt" weight="heavy">
           {'􀆊'}
         </Text>
       </Box>
