@@ -2,15 +2,17 @@ import { sportsApiBaseUrl } from '@/config/debug';
 import { IS_DEV } from '@/env';
 import { type SportsWindow } from '@/features/sports/core/browse';
 import {
-  type GamesResult,
   type GetCatalogRequest,
-  type GetCatalogResponse,
   type GetGamesForEventsRequest,
-  type GetGamesForEventsResponse,
   type ListGamesRequest,
   type ListLiveGamesRequest,
   type SearchGamesRequest,
-  type SearchGamesResponse,
+} from '@/features/sports/core/generated/requests';
+import {
+  type CatalogResult,
+  type GamesForEventsResult,
+  type GamesResult,
+  type SearchGamesResult,
 } from '@/features/sports/core/generated/sports';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -35,8 +37,8 @@ export const sportsClient = {
   /**
    * Fetches the catalog and its revision. An unchanged catalog is omitted.
    */
-  async getCatalog({ knownCatalogRevision }: GetCatalogRequest, abortController: AbortController | null): Promise<GetCatalogResponse> {
-    const { data } = await getFetchClient().get<PlatformResponse<GetCatalogResponse>>('/sports/catalog', {
+  async getCatalog({ knownCatalogRevision }: GetCatalogRequest, abortController: AbortController | null): Promise<CatalogResult> {
+    const { data } = await getFetchClient().get<PlatformResponse<CatalogResult>>('/sports/catalog', {
       abortController,
       params: knownCatalogRevision === undefined ? undefined : { knownCatalogRevision: String(knownCatalogRevision) },
     });
@@ -77,11 +79,11 @@ export const sportsClient = {
   async getGamesForEvents(
     { eventIds, knownCatalogRevision }: GetGamesForEventsRequest,
     abortController: AbortController | null
-  ): Promise<GetGamesForEventsResponse> {
+  ): Promise<GamesForEventsResult> {
     const params = eventIds.map(id => ['eventIds', id]);
     if (knownCatalogRevision !== undefined) params.push(['knownCatalogRevision', String(knownCatalogRevision)]);
 
-    const { data } = await getFetchClient().get<PlatformResponse<GetGamesForEventsResponse>>('/sports/games/lookup', {
+    const { data } = await getFetchClient().get<PlatformResponse<GamesForEventsResult>>('/sports/games/lookup', {
       abortController,
       params,
     });
@@ -94,8 +96,8 @@ export const sportsClient = {
   async searchGames(
     { query, scopeId, window, pageToken, knownCatalogRevision }: SearchRequest,
     abortController: AbortController | null
-  ): Promise<SearchGamesResponse> {
-    const { data } = await getFetchClient().get<PlatformResponse<SearchGamesResponse>>('/sports/search', {
+  ): Promise<SearchGamesResult> {
+    const { data } = await getFetchClient().get<PlatformResponse<SearchGamesResult>>('/sports/search', {
       abortController,
       params: {
         query,

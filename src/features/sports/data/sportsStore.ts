@@ -6,11 +6,11 @@ import { type SportsDestination, type SportsHost, type SportsWindow } from '@/fe
 import { buildSportsCatalog, type SportsCatalog } from '@/features/sports/core/catalog';
 import {
   type SportsCatalog as CatalogMessage,
+  type CatalogResult,
   type Game,
+  type GamesForEventsResult,
   type GamesResult,
-  type GetCatalogResponse,
-  type GetGamesForEventsResponse,
-  type SearchGamesResponse,
+  type SearchGamesResult,
 } from '@/features/sports/core/generated/sports';
 import {
   areSectionFieldsEqual,
@@ -43,14 +43,14 @@ type BrowseResponse = ({ type: 'live' } | { type: 'scope'; scopeId: string; wind
 
 type SportsResponse =
   | BrowseResponse
-  | ({ type: 'catalog' } & GetCatalogResponse)
+  | ({ type: 'catalog' } & CatalogResult)
   | SportsSearchResponse
-  | ({ type: 'event'; eventId: string } & Pick<GetGamesForEventsResponse, 'catalog' | 'catalogRevision' | 'games'>);
+  | ({ type: 'event'; eventId: string } & Pick<GamesForEventsResult, 'catalog' | 'catalogRevision' | 'games'>);
 
 /**
  * The full Search result order and newly fetched game data.
  */
-type SportsSearchResponse = SearchGamesResponse & {
+type SportsSearchResponse = SearchGamesResult & {
   type: 'search';
   gameIds: string[];
   minimumGameCount: number;
@@ -269,7 +269,7 @@ async function fetchSearchResult(
   const { query, window } = request;
 
   for (;;) {
-    let response: SearchGamesResponse;
+    let response: SearchGamesResult;
     try {
       response = await sportsClient.searchGames({ query, window, pageToken, knownCatalogRevision }, abortController);
     } catch (error) {

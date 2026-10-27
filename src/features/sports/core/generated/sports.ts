@@ -2,11 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.12.4
 //   protoc               unknown
-// source: sports/sports.proto
+// source: common/sports/sports.proto
 
 /* eslint-disable */
 
-export const protobufPackage = "sports";
+export const protobufPackage = "common.sports";
 
 /** SportsCatalog defines navigation and featured games for the Sports API. */
 export interface SportsCatalog {
@@ -208,87 +208,11 @@ export interface ScoreValue {
   tieBreak?: number | undefined;
 }
 
-export interface GetCatalogRequest {
-  /** Known nonnegative revision. Omit to receive the catalog unconditionally. */
-  knownCatalogRevision?: number | undefined;
-}
-
-export interface GetCatalogResponse {
+export interface CatalogResult {
   /** Editorial policy revision used by this response. */
   catalogRevision: number;
   /** Included when known_catalog_revision is absent or differs from catalog_revision. */
   catalog?: SportsCatalog | undefined;
-}
-
-export interface ListLiveGamesRequest {
-  /** Known nonnegative revision; suppresses the catalog when unchanged. */
-  knownCatalogRevision?: number | undefined;
-}
-
-export interface ListGamesRequest {
-  /** Sport or competition ID from the catalog, such as "nfl". */
-  scopeId: string;
-  /** Start of the schedule window, inclusive. Live games may start outside the window. */
-  windowStartTime?:
-    | string
-    | undefined;
-  /**
-   * Boundary between Today and Upcoming, usually the next midnight in the caller's timezone.
-   * Require window_start_time < today_cutoff_time <= window_end_time.
-   */
-  todayCutoffTime?:
-    | string
-    | undefined;
-  /** End of the schedule window, exclusive. */
-  windowEndTime?:
-    | string
-    | undefined;
-  /** Known nonnegative revision; suppresses the catalog when unchanged. */
-  knownCatalogRevision?: number | undefined;
-}
-
-export interface GetGamesForEventsRequest {
-  /**
-   * Between 1 and 100 primary or child Polymarket event IDs, as decimal strings.
-   * Repeated IDs count toward the limit but are resolved once.
-   */
-  eventIds: string[];
-  /** Known nonnegative revision; suppresses the catalog when unchanged. */
-  knownCatalogRevision?: number | undefined;
-}
-
-export interface SearchGamesRequest {
-  /** Nonempty search text, such as "New York". */
-  query: string;
-  /** Catalog sport or competition ID. Omit to search all competitions. */
-  scopeId?:
-    | string
-    | undefined;
-  /** Inclusive scheduled-start boundary. Live games may start outside the window. */
-  windowStartTime?:
-    | string
-    | undefined;
-  /** Exclusive scheduled-start boundary; must follow window_start_time. */
-  windowEndTime?:
-    | string
-    | undefined;
-  /**
-   * Continuation from the preceding response. Query, scope and window must match.
-   * A catalog revision change invalidates the token; restart search without it.
-   */
-  pageToken?:
-    | string
-    | undefined;
-  /** Known nonnegative revision; suppresses the catalog when unchanged. */
-  knownCatalogRevision?: number | undefined;
-}
-
-export interface ListLiveGamesResponse {
-  result?: GamesResult | undefined;
-}
-
-export interface ListGamesResponse {
-  result?: GamesResult | undefined;
 }
 
 /**
@@ -308,7 +232,7 @@ export interface GamesResult {
   games: Game[];
 }
 
-export interface GetGamesForEventsResponse {
+export interface GamesForEventsResult {
   catalogRevision: number;
   /** Omitted when known_catalog_revision matches catalog_revision. */
   catalog?:
@@ -328,7 +252,7 @@ export interface EventGameMapping {
   gameId: string;
 }
 
-export interface SearchGamesResponse {
+export interface SearchGamesResult {
   catalogRevision: number;
   /** Omitted when known_catalog_revision matches catalog_revision. */
   catalog?:
