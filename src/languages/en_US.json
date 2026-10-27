@@ -718,7 +718,9 @@
         },
         "spot_pnl": {
           "profit": "Profit",
-          "loss": "Loss"
+          "loss": "Loss",
+          "realized_profit": "Realized Profit",
+          "realized_loss": "Realized Loss"
         },
         "menu": {
           "view_on": "View on %{blockExplorerName}",
@@ -3639,6 +3641,22 @@
       "cause_switched_devices": "It looks like you may have switched devices.",
       "resolution_enable_passcode": "To use your wallet, re-enable it in your device settings.",
       "resolution_restore_backup": "To use your wallet, restore from a backup or reimport your secret recovery phrase."
+    },
+    "spot_pnl_sheet": {
+      "unrealized_position": "Unrealized Position",
+      "invested": "Invested",
+      "avg_entry": "Avg. Entry",
+      "current": "Current",
+      "avg_exit": "Avg. Exit",
+      "avg_entry_mc": "Avg Entry MC",
+      "current_mc": "Current MC",
+      "avg_exit_mc": "Avg Exit MC",
+      "realized_return": "Realized Return",
+      "total_return": "Total Return",
+      "nothing_sold_yet": "Nothing sold yet",
+      "excluded_from_calculation": "excluded from calculation",
+      "excluded_tokens_info": "Tokens you received, like transfers from another wallet, airdrops, or rewards, aren’t counted in your profit and loss. They have no buy price to compare against.",
+      "nothing_to_show": "No P&L to show"
     },
     "rnbw_rewards_estimate_sheet": {
       "earning_rewards": "Earning Rewards",

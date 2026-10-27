@@ -8,7 +8,7 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 import { logger } from '@/logger';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
-import { useTokenAcquisitionStore, type TokenAcquisitionParams } from './tokenAcquisitionStore';
+import { useTokenTradesStore, type TokenTradesParams } from './tokenTradesStore';
 
 const account = vi.hoisted(() => ({ address: '0xwallet' }));
 
@@ -20,7 +20,7 @@ vi.mock('@/state/assets/createUserAssetsStore', async () => {
   return { createUserAssetsStore: () => createBaseStore(() => ({ userAssets: new Map<string, ParsedSearchAsset>() })) };
 });
 
-const PARAMS: TokenAcquisitionParams = { walletAddress: '0xwallet', codexTokenId: '0xtoken:8453', heldBalance: '10' };
+const PARAMS: TokenTradesParams = { walletAddress: '0xwallet', codexTokenId: '0xtoken:8453', heldBalance: '10' };
 const subscriptions: (() => void)[] = [];
 
 function jsonResponse(body: unknown) {
@@ -35,8 +35,8 @@ function respondWithAcquisition(acquisition: unknown) {
   respondWith({ data: { filterTokenWallets: { results: [acquisition] } } });
 }
 
-function fetchAcquisition() {
-  return useTokenAcquisitionStore.getState().fetch(PARAMS, { force: true, throwOnError: true });
+function fetchTrades() {
+  return useTokenTradesStore.getState().fetch(PARAMS, { force: true, throwOnError: true });
 }
 
 // With nothing else subscribed to the changed stores, as here, derived stores re-derive in a microtask, so each change settles before the query store is read
@@ -52,7 +52,7 @@ async function setHeldBalance(address: string, amount: string) {
 }
 
 function subscribe() {
-  const unsubscribe = useTokenAcquisitionStore.subscribe(() => undefined);
+  const unsubscribe = useTokenTradesStore.subscribe(() => undefined);
   subscriptions.push(unsubscribe);
   return unsubscribe;
 }
@@ -77,11 +77,11 @@ function settle() {
 
 async function viewAcquisition(expected: unknown) {
   const unsubscribe = subscribe();
-  await vi.waitFor(() => expect(useTokenAcquisitionStore.getState().getData()).toEqual(expected));
+  await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(expected));
   unsubscribe();
 }
 
-describe('useTokenAcquisitionStore', () => {
+describe('useTokenTradesStore', () => {
   beforeEach(async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected request'));
     vi.spyOn(logger, 'error').mockImplementation(() => undefined);
@@ -96,11 +96,18 @@ describe('useTokenAcquisitionStore', () => {
   });
 
   it('fetches the viewed token for the current wallet once subscribed', async () => {
-    const acquisition = { purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '100' };
+    const trades = {
+      purchasedTokenBalance: '10',
+      tokenAcquisitionCostUsd: '100',
+      tokenAmountSold1y: '2',
+      amountSoldUsd1y: '30',
+      realizedProfitUsd1y: '10',
+      lastTransactionAt: 1790000000,
+    };
     await viewToken({ address: '0xviewed', chainId: 8453 });
-    respondWithAcquisition(acquisition);
+    respondWithAcquisition(trades);
 
-    await viewAcquisition(acquisition);
+    await viewAcquisition(trades);
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({ wallet: '0xwallet', tokenId: '0xviewed:8453' });
@@ -128,13 +135,13 @@ describe('useTokenAcquisitionStore', () => {
     await setHeldBalance('0xswitched', '10');
     respondWithAcquisition(firstWallet);
     subscribe();
-    await vi.waitFor(() => expect(useTokenAcquisitionStore.getState().getData()).toEqual(firstWallet));
+    await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(firstWallet));
 
     // The new wallet's balance arrives after the switch, so every request from here on answers for the new wallet
     vi.mocked(fetch).mockImplementation(async () => jsonResponse({ data: { filterTokenWallets: { results: [secondWallet] } } }));
     await switchWallet('0xother');
     await setHeldBalance('0xswitched', '5');
-    await vi.waitFor(() => expect(useTokenAcquisitionStore.getState().getData()).toEqual(secondWallet));
+    await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(secondWallet));
 
     expect(JSON.parse(String(vi.mocked(fetch).mock.lastCall?.[1]?.body)).variables.wallet).toBe('0xother');
   });
@@ -183,14 +190,14 @@ describe('useTokenAcquisitionStore', () => {
     );
   });
 
-  it('returns null when Codex has no acquisition', async () => {
+  it('returns null when Codex has no trades', async () => {
     respondWith({ data: { filterTokenWallets: { results: [] } } });
-    await expect(fetchAcquisition()).resolves.toBeNull();
+    await expect(fetchTrades()).resolves.toBeNull();
   });
 
   it('fails and logs when the GraphQL envelope carries errors', async () => {
     respondWith({ errors: [{ message: 'Field "filterTokenWallets" is not allowed' }] });
-    await expect(fetchAcquisition()).rejects.toThrow('not allowed');
+    await expect(fetchTrades()).rejects.toThrow('not allowed');
     expect(logger.error).toHaveBeenCalledTimes(1);
   });
 });
