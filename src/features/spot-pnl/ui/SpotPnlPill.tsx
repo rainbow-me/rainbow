@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
+import Animated, { FadeIn } from 'react-native-reanimated';
+
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Text } from '@/design-system';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -67,6 +69,8 @@ function SpotPnlPillContent({ asset, surfaceColor }: Omit<SpotPnlPillProps, 'tok
 
   return (
     <Box
+      as={Animated.View}
+      entering={FadeIn.duration(160)}
       style={{ alignSelf: 'center' }}
       backgroundColor={surfaceColor}
       borderColor={{ custom: surfaceColor }}
