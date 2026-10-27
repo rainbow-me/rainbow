@@ -1,0 +1,16 @@
+version: v2
+plugins:
+  - remote: buf.build/community/stephenh-ts-proto:v2.12.4
+    out: src/features/sports/core/generated
+    opt:
+      - emitImportedFiles=false
+      - onlyTypes=true
+      - useJsonWireFormat=true
+      - useOptionals=messages
+      - unrecognizedEnum=false
+inputs:
+  - git_repo: https://github.com/rainbow-me/protobuf-registry.git
+    ref: 2626fb57c16c0f360ae0c4fa36faa9a9562bc6f4
+    paths:
+      - schemas/common/v1/common/sports/sports.proto
+      - schemas/gateways/v1/external/sports/requests.proto

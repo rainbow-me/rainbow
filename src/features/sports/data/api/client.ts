@@ -2,18 +2,18 @@ import { sportsApiBaseUrl } from '@/config/debug';
 import { IS_DEV } from '@/env';
 import { type SportsWindow } from '@/features/sports/core/browse';
 import {
+  type CatalogResult,
+  type GamesForEventsResult,
+  type GamesResult,
+  type SearchGamesResult,
+} from '@/features/sports/core/generated/common/sports/sports';
+import {
   type GetCatalogRequest,
   type GetGamesForEventsRequest,
   type ListGamesRequest,
   type ListLiveGamesRequest,
   type SearchGamesRequest,
-} from '@/features/sports/core/generated/requests';
-import {
-  type CatalogResult,
-  type GamesForEventsResult,
-  type GamesResult,
-  type SearchGamesResult,
-} from '@/features/sports/core/generated/sports';
+} from '@/features/sports/core/generated/external/sports/requests';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';

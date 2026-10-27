@@ -28,7 +28,7 @@ import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { type PolymarketOutcome } from '@/features/sports/core/generated/sports';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/common/sports/sports';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
