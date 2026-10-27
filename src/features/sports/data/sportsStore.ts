@@ -104,8 +104,8 @@ type SportsState = SportsData & {
 // ============ Constants ====================================================== //
 
 const STALE_TIME = time.seconds(60);
-const RPC_NOT_FOUND = 5;
-const RPC_FAILED_PRECONDITION = 9;
+const NOT_FOUND = 404;
+const BAD_REQUEST = 400;
 const CATALOG_QUERY_KEY = getPageQueryKey({ type: 'catalog' });
 
 // ============ Sports Store =================================================== //
@@ -197,7 +197,7 @@ export async function retrySportsPage(host: SportsHost): Promise<void> {
   const queryKey = getPageQueryKey(request);
   const code = getErrorCode(queryCache[queryKey]?.errorInfo?.error);
 
-  if (code === RPC_NOT_FOUND && request.type === 'scope') return sportsNavigationStores[host].getState().select('live');
+  if (code === NOT_FOUND && request.type === 'scope') return sportsNavigationStores[host].getState().select('live');
 
   await refreshSportsPage(host);
 }
@@ -253,7 +253,7 @@ async function fetchSearchResult(
     previous &&
     previous.minimumGameCount > previous.gameIds.length &&
     Date.now() - (entry?.lastFetchedAt ?? 0) < STALE_TIME &&
-    getErrorCode(entry?.errorInfo?.error) !== RPC_FAILED_PRECONDITION;
+    getErrorCode(entry?.errorInfo?.error) !== BAD_REQUEST;
 
   let minimumGameCount = Math.max(previous?.gameIds.length ?? 0, previous?.minimumGameCount ?? 1);
   let pageToken = canContinue ? previous.nextPageToken : undefined;
@@ -273,7 +273,7 @@ async function fetchSearchResult(
     try {
       response = await sportsClient.searchGames({ query, window, pageToken, knownCatalogRevision }, abortController);
     } catch (error) {
-      if (restarted || !pageToken || abortController?.signal.aborted || getErrorCode(error) !== RPC_FAILED_PRECONDITION) throw error;
+      if (restarted || !pageToken || abortController?.signal.aborted || getErrorCode(error) !== BAD_REQUEST) throw error;
 
       restarted = true;
       pageToken = undefined;
