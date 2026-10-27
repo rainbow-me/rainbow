@@ -91,14 +91,13 @@ export function createQueryCollectionStore<Input, Data>(
         set(s => {
           const queryCache = { ...s.queryCache };
           const lastFetchedAt = Date.now();
-          for (const key in data) {
-            queryCache[`:${key}`] = { data: { [key]: data[key] }, lastFetchedAt, cacheTime, errorInfo: null };
-          }
+          for (const key in data) queryCache[`:${key}`] = { data: { [key]: data[key] }, lastFetchedAt, cacheTime, errorInfo: null };
           queryCache[queryKey] = batchEntry(params.inputs, queryCache);
           return { queryCache };
         });
       },
     },
+
     (_, get) => ({
       inputs: [],
       get: input => {
@@ -111,6 +110,7 @@ export function createQueryCollectionStore<Input, Data>(
         return get().get(input);
       },
     }),
+
     persistence ? { ...persistence, partialize: () => EMPTY_CUSTOM_STATE } : undefined
   );
 
@@ -123,6 +123,7 @@ export function createQueryCollectionStore<Input, Data>(
           const lastFetchedAt = queryCache[`:${getKey(input)}`]?.lastFetchedAt;
           return !lastFetchedAt || lastFetchedAt <= staleCutoff;
         });
+
     const settled = await Promise.allSettled(staleInputs.map(async input => fetcher(input, controller?.signal)));
     const data: Results<Data> = nullObject();
     let firstFailure: PromiseRejectedResult | undefined;
@@ -135,6 +136,7 @@ export function createQueryCollectionStore<Input, Data>(
         succeeded = true;
       } else firstFailure ??= result;
     }
+
     if (!succeeded && firstFailure) throw firstFailure.reason;
     return data;
   }
@@ -149,11 +151,13 @@ export function createQueryCollectionStore<Input, Data>(
     demandUpdatePending = false;
     const inputs: Input[] = [];
     const nextInputs: Record<Key, Input> = nullObject();
+
     for (const key of demandedKeys) {
       const input = inputsByKey[key];
       inputs.push(input);
       nextInputs[key] = input;
     }
+
     inputsByKey = nextInputs;
 
     store.setState(s => {

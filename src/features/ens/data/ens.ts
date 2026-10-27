@@ -30,10 +30,13 @@ import { namehash, normalize, packetToBytes, toCoinType } from 'viem/ens';
 
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { time } from '@/framework/core/utils/time';
 
 // ============ Types ========================================================== //
 
-/** Fields to read together from one name. Contenthash is always included. */
+/**
+ * Fields to read together from one name. Contenthash is always included.
+ */
 export type EnsRecordKeys = {
   texts: readonly string[];
   coins: readonly number[];
@@ -57,7 +60,7 @@ type EnsClient = Client<Transport, typeof mainnet>;
 export const ETHEREUM_COIN_TYPE = 60;
 
 const BATCH_GATEWAYS = ['https://ccip-v3.ens.xyz'];
-const LOOKUP_TIMEOUT_MS = 15_000;
+const LOOKUP_TIMEOUT_MS = time.seconds(15);
 const MAX_CCIP_LOOKUPS = 8;
 
 const ABI_WORD_BYTES = 32;
@@ -69,6 +72,7 @@ const CONTENT_HASH_RECORD = AbiFunction.from('function contenthash(bytes32 node)
 const ETH_ADDRESS_RECORD = AbiFunction.from('function addr(bytes32 node) view returns (address)');
 const MULTICALL = AbiFunction.from('function multicall(bytes[] data) view returns (bytes[])');
 const TEXT_RECORD = AbiFunction.from('function text(bytes32 node, string key) view returns (string)');
+
 const UNIVERSAL_RESOLVER_ABI = parseAbi([
   'error ResolverNotFound(bytes name)',
   'error ResolverNotContract(bytes name, address resolver)',
@@ -103,6 +107,7 @@ export async function resolveEnsName(address: Address, chainId: ChainId, signal?
   try {
     const name = await withEnsClient(client => getEnsName(client, { address, coinType: toCoinType(chainId), strict: true }), signal);
     if (name === null) return null;
+
     try {
       return normalize(name) === name ? name : null;
     } catch {
@@ -143,14 +148,17 @@ export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?:
   const texts: EnsRecords['texts'] = Object.create(null);
   const coins: EnsRecords['coins'] = Object.create(null);
   let index = 0;
+
   for (const key of keys.texts) {
     texts[key] = decodeRecord(values[index], decodeText);
     index += 1;
   }
+
   for (const coinType of keys.coins) {
     coins[coinType] = decodeRecord(values[index], coinType === ETHEREUM_COIN_TYPE ? decodeEthAddress : decodeCoinAddress);
     index += 1;
   }
+
   return { texts, coins, contentHash: decodeRecord(values[index], decodeContentHash) };
 }
 
@@ -158,8 +166,9 @@ export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?:
 
 async function withEnsClient<T>(read: (client: EnsClient) => Promise<T>, signal?: AbortSignal): Promise<T | null> {
   if (signal?.aborted) throw new Error('ENS lookup cancelled');
+
   const controller = new AbortController();
-  const abort = (): void => controller.abort();
+  const abort = () => controller.abort();
   signal?.addEventListener('abort', abort, { once: true });
   const timeout = setTimeout(abort, LOOKUP_TIMEOUT_MS);
 
@@ -167,18 +176,18 @@ async function withEnsClient<T>(read: (client: EnsClient) => Promise<T>, signal?
     const base = createClient({
       chain: mainnet,
       ccipRead: false,
-      transport: http(backendNetworksActions.getChainDefaultRpc(ChainId.mainnet), {
-        retryCount: 0,
-        timeout: 0,
-      }),
+      transport: http(backendNetworksActions.getChainDefaultRpc(ChainId.mainnet), { retryCount: 0, timeout: 0 }),
     });
+
     const gateway = ccipReadTunnel({
       batchGateways: BATCH_GATEWAYS,
       ccipRequest: parameters => ccipRequest({ ...parameters, requestOptions: { signal: controller.signal } }),
     });
+
     const client = base.extend(() => ({
       call: (parameters: CallParameters<typeof mainnet>) => callWithCcip(base, parameters, gateway.request, controller.signal),
     }));
+
     return await read(client);
   } catch (error) {
     if (hasResolverError(error, 'ResolverNotFound')) return null;
@@ -206,6 +215,7 @@ async function callWithCcip(
 
   for (let lookups = 0; ; lookups += 1) {
     if (signal.aborted) throw new Error('ENS lookup cancelled');
+
     try {
       return await call(client, { ...parameters, data, requestOptions });
     } catch (error) {
@@ -213,6 +223,7 @@ async function callWithCcip(
       if (!parameters.to || !revertData?.startsWith(offchainLookupSignature)) throw error;
 
       const { sender, urls, callData, callbackFunction, extraData } = AbiError.decode(OFFCHAIN_LOOKUP, revertData, { as: 'Object' });
+
       if (!isAddressEqual(sender, parameters.to)) throw new Error('CCIP lookup sender does not match the called contract');
       if (lookups === MAX_CCIP_LOOKUPS) throw new Error('ENS lookup exceeded its CCIP request limit');
 
@@ -222,14 +233,18 @@ async function callWithCcip(
   }
 }
 
-/** Extracts direct or nested revert bytes from this client's HTTP RPC error. */
+/**
+ * Extracts direct or nested revert bytes from this client's HTTP RPC error.
+ */
 function getRevertData(error: unknown): Hex | undefined {
   if (!(error instanceof BaseError)) return undefined;
+
   const cause = error.walk(value => value instanceof RpcRequestError);
   if (!(cause instanceof RpcRequestError)) return undefined;
 
   const payload = cause.data;
   const data = payload && typeof payload === 'object' && 'data' in payload ? payload.data : payload;
+
   return isHex(data, { strict: true }) ? data : undefined;
 }
 
@@ -249,9 +264,11 @@ async function readRecordBatch(client: EnsClient, dnsName: Hex, calls: readonly 
     functionName: 'resolveWithGateways',
     args: [dnsName, data, ['x-batch-gateway:true']],
   });
+
   const values = AbiFunction.decodeResult(MULTICALL, result);
-  if (values.length !== calls.length) throw new Error('ENS returned an incomplete record batch');
-  return values;
+  if (values.length === calls.length) return values;
+
+  throw new Error('ENS returned an incomplete record batch');
 }
 
 /**

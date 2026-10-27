@@ -463,10 +463,12 @@ export async function resolveNameOrAddress(nameOrAddress: string, chainId: Chain
   const input = nameOrAddress.trim();
   if (isAddress(input)) return getViemAddress(input);
   if (input.startsWith('0x')) return null;
+
   if (isUnstoppableAddressFormat(input)) {
     const address = await resolveUnstoppableDomain(input);
     return address === null ? null : getViemAddress(address);
   }
+
   return resolveEnsAddress(input, chainId, signal);
 }
 
