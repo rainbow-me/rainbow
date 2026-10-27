@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
