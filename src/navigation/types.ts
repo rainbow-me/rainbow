@@ -732,6 +732,8 @@ type ParamsByRoute = {
   [Routes.SPOT_PNL_SHEET]: {
     address: string;
     chainId: ChainId;
+    /** Defaults to the selected wallet. */
+    walletAddress?: string;
   };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;

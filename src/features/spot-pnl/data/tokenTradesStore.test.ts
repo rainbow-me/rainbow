@@ -31,8 +31,12 @@ function respondWith(body: unknown) {
   vi.mocked(fetch).mockResolvedValueOnce(jsonResponse(body));
 }
 
-function respondWithAcquisition(acquisition: unknown) {
-  respondWith({ data: { filterTokenWallets: { results: [acquisition] } } });
+function tradesResponse(trades: object, wallet = '0xwallet') {
+  return { data: { filterTokenWallets: { results: [{ address: wallet, ...trades }] } } };
+}
+
+function respondWithAcquisition(trades: object) {
+  respondWith(tradesResponse(trades));
 }
 
 function fetchTrades() {
@@ -103,6 +107,7 @@ describe('useTokenTradesStore', () => {
       amountSoldUsd1y: '30',
       realizedProfitUsd1y: '10',
       lastTransactionAt: 1790000000,
+      tokenBalanceLive: '12',
     };
     await viewToken({ address: '0xviewed', chainId: 8453 });
     respondWithAcquisition(trades);
@@ -110,7 +115,11 @@ describe('useTokenTradesStore', () => {
     await viewAcquisition(trades);
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({ wallet: '0xwallet', tokenId: '0xviewed:8453' });
+    expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).variables).toEqual({
+      wallets: ['0xwallet'],
+      tokenId: '0xviewed:8453',
+      limit: 1,
+    });
   });
 
   it('refetches the cost basis when the held balance changes', async () => {
@@ -138,12 +147,12 @@ describe('useTokenTradesStore', () => {
     await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(firstWallet));
 
     // The new wallet's balance arrives after the switch, so every request from here on answers for the new wallet
-    vi.mocked(fetch).mockImplementation(async () => jsonResponse({ data: { filterTokenWallets: { results: [secondWallet] } } }));
+    vi.mocked(fetch).mockImplementation(async () => jsonResponse(tradesResponse(secondWallet, '0xother')));
     await switchWallet('0xother');
     await setHeldBalance('0xswitched', '5');
     await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(secondWallet));
 
-    expect(JSON.parse(String(vi.mocked(fetch).mock.lastCall?.[1]?.body)).variables.wallet).toBe('0xother');
+    expect(JSON.parse(String(vi.mocked(fetch).mock.lastCall?.[1]?.body)).variables.wallets).toEqual(['0xother']);
   });
 
   it.each([

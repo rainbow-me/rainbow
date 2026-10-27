@@ -18,21 +18,24 @@ import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/f
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type TokenData } from '@/state/liveTokens/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
-import { useTokenTradesStore } from '../data/tokenTradesStore';
+import { createTokenTradesStore, useTokenTradesStore, type WalletTokenTrades } from '../data/tokenTradesStore';
 import {
   formatCompactTokenAmount,
   formatNativeAmount,
@@ -49,9 +52,10 @@ const LOADING_HEIGHT = 120;
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
-    params: { address, chainId },
+    params: { address, chainId, walletAddress: routeWalletAddress },
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
-  const walletAddress = userAssetsStoreManager(state => state.address);
+  const selectedWalletAddress = userAssetsStoreManager(state => state.address);
+  const walletAddress = routeWalletAddress ?? selectedWalletAddress;
 
   return (
     <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
@@ -66,6 +70,17 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
+
+  // Codex returns lowercased addresses, so a Top Holders row for the selected wallet differs in case
+  const isSelectedWallet = userAssetsStoreManager(state => isLowerCaseMatch(walletAddress, state.address ?? undefined));
+  const otherWalletTradesStore = useStableValue(() =>
+    createTokenTradesStore({ params: { walletAddress, codexTokenId: getCodexTokenId(tokenAddress, chainId), heldBalance: null } })
+  );
+  const tradesStore = isSelectedWallet ? useTokenTradesStore : otherWalletTradesStore;
+  const trades = tradesStore(state => state.getData());
+  const isSettled = tradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  // The selected wallet uses its own assets, as the pill does, rather than Codex's indexed balance
+  const balance = isSelectedWallet ? accountAsset?.balance?.amount || '0' : (trades?.tokenBalanceLive ?? '0');
 
   return (
     <Box paddingTop={{ custom: 22 }} paddingBottom={{ custom: 14 }}>
@@ -86,15 +101,17 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
         <WalletChip walletAddress={walletAddress} />
       </Box>
       <SpotPnlSection
-        balance={accountAsset?.balance?.amount || '0'}
+        balance={balance}
         chainId={chainId}
         decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
-        initialPrice={accountAsset?.native?.price?.amount ?? ''}
+        initialPrice={accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? ''}
         initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
+        isSettled={isSettled}
         nativeCurrency={nativeCurrency}
         symbol={symbol}
         tokenAddress={tokenAddress}
         tokenName={accountAsset?.name ?? externalToken?.name}
+        trades={trades}
         uniqueId={uniqueId}
       />
     </Box>
@@ -107,10 +124,12 @@ function SpotPnlSection({
   decimals,
   initialPrice,
   initialPriceUpdatedAt,
+  isSettled,
   nativeCurrency,
   symbol,
   tokenAddress,
   tokenName,
+  trades,
   uniqueId,
 }: {
   balance: string;
@@ -118,13 +137,14 @@ function SpotPnlSection({
   decimals: number;
   initialPrice: string;
   initialPriceUpdatedAt: number;
+  isSettled: boolean;
   nativeCurrency: NativeCurrencyKey;
   symbol: string;
   tokenAddress: string;
   tokenName: string | undefined;
+  trades: WalletTokenTrades | null;
   uniqueId: string;
 }) {
-  const trades = useTokenTradesStore(state => state.getData());
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
   const price = useLiveTokenValue({
@@ -171,7 +191,7 @@ function SpotPnlSection({
   return pnl ? (
     <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
   ) : (
-    <SpotPnlPlaceholder />
+    <SpotPnlPlaceholder isSettled={isSettled} />
   );
 }
 
@@ -179,8 +199,7 @@ function selectCirculatingMarketCap(token: TokenData): string {
   return token.marketData.circulatingMarketCap;
 }
 
-function SpotPnlPlaceholder() {
-  const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+function SpotPnlPlaceholder({ isSettled }: { isSettled: boolean }) {
   const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
 
   return (

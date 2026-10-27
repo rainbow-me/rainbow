@@ -17,10 +17,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig extends Record<
-  string,
-  string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }
-> {
+export interface RainbowConfig extends Record<string, unknown> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;
@@ -96,6 +93,7 @@ export interface RainbowConfig extends Record<
   cash_enabled: boolean;
   cash_signup_enabled: boolean;
   cash_balance_enabled: boolean;
+  dev_section_enabled: boolean;
   rnbw_rewards_enabled: boolean;
   rnbw_membership_enabled: boolean;
   delegation_enabled: boolean;
@@ -108,6 +106,8 @@ export interface RainbowConfig extends Record<
   go_relay_backend_enabled: boolean;
   solana_enabled: boolean;
   spot_pnl_enabled: boolean;
+  top_holders_enabled: boolean;
+  top_holders_wallet_filter: { categories: string[]; excludedLabels: string[] };
 }
 
 const Bips = {
@@ -250,6 +250,11 @@ export const DEFAULT_CONFIG = {
   go_relay_backend_enabled: true,
   solana_enabled: false,
   spot_pnl_enabled: false,
+  top_holders_enabled: false,
+  top_holders_wallet_filter: {
+    categories: ['NORMIE'],
+    excludedLabels: ['BOT', 'MEV_BOT', 'BRIDGE', 'DEX'],
+  },
 } as const satisfies Readonly<RainbowConfig>;
 
 export type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -261,6 +266,7 @@ type StringifiedFirebaseDefaults = Readonly<{
   default_slippage_bips_chainId: string;
   rewards_claim_networks: string;
   perps_feature_card_copy: string;
+  top_holders_wallet_filter: string;
 }>;
 
 const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
@@ -268,6 +274,7 @@ const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
   default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
   rewards_claim_networks: JSON.stringify(DEFAULT_CONFIG.rewards_claim_networks),
   perps_feature_card_copy: JSON.stringify(DEFAULT_CONFIG.perps_feature_card_copy),
+  top_holders_wallet_filter: JSON.stringify(DEFAULT_CONFIG.top_holders_wallet_filter),
 };
 
 type FirebaseConfigDefaults = Omit<RainbowConfig, keyof StringifiedFirebaseDefaults> &
