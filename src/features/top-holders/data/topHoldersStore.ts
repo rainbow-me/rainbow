@@ -4,21 +4,14 @@ import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { fetchWalletsTokenTrades } from '@/features/spot-pnl/data/tokenTradesStore';
 import { divWorklet, powWorklet } from '@/framework/core/safeMath';
-import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
 
 import { isHolderWalletFilter, rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
-
-export type TopHoldersData = TopHolders & {
-  /** Lowercased address to ENS name, for the listed holders that have a reverse record. */
-  ensNames: Record<string, string>;
-};
 
 export type TopHoldersParams = {
   /** `null` when no token is viewed or it is a perps market. */
@@ -42,7 +35,6 @@ type HoldersResponse = {
 
 /** Codex's maximum page size for both queries. */
 const HOLDERS_SCANNED = 200;
-const NAME_LOOKUP_CONCURRENCY = 6;
 
 const HOLDERS_QUERY = `query TopHolders($tokenId: String!, $address: String!, $networkId: Int!) {
   holders(input: { tokenId: $tokenId, limit: ${HOLDERS_SCANNED}, sort: { attribute: BALANCE, direction: DESC } }) {
@@ -72,10 +64,10 @@ export const useTopHoldersEnabledStore = createDerivedStore($ => {
 });
 
 /**
- * The viewed token's Top Holders lists, with ENS names for the listed wallets. Codex returns at most
- * {@link HOLDERS_SCANNED} holders, which bounds which holders can rank by profit. `null` when there is no holder to show.
+ * The viewed token's Top Holders lists. Codex returns at most {@link HOLDERS_SCANNED} holders, which bounds which
+ * holders can rank by profit. `null` when there is no holder to show.
  */
-export const useTopHoldersStore = createQueryStore<TopHoldersData | null, TopHoldersParams>({
+export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
   enabled: $ => $(useTopHoldersEnabledStore),
   params: {
@@ -91,10 +83,7 @@ export const useTopHoldersStore = createQueryStore<TopHoldersData | null, TopHol
   cacheTime: time.hours(1),
 });
 
-async function fetchTopHolders(
-  { token, filter }: TopHoldersParams,
-  abortController: AbortController | null
-): Promise<TopHoldersData | null> {
+async function fetchTopHolders({ token, filter }: TopHoldersParams, abortController: AbortController | null): Promise<TopHolders | null> {
   if (!token) return null;
   const tokenId = getCodexTokenId(token.address, token.chainId);
   try {
@@ -129,22 +118,9 @@ async function fetchTopHolders(
       },
       filter
     );
-    if (!topHolders.byStake.length) return null;
-
-    const listed = [...new Set([...topHolders.byStake, ...topHolders.byProfit].map(row => row.holder.address.toLowerCase()))];
-    return { ...topHolders, ensNames: await fetchEnsNames(listed) };
+    return topHolders.byStake.length ? topHolders : null;
   } catch (error) {
     logger.error(new RainbowError('[topHoldersStore] Codex top holders fetch failed', error), { tokenId });
     throw error;
   }
-}
-
-/** Addresses without a reverse record, or whose lookup fails, are left out. */
-async function fetchEnsNames(addresses: string[]): Promise<Record<string, string>> {
-  const results = await mapWithConcurrency(addresses, NAME_LOOKUP_CONCURRENCY, fetchReverseRecord);
-  const names: Record<string, string> = {};
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) names[addresses[index]] = result.value;
-  });
-  return names;
 }

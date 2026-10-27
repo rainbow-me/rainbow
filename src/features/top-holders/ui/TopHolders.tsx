@@ -19,11 +19,13 @@ import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/a
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import { type ProfitHolderRow, type StakeHolderRow, type TokenHolder } from '../core/topHolders';
+import { useTopHolderNamesStore } from '../data/topHolderNamesStore';
 import { useTopHoldersStore } from '../data/topHoldersStore';
 
 type Tab = 'stake' | 'profit';
 
-const ROW_HEIGHT = 58;
+export const HOLDER_ROW_HEIGHT = 58;
+export const HOLDER_ROW_SEPARATOR_HEIGHT = 1;
 const AVATAR_SIZE = 32;
 const RANK_WIDTH = 40;
 
@@ -213,7 +215,7 @@ function HolderRow({
   subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
 }) {
-  const ensName = useTopHoldersStore(state => state.getData()?.ensNames[holder.address.toLowerCase()] ?? null);
+  const ensName = useTopHolderNamesStore(state => state.getData()?.[holder.address.toLowerCase()] ?? null);
 
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {
@@ -224,7 +226,7 @@ function HolderRow({
 
   return (
     <ButtonPressAnimation onPress={openPnlSheet} scaleTo={0.98}>
-      <Box flexDirection="row" alignItems="center" height={{ custom: ROW_HEIGHT }}>
+      <Box flexDirection="row" alignItems="center" height={{ custom: HOLDER_ROW_HEIGHT }}>
         <Box width={{ custom: RANK_WIDTH }}>
           <TextShadow blur={12} shadowOpacity={0.24}>
             <Text color="accent" size="22pt" weight="semibold">
@@ -259,7 +261,7 @@ function HolderAvatar({ address, ensName }: { address: string; ensName: string |
 function RowSeparator() {
   return (
     <Box paddingLeft={{ custom: RANK_WIDTH }}>
-      <Separator color="separatorTertiary" thickness={1} />
+      <Separator color="separatorTertiary" thickness={HOLDER_ROW_SEPARATOR_HEIGHT} />
     </Box>
   );
 }

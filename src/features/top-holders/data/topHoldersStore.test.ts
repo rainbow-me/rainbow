@@ -6,8 +6,6 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 
 import { useTopHoldersStore } from './topHoldersStore';
 
-const { fetchReverseRecord } = vi.hoisted(() => ({ fetchReverseRecord: vi.fn<(address: string) => Promise<string>>() }));
-vi.mock('@/features/ens/utils/handlers', () => ({ fetchReverseRecord }));
 vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => '0xwallet', useAccountAddress: () => '0xwallet' }));
 vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
 vi.mock('@/state/assets/createUserAssetsStore', async () => {
@@ -42,7 +40,6 @@ async function loadViewedToken(address: string) {
 describe('useTopHoldersStore', () => {
   beforeEach(() => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected request'));
-    fetchReverseRecord.mockResolvedValue('');
   });
 
   afterEach(() => {
@@ -61,9 +58,8 @@ describe('useTopHoldersStore', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('joins swap history to holders across address casing, in token units, with ENS names', async () => {
+  it('joins swap history to holders across address casing, in token units', async () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
-    fetchReverseRecord.mockImplementation(async address => (address === WHALE.toLowerCase() ? 'whale.eth' : ''));
     respondWith({
       data: {
         holders: {
@@ -109,7 +105,6 @@ describe('useTopHoldersStore', () => {
       [WHALE, '100', '200', '10'],
     ]);
     expect(data?.byProfit.map(row => [row.holder.address, row.pnl.amount])).toEqual([[WHALE, '150']]);
-    expect(data?.ensNames).toEqual({ [WHALE.toLowerCase()]: 'whale.eth' });
   });
 
   it('hides the section when Codex does not track holders for the token', async () => {
