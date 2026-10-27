@@ -26,6 +26,8 @@ type Tab = 'stake' | 'profit';
 
 export const HOLDER_ROW_HEIGHT = 58;
 export const HOLDER_ROW_SEPARATOR_HEIGHT = 1;
+export const TAB_TOGGLE_HEIGHT = 36;
+export const TAB_TOGGLE_GAP = 8;
 const AVATAR_SIZE = 32;
 const RANK_WIDTH = 40;
 
@@ -36,7 +38,7 @@ export const TopHolders = memo(function TopHolders({ token }: { token: { address
   const tab = hasProfitHolders ? selectedTab : 'stake';
 
   return (
-    <Box gap={8}>
+    <Box gap={TAB_TOGGLE_GAP}>
       {hasProfitHolders && <TabToggle selectedTab={tab} onSelect={setSelectedTab} />}
       <HolderList tab={tab} token={token} />
     </Box>
@@ -53,7 +55,7 @@ function TabToggle({ selectedTab, onSelect }: { selectedTab: Tab; onSelect: (tab
       borderWidth={4 / 3}
       flexDirection="row"
       gap={3}
-      height={{ custom: 36 }}
+      height={{ custom: TAB_TOGGLE_HEIGHT }}
       padding={{ custom: 3 }}
     >
       <TabButton
