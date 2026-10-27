@@ -25,13 +25,13 @@ const SKELETON_ROW_INSET = 6;
 
 export const TopHoldersSection = memo(function TopHoldersSection() {
   const isEnabled = useTopHoldersEnabledStore();
-  // Cached holders stay on screen through a refetch and after a failed one. Without them, the skeleton shows only until
-  // the first fetch settles: `status` returns to loading on every retry and refetch, while the cache entry keeps the
-  // failure or the time of the last success
+  // Cached holders stay on screen through a refetch and after a failed one. A failed load or a settled empty result stays
+  // hidden through later fetches: `status` returns to loading on every retry and refetch, while the cache entry keeps
+  // the failure or the empty result. Expired holders keep their data in the entry, so their refetch shows the skeleton
   const display = useTopHoldersStore(state => {
     if (state.getData()) return 'holders';
     const entry = state.getCacheEntry();
-    if (entry?.errorInfo || entry?.lastFetchedAt) return null;
+    if (entry?.errorInfo || (entry?.lastFetchedAt && entry.data === null)) return null;
     return state.status === 'idle' || state.status === 'loading' ? 'skeleton' : null;
   });
   const token = useChartsStore(state => (state.token && typeof state.token !== 'string' ? state.token : null));
