@@ -14,7 +14,7 @@ export const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 
 // Types
-type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price' | 'transferable'>;
+type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price' | 'transferable' | 'type'>;
 export type FormattedExternalAsset = ExternalToken & {
   address: AddressOrEth;
   chainId: ChainId;
