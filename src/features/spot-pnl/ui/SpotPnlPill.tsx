@@ -16,7 +16,6 @@ import { useTheme } from '@/theme/ThemeContext';
 import { calculateSpotPnl, type TokenTrades } from '../core/spotPnl';
 import { useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
-import { isSpotPnlEligible } from './spotPnlEligibility';
 
 type SpotPnlPillToken = {
   address: string;
@@ -31,14 +30,11 @@ type SpotPnlPillToken = {
 type SpotPnlPillProps = {
   token: SpotPnlPillToken;
   surfaceColor: string;
-  /** The metadata token type, since wallet assets do not carry it; the pill stays hidden until it is known. */
-  tokenType: string | undefined;
 };
 
 /** Unrealized P&L while purchased tokens are held, otherwise realized P&L once they have all been sold. */
-export function SpotPnlPill({ token, surfaceColor, tokenType }: SpotPnlPillProps) {
-  const isEnabled = useSpotPnlTokenId(Boolean);
-  const isEligible = isEnabled && isSpotPnlEligible({ address: token.address, chainId: token.chainId, type: tokenType });
+export function SpotPnlPill({ token, surfaceColor }: SpotPnlPillProps) {
+  const isEligible = useSpotPnlTokenId(Boolean);
 
   if (!isEligible) return null;
   return <SpotPnlPillContent token={token} surfaceColor={surfaceColor} />;
@@ -47,7 +43,7 @@ export function SpotPnlPill({ token, surfaceColor, tokenType }: SpotPnlPillProps
 function SpotPnlPillContent({
   token: { address, balance, chainId, initialPrice, initialPriceUpdatedAt, uniqueId },
   surfaceColor,
-}: Omit<SpotPnlPillProps, 'tokenType'>) {
+}: SpotPnlPillProps) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const fetchedTrades = useTokenTradesStore(state => state.getData());

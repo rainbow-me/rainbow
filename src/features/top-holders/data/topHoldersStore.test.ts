@@ -3,9 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { externalTokenQueryFunction } from '@/resources/assets/externalAssetsQuery';
+import { setExternalTokenType } from '@/resources/assets/testing/mockExternalTokenTypes';
 
 import { useTopHoldersStore } from './topHoldersStore';
 
+vi.mock('@/react-query/queryClient');
+vi.mock('@/resources/assets/externalAssetsQuery');
 vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => '0xwallet', useAccountAddress: () => '0xwallet' }));
 vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
 vi.mock('@/state/assets/createUserAssetsStore', async () => {
@@ -32,7 +36,12 @@ function requestBodies() {
 async function loadViewedToken(address: string) {
   useChartsStore.getState().setToken({ address, chainId: 8453 });
   const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
-  await vi.waitFor(() => expect(useTopHoldersStore.getState().getStatus('isSuccess')).toBe(true));
+  // The token becomes eligible once its metadata type loads, and only then does the store fetch its holders
+  await vi.waitFor(() => {
+    const state = useTopHoldersStore.getState();
+    expect(state.queryKey).toContain(address);
+    expect(state.getStatus('isSuccess')).toBe(true);
+  });
   unsubscribe();
   return useTopHoldersStore.getState().getData();
 }
@@ -55,6 +64,20 @@ describe('useTopHoldersStore', () => {
     });
     unsubscribe();
 
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not request Codex for a stablecoin', async () => {
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    setExternalTokenType('0xstable', 'stablecoin');
+    useChartsStore.getState().setToken({ address: '0xstable', chainId: 8453 });
+    const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
+    await new Promise(resolve => {
+      setTimeout(resolve, 50);
+    });
+    unsubscribe();
+
+    expect(externalTokenQueryFunction).toHaveBeenCalled();
     expect(fetch).not.toHaveBeenCalled();
   });
 

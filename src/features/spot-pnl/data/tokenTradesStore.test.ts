@@ -6,6 +6,8 @@ import type { Token } from '@/features/charts/types';
 import { SPOT_PNL } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { logger } from '@/logger';
+import { externalTokenQueryFunction } from '@/resources/assets/externalAssetsQuery';
+import { setExternalTokenType } from '@/resources/assets/testing/mockExternalTokenTypes';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { useTokenTradesStore, type TokenTradesParams } from './tokenTradesStore';
@@ -13,6 +15,8 @@ import { useTokenTradesStore, type TokenTradesParams } from './tokenTradesStore'
 const account = vi.hoisted(() => ({ address: '0xwallet' }));
 
 vi.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/react-query/queryClient');
+vi.mock('@/resources/assets/externalAssetsQuery');
 vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => account.address, useAccountAddress: () => account.address }));
 vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
 vi.mock('@/state/assets/createUserAssetsStore', async () => {
@@ -120,6 +124,16 @@ describe('useTokenTradesStore', () => {
       tokenId: '0xviewed:8453',
       limit: 1,
     });
+  });
+
+  it('does not request Codex for a stablecoin', async () => {
+    setExternalTokenType('0xstable', 'stablecoin');
+    await viewToken({ address: '0xstable', chainId: 8453 });
+    subscribe();
+    await settle();
+
+    expect(externalTokenQueryFunction).toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('refetches the cost basis when the held balance changes', async () => {

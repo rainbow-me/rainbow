@@ -5,8 +5,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import { useChartsStore } from '@/features/charts/stores/chartsStore';
-import { isSpotPnlEligible } from '@/features/spot-pnl/ui/spotPnlEligibility';
+import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
 import { TOP_HOLDERS_LIMIT } from '@/features/top-holders/core/topHolders';
 import { useTopHoldersEnabledStore, useTopHoldersStore } from '@/features/top-holders/data/topHoldersStore';
 import {
@@ -26,7 +25,6 @@ const SKELETON_ROW_INSET = 6;
 
 export const TopHoldersSection = memo(function TopHoldersSection() {
   const isEnabled = useTopHoldersEnabledStore();
-  const { basicAsset } = useExpandedAssetSheetContext();
   // Cached holders stay on screen through a refetch and after a failed one. A failed load or a settled empty result stays
   // hidden through later fetches: `status` returns to loading on every retry and refetch, while the cache entry keeps
   // the failure or the empty result. Expired holders keep their data in the entry, so their refetch shows the skeleton
@@ -36,10 +34,8 @@ export const TopHoldersSection = memo(function TopHoldersSection() {
     if (entry?.errorInfo || (entry?.lastFetchedAt && entry.data === null)) return null;
     return state.status === 'idle' || state.status === 'loading' ? 'skeleton' : null;
   });
-  const token = useChartsStore(state => (state.token && typeof state.token !== 'string' ? state.token : null));
-  const type = 'type' in basicAsset ? basicAsset.type : undefined;
-  const isEligible = isSpotPnlEligible({ address: basicAsset.address, chainId: basicAsset.chainId, type });
-  if (!isEnabled || !isEligible || !display || !token) return null;
+  const token = usePnlEligibleToken();
+  if (!isEnabled || !display || !token) return null;
 
   return (
     <Box

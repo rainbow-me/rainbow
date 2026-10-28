@@ -8,11 +8,12 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
+import { postCodex } from '@/resources/platform/codex';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { type TokenTrades } from '../core/spotPnl';
+import { usePnlEligibleToken } from './pnlEligibleTokenStore';
 
 export type WalletTokenTrades = TokenTrades & {
   /** Token units the wallet holds now. */
@@ -45,20 +46,21 @@ const FILTER_TOKEN_WALLETS_QUERY = `query FilterTokenWallets($wallets: [String],
   }
 }`;
 
+const useSpotPnlEnabledStore = createDerivedStore($ => {
+  const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('spot_pnl_enabled'));
+  const experimentalEnabled = $(useExperimentalConfigStore, state => state.getFlag(SPOT_PNL));
+  return remoteEnabled || experimentalEnabled;
+});
+
 /**
- * The viewed token's Codex token id while spot P&L is enabled, or `null` when it is disabled, no token is viewed,
- * or the viewed token is a perps market.
+ * The viewed token's Codex token id while spot P&L is enabled, or `null` when it is disabled or the viewed token is
+ * not P&L-eligible.
  */
 export const useSpotPnlTokenId = createDerivedStore(
   $ => {
-    const token = $(useChartsStore, state => state.token);
-    const remoteEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('spot_pnl_enabled'));
-    const experimentalEnabled = $(useExperimentalConfigStore, state => state.getFlag(SPOT_PNL));
-
-    if (!remoteEnabled && !experimentalEnabled) return null;
-    if (!token || isHyperliquidToken(token)) return null;
-
-    return getCodexTokenId(token.address, token.chainId);
+    const isEnabled = $(useSpotPnlEnabledStore);
+    const codexTokenId = $(usePnlEligibleToken, token => token?.codexTokenId ?? null);
+    return isEnabled ? codexTokenId : null;
   },
   { lockDependencies: true }
 );
@@ -89,10 +91,11 @@ export function createTokenTradesStore(config: Pick<QueryStoreConfig<WalletToken
 
 /** The current wallet's trades in the viewed token. */
 export const useTokenTradesStore = createTokenTradesStore({
-  enabled: $ => $(useSpotPnlTokenId, Boolean),
+  // Gated on the flags alone: an ineligible token leaves `codexTokenId` null, which fetches nothing
+  enabled: $ => $(useSpotPnlEnabledStore),
   params: {
     walletAddress: $ => $(userAssetsStoreManager).address,
-    codexTokenId: $ => $(useSpotPnlTokenId),
+    codexTokenId: $ => $(usePnlEligibleToken, token => token?.codexTokenId ?? null),
     heldBalance: $ => $(useViewedTokenBalance),
   },
 });
