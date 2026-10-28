@@ -29,6 +29,16 @@ function respondWith(body: unknown) {
   vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } }));
 }
 
+function typeLookupFor(address: string) {
+  return expect.objectContaining({ queryKey: expect.arrayContaining([expect.objectContaining({ address })]) });
+}
+
+function settle() {
+  return new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
+}
+
 function requestBodies() {
   return vi.mocked(fetch).mock.calls.map(call => JSON.parse(String(call[1]?.body)));
 }
@@ -72,14 +82,10 @@ describe('useTopHoldersStore', () => {
     setExternalTokenType('0xstable', 'stablecoin');
     useChartsStore.getState().setToken({ address: '0xstable', chainId: 8453 });
     const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
-    await new Promise(resolve => {
-      setTimeout(resolve, 50);
-    });
+    await vi.waitFor(() => expect(externalTokenQueryFunction).toHaveBeenCalledWith(typeLookupFor('0xstable')));
+    await settle();
     unsubscribe();
 
-    expect(externalTokenQueryFunction).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: expect.arrayContaining([expect.objectContaining({ address: '0xstable' })]) })
-    );
     expect(fetch).not.toHaveBeenCalled();
   });
 
