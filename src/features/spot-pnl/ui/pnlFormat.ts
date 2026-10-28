@@ -51,9 +51,11 @@ export function formatNativeAmount(
   const wholeUnits = wholeUnitsFrom !== null && greaterThanOrEqualToWorklet(roundedMagnitude, wholeUnitsFrom);
   const displayed = wholeUnits ? toFixedWorklet(amount, 0) : rounded;
 
-  const abbreviate = style === 'compact' && greaterThanOrEqualToWorklet(displayed.replace('-', ''), COMPACT_AMOUNT_FROM);
-  const display = convertAmountToNativeDisplay(displayed, nativeCurrency, undefined, wholeUnits, abbreviate);
-  return abbreviate ? uppercaseSuffix(display) : display;
+  // The rounded values only pick the tier; what is shown is rounded once from the raw amount, so 184,949.5 reads `$184.9K`.
+  if (style === 'compact' && greaterThanOrEqualToWorklet(displayed.replace('-', ''), COMPACT_AMOUNT_FROM)) {
+    return uppercaseSuffix(convertAmountToNativeDisplay(amount, nativeCurrency, undefined, undefined, true));
+  }
+  return convertAmountToNativeDisplay(displayed, nativeCurrency, undefined, wholeUnits);
 }
 
 /** A token amount with its symbol, abbreviated from ten thousand up, e.g. `86.2M HABS`. */

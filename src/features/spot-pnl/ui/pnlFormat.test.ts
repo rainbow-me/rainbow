@@ -17,7 +17,9 @@ describe('formatNativeAmount', () => {
     { amount: '9999.4', currency: 'USD', style: 'compact', expected: '$9,999' },
     { amount: '9999.6', currency: 'USD', style: 'compact', expected: '$10K' },
     { amount: '9999.495', currency: 'USD', style: 'compact', expected: '$9,999' },
+    { amount: '10049.5', currency: 'USD', style: 'compact', expected: '$10K' },
     { amount: '32700', currency: 'USD', style: 'compact', expected: '$32.7K' },
+    { amount: '184949.5', currency: 'USD', style: 'compact', expected: '$184.9K' },
     { amount: '1900000', currency: 'USD', style: 'compact', expected: '$1.9M' },
 
     { amount: '0.00283', currency: 'USD', style: 'whole', expected: '$0.00283' },
