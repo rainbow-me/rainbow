@@ -36,15 +36,8 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { createTokenTradesStore, useTokenTradesStore, type WalletTokenTrades } from '../data/tokenTradesStore';
-import {
-  formatCompactTokenAmount,
-  formatNativeAmount,
-  formatPnlAmount,
-  formatPnlPercentage,
-  PnlArrow,
-  pnlColor,
-  pnlSign,
-} from './pnlDisplay';
+import { PnlArrow, pnlColor } from './pnlDisplay';
+import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;

@@ -7,7 +7,8 @@ import { useCurrencyConversionStore } from '@/features/currency/stores/currencyC
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
+import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
+import { formatNativeAmount, formatPnlAmount, formatPnlPercentage } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
