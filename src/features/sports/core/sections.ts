@@ -2,7 +2,7 @@ import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 
 import { type SportsWindow } from './browse';
 import { type SportsCatalog, type SportsScope } from './catalog';
-import { Game_Status, type Game } from './generated/common/sports/sports';
+import { GameStatus, type Game } from './generated/common/sports/sports';
 
 // ============ Types ========================================================== //
 
@@ -96,19 +96,19 @@ export function groupSportsGames(
 export function areSectionFieldsEqual(first: Game | undefined, second: Game | undefined): boolean {
   if (first === second) return true;
 
-  if (first?.status === Game_Status.STATUS_LIVE) {
-    return second?.status === Game_Status.STATUS_LIVE && areArraysEqual(first.competitionIds, second.competitionIds);
+  if (first?.status === GameStatus.GAME_STATUS_LIVE) {
+    return second?.status === GameStatus.GAME_STATUS_LIVE && areArraysEqual(first.competitionIds, second.competitionIds);
   }
 
-  if (first?.status === Game_Status.STATUS_SCHEDULED && first.startTime) {
+  if (first?.status === GameStatus.GAME_STATUS_SCHEDULED && first.startTime) {
     return (
-      second?.status === Game_Status.STATUS_SCHEDULED &&
+      second?.status === GameStatus.GAME_STATUS_SCHEDULED &&
       first.startTime === second.startTime &&
       areArraysEqual(first.competitionIds, second.competitionIds)
     );
   }
 
-  return second?.status !== Game_Status.STATUS_LIVE && (second?.status !== Game_Status.STATUS_SCHEDULED || !second.startTime);
+  return second?.status !== GameStatus.GAME_STATUS_LIVE && (second?.status !== GameStatus.GAME_STATUS_SCHEDULED || !second.startTime);
 }
 
 /**
@@ -137,9 +137,9 @@ function getSectionId(
   window: SportsWindow | undefined
 ): string | undefined {
   if (scopeId && !isInScope(catalog, scopeId, game)) return undefined;
-  if (game.status === Game_Status.STATUS_LIVE) return scopeId ? 'live' : getLiveGroupId(catalog, game);
+  if (game.status === GameStatus.GAME_STATUS_LIVE) return scopeId ? 'live' : getLiveGroupId(catalog, game);
 
-  if (game.status !== Game_Status.STATUS_SCHEDULED || !window || !game.startTime) return undefined;
+  if (game.status !== GameStatus.GAME_STATUS_SCHEDULED || !window || !game.startTime) return undefined;
 
   const startTime = Date.parse(game.startTime);
   if (!(startTime >= window.windowStartTime && startTime < window.windowEndTime)) return undefined;

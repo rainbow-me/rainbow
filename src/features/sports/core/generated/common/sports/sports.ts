@@ -8,6 +8,56 @@
 
 export const protobufPackage = "common.sports";
 
+export enum SportBrowseTarget {
+  SPORT_BROWSE_TARGET_UNSPECIFIED = "SPORT_BROWSE_TARGET_UNSPECIFIED",
+  SPORT_BROWSE_TARGET_GAMES = "SPORT_BROWSE_TARGET_GAMES",
+  SPORT_BROWSE_TARGET_COMPETITIONS = "SPORT_BROWSE_TARGET_COMPETITIONS",
+}
+
+export enum GameStatus {
+  /** GAME_STATUS_UNSPECIFIED - Status is unknown; the scheduled start does not establish whether a game is live. */
+  GAME_STATUS_UNSPECIFIED = "GAME_STATUS_UNSPECIFIED",
+  GAME_STATUS_SCHEDULED = "GAME_STATUS_SCHEDULED",
+  GAME_STATUS_LIVE = "GAME_STATUS_LIVE",
+  GAME_STATUS_ENDED = "GAME_STATUS_ENDED",
+  GAME_STATUS_POSTPONED = "GAME_STATUS_POSTPONED",
+  GAME_STATUS_CANCELLED = "GAME_STATUS_CANCELLED",
+}
+
+export enum GameInterruption {
+  /** GAME_INTERRUPTION_UNSPECIFIED - No reported interruption. */
+  GAME_INTERRUPTION_UNSPECIFIED = "GAME_INTERRUPTION_UNSPECIFIED",
+  GAME_INTERRUPTION_DELAYED = "GAME_INTERRUPTION_DELAYED",
+  GAME_INTERRUPTION_SUSPENDED = "GAME_INTERRUPTION_SUSPENDED",
+}
+
+export enum ParticipantRole {
+  PARTICIPANT_ROLE_UNSPECIFIED = "PARTICIPANT_ROLE_UNSPECIFIED",
+  PARTICIPANT_ROLE_HOME = "PARTICIPANT_ROLE_HOME",
+  PARTICIPANT_ROLE_AWAY = "PARTICIPANT_ROLE_AWAY",
+}
+
+export enum MoneylineKind {
+  MONEYLINE_KIND_UNSPECIFIED = "MONEYLINE_KIND_UNSPECIFIED",
+  MONEYLINE_KIND_TWO_WAY = "MONEYLINE_KIND_TWO_WAY",
+  MONEYLINE_KIND_THREE_WAY = "MONEYLINE_KIND_THREE_WAY",
+}
+
+export enum ScoreColumnKind {
+  SCORE_COLUMN_KIND_UNSPECIFIED = "SCORE_COLUMN_KIND_UNSPECIFIED",
+  SCORE_COLUMN_KIND_TOTAL = "SCORE_COLUMN_KIND_TOTAL",
+  SCORE_COLUMN_KIND_SET = "SCORE_COLUMN_KIND_SET",
+  SCORE_COLUMN_KIND_ROUNDS = "SCORE_COLUMN_KIND_ROUNDS",
+  SCORE_COLUMN_KIND_SERIES = "SCORE_COLUMN_KIND_SERIES",
+}
+
+export enum ScoreColumnWinner {
+  /** SCORE_COLUMN_WINNER_UNSPECIFIED - No confirmed winner, including incomplete and tied scores. */
+  SCORE_COLUMN_WINNER_UNSPECIFIED = "SCORE_COLUMN_WINNER_UNSPECIFIED",
+  SCORE_COLUMN_WINNER_FIRST = "SCORE_COLUMN_WINNER_FIRST",
+  SCORE_COLUMN_WINNER_SECOND = "SCORE_COLUMN_WINNER_SECOND",
+}
+
 /** SportsCatalog defines navigation and featured games for the Sports API. */
 export interface SportsCatalog {
   sports: Sport[];
@@ -31,14 +81,8 @@ export interface Sport {
     | string
     | undefined;
   /** Whether opening the sport shows its games or its competitions. */
-  browseTarget: Sport_BrowseTarget;
+  browseTarget: SportBrowseTarget;
   competitions: Competition[];
-}
-
-export enum Sport_BrowseTarget {
-  BROWSE_TARGET_UNSPECIFIED = "BROWSE_TARGET_UNSPECIFIED",
-  BROWSE_TARGET_GAMES = "BROWSE_TARGET_GAMES",
-  BROWSE_TARGET_COMPETITIONS = "BROWSE_TARGET_COMPETITIONS",
 }
 
 export interface Competition {
@@ -69,8 +113,8 @@ export interface Game {
     | undefined;
   /** Absent when no spread market is available. */
   spread?: Spread | undefined;
-  status: Game_Status;
-  interruption: Game_Interruption;
+  status: GameStatus;
+  interruption: GameInterruption;
   /** Display label, such as "Q2" or "Set 2". Absent when unavailable. */
   period?:
     | string
@@ -81,25 +125,8 @@ export interface Game {
     | undefined;
   /** Scores in display order. Empty when no reliable score is available. */
   scoreColumns: ScoreColumn[];
-  /** Primary event trading volume for display and sorting. Absent when unavailable. */
-  volumeUsd?: number | undefined;
-}
-
-export enum Game_Status {
-  /** STATUS_UNSPECIFIED - Status is unknown; the scheduled start does not establish whether a game is live. */
-  STATUS_UNSPECIFIED = "STATUS_UNSPECIFIED",
-  STATUS_SCHEDULED = "STATUS_SCHEDULED",
-  STATUS_LIVE = "STATUS_LIVE",
-  STATUS_ENDED = "STATUS_ENDED",
-  STATUS_POSTPONED = "STATUS_POSTPONED",
-  STATUS_CANCELLED = "STATUS_CANCELLED",
-}
-
-export enum Game_Interruption {
-  /** INTERRUPTION_UNSPECIFIED - No reported interruption. */
-  INTERRUPTION_UNSPECIFIED = "INTERRUPTION_UNSPECIFIED",
-  INTERRUPTION_DELAYED = "INTERRUPTION_DELAYED",
-  INTERRUPTION_SUSPENDED = "INTERRUPTION_SUSPENDED",
+  /** Primary event trading volume for display and sorting, such as "123456.78". Absent when unavailable. */
+  volumeUsd?: string | undefined;
 }
 
 export interface Participant {
@@ -113,16 +140,10 @@ export interface Participant {
   /** Display color supplied by the provider, such as "#0080C0". */
   color?: string | undefined;
   role?:
-    | Participant_Role
+    | ParticipantRole
     | undefined;
   /** Outcome for this participant to win. Absent when unavailable. */
   moneylineOutcome?: PolymarketOutcome | undefined;
-}
-
-export enum Participant_Role {
-  ROLE_UNSPECIFIED = "ROLE_UNSPECIFIED",
-  ROLE_HOME = "ROLE_HOME",
-  ROLE_AWAY = "ROLE_AWAY",
 }
 
 /**
@@ -131,15 +152,9 @@ export enum Participant_Role {
  */
 export interface Moneyline {
   /** Market type, including when some outcomes are unavailable. */
-  kind: Moneyline_Kind;
+  kind: MoneylineKind;
   /** Draw outcome, available only for a three-way moneyline. */
   draw?: PolymarketOutcome | undefined;
-}
-
-export enum Moneyline_Kind {
-  KIND_UNSPECIFIED = "KIND_UNSPECIFIED",
-  KIND_TWO_WAY = "KIND_TWO_WAY",
-  KIND_THREE_WAY = "KIND_THREE_WAY",
 }
 
 /** PolymarketOutcome identifies a market outcome. Its price is not an execution quote. */
@@ -170,35 +185,20 @@ export interface SpreadOutcome {
   /** Zero-based source-market index, independent of participant order. */
   outcomeIndex: number;
   /**
-   * Added to this participant's final score before comparison with the opponent's score.
+   * Added to this participant's final score before comparison with the opponent's score, such as "-2.5".
    * The other participant has the opposite adjustment.
    */
-  scoreAdjustment: number;
+  scoreAdjustment: string;
   /** Snapshot price per share from 0 to 1, such as "0.52". Absent when unavailable. */
   priceUsd?: string | undefined;
 }
 
 /** ScoreColumn pairs scores in Game.participants order. */
 export interface ScoreColumn {
-  kind: ScoreColumn_Kind;
+  kind: ScoreColumnKind;
   first?: ScoreValue | undefined;
   second?: ScoreValue | undefined;
-  winner: ScoreColumn_Winner;
-}
-
-export enum ScoreColumn_Kind {
-  KIND_UNSPECIFIED = "KIND_UNSPECIFIED",
-  KIND_TOTAL = "KIND_TOTAL",
-  KIND_SET = "KIND_SET",
-  KIND_ROUNDS = "KIND_ROUNDS",
-  KIND_SERIES = "KIND_SERIES",
-}
-
-export enum ScoreColumn_Winner {
-  /** WINNER_UNSPECIFIED - No confirmed winner, including incomplete and tied scores. */
-  WINNER_UNSPECIFIED = "WINNER_UNSPECIFIED",
-  WINNER_FIRST = "WINNER_FIRST",
-  WINNER_SECOND = "WINNER_SECOND",
+  winner: ScoreColumnWinner;
 }
 
 export interface ScoreValue {

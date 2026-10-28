@@ -1,5 +1,5 @@
 import { type SportsDestination } from './browse';
-import { Sport_BrowseTarget, type SportsCatalog as CatalogMessage, type Competition } from './generated/common/sports/sports';
+import { SportBrowseTarget, type SportsCatalog as CatalogMessage, type Competition } from './generated/common/sports/sports';
 
 /**
  * A sport or competition in the browse catalog.
@@ -49,7 +49,7 @@ export function buildSportsCatalog(catalog: CatalogMessage, revision: number): S
       name: sport.name,
       imageUrl: sport.imageUrl,
       color: sport.color,
-      directoryIds: sport.browseTarget === Sport_BrowseTarget.BROWSE_TARGET_COMPETITIONS ? childIds : undefined,
+      directoryIds: sport.browseTarget === SportBrowseTarget.SPORT_BROWSE_TARGET_COMPETITIONS ? childIds : undefined,
       searchName: sport.name.toLocaleLowerCase(),
       category,
     };

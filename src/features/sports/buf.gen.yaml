@@ -10,7 +10,7 @@ plugins:
       - unrecognizedEnum=false
 inputs:
   - git_repo: https://github.com/rainbow-me/protobuf-registry.git
-    ref: 2626fb57c16c0f360ae0c4fa36faa9a9562bc6f4
+    ref: 99509e2c4d3f7c2105788c9ac249dae59bc2e1bc
     paths:
       - schemas/common/v1/common/sports/sports.proto
       - schemas/gateways/v1/external/sports/requests.proto
