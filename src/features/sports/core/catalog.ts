@@ -1,5 +1,5 @@
 import { type SportsDestination } from './browse';
-import { SportBrowseTarget, type SportsCatalog as CatalogMessage, type Competition } from './generated/common/sports/sports';
+import { SportBrowseTarget, type SportsCatalog as CatalogMessage, type Competition } from './generated/external/sports/payload';
 
 /**
  * A sport or competition in the browse catalog.

@@ -2,7 +2,7 @@ import { createQueryStore, queryParam } from '@storesjs/stores';
 
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { type PolymarketOutcome } from '@/features/sports/core/generated/common/sports/sports';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import Routes from '@/navigation/routesNames';

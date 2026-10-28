@@ -2,11 +2,11 @@
 // versions:
 //   protoc-gen-ts_proto  v2.12.4
 //   protoc               unknown
-// source: common/sports/sports.proto
+// source: external/sports/payload.proto
 
 /* eslint-disable */
 
-export const protobufPackage = "common.sports";
+export const protobufPackage = "external.sports";
 
 export enum SportBrowseTarget {
   SPORT_BROWSE_TARGET_UNSPECIFIED = "SPORT_BROWSE_TARGET_UNSPECIFIED",

@@ -11,7 +11,7 @@ import {
   type GamesForEventsResult,
   type GamesResult,
   type SearchGamesResult,
-} from '@/features/sports/core/generated/common/sports/sports';
+} from '@/features/sports/core/generated/external/sports/payload';
 import {
   areSectionFieldsEqual,
   groupSportsGames,

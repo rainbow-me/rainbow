@@ -2,7 +2,7 @@ import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 
 import { type SportsWindow } from './browse';
 import { type SportsCatalog, type SportsScope } from './catalog';
-import { GameStatus, type Game } from './generated/common/sports/sports';
+import { GameStatus, type Game } from './generated/external/sports/payload';
 
 // ============ Types ========================================================== //
 
