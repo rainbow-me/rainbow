@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js b/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
+--- a/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
++++ b/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
+@@ -8,7 +8,7 @@
+   },
+ 
+   layer: {
+-    ...StyleSheet.absoluteFillObject,
++    ...StyleSheet.absoluteFill,
+ 
+     justifyContent: 'flex-start',
+     alignItems: 'center',
