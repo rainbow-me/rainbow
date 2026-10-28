@@ -13,6 +13,7 @@ import { type TextProps } from '@/design-system/components/Text/Text';
 import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
@@ -52,19 +53,29 @@ const LOADING_HEIGHT = 120;
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
-    params: { address, chainId, walletAddress: routeWalletAddress },
+    params: { address, chainId, ensName, walletAddress: routeWalletAddress },
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
   const selectedWalletAddress = userAssetsStoreManager(state => state.address);
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
 
   return (
     <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
-      {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} />}
+      {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} ensName={ensName} />}
     </PanelSheet>
   );
 });
 
-function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAddress: string; chainId: ChainId; walletAddress: string }) {
+function SpotPnlSheetContent({
+  tokenAddress,
+  chainId,
+  walletAddress,
+  ensName,
+}: {
+  tokenAddress: string;
+  chainId: ChainId;
+  walletAddress: string;
+  ensName: string | undefined;
+}) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const uniqueId = getUniqueId(tokenAddress, chainId);
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
@@ -98,7 +109,7 @@ function SpotPnlSheetContent({ tokenAddress, chainId, walletAddress }: { tokenAd
             {symbol}
           </Text>
         </Box>
-        <WalletChip walletAddress={walletAddress} />
+        <WalletChip walletAddress={walletAddress} ensName={ensName} />
       </Box>
       <SpotPnlSection
         balance={balance}
@@ -215,8 +226,10 @@ function SpotPnlPlaceholder({ isSettled }: { isSettled: boolean }) {
   );
 }
 
-function WalletChip({ walletAddress }: { walletAddress: string }) {
+function WalletChip({ walletAddress, ensName }: { walletAddress: string; ensName: string | undefined }) {
   const { accountColor, accountENS, accountImage, accountName, accountSymbol } = useAccountProfileInfo(walletAddress as Address);
+  const displayEns = accountENS ?? ensName;
+  const { data: ensAvatar } = useENSAvatar(ensName ?? '', { enabled: !accountImage && !!ensName });
 
   return (
     <Box
@@ -239,11 +252,11 @@ function WalletChip({ walletAddress }: { walletAddress: string }) {
           emoji={accountSymbol || undefined}
           label={accountName ?? ''}
           size={18}
-          url={accountImage}
+          url={accountImage ?? ensAvatar?.imageUrl}
         />
       </Box>
       <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
-        {abbreviateEnsForDisplay(accountENS) ?? abbreviateAddress(walletAddress, 4, 6)}
+        {abbreviateEnsForDisplay(displayEns) ?? abbreviateAddress(walletAddress, 4, 6)}
       </Text>
     </Box>
   );

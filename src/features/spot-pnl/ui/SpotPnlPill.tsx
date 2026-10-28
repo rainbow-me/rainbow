@@ -7,7 +7,6 @@ import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValu
 import { Box, Text } from '@/design-system';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { isNativeAsset } from '@/handlers/assets';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -17,6 +16,7 @@ import { useTheme } from '@/theme/ThemeContext';
 import { calculateSpotPnl, type TokenTrades } from '../core/spotPnl';
 import { useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
+import { isSpotPnlEligible } from './spotPnlEligibility';
 
 type SpotPnlPillToken = {
   address: string;
@@ -38,7 +38,7 @@ type SpotPnlPillProps = {
 /** Unrealized P&L while purchased tokens are held, otherwise realized P&L once they have all been sold. */
 export function SpotPnlPill({ token, surfaceColor, tokenType }: SpotPnlPillProps) {
   const isEnabled = useSpotPnlTokenId(Boolean);
-  const isEligible = isEnabled && tokenType !== undefined && tokenType !== 'stablecoin' && !isNativeAsset(token.address, token.chainId);
+  const isEligible = isEnabled && isSpotPnlEligible({ address: token.address, chainId: token.chainId, type: tokenType });
 
   if (!isEligible) return null;
   return <SpotPnlPillContent token={token} surfaceColor={surfaceColor} />;
@@ -50,7 +50,6 @@ function SpotPnlPillContent({
 }: Omit<SpotPnlPillProps, 'tokenType'>) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  // Subscribing here, behind the eligibility gate, is what triggers the fetch
   const fetchedTrades = useTokenTradesStore(state => state.getData());
   const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
   const walletAddress = userAssetsStoreManager(state => state.address);

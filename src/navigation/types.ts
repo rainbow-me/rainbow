@@ -734,6 +734,8 @@ type ParamsByRoute = {
     chainId: ChainId;
     /** Defaults to the selected wallet. */
     walletAddress?: string;
+    /** The wallet's ENS name when already resolved, shown for wallets that are not the user's. */
+    ensName?: string;
   };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
