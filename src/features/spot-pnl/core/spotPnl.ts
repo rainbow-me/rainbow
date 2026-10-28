@@ -11,6 +11,21 @@ export type TokenTrades = TokenAcquisition & {
   lastTransactionAt: number;
 };
 
+export type WalletTokenTrades = TokenTrades & {
+  /** Token units the wallet holds now. */
+  tokenBalanceLive: string;
+};
+
+/** Realized figures in USD. */
+export type RealizedReturnUsd = {
+  /** Signed realized profit. */
+  amount: string;
+  /** Signed, where 1 is 1%; `null` when the sold tokens have no cost to relate the profit to. */
+  percentage: string | null;
+  /** Cost of the tokens sold. */
+  cost: string;
+};
+
 export type SpotPnlVariant = 'unrealized' | 'partiallyRealized' | 'fullyRealized';
 
 export type PnlReturn = {
@@ -53,11 +68,12 @@ export function calculateSpotPnl({
   price: string;
   usdToNativeRate: number;
 }): SpotPnl | null {
-  const { purchasedTokenBalance, tokenAcquisitionCostUsd, tokenAmountSold1y, amountSoldUsd1y, realizedProfitUsd1y } = trades;
+  const { purchasedTokenBalance, tokenAcquisitionCostUsd, tokenAmountSold1y, amountSoldUsd1y } = trades;
   const hasSold = greaterThanWorklet(tokenAmountSold1y, 0);
   const toNative = (usd: string) => mulWorklet(usd, usdToNativeRate);
-  const soldCostUsd = subWorklet(amountSoldUsd1y, realizedProfitUsd1y);
-  const realized: PnlReturn = { amount: toNative(realizedProfitUsd1y), percentage: percentageOf(realizedProfitUsd1y, soldCostUsd) };
+  const realizedUsd = calculateRealizedReturn(trades);
+  const soldCostUsd = realizedUsd.cost;
+  const realized: PnlReturn = { amount: toNative(realizedUsd.amount), percentage: realizedUsd.percentage };
 
   const position = calculateUnrealizedPnl({ acquisition: trades, balance, price, usdToNativeRate });
   const isHeld = greaterThanWorklet(purchasedTokenBalance, 0) && greaterThanWorklet(balance, 0);
@@ -71,7 +87,7 @@ export function calculateSpotPnl({
       avgExit: toNative(divWorklet(amountSoldUsd1y, tokenAmountSold1y)),
       realized,
       excludedBalance: balance,
-      headlineUsd: realizedProfitUsd1y,
+      headlineUsd: realizedUsd.amount,
     };
   }
 
@@ -88,7 +104,7 @@ export function calculateSpotPnl({
 
   if (!hasSold) return { variant: 'unrealized', ...held, headlineUsd: positionPnlUsd };
 
-  const totalUsd = sumWorklet(realizedProfitUsd1y, positionPnlUsd);
+  const totalUsd = sumWorklet(realizedUsd.amount, positionPnlUsd);
   return {
     variant: 'partiallyRealized',
     ...held,
@@ -99,6 +115,15 @@ export function calculateSpotPnl({
     },
     headlineUsd: totalUsd,
   };
+}
+
+/** Realized P&L of the tokens sold in Codex's one-year window. */
+export function calculateRealizedReturn({
+  amountSoldUsd1y,
+  realizedProfitUsd1y,
+}: Pick<TokenTrades, 'amountSoldUsd1y' | 'realizedProfitUsd1y'>): RealizedReturnUsd {
+  const cost = subWorklet(amountSoldUsd1y, realizedProfitUsd1y);
+  return { amount: realizedProfitUsd1y, percentage: percentageOf(realizedProfitUsd1y, cost), cost };
 }
 
 function percentageOf(amount: string, cost: string): string | null {

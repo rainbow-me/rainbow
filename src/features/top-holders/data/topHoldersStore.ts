@@ -5,13 +5,23 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
-import { fetchWalletsTokenTrades } from '@/features/spot-pnl/data/tokenTradesStore';
+import { WALLET_TOKEN_TRADES_FIELDS } from '@/features/spot-pnl/data/tokenTradesStore';
 import { divWorklet, powWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
 
-import { isHolderWalletFilter, rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
+import {
+  isHolderWalletFilter,
+  rankHolding,
+  rankRealized,
+  rankUnrealized,
+  TOP_HOLDERS_LIMIT,
+  type HolderWalletFilter,
+  type TokenHolder,
+  type TokenTrader,
+  type TopHolders,
+} from '../core/topHolders';
 
 export type TopHoldersParams = {
   /** `null` when the viewed token is not P&L-eligible. */
@@ -19,30 +29,34 @@ export type TopHoldersParams = {
   filter: HolderWalletFilter;
 };
 
-type HoldersResponse = {
+type TradersResponse = { results: TokenTrader[] };
+
+type TopHoldersResponse = {
   holders: {
     status: 'ENABLED' | 'DISABLED';
     items: {
       address: string;
       /** Raw integer amount. */
       balance: string;
-      tokenPriceUsd: string | null;
       wallet: { category: string | null; identityLabels: string[] | null } | null;
     }[];
   };
   token: { decimals: number; info: { totalSupply: string | null } | null } | null;
+  prices: ({ priceUsd: number | null } | null)[];
+  unrealized: TradersResponse;
+  realized: TradersResponse;
 };
 
-/** Codex's maximum page size for both queries. */
-const HOLDERS_SCANNED = 200;
+/** Codex's maximum page size. */
+const CODEX_PAGE_SIZE = 200;
 
-const HOLDERS_QUERY = `query TopHolders($tokenId: String!, $address: String!, $networkId: Int!) {
-  holders(input: { tokenId: $tokenId, limit: ${HOLDERS_SCANNED}, sort: { attribute: BALANCE, direction: DESC } }) {
+// Codex can't rank traders by unrealized P&L, which depends on the price, so the largest bought positions are ranked locally
+const TOP_HOLDERS_QUERY = `query TopHolders($tokenId: String!, $address: String!, $networkId: Int!, $excludeLabels: [String]) {
+  holders(input: { tokenId: $tokenId, limit: ${CODEX_PAGE_SIZE}, sort: { attribute: BALANCE, direction: DESC } }) {
     status
     items {
       address
       balance
-      tokenPriceUsd
       wallet {
         category
         identityLabels
@@ -55,6 +69,37 @@ const HOLDERS_QUERY = `query TopHolders($tokenId: String!, $address: String!, $n
       totalSupply
     }
   }
+  prices: getTokenPrices(inputs: [{ address: $address, networkId: $networkId }]) {
+    priceUsd
+  }
+  unrealized: filterTokenWallets(
+    input: {
+      tokenIds: [$tokenId]
+      limit: ${CODEX_PAGE_SIZE}
+      excludeLabels: $excludeLabels
+      rankings: [{ attribute: purchasedTokenBalance, direction: DESC }]
+      filtersV2: { purchasedTokenBalance: { gt: 0 }, tokenBalance: { gt: 0 }, tokenAcquisitionCostUsd: { gt: 0 } }
+    }
+  ) {
+    results {
+      address
+      ${WALLET_TOKEN_TRADES_FIELDS}
+    }
+  }
+  realized: filterTokenWallets(
+    input: {
+      tokenIds: [$tokenId]
+      limit: ${TOP_HOLDERS_LIMIT}
+      excludeLabels: $excludeLabels
+      rankings: [{ attribute: realizedProfitUsd1y, direction: DESC }]
+      filtersV2: { tokenAmountSold1y: { gt: 0 } }
+    }
+  ) {
+    results {
+      address
+      ${WALLET_TOKEN_TRADES_FIELDS}
+    }
+  }
 }`;
 
 export const useTopHoldersEnabledStore = createDerivedStore($ => {
@@ -64,8 +109,8 @@ export const useTopHoldersEnabledStore = createDerivedStore($ => {
 });
 
 /**
- * The viewed token's Top Holders lists. Codex returns at most {@link HOLDERS_SCANNED} holders, which bounds which
- * holders can rank by profit. `null` when there is no holder to show.
+ * The viewed token's Top Holders lists. Holding ranks Codex's top {@link CODEX_PAGE_SIZE} holders; Unrealized ranks
+ * the {@link CODEX_PAGE_SIZE} largest bought positions still held. `null` when no list has a row.
  */
 export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
@@ -87,40 +132,45 @@ async function fetchTopHolders({ token, filter }: TopHoldersParams, abortControl
   if (!token) return null;
   const tokenId = getCodexTokenId(token.address, token.chainId);
   try {
-    const { holders, token: codexToken } = await postCodex<HoldersResponse>(
-      HOLDERS_QUERY,
-      { tokenId, address: token.address, networkId: token.chainId },
+    const response = await postCodex<TopHoldersResponse>(
+      TOP_HOLDERS_QUERY,
+      { tokenId, address: token.address, networkId: token.chainId, excludeLabels: filter.excludedLabels },
       abortController
     );
-    const priceUsd = holders.items.find(item => item.tokenPriceUsd)?.tokenPriceUsd;
-    if (holders.status !== 'ENABLED' || !holders.items.length || !codexToken || !priceUsd) return null;
-
-    const tradesByAddress = await fetchWalletsTokenTrades(
-      holders.items.map(item => item.address),
-      tokenId,
-      abortController
-    );
-    const unit = powWorklet(10, codexToken.decimals);
-
-    const topHolders = rankTopHolders(
-      {
-        holders: holders.items.map(
-          (item): TokenHolder => ({
-            address: item.address,
-            balance: divWorklet(item.balance, unit),
-            category: item.wallet?.category ?? null,
-            identityLabels: item.wallet?.identityLabels ?? [],
-            trades: tradesByAddress.get(item.address.toLowerCase()) ?? null,
-          })
-        ),
-        priceUsd,
-        totalSupply: codexToken.info?.totalSupply ?? '0',
-      },
-      filter
-    );
-    return topHolders.byStake.length ? topHolders : null;
+    const topHolders = rankTopHolders(response, filter);
+    return topHolders.holding.length || topHolders.unrealized.length || topHolders.realized.length ? topHolders : null;
   } catch (error) {
     logger.error(new RainbowError('[topHoldersStore] Codex top holders fetch failed', error), { tokenId });
     throw error;
   }
+}
+
+function rankTopHolders({ holders, token, prices, unrealized, realized }: TopHoldersResponse, filter: HolderWalletFilter): TopHolders {
+  const priceUsd = prices[0]?.priceUsd;
+  const hasPrice = priceUsd != null && priceUsd > 0;
+  const hasHolders = holders.status === 'ENABLED' && !!token;
+  const unit = token ? powWorklet(10, token.decimals) : '1';
+
+  return {
+    holding:
+      hasPrice && hasHolders
+        ? rankHolding(
+            {
+              holders: holders.items.map(
+                (item): TokenHolder => ({
+                  address: item.address,
+                  balance: divWorklet(item.balance, unit),
+                  category: item.wallet?.category ?? null,
+                  identityLabels: item.wallet?.identityLabels ?? [],
+                })
+              ),
+              priceUsd: String(priceUsd),
+              totalSupply: token.info?.totalSupply ?? '0',
+            },
+            filter
+          )
+        : [],
+    unrealized: hasPrice ? rankUnrealized(unrealized.results, String(priceUsd)) : [],
+    realized: rankRealized(realized.results),
+  };
 }

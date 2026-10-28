@@ -28,24 +28,31 @@ const NAMED = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 const UNNAMED = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 const BROKEN_RECORD = '0xcccccccccccccccccccccccccccccccccccccccc';
 
-function respondWithHolders(addresses: string[]) {
-  const body = (data: unknown) => new Response(JSON.stringify({ data }), { headers: { 'Content-Type': 'application/json' } });
-  vi.mocked(fetch)
-    .mockResolvedValueOnce(
-      body({
-        holders: {
-          status: 'ENABLED',
-          items: addresses.map(address => ({
-            address,
-            balance: '1000000000000000000',
-            tokenPriceUsd: '2',
-            wallet: { category: 'NORMIE', identityLabels: null },
-          })),
+function respondWithHolders(addresses: string[], sellers: string[] = []) {
+  const sold = { purchasedTokenBalance: '0', tokenAcquisitionCostUsd: '0', tokenBalanceLive: '0', lastTransactionAt: 0 };
+  vi.mocked(fetch).mockResolvedValueOnce(
+    new Response(
+      JSON.stringify({
+        data: {
+          holders: {
+            status: 'ENABLED',
+            items: addresses.map(address => ({
+              address,
+              balance: '1000000000000000000',
+              wallet: { category: 'NORMIE', identityLabels: null },
+            })),
+          },
+          token: { decimals: 18, info: { totalSupply: '1000' } },
+          prices: [{ priceUsd: 2 }],
+          unrealized: { results: [] },
+          realized: {
+            results: sellers.map(address => ({ address, ...sold, tokenAmountSold1y: '1', amountSoldUsd1y: '2', realizedProfitUsd1y: '1' })),
+          },
         },
-        token: { decimals: 18, info: { totalSupply: '1000' } },
-      })
+      }),
+      { headers: { 'Content-Type': 'application/json' } }
     )
-    .mockResolvedValueOnce(body({ filterTokenWallets: { results: [] } }));
+  );
 }
 
 function ethersError(code: string) {
@@ -70,7 +77,7 @@ describe('useTopHolderNamesStore', () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, false);
   });
 
-  it('lists holders before their names resolve, then names the ones with a valid reverse record', async () => {
+  it('lists every tab before its names resolve, then names the ones with a valid reverse record', async () => {
     let resolveNamed: (name: string) => void = () => undefined;
     lookupAddress.mockImplementation(address => {
       if (address.toLowerCase() === NAMED) {
@@ -81,12 +88,14 @@ describe('useTopHolderNamesStore', () => {
       if (address.toLowerCase() === BROKEN_RECORD) return Promise.reject(ethersError(Logger.errors.CALL_EXCEPTION));
       return Promise.resolve(null);
     });
-    respondWithHolders([NAMED, UNNAMED, BROKEN_RECORD]);
+    // A seller that is also a holder is looked up once
+    respondWithHolders([NAMED, UNNAMED], [BROKEN_RECORD, NAMED.toUpperCase().replace('0X', '0x')]);
 
     useChartsStore.getState().setToken({ address: '0xnamed', chainId: 8453 });
 
-    await vi.waitFor(() => expect(useTopHoldersStore.getState().getData()?.byStake).toHaveLength(3));
+    await vi.waitFor(() => expect(useTopHoldersStore.getState().getData()?.realized).toHaveLength(2));
     expect(useTopHolderNamesStore.getState().getData()).toBeNull();
+    await vi.waitFor(() => expect(lookupAddress).toHaveBeenCalledTimes(3));
 
     resolveNamed('named.eth');
     await vi.waitFor(() => expect(useTopHolderNamesStore.getState().getData()).toEqual({ [NAMED]: 'named.eth' }));

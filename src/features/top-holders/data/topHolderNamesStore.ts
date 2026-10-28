@@ -30,7 +30,7 @@ export const useTopHolderNamesStore = createQueryStore<Record<string, string>, T
         state => {
           const topHolders = state.getData();
           if (!topHolders) return [];
-          const listed = [...topHolders.byStake, ...topHolders.byProfit].map(row => row.holder.address.toLowerCase());
+          const listed = [...topHolders.holding, ...topHolders.unrealized, ...topHolders.realized].map(row => row.address.toLowerCase());
           return [...new Set(listed)].sort();
         },
         shallowEqual

@@ -1,5 +1,7 @@
 import React, { memo, useState } from 'react';
 
+import { shallowEqual } from '@storesjs/stores';
+
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
@@ -8,8 +10,9 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
-import { formatNativeAmount, formatPnlAmount, formatPnlPercentage } from '@/features/spot-pnl/ui/pnlFormat';
+import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -19,11 +22,12 @@ import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
-import { type ProfitHolderRow, type StakeHolderRow, type TokenHolder } from '../core/topHolders';
+import { type HoldingRow, type RealizedRow, type UnrealizedRow } from '../core/topHolders';
 import { useTopHolderNamesStore } from '../data/topHolderNamesStore';
 import { useTopHoldersStore } from '../data/topHoldersStore';
 
-type Tab = 'stake' | 'profit';
+const TABS = ['holding', 'unrealized', 'realized'] as const;
+type Tab = (typeof TABS)[number];
 
 export const HOLDER_ROW_HEIGHT = 58;
 export const HOLDER_ROW_SEPARATOR_HEIGHT = 1;
@@ -32,21 +36,25 @@ export const TAB_TOGGLE_GAP = 8;
 const AVATAR_SIZE = 32;
 const RANK_WIDTH = 40;
 
-/** The Top Holders lists for the viewed token. Renders nothing until there is a holder to show. */
+/** The Top Holders lists for the viewed token, one tab per list that has a row. Renders nothing until there is a row to show. */
 export const TopHolders = memo(function TopHolders({ token }: { token: { address: string; chainId: ChainId } }) {
-  const [selectedTab, setSelectedTab] = useState<Tab>('stake');
-  const hasProfitHolders = useTopHoldersStore(state => !!state.getData()?.byProfit.length);
-  const tab = hasProfitHolders ? selectedTab : 'stake';
+  const [selectedTab, setSelectedTab] = useState<Tab>('holding');
+  const tabs = useTopHoldersStore(state => {
+    const topHolders = state.getData();
+    return topHolders ? TABS.filter(tab => topHolders[tab].length) : [];
+  }, shallowEqual);
+  const tab = tabs.includes(selectedTab) ? selectedTab : tabs[0];
+  if (!tab) return null;
 
   return (
     <Box gap={TAB_TOGGLE_GAP}>
-      {hasProfitHolders && <TabToggle selectedTab={tab} onSelect={setSelectedTab} />}
+      {tabs.length > 1 && <TabToggle selectedTab={tab} tabs={tabs} onSelect={setSelectedTab} />}
       <HolderList tab={tab} token={token} />
     </Box>
   );
 });
 
-function TabToggle({ selectedTab, onSelect }: { selectedTab: Tab; onSelect: (tab: Tab) => void }) {
+function TabToggle({ onSelect, selectedTab, tabs }: { onSelect: (tab: Tab) => void; selectedTab: Tab; tabs: Tab[] }) {
   const accent = useForegroundColor('accent');
 
   return (
@@ -59,18 +67,15 @@ function TabToggle({ selectedTab, onSelect }: { selectedTab: Tab; onSelect: (tab
       height={{ custom: TAB_TOGGLE_HEIGHT }}
       padding={{ custom: 3 }}
     >
-      <TabButton
-        label={i18n.t(i18n.l.expanded_state.sections.top_holders.by_stake)}
-        tab="stake"
-        selectedTab={selectedTab}
-        onSelect={onSelect}
-      />
-      <TabButton
-        label={i18n.t(i18n.l.expanded_state.sections.top_holders.by_profit)}
-        tab="profit"
-        selectedTab={selectedTab}
-        onSelect={onSelect}
-      />
+      {tabs.map(tab => (
+        <TabButton
+          key={tab}
+          label={i18n.t(i18n.l.expanded_state.sections.top_holders[tab])}
+          tab={tab}
+          selectedTab={selectedTab}
+          onSelect={onSelect}
+        />
+      ))}
     </Box>
   );
 }
@@ -93,12 +98,12 @@ function TabButton({ label, onSelect, selectedTab, tab }: { label: string; onSel
         >
           {isSelected ? (
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text align="center" color="accent" size="17pt" weight="heavy">
+              <Text align="center" color="accent" numberOfLines={1} size="17pt" weight="heavy">
                 {label}
               </Text>
             </TextShadow>
           ) : (
-            <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
+            <Text align="center" color="labelSecondary" numberOfLines={1} size="17pt" weight="heavy">
               {label}
             </Text>
           )}
@@ -115,10 +120,10 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
   if (!topHolders) return null;
 
   const rows =
-    tab === 'stake'
-      ? topHolders.byStake.map((row, index) => (
-          <StakeRow
-            key={row.holder.address}
+    tab === 'holding'
+      ? topHolders.holding.map((row, index) => (
+          <HoldingHolderRow
+            key={row.address}
             nativeCurrency={nativeCurrency}
             rank={index + 1}
             row={row}
@@ -126,16 +131,27 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
             usdToNativeRate={usdToNativeRate}
           />
         ))
-      : topHolders.byProfit.map((row, index) => (
-          <ProfitRow
-            key={row.holder.address}
-            nativeCurrency={nativeCurrency}
-            rank={index + 1}
-            row={row}
-            token={token}
-            usdToNativeRate={usdToNativeRate}
-          />
-        ));
+      : tab === 'unrealized'
+        ? topHolders.unrealized.map((row, index) => (
+            <UnrealizedHolderRow
+              key={row.address}
+              nativeCurrency={nativeCurrency}
+              rank={index + 1}
+              row={row}
+              token={token}
+              usdToNativeRate={usdToNativeRate}
+            />
+          ))
+        : topHolders.realized.map((row, index) => (
+            <RealizedHolderRow
+              key={row.address}
+              nativeCurrency={nativeCurrency}
+              rank={index + 1}
+              row={row}
+              token={token}
+              usdToNativeRate={usdToNativeRate}
+            />
+          ));
 
   return (
     <Box>
@@ -157,12 +173,12 @@ type RowProps<T> = {
   usdToNativeRate: number;
 };
 
-const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<StakeHolderRow>) {
+const HoldingHolderRow = memo(function HoldingHolderRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<HoldingRow>) {
   const supply = lessThanWorklet(row.supplyPercentage, 0.01) ? '<0.01%' : `${toFixedWorklet(row.supplyPercentage, 2)}%`;
 
   return (
     <HolderRow
-      holder={row.holder}
+      address={row.address}
       rank={rank}
       subtitle={
         <Box flexDirection="row" gap={3}>
@@ -183,48 +199,105 @@ const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdT
   );
 });
 
-const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<ProfitHolderRow>) {
-  const { colors } = useTheme();
-  const { direction } = formatPnlAmount(mulWorklet(row.pnl.amount, usdToNativeRate), nativeCurrency);
-  const color = pnlColor(direction, colors);
-
+const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
+  nativeCurrency,
+  rank,
+  row,
+  token,
+  usdToNativeRate,
+}: RowProps<UnrealizedRow>) {
   return (
-    <HolderRow holder={row.holder} rank={rank} token={token}>
-      <Box alignItems="flex-end" gap={10}>
-        <Text color="label" size="17pt" weight="semibold">
-          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency)}
-        </Text>
-        <Box flexDirection="row" alignItems="center" gap={2}>
-          <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />
-          <Text color={color} size="15pt" weight="bold">
-            {formatPnlPercentage(row.pnl.percentage)}
+    <HolderRow
+      address={row.address}
+      rank={rank}
+      subtitle={
+        <Box flexDirection="row" gap={3}>
+          <Text color="labelQuinary" size="13pt" weight="semibold">
+            {i18n.t(i18n.l.spot_pnl_sheet.avg_entry)}
+          </Text>
+          <Text color="labelQuaternary" size="13pt" weight="semibold" numberOfLines={1}>
+            {formatAssetPrice({ value: mulWorklet(row.avgEntryUsd, usdToNativeRate), currency: nativeCurrency })}
           </Text>
         </Box>
-      </Box>
+      }
+      token={token}
+    >
+      <PnlFigures
+        amountUsd={row.pnl.amount}
+        nativeCurrency={nativeCurrency}
+        percentage={row.pnl.percentage}
+        usdToNativeRate={usdToNativeRate}
+      />
     </HolderRow>
   );
 });
 
+const RealizedHolderRow = memo(function RealizedHolderRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<RealizedRow>) {
+  return (
+    <HolderRow address={row.address} rank={rank} token={token}>
+      <PnlFigures
+        amountUsd={row.realized.amount}
+        nativeCurrency={nativeCurrency}
+        percentage={row.realized.percentage}
+        usdToNativeRate={usdToNativeRate}
+      />
+    </HolderRow>
+  );
+});
+
+/** A signed P&L amount over its percentage, coloured by direction. */
+function PnlFigures({
+  amountUsd,
+  nativeCurrency,
+  percentage,
+  usdToNativeRate,
+}: {
+  amountUsd: string;
+  nativeCurrency: NativeCurrencyKey;
+  percentage: string | null;
+  usdToNativeRate: number;
+}) {
+  const { colors } = useTheme();
+  const { direction, display } = formatPnlAmount(mulWorklet(amountUsd, usdToNativeRate), nativeCurrency);
+  const color = pnlColor(direction, colors);
+
+  return (
+    <Box alignItems="flex-end" gap={10}>
+      <Text color="label" size="17pt" weight="semibold">
+        {`${pnlSign(direction)}${display}`}
+      </Text>
+      {percentage !== null && (
+        <Box flexDirection="row" alignItems="center" gap={2}>
+          <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />
+          <Text color={color} size="15pt" weight="bold">
+            {formatPnlPercentage(percentage)}
+          </Text>
+        </Box>
+      )}
+    </Box>
+  );
+}
+
 function HolderRow({
+  address,
   children,
-  holder,
   rank,
   subtitle,
   token,
 }: {
+  address: string;
   children: React.ReactNode;
-  holder: TokenHolder;
   rank: number;
   subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
 }) {
-  const ensName = useTopHolderNamesStore(state => state.getData()?.[holder.address.toLowerCase()] ?? null);
+  const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
 
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {
       address: token.address,
       chainId: token.chainId,
-      walletAddress: holder.address,
+      walletAddress: address,
       ensName: ensName ?? undefined,
     });
 
@@ -239,10 +312,10 @@ function HolderRow({
           </TextShadow>
         </Box>
         <Box flexDirection="row" alignItems="center" flexGrow={1} flexShrink={1} gap={12}>
-          <HolderAvatar address={holder.address} ensName={ensName} />
+          <HolderAvatar address={address} ensName={ensName} />
           <Box flexShrink={1} gap={10}>
             <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
-              {abbreviateEnsForDisplay(ensName ?? undefined) ?? abbreviateAddress(holder.address, 4, 6)}
+              {abbreviateEnsForDisplay(ensName ?? undefined) ?? abbreviateAddress(address, 4, 6)}
             </Text>
             {subtitle}
           </Box>

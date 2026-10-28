@@ -748,8 +748,9 @@
         "top_holders": {
           "title_top": "Top",
           "title_holders": "Holders",
-          "by_stake": "By Stake",
-          "by_profit": "By Profit",
+          "holding": "Holding",
+          "unrealized": "Unrealized",
+          "realized": "Realized",
           "of_supply": "of supply"
         },
         "claim": {

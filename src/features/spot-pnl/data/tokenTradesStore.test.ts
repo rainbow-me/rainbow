@@ -35,8 +35,8 @@ function respondWith(body: unknown) {
   vi.mocked(fetch).mockResolvedValueOnce(jsonResponse(body));
 }
 
-function tradesResponse(trades: object, wallet = '0xwallet') {
-  return { data: { filterTokenWallets: { results: [{ address: wallet, ...trades }] } } };
+function tradesResponse(trades: object) {
+  return { data: { filterTokenWallets: { results: [trades] } } };
 }
 
 function respondWithAcquisition(trades: object) {
@@ -163,7 +163,7 @@ describe('useTokenTradesStore', () => {
     await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(firstWallet));
 
     // The new wallet's balance arrives after the switch, so every request from here on answers for the new wallet
-    vi.mocked(fetch).mockImplementation(async () => jsonResponse(tradesResponse(secondWallet, '0xother')));
+    vi.mocked(fetch).mockImplementation(async () => jsonResponse(tradesResponse(secondWallet)));
     await switchWallet('0xother');
     await setHeldBalance('0xswitched', '5');
     await vi.waitFor(() => expect(useTokenTradesStore.getState().getData()).toEqual(secondWallet));
