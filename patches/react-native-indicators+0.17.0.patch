@@ -1,3 +1,15 @@
+# PATCH CONTEXT
+# Why: Rainbow uses UIActivityIndicator from react-native-indicators 0.17.0.
+#   On the RN 0.87 upgrade, its removed StyleSheet.absoluteFillObject spread
+#   leaves animated layers in normal flow, stacking the bars vertically.
+#   Use StyleSheet.absoluteFill to preserve their overlapping frames.
+# Upstream Issue: none filed; tracked in rainbow-me/rainbow#7897 for the
+#   RN 0.87 upgrade in rainbow-me/rainbow#7785.
+# Linear Issue: none.
+# Remove when: react-native-indicators ships a release whose UIActivityIndicator
+#   no longer uses StyleSheet.absoluteFillObject and Rainbow upgrades to it,
+#   or Rainbow replaces this component/dependency.
+
 diff --git a/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js b/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
 --- a/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
 +++ b/node_modules/react-native-indicators/src/components/ui-activity-indicator/styles.js
