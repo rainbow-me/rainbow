@@ -1,8 +1,10 @@
 import React, { memo, useState } from 'react';
 
 import { shallowEqual } from '@storesjs/stores';
+import Animated from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { LAYOUT_ANIMATION } from '@/components/collapsible/CollapsibleSectionBase';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
@@ -154,7 +156,8 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
           ));
 
   return (
-    <Box>
+    // Clipped so a longer list is revealed as the height grows instead of overlapping the sections below
+    <Box as={Animated.View} layout={LAYOUT_ANIMATION} style={{ overflow: 'hidden' }}>
       {rows.map((row, index) => (
         <React.Fragment key={row.key}>
           {index > 0 && <RowSeparator />}
