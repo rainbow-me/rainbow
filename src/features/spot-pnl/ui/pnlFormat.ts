@@ -34,6 +34,7 @@ export function formatPnlAmount(
  * - `whole` drops the minor unit from one up and never abbreviates, e.g. `$146,935`, so ranked values stay comparable.
  *
  * The minor unit is kept for currencies finer than cents (ETH), where whole units would hide most of the value.
+ * Currencies without one (JPY) drop decimals from one up in both non-exact styles.
  */
 export function formatNativeAmount(
   amount: string,
@@ -45,9 +46,10 @@ export function formatNativeAmount(
   const rounded = greaterThanOrEqualToWorklet(amount.replace('-', ''), minorUnit) ? toFixedWorklet(amount, decimals) : amount;
   const roundedMagnitude = rounded.replace('-', '');
 
-  const wholeUnitsFrom = decimals <= 2 ? WHOLE_UNITS_FROM[style] : null;
+  const threshold = WHOLE_UNITS_FROM[style];
+  const wholeUnitsFrom = threshold === null || decimals > 2 ? null : decimals === 0 ? 1 : threshold;
   const wholeUnits = wholeUnitsFrom !== null && greaterThanOrEqualToWorklet(roundedMagnitude, wholeUnitsFrom);
-  const displayed = wholeUnits ? toFixedWorklet(rounded, 0) : rounded;
+  const displayed = wholeUnits ? toFixedWorklet(amount, 0) : rounded;
 
   const abbreviate = style === 'compact' && greaterThanOrEqualToWorklet(displayed.replace('-', ''), COMPACT_AMOUNT_FROM);
   const display = convertAmountToNativeDisplay(displayed, nativeCurrency, undefined, wholeUnits, abbreviate);

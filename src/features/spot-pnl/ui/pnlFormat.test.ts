@@ -16,6 +16,7 @@ describe('formatNativeAmount', () => {
     { amount: '6178.32', currency: 'USD', style: 'compact', expected: '$6,178' },
     { amount: '9999.4', currency: 'USD', style: 'compact', expected: '$9,999' },
     { amount: '9999.6', currency: 'USD', style: 'compact', expected: '$10K' },
+    { amount: '9999.495', currency: 'USD', style: 'compact', expected: '$9,999' },
     { amount: '32700', currency: 'USD', style: 'compact', expected: '$32.7K' },
     { amount: '1900000', currency: 'USD', style: 'compact', expected: '$1.9M' },
 
@@ -24,11 +25,13 @@ describe('formatNativeAmount', () => {
     { amount: '0.996', currency: 'USD', style: 'whole', expected: '$1' },
     { amount: '5.67', currency: 'USD', style: 'whole', expected: '$6' },
     { amount: '7073.81', currency: 'USD', style: 'whole', expected: '$7,074' },
+    { amount: '6178.495', currency: 'USD', style: 'whole', expected: '$6,178' },
     { amount: '10124.4', currency: 'USD', style: 'whole', expected: '$10,124' },
     { amount: '1234567.8', currency: 'USD', style: 'whole', expected: '$1,234,568' },
 
     { amount: '0.4', currency: 'JPY', style: 'whole', expected: '¥0.40' },
     { amount: '7073.6', currency: 'JPY', style: 'whole', expected: '¥7,074' },
+    { amount: '769.4', currency: 'JPY', style: 'compact', expected: '¥769' },
     { amount: '32700', currency: 'JPY', style: 'compact', expected: '¥32.7K' },
 
     { amount: '1.4567', currency: 'ETH', style: 'whole', expected: 'Ξ1.457' },
