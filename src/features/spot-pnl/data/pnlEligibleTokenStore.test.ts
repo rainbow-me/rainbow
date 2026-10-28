@@ -88,6 +88,7 @@ describe('usePnlEligibleToken', () => {
     expect(usePnlEligibleToken.getState()).toBeNull();
   });
 
+  // Pins an ordering the store relies on: the type store follows a token switch before the eligibility re-derives
   it("never pairs a newly viewed token with the previous token's type", async () => {
     const values: unknown[] = [];
     subscriptions.push(usePnlEligibleToken.subscribe(state => values.push(state)));

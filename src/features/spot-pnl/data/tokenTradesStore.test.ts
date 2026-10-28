@@ -132,7 +132,9 @@ describe('useTokenTradesStore', () => {
     subscribe();
     await settle();
 
-    expect(externalTokenQueryFunction).toHaveBeenCalled();
+    expect(externalTokenQueryFunction).toHaveBeenCalledWith(
+      expect.objectContaining({ queryKey: expect.arrayContaining([expect.objectContaining({ address: '0xstable' })]) })
+    );
     expect(fetch).not.toHaveBeenCalled();
   });
 
