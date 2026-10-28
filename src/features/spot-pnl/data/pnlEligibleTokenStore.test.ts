@@ -49,15 +49,22 @@ describe('usePnlEligibleToken', () => {
   });
 
   it.each([
-    { name: 'an ordinary token', address: '0xordinary', type: 'none', eligible: true },
-    { name: 'a stablecoin', address: '0xstable', type: 'stablecoin', eligible: false },
-    { name: 'a token without a type', address: '0xuntyped', type: null, eligible: false },
-  ])('treats $name as eligible: $eligible', async ({ address, type, eligible }) => {
+    { name: 'an ordinary token', address: '0xordinary', chainId: 8453, type: 'none', eligible: true },
+    { name: 'a stablecoin', address: '0xstable', chainId: 8453, type: 'stablecoin', eligible: false },
+    { name: 'a token without a type', address: '0xuntyped', chainId: 8453, type: null, eligible: false },
+    {
+      name: 'mainnet ETH by the zero address',
+      address: '0x0000000000000000000000000000000000000000',
+      chainId: 1,
+      type: 'native',
+      eligible: false,
+    },
+  ])('treats $name as eligible: $eligible', async ({ address, chainId, type, eligible }) => {
     setExternalTokenType(address, type);
-    await view({ address, chainId: 8453 });
+    await view({ address, chainId });
 
     expect(externalTokenQueryFunction).toHaveBeenCalled();
-    expect(usePnlEligibleToken.getState()).toEqual(eligible ? { address, chainId: 8453, codexTokenId: `${address}:8453` } : null);
+    expect(usePnlEligibleToken.getState()).toEqual(eligible ? { address, chainId, codexTokenId: `${address}:${chainId}` } : null);
   });
 
   it('excludes a native asset without looking up its type', async () => {

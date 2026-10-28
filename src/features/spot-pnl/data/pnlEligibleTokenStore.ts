@@ -67,7 +67,8 @@ export const usePnlEligibleToken = createDerivedStore(
     const token = $(useChartsStore, state => state.token);
     const type = $(useViewedTokenTypeStore, state => state.getData());
 
-    if (!token || isHyperliquidToken(token) || !type || type === 'stablecoin') return null;
+    // `native` covers native-asset addresses the network config doesn't list, e.g. mainnet ETH by the zero address
+    if (!token || isHyperliquidToken(token) || !type || type === 'stablecoin' || type === 'native') return null;
     return { address: token.address, chainId: token.chainId, codexTokenId: getCodexTokenId(token.address, token.chainId) };
   },
   { equalityFn: shallowEqual, lockDependencies: true }
