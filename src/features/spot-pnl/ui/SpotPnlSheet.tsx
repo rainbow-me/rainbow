@@ -254,7 +254,7 @@ function SpotPnlBody({
   nativeCurrency: NativeCurrencyKey;
   pnl: SpotPnl;
 }) {
-  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency, { compact: true });
+  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency, { style: 'compact' });
   const formatPerToken = (price: string) =>
     circulatingSupply ? format(mulWorklet(price, circulatingSupply)) : formatAssetPrice({ value: price, currency: nativeCurrency });
   const labels = circulatingSupply
@@ -332,7 +332,7 @@ function SpotPnlBody({
 
 function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: NativeCurrencyKey; pnl: UnrealizedPnl; value: string }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency, { compact: true });
+  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency, { style: 'compact' });
   const color = pnlColor(direction, colors);
 
   return (
@@ -369,7 +369,7 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
 
 function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: NativeCurrencyKey; realized: PnlReturn }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency, { compact: true });
+  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency, { style: 'compact' });
   const color = pnlColor(direction, colors);
 
   return (
@@ -423,7 +423,7 @@ function ReturnRow({
   value: PnlReturn | null;
 }) {
   const { colors } = useTheme();
-  const amount = value && formatPnlAmount(value.amount, nativeCurrency, { compact: true });
+  const amount = value && formatPnlAmount(value.amount, nativeCurrency, { style: 'compact' });
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>

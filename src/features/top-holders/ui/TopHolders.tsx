@@ -177,7 +177,7 @@ const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdT
       token={token}
     >
       <Text color="label" size="17pt" weight="semibold">
-        {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
+        {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { style: 'whole' })}
       </Text>
     </HolderRow>
   );
@@ -192,7 +192,7 @@ const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token, us
     <HolderRow holder={row.holder} rank={rank} token={token}>
       <Box alignItems="flex-end" gap={10}>
         <Text color="label" size="17pt" weight="semibold">
-          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
+          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { style: 'whole' })}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />

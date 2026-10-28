@@ -6,7 +6,10 @@ import { convertAmountToBalanceDisplay, handleSignificantDecimals } from '@/help
 
 export type PnlDirection = 'profit' | 'loss' | 'flat';
 
+export type NativeAmountStyle = 'exact' | 'compact' | 'whole';
+
 const COMPACT_AMOUNT_FROM = 10_000;
+const WHOLE_UNITS_FROM: Record<NativeAmountStyle, number | null> = { exact: null, compact: 1_000, whole: 1 };
 
 /** Uppercases the `k`/`m`/`b` suffix of an abbreviated number, e.g. `$146.9k` → `$146.9K`. */
 function uppercaseSuffix(display: string) {
@@ -17,25 +20,37 @@ function uppercaseSuffix(display: string) {
 export function formatPnlAmount(
   amount: string,
   nativeCurrency: NativeCurrencyKey,
-  { compact = false }: { compact?: boolean } = {}
+  { style }: { style?: NativeAmountStyle } = {}
 ): { direction: PnlDirection; display: string } {
   const magnitude = amount.replace('-', '');
-  const display = formatNativeAmount(magnitude, nativeCurrency, { compact });
+  const display = formatNativeAmount(magnitude, nativeCurrency, { style });
   if (display === convertAmountToNativeDisplay(0, nativeCurrency)) return { direction: 'flat', display };
   return { direction: lessThanWorklet(amount, 0) ? 'loss' : 'profit', display };
 }
 
 /**
- * Rounds to the currency's minor unit, e.g. `$0.02`, and keeps significant decimals only below it, e.g. `$0.00283`.
- * `compact` abbreviates from ten thousand up, e.g. `$146.9K`.
+ * - `exact` rounds to the currency's minor unit, e.g. `$7,073.81`, and keeps significant decimals only below it, e.g. `$0.00283`.
+ * - `compact` drops the minor unit from a thousand up, e.g. `$7,074`, and abbreviates from ten thousand up, e.g. `$146.9K`.
+ * - `whole` drops the minor unit from one up and never abbreviates, e.g. `$146,935`, so ranked values stay comparable.
+ *
+ * The minor unit is kept for currencies finer than cents (ETH), where whole units would hide most of the value.
  */
-export function formatNativeAmount(amount: string, nativeCurrency: NativeCurrencyKey, { compact = false }: { compact?: boolean } = {}) {
-  const magnitude = amount.replace('-', '');
+export function formatNativeAmount(
+  amount: string,
+  nativeCurrency: NativeCurrencyKey,
+  { style = 'exact' }: { style?: NativeAmountStyle } = {}
+) {
   const { decimals } = supportedCurrencies[nativeCurrency];
   const minorUnit = decimals === 0 ? '1' : `0.${'1'.padStart(decimals, '0')}`;
-  const rounded = greaterThanOrEqualToWorklet(magnitude, minorUnit) ? toFixedWorklet(amount, decimals) : amount;
-  const abbreviate = compact && greaterThanOrEqualToWorklet(magnitude, COMPACT_AMOUNT_FROM);
-  const display = convertAmountToNativeDisplay(rounded, nativeCurrency, undefined, undefined, abbreviate);
+  const rounded = greaterThanOrEqualToWorklet(amount.replace('-', ''), minorUnit) ? toFixedWorklet(amount, decimals) : amount;
+  const roundedMagnitude = rounded.replace('-', '');
+
+  const wholeUnitsFrom = decimals <= 2 ? WHOLE_UNITS_FROM[style] : null;
+  const wholeUnits = wholeUnitsFrom !== null && greaterThanOrEqualToWorklet(roundedMagnitude, wholeUnitsFrom);
+  const displayed = wholeUnits ? toFixedWorklet(rounded, 0) : rounded;
+
+  const abbreviate = style === 'compact' && greaterThanOrEqualToWorklet(displayed.replace('-', ''), COMPACT_AMOUNT_FROM);
+  const display = convertAmountToNativeDisplay(displayed, nativeCurrency, undefined, wholeUnits, abbreviate);
   return abbreviate ? uppercaseSuffix(display) : display;
 }
 
