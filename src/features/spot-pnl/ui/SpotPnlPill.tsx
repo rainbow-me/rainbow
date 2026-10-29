@@ -16,7 +16,8 @@ import { useTheme } from '@/theme/ThemeContext';
 
 import { calculateSpotPnl, type TokenTrades } from '../core/spotPnl';
 import { useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
-import { formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor, pnlSign } from './pnlDisplay';
+import { PnlArrow, pnlColor } from './pnlDisplay';
+import { formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
 
 type SpotPnlPillToken = {
   address: string;

@@ -7,7 +7,8 @@ import { useCurrencyConversionStore } from '@/features/currency/stores/currencyC
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
+import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
+import { formatNativeAmount, formatPnlAmount, formatPnlPercentage } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -176,7 +177,7 @@ const StakeRow = memo(function StakeRow({ nativeCurrency, rank, row, token, usdT
       token={token}
     >
       <Text color="label" size="17pt" weight="semibold">
-        {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
+        {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency)}
       </Text>
     </HolderRow>
   );
@@ -191,12 +192,12 @@ const ProfitRow = memo(function ProfitRow({ nativeCurrency, rank, row, token, us
     <HolderRow holder={row.holder} rank={rank} token={token}>
       <Box alignItems="flex-end" gap={10}>
         <Text color="label" size="17pt" weight="semibold">
-          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency, { compact: true })}
+          {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency)}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="10pt" weight="heavy" />
           <Text color={color} size="15pt" weight="bold">
-            {formatPnlPercentage(row.pnl.percentage, { compact: true })}
+            {formatPnlPercentage(row.pnl.percentage)}
           </Text>
         </Box>
       </Box>

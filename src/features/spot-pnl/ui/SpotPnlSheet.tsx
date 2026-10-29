@@ -36,15 +36,8 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { createTokenTradesStore, useTokenTradesStore, type WalletTokenTrades } from '../data/tokenTradesStore';
-import {
-  formatCompactTokenAmount,
-  formatNativeAmount,
-  formatPnlAmount,
-  formatPnlPercentage,
-  PnlArrow,
-  pnlColor,
-  pnlSign,
-} from './pnlDisplay';
+import { PnlArrow, pnlColor } from './pnlDisplay';
+import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;
@@ -261,7 +254,7 @@ function SpotPnlBody({
   nativeCurrency: NativeCurrencyKey;
   pnl: SpotPnl;
 }) {
-  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency, { compact: true });
+  const format = (amount: string) => formatNativeAmount(amount, nativeCurrency);
   const formatPerToken = (price: string) =>
     circulatingSupply ? format(mulWorklet(price, circulatingSupply)) : formatAssetPrice({ value: price, currency: nativeCurrency });
   const labels = circulatingSupply
@@ -339,7 +332,7 @@ function SpotPnlBody({
 
 function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: NativeCurrencyKey; pnl: UnrealizedPnl; value: string }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency, { compact: true });
+  const { direction, display } = formatPnlAmount(pnl.amount, nativeCurrency);
   const color = pnlColor(direction, colors);
 
   return (
@@ -356,7 +349,7 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
           <GlowText color={color} size="17pt" weight="heavy">
-            {formatPnlPercentage(pnl.percentage, { compact: true })}
+            {formatPnlPercentage(pnl.percentage)}
           </GlowText>
         </Box>
         <Box flexDirection="row" alignItems="center" gap={3}>
@@ -376,7 +369,7 @@ function PositionHeadline({ nativeCurrency, pnl, value }: { nativeCurrency: Nati
 
 function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: NativeCurrencyKey; realized: PnlReturn }) {
   const { colors } = useTheme();
-  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency, { compact: true });
+  const { direction, display } = formatPnlAmount(realized.amount, nativeCurrency);
   const color = pnlColor(direction, colors);
 
   return (
@@ -398,7 +391,7 @@ function RealizedHeadline({ nativeCurrency, realized }: { nativeCurrency: Native
         <Box flexDirection="row" alignItems="center" gap={2}>
           <PnlArrow color={color} direction={direction} size="12pt" weight="black" />
           <GlowText color={color} size="17pt" weight="heavy">
-            {formatPnlPercentage(realized.percentage, { compact: true })}
+            {formatPnlPercentage(realized.percentage)}
           </GlowText>
         </Box>
       )}
@@ -430,7 +423,7 @@ function ReturnRow({
   value: PnlReturn | null;
 }) {
   const { colors } = useTheme();
-  const amount = value && formatPnlAmount(value.amount, nativeCurrency, { compact: true });
+  const amount = value && formatPnlAmount(value.amount, nativeCurrency);
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={10}>
@@ -443,7 +436,7 @@ function ReturnRow({
             <Box flexDirection="row" alignItems="center" gap={2}>
               <PnlArrow color="labelTertiary" direction={amount.direction} size="11pt" weight="heavy" />
               <Text color="labelTertiary" size="15pt" weight="bold">
-                {formatPnlPercentage(value.percentage, { compact: true })}
+                {formatPnlPercentage(value.percentage)}
               </Text>
             </Box>
           )}
