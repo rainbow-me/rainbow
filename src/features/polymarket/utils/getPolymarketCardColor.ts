@@ -1,9 +1,9 @@
 import chroma from 'chroma-js';
 
+import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { type ResponseByTheme } from '@/theme/types';
 import { withTimeout } from '@/utils/promise';
 
@@ -23,13 +23,6 @@ function isCardAccentColor(color: string): boolean {
   return s >= MIN_CARD_COLOR_SATURATION && l >= MIN_CARD_COLOR_LIGHTNESS && l <= MAX_CARD_COLOR_LIGHTNESS && a > MIN_CARD_COLOR_ALPHA;
 }
 
-function getHighContrastColorTheme(color: string): ResponseByTheme<string> {
-  return {
-    light: getHighContrastColor(color, false),
-    dark: getHighContrastColor(color, true),
-  };
-}
-
 export async function resolvePolymarketCardColor({
   event,
 }: {
@@ -43,7 +36,7 @@ export async function resolvePolymarketCardColor({
       '[resolvePolymarketCardColor]: getImagePrimaryColor timed out'
     ).catch(() => undefined);
     if (eventImageColor && isCardAccentColor(eventImageColor)) {
-      return getHighContrastColorTheme(eventImageColor);
+      return getHighContrastColor(eventImageColor);
     }
   }
   return getColorBySeed(event.id);

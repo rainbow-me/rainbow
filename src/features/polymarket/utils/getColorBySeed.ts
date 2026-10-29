@@ -1,6 +1,6 @@
 import { isHex, keccak256, stringToHex } from 'viem';
 
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
+import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { type ResponseByTheme } from '@/theme/types';
 import { oklchToHex } from '@/worklets/colors';
 
@@ -42,8 +42,5 @@ function getColorFromSeed(seed: string): string {
 
 export function getColorBySeed(seed: string): ResponseByTheme<string> {
   const color = getColorFromSeed(seed);
-  return {
-    light: getHighContrastColor(color, false),
-    dark: getHighContrastColor(color, true),
-  };
+  return getHighContrastColor(color);
 }

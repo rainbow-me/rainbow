@@ -10,7 +10,7 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
-import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
+import { Bleed, Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
@@ -20,7 +20,7 @@ import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge'
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { formatOutcomePercentage } from '@/features/polymarket/utils/formatOutcomePercentage';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
@@ -44,24 +44,25 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   onPress?: () => void;
 }) {
   const { isDarkMode } = useColorMode();
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
+
   const accentColors = useMemo(() => {
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);
+
+  const buttonBackgroundColor = useMemo(
+    () =>
+      isDarkMode
+        ? getSolidColorEquivalent({ background: accentColors.opacity70, foreground: globalColors.grey100, opacity: 0.4 })
+        : accentColor,
+    [accentColor, accentColors.opacity70, isDarkMode]
+  );
+
   const eventTitle = position.market.events[0]?.title ?? '';
-
-  const buttonBackgroundColor = isDarkMode
-    ? getSolidColorEquivalent({
-        background: accentColors.opacity70,
-        foreground: 'rgb(0, 0, 0)',
-        opacity: 0.4,
-      })
-    : accentColor;
-
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
-  const actionButtonType = useMemo(() => getPositionAction(position), [position]);
 
+  const actionButtonType = getPositionAction(position);
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
@@ -75,9 +76,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   const onPressActionButton = useCallback(
     (e?: GestureResponderEvent) => {
-      if (e && 'stopPropagation' in e) {
-        e.stopPropagation();
-      }
+      if (e && 'stopPropagation' in e) e.stopPropagation();
+
       if (position.redeemable) {
         Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
       } else {

@@ -41,7 +41,7 @@ import { black, white } from '@/worklets/colors';
 /**
  * Callback provided to game card and bet badge press handlers.
  */
-export type SportsGamePress = (gameId: string, bet?: { outcome: PolymarketOutcome; outcomeColor: string }) => void;
+export type SportsGamePress = (gameId: string, bet?: { outcome: PolymarketOutcome; badgeColor: string }) => void;
 
 // ============ Constants ====================================================== //
 
@@ -472,7 +472,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
           fallbackPrice={outcome.priceUsd}
           color={color}
           scoreAdjustment={Number(outcome.scoreAdjustment)}
-          onPress={outcomeColor =>
+          onPress={badgeColor =>
             onPress(gameId, {
               outcome: {
                 eventId: spread.eventId,
@@ -480,7 +480,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
                 tokenId: outcome.tokenId,
                 outcomeIndex: outcome.outcomeIndex,
               },
-              outcomeColor,
+              badgeColor,
             })
           }
         />
@@ -493,7 +493,7 @@ const ParticipantBetButtons = memo(function ParticipantBetButtons({
           liveTokenId={getPolymarketTokenId(moneylineOutcome.tokenId, 'midpoint')}
           fallbackPrice={moneylineOutcome.priceUsd}
           color={color}
-          onPress={outcomeColor => onPress(gameId, { outcome: moneylineOutcome, outcomeColor })}
+          onPress={badgeColor => onPress(gameId, { outcome: moneylineOutcome, badgeColor })}
         />
       ) : (
         <View style={styles.unavailable}>

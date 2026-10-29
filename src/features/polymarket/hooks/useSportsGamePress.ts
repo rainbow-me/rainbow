@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 
+import { getHighContrastColor } from '@/__swaps__/utils/swaps';
 import { type SportsGamePress } from '@/features/sports/ui/GameCard';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
@@ -11,8 +12,15 @@ export function useSportsGamePress(): SportsGamePress {
 
   return useCallback<SportsGamePress>(
     (gameId, bet) => {
-      if (bet) Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, { ...bet, fromRoute });
-      else Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { gameId });
+      if (bet) {
+        Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
+          outcome: bet.outcome,
+          accentColor: getHighContrastColor(bet.badgeColor),
+          fromRoute,
+        });
+      } else {
+        Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { gameId });
+      }
     },
     [fromRoute]
   );

@@ -14,7 +14,7 @@ import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
@@ -35,7 +35,7 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const buttonBackgroundColor = getSolidColorEquivalent({

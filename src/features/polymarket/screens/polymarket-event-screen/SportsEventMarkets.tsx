@@ -13,7 +13,7 @@ import {
   type SingleMarketGroup,
 } from '@/features/polymarket/screens/polymarket-event-screen/utils/getMarketsGroupedByBetType';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getSportsTeamImage } from '@/features/polymarket/utils/getSportsTeamImage';
 import { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
@@ -170,18 +170,17 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
           {group.markets.map((market, index) => {
             const team = getOutcomeTeam({ outcome: market.groupItemTitle, outcomeIndex: index, teams: event.teams });
             const image = index !== 1 ? getSportsTeamImage(team, participants) : undefined;
-            const outcomeColor = getOutcomeColor({
+            const outcomeColors = getOutcomeColors({
               market,
               outcome: market.groupItemTitle,
               outcomeIndex: index,
-              isDarkMode,
               teams: event.teams,
             });
 
             return (
               <MarketRow
                 key={market.id}
-                accentColor={outcomeColor}
+                accentColor={outcomeColors[isDarkMode ? 'dark' : 'light']}
                 icon={image}
                 priceChange={0}
                 title={market.groupItemTitle}

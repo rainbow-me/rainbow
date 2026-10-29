@@ -18,7 +18,7 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
@@ -53,7 +53,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     outcomeIndex: position.outcomeIndex,
   });
 
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
   const buttonBackgroundColor = getSolidColorEquivalent({
     background: opacity(accentColor, 0.7),
     foreground: '#000000',
