@@ -8,21 +8,19 @@ import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassifica
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
 import { type ResponseByTheme } from '@/theme/types';
 
-type MarketColors = {
-  color: ResponseByTheme<string>;
-  secondaryColor: ResponseByTheme<string> | undefined;
-};
-
 const DRAW_COLOR = Object.freeze({ light: '#808080', dark: '#808080' });
 
 /**
- * Returns light and dark accent colors for a `RawPolymarketMarket`.
+ * Returns light and dark variants of a market's primary and optional secondary accent colors.
  */
-export function getMarketColors(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): MarketColors {
+export function getMarketColors(
+  market: RawPolymarketMarket,
+  eventColor: ResponseByTheme<string>
+): { color: ResponseByTheme<string>; secondaryColor: ResponseByTheme<string> | undefined } {
   if (market.seriesColor) {
     const [primary, secondary] = market.seriesColor.split(',');
     return {
-      color: getHighContrastColor(primary),
+      color: primary ? getHighContrastColor(primary) : eventColor,
       secondaryColor: secondary ? getHighContrastColor(secondary) : undefined,
     };
   }
@@ -36,7 +34,7 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: Respons
 }
 
 /**
- * Returns light and dark accent colors for a Polymarket outcome.
+ * Returns light and dark accent colors for a single Polymarket outcome.
  */
 export function getOutcomeColors({
   market,
@@ -55,7 +53,7 @@ export function getOutcomeColors({
 }
 
 /**
- * Returns light and dark accent colors for a `PolymarketPosition`.
+ * Returns light and dark accent colors for a Polymarket position.
  */
 export function getPositionColors(position: PolymarketPosition): ResponseByTheme<string> {
   if (isTeamBasedOutcome(position.outcome) && position.teams) {
