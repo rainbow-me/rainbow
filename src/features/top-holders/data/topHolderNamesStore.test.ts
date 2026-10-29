@@ -9,6 +9,8 @@ import { useTopHolderNamesStore } from './topHolderNamesStore';
 import { useTopHoldersStore } from './topHoldersStore';
 
 const { lookupAddress } = vi.hoisted(() => ({ lookupAddress: vi.fn<(address: string) => Promise<string | null>>() }));
+vi.mock('@/react-query/queryClient');
+vi.mock('@/resources/assets/externalAssetsQuery');
 vi.mock('@/handlers/web3', () => ({ getProvider: () => ({ lookupAddress }) }));
 vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => '0xwallet', useAccountAddress: () => '0xwallet' }));
 vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));

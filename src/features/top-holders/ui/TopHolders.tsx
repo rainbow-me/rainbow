@@ -225,6 +225,7 @@ function HolderRow({
       address: token.address,
       chainId: token.chainId,
       walletAddress: holder.address,
+      ensName: ensName ?? undefined,
     });
 
   return (

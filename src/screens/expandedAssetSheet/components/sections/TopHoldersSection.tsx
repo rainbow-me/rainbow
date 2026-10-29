@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import { useChartsStore } from '@/features/charts/stores/chartsStore';
+import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
 import { TOP_HOLDERS_LIMIT } from '@/features/top-holders/core/topHolders';
 import { useTopHoldersEnabledStore, useTopHoldersStore } from '@/features/top-holders/data/topHoldersStore';
 import {
@@ -34,7 +34,7 @@ export const TopHoldersSection = memo(function TopHoldersSection() {
     if (entry?.errorInfo || (entry?.lastFetchedAt && entry.data === null)) return null;
     return state.status === 'idle' || state.status === 'loading' ? 'skeleton' : null;
   });
-  const token = useChartsStore(state => (state.token && typeof state.token !== 'string' ? state.token : null));
+  const token = usePnlEligibleToken();
   if (!isEnabled || !display || !token) return null;
 
   return (

@@ -86,8 +86,6 @@ export function BalanceSection() {
     return tokenBalanceData.value.displayValue;
   });
 
-  const tokenType = 'type' in basicAsset ? basicAsset.type : undefined;
-
   if (!isOwnedAsset) {
     return (
       <SpotPnlPill
@@ -100,7 +98,6 @@ export function BalanceSection() {
           initialPriceUpdatedAt: 0,
           uniqueId: basicAsset.uniqueId,
         }}
-        tokenType={tokenType}
       />
     );
   }
@@ -174,7 +171,6 @@ export function BalanceSection() {
             initialPriceUpdatedAt: asset.price?.changed_at ?? 0,
             uniqueId: asset.uniqueId,
           }}
-          tokenType={tokenType}
         />
       </Box>
       <SheetSeparator />

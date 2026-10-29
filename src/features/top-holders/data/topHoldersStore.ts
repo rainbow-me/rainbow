@@ -1,10 +1,10 @@
-import { createDerivedStore, createQueryStore } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, shallowEqual } from '@storesjs/stores';
 
-import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
 import { fetchWalletsTokenTrades } from '@/features/spot-pnl/data/tokenTradesStore';
 import { divWorklet, powWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
@@ -14,7 +14,7 @@ import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
 import { isHolderWalletFilter, rankTopHolders, type HolderWalletFilter, type TokenHolder, type TopHolders } from '../core/topHolders';
 
 export type TopHoldersParams = {
-  /** `null` when no token is viewed or it is a perps market. */
+  /** `null` when the viewed token is not P&L-eligible. */
   token: { address: string; chainId: ChainId } | null;
   filter: HolderWalletFilter;
 };
@@ -69,10 +69,10 @@ export const useTopHoldersEnabledStore = createDerivedStore($ => {
  */
 export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
+  // Gated on the flags alone: an ineligible token leaves `token` null, which fetches nothing
   enabled: $ => $(useTopHoldersEnabledStore),
   params: {
-    token: $ =>
-      $(useChartsStore, ({ token }) => (token && typeof token !== 'string' ? { address: token.address, chainId: token.chainId } : null)),
+    token: $ => $(usePnlEligibleToken, token => (token ? { address: token.address, chainId: token.chainId } : null), shallowEqual),
     filter: $ =>
       $(useRemoteConfigStore, state => {
         const filter = state.getRemoteConfigKey('top_holders_wallet_filter');

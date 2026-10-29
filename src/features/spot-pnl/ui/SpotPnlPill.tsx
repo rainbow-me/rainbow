@@ -7,7 +7,6 @@ import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValu
 import { Box, Text } from '@/design-system';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { isNativeAsset } from '@/handlers/assets';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -32,14 +31,11 @@ type SpotPnlPillToken = {
 type SpotPnlPillProps = {
   token: SpotPnlPillToken;
   surfaceColor: string;
-  /** The metadata token type, since wallet assets do not carry it; the pill stays hidden until it is known. */
-  tokenType: string | undefined;
 };
 
 /** Unrealized P&L while purchased tokens are held, otherwise realized P&L once they have all been sold. */
-export function SpotPnlPill({ token, surfaceColor, tokenType }: SpotPnlPillProps) {
-  const isEnabled = useSpotPnlTokenId(Boolean);
-  const isEligible = isEnabled && tokenType !== undefined && tokenType !== 'stablecoin' && !isNativeAsset(token.address, token.chainId);
+export function SpotPnlPill({ token, surfaceColor }: SpotPnlPillProps) {
+  const isEligible = useSpotPnlTokenId(Boolean);
 
   if (!isEligible) return null;
   return <SpotPnlPillContent token={token} surfaceColor={surfaceColor} />;
@@ -48,10 +44,9 @@ export function SpotPnlPill({ token, surfaceColor, tokenType }: SpotPnlPillProps
 function SpotPnlPillContent({
   token: { address, balance, chainId, initialPrice, initialPriceUpdatedAt, uniqueId },
   surfaceColor,
-}: Omit<SpotPnlPillProps, 'tokenType'>) {
+}: SpotPnlPillProps) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  // Subscribing here, behind the eligibility gate, is what triggers the fetch
   const fetchedTrades = useTokenTradesStore(state => state.getData());
   const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
   const walletAddress = userAssetsStoreManager(state => state.address);
