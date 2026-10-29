@@ -1,80 +1,86 @@
 import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import { greaterThanOrEqualToWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { divWorklet, equalWorklet, greaterThanOrEqualToWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { convertAmountToBalanceDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 
 export type PnlDirection = 'profit' | 'loss' | 'flat';
 
-export type NativeAmountStyle = 'exact' | 'compact' | 'whole';
+const COMPACT_AMOUNT_FROM = 100_000;
+const COMPACT_PERCENTAGE_FROM = 1_000;
+const COMPACT_TOKEN_AMOUNT_FROM = 10_000;
+const SUFFIXES = [
+  { suffix: 'K', value: 1e3 },
+  { suffix: 'M', value: 1e6 },
+  { suffix: 'B', value: 1e9 },
+  { suffix: 'T', value: 1e12 },
+];
 
-const COMPACT_AMOUNT_FROM = 10_000;
-const WHOLE_UNITS_FROM: Record<NativeAmountStyle, number | null> = { exact: null, compact: 1_000, whole: 1 };
-
-/** Uppercases the `k`/`m`/`b` suffix of an abbreviated number, e.g. `$146.9k` → `$146.9K`. */
+/** Uppercases the `k`/`m`/`b` suffix of an abbreviated number, e.g. `86.2m HABS` → `86.2M HABS`. */
 function uppercaseSuffix(display: string) {
   return display.replace(/(\d)([kmb])/, (_, digit: string, suffix: string) => digit + suffix.toUpperCase());
 }
 
-/** The unsigned display of a signed native amount, which reads as flat when it rounds to zero. */
-export function formatPnlAmount(
-  amount: string,
-  nativeCurrency: NativeCurrencyKey,
-  { style }: { style?: NativeAmountStyle } = {}
-): { direction: PnlDirection; display: string } {
-  const magnitude = amount.replace('-', '');
-  const display = formatNativeAmount(magnitude, nativeCurrency, { style });
+/**
+ * One decimal, trailing zero kept, on the first suffix where the rounded value stays below a thousand,
+ * e.g. `184.0K`, and 999,950 → `1.0M`. Rounded once from the raw value, so 999,949.5 → `999.9K`.
+ */
+function abbreviate(magnitude: string): string {
+  let tier = 0;
+  let scaled = toFixedWorklet(divWorklet(magnitude, SUFFIXES[tier].value), 1);
+  while (tier < SUFFIXES.length - 1 && greaterThanOrEqualToWorklet(scaled, 1000)) {
+    tier += 1;
+    scaled = toFixedWorklet(divWorklet(magnitude, SUFFIXES[tier].value), 1);
+  }
+  return `${addCommasToNumber(scaled)}${SUFFIXES[tier].suffix}`;
+}
+
+/** The unsigned display of a signed native amount, which reads as flat when it displays as zero. */
+export function formatPnlAmount(amount: string, nativeCurrency: NativeCurrencyKey): { direction: PnlDirection; display: string } {
+  const display = formatNativeAmount(amount, nativeCurrency);
   if (display === convertAmountToNativeDisplay(0, nativeCurrency)) return { direction: 'flat', display };
   return { direction: lessThanWorklet(amount, 0) ? 'loss' : 'profit', display };
 }
 
 /**
- * - `exact` rounds to the currency's minor unit, e.g. `$7,073.81`, and keeps significant decimals only below it, e.g. `$0.00283`.
- * - `compact` drops the minor unit from a thousand up, e.g. `$7,074`, and abbreviates from ten thousand up, e.g. `$146.9K`.
- * - `whole` drops the minor unit from one up and never abbreviates, e.g. `$146,935`, so ranked values stay comparable.
- *
- * The minor unit is kept for currencies finer than cents (ETH), where whole units would hide most of the value.
- * Currencies without one (JPY) drop decimals from one up in both non-exact styles.
+ * Unsigned. Below the currency's minor unit keeps significant decimals, e.g. `$0.00283`. From there: cents below one,
+ * e.g. `$0.43`, whole units below 100K, e.g. `$7,074`, then one decimal on a suffix, e.g. `$184.0K`.
+ * Each tier is picked on the value rounded for the tier below, so `$0.996` → `$1` and `$99,999.60` → `$100.0K`.
+ * Currencies finer than cents (ETH) keep their decimals below 100K, where whole units would hide most of the value.
  */
-export function formatNativeAmount(
-  amount: string,
-  nativeCurrency: NativeCurrencyKey,
-  { style = 'exact' }: { style?: NativeAmountStyle } = {}
-) {
-  const { decimals } = supportedCurrencies[nativeCurrency];
+export function formatNativeAmount(amount: string, nativeCurrency: NativeCurrencyKey): string {
+  const magnitude = amount.replace('-', '');
+  const { alignment, decimals, symbol } = supportedCurrencies[nativeCurrency];
   const minorUnit = decimals === 0 ? '1' : `0.${'1'.padStart(decimals, '0')}`;
-  const rounded = greaterThanOrEqualToWorklet(amount.replace('-', ''), minorUnit) ? toFixedWorklet(amount, decimals) : amount;
-  const roundedMagnitude = rounded.replace('-', '');
+  if (lessThanWorklet(magnitude, minorUnit)) return convertAmountToNativeDisplay(magnitude, nativeCurrency);
 
-  const threshold = WHOLE_UNITS_FROM[style];
-  const wholeUnitsFrom = threshold === null || decimals > 2 ? null : decimals === 0 ? 1 : threshold;
-  const wholeUnits = wholeUnitsFrom !== null && greaterThanOrEqualToWorklet(roundedMagnitude, wholeUnitsFrom);
-  const displayed = wholeUnits ? toFixedWorklet(amount, 0) : rounded;
-
-  // The rounded values only pick the tier; what is shown is rounded once from the raw amount, so 184,949.5 reads `$184.9K`.
-  if (style === 'compact' && greaterThanOrEqualToWorklet(displayed.replace('-', ''), COMPACT_AMOUNT_FROM)) {
-    return uppercaseSuffix(convertAmountToNativeDisplay(amount, nativeCurrency, undefined, undefined, true));
+  if (greaterThanOrEqualToWorklet(toFixedWorklet(magnitude, 0), COMPACT_AMOUNT_FROM)) {
+    const display = abbreviate(magnitude);
+    return alignment === 'left' ? `${symbol}${display}` : `${display} ${symbol}`;
   }
-  return convertAmountToNativeDisplay(displayed, nativeCurrency, undefined, wholeUnits);
+
+  const rounded = toFixedWorklet(magnitude, decimals);
+  if (decimals > 2 || lessThanWorklet(rounded, 1)) return convertAmountToNativeDisplay(rounded, nativeCurrency);
+  return convertAmountToNativeDisplay(toFixedWorklet(magnitude, 0), nativeCurrency, undefined, true);
 }
 
 /** A token amount with its symbol, abbreviated from ten thousand up, e.g. `86.2M HABS`. */
 export function formatCompactTokenAmount(amount: string, asset: { decimals: number; symbol: string }) {
-  if (lessThanWorklet(amount, COMPACT_AMOUNT_FROM)) return convertAmountToBalanceDisplay(amount, asset);
+  if (lessThanWorklet(amount, COMPACT_TOKEN_AMOUNT_FROM)) return convertAmountToBalanceDisplay(amount, asset);
   return `${uppercaseSuffix(handleSignificantDecimals(amount, asset.decimals, undefined, false, true))} ${asset.symbol}`;
 }
 
 /**
- * Unsigned, since the direction is shown by an arrow. `compact` drops the decimals from 100% up and
- * abbreviates from a thousand, e.g. `451%`.
+ * Unsigned, since the direction is shown by an arrow. `<1%` between zero and one, whole percents below a thousand,
+ * then one decimal on a suffix, e.g. `3.9K%`.
  */
-export function formatPnlPercentage(percentage: string, { compact = false }: { compact?: boolean } = {}): string {
+export function formatPnlPercentage(percentage: string): string {
   const magnitude = percentage.replace('-', '');
-  const display =
-    compact && greaterThanOrEqualToWorklet(magnitude, 100)
-      ? uppercaseSuffix(handleSignificantDecimals(magnitude, 0, 2, false, true))
-      : toFixedWorklet(magnitude, 2);
-  return `${display}%`;
+  if (equalWorklet(magnitude, 0)) return '0%';
+  if (lessThanWorklet(magnitude, 1)) return '<1%';
+  const whole = toFixedWorklet(magnitude, 0);
+  return `${lessThanWorklet(whole, COMPACT_PERCENTAGE_FROM) ? whole : abbreviate(magnitude)}%`;
 }
 
 export function pnlSign(direction: PnlDirection): string {
