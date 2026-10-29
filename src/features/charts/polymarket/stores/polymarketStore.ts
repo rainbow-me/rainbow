@@ -12,7 +12,7 @@ export type PolymarketStoreState = {
   reset: () => void;
   setChartInterval: (interval: PolymarketInterval) => void;
   setHighlightedSeriesId: (id: string | null) => void;
-  setSelectedEventSlug: (slug: string | null) => void;
+  setSelectedEventSlug: (slug: string | null | undefined) => void;
   setSelectedMarketFilter: (filter: MarketFilter | null) => void;
 };
 
@@ -48,10 +48,11 @@ export const usePolymarketStore = createBaseStore<PolymarketStoreState>(
       });
     },
 
-    setSelectedEventSlug: (slug: string | null) => {
+    setSelectedEventSlug: (slug: string | null | undefined) => {
+      const selectedEventSlug = slug || null;
       set(state => {
-        if (state.selectedEventSlug === slug) return state;
-        return { selectedEventSlug: slug };
+        if (state.selectedEventSlug === selectedEventSlug) return state;
+        return { selectedEventSlug };
       });
     },
 

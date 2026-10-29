@@ -8,7 +8,9 @@ import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
+import { getSportsTeamImage } from '@/features/polymarket/utils/getSportsTeamImage';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
+import { type Participant } from '@/features/sports/core/generated/external/sports/payload';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
@@ -16,11 +18,13 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
   market,
   outcomeTitles,
   teams,
+  participants,
   event,
 }: {
   market: PolymarketMarket;
   outcomeTitles?: string[];
   teams?: PolymarketTeamInfo[];
+  participants?: Participant[];
   event: PolymarketEvent;
 }) {
   const { isDarkMode } = useColorMode();
@@ -30,7 +34,9 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
     <Box gap={8}>
       {market.outcomes.map((outcome, index) => {
         const isTeamBased = isTeamBasedOutcome(outcome);
-        const outcomeImage = isTeamBased ? getOutcomeTeam({ outcome, outcomeIndex: index, teams })?.logo : undefined;
+        const outcomeImage = isTeamBased
+          ? getSportsTeamImage(getOutcomeTeam({ outcome, outcomeIndex: index, teams }), participants)
+          : undefined;
         const outcomeColor = isTeamBased
           ? getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams })
           : getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode });
