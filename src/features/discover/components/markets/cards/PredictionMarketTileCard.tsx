@@ -90,7 +90,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
 }: PredictionMarketTileCardProps) {
   const { isDarkMode } = useColorMode();
   const eventColor = useMemo(() => getTileAccentColor(event, isDarkMode), [event, isDarkMode]);
-  const rows = useMemo(() => getOutcomeRows(event), [event]);
+  const rows = useMemo(() => getPredictionWidgetOutcomes(event), [event]);
   const iconSource = useMemo(() => ({ uri: event.icon ?? event.image }), [event.icon, event.image]);
   const volumeText = useMemo(
     () => (event.volume == null ? null : formatNumber(event.volume, { useOrderSuffix: true, style: '$' })),
@@ -260,14 +260,9 @@ const OutcomeRow = memo(function OutcomeRow({
 // ============ Helpers ======================================================== //
 
 /**
- * Live-token IDs for the outcomes displayed by this card.
+ * Builds the outcome rows displayed by the prediction widget.
  */
-export function getTileWidgetTokenIds(event: PolymarketEvent): string[] {
-  const tokenIds = getOutcomeRows(event).map(row => row.tokenId);
-  return Array.from(new Set(tokenIds));
-}
-
-function getOutcomeRows(event: PolymarketEvent): OutcomeRowData[] {
+export function getPredictionWidgetOutcomes(event: PolymarketEvent): OutcomeRowData[] {
   const activeMarkets = event.markets.filter(market => market.active && !market.closed);
   const firstMarket = activeMarkets[0];
   if (!firstMarket) return [];

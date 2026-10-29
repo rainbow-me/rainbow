@@ -263,17 +263,6 @@ export function getPolymarketEventsListOutcomes(event: PolymarketEvent): Polymar
   }));
 }
 
-/**
- * Token ids for the outcomes this list item renders. Derived from the SAME selection
- * as the render, so subscribed == rendered by construction.
- */
-export function getPolymarketEventsListTokenIds(event: PolymarketEvent): string[] {
-  const tokenIds = getPolymarketEventsListOutcomes(event)
-    .map(outcome => outcome.tokenId)
-    .filter((tokenId): tokenId is string => Boolean(tokenId));
-  return Array.from(new Set(tokenIds));
-}
-
 function navigateToEvent(event: PolymarketEvent): void {
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
 }
