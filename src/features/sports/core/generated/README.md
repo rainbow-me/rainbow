@@ -1,7 +1,7 @@
 # Sports API types
 
-`sports.ts` is generated from `schemas/services/v1/sports/sports.proto` in
-`protobuf-registry`.
+Run `yarn generate:sports` from the app root to regenerate these files.
 
-Edit that schema, then run `make gen_ts` from the registry root. Copy
-`schemas/services/gen/v1/ts/sports/sports.ts` into this directory.
+The schema revision and generator version are pinned in
+[`buf.gen.yaml`](../../buf.gen.yaml). To use a newer schema, update its `ref`
+and run the command again. Commit the configuration and generated files together.
