@@ -12,7 +12,7 @@ import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import styled from '@/framework/ui/styled-thing';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
-import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { useOnTabReselect } from '@/navigation/tabEvents';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
@@ -155,6 +155,13 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
 
   const listRef = useRef<LegendListRef | null>(null);
 
+  useOnTabReselect(() => {
+    const list = listRef.current;
+    if (!list || list.getState().isAtStart) return;
+
+    list.scrollToIndex({ index: 0, viewOffset: 200, animated: true });
+  });
+
   const onScroll = useMemo(() => {
     if (!scrollY) return undefined;
     return (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -162,8 +169,6 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       scrollY.value = event.nativeEvent.contentOffset.y;
     };
   }, [scrollY]);
-
-  useLegendListNavBarScrollToTop(listRef);
 
   if (isLoadingTransactions) {
     return (
