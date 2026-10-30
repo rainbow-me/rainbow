@@ -13,7 +13,7 @@ import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { calculateSpotPnl, type TokenTrades } from '../core/spotPnl';
+import { calculateSpotPnl, type SpotPnlVariant, type TokenTrades } from '../core/spotPnl';
 import { useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
 import { formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
@@ -31,19 +31,22 @@ type SpotPnlPillToken = {
 type SpotPnlPillProps = {
   token: SpotPnlPillToken;
   surfaceColor: string;
+  /** Called once the pill is on screen, and again whenever its variant changes. */
+  onShown: (variant: SpotPnlVariant) => void;
 };
 
 /** Unrealized P&L while purchased tokens are held, otherwise realized P&L once they have all been sold. */
-export function SpotPnlPill({ token, surfaceColor }: SpotPnlPillProps) {
+export function SpotPnlPill({ token, surfaceColor, onShown }: SpotPnlPillProps) {
   const isEligible = useSpotPnlTokenId(Boolean);
 
   if (!isEligible) return null;
-  return <SpotPnlPillContent token={token} surfaceColor={surfaceColor} />;
+  return <SpotPnlPillContent token={token} surfaceColor={surfaceColor} onShown={onShown} />;
 }
 
 function SpotPnlPillContent({
   token: { address, balance, chainId, initialPrice, initialPriceUpdatedAt, uniqueId },
   surfaceColor,
+  onShown,
 }: SpotPnlPillProps) {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -66,9 +69,12 @@ function SpotPnlPillContent({
     fallbackUpdatedAt: initialPriceUpdatedAt,
   });
 
-  if (!trades || !usdToNativeRate) return null;
+  const pnl = trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null;
+  const shownVariant = pnl?.variant;
+  useEffect(() => {
+    if (shownVariant) onShown(shownVariant);
+  }, [onShown, shownVariant]);
 
-  const pnl = calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate });
   if (!pnl) return null;
 
   const isRealized = pnl.variant === 'fullyRealized';
@@ -80,7 +86,7 @@ function SpotPnlPillContent({
   return (
     <ButtonPressAnimation
       scaleTo={0.94}
-      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId })}
+      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId, entryPoint: 'pill' })}
       style={{ alignSelf: 'center' }}
     >
       <Box

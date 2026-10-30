@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
@@ -35,6 +36,14 @@ export const TopHoldersSection = memo(function TopHoldersSection() {
     return state.status === 'idle' || state.status === 'loading' ? 'skeleton' : null;
   });
   const token = usePnlEligibleToken();
+  const hasTrackedShown = useRef(false);
+
+  useEffect(() => {
+    if (hasTrackedShown.current || !isEnabled || display !== 'holders' || !token) return;
+    hasTrackedShown.current = true;
+    analytics.track(analytics.event.topHoldersShown, { tokenAddress: token.address, chainId: token.chainId });
+  }, [display, isEnabled, token]);
+
   if (!isEnabled || !display || !token) return null;
 
   return (

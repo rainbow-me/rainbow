@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import Animated, { useAnimatedStyle, useDerivedValue, type DerivedValue } from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
@@ -11,6 +12,7 @@ import { useChartType } from '@/features/charts/stores/chartsStore';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
 import { SpotPnlPill } from '@/features/spot-pnl/ui/SpotPnlPill';
 import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import useAccountSettings from '@/hooks/useAccountSettings';
@@ -49,6 +51,17 @@ export function BalanceSection() {
   });
 
   useListenerRouteGuard(candlestickPriceListener);
+
+  // Held here rather than in the pill, which remounts when the asset becomes owned or not owned
+  const hasTrackedPill = useRef(false);
+  const onPillShown = useCallback(
+    (variant: SpotPnlVariant) => {
+      if (hasTrackedPill.current) return;
+      hasTrackedPill.current = true;
+      analytics.track(analytics.event.spotPnlPillShown, { tokenAddress: basicAsset.address, chainId: basicAsset.chainId, variant });
+    },
+    [basicAsset.address, basicAsset.chainId]
+  );
 
   const tokenBalanceData = useDerivedValue(() => {
     const priceToUse =
@@ -90,6 +103,7 @@ export function BalanceSection() {
     return (
       <SpotPnlPill
         surfaceColor={accentColors.opacity6}
+        onShown={onPillShown}
         token={{
           address: basicAsset.address,
           balance: '0',
@@ -163,6 +177,7 @@ export function BalanceSection() {
         </Animated.View>
         <SpotPnlPill
           surfaceColor={accentColors.opacity6}
+          onShown={onPillShown}
           token={{
             address: asset.address,
             balance: balanceAmount,
