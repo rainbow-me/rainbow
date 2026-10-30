@@ -15,7 +15,7 @@ import { type CardPressHandler, type OrderPressHandler } from '@/features/discov
 import { DOWN_ARROW, UP_ARROW } from '@/features/market/ui/utils/formatPriceChange';
 import { BetButton } from '@/features/polymarket/components/BetButton';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeColors } from '@/features/polymarket/utils/getMarketColor';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -49,27 +49,15 @@ export const PREDICTION_MARKET_TILE_CARD_BORDER_RADIUS = 30;
 
 const OUTCOME_ROW_COUNT = 2;
 const LAST_TRADE_PRICE_THRESHOLDS = [0.05, 0.01];
+
 const LIGHT_CARD_BACKGROUND = white(0.92);
 const LIGHT_CARD_BORDER_COLORS = [white(0.8), white(0.8)] as const;
-const CARD_FILL_GRADIENT_CONFIG = {
-  end: { x: 1, y: 1 },
-  locations: [0.17824, 0.58889] as const,
-  start: { x: 0, y: 0 },
-};
-const CARD_FILL_LIGHT_GRADIENT_CONFIG = {
-  end: { x: 1, y: 0.72 },
-  start: { x: 0, y: 0 },
-};
-const CARD_BORDER_GRADIENT_CONFIG = {
-  end: { x: 1, y: 1 },
-  locations: [0, 0.94] as const,
-  start: { x: 0, y: 0 },
-};
-const OUTCOME_ROW_GRADIENT_CONFIG = {
-  end: { x: 0.89062, y: 0.5 },
-  locations: [0, 1] as const,
-  start: { x: 0, y: 0.5 },
-};
+
+const CARD_FILL_GRADIENT_CONFIG = { end: { x: 1, y: 1 }, locations: [0.17824, 0.58889] as const, start: { x: 0, y: 0 } };
+const CARD_FILL_LIGHT_GRADIENT_CONFIG = { end: { x: 1, y: 0.72 }, start: { x: 0, y: 0 } };
+const CARD_BORDER_GRADIENT_CONFIG = { end: { x: 1, y: 1 }, locations: [0, 0.94] as const, start: { x: 0, y: 0 } };
+const OUTCOME_ROW_GRADIENT_CONFIG = { end: { x: 0.89062, y: 0.5 }, locations: [0, 1] as const, start: { x: 0, y: 0.5 } };
+
 const ASSET_ACCENT_COLORS = [
   { color: '#F8931A', pattern: /\b(bitcoin|btc)\b/i },
   { color: '#9CA4AD', pattern: /\b(ethereum|eth)\b/i },
@@ -77,6 +65,8 @@ const ASSET_ACCENT_COLORS = [
   { color: '#D6A438', pattern: /\b(gold|xauusd|xau)\b/i },
   { color: '#7A70FF', pattern: /\b(solana|sol)\b/i },
 ] as const;
+
+const EMPTY_WIDGET_OUTCOMES: OutcomeRowData[] = [];
 
 // ============ Prediction Card ================================================ //
 
@@ -96,10 +86,12 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
     () => (event.volume == null ? null : formatNumber(event.volume, { useOrderSuffix: true, style: '$' })),
     [event.volume]
   );
+
   const priceChange = rows[0]?.market.oneDayPriceChange;
   const priceChangeText = formatPriceChange(priceChange);
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
   const priceChangeColor = priceChangeIsPositive ? 'green' : 'red';
+
   const { cardBorderColors, cardFillColors, outcomeBorderColors, outcomeFillColors } = useMemo(() => {
     const palette = createOpacityPalette(eventColor, isDarkMode ? [0, 8, 10, 24] : [0, 6, 10]);
     const outcomeBorderColors = isDarkMode ? ([palette.opacity8, palette.opacity0] as const) : ([eventColor, eventColor] as const);
@@ -138,6 +130,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
             locations={isDarkMode ? CARD_FILL_GRADIENT_CONFIG.locations : undefined}
             style={StyleSheet.absoluteFill}
           />
+
           <View style={styles.content}>
             <View style={styles.header}>
               <ImgixImage enableFasterImage source={iconSource} size={40} style={styles.icon} />
@@ -146,11 +139,12 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                   {event.title}
                 </Text>
                 <View style={styles.statsRow}>
-                  {volumeText !== null ? (
+                  {volumeText ? (
                     <Text color="labelTertiary" size="13pt" weight="bold">
                       {volumeText} {i18n.t(i18n.l.market_data.vol)}
                     </Text>
                   ) : null}
+
                   {priceChangeText ? (
                     <View style={styles.priceChangeRow}>
                       <TextIcon color={priceChangeColor} height={9} size="icon 10px" weight="heavy" width={11}>
@@ -164,6 +158,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
                 </View>
               </View>
             </View>
+
             <View style={styles.outcomes}>
               {rows.map(row => (
                 <OutcomeRow
@@ -211,16 +206,15 @@ const OutcomeRow = memo(function OutcomeRow({
       market: row.market,
       event,
       outcomeIndex: row.outcomeIndex,
-      outcomeColor: getOutcomeColor({
+      accentColor: getOutcomeColors({
         market: row.market,
         outcome: row.market.outcomes[row.outcomeIndex] ?? row.title,
         outcomeIndex: row.outcomeIndex,
-        isDarkMode,
         teams: event.teams,
       }),
       fromRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
     });
-  }, [event, isDarkMode, onOrderPress, row.market, row.outcomeIndex, row.title]);
+  }, [event, onOrderPress, row.market, row.outcomeIndex, row.title]);
 
   return (
     <GradientBorderView
@@ -240,6 +234,7 @@ const OutcomeRow = memo(function OutcomeRow({
         locations={isDarkMode ? OUTCOME_ROW_GRADIENT_CONFIG.locations : undefined}
         style={StyleSheet.absoluteFill}
       />
+
       <View style={styles.outcomeRowContent}>
         <BetButton
           key={row.tokenId}
@@ -265,7 +260,7 @@ const OutcomeRow = memo(function OutcomeRow({
 export function getPredictionWidgetOutcomes(event: PolymarketEvent): OutcomeRowData[] {
   const activeMarkets = event.markets.filter(market => market.active && !market.closed);
   const firstMarket = activeMarkets[0];
-  if (!firstMarket) return [];
+  if (!firstMarket) return EMPTY_WIDGET_OUTCOMES;
 
   if (activeMarkets.length === 1) {
     return firstMarket.outcomes
@@ -283,6 +278,7 @@ export function getPredictionWidgetOutcomes(event: PolymarketEvent): OutcomeRowD
   const marketsAboveThreshold = LAST_TRADE_PRICE_THRESHOLDS.map(threshold =>
     activeMarkets.filter(market => calculateOddsPrice(market) >= threshold)
   ).find(markets => markets.length >= OUTCOME_ROW_COUNT);
+
   const visibleMarkets = (marketsAboveThreshold ?? activeMarkets).slice(0, OUTCOME_ROW_COUNT);
 
   return visibleMarkets

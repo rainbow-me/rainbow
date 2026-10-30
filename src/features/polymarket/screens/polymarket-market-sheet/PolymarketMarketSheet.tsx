@@ -81,7 +81,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                     market,
                     event,
                     outcomeIndex: index,
-                    outcomeColor: accentColor,
+                    accentColor: market.color,
                     fromRoute: Routes.POLYMARKET_MARKET_SHEET,
                   })
                 }

@@ -47,14 +47,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_NEW_POSITION_SHEET>>();
   const safeAreaInsets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
-  const outcomeColor = params.outcomeColor;
+  const accentColor = params.accentColor[isDarkMode ? 'dark' : 'light'];
 
   return (
     <PanelSheet innerBorderWidth={1} enableKeyboardAvoidance keyboardAvoidanceOffset={{ opened: safeAreaInsets.bottom }}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }]}>
         <LinearGradient
           colors={
-            isDarkMode ? [opacity(outcomeColor, 0.22), opacity(outcomeColor, 0)] : [opacity(outcomeColor, 0), opacity(outcomeColor, 0.06)]
+            isDarkMode ? [opacity(accentColor, 0.22), opacity(accentColor, 0)] : [opacity(accentColor, 0), opacity(accentColor, 0.06)]
           }
           style={StyleSheet.absoluteFill}
           start={isDarkMode ? { x: 0, y: 0 } : { x: 0, y: 0.12 }}
@@ -67,13 +67,13 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
           {'outcome' in params ? (
-            <OrderDetailsLoader outcome={params.outcome} outcomeColor={outcomeColor} fromRoute={params.fromRoute} />
+            <OrderDetailsLoader outcome={params.outcome} accentColor={accentColor} fromRoute={params.fromRoute} />
           ) : (
             <NewPositionForm
               event={params.event}
               market={params.market}
               outcomeIndex={params.outcomeIndex}
-              outcomeColor={outcomeColor}
+              accentColor={accentColor}
               fromRoute={params.fromRoute}
             />
           )}
@@ -83,14 +83,14 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
   );
 });
 
-function OrderDetailsLoader({ outcome, outcomeColor, fromRoute }: { outcome: PolymarketOutcome; outcomeColor: string; fromRoute: Route }) {
+function OrderDetailsLoader({ outcome, accentColor, fromRoute }: { outcome: PolymarketOutcome; accentColor: string; fromRoute: Route }) {
   const details = usePolymarketOrderStore(s => {
     const data = s.getData({ outcome });
     if (data) return data;
     return s.getStatus('isInitialLoad') || s.getStatus('isLoading') ? undefined : null;
   });
 
-  if (details === undefined) return <NewPositionSkeleton outcomeColor={outcomeColor} />;
+  if (details === undefined) return <NewPositionSkeleton accentColor={accentColor} />;
 
   if (details === null) {
     return (
@@ -115,7 +115,7 @@ function OrderDetailsLoader({ outcome, outcomeColor, fromRoute }: { outcome: Pol
       event={details.event}
       market={details.market}
       outcomeIndex={details.outcomeIndex}
-      outcomeColor={outcomeColor}
+      accentColor={accentColor}
       fromRoute={fromRoute}
     />
   );
@@ -125,9 +125,9 @@ function NewPositionForm({
   market,
   event,
   outcomeIndex,
-  outcomeColor,
+  accentColor,
   fromRoute,
-}: PolymarketOrderDetails & { outcomeColor: string; fromRoute: Route }) {
+}: PolymarketOrderDetails & { accentColor: string; fromRoute: Route }) {
   const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
@@ -135,7 +135,7 @@ function NewPositionForm({
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
-  const buttonColor = getButtonColor(outcomeColor);
+  const buttonColor = getButtonColor(accentColor);
 
   const {
     availableBalance,
@@ -247,7 +247,7 @@ function NewPositionForm({
     <>
       <Box gap={12}>
         <PolymarketOutcomeCard
-          accentColor={outcomeColor}
+          accentColor={accentColor}
           icon={market.icon}
           outcomeTitle={outcomeTitle}
           outcomeSubtitle={outcomeSubtitle}
@@ -257,8 +257,8 @@ function NewPositionForm({
         />
         <AmountInputCard
           availableBalance={availableBalance}
-          accentColor={outcomeColor}
-          backgroundColor={isDarkMode ? opacity(outcomeColor, 0.08) : white(0.9)}
+          accentColor={accentColor}
+          backgroundColor={isDarkMode ? opacity(accentColor, 0.08) : white(0.9)}
           onAmountChange={setBuyAmount}
           title={i18n.t(i18n.l.predictions.new_position.amount)}
           validation={validation}
@@ -346,9 +346,9 @@ function OrderSummary({ averagePrice, spread, amountToWin }: { averagePrice?: st
   );
 }
 
-function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }) {
+function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
   const { isDarkMode } = useColorMode();
-  const cardColor = isDarkMode ? opacity(outcomeColor, 0.08) : white(0.9);
+  const cardColor = isDarkMode ? opacity(accentColor, 0.08) : white(0.9);
 
   return (
     <>
@@ -373,7 +373,7 @@ function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }) {
         <Box height={INPUT_CARD_HEIGHT} backgroundColor={cardColor} borderRadius={28} padding="20px" gap={20}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Box gap={12}>
-              <Text size="20pt" weight="heavy" color={{ custom: outcomeColor }}>
+              <Text size="20pt" weight="heavy" color={{ custom: accentColor }}>
                 {i18n.t(i18n.l.predictions.new_position.amount)}
               </Text>
               <Box width={96} height={12} borderRadius={4} background="fillTertiary" />
@@ -387,7 +387,7 @@ function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }) {
       <Box
         height={48}
         borderRadius={24}
-        backgroundColor={getButtonColor(outcomeColor)}
+        backgroundColor={getButtonColor(accentColor)}
         borderColor={BUTTON_BORDER_COLOR}
         borderWidth={2}
         alignItems="center"
@@ -402,8 +402,8 @@ function NewPositionSkeleton({ outcomeColor }: { outcomeColor: string }) {
   );
 }
 
-function getButtonColor(outcomeColor: string): string {
-  return getSolidColorEquivalent({ background: outcomeColor, foreground: '#000000', opacity: 0.4 });
+function getButtonColor(accentColor: string): string {
+  return getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.4 });
 }
 
 function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {

@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import { isHex, keccak256, stringToHex } from 'viem';
 
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isETH from '@/utils/isETH';
 
 import { lightModeThemeColors } from '../styles/colors';
-import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 
 export default function useColorForAsset(

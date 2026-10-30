@@ -2,7 +2,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import chroma from 'chroma-js';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -35,6 +34,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type TextColor } from '@/design-system/color/palettes';
 import { opacity } from '@/design-system/utils/opacity';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
@@ -306,21 +306,6 @@ export const ControlPanel = () => {
   );
 };
 
-const getHighContrastAccentColor = (accentColor: string, isDarkMode: boolean) => {
-  const contrast = chroma.contrast(accentColor, isDarkMode ? '#191A1C' : globalColors.white100);
-  if (contrast < 2.125) {
-    if (isDarkMode) {
-      const brightenedColor = chroma(accentColor).brighten(1).saturate(0.5).css();
-      return brightenedColor;
-    } else {
-      const darkenedColor = chroma(accentColor).darken(1).saturate(0.5).css();
-      return darkenedColor;
-    }
-  } else {
-    return accentColor;
-  }
-};
-
 const AccentColorSetter = ({
   animatedAccentColor,
   selectedWallet,
@@ -331,7 +316,7 @@ const AccentColorSetter = ({
   const { isDarkMode } = useColorMode();
 
   const accountColor = usePersistentDominantColorFromImage(selectedWallet?.imageUrl) || selectedWallet?.color || globalColors.blue60;
-  const highContrastAccentColor = useMemo(() => getHighContrastAccentColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
+  const highContrastAccentColor = useMemo(() => getHighContrastColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
 
   useSyncSharedValue({
     sharedValue: animatedAccentColor,

@@ -16,7 +16,7 @@ import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
 import { navigateToPolymarketEvent } from '@/features/polymarket/utils/navigateToPolymarket';
 import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
@@ -24,7 +24,7 @@ import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 export const PolymarketPositionRow = memo(function PolymarketPositionRow({ position }: { position: PolymarketPosition }) {
   const { isDarkMode } = useColorMode();
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
 
   const tokenId = getPositionTokenId(position);
 

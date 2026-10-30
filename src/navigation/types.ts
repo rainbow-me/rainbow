@@ -43,6 +43,7 @@ import { type WalletNotificationSettings } from '@/notifications/settings/types'
 import { type Contact } from '@/redux/contacts';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { type ResponseByTheme } from '@/theme/types';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 
 export type PortalSheetProps = {
@@ -698,7 +699,7 @@ type ParamsByRoute = {
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
     fromRoute: Route;
-    outcomeColor: string;
+    accentColor: ResponseByTheme<string>;
   } & (
     | { outcome: PolymarketOutcome }
     | {

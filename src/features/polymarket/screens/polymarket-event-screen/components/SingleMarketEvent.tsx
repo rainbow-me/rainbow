@@ -6,7 +6,7 @@ import { ResolvedMarketRow } from '@/features/polymarket/screens/polymarket-even
 import { MarketRow } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { getOutcomeColor } from '@/features/polymarket/utils/getMarketColor';
+import { getOutcomeColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getSportsTeamImage } from '@/features/polymarket/utils/getSportsTeamImage';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
@@ -37,9 +37,8 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
         const outcomeImage = isTeamBased
           ? getSportsTeamImage(getOutcomeTeam({ outcome, outcomeIndex: index, teams }), participants)
           : undefined;
-        const outcomeColor = isTeamBased
-          ? getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode, teams })
-          : getOutcomeColor({ market, outcome, outcomeIndex: index, isDarkMode });
+        const outcomeColors = getOutcomeColors({ market, outcome, outcomeIndex: index, teams: isTeamBased ? teams : undefined });
+        const outcomeColor = outcomeColors[isDarkMode ? 'dark' : 'light'];
 
         const outcomeLower = outcome.toLowerCase();
         const isOverUnder = outcomeLower === 'over' || outcomeLower === 'under';
@@ -73,7 +72,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
                 market,
                 event,
                 outcomeIndex: index,
-                outcomeColor,
+                accentColor: outcomeColors,
                 fromRoute: Routes.POLYMARKET_EVENT_SCREEN,
               });
             }}
