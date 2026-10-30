@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator } from 'react-native';
 
+import { LinearTransition } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
@@ -47,6 +49,11 @@ const PLACEHOLDER_HEIGHT = 252;
 
 type TradesStatus = 'loading' | 'success' | 'error';
 
+const PANEL_LAYOUT = LinearTransition.springify()
+  .mass(SPRING_CONFIGS.sheetTransition.mass)
+  .damping(SPRING_CONFIGS.sheetTransition.damping)
+  .stiffness(SPRING_CONFIGS.sheetTransition.stiffness);
+
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
     params: { address, chainId, ensName, walletAddress: routeWalletAddress },
@@ -55,7 +62,7 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
 
   return (
-    <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
+    <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1} layoutAnimation={PANEL_LAYOUT}>
       {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} ensName={ensName} />}
     </PanelSheet>
   );
