@@ -104,6 +104,7 @@ reviews:
       # Keys, backups, local auth
       - 'src/model/wallet.ts'
       - 'src/helpers/signingWallet.ts'
+      - 'src/utils/wallet.ts'
       - 'src/utils/signingUtils.ts'
       - 'src/features/wallet/**'
       - 'src/features/local-auth/**'
@@ -148,6 +149,7 @@ reviews:
       - 'src/features/polymarket/utils/collectPolymarketTradeFee.ts'
       - 'src/features/polymarket/utils/redeemPosition.ts'
       - 'src/features/polymarket/utils/polymarketWallet.ts'
+      - 'src/features/polymarket/utils/handlePolymarketDepositSubmitted.ts'
       - 'src/features/rnbw-staking/utils/**'
       - 'src/features/rnbw-rewards/utils/**'
       - 'src/features/*/depositConfig.ts'
@@ -158,6 +160,9 @@ reviews:
       - 'src/browser/**'
       - 'src/features/wallet-connect/**'
       - 'src/handlers/deeplinks.ts'
+      - 'src/utils/branch.ts'
+      - 'src/app/navigation/DeeplinkHandler.tsx'
+      - 'src/app/navigation/TestDeeplinkHandler.tsx'
       # Cash: auth, passkeys, sessions, orders, KYC
       - 'src/features/cash/services/**'
       - 'src/features/cash/stores/**'
