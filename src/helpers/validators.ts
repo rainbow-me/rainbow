@@ -1,7 +1,7 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { normalize } from 'viem/ens';
 
-import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { isHexStringIgnorePrefix, isValidMnemonic, resolveNameOrAddress } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
@@ -73,9 +73,4 @@ export const isValidSeed = (seed: any) => seed && (isValidPrivateKey(seed) || is
  * @return {Boolean}
  */
 export const isValidWallet = (seed: any) =>
-  seed &&
-  (isValidPrivateKey(seed) ||
-    isValidSeedPhrase(seed) ||
-    isValidAddress(seed) ||
-    isUnstoppableAddressFormat(seed) ||
-    isENSAddressFormat(seed));
+  seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed) || checkIsValidAddressOrDomainFormat(seed));
