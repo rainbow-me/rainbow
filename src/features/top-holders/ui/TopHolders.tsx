@@ -11,6 +11,7 @@ import { useCurrencyConversionStore } from '@/features/currency/stores/currencyC
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
@@ -194,6 +195,7 @@ const HoldingHolderRow = memo(function HoldingHolderRow({ nativeCurrency, rank, 
         </Box>
       }
       token={token}
+      trades={row.trades}
     >
       <Text color="label" size="17pt" weight="semibold">
         {formatNativeAmount(mulWorklet(row.valueUsd, usdToNativeRate), nativeCurrency)}
@@ -224,6 +226,7 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
         </Box>
       }
       token={token}
+      trades={row.trades}
     >
       <PnlFigures
         amountUsd={row.pnl.amount}
@@ -237,7 +240,7 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
 
 const RealizedHolderRow = memo(function RealizedHolderRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<RealizedRow>) {
   return (
-    <HolderRow address={row.address} rank={rank} token={token}>
+    <HolderRow address={row.address} rank={rank} token={token} trades={row.trades}>
       <PnlFigures
         amountUsd={row.realized.amount}
         nativeCurrency={nativeCurrency}
@@ -287,12 +290,14 @@ function HolderRow({
   rank,
   subtitle,
   token,
+  trades,
 }: {
   address: string;
   children: React.ReactNode;
   rank: number;
   subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
+  trades: WalletTokenTrades | undefined;
 }) {
   const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
 
@@ -302,6 +307,7 @@ function HolderRow({
       chainId: token.chainId,
       walletAddress: address,
       ensName: ensName ?? undefined,
+      trades,
     });
 
   return (

@@ -166,6 +166,7 @@ function rankTopHolders({ holders, token, prices, unrealized, realized }: TopHol
               ),
               priceUsd: String(priceUsd),
               totalSupply: token.info?.totalSupply ?? '0',
+              traders: [...unrealized.results, ...realized.results],
             },
             filter
           )
