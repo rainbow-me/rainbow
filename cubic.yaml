@@ -88,6 +88,7 @@ reviews:
       - 'scripts/fetch-rainbow-env-file.sh'
       - 'scripts/graph-ens-key.sh'
       - 'scripts/e2e-*ci*.sh'
+      - 'scripts/e2e-ios-enroll-biometrics.sh'
       - 'ios/.xcode.env'
       - 'ios/AppIcons/.xcode.env'
       # Review config and the instructions reviewers read
