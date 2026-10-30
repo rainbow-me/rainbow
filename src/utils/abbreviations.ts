@@ -25,7 +25,7 @@ export function abbreviateEnsForDisplay(text: string | undefined, truncationLeng
   }
   const pieces = text.split('.');
   if (pieces[0].length > truncationLength + truncationLengthBuffer) {
-    return [pieces[0].slice(0, truncationLength - 4), '...', pieces[0].slice(-4), `.${pieces[1]}`].join('');
+    return [pieces[0].slice(0, truncationLength - 4), '...', pieces[0].slice(-4), `.${pieces.slice(1).join('.')}`].join('');
   } else {
     return text;
   }
