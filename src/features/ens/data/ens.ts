@@ -1,3 +1,4 @@
+import { nullObject } from '@storesjs/stores';
 import * as AbiError from 'ox/AbiError';
 import * as AbiFunction from 'ox/AbiFunction';
 import {
@@ -67,8 +68,8 @@ const LOOKUP_TIMEOUT_MS = time.seconds(15);
 const MAX_CCIP_LOOKUPS = 8;
 
 const ABI_WORD_BYTES = 32;
-const CALLBACK_ARGUMENTS = [{ type: 'bytes' }, { type: 'bytes' }] as const;
-const OFFCHAIN_LOOKUP = AbiError.from(offchainLookupAbiItem);
+const ABI_ENCODE_PARAMS = [{ type: 'bytes' }, { type: 'bytes' }] as const;
+const OFFCHAIN_LOOKUP_ERROR = AbiError.from(offchainLookupAbiItem);
 
 const COIN_ADDRESS_RECORD = AbiFunction.from('function addr(bytes32 node, uint256 coinType) view returns (bytes)');
 const CONTENT_HASH_RECORD = AbiFunction.from('function contenthash(bytes32 node) view returns (bytes)');
@@ -151,13 +152,14 @@ export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?:
         : AbiFunction.encodeData(COIN_ADDRESS_RECORD, [node, BigInt(coinType)])
     );
   }
+
   calls.push(AbiFunction.encodeData(CONTENT_HASH_RECORD, [node]));
 
   const values = await withEnsClient(client => readRecordBatch(client, dnsName, calls), signal);
   if (values === null) return null;
 
-  const texts: EnsRecords['texts'] = Object.create(null);
-  const coins: EnsRecords['coins'] = Object.create(null);
+  const texts: EnsRecords['texts'] = nullObject();
+  const coins: EnsRecords['coins'] = nullObject();
   let index = 0;
 
   for (const key of keys.texts) {
@@ -233,13 +235,13 @@ async function callWithCcip(
       const revertData = getRevertData(error);
       if (!parameters.to || !revertData?.startsWith(offchainLookupSignature)) throw error;
 
-      const { sender, urls, callData, callbackFunction, extraData } = AbiError.decode(OFFCHAIN_LOOKUP, revertData, { as: 'Object' });
+      const { sender, urls, callData, callbackFunction, extraData } = AbiError.decode(OFFCHAIN_LOOKUP_ERROR, revertData, { as: 'Object' });
 
       if (!isAddressEqual(sender, parameters.to)) throw new Error('CCIP lookup sender does not match the called contract');
       if (lookups === MAX_CCIP_LOOKUPS) throw new Error('ENS lookup exceeded its CCIP request limit');
 
       const response = await requestGateway({ sender, urls, data: callData });
-      data = concat([callbackFunction, encodeAbiParameters(CALLBACK_ARGUMENTS, [response, extraData])]);
+      data = concat([callbackFunction, encodeAbiParameters(ABI_ENCODE_PARAMS, [response, extraData])]);
     }
   }
 }
@@ -250,8 +252,8 @@ async function callWithCcip(
 function getRevertData(error: unknown): Hex | undefined {
   if (!(error instanceof BaseError)) return undefined;
 
-  const cause = error.walk(value => value instanceof RpcRequestError);
-  if (!(cause instanceof RpcRequestError)) return undefined;
+  const cause = error.walk(isRpcRequestError);
+  if (!isRpcRequestError(cause)) return undefined;
 
   const payload = cause.data;
   const data = payload && typeof payload === 'object' && 'data' in payload ? payload.data : payload;
@@ -261,8 +263,8 @@ function getRevertData(error: unknown): Hex | undefined {
 
 function hasResolverError(error: unknown, name: string): boolean {
   if (!(error instanceof BaseError)) return false;
-  const cause = error.walk(candidate => candidate instanceof ContractFunctionRevertedError);
-  return cause instanceof ContractFunctionRevertedError && cause.data?.errorName === name;
+  const cause = error.walk(isContractFunctionRevertedError);
+  return isContractFunctionRevertedError(cause) && cause.data?.errorName === name;
 }
 
 // ============ Record Batches ================================================= //
@@ -282,6 +284,8 @@ async function readRecordBatch(client: EnsClient, dnsName: Hex, calls: readonly 
   throw new Error('ENS returned an incomplete record batch');
 }
 
+// ============ Decoding ======================================================= //
+
 /**
  * Decodes a Smart Multicall record, distinguishing values from reported errors.
  * Unsupported methods return null; other errors retain their resolver diagnostics.
@@ -292,6 +296,7 @@ function decodeRecord<T>(data: Hex, decode: (data: Hex) => T): T | null {
 
   const error = new ContractFunctionRevertedError({ abi: UNIVERSAL_RESOLVER_ABI, data, functionName: 'resolveWithGateways' });
   if (error.data?.errorName === 'UnsupportedResolverProfile') return null;
+
   throw error;
 }
 
@@ -312,4 +317,14 @@ function decodeCoinAddress(data: Hex): Hex | null {
 function decodeContentHash(data: Hex): Hex | null {
   const hash = AbiFunction.decodeResult(CONTENT_HASH_RECORD, data);
   return hash === '0x' ? null : hash;
+}
+
+// ============ Error Classification =========================================== //
+
+function isContractFunctionRevertedError(error: unknown): error is ContractFunctionRevertedError {
+  return error instanceof ContractFunctionRevertedError;
+}
+
+function isRpcRequestError(error: unknown): error is RpcRequestError {
+  return error instanceof RpcRequestError;
 }
