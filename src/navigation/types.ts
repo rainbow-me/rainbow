@@ -734,7 +734,7 @@ type ParamsByRoute = {
     walletAddress?: string;
     /** The wallet's ENS name when already resolved, shown for wallets that are not the user's. */
     ensName?: string;
-    /** The wallet's trades when already fetched, shown instead of fetching them for wallets that are not the user's. */
+    /** The wallet's trades when already fetched, shown instead of fetching them. */
     trades?: WalletTokenTrades;
   };
   [Routes.REVOKE_DELEGATION_PANEL]: {

@@ -13,7 +13,7 @@ import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { calculateSpotPnl, type TokenTrades } from '../core/spotPnl';
+import { calculateSpotPnl, type WalletTokenTrades } from '../core/spotPnl';
 import { useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
 import { formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
@@ -52,7 +52,7 @@ function SpotPnlPillContent({
   const walletAddress = userAssetsStoreManager(state => state.address);
   const codexTokenId = useSpotPnlTokenId();
   const position = `${walletAddress}:${codexTokenId}`;
-  const lastTrades = useRef<{ position: string; trades: TokenTrades } | null>(null);
+  const lastTrades = useRef<{ position: string; trades: WalletTokenTrades } | null>(null);
   useEffect(() => {
     if (fetchedTrades) lastTrades.current = { position, trades: fetchedTrades };
   }, [fetchedTrades, position]);
@@ -80,7 +80,7 @@ function SpotPnlPillContent({
   return (
     <ButtonPressAnimation
       scaleTo={0.94}
-      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId })}
+      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId, trades })}
       style={{ alignSelf: 'center' }}
     >
       <Box

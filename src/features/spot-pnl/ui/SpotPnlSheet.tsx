@@ -38,7 +38,7 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import { calculateSpotPnl, type PnlReturn, type SpotPnl, type WalletTokenTrades } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
-import { createTokenTradesStore, useTokenTradesStore } from '../data/tokenTradesStore';
+import { createTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
 import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
 
@@ -70,8 +70,7 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
           walletAddress={walletAddress}
           ensName={ensName}
           isSelectedWallet={isSelectedWallet}
-          // The selected wallet's own store pairs its trades with its own balance
-          knownTrades={isSelectedWallet ? undefined : trades}
+          knownTrades={trades}
         />
       )}
     </PanelSheet>
@@ -100,7 +99,7 @@ function SpotPnlSheetContent({
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
 
   // A null wallet fetches nothing when the trades are already known
-  const otherWalletTradesStore = useStableValue(() =>
+  const tradesStore = useStableValue(() =>
     createTokenTradesStore({
       params: {
         walletAddress: knownTrades ? null : walletAddress,
@@ -109,7 +108,6 @@ function SpotPnlSheetContent({
       },
     })
   );
-  const tradesStore = isSelectedWallet ? useTokenTradesStore : otherWalletTradesStore;
   const fetchedTrades = tradesStore(state => state.getData());
   const isFetchSuccess = tradesStore(state => state.getStatus('isSuccess'));
   const isFetchError = tradesStore(state => state.getStatus('isError'));
