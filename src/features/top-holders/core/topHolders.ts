@@ -31,6 +31,8 @@ export type HoldingRow = {
   valueUsd: string;
   /** Where 1 is 1%. */
   supplyPercentage: string;
+  /** `null` when the holder is not among the traders fetched with it. */
+  trades: WalletTokenTrades | null;
 };
 
 export type UnrealizedRow = {
@@ -39,11 +41,13 @@ export type UnrealizedRow = {
   pnl: UnrealizedPnl;
   /** USD per token. */
   avgEntryUsd: string;
+  trades: WalletTokenTrades;
 };
 
 export type RealizedRow = {
   address: string;
   realized: RealizedReturnUsd;
+  trades: WalletTokenTrades;
 };
 
 export type TopHolders = {
@@ -70,12 +74,13 @@ export function isRealUser(holder: TokenHolder, filter: HolderWalletFilter): boo
   );
 }
 
-/** The largest real-user holders. `holders` is ordered by balance, descending. */
+/** The largest real-user holders, with their trades when they are among `traders`. `holders` is ordered by balance, descending. */
 export function rankHolding(
-  { holders, priceUsd, totalSupply }: { holders: TokenHolder[]; priceUsd: string; totalSupply: string },
+  { holders, priceUsd, totalSupply, traders }: { holders: TokenHolder[]; priceUsd: string; totalSupply: string; traders: TokenTrader[] },
   filter: HolderWalletFilter
 ): HoldingRow[] {
   const hasSupply = greaterThanWorklet(totalSupply, 0);
+  const tradesByAddress = new Map(traders.map(trader => [trader.address, trader]));
   return holders
     .filter(holder => isRealUser(holder, filter))
     .slice(0, TOP_HOLDERS_LIMIT)
@@ -83,6 +88,7 @@ export function rankHolding(
       address: holder.address,
       valueUsd: mulWorklet(holder.balance, priceUsd),
       supplyPercentage: hasSupply ? mulWorklet(divWorklet(holder.balance, totalSupply), 100) : '0',
+      trades: tradesByAddress.get(holder.address) ?? null,
     }));
 }
 
@@ -99,6 +105,7 @@ export function rankUnrealized(traders: TokenTrader[], priceUsd: string): Unreal
         address: trader.address,
         pnl,
         avgEntryUsd: divWorklet(trader.tokenAcquisitionCostUsd, trader.purchasedTokenBalance),
+        trades: trader,
       });
     }
   }
@@ -108,5 +115,7 @@ export function rankUnrealized(traders: TokenTrader[], priceUsd: string): Unreal
 
 /** `traders` is already ranked by realized profit in USD. */
 export function rankRealized(traders: TokenTrader[]): RealizedRow[] {
-  return traders.slice(0, TOP_HOLDERS_LIMIT).map(trader => ({ address: trader.address, realized: calculateRealizedReturn(trader) }));
+  return traders
+    .slice(0, TOP_HOLDERS_LIMIT)
+    .map(trader => ({ address: trader.address, realized: calculateRealizedReturn(trader), trades: trader }));
 }

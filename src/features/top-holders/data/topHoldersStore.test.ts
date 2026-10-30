@@ -23,9 +23,10 @@ vi.mock('@/features/config/stores/remoteConfig', async () => {
   return import('@/features/config/stores/__mocks__/remoteConfig');
 });
 
-const WHALE = '0xAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa';
+const WHALE = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 const EXCHANGE = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
-const TRADER = '0xCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc';
+// Codex returns lowercase addresses
+const TRADER = '0xcccccccccccccccccccccccccccccccccccccccc';
 
 const NO_HOLDERS = { holders: { status: 'DISABLED', items: [] }, token: null };
 const NO_TRADERS = { unrealized: { results: [] }, realized: { results: [] } };
@@ -105,6 +106,17 @@ describe('useTopHoldersStore', () => {
 
   it('ranks holders and traders from one request, at the token price, in token units', async () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    const traderTrades = {
+      address: TRADER,
+      ...trades({
+        purchasedTokenBalance: '10',
+        tokenAcquisitionCostUsd: '5',
+        tokenBalanceLive: '4',
+        tokenAmountSold1y: '6',
+        amountSoldUsd1y: '12',
+        realizedProfitUsd1y: '9',
+      }),
+    };
     respondWith({
       data: {
         holders: {
@@ -112,21 +124,13 @@ describe('useTopHoldersStore', () => {
           items: [
             { address: EXCHANGE, balance: '5000000000000000000000', wallet: { category: 'EXCHANGE', identityLabels: null } },
             { address: WHALE, balance: '100000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
+            { address: TRADER, balance: '4000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
           ],
         },
         token: { decimals: 18, info: { totalSupply: '1000' } },
         prices: [{ priceUsd: 2 }],
-        unrealized: {
-          results: [
-            {
-              address: TRADER.toLowerCase(),
-              ...trades({ purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '5', tokenBalanceLive: '4' }),
-            },
-          ],
-        },
-        realized: {
-          results: [{ address: TRADER, ...trades({ tokenAmountSold1y: '6', amountSoldUsd1y: '12', realizedProfitUsd1y: '9' }) }],
-        },
+        unrealized: { results: [traderTrades] },
+        realized: { results: [traderTrades] },
       },
     });
 
@@ -136,15 +140,19 @@ describe('useTopHoldersStore', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(variables).toEqual({ tokenId: '0xtoken:8453', address: '0xtoken', networkId: 8453, excludeLabels: ['BOT'] });
     expect(getData()).toEqual({
-      holding: [{ address: WHALE, valueUsd: '200', supplyPercentage: '10' }],
+      holding: [
+        { address: WHALE, valueUsd: '200', supplyPercentage: '10', trades: null },
+        { address: TRADER, valueUsd: '8', supplyPercentage: '0.4', trades: traderTrades },
+      ],
       unrealized: [
         {
-          address: TRADER.toLowerCase(),
+          address: TRADER,
           avgEntryUsd: '0.5',
           pnl: { heldBalance: '4', cost: '2', value: '8', amount: '6', percentage: '300' },
+          trades: traderTrades,
         },
       ],
-      realized: [{ address: TRADER, realized: { amount: '9', percentage: '300', cost: '3' } }],
+      realized: [{ address: TRADER, realized: { amount: '9', percentage: '300', cost: '3' }, trades: traderTrades }],
     });
   });
 
