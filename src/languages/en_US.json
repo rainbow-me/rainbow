@@ -3665,7 +3665,8 @@
       "nothing_sold_yet": "Nothing sold yet",
       "excluded_from_calculation": "excluded from calculation",
       "excluded_tokens_info": "Tokens you received, like transfers from another wallet, airdrops, or rewards, aren’t counted in your profit and loss. They have no buy price to compare against.",
-      "nothing_to_show": "No P&L to show"
+      "nothing_to_show": "No PnL to show",
+      "nothing_to_show_description": "This wallet received these tokens rather than buying them, so PnL can’t be calculated."
     },
     "rnbw_rewards_estimate_sheet": {
       "earning_rewards": "Earning Rewards",

@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator } from 'react-native';
 
+import { LinearTransition } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
@@ -42,7 +44,13 @@ import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPn
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;
-const LOADING_HEIGHT = 120;
+// Height of the unrealized-position body, so the sheet opens at its full height before trades load
+const PLACEHOLDER_HEIGHT = 252;
+
+const PANEL_LAYOUT = LinearTransition.springify()
+  .mass(SPRING_CONFIGS.sheetTransition.mass)
+  .damping(SPRING_CONFIGS.sheetTransition.damping)
+  .stiffness(SPRING_CONFIGS.sheetTransition.stiffness);
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
@@ -52,7 +60,7 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
 
   return (
-    <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1}>
+    <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1} layoutAnimation={PANEL_LAYOUT}>
       {walletAddress && <SpotPnlSheetContent tokenAddress={address} chainId={chainId} walletAddress={walletAddress} ensName={ensName} />}
     </PanelSheet>
   );
@@ -83,6 +91,10 @@ function SpotPnlSheetContent({
   const tradesStore = isSelectedWallet ? useTokenTradesStore : otherWalletTradesStore;
   const trades = tradesStore(state => state.getData());
   const isSettled = tradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  // Codex lists only a token's traders, so a wallet that never bought it may have no record at all
+  const isReceivedOnly = tradesStore(
+    state => state.getStatus('isSuccess') && !greaterThanWorklet(state.getData()?.purchasedTokenBalance ?? '0', 0)
+  );
   // The selected wallet uses its own assets, as the pill does, rather than Codex's indexed balance
   const balance = isSelectedWallet ? accountAsset?.balance?.amount || '0' : (trades?.tokenBalanceLive ?? '0');
 
@@ -110,6 +122,7 @@ function SpotPnlSheetContent({
         decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
         initialPrice={accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? ''}
         initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
+        isReceivedOnly={isReceivedOnly}
         isSettled={isSettled}
         nativeCurrency={nativeCurrency}
         symbol={symbol}
@@ -128,6 +141,7 @@ function SpotPnlSection({
   decimals,
   initialPrice,
   initialPriceUpdatedAt,
+  isReceivedOnly,
   isSettled,
   nativeCurrency,
   symbol,
@@ -141,6 +155,7 @@ function SpotPnlSection({
   decimals: number;
   initialPrice: string;
   initialPriceUpdatedAt: number;
+  isReceivedOnly: boolean;
   isSettled: boolean;
   nativeCurrency: NativeCurrencyKey;
   symbol: string;
@@ -195,7 +210,7 @@ function SpotPnlSection({
   return pnl ? (
     <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
   ) : (
-    <SpotPnlPlaceholder isSettled={isSettled} />
+    <SpotPnlPlaceholder isReceivedOnly={isReceivedOnly} isSettled={isSettled} />
   );
 }
 
@@ -203,15 +218,22 @@ function selectCirculatingMarketCap(token: TokenData): string {
   return token.marketData.circulatingMarketCap;
 }
 
-function SpotPnlPlaceholder({ isSettled }: { isSettled: boolean }) {
+function SpotPnlPlaceholder({ isReceivedOnly, isSettled }: { isReceivedOnly: boolean; isSettled: boolean }) {
   const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
 
   return (
-    <Box alignItems="center" justifyContent="center" height={{ custom: LOADING_HEIGHT }}>
+    <Box alignItems="center" justifyContent="center" height={{ custom: PLACEHOLDER_HEIGHT }}>
       {isSettled && hasUsdToNativeRate ? (
-        <Text color="labelTertiary" size="15pt" weight="semibold">
-          {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
-        </Text>
+        <Box alignItems="center" gap={22} style={{ maxWidth: 306 }}>
+          <Text align="center" color="label" size="22pt" weight="heavy">
+            {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
+          </Text>
+          {isReceivedOnly && (
+            <Text align="center" color="labelSecondary" size="17pt / 135%" weight="bold">
+              {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show_description)}
+            </Text>
+          )}
+        </Box>
       ) : (
         <ActivityIndicator />
       )}
