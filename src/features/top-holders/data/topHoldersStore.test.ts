@@ -140,7 +140,7 @@ describe('useTopHoldersStore', () => {
     expect(variables).toEqual({ tokenId: '0xtoken:8453', address: '0xtoken', networkId: 8453, excludeLabels: ['BOT'] });
     expect(getData()).toEqual({
       holding: [
-        { address: WHALE, valueUsd: '200', supplyPercentage: '10', trades: null },
+        { address: WHALE, valueUsd: '200', supplyPercentage: '10', trades: undefined },
         { address: TRADER, valueUsd: '8', supplyPercentage: '0.4', trades: traderTrades },
         { address: SELLER, valueUsd: '4', supplyPercentage: '0.2', trades: sellerTrades },
       ],

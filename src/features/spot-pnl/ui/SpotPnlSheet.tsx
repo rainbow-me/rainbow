@@ -58,6 +58,8 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
   const selectedWalletAddress = userAssetsStoreManager(state => state.address);
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
+  // Codex returns lowercased addresses, so a Top Holders row for the selected wallet differs in case
+  const isSelectedWallet = !!walletAddress && isLowerCaseMatch(walletAddress, selectedWalletAddress ?? undefined);
 
   return (
     <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1} layoutAnimation={PANEL_LAYOUT}>
@@ -67,7 +69,9 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
           chainId={chainId}
           walletAddress={walletAddress}
           ensName={ensName}
-          knownTrades={trades}
+          isSelectedWallet={isSelectedWallet}
+          // The selected wallet's own store pairs its trades with its own balance
+          knownTrades={isSelectedWallet ? undefined : trades}
         />
       )}
     </PanelSheet>
@@ -79,12 +83,14 @@ function SpotPnlSheetContent({
   chainId,
   walletAddress,
   ensName,
+  isSelectedWallet,
   knownTrades,
 }: {
   tokenAddress: string;
   chainId: ChainId;
   walletAddress: string;
   ensName: string | undefined;
+  isSelectedWallet: boolean;
   knownTrades: WalletTokenTrades | undefined;
 }) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -93,8 +99,6 @@ function SpotPnlSheetContent({
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
 
-  // Codex returns lowercased addresses, so a Top Holders row for the selected wallet differs in case
-  const isSelectedWallet = userAssetsStoreManager(state => isLowerCaseMatch(walletAddress, state.address ?? undefined));
   // A null wallet fetches nothing when the trades are already known
   const otherWalletTradesStore = useStableValue(() =>
     createTokenTradesStore({
@@ -106,15 +110,14 @@ function SpotPnlSheetContent({
     })
   );
   const tradesStore = isSelectedWallet ? useTokenTradesStore : otherWalletTradesStore;
-  // The selected wallet's own store pairs its trades with its own balance, so known trades apply to other wallets only
-  const prefilledTrades = isSelectedWallet ? undefined : knownTrades;
   const fetchedTrades = tradesStore(state => state.getData());
   const isFetchSuccess = tradesStore(state => state.getStatus('isSuccess'));
-  const isFetchSettled = tradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
-  const trades = prefilledTrades ?? fetchedTrades;
-  const isSettled = !!prefilledTrades || isFetchSettled;
+  const isFetchError = tradesStore(state => state.getStatus('isError'));
+  const trades = knownTrades ?? fetchedTrades;
+  const isSuccess = !!knownTrades || isFetchSuccess;
+  const isSettled = isSuccess || isFetchError;
   // Codex lists only a token's traders, so a wallet that never bought it may have no record at all
-  const isReceivedOnly = (!!prefilledTrades || isFetchSuccess) && !greaterThanWorklet(trades?.purchasedTokenBalance ?? '0', 0);
+  const isReceivedOnly = isSuccess && !greaterThanWorklet(trades?.purchasedTokenBalance ?? '0', 0);
   // The selected wallet uses its own assets, as the pill does, rather than Codex's indexed balance
   const balance = isSelectedWallet ? accountAsset?.balance?.amount || '0' : (trades?.tokenBalanceLive ?? '0');
 

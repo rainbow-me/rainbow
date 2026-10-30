@@ -31,8 +31,8 @@ export type HoldingRow = {
   valueUsd: string;
   /** Where 1 is 1%. */
   supplyPercentage: string;
-  /** `null` when the holder is not among the traders fetched with it. */
-  trades: WalletTokenTrades | null;
+  /** Absent when the holder is not among the traders fetched with it. */
+  trades: WalletTokenTrades | undefined;
 };
 
 export type UnrealizedRow = {
@@ -88,7 +88,7 @@ export function rankHolding(
       address: holder.address,
       valueUsd: mulWorklet(holder.balance, priceUsd),
       supplyPercentage: hasSupply ? mulWorklet(divWorklet(holder.balance, totalSupply), 100) : '0',
-      trades: tradesByAddress.get(holder.address) ?? null,
+      trades: tradesByAddress.get(holder.address),
     }));
 }
 

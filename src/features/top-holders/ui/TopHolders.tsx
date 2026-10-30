@@ -297,7 +297,7 @@ function HolderRow({
   rank: number;
   subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
-  trades: WalletTokenTrades | null;
+  trades: WalletTokenTrades | undefined;
 }) {
   const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
 
@@ -307,7 +307,7 @@ function HolderRow({
       chainId: token.chainId,
       walletAddress: address,
       ensName: ensName ?? undefined,
-      trades: trades ?? undefined,
+      trades,
     });
 
   return (

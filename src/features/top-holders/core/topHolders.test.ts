@@ -37,7 +37,7 @@ describe('rankHolding', () => {
     );
 
     expect(rows).toEqual([
-      { address: 'whale', valueUsd: '200', supplyPercentage: '5', trades: null },
+      { address: 'whale', valueUsd: '200', supplyPercentage: '5', trades: undefined },
       { address: 'mid', valueUsd: '100', supplyPercentage: '2.5', trades: midTrades },
     ]);
   });
