@@ -26,7 +26,6 @@ import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/a
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import { type HoldingRow, type RealizedRow, type UnrealizedRow } from '../core/topHolders';
-import { useTopHolderNamesStore } from '../data/topHolderNamesStore';
 import { useTopHoldersStore } from '../data/topHoldersStore';
 
 const TABS = ['holding', 'unrealized', 'realized'] as const;
@@ -299,7 +298,7 @@ function HolderRow({
   token: { address: string; chainId: ChainId };
   trades: WalletTokenTrades | undefined;
 }) {
-  const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
+  const ensName = useTopHoldersStore(state => state.getData()?.names[address.toLowerCase()] ?? null);
 
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {

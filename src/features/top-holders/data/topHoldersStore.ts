@@ -1,9 +1,11 @@
 import { createDerivedStore, createQueryStore, shallowEqual } from '@storesjs/stores';
+import { getAddress } from 'viem';
 
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { type ChainId } from '@/features/network/types/backendNetworks';
+import { resolveEnsName } from '@/features/ens/data/ens';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
 import { WALLET_TOKEN_TRADES_FIELDS } from '@/features/spot-pnl/data/tokenTradesStore';
 import { divWorklet, powWorklet } from '@/framework/core/safeMath';
@@ -22,6 +24,8 @@ import {
   type TokenTrader,
   type TopHolders,
 } from '../core/topHolders';
+
+type NamedTopHolders = TopHolders & { names: Record<string, string> };
 
 export type TopHoldersParams = {
   /** `null` when the viewed token is not P&L-eligible. */
@@ -112,7 +116,7 @@ export const useTopHoldersEnabledStore = createDerivedStore($ => {
  * The viewed token's Top Holders lists. Holding ranks Codex's top {@link CODEX_PAGE_SIZE} holders; Unrealized ranks
  * the {@link CODEX_PAGE_SIZE} largest bought positions still held. `null` when no list has a row.
  */
-export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHoldersParams>({
+export const useTopHoldersStore = createQueryStore<NamedTopHolders | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
   // Gated on the flags alone: an ineligible token leaves `token` null, which fetches nothing
   enabled: $ => $(useTopHoldersEnabledStore),
@@ -128,7 +132,10 @@ export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHolders
   cacheTime: time.hours(1),
 });
 
-async function fetchTopHolders({ token, filter }: TopHoldersParams, abortController: AbortController | null): Promise<TopHolders | null> {
+async function fetchTopHolders(
+  { token, filter }: TopHoldersParams,
+  abortController: AbortController | null
+): Promise<NamedTopHolders | null> {
   if (!token) return null;
   const tokenId = getCodexTokenId(token.address, token.chainId);
   try {
@@ -138,7 +145,18 @@ async function fetchTopHolders({ token, filter }: TopHoldersParams, abortControl
       abortController
     );
     const topHolders = rankTopHolders(response, filter);
-    return topHolders.holding.length || topHolders.unrealized.length || topHolders.realized.length ? topHolders : null;
+    const addresses = [...new Set(Object.values(topHolders).flatMap(rows => rows.map(row => row.address.toLowerCase())))];
+    if (!addresses.length) return null;
+
+    const resolved = await Promise.allSettled(
+      addresses.map(async address => resolveEnsName(getAddress(address), ChainId.mainnet, abortController?.signal))
+    );
+    const names: Record<string, string> = {};
+    for (let i = 0; i < addresses.length; i++) {
+      const result = resolved[i];
+      if (result.status === 'fulfilled' && result.value) names[addresses[i]] = result.value;
+    }
+    return { ...topHolders, names };
   } catch (error) {
     logger.error(new RainbowError('[topHoldersStore] Codex top holders fetch failed', error), { tokenId });
     throw error;
