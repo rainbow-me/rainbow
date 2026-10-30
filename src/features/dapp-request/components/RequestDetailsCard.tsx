@@ -14,11 +14,11 @@ import { TransactionDetailsRow } from '@/components/Transactions/TransactionDeta
 import { IconContainer } from '@/components/Transactions/TransactionIcons';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
 import * as i18n from '@/languages';
-import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { formatDate } from '@/utils/formatDate';
 
@@ -109,7 +109,7 @@ export const RequestDetailsCard = ({
                 }
                 value={
                   meta?.to?.name ||
-                  abbreviations.address(meta?.to?.address || toAddress, 4, 6) ||
+                  abbreviateAddress(meta?.to?.address || toAddress, 4, 6) ||
                   meta?.to?.address ||
                   toAddress ||
                   meta?.transferTo?.address ||

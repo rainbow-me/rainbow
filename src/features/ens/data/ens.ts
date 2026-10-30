@@ -26,8 +26,9 @@ import {
 } from 'viem';
 import { call, getEnsAddress, getEnsName, getEnsText, readContract, type CallParameters, type CallReturnType } from 'viem/actions';
 import { mainnet } from 'viem/chains';
-import { namehash, normalize, packetToBytes, toCoinType } from 'viem/ens';
+import { namehash, packetToBytes, toCoinType } from 'viem/ens';
 
+import { normalizeEnsName } from '@/features/address/core/address';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -56,7 +57,9 @@ type EnsClient = Client<Transport, typeof mainnet>;
 
 // ============ Constants ====================================================== //
 
-/** ENS coin type for Ethereum, read through the legacy addr(bytes32) record. */
+/**
+ * ENS coin type for Ethereum, read through the legacy addr(bytes32) record.
+ */
 export const ETHEREUM_COIN_TYPE = 60;
 
 const BATCH_GATEWAYS = ['https://ccip-v3.ens.xyz'];
@@ -91,7 +94,7 @@ const UNIVERSAL_RESOLVER_ABI = parseAbi([
  * cross-chain fallback.
  */
 export async function resolveEnsAddress(name: string, chainId: ChainId, signal?: AbortSignal): Promise<Address | null> {
-  const normalizedName = normalize(name);
+  const normalizedName = normalizeEnsName(name);
   const coinType = chainId === ChainId.mainnet ? undefined : toCoinType(chainId);
   const address = await withEnsClient(client => getEnsAddress(client, { name: normalizedName, coinType, strict: true }), signal);
   return address === null || coinType === undefined ? address : getAddress(address);
@@ -109,7 +112,7 @@ export async function resolveEnsName(address: Address, chainId: ChainId, signal?
     if (name === null) return null;
 
     try {
-      return normalize(name) === name ? name : null;
+      return normalizeEnsName(name) === name ? name : null;
     } catch {
       return null;
     }
@@ -119,9 +122,11 @@ export async function resolveEnsName(address: Address, chainId: ChainId, signal?
   }
 }
 
-/** Reads one text record through the same bounded ENS resolution path. */
+/**
+ * Reads one text record through the same bounded ENS resolution path.
+ */
 export async function readEnsText(name: string, key: string, signal?: AbortSignal): Promise<string | null> {
-  const normalizedName = normalize(name);
+  const normalizedName = normalizeEnsName(name);
   return withEnsClient(client => getEnsText(client, { name: normalizedName, key, strict: true }), signal);
 }
 
@@ -133,7 +138,7 @@ export async function readEnsText(name: string, key: string, signal?: AbortSigna
  * exists.
  */
 export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?: AbortSignal): Promise<EnsRecords | null> {
-  const normalizedName = normalize(name);
+  const normalizedName = normalizeEnsName(name);
   const node = namehash(normalizedName);
   const dnsName = toHex(packetToBytes(normalizedName));
   const calls: Hex[] = [];

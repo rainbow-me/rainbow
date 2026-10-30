@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { opacity } from '@/design-system/utils/opacity';
+import { abbreviateAddress, formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import styled from '@/framework/ui/styled-thing';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import abbreviations from '@/utils/abbreviations';
 import addressUtils from '@/utils/address';
 
 import { isHexString } from '../../handlers/web3';
@@ -34,7 +34,7 @@ const AddressInput = styled(Input).attrs({
   zIndex: 1,
 });
 
-const formatValue = value => (isHexString(value) && value.length === addressUtils.maxLength ? abbreviations.address(value, 4, 4) : value);
+const formatValue = value => (isHexString(value) && value.length === addressUtils.maxLength ? abbreviateAddress(value, 4, 4) : value);
 
 const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeText, onFocus, testID, ...props }, ref) => {
   const { isTinyPhone } = useDimensions();
@@ -43,7 +43,7 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
   const [inputValue, setInputValue] = useState(address ?? '');
 
   const expandAbbreviatedClipboard = useCallback(() => {
-    if (clipboard === abbreviations.formatAddressForDisplay(address)) {
+    if (clipboard === formatAddressForDisplay(address)) {
       setClipboard(address);
     }
   }, [address, clipboard, setClipboard]);

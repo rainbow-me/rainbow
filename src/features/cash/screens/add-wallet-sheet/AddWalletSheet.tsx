@@ -7,6 +7,7 @@ import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Stack, Text } from '@/design-system';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { CashActionButton } from '@/features/cash/components/CashActionButton';
 import { cashBuyOrderActions } from '@/features/cash/stores/cashBuyOrderStore';
 import * as i18n from '@/languages';
@@ -14,7 +15,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useAccountProfileInfo, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 import { useWalletLinkFlow } from './useWalletLinkFlow';
 

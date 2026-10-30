@@ -23,6 +23,7 @@ import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import type { SwappableAsset } from '@/entities/tokens';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGestureHandler';
 import usePrevious from '@/hooks/usePrevious';
@@ -31,7 +32,6 @@ import Routes from '@/navigation/routesNames';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 
 import { EasingGradient } from './easing-gradient/EasingGradient';
@@ -56,7 +56,7 @@ function useSwapDetailsClipboardState() {
   const [copiedText, setCopiedText] = useState<string>();
   const [copyCount, setCopyCount] = useState(0);
   const onCopySwapDetailsText = useCallback((text: string) => {
-    setCopiedText(abbreviations.formatAddressForDisplay(text));
+    setCopiedText(formatAddressForDisplay(text));
     setCopyCount(count => count + 1);
   }, []);
   return {

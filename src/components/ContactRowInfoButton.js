@@ -8,11 +8,11 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import styled from '@/framework/ui/styled-thing';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';
-import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
@@ -102,7 +102,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
         blockExplorerAction,
         {
           ...ContactRowActions[ContactRowActionsEnum.copyAddress],
-          discoverabilityTitle: abbreviations.formatAddressForDisplay(item?.address),
+          discoverabilityTitle: formatAddressForDisplay(item?.address),
         },
       ],
       menuTitle: `${item?.name}`,

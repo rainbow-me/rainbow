@@ -1,6 +1,5 @@
 import type { EthereumAddress } from '@/entities/wallet';
-
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
+import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
 
 /**
  * @desc get ethereum address from raw QR Code data
@@ -12,10 +11,10 @@ export const getEthereumAddressFromQRCodeData = async (data: string): Promise<Et
 
   const parts = data.split(':');
 
-  if (parts[0] === 'ethereum' && (await checkIsValidAddressOrDomain(parts[1]))) {
+  if (parts[0] === 'ethereum' && (await isValidAddressOrDomain(parts[1]))) {
     return parts[1];
   }
-  if (await checkIsValidAddressOrDomain(parts[0])) {
+  if (await isValidAddressOrDomain(parts[0])) {
     return parts[0];
   }
 

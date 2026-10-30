@@ -26,7 +26,8 @@ import TouchableBackdrop from '@/components/TouchableBackdrop';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { AssetType } from '@/entities/assetTypes';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
+import { getNameService } from '@/features/address/core/address';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
@@ -63,7 +64,6 @@ import { startTimeToSignTracking } from '@/state/performance/performance';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import { address } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -412,7 +412,7 @@ export const SendConfirmationSheet = () => {
     } else if (walletNames?.[to]) {
       avatarName = walletNames[to];
     } else {
-      avatarName = address(to, 4, 6) ?? 'default';
+      avatarName = abbreviateAddress(to, 4, 6) ?? 'default';
     }
   }
 
@@ -421,7 +421,7 @@ export const SendConfirmationSheet = () => {
   const avatarColor = existingAccount?.color || contact?.color || addressHashedColorIndex(toAddress);
 
   const { data: avatar } = useENSAvatar(to, {
-    enabled: isENSAddressFormat(to),
+    enabled: getNameService(to) === 'ens',
   });
 
   const accountImage = profilesEnabled ? avatar?.imageUrl || existingAccount?.image : existingAccount?.image;
@@ -549,7 +549,7 @@ export const SendConfirmationSheet = () => {
                     <ContactRowInfoButton
                       item={{
                         address: toAddress,
-                        name: avatarName || address(to, 4, 8),
+                        name: avatarName || abbreviateAddress(to, 4, 8),
                       }}
                       chainId={chainId}
                       scaleTo={0.75}

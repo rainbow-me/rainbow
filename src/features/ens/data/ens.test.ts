@@ -141,15 +141,19 @@ describe('ENS CCIP continuation', () => {
     expect(gatewayBodies).toHaveLength(0);
   });
 
-  it('continues through nested RPC revert data for a reverse lookup', async () => {
+  it.each([
+    ['alice.eth', 'alice.eth'],
+    [' alice.eth ', null],
+    ['ALICE.eth', null],
+  ] as const)('verifies the reverse name %s through nested RPC revert data', async (name, expected) => {
     const lookup = offchainLookup();
     if (typeof lookup.data !== 'string') throw new Error('Expected encoded lookup');
     replies = [
       { ...lookup, data: { data: lookup.data } },
-      encodeFunctionResult({ abi: RESOLVER_ABI, functionName: 'reverseWithGateways', result: ['alice.eth', RESOLVER, RESOLVER] }),
+      encodeFunctionResult({ abi: RESOLVER_ABI, functionName: 'reverseWithGateways', result: [name, RESOLVER, RESOLVER] }),
     ];
 
-    await expect(resolveEnsName(DESTINATION, ChainId.base)).resolves.toBe('alice.eth');
+    await expect(resolveEnsName(DESTINATION, ChainId.base)).resolves.toBe(expected);
 
     const request = decodeFunctionData({ abi: RESOLVER_ABI, data: rpcCalls[0].params[0].data });
     expect(request.args[1]).toBe(2147492101n);
@@ -300,7 +304,7 @@ describe('ENS text reads', () => {
         result: [encodeAbiParameters([{ type: 'string' }], ['https://example.com/avatar.png']), RESOLVER],
       }),
     ];
-    await expect(readEnsText('ALICE.eth', 'avatar')).resolves.toBe('https://example.com/avatar.png');
+    await expect(readEnsText(' ALICE.eth ', 'avatar')).resolves.toBe('https://example.com/avatar.png');
     const request = decodeFunctionData({ abi: RESOLVER_ABI, data: rpcCalls[0].params[0].data });
     if (request.functionName !== 'resolveWithGateways') throw new Error('Expected a forward text lookup');
     expect(request.args[0]).toBe('0x05616c6963650365746800');
