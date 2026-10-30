@@ -7800,10 +7800,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chroma-js@npm:2.1.3":
-  version: 2.1.3
-  resolution: "@types/chroma-js@npm:2.1.3"
-  checksum: 10c0/fe16f775ff6e32e91b407e89397ebb75283d00cdd6b98dc3ae73020a1f9cdf7fbc0669f761d32fe408e924c74033f97f130a78b14a692a9862e27ca598017196
+"@types/chroma-js@npm:2.1.5":
+  version: 2.1.5
+  resolution: "@types/chroma-js@npm:2.1.5"
+  checksum: 10c0/3588c02d478e602eac05e0fa0876dc514bc897885b1f3b974707e403e49ae974b1a82d1ed68943d6feac0d2ab609717726328f7505722bd3df6d845040a27c6a
   languageName: node
   linkType: hard
 
@@ -9409,7 +9409,7 @@ __metadata:
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@tradle/react-native-http": "npm:2.0.1"
-    "@types/chroma-js": "npm:2.1.3"
+    "@types/chroma-js": "npm:2.1.5"
     "@types/d3-scale": "npm:4.0.2"
     "@types/d3-shape": "npm:3.1.6"
     "@types/i18n-js": "npm:3.0.3"

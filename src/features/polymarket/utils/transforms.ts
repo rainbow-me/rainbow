@@ -1,4 +1,4 @@
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { getLeague } from '@/features/polymarket/leagues';
 import { type PolymarketTeamInfo } from '@/features/polymarket/types';
 import {

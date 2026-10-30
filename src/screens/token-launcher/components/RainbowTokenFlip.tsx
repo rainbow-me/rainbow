@@ -38,8 +38,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { opacity } from '@/design-system/utils/opacity';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 
 interface RainbowCoinEffectProps {
   color: string;

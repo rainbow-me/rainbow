@@ -1,6 +1,6 @@
 import { createQueryStore, createStoreActions } from '@storesjs/stores';
 
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';

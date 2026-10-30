@@ -1,6 +1,6 @@
 import { isHex, keccak256, stringToHex } from 'viem';
 
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type ResponseByTheme } from '@/theme/types';
 import { oklchToHex } from '@/worklets/colors';
 

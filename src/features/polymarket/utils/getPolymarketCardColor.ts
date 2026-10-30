@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';

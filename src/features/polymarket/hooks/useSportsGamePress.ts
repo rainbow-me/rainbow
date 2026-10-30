@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type SportsGamePress } from '@/features/sports/ui/GameCard';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';

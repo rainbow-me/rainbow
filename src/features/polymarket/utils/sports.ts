@@ -1,6 +1,6 @@
 import { nullObject } from '@storesjs/stores';
 
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
 import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';

@@ -1,4 +1,4 @@
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { type PolymarketPosition, type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
