@@ -37,14 +37,14 @@ reviews:
     Security and data
     - Authentication or authorization anywhere; secrets, API keys, environment config
     - Sending user data (addresses, balances, identifiers, device info) to a new party or endpoint; analytics SDK changes; new analytics events that carry user-identifying data
-    - Adding any new dependency; upgrading a native dependency
+    - Any dependency change: adding, removing or upgrading a dependency (package.json, yarn.lock)
 
     Platform and hard to reverse
-    - Native code: ios/, android/, and patches that change native code; permissions, entitlements, Info.plist, AndroidManifest. Routine version-number bumps are exempt.
+    - Native code: ios/, android/, and patches that change native code; permissions, entitlements, Info.plist, AndroidManifest; release version bumps
     - Persisted-state migrations: store version or migrate changes, renamed or removed storage keys
-    - Build, CI, release and code-signing config (babel and metro config, .github/workflows, bitrise, fastlane, signing), and review or approval config (cubic.yaml)
+    - Build, CI, release and code-signing config (babel and metro config, .github/workflows, bitrise, fastlane, signing, install and CI scripts), and review or approval config (cubic.yaml)
 
-    Everything else is approvable, including new features, new screens, new stores and network calls to existing backends, changed calculations outside the list above, removed features, refactors, performance work, and JS-only upgrades of existing dependencies. Touching business logic, size, or the theoretical chance of a bug are not reasons to decline; Cubic has already reviewed the implementation.
+    Everything else is approvable, including new features, new screens, new stores and network calls to existing backends, changed calculations outside the list above, removed features, refactors and performance work. Touching business logic, size, or the theoretical chance of a bug are not reasons to decline; Cubic has already reviewed the implementation.
 
     When you require human review, name the High item and the file where the diff hits it. A generic reason doesn't count.
   auto_approve_rules:
@@ -77,6 +77,19 @@ reviews:
       - 'audit-ci.jsonc'
       - '.yarnrc.yml'
       - '.yarn/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'src/graphql/package.json'
+      - 'src/graphql/yarn.lock'
+      - 'scripts/postinstall.sh'
+      - 'scripts/setup-ci.sh'
+      - 'scripts/check-env.sh'
+      - 'scripts/rc-push.sh'
+      - 'scripts/fetch-rainbow-env-file.sh'
+      - 'scripts/graph-ens-key.sh'
+      - 'scripts/e2e-*ci*.sh'
+      - 'ios/.xcode.env'
+      - 'ios/AppIcons/.xcode.env'
       # Review config and the instructions reviewers read
       - 'cubic.yaml'
       - 'AGENTS.md'
