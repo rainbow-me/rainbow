@@ -34,9 +34,9 @@ import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import { calculateSpotPnl, type PnlReturn, type SpotPnl } from '../core/spotPnl';
+import { calculateSpotPnl, type PnlReturn, type SpotPnl, type WalletTokenTrades } from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
-import { createTokenTradesStore, useTokenTradesStore, type WalletTokenTrades } from '../data/tokenTradesStore';
+import { createTokenTradesStore, useTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
 import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
 

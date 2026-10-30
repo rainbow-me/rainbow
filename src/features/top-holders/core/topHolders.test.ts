@@ -1,61 +1,108 @@
 import { describe, expect, it } from 'vitest';
 
-import { isHolderWalletFilter, rankTopHolders, type TokenHolder } from './topHolders';
+import { isHolderWalletFilter, rankHolding, rankRealized, rankUnrealized, type TokenHolder, type TokenTrader } from './topHolders';
 
 const FILTER = { categories: ['NORMIE'], excludedLabels: ['BRIDGE'] };
 const NOTHING_SOLD = { tokenAmountSold1y: '0', amountSoldUsd1y: '0', realizedProfitUsd1y: '0', lastTransactionAt: 0 };
 
 function holder(address: string, balance: string, overrides: Partial<TokenHolder> = {}): TokenHolder {
-  return { address, balance, category: 'NORMIE', identityLabels: [], trades: null, ...overrides };
+  return { address, balance, category: 'NORMIE', identityLabels: [], ...overrides };
 }
 
-function bought(purchasedTokenBalance: string, tokenAcquisitionCostUsd: string) {
-  return { purchasedTokenBalance, tokenAcquisitionCostUsd, ...NOTHING_SOLD };
+function trader(address: string, overrides: Partial<TokenTrader>): TokenTrader {
+  return { address, purchasedTokenBalance: '0', tokenAcquisitionCostUsd: '0', tokenBalanceLive: '0', ...NOTHING_SOLD, ...overrides };
 }
 
-describe('rankTopHolders', () => {
-  it('lists real users by balance and ranks the ones with a cost basis by unrealized P&L in USD', () => {
-    const { byStake, byProfit } = rankTopHolders(
+function bought(address: string, purchasedTokenBalance: string, tokenAcquisitionCostUsd: string, tokenBalanceLive = purchasedTokenBalance) {
+  return trader(address, { purchasedTokenBalance, tokenAcquisitionCostUsd, tokenBalanceLive });
+}
+
+describe('rankHolding', () => {
+  it('lists real users by balance with their value and share of supply', () => {
+    const rows = rankHolding(
       {
         holders: [
-          holder('exchange', '1000', { category: 'EXCHANGE', trades: bought('1000', '1') }),
-          holder('whale', '100', { trades: bought('100', '95') }),
-          holder('bridge', '90', { identityLabels: ['BRIDGE'], trades: bought('90', '1') }),
-          holder('uncategorized', '80', { category: null, trades: bought('80', '1') }),
-          holder('airdropped', '60'),
-          holder('mid', '50', { trades: bought('50', '10') }),
-          holder('degen', '10', { trades: bought('10', '1') }),
-          holder('underwater', '5', { trades: bought('5', '10') }),
+          holder('exchange', '1000', { category: 'EXCHANGE' }),
+          holder('whale', '100'),
+          holder('bridge', '90', { identityLabels: ['BRIDGE'] }),
+          holder('uncategorized', '80', { category: null }),
+          holder('mid', '50'),
         ],
-        priceUsd: '1',
+        priceUsd: '2',
         totalSupply: '2000',
       },
       FILTER
     );
 
-    expect(byStake.map(row => [row.holder.address, row.valueUsd, row.supplyPercentage])).toEqual([
-      ['whale', '100', '5'],
-      ['airdropped', '60', '3'],
-      ['mid', '50', '2.5'],
-      ['degen', '10', '0.5'],
-      ['underwater', '5', '0.25'],
-    ]);
-    // Neither balance order (whale first) nor percentage order (degen's 900% first)
-    expect(byProfit.map(row => [row.holder.address, row.valueUsd, row.pnl.amount])).toEqual([
-      ['mid', '50', '40'],
-      ['degen', '10', '9'],
-      ['whale', '100', '5'],
-      ['underwater', '5', '-5'],
+    expect(rows).toEqual([
+      { address: 'whale', valueUsd: '200', supplyPercentage: '5' },
+      { address: 'mid', valueUsd: '100', supplyPercentage: '2.5' },
     ]);
   });
 
-  it('caps each list at ten holders', () => {
-    const holders = Array.from({ length: 12 }, (_, index) => holder(`0x${index}`, String(100 - index), { trades: bought('1', '1') }));
-    const { byStake, byProfit } = rankTopHolders({ holders, priceUsd: '2', totalSupply: '0' }, FILTER);
+  it('caps the list at ten holders and reads a missing supply as 0%', () => {
+    const holders = Array.from({ length: 12 }, (_, index) => holder(`0x${index}`, String(100 - index)));
+    const rows = rankHolding({ holders, priceUsd: '2', totalSupply: '0' }, FILTER);
 
-    expect(byStake).toHaveLength(10);
-    expect(byStake[0].supplyPercentage).toBe('0');
-    expect(byProfit).toHaveLength(10);
+    expect(rows).toHaveLength(10);
+    expect(rows[0].supplyPercentage).toBe('0');
+  });
+});
+
+describe('rankUnrealized', () => {
+  it('ranks positions worth $1 or more by P&L in USD on the live balance, losses last', () => {
+    const rows = rankUnrealized(
+      [
+        // Largest position, smallest gain
+        bought('whale', '1000', '990'),
+        // Largest percentage gain
+        bought('degen', '10', '1'),
+        // Largest P&L in USD
+        bought('mid', '100', '20'),
+        // Sent half away: only the 50 still held count, at half the cost
+        bought('sender', '100', '40', '50'),
+        bought('underwater', '50', '100'),
+        // Codex's balance filter lags: sold out since
+        bought('exited', '100', '1', '0'),
+        // Worth under $1: a near-zero loss that would otherwise rank above real losses
+        bought('dust', '0.5', '0.6'),
+        bought('dollar', '1', '1.5'),
+      ],
+      '1'
+    );
+
+    expect(rows.map(row => [row.address, row.pnl.amount])).toEqual([
+      ['mid', '80'],
+      ['sender', '30'],
+      ['whale', '10'],
+      ['degen', '9'],
+      ['dollar', '-0.5'],
+      ['underwater', '-50'],
+    ]);
+    expect(rows[0].avgEntryUsd).toBe('0.2');
+  });
+
+  it('keeps the ten best of more traders, in any input order', () => {
+    // P&L grows with the index: 0x0 makes $1, 0x11 makes $12
+    const traders = Array.from({ length: 12 }, (_, index) => bought(`0x${index}`, String(index + 2), '1'));
+    const rows = rankUnrealized(traders, '1');
+
+    expect(rows).toHaveLength(10);
+    expect(rows[0].address).toBe('0x11');
+  });
+});
+
+describe('rankRealized', () => {
+  it("keeps Codex's ranking and relates profit to the cost of the tokens sold", () => {
+    const sold = (address: string, amountSoldUsd1y: string, realizedProfitUsd1y: string) =>
+      trader(address, { tokenAmountSold1y: '1', amountSoldUsd1y, realizedProfitUsd1y });
+    const rows = rankRealized([sold('first', '10', '5'), sold('second', '150', '50'), sold('gifted', '20', '20')]);
+
+    expect(rows.map(row => [row.address, row.realized.amount, row.realized.percentage])).toEqual([
+      ['first', '5', '100'],
+      ['second', '50', '50'],
+      ['gifted', '20', null],
+    ]);
   });
 });
 

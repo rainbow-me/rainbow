@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { logger } from '@/logger';
 import { externalTokenQueryFunction } from '@/resources/assets/externalAssetsQuery';
 import { setExternalTokenType } from '@/resources/assets/testing/mockExternalTokenTypes';
 
@@ -18,12 +19,29 @@ vi.mock('@/state/assets/createUserAssetsStore', async () => {
 });
 vi.mock('@/features/config/stores/remoteConfig', async () => {
   const { setRemoteConfig } = await import('@/features/config/testing/mockRemoteConfig');
-  setRemoteConfig({ top_holders_enabled: false, top_holders_wallet_filter: { categories: ['NORMIE'], excludedLabels: [] } });
+  setRemoteConfig({ top_holders_enabled: false, top_holders_wallet_filter: { categories: ['NORMIE'], excludedLabels: ['BOT'] } });
   return import('@/features/config/stores/__mocks__/remoteConfig');
 });
 
 const WHALE = '0xAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa';
 const EXCHANGE = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+const TRADER = '0xCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc';
+
+const NO_HOLDERS = { holders: { status: 'DISABLED', items: [] }, token: null };
+const NO_TRADERS = { unrealized: { results: [] }, realized: { results: [] } };
+
+function trades(overrides: Record<string, unknown>) {
+  return {
+    purchasedTokenBalance: '0',
+    tokenAcquisitionCostUsd: '0',
+    tokenBalanceLive: '0',
+    tokenAmountSold1y: '0',
+    amountSoldUsd1y: '0',
+    realizedProfitUsd1y: '0',
+    lastTransactionAt: 0,
+    ...overrides,
+  };
+}
 
 function respondWith(body: unknown) {
   vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } }));
@@ -39,21 +57,17 @@ function settle() {
   });
 }
 
-function requestBodies() {
-  return vi.mocked(fetch).mock.calls.map(call => JSON.parse(String(call[1]?.body)));
-}
-
-async function loadViewedToken(address: string) {
+async function loadViewedToken(address: string, settled: 'isSuccess' | 'isError' = 'isSuccess') {
   useChartsStore.getState().setToken({ address, chainId: 8453 });
   const unsubscribe = useTopHoldersStore.subscribe(() => undefined);
   // The token becomes eligible once its metadata type loads, and only then does the store fetch its holders
   await vi.waitFor(() => {
     const state = useTopHoldersStore.getState();
     expect(state.queryKey).toContain(address);
-    expect(state.getStatus('isSuccess')).toBe(true);
+    expect(state.getStatus(settled)).toBe(true);
   });
   unsubscribe();
-  return useTopHoldersStore.getState().getData();
+  return useTopHoldersStore.getState();
 }
 
 describe('useTopHoldersStore', () => {
@@ -89,60 +103,87 @@ describe('useTopHoldersStore', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('joins swap history to holders across address casing, in token units', async () => {
+  it('ranks holders and traders from one request, at the token price, in token units', async () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
     respondWith({
       data: {
         holders: {
           status: 'ENABLED',
           items: [
-            {
-              address: EXCHANGE,
-              balance: '5000000000000000000000',
-              tokenPriceUsd: '2',
-              wallet: { category: 'EXCHANGE', identityLabels: null },
-            },
-            { address: WHALE, balance: '100000000000000000000', tokenPriceUsd: '2', wallet: { category: 'NORMIE', identityLabels: null } },
+            { address: EXCHANGE, balance: '5000000000000000000000', wallet: { category: 'EXCHANGE', identityLabels: null } },
+            { address: WHALE, balance: '100000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
           ],
         },
         token: { decimals: 18, info: { totalSupply: '1000' } },
-      },
-    });
-    respondWith({
-      data: {
-        filterTokenWallets: {
+        prices: [{ priceUsd: 2 }],
+        unrealized: {
           results: [
             {
-              address: WHALE.toLowerCase(),
-              purchasedTokenBalance: '100',
-              tokenAcquisitionCostUsd: '50',
-              tokenAmountSold1y: '0',
-              amountSoldUsd1y: '0',
-              realizedProfitUsd1y: '0',
-              lastTransactionAt: 0,
+              address: TRADER.toLowerCase(),
+              ...trades({ purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '5', tokenBalanceLive: '4' }),
             },
           ],
+        },
+        realized: {
+          results: [{ address: TRADER, ...trades({ tokenAmountSold1y: '6', amountSoldUsd1y: '12', realizedProfitUsd1y: '9' }) }],
         },
       },
     });
 
-    const data = await loadViewedToken('0xtoken');
+    const { getData } = await loadViewedToken('0xtoken');
 
-    expect(requestBodies().map(body => body.variables)).toEqual([
-      { tokenId: '0xtoken:8453', address: '0xtoken', networkId: 8453 },
-      { wallets: [EXCHANGE, WHALE], tokenId: '0xtoken:8453', limit: 2 },
-    ]);
-    expect(data?.byStake.map(row => [row.holder.address, row.holder.balance, row.valueUsd, row.supplyPercentage])).toEqual([
-      [WHALE, '100', '200', '10'],
-    ]);
-    expect(data?.byProfit.map(row => [row.holder.address, row.pnl.amount])).toEqual([[WHALE, '150']]);
+    const { variables } = JSON.parse(String(vi.mocked(fetch).mock.lastCall?.[1]?.body));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(variables).toEqual({ tokenId: '0xtoken:8453', address: '0xtoken', networkId: 8453, excludeLabels: ['BOT'] });
+    expect(getData()).toEqual({
+      holding: [{ address: WHALE, valueUsd: '200', supplyPercentage: '10' }],
+      unrealized: [
+        {
+          address: TRADER.toLowerCase(),
+          avgEntryUsd: '0.5',
+          pnl: { heldBalance: '4', cost: '2', value: '8', amount: '6', percentage: '300' },
+        },
+      ],
+      realized: [{ address: TRADER, realized: { amount: '9', percentage: '300', cost: '3' } }],
+    });
   });
 
-  it('hides the section when Codex does not track holders for the token', async () => {
+  it('shows traders when Codex does not track holders, and Realized without a price', async () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
-    respondWith({ data: { holders: { status: 'DISABLED', items: [] }, token: null } });
+    respondWith({
+      data: {
+        ...NO_HOLDERS,
+        prices: [],
+        unrealized: {
+          results: [{ address: TRADER, ...trades({ purchasedTokenBalance: '1', tokenAcquisitionCostUsd: '1', tokenBalanceLive: '1' }) }],
+        },
+        realized: { results: [{ address: TRADER, ...trades({ tokenAmountSold1y: '1', amountSoldUsd1y: '2', realizedProfitUsd1y: '1' }) }] },
+      },
+    });
 
-    await expect(loadViewedToken('0xuntracked')).resolves.toBeNull();
-    expect(fetch).toHaveBeenCalledTimes(1);
+    const { getData } = await loadViewedToken('0xuntracked');
+
+    expect(getData()).toMatchObject({ holding: [], unrealized: [], realized: [{ address: TRADER }] });
+  });
+
+  it('hides the section when no list has a row', async () => {
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    respondWith({ data: { ...NO_HOLDERS, prices: [{ priceUsd: 1 }], ...NO_TRADERS } });
+
+    const { getData } = await loadViewedToken('0xempty');
+
+    expect(getData()).toBeNull();
+  });
+
+  it('fails as a whole on a Codex error rather than showing partial lists', async () => {
+    useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
+    vi.spyOn(logger, 'error').mockImplementation(() => undefined);
+    respondWith({ data: null, errors: [{ message: 'Token not found' }] });
+
+    const state = await loadViewedToken('0xunknown', 'isError');
+
+    expect(state.getData()).toBeNull();
+    expect(state.getCacheEntry()?.errorInfo).toBeTruthy();
+    expect(logger.error).toHaveBeenCalled();
   });
 });

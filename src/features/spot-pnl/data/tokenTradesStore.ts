@@ -12,13 +12,8 @@ import { postCodex } from '@/resources/platform/codex';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-import { type TokenTrades } from '../core/spotPnl';
+import { type WalletTokenTrades } from '../core/spotPnl';
 import { usePnlEligibleToken } from './pnlEligibleTokenStore';
-
-export type WalletTokenTrades = TokenTrades & {
-  /** Token units the wallet holds now. */
-  tokenBalanceLive: string;
-};
 
 export type TokenTradesParams = {
   walletAddress: string | null;
@@ -28,20 +23,22 @@ export type TokenTradesParams = {
 };
 
 type FilterTokenWalletsResponse = {
-  filterTokenWallets: { results: (WalletTokenTrades & { address: string })[] };
+  filterTokenWallets: { results: WalletTokenTrades[] };
 };
 
-const FILTER_TOKEN_WALLETS_QUERY = `query FilterTokenWallets($wallets: [String], $tokenId: String!, $limit: Int!) {
-  filterTokenWallets(input: { wallets: $wallets, tokenIds: [$tokenId], limit: $limit }) {
-    results {
-      address
-      purchasedTokenBalance
+/** The `filterTokenWallets` result fields that make up {@link WalletTokenTrades}. */
+export const WALLET_TOKEN_TRADES_FIELDS = `purchasedTokenBalance
       tokenAcquisitionCostUsd
       tokenAmountSold1y
       amountSoldUsd1y
       realizedProfitUsd1y
       lastTransactionAt
-      tokenBalanceLive
+      tokenBalanceLive`;
+
+const FILTER_TOKEN_WALLETS_QUERY = `query FilterTokenWallets($wallets: [String], $tokenId: String!, $limit: Int!) {
+  filterTokenWallets(input: { wallets: $wallets, tokenIds: [$tokenId], limit: $limit }) {
+    results {
+      ${WALLET_TOKEN_TRADES_FIELDS}
     }
   }
 }`;
@@ -100,28 +97,18 @@ export const useTokenTradesStore = createTokenTradesStore({
   },
 });
 
-/** Codex's trades in one token for each of `wallets` that has any, keyed by lowercased address. At most 200 wallets. */
-export async function fetchWalletsTokenTrades(
-  wallets: string[],
-  codexTokenId: string,
-  abortController: AbortController | null
-): Promise<Map<string, WalletTokenTrades>> {
-  const { filterTokenWallets } = await postCodex<FilterTokenWalletsResponse>(
-    FILTER_TOKEN_WALLETS_QUERY,
-    { wallets, tokenId: codexTokenId, limit: wallets.length },
-    abortController
-  );
-  return new Map(filterTokenWallets.results.map(({ address, ...trades }) => [address.toLowerCase(), trades]));
-}
-
 async function fetchTokenTrades(
   { walletAddress, codexTokenId }: TokenTradesParams,
   abortController: AbortController | null
 ): Promise<WalletTokenTrades | null> {
   if (!walletAddress || !codexTokenId) return null;
   try {
-    const tradesByWallet = await fetchWalletsTokenTrades([walletAddress], codexTokenId, abortController);
-    return tradesByWallet.get(walletAddress.toLowerCase()) ?? null;
+    const { filterTokenWallets } = await postCodex<FilterTokenWalletsResponse>(
+      FILTER_TOKEN_WALLETS_QUERY,
+      { wallets: [walletAddress], tokenId: codexTokenId, limit: 1 },
+      abortController
+    );
+    return filterTokenWallets.results[0] ?? null;
   } catch (error) {
     if (!abortController?.signal.aborted) {
       logger.error(new RainbowError('[tokenTradesStore] Codex filterTokenWallets failed', error), { codexTokenId });
