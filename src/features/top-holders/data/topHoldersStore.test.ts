@@ -27,6 +27,7 @@ const WHALE = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 const EXCHANGE = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
 // Codex returns lowercase addresses
 const TRADER = '0xcccccccccccccccccccccccccccccccccccccccc';
+const SELLER = '0xdddddddddddddddddddddddddddddddddddddddd';
 
 const NO_HOLDERS = { holders: { status: 'DISABLED', items: [] }, token: null };
 const NO_TRADERS = { unrealized: { results: [] }, realized: { results: [] } };
@@ -108,14 +109,11 @@ describe('useTopHoldersStore', () => {
     useExperimentalConfigStore.getState().setFlag(TOP_HOLDERS, true);
     const traderTrades = {
       address: TRADER,
-      ...trades({
-        purchasedTokenBalance: '10',
-        tokenAcquisitionCostUsd: '5',
-        tokenBalanceLive: '4',
-        tokenAmountSold1y: '6',
-        amountSoldUsd1y: '12',
-        realizedProfitUsd1y: '9',
-      }),
+      ...trades({ purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '5', tokenBalanceLive: '4' }),
+    };
+    const sellerTrades = {
+      address: SELLER,
+      ...trades({ tokenBalanceLive: '2', tokenAmountSold1y: '6', amountSoldUsd1y: '12', realizedProfitUsd1y: '9' }),
     };
     respondWith({
       data: {
@@ -125,12 +123,13 @@ describe('useTopHoldersStore', () => {
             { address: EXCHANGE, balance: '5000000000000000000000', wallet: { category: 'EXCHANGE', identityLabels: null } },
             { address: WHALE, balance: '100000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
             { address: TRADER, balance: '4000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
+            { address: SELLER, balance: '2000000000000000000', wallet: { category: 'NORMIE', identityLabels: null } },
           ],
         },
         token: { decimals: 18, info: { totalSupply: '1000' } },
         prices: [{ priceUsd: 2 }],
         unrealized: { results: [traderTrades] },
-        realized: { results: [traderTrades] },
+        realized: { results: [sellerTrades] },
       },
     });
 
@@ -143,6 +142,7 @@ describe('useTopHoldersStore', () => {
       holding: [
         { address: WHALE, valueUsd: '200', supplyPercentage: '10', trades: null },
         { address: TRADER, valueUsd: '8', supplyPercentage: '0.4', trades: traderTrades },
+        { address: SELLER, valueUsd: '4', supplyPercentage: '0.2', trades: sellerTrades },
       ],
       unrealized: [
         {
@@ -152,7 +152,7 @@ describe('useTopHoldersStore', () => {
           trades: traderTrades,
         },
       ],
-      realized: [{ address: TRADER, realized: { amount: '9', percentage: '300', cost: '3' }, trades: traderTrades }],
+      realized: [{ address: SELLER, realized: { amount: '9', percentage: '300', cost: '3' }, trades: sellerTrades }],
     });
   });
 
