@@ -24,7 +24,7 @@ import {
   type Hex,
   type Transport,
 } from 'viem';
-import { call, getEnsAddress, getEnsName, readContract, type CallParameters, type CallReturnType } from 'viem/actions';
+import { call, getEnsAddress, getEnsName, getEnsText, readContract, type CallParameters, type CallReturnType } from 'viem/actions';
 import { mainnet } from 'viem/chains';
 import { namehash, normalize, packetToBytes, toCoinType } from 'viem/ens';
 
@@ -117,6 +117,12 @@ export async function resolveEnsName(address: Address, chainId: ChainId, signal?
     if (hasResolverError(error, 'ReverseAddressMismatch')) return null;
     throw error;
   }
+}
+
+/** Reads one text record through the same bounded ENS resolution path. */
+export async function readEnsText(name: string, key: string, signal?: AbortSignal): Promise<string | null> {
+  const normalizedName = normalize(name);
+  return withEnsClient(client => getEnsText(client, { name: normalizedName, key, strict: true }), signal);
 }
 
 /**
