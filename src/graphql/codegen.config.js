@@ -9,6 +9,9 @@ module.exports = {
         documents: [value.document],
         plugins: ['typescript', 'typescript-operations', 'typescript-generic-sdk'],
         schema: [{ [value.schema.url]: { method: value.schema.method } }],
+        // The ENS subgraph has enum values that differ only by underscores (`resolverAddress`, `resolver__address`),
+        // which the default PascalCase member names collapse into duplicates
+        ...(key === 'ens' && { config: { namingConvention: { enumValues: 'keep' } } }),
       },
     };
   }, {}),
