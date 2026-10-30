@@ -80,7 +80,8 @@ function SpotPnlPillContent({
   return (
     <ButtonPressAnimation
       scaleTo={0.94}
-      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId, trades })}
+      // Retained trades predate the current balance, so only trades fetched for it are passed
+      onPress={() => Navigation.handleAction(Routes.SPOT_PNL_SHEET, { address, chainId, trades: fetchedTrades ?? undefined })}
       style={{ alignSelf: 'center' }}
     >
       <Box

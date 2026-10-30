@@ -12,6 +12,7 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
+import { useSpotPnlTokenId, useTokenTradesStore } from '@/features/spot-pnl/data/tokenTradesStore';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
@@ -19,10 +20,12 @@ import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import { type HoldingRow, type RealizedRow, type UnrealizedRow } from '../core/topHolders';
@@ -300,6 +303,10 @@ function HolderRow({
   trades: WalletTokenTrades | undefined;
 }) {
   const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
+  const isSelectedWallet = userAssetsStoreManager(state => isLowerCaseMatch(address, state.address ?? undefined));
+  // The list is cached, so the user's own row passes the trades fetched for their current balance instead
+  const ownTrades = useTokenTradesStore(state => (isSelectedWallet ? state.getData() : null));
+  const isOwnTradesToken = useSpotPnlTokenId(tokenId => tokenId === getCodexTokenId(token.address, token.chainId));
 
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {
@@ -307,7 +314,7 @@ function HolderRow({
       chainId: token.chainId,
       walletAddress: address,
       ensName: ensName ?? undefined,
-      trades,
+      trades: isSelectedWallet ? (isOwnTradesToken ? (ownTrades ?? undefined) : undefined) : trades,
     });
 
   return (
