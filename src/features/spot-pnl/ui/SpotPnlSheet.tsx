@@ -47,8 +47,6 @@ const CARD_BORDER_RADIUS = 22;
 // Height of the unrealized-position body, so the sheet opens at its full height before trades load
 const PLACEHOLDER_HEIGHT = 252;
 
-type TradesStatus = 'loading' | 'success' | 'error';
-
 const PANEL_LAYOUT = LinearTransition.springify()
   .mass(SPRING_CONFIGS.sheetTransition.mass)
   .damping(SPRING_CONFIGS.sheetTransition.damping)
@@ -92,7 +90,11 @@ function SpotPnlSheetContent({
   );
   const tradesStore = isSelectedWallet ? useTokenTradesStore : otherWalletTradesStore;
   const trades = tradesStore(state => state.getData());
-  const tradesStatus = tradesStore(state => (state.getStatus('isSuccess') ? 'success' : state.getStatus('isError') ? 'error' : 'loading'));
+  const isSettled = tradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
+  // Codex lists only a token's traders, so a wallet that never bought it may have no record at all
+  const isReceivedOnly = tradesStore(
+    state => state.getStatus('isSuccess') && !greaterThanWorklet(state.getData()?.purchasedTokenBalance ?? '0', 0)
+  );
   // The selected wallet uses its own assets, as the pill does, rather than Codex's indexed balance
   const balance = isSelectedWallet ? accountAsset?.balance?.amount || '0' : (trades?.tokenBalanceLive ?? '0');
 
@@ -120,7 +122,8 @@ function SpotPnlSheetContent({
         decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
         initialPrice={accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? ''}
         initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
-        tradesStatus={tradesStatus}
+        isReceivedOnly={isReceivedOnly}
+        isSettled={isSettled}
         nativeCurrency={nativeCurrency}
         symbol={symbol}
         tokenAddress={tokenAddress}
@@ -138,7 +141,8 @@ function SpotPnlSection({
   decimals,
   initialPrice,
   initialPriceUpdatedAt,
-  tradesStatus,
+  isReceivedOnly,
+  isSettled,
   nativeCurrency,
   symbol,
   tokenAddress,
@@ -151,7 +155,8 @@ function SpotPnlSection({
   decimals: number;
   initialPrice: string;
   initialPriceUpdatedAt: number;
-  tradesStatus: TradesStatus;
+  isReceivedOnly: boolean;
+  isSettled: boolean;
   nativeCurrency: NativeCurrencyKey;
   symbol: string;
   tokenAddress: string;
@@ -205,7 +210,7 @@ function SpotPnlSection({
   return pnl ? (
     <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
   ) : (
-    <SpotPnlPlaceholder tradesStatus={tradesStatus} />
+    <SpotPnlPlaceholder isReceivedOnly={isReceivedOnly} isSettled={isSettled} />
   );
 }
 
@@ -213,17 +218,17 @@ function selectCirculatingMarketCap(token: TokenData): string {
   return token.marketData.circulatingMarketCap;
 }
 
-function SpotPnlPlaceholder({ tradesStatus }: { tradesStatus: TradesStatus }) {
+function SpotPnlPlaceholder({ isReceivedOnly, isSettled }: { isReceivedOnly: boolean; isSettled: boolean }) {
   const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
 
   return (
     <Box alignItems="center" justifyContent="center" height={{ custom: PLACEHOLDER_HEIGHT }}>
-      {tradesStatus !== 'loading' && hasUsdToNativeRate ? (
+      {isSettled && hasUsdToNativeRate ? (
         <Box alignItems="center" gap={22} style={{ maxWidth: 306 }}>
           <Text align="center" color="label" size="22pt" weight="heavy">
             {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
           </Text>
-          {tradesStatus === 'success' && (
+          {isReceivedOnly && (
             <Text align="center" color="labelSecondary" size="17pt / 135%" weight="bold">
               {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show_description)}
             </Text>
