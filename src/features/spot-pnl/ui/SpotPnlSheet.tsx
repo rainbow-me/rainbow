@@ -16,6 +16,7 @@ import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
@@ -36,7 +37,14 @@ import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import { calculateSpotPnl, type PnlReturn, type SpotPnl, type WalletTokenTrades } from '../core/spotPnl';
+import {
+  calculateSpotPnl,
+  summarizeSpotPnlView,
+  type PnlReturn,
+  type SpotPnl,
+  type SpotPnlSheetEntryPoint,
+  type WalletTokenTrades,
+} from '../core/spotPnl';
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { createTokenTradesStore, useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
@@ -54,7 +62,7 @@ const PANEL_LAYOUT = LinearTransition.springify()
 
 export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
-    params: { address, chainId, ensName, trades, walletAddress: routeWalletAddress },
+    params: { address, chainId, ensName, entryPoint, trades, walletAddress: routeWalletAddress },
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
   const selectedWalletAddress = userAssetsStoreManager(state => state.address);
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
@@ -64,7 +72,7 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
   // for the selected wallet: they come from a cached list, which can predate the wallet's own balance.
   const isOwnTradesToken = useSpotPnlTokenId(tokenId => tokenId === getCodexTokenId(address, chainId));
 
-  const position = walletAddress ? { tokenAddress: address, chainId, walletAddress, ensName, isSelectedWallet } : null;
+  const position = walletAddress ? { tokenAddress: address, chainId, walletAddress, ensName, isSelectedWallet, entryPoint } : null;
 
   return (
     <PanelSheet borderRadius={SHEET_BORDER_RADIUS} innerBorderWidth={1} layoutAnimation={PANEL_LAYOUT}>
@@ -86,6 +94,7 @@ type SheetPosition = {
   walletAddress: string;
   ensName: string | undefined;
   isSelectedWallet: boolean;
+  entryPoint: SpotPnlSheetEntryPoint;
 };
 
 function FetchedTradesContent({ position }: { position: SheetPosition }) {
@@ -109,7 +118,7 @@ function StoredTradesContent({ position, tradesStore }: { position: SheetPositio
 }
 
 function SpotPnlSheetContent({
-  position: { tokenAddress, chainId, walletAddress, ensName, isSelectedWallet },
+  position: { tokenAddress, chainId, walletAddress, ensName, isSelectedWallet, entryPoint },
   trades,
   isSuccess,
   isSettled,
@@ -124,6 +133,8 @@ function SpotPnlSheetContent({
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
+  const profile = useAccountProfileInfo(walletAddress as Address);
+  const displayEns = profile.accountENS ?? ensName;
 
   // Codex lists only a token's traders, so a wallet that never bought it may have no record at all
   const isReceivedOnly = isSuccess && !greaterThanWorklet(trades?.purchasedTokenBalance ?? '0', 0);
@@ -146,7 +157,7 @@ function SpotPnlSheetContent({
             {symbol}
           </Text>
         </Box>
-        <WalletChip walletAddress={walletAddress} ensName={ensName} />
+        <WalletChip walletAddress={walletAddress} ensName={ensName} displayEns={displayEns} profile={profile} />
       </Box>
       <SpotPnlSection
         balance={balance}
@@ -156,12 +167,14 @@ function SpotPnlSheetContent({
         initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
         isReceivedOnly={isReceivedOnly}
         isSettled={isSettled}
+        isSuccess={isSuccess}
         nativeCurrency={nativeCurrency}
         symbol={symbol}
         tokenAddress={tokenAddress}
         tokenName={accountAsset?.name ?? externalToken?.name}
         trades={trades}
         uniqueId={uniqueId}
+        viewContext={{ entryPoint, hasEnsName: !!displayEns, isOwnWallet: isSelectedWallet }}
       />
     </Box>
   );
@@ -175,12 +188,14 @@ function SpotPnlSection({
   initialPriceUpdatedAt,
   isReceivedOnly,
   isSettled,
+  isSuccess,
   nativeCurrency,
   symbol,
   tokenAddress,
   tokenName,
   trades,
   uniqueId,
+  viewContext,
 }: {
   balance: string;
   chainId: ChainId;
@@ -189,12 +204,15 @@ function SpotPnlSection({
   initialPriceUpdatedAt: number;
   isReceivedOnly: boolean;
   isSettled: boolean;
+  isSuccess: boolean;
   nativeCurrency: NativeCurrencyKey;
   symbol: string;
   tokenAddress: string;
   tokenName: string | undefined;
   trades: WalletTokenTrades | null;
   uniqueId: string;
+  /** Sent with the view event. */
+  viewContext: { entryPoint: SpotPnlSheetEntryPoint; hasEnsName: boolean; isOwnWallet: boolean };
 }) {
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
   const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
@@ -223,26 +241,35 @@ function SpotPnlSection({
     [balance, price, trades, usdToNativeRate]
   );
 
-  const lastTradeAt = trades?.lastTransactionAt;
+  const isNothingToShow = !pnl && isSettled && !!usdToNativeRate;
+  const viewSummary = summarizeSpotPnlView({
+    pnl,
+    lastTradeAt: trades?.lastTransactionAt,
+    isLoaded: isSuccess && !!usdToNativeRate,
+    price: price || '0',
+  });
+  const { entryPoint, hasEnsName, isOwnWallet } = viewContext;
   const hasTrackedView = useRef(false);
 
   useEffect(() => {
-    if (hasTrackedView.current || !pnl || !tokenName || lastTradeAt === undefined) return;
+    if (hasTrackedView.current || !tokenName || !viewSummary) return;
     hasTrackedView.current = true;
     analytics.track(analytics.event.spotPnlSheetViewed, {
       tokenName,
       tokenAddress,
       chainId,
-      variant: pnl.variant,
-      pnlUsd: Number(pnl.headlineUsd),
-      lastTradeAt,
+      chainName: useBackendNetworksStore.getState().getChainsLabel()[chainId],
+      entryPoint,
+      ...viewSummary,
+      isOwnWallet,
+      hasEnsName,
     });
-  }, [chainId, lastTradeAt, pnl, tokenAddress, tokenName]);
+  }, [chainId, entryPoint, hasEnsName, isOwnWallet, tokenAddress, tokenName, viewSummary]);
 
   return pnl ? (
     <SpotPnlBody asset={{ decimals, symbol }} circulatingSupply={circulatingSupply} nativeCurrency={nativeCurrency} pnl={pnl} />
   ) : (
-    <SpotPnlPlaceholder isReceivedOnly={isReceivedOnly} isSettled={isSettled} />
+    <SpotPnlPlaceholder isNothingToShow={isNothingToShow} isReceivedOnly={isReceivedOnly} />
   );
 }
 
@@ -250,12 +277,10 @@ function selectCirculatingMarketCap(token: TokenData): string {
   return token.marketData.circulatingMarketCap;
 }
 
-function SpotPnlPlaceholder({ isReceivedOnly, isSettled }: { isReceivedOnly: boolean; isSettled: boolean }) {
-  const hasUsdToNativeRate = useCurrencyConversionStore(state => !!state.getData()?.usdToNativeCurrencyConversionRate);
-
+function SpotPnlPlaceholder({ isNothingToShow, isReceivedOnly }: { isNothingToShow: boolean; isReceivedOnly: boolean }) {
   return (
     <Box alignItems="center" justifyContent="center" height={{ custom: PLACEHOLDER_HEIGHT }}>
-      {isSettled && hasUsdToNativeRate ? (
+      {isNothingToShow ? (
         <Box alignItems="center" gap={22} style={{ maxWidth: 306 }}>
           <Text align="center" color="label" size="22pt" weight="heavy">
             {i18n.t(i18n.l.spot_pnl_sheet.nothing_to_show)}
@@ -273,9 +298,18 @@ function SpotPnlPlaceholder({ isReceivedOnly, isSettled }: { isReceivedOnly: boo
   );
 }
 
-function WalletChip({ walletAddress, ensName }: { walletAddress: string; ensName: string | undefined }) {
-  const { accountColor, accountENS, accountImage, accountName, accountSymbol } = useAccountProfileInfo(walletAddress as Address);
-  const displayEns = accountENS ?? ensName;
+function WalletChip({
+  walletAddress,
+  ensName,
+  displayEns,
+  profile: { accountColor, accountImage, accountName, accountSymbol },
+}: {
+  walletAddress: string;
+  ensName: string | undefined;
+  /** The wallet's own ENS name, else `ensName`. */
+  displayEns: string | undefined;
+  profile: ReturnType<typeof useAccountProfileInfo>;
+}) {
   const { data: ensAvatar } = useENSAvatar(ensName ?? '', { enabled: !accountImage && !!ensName });
 
   return (

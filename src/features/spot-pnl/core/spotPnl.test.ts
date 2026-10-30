@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateSpotPnl, type TokenTrades } from './spotPnl';
+import { calculateSpotPnl, summarizeSpotPnlView, type SpotPnlViewSummary, type TokenTrades } from './spotPnl';
 
 const NOTHING_SOLD = { tokenAmountSold1y: '0', amountSoldUsd1y: '0', realizedProfitUsd1y: '0', lastTransactionAt: 0 };
 
@@ -26,7 +26,8 @@ describe('calculateSpotPnl', () => {
         avgEntry: '10',
         current: '12',
         excludedBalance: '0',
-        headlineUsd: '20',
+        unrealizedPnlUsd: '20',
+        realizedPnlUsd: null,
       },
     },
     {
@@ -35,8 +36,8 @@ describe('calculateSpotPnl', () => {
         purchasedTokenBalance: '10',
         tokenAcquisitionCostUsd: '100',
         tokenAmountSold1y: '5',
-        amountSoldUsd1y: '60',
-        realizedProfitUsd1y: '10',
+        amountSoldUsd1y: '70',
+        realizedProfitUsd1y: '-30',
         lastTransactionAt: 0,
       },
       balance: '12',
@@ -49,9 +50,10 @@ describe('calculateSpotPnl', () => {
         avgEntry: '20',
         current: '30',
         excludedBalance: '2',
-        realized: { amount: '20', percentage: '20' },
-        total: { amount: '120', percentage: '40' },
-        headlineUsd: '60',
+        realized: { amount: '-60', percentage: '-30' },
+        total: { amount: '40', percentage: '10' },
+        unrealizedPnlUsd: '50',
+        realizedPnlUsd: '-30',
       },
     },
     {
@@ -74,7 +76,8 @@ describe('calculateSpotPnl', () => {
         avgExit: '15',
         realized: { amount: '-20', percentage: '-25' },
         excludedBalance: '3',
-        headlineUsd: '-20',
+        unrealizedPnlUsd: null,
+        realizedPnlUsd: '-20',
       },
     },
     {
@@ -97,7 +100,8 @@ describe('calculateSpotPnl', () => {
         avgExit: '30',
         realized: { amount: '-40', percentage: '-25' },
         excludedBalance: '0',
-        headlineUsd: '-20',
+        unrealizedPnlUsd: null,
+        realizedPnlUsd: '-20',
       },
     },
     {
@@ -110,5 +114,45 @@ describe('calculateSpotPnl', () => {
     },
   ])('$name', ({ trades, balance, price, rate, expected }) => {
     expect(calculateSpotPnl({ trades, balance, price, usdToNativeRate: rate })).toEqual(expected);
+  });
+});
+
+describe('summarizeSpotPnlView', () => {
+  const held = { purchasedTokenBalance: '10', tokenAcquisitionCostUsd: '100' };
+  const pnlOf = (trades: TokenTrades, price: string) => calculateSpotPnl({ trades, balance: '10', price, usdToNativeRate: 2 });
+
+  it.each<{ name: string; input: Parameters<typeof summarizeSpotPnlView>[0]; expected: SpotPnlViewSummary | null }>([
+    {
+      name: 'both amounts in USD for a partially realized position',
+      input: {
+        pnl: pnlOf({ ...held, tokenAmountSold1y: '5', amountSoldUsd1y: '70', realizedProfitUsd1y: '-30', lastTransactionAt: 0 }, '30'),
+        lastTradeAt: 1700000000,
+        isLoaded: true,
+        price: '30',
+      },
+      expected: { variant: 'partiallyRealized', unrealizedPnlUsd: 50, realizedPnlUsd: -30, lastTradeAt: 1700000000 },
+    },
+    {
+      name: 'a zero amount, not null, for a break-even position',
+      input: { pnl: pnlOf({ ...held, ...NOTHING_SOLD }, '20'), lastTradeAt: 1700000000, isLoaded: true, price: '20' },
+      expected: { variant: 'unrealized', unrealizedPnlUsd: 0, realizedPnlUsd: null, lastTradeAt: 1700000000 },
+    },
+    {
+      name: 'nulls when the loaded trades leave nothing to show',
+      input: { pnl: null, lastTradeAt: 1700000000, isLoaded: true, price: '1' },
+      expected: { variant: null, unrealizedPnlUsd: null, realizedPnlUsd: null, lastTradeAt: null },
+    },
+    {
+      name: 'nothing while the trades failed to load',
+      input: { pnl: null, lastTradeAt: undefined, isLoaded: false, price: '1' },
+      expected: null,
+    },
+    {
+      name: 'nothing while the price is missing',
+      input: { pnl: null, lastTradeAt: 1700000000, isLoaded: true, price: '0' },
+      expected: null,
+    },
+  ])('$name', ({ input, expected }) => {
+    expect(summarizeSpotPnlView(input)).toEqual(expected);
   });
 });

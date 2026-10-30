@@ -17,7 +17,7 @@ import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/t
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
+import { type SpotPnlSheetEntryPoint, type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
 import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -332,6 +332,10 @@ export const event = {
 
   // spot p&l
   spotPnlSheetViewed: 'spot_pnl.sheet.viewed',
+  spotPnlPillShown: 'spot_pnl.pill.shown',
+
+  // top holders
+  topHoldersShown: 'top_holders.shown',
 
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
@@ -1292,15 +1296,34 @@ export type EventProperties = {
   };
 
   // spot p&l
+  /** Variant, amounts and `lastTradeAt` are `null` when the sheet has nothing to show. */
   [event.spotPnlSheetViewed]: {
     tokenName: string;
     tokenAddress: string;
     chainId: number;
-    variant: SpotPnlVariant;
-    /** Unrealized P&L, Total Return or Realized Return, depending on the variant. */
-    pnlUsd: number;
+    chainName: string;
+    entryPoint: SpotPnlSheetEntryPoint;
+    variant: SpotPnlVariant | null;
+    /** `null` when nothing purchased is held. */
+    unrealizedPnlUsd: number | null;
+    /** `null` when nothing was sold. */
+    realizedPnlUsd: number | null;
+    /** Whether the position belongs to the selected wallet. */
+    isOwnWallet: boolean;
+    hasEnsName: boolean;
     /** Unix seconds of the wallet's last trade or transfer of the token. */
-    lastTradeAt: number;
+    lastTradeAt: number | null;
+  };
+  [event.spotPnlPillShown]: {
+    tokenAddress: string;
+    chainId: number;
+    variant: SpotPnlVariant;
+  };
+
+  // top holders
+  [event.topHoldersShown]: {
+    tokenAddress: string;
+    chainId: number;
   };
 
   // predictions

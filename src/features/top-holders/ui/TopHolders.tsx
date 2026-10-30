@@ -11,7 +11,7 @@ import { useCurrencyConversionStore } from '@/features/currency/stores/currencyC
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
+import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
@@ -31,6 +31,12 @@ import { useTopHoldersStore } from '../data/topHoldersStore';
 
 const TABS = ['holding', 'unrealized', 'realized'] as const;
 type Tab = (typeof TABS)[number];
+
+const TAB_ENTRY_POINTS: Record<Tab, SpotPnlSheetEntryPoint> = {
+  holding: 'topHoldersHolding',
+  unrealized: 'topHoldersUnrealized',
+  realized: 'topHoldersRealized',
+};
 
 export const HOLDER_ROW_HEIGHT = 58;
 export const HOLDER_ROW_SEPARATOR_HEIGHT = 1;
@@ -122,11 +128,13 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
   const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
   if (!topHolders) return null;
 
+  const entryPoint = TAB_ENTRY_POINTS[tab];
   const rows =
     tab === 'holding'
       ? topHolders.holding.map((row, index) => (
           <HoldingHolderRow
             key={row.address}
+            entryPoint={entryPoint}
             nativeCurrency={nativeCurrency}
             rank={index + 1}
             row={row}
@@ -138,6 +146,7 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
         ? topHolders.unrealized.map((row, index) => (
             <UnrealizedHolderRow
               key={row.address}
+              entryPoint={entryPoint}
               nativeCurrency={nativeCurrency}
               rank={index + 1}
               row={row}
@@ -148,6 +157,7 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
         : topHolders.realized.map((row, index) => (
             <RealizedHolderRow
               key={row.address}
+              entryPoint={entryPoint}
               nativeCurrency={nativeCurrency}
               rank={index + 1}
               row={row}
@@ -170,6 +180,7 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
 }
 
 type RowProps<T> = {
+  entryPoint: SpotPnlSheetEntryPoint;
   nativeCurrency: NativeCurrencyKey;
   rank: number;
   row: T;
@@ -177,12 +188,20 @@ type RowProps<T> = {
   usdToNativeRate: number;
 };
 
-const HoldingHolderRow = memo(function HoldingHolderRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<HoldingRow>) {
+const HoldingHolderRow = memo(function HoldingHolderRow({
+  entryPoint,
+  nativeCurrency,
+  rank,
+  row,
+  token,
+  usdToNativeRate,
+}: RowProps<HoldingRow>) {
   const supply = lessThanWorklet(row.supplyPercentage, 0.01) ? '<0.01%' : `${toFixedWorklet(row.supplyPercentage, 2)}%`;
 
   return (
     <HolderRow
       address={row.address}
+      entryPoint={entryPoint}
       rank={rank}
       subtitle={
         <Box flexDirection="row" gap={3}>
@@ -205,6 +224,7 @@ const HoldingHolderRow = memo(function HoldingHolderRow({ nativeCurrency, rank, 
 });
 
 const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
+  entryPoint,
   nativeCurrency,
   rank,
   row,
@@ -214,6 +234,7 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
   return (
     <HolderRow
       address={row.address}
+      entryPoint={entryPoint}
       rank={rank}
       subtitle={
         <Box flexDirection="row" gap={3}>
@@ -238,9 +259,16 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
   );
 });
 
-const RealizedHolderRow = memo(function RealizedHolderRow({ nativeCurrency, rank, row, token, usdToNativeRate }: RowProps<RealizedRow>) {
+const RealizedHolderRow = memo(function RealizedHolderRow({
+  entryPoint,
+  nativeCurrency,
+  rank,
+  row,
+  token,
+  usdToNativeRate,
+}: RowProps<RealizedRow>) {
   return (
-    <HolderRow address={row.address} rank={rank} token={token} trades={row.trades}>
+    <HolderRow address={row.address} entryPoint={entryPoint} rank={rank} token={token} trades={row.trades}>
       <PnlFigures
         amountUsd={row.realized.amount}
         nativeCurrency={nativeCurrency}
@@ -287,6 +315,7 @@ function PnlFigures({
 function HolderRow({
   address,
   children,
+  entryPoint,
   rank,
   subtitle,
   token,
@@ -294,6 +323,7 @@ function HolderRow({
 }: {
   address: string;
   children: React.ReactNode;
+  entryPoint: SpotPnlSheetEntryPoint;
   rank: number;
   subtitle?: React.ReactNode;
   token: { address: string; chainId: ChainId };
@@ -308,6 +338,7 @@ function HolderRow({
       walletAddress: address,
       ensName: ensName ?? undefined,
       trades,
+      entryPoint,
     });
 
   return (

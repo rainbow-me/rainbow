@@ -28,6 +28,9 @@ export type RealizedReturnUsd = {
 
 export type SpotPnlVariant = 'unrealized' | 'partiallyRealized' | 'fullyRealized';
 
+/** Where the P&L sheet was opened from: the expanded sheet's pill, or a row in one of the Top Holders tabs. */
+export type SpotPnlSheetEntryPoint = 'pill' | 'topHoldersHolding' | 'topHoldersUnrealized' | 'topHoldersRealized';
+
 export type PnlReturn = {
   /** Signed, in the native currency. */
   amount: string;
@@ -42,8 +45,10 @@ type SpotPnlBase = {
   avgEntry: string;
   /** Token units held but not purchased, which have no cost basis. */
   excludedBalance: string;
-  /** The headline return in USD: unrealized P&L, Total Return or Realized Return, depending on the variant. */
-  headlineUsd: string;
+  /** Unrealized P&L of the held position in USD; `null` when nothing purchased is held. */
+  unrealizedPnlUsd: string | null;
+  /** Realized P&L in USD; `null` when nothing was sold. */
+  realizedPnlUsd: string | null;
 };
 
 export type SpotPnl =
@@ -87,7 +92,8 @@ export function calculateSpotPnl({
       avgExit: toNative(divWorklet(amountSoldUsd1y, tokenAmountSold1y)),
       realized,
       excludedBalance: balance,
-      headlineUsd: realizedUsd.amount,
+      unrealizedPnlUsd: null,
+      realizedPnlUsd: realizedUsd.amount,
     };
   }
 
@@ -102,7 +108,7 @@ export function calculateSpotPnl({
   };
   const positionPnlUsd = divWorklet(position.amount, usdToNativeRate);
 
-  if (!hasSold) return { variant: 'unrealized', ...held, headlineUsd: positionPnlUsd };
+  if (!hasSold) return { variant: 'unrealized', ...held, unrealizedPnlUsd: positionPnlUsd, realizedPnlUsd: null };
 
   const totalUsd = sumWorklet(realizedUsd.amount, positionPnlUsd);
   return {
@@ -113,8 +119,47 @@ export function calculateSpotPnl({
       amount: toNative(totalUsd),
       percentage: percentageOf(totalUsd, sumWorklet(divWorklet(position.cost, usdToNativeRate), soldCostUsd)),
     },
-    headlineUsd: totalUsd,
+    unrealizedPnlUsd: positionPnlUsd,
+    realizedPnlUsd: realizedUsd.amount,
   };
+}
+
+export type SpotPnlViewSummary = {
+  variant: SpotPnlVariant | null;
+  unrealizedPnlUsd: number | null;
+  realizedPnlUsd: number | null;
+  /** Unix seconds. */
+  lastTradeAt: number | null;
+};
+
+/**
+ * What the P&L sheet's view event reports, all `null` when there is nothing to show, or `null` while the sheet has
+ * not settled on either.
+ */
+export function summarizeSpotPnlView({
+  pnl,
+  lastTradeAt,
+  isLoaded,
+  price,
+}: {
+  pnl: SpotPnl | null;
+  lastTradeAt: number | undefined;
+  /** The trades loaded successfully and the USD rate is known. */
+  isLoaded: boolean;
+  /** Native currency per token. */
+  price: string;
+}): SpotPnlViewSummary | null {
+  if (pnl) {
+    return {
+      variant: pnl.variant,
+      unrealizedPnlUsd: pnl.unrealizedPnlUsd === null ? null : Number(pnl.unrealizedPnlUsd),
+      realizedPnlUsd: pnl.realizedPnlUsd === null ? null : Number(pnl.realizedPnlUsd),
+      lastTradeAt: lastTradeAt ?? null,
+    };
+  }
+  // A failed load or a missing price also leaves nothing to show, but says nothing about the position
+  if (!isLoaded || !greaterThanWorklet(price, 0)) return null;
+  return { variant: null, unrealizedPnlUsd: null, realizedPnlUsd: null, lastTradeAt: null };
 }
 
 /** Realized P&L of the tokens sold in Codex's one-year window. */
