@@ -48,6 +48,10 @@ reviews:
 
     When you require human review, name the High item and the file where the diff hits it. A generic reason doesn't count.
   auto_approve_rules:
+    exclude_external_contributors: true
+    # Bots aren't org members either: dependabot, renovate and app-authored PRs
+    exclude_authors:
+      - '*[bot]'
     # Any changed file matching one of these blocks auto-approval, whatever the prompt decides
     exclude:
       # Native, platform and patched dependencies
