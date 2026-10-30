@@ -52,7 +52,10 @@ reviews:
     # Bots aren't org members either: dependabot, renovate and app-authored PRs
     exclude_authors:
       - '*[bot]'
-    # Any changed file matching one of these blocks auto-approval, whatever the prompt decides
+    # Any changed file matching one of these blocks auto-approval, whatever the prompt decides.
+    # Transaction globs cover code that signs, sends, picks nonces, or builds orders and calldata.
+    # Amount, fee and slippage math in feature files is left to the prompt's High list: path-blocking
+    # it would send most feature work to a human.
     exclude:
       # Native, platform and patched dependencies
       - 'ios/**'
@@ -117,6 +120,24 @@ reviews:
       - 'src/handlers/web3.ts'
       - 'src/handlers/swap.ts'
       - 'src/resources/transactions/transactionSimulation.ts'
+      - 'src/state/nonces/index.ts'
+      - 'src/features/token/core/services/erc20Calldata.ts'
+      - 'src/features/token/data/api/erc20Read.ts'
+      - 'src/__swaps__/screens/Swap/providers/swap-provider.tsx'
+      - 'src/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit.ts'
+      - 'src/__swaps__/utils/quotes.ts'
+      - 'src/features/perps/stores/hyperliquidAccountStore.ts'
+      - 'src/features/perps/utils/orders.ts'
+      - 'src/features/perps/utils/calculateTradingFee.ts'
+      - 'src/features/perps/utils/calculateLiquidationPrice.ts'
+      - 'src/features/perps/utils/calculateMaxMarginForLeverage.ts'
+      - 'src/features/perps/utils/getApplicableMaxLeverage.ts'
+      - 'src/features/perps/utils/buildOrderAmountValidation.ts'
+      - 'src/systems/funding/hooks/useDepositHandler.ts'
+      - 'src/systems/funding/stores/createDepositGasStores.ts'
+      - 'src/features/ens/hooks/useENSRegistrationActionHandler.ts'
+      - 'src/screens/Airdrops/utils.ts'
+      - 'src/screens/token-launcher/state/tokenLauncherStore.ts'
       - 'src/features/gas/**'
       - 'src/features/transfer/**'
       - 'src/features/delegation/**'
@@ -132,6 +153,7 @@ reviews:
       - 'src/features/polymarket/utils/collateral.ts'
       - 'src/features/polymarket/utils/collectPolymarketTradeFee.ts'
       - 'src/features/polymarket/utils/redeemPosition.ts'
+      - 'src/features/polymarket/utils/polymarketWallet.ts'
       - 'src/features/rnbw-staking/utils/**'
       - 'src/features/rnbw-rewards/utils/**'
       - 'src/features/*/depositConfig.ts'
