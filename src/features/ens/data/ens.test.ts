@@ -13,6 +13,7 @@ import {
   type Hex,
 } from 'viem';
 import { mainnet } from 'viem/chains';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
@@ -21,7 +22,7 @@ import { ETHEREUM_COIN_TYPE, readEnsRecords, resolveEnsAddress, resolveEnsName }
 type RpcFailure = { code: number; message: string; data?: Hex | { data: Hex } };
 type RpcCall = { id: number; method: string; params: [{ to: Address; data: Hex }, string] };
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: { getChainDefaultRpc: () => 'https://fixture.invalid/rpc' },
 }));
 
@@ -73,7 +74,7 @@ function jsonResponse(value: unknown): Response {
   return new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } });
 }
 
-const fetchMock = jest.spyOn(global, 'fetch');
+const fetchMock = vi.spyOn(global, 'fetch');
 let replies: (Hex | RpcFailure)[];
 let rpcCalls: RpcCall[];
 let gatewayBodies: { sender: Address; data: Hex }[];
