@@ -69,6 +69,8 @@ reviews:
       - 'Gemfile.lock'
       - '.xcode-version'
       - '.ruby-version'
+      - '.node-version'
+      - 'mise.toml'
       - 'index.js'
       - 'shim.js'
       - 'InjectedJSBundle.js'
