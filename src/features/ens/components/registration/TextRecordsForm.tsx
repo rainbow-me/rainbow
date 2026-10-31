@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { type LayoutChangeEvent, type TextInputProps, type ViewProps } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
-import { debounce, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 
-import { InlineField, type InlineFieldProps } from '@/components/inputs/InlineField';
+import { InlineField } from '@/components/inputs/InlineField';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
 
@@ -24,7 +23,7 @@ export function TextRecordsForm({
   onError?: ({ yOffset }: { yOffset: number }) => void;
   selectionColor?: string;
 }) {
-  const { errors, isLoading, selectedFields, onChangeField, onBlurField, submitting, values } = useENSRegistrationForm();
+  const { errors, isLoading, selectedFields, onChangeField, submitting, values } = useENSRegistrationForm();
 
   const [yOffsets, setYOffsets] = useState<{ [key: string]: number }>({});
 
@@ -68,17 +67,15 @@ export function TextRecordsForm({
         <>
           {selectedFields.map(({ label, inputProps, placeholder, startsWith, id, key }) => (
             <Box key={id} onLayout={e => handleLayout(e, key)}>
-              <Field
+              <Separator color="divider40 (Deprecated)" />
+              <InlineField
                 autoFocus={autoFocusKey === key}
-                defaultValue={values[key]}
+                value={values[key] ?? ''}
                 errorMessage={errors[key]}
                 inputProps={inputProps}
                 key={key}
                 label={label}
-                onChangeText={debounce(text => onChangeField({ key, value: text }), 300)}
-                onEndEditing={({ nativeEvent }) => {
-                  onBlurField({ key, value: nativeEvent.text });
-                }}
+                onChangeText={text => onChangeField({ key, value: text })}
                 onFocus={onFocus}
                 placeholder={placeholder}
                 selectionColor={selectionColor}
@@ -97,36 +94,6 @@ export function TextRecordsForm({
         </>
       )}
     </Box>
-  );
-}
-
-function Field({ defaultValue, ...props }: InlineFieldProps) {
-  const [value, setValue] = useState(defaultValue);
-  const [isTouched, setIsTouched] = useState(false);
-
-  useEffect(() => {
-    // If the field is touched, we don't want to set the default value again.
-    if (isTouched) return;
-
-    setValue(defaultValue);
-  }, [defaultValue, isTouched]);
-
-  // Set fields to be not touched when screen gets out of focus.
-  useFocusEffect(useCallback(() => () => setIsTouched(false), []));
-
-  return (
-    <>
-      <Separator color="divider40 (Deprecated)" />
-      <InlineField
-        {...props}
-        onChangeText={text => {
-          props.onChangeText(text);
-          setIsTouched(true);
-          setValue(text);
-        }}
-        value={value}
-      />
-    </>
   );
 }
 

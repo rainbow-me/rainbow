@@ -36,7 +36,7 @@ import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInf
 import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
 import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
-import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
+import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';

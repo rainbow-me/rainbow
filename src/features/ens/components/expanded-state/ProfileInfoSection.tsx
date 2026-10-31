@@ -5,9 +5,10 @@ import { partition } from 'lodash';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Stack } from '@/design-system';
 
-import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
+import { deprecatedTextRecordFields } from '../../core/records';
+import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
+import { ENS_RECORDS } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];

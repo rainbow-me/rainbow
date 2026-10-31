@@ -34,8 +34,9 @@ import { avatarMetadataAtom } from '../components/registration/RegistrationAvata
 import { RenewContent } from '../components/registration/RenewContent';
 import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
 import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
-import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
+import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
+import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
@@ -118,7 +119,7 @@ export function ENSConfirmRegisterSheet() {
 
   const { navigate, goBack } = useNavigation();
 
-  const { blurFields, values } = useENSRegistrationForm();
+  const { values } = useENSRegistrationForm();
   const accountProfile = useAccountProfileInfo();
 
   const avatarUrl = initialAvatarUrl || values.avatar;
@@ -145,7 +146,6 @@ export function ENSConfirmRegisterSheet() {
     step,
     yearsDuration: duration,
   });
-  const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -306,16 +306,15 @@ export function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       Keyboard.dismiss();
-      blurFields();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 
   useEffect(
     () => () => {
-      if (step === REGISTRATION_STEPS.RENEW || step === REGISTRATION_STEPS.SET_NAME) clearCurrentRegistrationName();
+      if (step === REGISTRATION_STEPS.RENEW || step === REGISTRATION_STEPS.SET_NAME) useEnsRegistrationStore.getState().clear();
     },
-    [clearCurrentRegistrationName, step]
+    [step]
   );
 
   return (

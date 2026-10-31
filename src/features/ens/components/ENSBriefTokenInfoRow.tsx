@@ -11,10 +11,11 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import useENSAvatar from '../hooks/useENSAvatar';
-import useENSRegistration from '../hooks/useENSRegistration';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
@@ -35,7 +36,7 @@ export function ENSBriefTokenInfoRow({
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { data: avatar } = useENSAvatar(ensName, { enabled: profilesEnabled });
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
@@ -46,7 +47,7 @@ export function ENSBriefTokenInfoRow({
   const handlePressEditExpiryDate = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
-      startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
+      useEnsRegistrationStore.getState().start(accountAddress, cleanENSName, REGISTRATION_MODES.RENEW);
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
         externalAvatarUrl,
@@ -54,7 +55,7 @@ export function ENSBriefTokenInfoRow({
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [ensName, startRegistration, navigate, externalAvatarUrl, avatar?.imageUrl]);
+  }, [ensName, accountAddress, navigate, externalAvatarUrl, avatar?.imageUrl]);
 
   return (
     <Columns space="10px">

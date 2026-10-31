@@ -460,13 +460,6 @@ export const textRecordFields = {
   [key in ENS_RECORDS]?: TextRecordField;
 };
 
-export const deprecatedTextRecordFields = {
-  [ENS_RECORDS.displayName]: ENS_RECORDS.name,
-  [ENS_RECORDS.content]: ENS_RECORDS.contenthash,
-} as {
-  [key in ENS_RECORDS]: ENS_RECORDS;
-};
-
 export const ENS_DOMAIN = '.eth';
 
 const getENSRegistrarControllerContract = async (wallet?: Signer, registrarAddress?: string) => {

@@ -25,13 +25,13 @@ export interface ENSRap {
 }
 
 export interface ENSActionParameters {
-  duration: number;
+  duration?: number;
   nonce?: number;
   name: string;
-  rentPrice: string;
-  ownerAddress: string;
+  rentPrice?: string;
+  ownerAddress?: string;
   toAddress?: string;
-  salt: string;
+  salt?: string;
   records?: Records;
   setReverseRecord?: boolean;
   resolverAddress?: EthereumAddress;
@@ -44,12 +44,12 @@ export interface ENSActionParameters {
 }
 
 export interface RapENSActionParameters {
-  duration: number;
+  duration?: number;
   name: string;
-  ownerAddress: EthereumAddress;
-  rentPrice: string;
+  ownerAddress?: EthereumAddress;
+  rentPrice?: string;
   records?: Records;
-  salt: string;
+  salt?: string;
   toAddress?: string;
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;

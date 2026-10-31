@@ -11,9 +11,10 @@ import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } 
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
-import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
+import { deprecatedTextRecordFields } from '../../core/records';
+import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
+import { ENS_RECORDS } from '../../utils/helpers';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {

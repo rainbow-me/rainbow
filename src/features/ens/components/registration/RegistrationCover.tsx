@@ -16,8 +16,8 @@ import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
-import useENSModifiedRegistration from '../../hooks/useENSModifiedRegistration';
-import useENSRegistration from '../../hooks/useENSRegistration';
+import { useENSModifiedRegistration } from '../../hooks/useENSModifiedRegistration';
+import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { ENS_RECORDS } from '../../utils/helpers';
 import { stringifyENSNFTRecord } from '../../utils/records';
@@ -39,7 +39,7 @@ const RegistrationCover = ({
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSModifiedRegistration();
-  const { isLoading, onBlurField, onRemoveField, setDisabled, values } = useENSRegistrationForm();
+  const { isLoading, onChangeField, onRemoveField, setUploading, uploading, values } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
@@ -65,7 +65,7 @@ const RegistrationCover = ({
         const standard = asset.standard || '';
         const contractAddress = asset.contractAddress || '';
         const tokenId = asset.tokenId;
-        onBlurField({
+        onChangeField({
           key: 'header',
           value: stringifyENSNFTRecord({
             contractAddress,
@@ -77,15 +77,15 @@ const RegistrationCover = ({
         // We want to disallow future avatar state changes (i.e. when upload successful)
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setCoverUpdateAllowed(false);
-        onBlurField({
+        onChangeField({
           key: 'header',
           value: image.uri,
         });
       }
     },
-    [onBlurField, setCoverMetadata]
+    [onChangeField, setCoverMetadata]
   );
-  const [isUploading, setIsUploading] = useState(false);
+  const isUploading = uploading.header;
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const { ContextMenu, handleSelectImage } = useSelectImageMenu({
@@ -101,24 +101,22 @@ const RegistrationCover = ({
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
       setCoverMetadata(undefined);
-      setDisabled(false);
+      setUploading('header', false);
       setTimeout(() => {
         setCoverUrl('');
       }, 100);
     },
     onUploadError: () => {
-      onBlurField({ key: 'header', value: '' });
+      setUploading('header', false);
+      onChangeField({ key: 'header', value: '' });
       setCoverUrl('');
-      setIsUploading(false);
     },
     onUploading: () => {
-      setIsUploading(true);
-      setDisabled(true);
+      setUploading('header', true);
     },
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'header', value: data.url });
-      setDisabled(false);
-      setIsUploading(false);
+      onChangeField({ key: 'header', value: data.url });
+      setUploading('header', false);
       setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),

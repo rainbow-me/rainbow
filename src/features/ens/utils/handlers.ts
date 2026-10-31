@@ -460,6 +460,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   salt,
   setReverseRecord,
 }: ENSActionParameters) => {
+  if (!duration || !ownerAddress || !rentPrice || !salt) throw new Error('Registration requires a saved commitment');
   const registerGasLimitPromise = estimateENSRegisterWithConfigGasLimit({
     duration,
     name,

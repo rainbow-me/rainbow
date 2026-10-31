@@ -17,13 +17,14 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { IntroMarquee } from '../components/registration/IntroMarquee';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar from '../hooks/useENSAvatar';
 import useENSRecords from '../hooks/useENSRecords';
-import useENSRegistration from '../hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
 enum AnotherENSEnum {
@@ -121,25 +122,25 @@ export function ENSIntroSheet() {
   );
 
   const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
 
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();
     InteractionManager.runAfterInteractions(() => {
-      startRegistration('', REGISTRATION_MODES.CREATE);
+      useEnsRegistrationStore.getState().start(accountAddress, '', REGISTRATION_MODES.CREATE);
       navigate(Routes.ENS_SEARCH_SHEET);
     });
-  }, [navigate, params, startRegistration]);
+  }, [navigate, params, accountAddress]);
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
-      startRegistration(ensName, REGISTRATION_MODES.EDIT);
+      useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.EDIT);
       InteractionManager.runAfterInteractions(() => {
         params?.onSelectExistingName?.();
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       });
     },
-    [navigate, params, startRegistration]
+    [navigate, params, accountAddress]
   );
 
   const handleSelectUniqueDomain = useCallback(() => {

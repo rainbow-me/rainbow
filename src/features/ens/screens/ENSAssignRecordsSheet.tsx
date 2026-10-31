@@ -31,9 +31,9 @@ import RegistrationAvatar from '../components/registration/RegistrationAvatar';
 import RegistrationCover from '../components/registration/RegistrationCover';
 import { SelectableButton } from '../components/registration/SelectableButton';
 import { TextRecordsForm } from '../components/registration/TextRecordsForm';
-import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
+import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
 import useENSRecords from '../hooks/useENSRecords';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useENSRegistration } from '../hooks/useENSRegistration';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
@@ -58,7 +58,6 @@ export function ENSAssignRecordsSheet() {
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration({
-    modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
   });
 
@@ -217,18 +216,8 @@ export function ENSAssignRecordsBottomActions({
   const { mode, name } = useENSRegistration();
   const insets = useSafeAreaInsets();
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
-  const {
-    disabled,
-    errors,
-    isValidating,
-    isEmpty: isEmptyForm,
-    selectedFields,
-    onAddField,
-    onRemoveField,
-    submit,
-    values,
-  } = useENSRegistrationForm();
-  const { isSuccess } = useENSModifiedRegistration();
+  const { disabled, errors, isEmpty: isEmptyForm, selectedFields, toggleField, submit, values } = useENSRegistrationForm();
+  const { hasRecords } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     if (fromRoute) {
@@ -267,11 +256,11 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(isSuccess), 200);
+      setTimeout(() => setVisible(hasRecords), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, isSuccess]);
+  }, [defaultVisible, mode, hasRecords]);
 
   const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
 
@@ -310,8 +299,7 @@ export function ENSAssignRecordsBottomActions({
                 <Inset horizontal="19px (Deprecated)" top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
-                    onAddField={onAddField}
-                    onRemoveField={onRemoveField}
+                    toggleField={toggleField}
                     selectedFields={selectedFields}
                   />
                 </Inset>
@@ -338,7 +326,7 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
-                          disabled={isValidating || !isEmpty(errors)}
+                          disabled={!isEmpty(errors)}
                           label={i18n.t(i18n.l.profiles.create.review)}
                           onPress={handlePressContinue}
                           size="big"
@@ -446,13 +434,11 @@ const MAX_DISPLAY_BUTTONS = 9;
 
 function SelectableAttributesButtons({
   selectedFields,
-  onAddField,
-  onRemoveField,
+  toggleField,
   navigateToAdditionalRecords,
 }: {
   selectedFields: TextRecordField[];
-  onAddField: (fieldsToAdd: TextRecordField, selectedFields: TextRecordField[]) => void;
-  onRemoveField: (fieldsToRemove: TextRecordField, selectedFields: TextRecordField[]) => void;
+  toggleField: (field: TextRecordField) => void;
   navigateToAdditionalRecords: () => void;
 }) {
   const dotsButtonIsSelected = useMemo(() => {
@@ -473,20 +459,7 @@ function SelectableAttributesButtons({
             <SelectableButton
               isSelected={isSelected}
               key={i}
-              onSelect={() => {
-                if (isSelected) {
-                  const index = selectedFields.findIndex(({ id }) => textRecordField.id === id);
-                  const fieldToRemove = selectedFields[index];
-                  const newFields = [...selectedFields];
-                  newFields.splice(index, 1);
-                  onRemoveField(fieldToRemove, newFields);
-                } else {
-                  const fieldToAdd = textRecordField;
-                  const newSelectedFields = [...selectedFields];
-                  newSelectedFields.splice(i, 0, fieldToAdd);
-                  onAddField(fieldToAdd, newSelectedFields);
-                }
-              }}
+              onSelect={() => toggleField(textRecordField)}
               testID={`ens-selectable-attribute-${textRecordField.id}`}
             >
               {textRecordField.label}

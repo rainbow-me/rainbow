@@ -1,23 +1,19 @@
 import { useEffect, useMemo } from 'react';
 
-import { differenceWith, isEqual } from 'lodash';
-import { useDispatch } from 'react-redux';
-
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import usePrevious from '@/hooks/usePrevious';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import * as ensRedux from '../redux/registration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { Records } from '../types/registration';
-import { deprecatedTextRecordFields, REGISTRATION_MODES } from '../utils/helpers';
+import { REGISTRATION_MODES } from '../utils/helpers';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '../utils/records';
 import useENSAvatar from './useENSAvatar';
 import useENSCover from './useENSCover';
 import useENSRecords from './useENSRecords';
-import useENSRegistration from './useENSRegistration';
+import { useENSRegistration } from './useENSRegistration';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
@@ -56,16 +52,13 @@ const getImageUrl = (
   return imageUrl;
 };
 
-export default function useENSModifiedRegistration({
+export function useENSModifiedRegistration({
   setInitialRecordsWhenInEditMode = false,
-  modifyChangedRecords = false,
 }: {
   /** When true, an update to `initialRecords` will be triggered when the flow is in "edit mode". */
   setInitialRecordsWhenInEditMode?: boolean;
-  modifyChangedRecords?: boolean;
 } = {}) {
-  const dispatch = useDispatch();
-  const { records, initialRecords, name, mode } = useENSRegistration();
+  const { records, changedRecords, name, mode } = useENSRegistration();
   const accountAddress = useAccountAddress();
 
   const {
@@ -75,83 +68,31 @@ export default function useENSModifiedRegistration({
   });
 
   const fetchEnabled = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
-  const { data: avatar, isSuccess: isAvatarSuccess } = useENSAvatar(name, {
+  const { data: avatar } = useENSAvatar(name, {
     enabled: fetchEnabled,
   });
-  const { data: cover, isSuccess: isCoverSuccess } = useENSCover(name, {
+  const { data: cover } = useENSCover(name, {
     enabled: fetchEnabled,
   });
-  const {
-    data: { coinAddresses: fetchedCoinAddresses, contenthash: fetchedContenthash, records: fetchedRecords } = {},
-    isSuccess: isRecordsSuccess,
-  } = useENSRecords(name, {
-    enabled: fetchEnabled,
-  });
+  const { data: { coinAddresses: fetchedCoinAddresses, contenthash: fetchedContenthash, records: fetchedRecords } = {} } = useENSRecords(
+    name,
+    {
+      enabled: fetchEnabled,
+    }
+  );
 
-  const isSuccess = isAvatarSuccess && isCoverSuccess && isRecordsSuccess;
+  const hasRecords = fetchedRecords !== undefined;
 
   useEffect(() => {
-    if (setInitialRecordsWhenInEditMode && mode === REGISTRATION_MODES.EDIT && isSuccess) {
+    if (setInitialRecordsWhenInEditMode && mode === REGISTRATION_MODES.EDIT && hasRecords) {
       const initialRecords = {
         contenthash: fetchedContenthash,
         ...fetchedRecords,
         ...fetchedCoinAddresses,
       } as Records;
-      dispatch(ensRedux.setInitialRecords(initialRecords));
+      useEnsRegistrationStore.getState().initializeRecords(accountAddress, name, initialRecords);
     }
-  }, [dispatch, mode, fetchedCoinAddresses, fetchedRecords, isSuccess, setInitialRecordsWhenInEditMode, fetchedContenthash]);
-
-  // Derive the records that should be added or removed from the profile
-  // (these should be used for SET_TEXT txns instead of `records` to save
-  // gas).
-  const changedRecords = useMemo(() => {
-    const initialRecordsWithDeprecated = Object.entries(deprecatedTextRecordFields).reduce((records, [deprecatedKey, key]) => {
-      return {
-        ...records,
-        // @ts-expect-error – This is a key in ENS_RECORDS...
-        [key]: initialRecords[deprecatedKey],
-      };
-    }, initialRecords);
-
-    const entriesToChange = differenceWith(Object.entries(records), Object.entries(initialRecordsWithDeprecated), isEqual) as [
-      keyof Records,
-      string,
-    ][];
-
-    const changedRecords = entriesToChange.reduce(
-      (recordsToAdd: Partial<Records>, [key, value]) => ({
-        ...recordsToAdd,
-        ...(value ? { [key]: value } : {}),
-      }),
-      {}
-    );
-
-    const recordKeysWithValue = (Object.keys(records) as (keyof Records)[]).filter((key: keyof Records) => {
-      return Boolean(records[key]);
-    });
-
-    const keysToRemove = differenceWith(Object.keys(initialRecords), recordKeysWithValue, isEqual) as (keyof Records)[];
-
-    const removedRecords = keysToRemove.reduce(
-      (recordsToAdd: Partial<Records>, key) => ({
-        ...recordsToAdd,
-        [key]: '',
-      }),
-      {}
-    );
-
-    return {
-      ...changedRecords,
-      ...removedRecords,
-    };
-  }, [initialRecords, records]);
-
-  const prevChangedRecords = usePrevious(changedRecords);
-  useEffect(() => {
-    if (modifyChangedRecords && JSON.stringify(prevChangedRecords || {}) !== JSON.stringify(changedRecords)) {
-      dispatch(ensRedux.setChangedRecords(changedRecords));
-    }
-  }, [changedRecords, dispatch, modifyChangedRecords, prevChangedRecords]);
+  }, [accountAddress, name, mode, fetchedCoinAddresses, fetchedRecords, hasRecords, setInitialRecordsWhenInEditMode, fetchedContenthash]);
 
   // Since `records.avatar` is not a reliable source for an avatar URL
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
@@ -169,6 +110,6 @@ export default function useENSModifiedRegistration({
   return {
     changedRecords,
     images,
-    isSuccess,
+    hasRecords,
   };
 }

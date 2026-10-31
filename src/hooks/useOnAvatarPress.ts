@@ -12,7 +12,7 @@ import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvat
 import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
 import useENSOwner from '@/features/ens/hooks/useENSOwner';
 import { prefetchENSRecords } from '@/features/ens/hooks/useENSRecords';
-import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
+import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isZero } from '@/helpers/utilities';

@@ -10,10 +10,11 @@ import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
-import useENSRegistration from './useENSRegistration';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -49,7 +50,7 @@ const links = {
   [ENS_RECORDS.telegram]: 'https://t.me/',
 } as { [key: string]: string };
 
-export default function useENSRecordDisplayProperties({
+export function useENSRecordDisplayProperties({
   allowEdit,
   ensName,
   images,
@@ -165,7 +166,7 @@ export default function useENSRecordDisplayProperties({
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
 
   const handlePressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -177,7 +178,7 @@ export default function useENSRecordDisplayProperties({
         setClipboard(recordValue);
       }
       if (actionKey === 'edit' && ensName) {
-        startRegistration(ensName, REGISTRATION_MODES.EDIT);
+        useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
@@ -185,7 +186,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, startRegistration, url]
+    [ensName, navigate, recordKey, recordValue, accountAddress, url]
   );
 
   const Button = useCallback(

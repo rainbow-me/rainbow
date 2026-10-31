@@ -19,7 +19,7 @@ import { PendingRegistrations } from '../components/registration/PendingRegistra
 import { SearchInput } from '../components/registration/SearchInput';
 import { SearchResultGradientIndicator } from '../components/registration/SearchResultGradientIndicator';
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useENSRegistration } from '../hooks/useENSRegistration';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';

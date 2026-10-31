@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import Divider from '@/components/Divider';
 import { opacity } from '@/design-system/utils/opacity';
 import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
-import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
+import { useEnsRegistrationStore } from '@/features/ens/data/stores/registrationStore';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { updateGasFeeForSpeed } from '@/features/gas/redux/gas';
@@ -182,10 +182,10 @@ export function SpeedUpAndCancelSheet() {
   }, [txType, selectedGasFee, minMaxPriorityFeePerGas, minMaxFeePerGas, minGasPrice]);
 
   const cancelCommitTransactionHash = useCallback(() => {
-    if (tx?.ensCommitRegistrationName) {
-      dispatch(removeRegistrationByName(tx?.ensCommitRegistrationName));
+    if (tx.from && tx.ensCommitRegistrationName) {
+      useEnsRegistrationStore.getState().remove(tx.from, tx.ensCommitRegistrationName);
     }
-  }, [dispatch, tx?.ensCommitRegistrationName]);
+  }, [tx.from, tx.ensCommitRegistrationName]);
 
   const handleCancellation = useCallback(async () => {
     const nonce = tx?.nonce;
@@ -203,7 +203,7 @@ export function SpeedUpAndCancelSheet() {
         transaction: cancelTxPayload,
       });
 
-      if (tx?.ensCommitRegistrationName) {
+      if (tx.from && tx.ensCommitRegistrationName) {
         cancelCommitTransactionHash();
       }
       const updatedTx = { ...tx, nonce };
@@ -252,14 +252,11 @@ export function SpeedUpAndCancelSheet() {
 
   const saveCommitTransactionHash = useCallback(
     (hash: string) => {
-      dispatch(
-        saveCommitRegistrationParameters({
-          commitTransactionHash: hash,
-          name: tx?.ensCommitRegistrationName,
-        })
-      );
+      if (tx.from && tx.ensCommitRegistrationName) {
+        useEnsRegistrationStore.getState().update(tx.from, tx.ensCommitRegistrationName, { commitTransactionHash: hash });
+      }
     },
-    [dispatch, tx?.ensCommitRegistrationName]
+    [tx.from, tx.ensCommitRegistrationName]
   );
 
   const handleSpeedUp = useCallback(async () => {

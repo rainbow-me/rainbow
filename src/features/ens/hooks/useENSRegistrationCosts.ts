@@ -33,7 +33,7 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '../utils/helpers';
-import useENSRegistration from './useENSRegistration';
+import { useENSRegistration } from './useENSRegistration';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -62,7 +62,7 @@ export default function useENSRegistrationCosts({
 }) {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { registrationParameters, mode } = useENSRegistration();
+  const { registrationParameters, mode, changedRecords } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
   const name = inputName.replace(ENS_DOMAIN, '');
   const {
@@ -87,7 +87,6 @@ export default function useENSRegistrationCosts({
     return registrationParameters?.name !== name && name?.length > 2;
   }, [name, registrationParameters?.name]);
 
-  const changedRecords = useMemo(() => registrationParameters?.changedRecords || {}, [registrationParameters?.changedRecords]);
   const [currentStepGasLimit, setCurrentStepGasLimit] = useState('');
 
   const [isValidGas, setIsValidGas] = useState(false);
@@ -164,7 +163,7 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, name]);
 
   const getRenewGasLimit = useCallback(async () => {
-    const cleanName = registrationParameters?.name?.replace(ENS_DOMAIN, '');
+    const cleanName = name;
     const rentPrice = await getRentPrice(cleanName, duration);
     const newRenewGasLimit = await estimateENSRenewGasLimit({
       duration,

@@ -11,12 +11,12 @@ import usePrevious from '@/hooks/usePrevious';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENSAssignRecordsBottomActions, ENSAssignRecordsSheet } from '../screens/ENSAssignRecordsSheet';
 import { ENSIntroSheet } from '../screens/ENSIntroSheet';
 import { ENSSearchSheet } from '../screens/ENSSearchSheet';
@@ -64,26 +64,24 @@ export function RegisterENSNavigator() {
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 
-  const { clearValues } = useENSRegistrationForm();
-
-  const { removeRecordByKey, clearCurrentRegistrationName, startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
 
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: REGISTRATION_MODES.CREATE };
     if (ensName && mode === REGISTRATION_MODES.EDIT) {
-      startRegistration(ensName, REGISTRATION_MODES.EDIT);
+      useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.EDIT);
       return Routes.ENS_ASSIGN_RECORDS_SHEET;
     }
     if (ensName && mode === REGISTRATION_MODES.SET_NAME) {
-      startRegistration(ensName, REGISTRATION_MODES.SET_NAME);
+      useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.SET_NAME);
       return Routes.ENS_CONFIRM_REGISTER_SHEET;
     }
     if (mode === REGISTRATION_MODES.SEARCH) {
-      startRegistration('', mode);
+      useEnsRegistrationStore.getState().start(accountAddress, '', mode);
       return Routes.ENS_SEARCH_SHEET;
     }
     return Routes.ENS_INTRO_SHEET;
-  }, [params, startRegistration]);
+  }, [params, accountAddress]);
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
@@ -91,20 +89,17 @@ export function RegisterENSNavigator() {
 
   useEffect(
     () => () => {
-      clearCurrentRegistrationName();
+      useEnsRegistrationStore.getState().clear();
     },
-    [clearCurrentRegistrationName]
+    []
   );
 
   useEffect(
     () => () => {
-      removeRecordByKey('avatar');
       setAvatarMetadata(undefined);
       setAccentColor(colors.purple);
-      clearValues();
-      clearCurrentRegistrationName();
     },
-    [clearCurrentRegistrationName, clearValues, colors.purple, removeRecordByKey, setAccentColor, setAvatarMetadata]
+    [colors.purple, setAccentColor, setAvatarMetadata]
   );
 
   const enableAssignRecordsBottomActions = currentRouteName !== Routes.ENS_INTRO_SHEET;

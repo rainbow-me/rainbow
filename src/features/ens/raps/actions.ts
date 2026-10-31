@@ -10,12 +10,10 @@ import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { toHex } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import store from '@/redux/store';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { getAccountAddress } from '@/state/wallets/walletsStore';
 
-import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { type ENSRegistrationRecords } from '../types/registration';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '../utils/handlers';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '../utils/helpers';
@@ -311,8 +309,7 @@ const ensAction = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.debug(`[raps/ens]: [${actionName}] base nonce ${baseNonce} index: ${index}`);
-  const { dispatch } = store;
-  const ownerAddress = getAccountAddress();
+  const ownerAddress = await wallet.getAddress();
 
   const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 
@@ -380,17 +377,15 @@ const ensAction = async (
           wallet,
           nonce
         );
-        dispatch(
-          saveCommitRegistrationParameters({
-            commitTransactionHash: tx?.hash,
-            duration,
-            name,
-            ownerAddress,
-            records,
-            rentPrice,
-            salt,
-          })
-        );
+        useEnsRegistrationStore.getState().update(ownerAddress, name, {
+          commitTransactionHash: tx?.hash,
+          duration,
+          name,
+          ownerAddress,
+          records,
+          rentPrice,
+          salt,
+        });
         analytics.track(analytics.event.ensInitiatedRegistration, {
           category: 'profiles',
         });
@@ -414,11 +409,9 @@ const ensAction = async (
           wallet,
           nonce
         );
-        dispatch(
-          updateTransactionRegistrationParameters({
-            registerTransactionHash: tx?.hash,
-          })
-        );
+        useEnsRegistrationStore.getState().update(ownerAddress, name, {
+          registerTransactionHash: tx?.hash,
+        });
         analytics.track(analytics.event.ensCompletedRegistration, {
           category: 'profiles',
         });

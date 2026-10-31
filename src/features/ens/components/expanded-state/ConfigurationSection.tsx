@@ -5,8 +5,9 @@ import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import useENSRegistration from '../../hooks/useENSRegistration';
+import { useEnsRegistrationStore } from '../../data/stores/registrationStore';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
@@ -36,7 +37,7 @@ export function ConfigurationSection({
   name: string;
   externalAvatarUrl?: string | null;
 }) {
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
 
   return (
@@ -53,7 +54,7 @@ export function ConfigurationSection({
               explainSheetType="ens_primary_name"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.set_primary_name)}
               onSwitchChange={() => {
-                startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                useEnsRegistrationStore.getState().start(accountAddress, name, REGISTRATION_MODES.SET_NAME);
                 navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
                   externalAvatarUrl,
                   longFormHeight: ENSConfirmUpdateSheetHeight + (externalAvatarUrl ? 70 : 0),

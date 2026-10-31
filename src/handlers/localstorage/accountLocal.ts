@@ -1,5 +1,3 @@
-import type { ENSRegistrations } from '@/features/ens/types/registration';
-
 import { getAccountLocal, saveAccountLocal } from './common';
 
 const assetsVersion = '0.3.0';
@@ -34,25 +32,6 @@ export const accountLocalKeys = [
  * @return {Array}
  */
 export const getAssets = (accountAddress: any, network: any) => getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
-
-/**
- * @desc get ENS registrations
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getLocalENSRegistrations = (accountAddress: any, network: any): Promise<ENSRegistrations> =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
-  getAccountLocal(ENS_REGISTRATIONS, accountAddress, network, {});
-
-/**
- * @desc save ENS registrations
- * @param  {String}   [address]
- * @param  {Array}    [assets]
- * @param  {String}   [network]
- */
-export const saveLocalENSRegistrations = (ensRegistrations: ENSRegistrations, accountAddress: any, network: any) =>
-  saveAccountLocal(ENS_REGISTRATIONS, ensRegistrations, accountAddress, network);
 
 /**
  * @desc get profile info

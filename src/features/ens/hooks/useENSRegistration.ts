@@ -1,57 +1,71 @@
 import { useCallback, useMemo } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
-
-import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import * as ensRedux from '../redux/registration';
+import { getChangedRecords } from '../core/records';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { Records } from '../types/registration';
-import { type REGISTRATION_MODES } from '../utils/helpers';
+import type { REGISTRATION_MODES } from '../utils/helpers';
 
-export default function useENSRegistration() {
-  const accountAddress = useAccountAddress();
+const EMPTY_RECORDS: Records = {};
 
-  const registrationParameters = useSelector(({ ensRegistration }: AppState) => {
-    return {
-      ...ensRegistration.registrations?.[accountAddress?.toLowerCase()]?.[ensRegistration.currentRegistrationName],
-      currentRegistrationName: ensRegistration.currentRegistrationName,
-    };
-  });
+/**
+ * Selects the active wallet's registration draft and derives its pending record writes.
+ */
+export function useENSRegistration() {
+  const accountAddress = useAccountAddress().toLowerCase();
+  const current = useEnsRegistrationStore(s => (s.current?.accountAddress === accountAddress ? s.current : null));
+  const registration = useEnsRegistrationStore(s => (current ? s.registrations[accountAddress]?.[current.name] : undefined));
+  const name = current?.name ?? '';
+  const records = registration?.records ?? EMPTY_RECORDS;
+  const initialRecords = registration?.initialRecords ?? EMPTY_RECORDS;
+  const changedRecords = useMemo(() => getChangedRecords(records, initialRecords), [records, initialRecords]);
+  const registrationParameters = registration ?? null;
 
-  const { mode, name, initialRecords, records } = useMemo(
-    () => ({
-      initialRecords: registrationParameters.initialRecords || {},
-      mode: registrationParameters.mode,
-      name: registrationParameters.currentRegistrationName,
-      records: registrationParameters.records || {},
-    }),
-    [
-      registrationParameters.initialRecords,
-      registrationParameters.mode,
-      registrationParameters.currentRegistrationName,
-      registrationParameters.records,
-    ]
+  const updateRecords = useCallback(
+    (records: Records) => {
+      if (!current) return;
+      useEnsRegistrationStore.getState().update(accountAddress, name, { records });
+    },
+    [accountAddress, current, name]
+  );
+  const updateRecordByKey = useCallback(
+    (key: string, value: string) => {
+      if (!current) return;
+      const store = useEnsRegistrationStore.getState();
+      store.update(accountAddress, name, { records: { ...store.registrations[accountAddress]?.[name]?.records, [key]: value } });
+    },
+    [accountAddress, current, name]
+  );
+  const removeRecordByKey = useCallback(
+    (key: string) => {
+      if (!current) return;
+      const store = useEnsRegistrationStore.getState();
+      const records = { ...store.registrations[accountAddress]?.[name]?.records };
+      delete records[key];
+      store.update(accountAddress, name, { records });
+    },
+    [accountAddress, current, name]
   );
 
-  const dispatch = useDispatch();
-  const removeRecordByKey = useCallback((key: string) => dispatch(ensRedux.removeRecordByKey(key)), [dispatch]);
   const startRegistration = useCallback(
-    (name: string, mode: keyof typeof REGISTRATION_MODES) => dispatch(ensRedux.startRegistration(name, mode)),
-    [dispatch]
+    (name: string, mode: keyof typeof REGISTRATION_MODES) => {
+      useEnsRegistrationStore.getState().start(accountAddress, name, mode);
+    },
+    [accountAddress]
   );
-  const updateRecordByKey = useCallback((key: string, value: string) => dispatch(ensRedux.updateRecordByKey(key, value)), [dispatch]);
-  const updateRecords = useCallback((records: Records) => dispatch(ensRedux.updateRecords(records)), [dispatch]);
-  const clearCurrentRegistrationName = useCallback(() => dispatch(ensRedux.clearCurrentRegistrationName()), [dispatch]);
-
-  const removeRegistrationByName = useCallback((name: string) => dispatch(ensRedux.removeRegistrationByName(name)), [dispatch]);
+  const removeRegistrationByName = useCallback(
+    (name: string) => useEnsRegistrationStore.getState().remove(accountAddress, name),
+    [accountAddress]
+  );
 
   return {
-    clearCurrentRegistrationName,
+    accountAddress,
     initialRecords,
-    mode,
+    mode: registration?.mode,
     name,
     records,
+    changedRecords,
     registrationParameters,
     removeRecordByKey,
     removeRegistrationByName,
