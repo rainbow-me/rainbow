@@ -2,7 +2,7 @@ import { getAddress, isAddress, type Address } from 'viem';
 
 import { normalizeEnsName } from '@/features/ens/core/name';
 
-const UNSTOPPABLE_SUFFIXES = ['888', 'bitcoin', 'blockchain', 'coin', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];
+const UNSTOPPABLE_SUFFIXES = ['888', 'bitcoin', 'blockchain', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];
 
 /**
  * Accepts lowercase or correctly checksummed Ethereum addresses.
@@ -32,7 +32,7 @@ export function isValidAddressOrDomainFormat(input: string | null | undefined): 
 }
 
 /**
- * Recognizes ENS names and supported Unstoppable suffixes, with Unstoppable taking precedence.
+ * Recognizes ENS name syntax and supported non-DNS Unstoppable suffixes.
  * Does not check registration or destination records.
  */
 export function getNameService(input: string | null | undefined): 'ens' | 'unstoppable' | null {

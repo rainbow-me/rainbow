@@ -23,7 +23,7 @@ beforeEach(() => {
   resolveUd.mockResolvedValue(UD_ADDRESS);
 });
 
-it('routes DNS names to the requested ENS chain and preserves Unstoppable precedence', async () => {
+it('routes DNS names to the requested ENS chain and Unstoppable names to their Ethereum address', async () => {
   const signal = new AbortController().signal;
   await expect(resolveNameOrAddress(' sub.alice.xyz ', ChainId.base, signal)).resolves.toBe(ENS_ADDRESS);
   expect(resolveEnsAddress).toHaveBeenCalledExactlyOnceWith('sub.alice.xyz', ChainId.base, signal);
