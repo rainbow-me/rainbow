@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 
 import { fetchENSImage } from '../utils/fetchENSImage';
-import { getENSData, saveENSData } from '../utils/localStorage';
+import { getENSData } from '../utils/localStorage';
 
 export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
 
@@ -18,9 +18,7 @@ export async function fetchENSAvatar(name: string, { cacheFirst, swallowError }:
       queryClient.setQueryData(ensAvatarQueryKey(name), cachedAvatar);
       if (cacheFirst) return cachedAvatar as { imageUrl: string };
     }
-    const avatar = await fetchENSImage('avatar', name);
-    saveENSData('avatar', name, avatar);
-    return avatar;
+    return await fetchENSImage('avatar', name);
   } catch (err) {
     if (swallowError) return undefined;
     throw err;
