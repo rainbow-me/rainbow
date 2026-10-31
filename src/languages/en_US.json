@@ -30,6 +30,7 @@
     },
     "account": {
       "tab_tokens": "Tokens",
+      "tab_cash": "Cash",
       "tab_claimables": "Claimables",
       "tab_collectibles": "Collectibles",
       "tab_showcase": "Showcase",
