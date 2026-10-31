@@ -209,15 +209,16 @@ export function SendSheet() {
   });
   const toAddress = address ?? (shouldResolveName && recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
   const isValidAddress = Boolean(toAddress);
+  const canSelectAsset = address !== null || shouldResolveName;
   const isResolvingAddress = shouldResolveName && recipientQuery.isFetching;
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
   const { nativeCurrencyInputRef, setLastFocusedInputHandle, assetInputRef } = useSendSheetInputRefs();
 
-  const showEmptyState = !isValidAddress;
-  const showAssetList = isValidAddress && isEmpty(selected);
-  const showAssetForm = isValidAddress && !isEmpty(selected);
+  const showEmptyState = !canSelectAsset;
+  const showAssetList = canSelectAsset && isEmpty(selected);
+  const showAssetForm = canSelectAsset && !isEmpty(selected);
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
@@ -437,7 +438,16 @@ export function SendSheet() {
     sponsoredSendPreparedCalls,
   });
 
+  const recipientErrorMessage =
+    !toAddress && shouldResolveName && !recipientQuery.isLoading && !recipientQuery.isFetching
+      ? i18n.t(recipientQuery.isError ? i18n.l.error_boundary.something_went_wrong : i18n.l.modal.invalid_address)
+      : null;
+
   const { buttonDisabled, buttonLabel } = useMemo(() => {
+    if (recipientErrorMessage) {
+      return { buttonDisabled: true, buttonLabel: recipientErrorMessage };
+    }
+
     if (!toAddress || currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
       return { buttonDisabled: true, buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading) };
     }
@@ -465,6 +475,7 @@ export function SendSheet() {
   }, [
     currentProvider,
     destinationChainId,
+    recipientErrorMessage,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
