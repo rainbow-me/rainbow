@@ -5,18 +5,17 @@ import { useDispatch } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import { IS_TEST } from '@/env';
-import { isValidAddress, looksLikeAddress } from '@/features/address/core/address';
-import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { getNameService, isValidAddress, isValidAddressOrDomainFormat, looksLikeAddress } from '@/features/address/core/address';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { resolveEnsAddress } from '@/features/ens/data/ens';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { isValidBluetoothDeviceId } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { checkIsValidAddressOrDomainFormat, isValidWallet } from '@/helpers/validators';
+import { isValidWallet } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -141,11 +140,12 @@ export default function useImportingWallet({
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
 
-      // Validate ENS
-      if (input.includes('.') && !isUnstoppableAddressFormat(input) && checkIsValidAddressOrDomainFormat(input)) {
+      const nameService = getNameService(input);
+
+      if (nameService === 'ens') {
         try {
           const [address, avatar] = await Promise.all([
-            resolveEnsAddress(input, ChainId.mainnet),
+            resolveNameOrAddress(input, ChainId.mainnet),
             !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
@@ -176,10 +176,9 @@ export default function useImportingWallet({
           Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_ens));
           return;
         }
-        // Look up ENS for 0x address
-      } else if (isUnstoppableAddressFormat(input)) {
+      } else if (nameService === 'unstoppable') {
         try {
-          const address = await resolveUnstoppableDomain(input);
+          const address = await resolveNameOrAddress(input, ChainId.mainnet);
           if (!address) {
             setBusy(false);
             Alert.alert(i18n.t(i18n.l.wallet.invalid_unstoppable_name));
@@ -321,7 +320,7 @@ export default function useImportingWallet({
         if (
           flowContext === 'in_app' &&
           backupProvider === walletBackupTypes.cloud &&
-          !(IS_TEST || checkIsValidAddressOrDomainFormat(input) || isValidBluetoothDeviceId(input))
+          !(IS_TEST || isValidAddressOrDomainFormat(input) || isValidBluetoothDeviceId(input))
         ) {
           Navigation.handleAction(Routes.BACKUP_SHEET, {
             step: WalletBackupStepTypes.backup_prompt_cloud,

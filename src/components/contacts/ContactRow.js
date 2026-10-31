@@ -1,17 +1,19 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
+import { getAddress } from 'viem';
+
 import { opacity } from '@/design-system/utils/opacity';
-import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core/domainFormat';
+import { getNameService } from '@/features/address/core/address';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
+import { resolveEnsName } from '@/features/ens/data/ens';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-import { ENS_DOMAIN } from '@/features/ens/utils/helpers';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { margin } from '@/styles';
-import abbreviations from '@/utils/abbreviations';
 import magicMemo from '@/utils/magicMemo';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
@@ -76,8 +78,8 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
-  // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const initialENSName = typeof ens === 'string' ? ens : nickname?.includes(ENS_DOMAIN) ? nickname : '';
+  const initialENSName =
+    typeof ens === 'string' ? ens : accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : '';
 
   const [ensName, setENSName] = useState(initialENSName);
 
@@ -88,10 +90,14 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   useEffect(() => {
     if (accountType === 'contacts') {
       const fetchENSName = async () => {
-        const name = await fetchReverseRecord(address);
-        if (name !== ensName) {
-          setENSName(name);
-          onAddOrUpdateContacts(address, name && isENSAddressFormat(nickname) ? name : nickname, color, name);
+        try {
+          const name = (await resolveEnsName(getAddress(address), ChainId.mainnet)) ?? '';
+          if (name !== ensName) {
+            setENSName(name);
+            onAddOrUpdateContacts(address, nickname === ensName ? name : nickname, color, name);
+          }
+        } catch {
+          // Keep the saved name and label when the lookup fails.
         }
       };
       fetchENSName();
@@ -107,7 +113,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : address;
+      const recipient = accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : address;
       onPress(recipient, nickname ?? recipient);
     }
   }, [accountType, address, nickname, onPress, showcaseItem]);
@@ -139,9 +145,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
               {cleanedUpLabel || ens ? (
                 <ContactName deviceWidth={deviceWidth}>{cleanedUpLabel || ens}</ContactName>
               ) : (
-                <ContactName deviceWidth={deviceWidth}>
-                  {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
-                </ContactName>
+                <ContactName deviceWidth={deviceWidth}>{getNameService(address) ? address : abbreviateAddress(address, 4, 6)}</ContactName>
               )}
               <BottomRowText
                 style={sx.bottomRowText}
@@ -157,7 +161,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {isValidDomainFormat(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
+              {getNameService(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
             </Fragment>
           )}
         </Column>

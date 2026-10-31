@@ -14,7 +14,8 @@ import { SheetActionButton } from '@/components/sheet';
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
+import { getNameService, isValidAddressOrDomainFormat } from '@/features/address/core/address';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
@@ -30,15 +31,8 @@ import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import {
-  assetIsParsedAddressAsset,
-  assetIsUniqueAsset,
-  buildTransferTransaction,
-  estimateGasLimit,
-  resolveNameOrAddress,
-} from '@/handlers/web3';
+import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransferTransaction, estimateGasLimit } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
-import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -193,7 +187,7 @@ export function SendSheet() {
   const input = recipient.trim();
   const address = useMemo(() => (isAddress(input) ? getAddress(input) : null), [input]);
   const shouldResolveName = useMemo(
-    () => address === null && input === debouncedRecipient.trim() && checkIsValidAddressOrDomainFormat(input),
+    () => address === null && input === debouncedRecipient.trim() && isValidAddressOrDomainFormat(input),
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
@@ -571,7 +565,7 @@ export function SendSheet() {
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
-      if (profilesEnabled && isENSAddressFormat(text)) {
+      if (profilesEnabled && getNameService(text) === 'ens') {
         prefetchENSAvatar(text);
         prefetchENSCover(text);
       }

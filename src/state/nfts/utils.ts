@@ -1,5 +1,4 @@
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import { queryClient } from '@/react-query';
 import { fetchNFTData, nftsQueryKey, type NFTData } from '@/resources/nfts';
@@ -47,8 +46,8 @@ export async function migrateTokens(accountAddress: string, tokens: string[]): P
   if (!data.nfts.length) return null;
 
   for (const token of tokens) {
-    const isENS = isENSAddressFormat(token);
-    if (isENS) {
+    // Older NFT preferences stored .eth names instead of the registrar token's unique ID.
+    if (token.toLowerCase().endsWith('.eth')) {
       const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
       if (!uniqueId) {
         continue;

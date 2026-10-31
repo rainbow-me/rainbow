@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { LAYOUT_ANIMATION } from '@/components/collapsible/CollapsibleSectionBase';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
@@ -22,7 +23,6 @@ import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
-import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import { type HoldingRow, type RealizedRow, type UnrealizedRow } from '../core/topHolders';
@@ -353,7 +353,7 @@ function HolderRow({
             <HolderAvatar address={address} ensName={ensName} />
             <Box flexShrink={1} gap={10}>
               <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
-                {abbreviateEnsForDisplay(ensName) ?? abbreviateAddress(address, 4, 6)}
+                {abbreviateName(ensName) ?? abbreviateAddress(address, 4, 6)}
               </Text>
               {subtitle}
             </Box>

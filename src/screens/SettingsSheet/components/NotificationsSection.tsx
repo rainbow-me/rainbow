@@ -7,6 +7,7 @@ import { useListen } from '@storesjs/stores';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 
 import { Box } from '@/design-system';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { type RainbowAccount } from '@/features/wallet/types';
 import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -30,7 +31,6 @@ import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/scre
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { useAppStateStore } from '@/state/appState/appStateStore';
 import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
-import abbreviations from '@/utils/abbreviations';
 import { deviceUtils } from '@/utils/deviceUtils';
 import profileUtils from '@/utils/profileUtils';
 
@@ -98,7 +98,7 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
   const notificationSetting = notificationSettings?.find((x: WalletNotificationSettings) => x.address === wallet.address);
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(wallet.label), [wallet.label]);
 
-  const displayAddress = useMemo(() => abbreviations.address(wallet.address, 4, 6), [wallet.address]);
+  const displayAddress = useMemo(() => abbreviateAddress(wallet.address, 4, 6), [wallet.address]);
   const walletName = cleanedUpLabel || ens || displayAddress || '';
 
   const navigateToWalletSettings = useCallback(

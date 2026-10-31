@@ -7,17 +7,15 @@ import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther, parseUnits } from '@ethersproject/units';
-import Resolution from '@unstoppabledomains/resolution';
 import { replace, startsWith } from 'lodash';
-import { getAddress as getViemAddress, isAddress, type Address, type Hex } from 'viem';
+import { type Address, type Hex } from 'viem';
 
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
-import { resolveEnsAddress } from '@/features/ens/data/ens';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -430,47 +428,6 @@ export const getTxDetails = async (transaction: TransactionDetailsInput): Promis
 
   return tx;
 };
-
-/**
- * @desc Resolves an Unstoppable domain string.
- * @param domain The domain as a string.
- * @return The resolved address, or undefined if none could be found.
- */
-export const resolveUnstoppableDomain = async (domain: string): Promise<string | null> => {
-  // This parameter doesn't line up with the `Resolution` type declaration,
-  // but it can be casted to `any` as it does match the documentation here:
-  // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
-  const resolution = new Resolution();
-  const res = resolution
-    .addr(domain, 'ETH')
-    .then((address: string) => {
-      return address;
-    })
-    .catch(error => {
-      logger.error(new RainbowError(`[web3]: resolveUnstoppableDomain error`), {
-        message: error.message,
-      });
-      return null;
-    });
-  return res;
-};
-
-/**
- * Resolves an address or supported name on the destination chain. Raw addresses
- * require no network request. ENS failures reject; a missing address returns null.
- */
-export async function resolveNameOrAddress(nameOrAddress: string, chainId: ChainId, signal?: AbortSignal): Promise<Address | null> {
-  const input = nameOrAddress.trim();
-  if (isAddress(input)) return getViemAddress(input);
-  if (input.startsWith('0x')) return null;
-
-  if (isUnstoppableAddressFormat(input)) {
-    const address = await resolveUnstoppableDomain(input);
-    return address === null ? null : getViemAddress(address);
-  }
-
-  return resolveEnsAddress(input, chainId, signal);
-}
 
 /**
  * @desc Gets transaction details for a new transfer NFT transaction.

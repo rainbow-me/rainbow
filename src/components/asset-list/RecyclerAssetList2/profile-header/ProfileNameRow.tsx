@@ -10,12 +10,12 @@ import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
 export const ProfileNameRowHeight = 16;
@@ -66,9 +66,9 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
     return (
       formatAccountLabel({
         address: accountAddress,
-        ens: abbreviateEnsForDisplay(accountENS, 20),
+        ens: abbreviateName(accountENS, 20),
         label: accountName,
-      }) || address(accountAddress, 4, 4)
+      }) || abbreviateAddress(accountAddress, 4, 4)
     );
   }, [accountAddress, accountENS, accountName]);
 

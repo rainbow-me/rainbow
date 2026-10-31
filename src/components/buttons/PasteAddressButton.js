@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { opacity } from '@/design-system/utils/opacity';
-import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
+import { isValidAddressOrDomainFormat } from '@/features/address/core/address';
 import useClipboard from '@/hooks/useClipboard';
 import useInvalidPaste from '@/hooks/useInvalidPaste';
 import * as i18n from '@/languages';
@@ -15,13 +15,13 @@ export default function PasteAddressButton({ onPress }) {
   const { onInvalidPaste } = useInvalidPaste();
   const { clipboard, enablePaste, getClipboard, hasClipboardData } = useClipboard();
 
-  const isValid = useMemo(() => checkIsValidAddressOrDomainFormat(clipboard), [clipboard]);
+  const isValid = useMemo(() => isValidAddressOrDomainFormat(clipboard), [clipboard]);
 
   const handlePress = useCallback(() => {
     if (!enablePaste) return;
 
     getClipboard(clipboardData => {
-      const isValidAddress = checkIsValidAddressOrDomainFormat(clipboardData);
+      const isValidAddress = isValidAddressOrDomainFormat(clipboardData);
 
       if (isValidAddress) {
         return onPress?.(clipboardData);

@@ -39,6 +39,7 @@ import {
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/design-system/utils/opacity';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -57,7 +58,6 @@ import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { darkModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
