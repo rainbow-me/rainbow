@@ -1,8 +1,9 @@
 import { isValidAddress } from 'ethereumjs-util';
 
-import { isENSAddressFormat, isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { normalizeEnsName } from '@/features/ens/core/name';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
+import { isHexStringIgnorePrefix, isValidMnemonic, resolveNameOrAddress } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 /**
@@ -16,41 +17,33 @@ export const isValidEmail = (email: any) =>
   );
 
 /**
- * @desc validate ethereum address, ENS, or Unstoppable name formatting
- * @param  {String} address, ENS, or Unstoppable
- * @return {Boolean}
+ * Checks address or name syntax without requiring a record on a particular chain.
  */
-export const checkIsValidAddressOrDomainFormat = (address: any) => {
-  if (isENSAddressFormat(address)) {
+export function checkIsValidAddressOrDomainFormat(input: string | null | undefined): boolean {
+  if (!input) return false;
+  const value = input.trim();
+  if (isValidAddress(value)) return true;
+  if (value.startsWith('0x') || !value.includes('.')) return false;
+  if (isUnstoppableAddressFormat(value)) return true;
+  try {
+    normalizeEnsName(value);
     return true;
+  } catch {
+    return false;
   }
-  if (isUnstoppableAddressFormat(address)) {
-    return true;
-  }
-  return isValidAddress(address);
-};
+}
 
 /**
- * @desc validate ethereum address, ENS, or Unstoppable name
- * @param  {String} address, ENS, or Unstoppable
- * @return {Boolean}
+ * Checks whether an address or name has an Ethereum destination for chain-agnostic legacy callers.
  */
-export const checkIsValidAddressOrDomain = async (address: any) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  if (isENSAddressFormat(address)) {
-    try {
-      const resolvedAddress = await provider.resolveName(address);
-      return !!resolvedAddress;
-    } catch (error) {
-      return false;
-    }
+export async function checkIsValidAddressOrDomain(input: string | null | undefined): Promise<boolean> {
+  if (!input || !checkIsValidAddressOrDomainFormat(input)) return false;
+  try {
+    return (await resolveNameOrAddress(input, ChainId.mainnet)) !== null;
+  } catch {
+    return false;
   }
-  if (isUnstoppableAddressFormat(address)) {
-    const resolvedAddress = await resolveUnstoppableDomain(address);
-    return !!resolvedAddress;
-  }
-  return isValidAddress(address);
-};
+}
 
 /**
  * @desc validate seed phrase mnemonic
@@ -84,9 +77,4 @@ export const isValidSeed = (seed: any) => seed && (isValidPrivateKey(seed) || is
  * @return {Boolean}
  */
 export const isValidWallet = (seed: any) =>
-  seed &&
-  (isValidPrivateKey(seed) ||
-    isValidSeedPhrase(seed) ||
-    isValidAddress(seed) ||
-    isUnstoppableAddressFormat(seed) ||
-    isENSAddressFormat(seed));
+  seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed) || checkIsValidAddressOrDomainFormat(seed));
