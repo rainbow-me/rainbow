@@ -2,10 +2,11 @@ import { captureMessage } from '@sentry/react-native';
 import { createBaseStore } from '@storesjs/stores';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { type Address } from 'viem';
+import { getAddress, type Address } from 'viem';
 
 import { normalizeAddress } from '@/features/address/core/address';
 import { parseTimestampFromBackupFile } from '@/features/backup/backupFile';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import * as kc from '@/features/local-auth/keychain';
 import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
@@ -32,7 +33,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji, isValidImagePath } from '@/utils/profileUtils';
 import { shallowEqual } from '@/worklets/comparisons';
 
 interface AccountProfileInfo {
@@ -649,7 +650,8 @@ async function refreshAccountInfo(
       return null;
     }
 
-    const ens = await fetchReverseRecordWithRetry(account.address);
+    const address = getAddress(account.address);
+    const ens = await useEnsNameStore.getState().refresh(address);
 
     if (ens) {
       // Only fetch avatar if ENS changed or we don't have an image
@@ -664,7 +666,7 @@ async function refreshAccountInfo(
       return {
         ens,
         image: newImage,
-        label: formatAccountLabel({ address: account.address, label: account.label, ens }),
+        label: formatAccountLabel({ address: account.address, label: account.label === account.ens ? null : account.label, ens }),
       };
     }
 
@@ -728,15 +730,19 @@ export const isImportedWallet = (address: string): boolean => {
   return false;
 };
 
-export const useAccountProfileInfo = (address?: Address) => {
+/** Combines wallet appearance and custom labels with the address's current ENS name. */
+export const useAccountProfileInfo = (address?: Address): AccountProfileInfo & { accountColorHex: string } => {
   const { colors } = useTheme();
-  return useWalletsStore(state => {
-    const info = state.getAccountProfileInfo(address);
-    return {
-      ...info,
-      accountColorHex: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
-    };
-  }, dequal);
+  const info = useWalletsStore(s => s.getAccountProfileInfo(address), dequal);
+  const name = useEnsNameStore(s => (info.accountAddress ? s.get(info.accountAddress) : undefined));
+  const accountENS = name === undefined ? info.accountENS : (name ?? undefined);
+  const hasCustomLabel = info.accountName && info.accountName !== info.accountENS && info.accountName !== info.accountAddress;
+  return {
+    ...info,
+    accountENS,
+    accountName: hasCustomLabel ? info.accountName : (accountENS ?? ''),
+    accountColorHex: info.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
+  };
 };
 
 const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {

@@ -26,7 +26,6 @@ import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/a
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
 import { type HoldingRow, type RealizedRow, type UnrealizedRow } from '../core/topHolders';
-import { useTopHolderNamesStore } from '../data/topHolderNamesStore';
 import { useTopHoldersStore } from '../data/topHoldersStore';
 
 const TABS = ['holding', 'unrealized', 'realized'] as const;
@@ -169,12 +168,7 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
   return (
     // Clipped so a longer list is revealed as the height grows instead of overlapping the sections below
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} style={{ overflow: 'hidden' }}>
-      {rows.map((row, index) => (
-        <React.Fragment key={row.key}>
-          {index > 0 && <RowSeparator />}
-          {row}
-        </React.Fragment>
-      ))}
+      {rows}
     </Box>
   );
 }
@@ -201,6 +195,7 @@ const HoldingHolderRow = memo(function HoldingHolderRow({
   return (
     <HolderRow
       address={row.address}
+      ensName={row.ensName}
       entryPoint={entryPoint}
       rank={rank}
       subtitle={
@@ -234,6 +229,7 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
   return (
     <HolderRow
       address={row.address}
+      ensName={row.ensName}
       entryPoint={entryPoint}
       rank={rank}
       subtitle={
@@ -268,7 +264,7 @@ const RealizedHolderRow = memo(function RealizedHolderRow({
   usdToNativeRate,
 }: RowProps<RealizedRow>) {
   return (
-    <HolderRow address={row.address} entryPoint={entryPoint} rank={rank} token={token} trades={row.trades}>
+    <HolderRow address={row.address} ensName={row.ensName} entryPoint={entryPoint} rank={rank} token={token} trades={row.trades}>
       <PnlFigures
         amountUsd={row.realized.amount}
         nativeCurrency={nativeCurrency}
@@ -314,6 +310,7 @@ function PnlFigures({
 
 function HolderRow({
   address,
+  ensName,
   children,
   entryPoint,
   rank,
@@ -322,6 +319,7 @@ function HolderRow({
   trades,
 }: {
   address: string;
+  ensName: string | undefined;
   children: React.ReactNode;
   entryPoint: SpotPnlSheetEntryPoint;
   rank: number;
@@ -329,46 +327,47 @@ function HolderRow({
   token: { address: string; chainId: ChainId };
   trades: WalletTokenTrades | undefined;
 }) {
-  const ensName = useTopHolderNamesStore(state => state.getData()?.[address.toLowerCase()] ?? null);
-
   const openPnlSheet = () =>
     Navigation.handleAction(Routes.SPOT_PNL_SHEET, {
       address: token.address,
       chainId: token.chainId,
       walletAddress: address,
-      ensName: ensName ?? undefined,
+      ensName,
       trades,
       entryPoint,
     });
 
   return (
-    <ButtonPressAnimation onPress={openPnlSheet} scaleTo={0.98}>
-      <Box flexDirection="row" alignItems="center" height={{ custom: HOLDER_ROW_HEIGHT }}>
-        <Box width={{ custom: RANK_WIDTH }}>
-          <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text color="accent" size="22pt" weight="semibold">
-              {String(rank)}
-            </Text>
-          </TextShadow>
-        </Box>
-        <Box flexDirection="row" alignItems="center" flexGrow={1} flexShrink={1} gap={12}>
-          <HolderAvatar address={address} ensName={ensName} />
-          <Box flexShrink={1} gap={10}>
-            <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
-              {abbreviateEnsForDisplay(ensName ?? undefined) ?? abbreviateAddress(address, 4, 6)}
-            </Text>
-            {subtitle}
+    <>
+      {rank > 1 && <RowSeparator />}
+      <ButtonPressAnimation onPress={openPnlSheet} scaleTo={0.98}>
+        <Box flexDirection="row" alignItems="center" height={{ custom: HOLDER_ROW_HEIGHT }}>
+          <Box width={{ custom: RANK_WIDTH }}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text color="accent" size="22pt" weight="semibold">
+                {String(rank)}
+              </Text>
+            </TextShadow>
+          </Box>
+          <Box flexDirection="row" alignItems="center" flexGrow={1} flexShrink={1} gap={12}>
+            <HolderAvatar address={address} ensName={ensName} />
+            <Box flexShrink={1} gap={10}>
+              <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
+                {abbreviateEnsForDisplay(ensName) ?? abbreviateAddress(address, 4, 6)}
+              </Text>
+              {subtitle}
+            </Box>
+          </Box>
+          <Box alignItems="flex-end" paddingLeft="12px">
+            {children}
           </Box>
         </Box>
-        <Box alignItems="flex-end" paddingLeft="12px">
-          {children}
-        </Box>
-      </Box>
-    </ButtonPressAnimation>
+      </ButtonPressAnimation>
+    </>
   );
 }
 
-function HolderAvatar({ address, ensName }: { address: string; ensName: string | null }) {
+function HolderAvatar({ address, ensName }: { address: string; ensName: string | undefined }) {
   const { data: avatar } = useENSAvatar(ensName ?? '', { enabled: !!ensName });
   return (
     <AddressAvatar address={address} color={addressHashedColorIndex(address) ?? 0} label="" size={AVATAR_SIZE} url={avatar?.imageUrl} />

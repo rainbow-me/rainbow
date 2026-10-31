@@ -4,8 +4,8 @@ Fork of [@ensdomains/ens-avatar](https://github.com/ensdomains/ens-avatar) at v0
 
 ## What it does
 
-Resolves ENS avatar and cover/header images. Given an ENS name, it reads the `avatar` or `header` text record from the
-resolver, parses CAIP-22/CAIP-29 NFT URIs, resolves IPFS/base64 URIs, and returns an image URL.
+Converts already resolved ENS avatar and cover/header records into image URLs. The ENS feature’s `fetchENSImage` reads
+the records; this library parses CAIP-22/CAIP-29 NFT URIs, resolves IPFS/base64 URIs, and returns an image URL.
 
 ## Why forked
 

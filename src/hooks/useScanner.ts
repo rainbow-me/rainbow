@@ -8,7 +8,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
-import { isENSAddressFormat } from '@/features/address/core/domainFormat';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
@@ -18,7 +18,6 @@ import Routes from '@/navigation/routesNames';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import addressUtils from '@/utils/address';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 import { Alert } from '../components/alerts';
 import Navigation, { useNavigation } from '../navigation/Navigation';
@@ -55,7 +54,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
     async (address: string) => {
       triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedAddress);
-      const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
+      const ensName = await fetchReverseRecord(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
@@ -81,14 +80,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
       const isValid = await checkIsValidAddressOrDomain(addressOrENS);
       if (isValid) {
-        const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
+        const ensName = isValidAddress(addressOrENS) ? await fetchReverseRecord(addressOrENS) : addressOrENS;
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(Routes.PROFILE_SHEET, {
-            address: ensName ?? '',
+            address: ensName || addressOrENS,
             fromRoute: 'QR Code',
           });
 

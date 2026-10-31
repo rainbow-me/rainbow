@@ -1,12 +1,13 @@
-import { createDerivedStore, createQueryStore, shallowEqual } from '@storesjs/stores';
+import { createDerivedStore, createQueryStore, nullObject, shallowEqual } from '@storesjs/stores';
+import { getAddress } from 'viem';
 
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { DEFAULT_CONFIG, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { type ChainId } from '@/features/network/types/backendNetworks';
+import { resolveEnsName } from '@/features/ens/data/ens';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { usePnlEligibleToken } from '@/features/spot-pnl/data/pnlEligibleTokenStore';
 import { WALLET_TOKEN_TRADES_FIELDS } from '@/features/spot-pnl/data/tokenTradesStore';
-import { divWorklet, powWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { getCodexTokenId, postCodex } from '@/resources/platform/codex';
@@ -34,12 +35,7 @@ type TradersResponse = { results: TokenTrader[] };
 type TopHoldersResponse = {
   holders: {
     status: 'ENABLED' | 'DISABLED';
-    items: {
-      address: string;
-      /** Raw integer amount. */
-      balance: string;
-      wallet: { category: string | null; identityLabels: string[] | null } | null;
-    }[];
+    items: TokenHolder[];
   };
   token: { decimals: number; info: { totalSupply: string | null } | null } | null;
   prices: ({ priceUsd: number | null } | null)[];
@@ -109,12 +105,11 @@ export const useTopHoldersEnabledStore = createDerivedStore($ => {
 });
 
 /**
- * The viewed token's Top Holders lists. Holding ranks Codex's top {@link CODEX_PAGE_SIZE} holders; Unrealized ranks
- * the {@link CODEX_PAGE_SIZE} largest bought positions still held. `null` when no list has a row.
+ * The viewed token's Top Holders lists. Holding ranks Codex's top {@link CODEX_PAGE_SIZE} holders; Unrealized
+ * ranks the {@link CODEX_PAGE_SIZE} largest bought positions still held. `null` when no list has a row.
  */
 export const useTopHoldersStore = createQueryStore<TopHolders | null, TopHoldersParams>({
   fetcher: fetchTopHolders,
-  // Gated on the flags alone: an ineligible token leaves `token` null, which fetches nothing
   enabled: $ => $(useTopHoldersEnabledStore),
   params: {
     token: $ => $(usePnlEligibleToken, token => (token ? { address: token.address, chainId: token.chainId } : null), shallowEqual),
@@ -137,41 +132,60 @@ async function fetchTopHolders({ token, filter }: TopHoldersParams, abortControl
       { tokenId, address: token.address, networkId: token.chainId, excludeLabels: filter.excludedLabels },
       abortController
     );
+
     const topHolders = rankTopHolders(response, filter);
-    return topHolders.holding.length || topHolders.unrealized.length || topHolders.realized.length ? topHolders : null;
+    const nameRequests: Record<string, Promise<string | null> | undefined> = nullObject();
+    const pending: Promise<void>[] = [];
+
+    for (const rows of [topHolders.holding, topHolders.unrealized, topHolders.realized]) {
+      for (const row of rows) {
+        const address = row.address.toLowerCase();
+        nameRequests[address] ??= resolveHolderName(address, abortController?.signal);
+        pending.push(
+          nameRequests[address].then(ensName => {
+            if (ensName) row.ensName = ensName;
+          })
+        );
+      }
+    }
+
+    if (!pending.length) return null;
+
+    await Promise.all(pending);
+    return topHolders;
   } catch (error) {
     logger.error(new RainbowError('[topHoldersStore] Codex top holders fetch failed', error), { tokenId });
     throw error;
   }
 }
 
-function rankTopHolders({ holders, token, prices, unrealized, realized }: TopHoldersResponse, filter: HolderWalletFilter): TopHolders {
-  const priceUsd = prices[0]?.priceUsd;
-  const hasPrice = priceUsd != null && priceUsd > 0;
-  const hasHolders = holders.status === 'ENABLED' && !!token;
-  const unit = token ? powWorklet(10, token.decimals) : '1';
+async function resolveHolderName(address: string, signal?: AbortSignal): Promise<string | null> {
+  try {
+    return await resolveEnsName(getAddress(address), ChainId.mainnet, signal);
+  } catch {
+    return null;
+  }
+}
 
-  return {
-    holding:
-      hasPrice && hasHolders
-        ? rankHolding(
-            {
-              holders: holders.items.map(
-                (item): TokenHolder => ({
-                  address: item.address,
-                  balance: divWorklet(item.balance, unit),
-                  category: item.wallet?.category ?? null,
-                  identityLabels: item.wallet?.identityLabels ?? [],
-                })
-              ),
-              priceUsd: String(priceUsd),
-              totalSupply: token.info?.totalSupply ?? '0',
-              traders: [...unrealized.results, ...realized.results],
-            },
-            filter
-          )
-        : [],
-    unrealized: hasPrice ? rankUnrealized(unrealized.results, String(priceUsd)) : [],
+function rankTopHolders({ holders, token, prices, unrealized, realized }: TopHoldersResponse, filter: HolderWalletFilter): TopHolders {
+  const price = prices[0]?.priceUsd;
+  const priceUsd = price != null && price > 0 ? String(price) : null;
+  const topHolders: TopHolders = {
+    holding: [],
+    unrealized: priceUsd ? rankUnrealized(unrealized.results, priceUsd) : [],
     realized: rankRealized(realized.results),
   };
+
+  if (priceUsd && token && holders.status === 'ENABLED') {
+    const tradesByAddress: Record<string, TokenTrader | undefined> = nullObject();
+    for (const traders of [unrealized.results, realized.results]) {
+      for (const trader of traders) tradesByAddress[trader.address] = trader;
+    }
+    topHolders.holding = rankHolding(
+      { holders: holders.items, decimals: token.decimals, priceUsd, totalSupply: token.info?.totalSupply ?? '0', tradesByAddress },
+      filter
+    );
+  }
+
+  return topHolders;
 }
