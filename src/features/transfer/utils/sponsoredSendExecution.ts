@@ -49,7 +49,7 @@ export async function buildSendCallFromSendDetails({
   chainId,
   toAddress,
 }: BuildSendCallFromSendDetailsParams): Promise<Call> {
-  const recipient = await resolveSendAddress(toAddress);
+  const recipient = await resolveSendAddress(toAddress, chainId);
   const rawAmount = parsePositiveRawAmount(amount, asset.decimals, '[buildSendCallFromSendDetails]: invalid send amount');
 
   if (isNativeAsset(asset.address, chainId)) {
@@ -92,7 +92,7 @@ export async function executeSponsoredSendIfAvailable({
   return Boolean(sponsoredExecution);
 }
 
-async function resolveSendAddress(address: string): Promise<Address> {
-  const resolved = await resolveNameOrAddress(address);
+async function resolveSendAddress(address: string, chainId: ChainId): Promise<Address> {
+  const resolved = await resolveNameOrAddress(address, chainId);
   return requireAddress(resolved, '[buildSendCallFromSendDetails]: invalid recipient');
 }

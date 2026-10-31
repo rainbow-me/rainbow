@@ -9,7 +9,7 @@ import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type Transacti
 import { parseEther, parseUnits } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { replace, startsWith } from 'lodash';
-import { type Address, type Hex } from 'viem';
+import { getAddress as getViemAddress, isAddress, type Address, type Hex } from 'viem';
 
 import { AssetType } from '@/entities/assetTypes';
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -17,6 +17,7 @@ import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { isUnstoppableAddressFormat } from '@/features/address/core/domainFormat';
+import { resolveEnsAddress } from '@/features/ens/data/ens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -455,23 +456,21 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
 };
 
 /**
- * @desc Resolves a name or address to an Ethereum hex-formatted address.
- * @param nameOrAddress The name or address to resolve.
- * @return The address, or null if one could not be resolved.
+ * Resolves an address or supported name on the destination chain. Raw addresses
+ * require no network request. ENS failures reject; a missing address returns null.
  */
-export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
-  if (!isHexString(nameOrAddress)) {
-    if (isUnstoppableAddressFormat(nameOrAddress)) {
-      const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
-      return resolvedAddress;
-    }
-    const p = getProvider({ chainId: ChainId.mainnet });
-    const resolvedAddress = await p?.resolveName(nameOrAddress);
+export async function resolveNameOrAddress(nameOrAddress: string, chainId: ChainId, signal?: AbortSignal): Promise<Address | null> {
+  const input = nameOrAddress.trim();
+  if (isAddress(input)) return getViemAddress(input);
+  if (input.startsWith('0x')) return null;
 
-    return resolvedAddress;
+  if (isUnstoppableAddressFormat(input)) {
+    const address = await resolveUnstoppableDomain(input);
+    return address === null ? null : getViemAddress(address);
   }
-  return nameOrAddress;
-};
+
+  return resolveEnsAddress(input, chainId, signal);
+}
 
 /**
  * @desc Gets transaction details for a new transfer NFT transaction.
@@ -486,7 +485,7 @@ export const getTransferNftTransaction = async (
     'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas' | 'chainId'
   >
 ): Promise<TransactionDetailsReturned> => {
-  const recipient = await resolveNameOrAddress(transaction.to);
+  const recipient = await resolveNameOrAddress(transaction.to, transaction.chainId);
 
   if (!recipient) {
     throw new Error(`Invalid recipient "${transaction.to}"`);
@@ -519,7 +518,8 @@ export const getTransferTokenTransaction = async (
   >
 ): Promise<TransactionDetailsReturned> => {
   const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
-  const recipient = (await resolveNameOrAddress(transaction.to)) as string;
+  const recipient = await resolveNameOrAddress(transaction.to, transaction.chainId);
+  if (!recipient) throw new Error(`Invalid recipient "${transaction.to}"`);
   const data = getDataForTokenTransfer(value, recipient);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -669,7 +669,8 @@ export const buildTransferTransaction = async (
 
   const _amount = hasPositiveAmount && rawAmount !== null ? rawAmount : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = (await resolveNameOrAddress(recipient)) as string;
+  const _recipient = await resolveNameOrAddress(recipient, chainId);
+  if (!_recipient) throw new Error(`Invalid recipient "${recipient}"`);
   let txData: TransactionRequest = {
     data: '0x',
     from: address,
