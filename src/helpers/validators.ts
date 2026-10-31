@@ -7,16 +7,6 @@ import { isHexStringIgnorePrefix, isValidMnemonic, resolveNameOrAddress } from '
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 /**
- * @desc validate email
- * @param  {String}  email
- * @return {Boolean}
- */
-export const isValidEmail = (email: any) =>
-  !!email.match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  );
-
-/**
  * Checks address or name syntax without requiring a record on a particular chain.
  */
 export function checkIsValidAddressOrDomainFormat(input: string | null | undefined): boolean {
@@ -46,35 +36,23 @@ export async function checkIsValidAddressOrDomain(input: string | null | undefin
 }
 
 /**
- * @desc validate seed phrase mnemonic
- * @param  {String} seed phrase mnemonic
- * @return {Boolean}
+ * Validates the input required to create a new wallet.
  */
-const isValidSeedPhrase = (seedPhrase: any) => {
-  const sanitizedSeedPhrase = sanitizeSeedPhrase(seedPhrase);
+export function isValidWallet(input: string): boolean {
+  return Boolean(input) && (isValidPrivateKey(input) || isValidSeedPhrase(input) || checkIsValidAddressOrDomainFormat(input));
+}
+
+/**
+ * Validates a seed phrase mnemonic.
+ */
+function isValidSeedPhrase(mnemonic: string): boolean {
+  const sanitizedSeedPhrase = sanitizeSeedPhrase(mnemonic);
   return sanitizedSeedPhrase.split(' ').length >= 12 && isValidMnemonic(sanitizedSeedPhrase);
-};
+}
 
 /**
- * @desc validate private key string
- * @param  {String} private key string
- * @return {Boolean}
+ * Validates a private key string.
  */
-const isValidPrivateKey = (key: any) => {
+function isValidPrivateKey(key: string): boolean {
   return key.length >= 64 && isHexStringIgnorePrefix(key);
-};
-
-/**
- * @desc validate seed phrase mnemonic or private key
- * @param  {String} seed phrase mnemonic or private key
- * @return {Boolean}
- */
-export const isValidSeed = (seed: any) => seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
-
-/**
- * @desc validates the input required to create a new wallet
- * @param  {String} seed, mnemonic, private key, address, ENS name, or Unstoppable name
- * @return {Boolean}
- */
-export const isValidWallet = (seed: any) =>
-  seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed) || checkIsValidAddressOrDomainFormat(seed));
+}
