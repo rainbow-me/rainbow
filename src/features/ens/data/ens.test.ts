@@ -17,7 +17,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
-import { ETHEREUM_COIN_TYPE, readEnsRecords, resolveEnsAddress, resolveEnsName } from './ens';
+import { ETHEREUM_COIN_TYPE, readEnsRecords, readEnsText, resolveEnsAddress, resolveEnsName } from './ens';
 
 type RpcFailure = { code: number; message: string; data?: Hex | { data: Hex } };
 type RpcCall = { id: number; method: string; params: [{ to: Address; data: Hex }, string] };
@@ -293,3 +293,36 @@ function recordResults(values: readonly Hex[]): Hex {
     result: [encodeFunctionResult({ abi: RECORDS_ABI, functionName: 'multicall', result: values }), RESOLVER],
   });
 }
+
+describe('ENS text reads', () => {
+  it('reads a normalized text record through CCIP without requesting unrelated fields', async () => {
+    replies = [
+      offchainLookup(),
+      encodeFunctionResult({
+        abi: RESOLVER_ABI,
+        functionName: 'resolveWithGateways',
+        result: [encodeAbiParameters([{ type: 'string' }], ['https://example.com/avatar.png']), RESOLVER],
+      }),
+    ];
+    await expect(readEnsText(' ALICE.eth ', 'avatar')).resolves.toBe('https://example.com/avatar.png');
+    const request = decodeFunctionData({ abi: RESOLVER_ABI, data: rpcCalls[0].params[0].data });
+    if (request.functionName !== 'resolveWithGateways') throw new Error('Expected a forward text lookup');
+    expect(request.args[0]).toBe('0x05616c6963650365746800');
+    expect(decodeFunctionData({ abi: RECORDS_ABI, data: request.args[1] })).toMatchObject({
+      functionName: 'text',
+      args: [expect.any(String), 'avatar'],
+    });
+    expect(gatewayBodies).toHaveLength(1);
+  });
+
+  it('returns null for an unset text record', async () => {
+    replies = [
+      encodeFunctionResult({
+        abi: RESOLVER_ABI,
+        functionName: 'resolveWithGateways',
+        result: [encodeAbiParameters([{ type: 'string' }], ['']), RESOLVER],
+      }),
+    ];
+    await expect(readEnsText('alice.eth', 'header')).resolves.toBeNull();
+  });
+});
