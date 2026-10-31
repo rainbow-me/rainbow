@@ -24,8 +24,11 @@ type ProfileRecords = {
 const STALE_TIME = time.seconds(10);
 const PROFILE_RECORDS = getProfileRecordKeys();
 const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
+  'arweave-ns': 'arweave',
   'ipfs-ns': 'ipfs',
   'ipns-ns': 'ipns',
+  'onion': 'onion',
+  'onion3': 'onion3',
   'skynet-ns': 'sia',
   'swarm-ns': 'bzz',
 };
