@@ -51,7 +51,7 @@ export function ENSSearchSheet() {
   });
 
   const { step } = useENSRegistrationStepHandler();
-  const { data: registrationCostsData, isSuccess: registrationCostsDataIsAvailable } = useENSRegistrationCosts({
+  const registrationCostsData = useENSRegistrationCosts({
     name: debouncedSearchQuery,
     rentPrice: registrationData?.rentPrice,
     step,
@@ -176,7 +176,7 @@ export function ENSSearchSheet() {
                 ) : (
                   <Inset horizontal="15px (Deprecated)">
                     <Inline>
-                      {registrationCostsDataIsAvailable ? (
+                      {registrationCostsData.estimatedTotalRegistrationCost ? (
                         <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" testID="ens-registration-fees" weight="bold">
                           {i18n.t(i18n.l.profiles.search.estimated_total_cost_1)}
                           <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">

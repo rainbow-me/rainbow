@@ -32,23 +32,6 @@ query getDomainsByAddress($address: ID!) {
   }
 }
 
-query getDomainsByName($name: String!) {
-  domains(where: { name: $name }) {
-    ...BaseEnsDomain
-    resolver {
-      addr {
-        id
-      }
-    }
-  }
-}
-
-query getNameFromLabelhash($labelhash: Bytes!) {
-  domains(first: 1, where: { labelhash: $labelhash }) {
-    labelName
-  }
-}
-
 query getTextRecordKeysByName($name: String!) {
   domains(first: 1, where: { name: $name }) {
     resolver {
@@ -65,14 +48,6 @@ query getRegistration($id: ID!) {
     registrant {
       id
     }
-  }
-}
-
-query getRegistrationsByLabelhash($labelHash: ID!) {
-  registrations(first: 1, where: { id: $labelHash }) {
-    id
-    registrationDate
-    expiryDate
   }
 }
 

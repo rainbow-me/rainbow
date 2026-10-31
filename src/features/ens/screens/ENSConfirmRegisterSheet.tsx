@@ -139,7 +139,7 @@ export function ENSConfirmRegisterSheet() {
     yearsDuration: duration,
   });
 
-  const { data: registrationCostsData } = useENSRegistrationCosts({
+  const registrationCostsData = useENSRegistrationCosts({
     name: ensName,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
