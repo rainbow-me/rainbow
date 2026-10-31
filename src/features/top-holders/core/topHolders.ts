@@ -1,6 +1,6 @@
 import { calculateRealizedReturn, type RealizedReturnUsd, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { calculateUnrealizedPnl, type UnrealizedPnl } from '@/features/spot-pnl/core/unrealizedPnl';
-import { divWorklet, greaterThanOrEqualToWorklet, greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { divWorklet, greaterThanOrEqualToWorklet, greaterThanWorklet, mulWorklet, powWorklet } from '@/framework/core/safeMath';
 
 export const TOP_HOLDERS_LIMIT = 10;
 
@@ -9,12 +9,14 @@ const MIN_UNREALIZED_POSITION_VALUE = 1;
 
 export type TokenHolder = {
   address: string;
-  /** Token units. */
+  /** Raw integer amount, before applying token decimals. */
   balance: string;
-  /** Codex `wallet.category`, e.g. `NORMIE` or `EXCHANGE`. */
-  category: string | null;
-  /** Codex `wallet.identityLabels`, e.g. `BRIDGE` or `BOT`. */
-  identityLabels: string[];
+  wallet: {
+    /** Codex `wallet.category`, e.g. `NORMIE` or `EXCHANGE`. */
+    category: string | null;
+    /** Codex `wallet.identityLabels`, e.g. `BRIDGE` or `BOT`. */
+    identityLabels: string[] | null;
+  } | null;
 };
 
 /** A wallet's swap trades in the token, from Codex's traders of the token. */
@@ -28,6 +30,7 @@ export type HolderWalletFilter = {
 
 export type HoldingRow = {
   address: string;
+  ensName?: string;
   valueUsd: string;
   /** Where 1 is 1%. */
   supplyPercentage: string;
@@ -37,6 +40,7 @@ export type HoldingRow = {
 
 export type UnrealizedRow = {
   address: string;
+  ensName?: string;
   /** In USD. */
   pnl: UnrealizedPnl;
   /** USD per token. */
@@ -46,6 +50,7 @@ export type UnrealizedRow = {
 
 export type RealizedRow = {
   address: string;
+  ensName?: string;
   realized: RealizedReturnUsd;
   trades: WalletTokenTrades;
 };
@@ -66,30 +71,53 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(item => typeof item === 'string');
 }
 
-export function isRealUser(holder: TokenHolder, filter: HolderWalletFilter): boolean {
+function isRealUser(holder: TokenHolder, filter: HolderWalletFilter): boolean {
+  const wallet = holder.wallet;
   return (
-    holder.category !== null &&
-    filter.categories.includes(holder.category) &&
-    !holder.identityLabels.some(label => filter.excludedLabels.includes(label))
+    wallet !== null &&
+    wallet.category !== null &&
+    filter.categories.includes(wallet.category) &&
+    !wallet.identityLabels?.some(label => filter.excludedLabels.includes(label))
   );
 }
 
-/** The largest real-user holders, with their trades when they are among `traders`. `holders` is ordered by balance, descending. */
+/**
+ * The largest real-user holders, with their trades when available.
+ * `holders` is ordered by raw balance, descending.
+ */
 export function rankHolding(
-  { holders, priceUsd, totalSupply, traders }: { holders: TokenHolder[]; priceUsd: string; totalSupply: string; traders: TokenTrader[] },
+  {
+    holders,
+    decimals,
+    priceUsd,
+    totalSupply,
+    tradesByAddress,
+  }: {
+    holders: TokenHolder[];
+    decimals: number;
+    priceUsd: string;
+    totalSupply: string;
+    tradesByAddress: Readonly<Record<string, TokenTrader | undefined>>;
+  },
   filter: HolderWalletFilter
 ): HoldingRow[] {
+  const rows: HoldingRow[] = [];
+  const unit = powWorklet(10, decimals);
   const hasSupply = greaterThanWorklet(totalSupply, 0);
-  const tradesByAddress = new Map(traders.map(trader => [trader.address, trader]));
-  return holders
-    .filter(holder => isRealUser(holder, filter))
-    .slice(0, TOP_HOLDERS_LIMIT)
-    .map(holder => ({
+
+  for (const holder of holders) {
+    if (!isRealUser(holder, filter)) continue;
+
+    const balance = divWorklet(holder.balance, unit);
+    rows.push({
       address: holder.address,
-      valueUsd: mulWorklet(holder.balance, priceUsd),
-      supplyPercentage: hasSupply ? mulWorklet(divWorklet(holder.balance, totalSupply), 100) : '0',
-      trades: tradesByAddress.get(holder.address),
-    }));
+      valueUsd: mulWorklet(balance, priceUsd),
+      supplyPercentage: hasSupply ? mulWorklet(divWorklet(balance, totalSupply), 100) : '0',
+      trades: tradesByAddress[holder.address],
+    });
+    if (rows.length === TOP_HOLDERS_LIMIT) break;
+  }
+  return rows;
 }
 
 /**
