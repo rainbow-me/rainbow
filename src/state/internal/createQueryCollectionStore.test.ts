@@ -1,6 +1,8 @@
 import { createBaseStore, createDerivedStore, type SyncStorageInterface } from '@storesjs/stores';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
+import { time } from '@/framework/core/utils/time';
+
 import { createQueryCollectionStore } from './createQueryCollectionStore';
 
 // ============ Fixtures ======================================================= //
@@ -78,7 +80,7 @@ it('keeps prior data for failed members while publishing successful refreshes', 
   requests[1].resolve('old bob');
   await flush();
 
-  vi.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(time.seconds(1));
   await flush();
   requests[2].reject(new Error('Alice failed'));
   requests[3].resolve('new bob');
@@ -105,7 +107,7 @@ it('uses native failure and retry handling when every requested member fails', a
   expect(store.getState().status).toBe('error');
   expect(store.getState().error).toBe(error);
 
-  vi.advanceTimersByTime(50);
+  vi.advanceTimersByTime(time.ms(50));
   await flush();
   expect(requests).toHaveLength(4);
   requests[2].resolve(null);
@@ -127,7 +129,7 @@ it('refreshes active readers through the native lifecycle and stops when demand 
   requests[0].resolve('first');
   await flush();
 
-  vi.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(time.seconds(1));
   await flush();
   expect(requests).toHaveLength(2);
   expect(store.getState().get(ALICE)).toBe('first');
@@ -137,7 +139,7 @@ it('refreshes active readers through the native lifecycle and stops when demand 
 
   stop();
   await flush();
-  vi.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(time.seconds(1));
   await flush();
   expect(requests).toHaveLength(2);
   store.getState().reset();
@@ -252,10 +254,10 @@ function createFixture(storage?: SyncStorageInterface): {
         requests.push(request);
         return request.promise;
       },
-      staleTime: 1000,
-      cacheTime: 5000,
+      staleTime: time.seconds(1),
+      cacheTime: time.seconds(5),
       retry: 1,
-      retryDelay: 50,
+      retryDelay: time.ms(50),
     },
     storage ? { storageKey: 'collection', storage, persistThrottleMs: 0 } : undefined
   );
