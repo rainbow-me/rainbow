@@ -10,6 +10,7 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -24,7 +25,6 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 import { CommitContent } from '../components/registration/CommitContent';
@@ -360,7 +360,7 @@ export function ENSConfirmRegisterSheet() {
                   )}
                   <Inset horizontal="30px (Deprecated)">
                     <Heading align="center" numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                      {abbreviateEnsForDisplay(ensName, 15)}
+                      {abbreviateName(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text color="accent" size="16px / 22px (Deprecated)" testID={`ens-confirm-register-label-${step}`} weight="heavy">

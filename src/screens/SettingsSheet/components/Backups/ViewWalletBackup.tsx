@@ -16,6 +16,7 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Stack } from '@/design-system';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
@@ -34,7 +35,6 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
-import abbreviations from '@/utils/abbreviations';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
@@ -242,9 +242,9 @@ export const ViewWalletBackup = () => {
         const title =
           formatAccountLabel({
             address: account.address,
-            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            ens: abbreviateName(account.ens ?? undefined, 8, 4),
             label: account.label,
-          }) || abbreviations.address(account.address, 6, 4);
+          }) || abbreviateAddress(account.address, 6, 4);
 
         navigate(Routes.VIEW_WALLET_DELEGATIONS, {
           walletId,
@@ -257,9 +257,9 @@ export const ViewWalletBackup = () => {
         const title =
           formatAccountLabel({
             address: account.address,
-            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            ens: abbreviateName(account.ens ?? undefined, 8, 4),
             label: account.label,
-          }) || abbreviations.address(account.address, 6, 4);
+          }) || abbreviateAddress(account.address, 6, 4);
 
         navigate(Routes.SECRET_WARNING, {
           walletId,
@@ -428,11 +428,11 @@ export const ViewWalletBackup = () => {
             .map((account: RainbowAccount) => {
               const nameOrENS = formatAccountLabel({
                 address: account.address,
-                ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+                ens: abbreviateName(account.ens ?? undefined, 8, 4),
                 label: account.label,
               });
-              const label = nameOrENS ? abbreviations.address(account.address, 4, 4) : undefined;
-              const title = nameOrENS || abbreviations.address(account.address, 4, 4);
+              const label = nameOrENS ? abbreviateAddress(account.address, 4, 4) : undefined;
+              const title = nameOrENS || abbreviateAddress(account.address, 4, 4);
 
               return (
                 <ContextMenuButton

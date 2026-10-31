@@ -13,6 +13,7 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { IS_DEV } from '@/env';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
@@ -33,7 +34,6 @@ import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
-import abbreviations from '@/utils/abbreviations';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
@@ -80,9 +80,9 @@ const WalletPill = ({ account }: WalletPillProps) => {
       <Text color="labelSecondary" size="11pt" weight="bold">
         {formatAccountLabel({
           address: account.address,
-          ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+          ens: abbreviateName(account.ens ?? undefined, 8, 4),
           label: account.label,
-        }) || abbreviations.address(account.address, 4, 4)}
+        }) || abbreviateAddress(account.address, 4, 4)}
       </Text>
     </Box>
   );
@@ -211,9 +211,9 @@ export const WalletsAndBackup = () => {
         title =
           formatAccountLabel({
             address: wallet.addresses[0].address,
-            ens: abbreviations.abbreviateEnsForDisplay(wallet.addresses[0].ens ?? undefined, 8, 4),
+            ens: abbreviateName(wallet.addresses[0].ens ?? undefined, 8, 4),
             label: wallet.addresses[0].label,
-          }) || abbreviations.address(wallet.addresses[0].address, 4, 4);
+          }) || abbreviateAddress(wallet.addresses[0].address, 4, 4);
       }
 
       navigate(Routes.VIEW_WALLET_BACKUP, {

@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { TintButton } from '@/components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -24,7 +25,6 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import RegistrationAvatar from '../components/registration/RegistrationAvatar';
@@ -173,7 +173,7 @@ export function ENSAssignRecordsSheet() {
             <Stack space="30px (Deprecated)">
               <Stack alignHorizontal="center" space="15px (Deprecated)">
                 <Heading align="center" numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                  {abbreviateEnsForDisplay(name, 15)}
+                  {abbreviateName(name, 15)}
                 </Heading>
                 <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">
                   {displayTitleLabel

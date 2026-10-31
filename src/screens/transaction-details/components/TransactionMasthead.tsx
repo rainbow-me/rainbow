@@ -19,6 +19,7 @@ import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type Tex
 import { opacity } from '@/design-system/utils/opacity';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/utils/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
@@ -38,7 +39,6 @@ import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';

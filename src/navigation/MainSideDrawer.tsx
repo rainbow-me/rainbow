@@ -10,6 +10,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { ControlPanelMenuItem, ListAvatar, ListEmojiAvatar } from '@/components/SmoothPager/ListPanel';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Box, globalColors, Stack, Text, TextIcon, useColorMode } from '@/design-system';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import type { RainbowAccount, RainbowWallet } from '@/features/wallet/types';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
@@ -27,7 +28,6 @@ import {
 } from '@/state/wallets/walletsStore';
 import { updateWalletUsage, useRecentWalletsStore } from '@/state/wallets/walletUsageStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
-import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 
 import Routes from './routesNames';
 
@@ -142,8 +142,8 @@ function AccountName() {
 
   const name = useMemo(() => {
     return (
-      formatAccountLabel({ address: accountAddress, ens: abbreviateEnsForDisplay(accountENS, 20), label: accountName }) ||
-      address(accountAddress, 4, 4)
+      formatAccountLabel({ address: accountAddress, ens: abbreviateName(accountENS, 20), label: accountName }) ||
+      abbreviateAddress(accountAddress, 4, 4)
     );
   }, [accountAddress, accountENS, accountName]);
 
@@ -200,7 +200,7 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
               <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} size={28} />
             )
           }
-          label={removeFirstEmojiFromString(account.label) || address(account.address, 6, 4)}
+          label={removeFirstEmojiFromString(account.label) || abbreviateAddress(account.address, 6, 4)}
           onPress={() => switchWallet(account, wallet)}
           selectedItemId={selected}
           uniqueId={account.address.toLowerCase()}

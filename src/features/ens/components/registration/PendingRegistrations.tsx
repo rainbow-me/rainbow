@@ -6,9 +6,9 @@ import { Alert } from '@/components/alerts';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Column, Columns, Inset, Separator, Stack, Text } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
 import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
 import type { RegistrationParameters } from '../../types/registration';
@@ -44,7 +44,7 @@ const PendingRegistration = ({
         <Column>
           <Box>
             <Text color="primary (Deprecated)" numberOfLines={1} size="16px / 22px (Deprecated)" weight="heavy">
-              {abbreviateEnsForDisplay(registration.name, 15)}
+              {abbreviateName(registration.name, 15)}
             </Text>
           </Box>
         </Column>

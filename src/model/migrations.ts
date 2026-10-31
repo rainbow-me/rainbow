@@ -13,6 +13,7 @@ import { type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { standardizeUrl, useFavoriteDappsStore } from '@/features/dapp-browser/stores/favoriteDappsStore';
@@ -34,7 +35,6 @@ import { getAllWallets, loadAddress, saveAddress } from '@/features/wallet/data/
 import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
