@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
+import { getAddress } from 'viem';
+
 import { opacity } from '@/design-system/utils/opacity';
 import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core/domainFormat';
+import { resolveEnsName } from '@/features/ens/data/ens';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-import { ENS_DOMAIN } from '@/features/ens/utils/helpers';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
@@ -76,8 +78,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
-  // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const initialENSName = typeof ens === 'string' ? ens : nickname?.includes(ENS_DOMAIN) ? nickname : '';
+  const initialENSName = typeof ens === 'string' ? ens : accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : '';
 
   const [ensName, setENSName] = useState(initialENSName);
 
@@ -88,10 +89,14 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   useEffect(() => {
     if (accountType === 'contacts') {
       const fetchENSName = async () => {
-        const name = await fetchReverseRecord(address);
-        if (name !== ensName) {
-          setENSName(name);
-          onAddOrUpdateContacts(address, name && isENSAddressFormat(nickname) ? name : nickname, color, name);
+        try {
+          const name = (await resolveEnsName(getAddress(address), ChainId.mainnet)) ?? '';
+          if (name !== ensName) {
+            setENSName(name);
+            onAddOrUpdateContacts(address, nickname === ensName ? name : nickname, color, name);
+          }
+        } catch {
+          // Keep the saved name and label when the lookup fails.
         }
       };
       fetchENSName();
