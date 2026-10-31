@@ -65,16 +65,6 @@ query getRegistration($id: ID!) {
   }
 }
 
-query getRegistrationsByAddress($address: ID!, $registrationDate_gt: BigInt = "0") {
-  account(id: $address) {
-    registrations(first: 99, orderBy: registrationDate, orderDirection: desc, where: { registrationDate_gt: $registrationDate_gt }) {
-      domain {
-        ...BaseEnsDomain
-      }
-    }
-  }
-}
-
 query getRegistrationsByLabelhash($labelHash: ID!) {
   registrations(first: 1, where: { id: $labelHash }) {
     id

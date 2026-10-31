@@ -1,6 +1,3 @@
-import { type EthereumAddress } from '@/entities/wallet';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
-
 import colors from '../styles/colors';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
@@ -116,18 +113,6 @@ export function isValidImagePath(path: string | null) {
   return path !== '~undefined';
 }
 
-export async function fetchReverseRecordWithRetry(address: EthereumAddress) {
-  for (let i = 0; i < 3; i++) {
-    try {
-      return await fetchReverseRecord(address);
-      // eslint-disable-next-line no-empty
-    } catch (err) {
-      console.log('error fetching', err);
-    }
-  }
-  return null;
-}
-
 export default {
   avatars,
   addressHashedIndex,
@@ -139,7 +124,6 @@ export default {
   getOldAvatarColorToAvatarBackgroundIndex,
   getNextEmojiWithColor,
   hashCode,
-  fetchReverseRecordWithRetry,
   popularEmojis,
   isEthAddress,
   isValidImagePath,

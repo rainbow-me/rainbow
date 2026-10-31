@@ -19,10 +19,6 @@ export async function fetchENSRegistrant(name: string) {
   return registrant;
 }
 
-export async function prefetchENSRegistrant(name: string) {
-  queryClient.prefetchQuery(ensRegistrantQueryKey(name), async () => fetchENSRegistrant(name), { staleTime: STALE_TIME });
-}
-
 export default function useENSRegistrant(name: string, config?: QueryConfigDeprecated<typeof fetchENSRegistrant>) {
   return useQuery<UseQueryData<typeof fetchENSRegistrant>>(ensRegistrantQueryKey(name), async () => fetchENSRegistrant(name), {
     ...config,

@@ -20,10 +20,6 @@ export async function fetchENSOwner(name: string) {
   return owner;
 }
 
-export async function prefetchENSOwner(name: string) {
-  queryClient.prefetchQuery(ensOwnerQueryKey(name), async () => fetchENSOwner(name), { staleTime: STALE_TIME });
-}
-
 export default function useENSOwner(name: string, config?: QueryConfigDeprecated<typeof fetchENSOwner>) {
   const accountAddress = useAccountAddress();
 

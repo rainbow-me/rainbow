@@ -24,10 +24,6 @@ export async function fetchENSResolver(name: string) {
   return data;
 }
 
-export async function prefetchENSResolver(name: string) {
-  queryClient.prefetchQuery(ensResolverQueryKey(name), async () => fetchENSResolver(name), { staleTime: STALE_TIME });
-}
-
 export default function useENSResolver(name: string, config?: QueryConfigDeprecated<typeof fetchENSResolver>) {
   return useQuery<UseQueryData<typeof fetchENSResolver>>(ensResolverQueryKey(name), async () => fetchENSResolver(name), {
     ...config,
