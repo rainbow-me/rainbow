@@ -5,8 +5,12 @@ import { isHolderWalletFilter, rankHolding, rankRealized, rankUnrealized, type T
 const FILTER = { categories: ['NORMIE'], excludedLabels: ['BRIDGE'] };
 const NOTHING_SOLD = { tokenAmountSold1y: '0', amountSoldUsd1y: '0', realizedProfitUsd1y: '0', lastTransactionAt: 0 };
 
-function holder(address: string, balance: string, overrides: Partial<TokenHolder> = {}): TokenHolder {
-  return { address, balance, category: 'NORMIE', identityLabels: [], ...overrides };
+function holder(
+  address: string,
+  balance: string,
+  wallet: TokenHolder['wallet'] = { category: 'NORMIE', identityLabels: null }
+): TokenHolder {
+  return { address, balance, wallet };
 }
 
 function trader(address: string, overrides: Partial<TokenTrader>): TokenTrader {
@@ -23,15 +27,16 @@ describe('rankHolding', () => {
     const rows = rankHolding(
       {
         holders: [
-          holder('exchange', '1000', { category: 'EXCHANGE' }),
-          holder('whale', '100'),
-          holder('bridge', '90', { identityLabels: ['BRIDGE'] }),
-          holder('uncategorized', '80', { category: null }),
-          holder('mid', '50'),
+          holder('exchange', '100000', { category: 'EXCHANGE', identityLabels: null }),
+          holder('whale', '10000'),
+          holder('bridge', '9000', { category: 'NORMIE', identityLabels: ['BRIDGE'] }),
+          holder('uncategorized', '8000', null),
+          holder('mid', '5000'),
         ],
+        decimals: 2,
         priceUsd: '2',
         totalSupply: '2000',
-        traders: [bought('exchange', '1000', '500'), midTrades],
+        tradesByAddress: { mid: midTrades },
       },
       FILTER
     );
@@ -44,9 +49,18 @@ describe('rankHolding', () => {
 
   it('caps the list at ten holders and reads a missing supply as 0%', () => {
     const holders = Array.from({ length: 12 }, (_, index) => holder(`0x${index}`, String(100 - index)));
-    const rows = rankHolding({ holders, priceUsd: '2', totalSupply: '0', traders: [] }, FILTER);
+    const rows = rankHolding(
+      {
+        holders: [holder('exchange', '1000', { category: 'EXCHANGE', identityLabels: null }), ...holders],
+        decimals: 0,
+        priceUsd: '2',
+        totalSupply: '0',
+        tradesByAddress: {},
+      },
+      FILTER
+    );
 
-    expect(rows).toHaveLength(10);
+    expect(rows.map(row => row.address)).toEqual(holders.slice(0, 10).map(holder => holder.address));
     expect(rows[0].supplyPercentage).toBe('0');
   });
 });
