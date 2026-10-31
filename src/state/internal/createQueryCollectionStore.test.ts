@@ -31,7 +31,6 @@ it('shares requests across consumers while selecting independent values', async 
   const bob = store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
   expect(requests.map(request => request.input)).toEqual([ALICE, BOB]);
-  expect(requests[0].signal).toBe(requests[1].signal);
 
   requests[0].resolve('alice address');
   requests[1].resolve(null);
@@ -236,6 +235,107 @@ it('tracks derived consumers without adding another request lifecycle', async ()
   stop();
   derived.destroy();
   await flush();
+  store.getState().reset();
+});
+
+it('shares overlapping demand and publishes each completed outcome without waiting for its peers', async () => {
+  const { store, requests } = createFixture();
+  const alice = store.subscribe(s => s.hasSettled(ALICE), vi.fn());
+  await flush();
+  const bob = store.subscribe(s => s.getError(BOB), vi.fn());
+  await flush();
+  expect(requests.map(request => request.input)).toEqual([ALICE, BOB]);
+  expect(requests[0].signal?.aborted).toBe(false);
+
+  const failure = new Error('Bob failed');
+  requests[1].reject(failure);
+  await flush();
+  expect(store.getState().hasSettled(ALICE)).toBe(false);
+  expect(store.getState().hasSettled(BOB)).toBe(true);
+  expect(store.getState().getError(BOB)).toBe(failure);
+
+  requests[0].resolve(null);
+  await flush();
+  expect(store.getState().hasSettled(ALICE)).toBe(true);
+  expect(store.getState().get(ALICE)).toBeNull();
+  expect(store.getState().getError(ALICE)).toBeNull();
+  bob();
+  await flush();
+  const retryBob = store.subscribe(s => s.getError(BOB), vi.fn());
+  await flush();
+  expect(requests).toHaveLength(3);
+  expect(store.getState().hasSettled(BOB)).toBe(true);
+  requests[2].resolve('bob');
+  await flush();
+  expect(store.getState().getError(BOB)).toBeNull();
+  alice();
+  retryBob();
+  store.getState().reset();
+});
+
+it('retains an imperatively loaded request after its last subscriber leaves', async () => {
+  const { store, requests } = createFixture();
+  const stop = store.subscribe(s => s.get(ALICE), vi.fn());
+  await flush();
+  const loaded = store.getState().load(ALICE);
+  stop();
+  await flush();
+  expect(requests).toHaveLength(1);
+  expect(requests[0].signal?.aborted).toBe(false);
+  requests[0].resolve('loaded');
+  await expect(loaded).resolves.toBe('loaded');
+  expect(store.getState().get(ALICE)).toBe('loaded');
+  store.getState().reset();
+});
+
+it('destroys pending work and prevents late publication', async () => {
+  const { store, requests } = createFixture();
+  const stop = store.subscribe(s => s.get(ALICE), vi.fn());
+  await flush();
+  store.getState().reset();
+  const snapshot = store.getState();
+  expect(requests[0].signal?.aborted).toBe(true);
+  requests[0].resolve('late');
+  stop();
+  await flush();
+  expect(store.getState()).toBe(snapshot);
+});
+
+it('preserves native admission and optional periodic-refresh behavior', async () => {
+  const admission = createBaseStore(() => ({ enabled: false }));
+  const pending = Promise.withResolvers<Data>();
+  const signals: AbortSignal[] = [];
+  const fetcher = vi.fn((_input: Input, signal?: AbortSignal) => {
+    if (signal) signals.push(signal);
+    return pending.promise;
+  });
+  const store = createQueryCollectionStore({
+    key: (input: Input) => input.name,
+    fetcher,
+    enabled: $ => $(admission, s => s.enabled),
+    disableAutoRefetching: true,
+    staleTime: time.seconds(1),
+    cacheTime: time.seconds(5),
+  });
+  const stop = store.subscribe(s => s.get(ALICE), vi.fn());
+  await flush();
+  expect(fetcher).not.toHaveBeenCalled();
+  admission.setState({ enabled: true });
+  await flush();
+  admission.setState({ enabled: false });
+  expect(signals[0].aborted).toBe(true);
+  pending.resolve('cancelled');
+  await flush();
+  expect(store.getState().get(ALICE)).toBeUndefined();
+
+  fetcher.mockResolvedValue('loaded');
+  admission.setState({ enabled: true });
+  await flush();
+  expect(store.getState().get(ALICE)).toBe('loaded');
+  vi.advanceTimersByTime(time.seconds(2));
+  await flush();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  stop();
   store.getState().reset();
 });
 

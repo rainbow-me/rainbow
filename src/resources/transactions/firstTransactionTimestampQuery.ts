@@ -29,19 +29,10 @@ export async function firstTransactionTimestampQueryFunction({
 }: QueryFunctionArgs<typeof firstTransactionTimestampQueryKey>) {
   if (!addressOrName) return null;
 
-  let address = addressOrName;
-  if (!isAddress(addressOrName)) {
-    const input = { addressOrName, chainId: ChainId.mainnet };
-    const ensAddresses = useEnsAddressStore.getState();
-    await ensAddresses.fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });
-    address = ensAddresses.get(input) ?? '';
-  }
-
-  let timestamp;
-  if (address) {
-    timestamp = await getFirstTransactionTimestamp(address);
-  }
-  return timestamp ?? null;
+  const address = isAddress(addressOrName)
+    ? addressOrName
+    : await useEnsAddressStore.getState().load({ addressOrName, chainId: ChainId.mainnet });
+  return address ? ((await getFirstTransactionTimestamp(address)) ?? null) : null;
 }
 
 export type FirstTransactionTimestampResult = QueryFunctionResult<typeof firstTransactionTimestampQueryFunction>;

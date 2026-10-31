@@ -55,7 +55,7 @@ it('resolves profile names and shares the result with imperative prefetchers', a
   await expect(useEnsAddressStore.getState().refresh({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
 
   const input = { addressOrName: 'alice.eth', chainId: ChainId.mainnet };
-  await useEnsAddressStore.getState().fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });
+  await useEnsAddressStore.getState().load(input);
   expect(useEnsAddressStore.getState().get(input)).toBe(ADDRESS);
 
   expect(fetchMock).toHaveBeenCalledTimes(1);
