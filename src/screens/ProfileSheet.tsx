@@ -8,8 +8,8 @@ import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
 import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
 import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
@@ -35,7 +35,8 @@ export function ProfileSheet() {
 
   const ensName = params?.address;
   const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }));
-  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
+  const avatar = useEnsImageStore(s => (ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
+  const isAvatarFetched = useEnsImageStore(s => (ensName ? s.hasSettled({ name: ensName, field: 'avatar' }) : false));
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
@@ -49,7 +50,7 @@ export function ProfileSheet() {
 
   const colorIndex = useMemo(() => (profileAddress ? addressHashedColorIndex(profileAddress) : 0), [profileAddress]);
 
-  const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
+  const dominantColor = usePersistentDominantColorFromImage(avatar);
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [contentHeight]);
 

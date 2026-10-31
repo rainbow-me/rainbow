@@ -19,11 +19,14 @@ query getCoinTypesByName($name: String!) {
 query getDomainsByAddress($address: ID!) {
   account(id: $address) {
     domains(orderBy: createdAt, orderDirection: desc) {
-      ...BaseEnsDomain
+      name
     }
     registrations(orderBy: registrationDate, orderDirection: desc) {
       domain {
-        ...BaseEnsDomain
+        name
+        owner {
+          id
+        }
       }
     }
   }

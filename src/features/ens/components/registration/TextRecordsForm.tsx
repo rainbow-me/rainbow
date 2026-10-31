@@ -6,9 +6,9 @@ import { isEmpty } from 'lodash';
 import { InlineField } from '@/components/inputs/InlineField';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import { ENS_RECORDS } from '../../utils/helpers';
 
 export function TextRecordsForm({
   autoFocusKey,

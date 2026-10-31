@@ -1,18 +1,17 @@
 import { useEffect, useMemo } from 'react';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { Records } from '../types/registration';
 import { REGISTRATION_MODES } from '../utils/helpers';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '../utils/records';
-import useENSAvatar from './useENSAvatar';
-import useENSCover from './useENSCover';
-import useENSRecords from './useENSRecords';
 import { useENSRegistration } from './useENSRegistration';
 
 const getImageUrl = (
@@ -68,18 +67,13 @@ export function useENSModifiedRegistration({
   });
 
   const fetchEnabled = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
-  const { data: avatar } = useENSAvatar(name, {
-    enabled: fetchEnabled,
-  });
-  const { data: cover } = useENSCover(name, {
-    enabled: fetchEnabled,
-  });
-  const { data: { coinAddresses: fetchedCoinAddresses, contenthash: fetchedContenthash, records: fetchedRecords } = {} } = useENSRecords(
-    name,
-    {
-      enabled: fetchEnabled,
-    }
-  );
+  const avatar = useEnsImageStore(s => (fetchEnabled && name ? s.get({ name, field: 'avatar' }) : undefined));
+  const cover = useEnsImageStore(s => (fetchEnabled && name ? s.get({ name, field: 'header' }) : undefined));
+  const {
+    coinAddresses: fetchedCoinAddresses,
+    contenthash: fetchedContenthash,
+    records: fetchedRecords,
+  } = useEnsRecordsStore(s => (fetchEnabled && name ? s.get({ name }) : undefined)) ?? {};
 
   const hasRecords = fetchedRecords !== undefined;
 
@@ -89,7 +83,7 @@ export function useENSModifiedRegistration({
         contenthash: fetchedContenthash,
         ...fetchedRecords,
         ...fetchedCoinAddresses,
-      } as Records;
+      };
       useEnsRegistrationStore.getState().initializeRecords(accountAddress, name, initialRecords);
     }
   }, [accountAddress, name, mode, fetchedCoinAddresses, fetchedRecords, hasRecords, setInitialRecordsWhenInEditMode, fetchedContenthash]);
@@ -98,18 +92,17 @@ export function useENSModifiedRegistration({
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
   const images = useMemo(() => {
-    const avatarUrl = getImageUrl('avatar', records, changedRecords, uniqueTokens, avatar?.imageUrl, mode);
-    const coverUrl = getImageUrl('header', records, changedRecords, uniqueTokens, cover?.imageUrl, mode);
+    const avatarUrl = getImageUrl('avatar', records, changedRecords, uniqueTokens, avatar, mode);
+    const coverUrl = getImageUrl('header', records, changedRecords, uniqueTokens, cover, mode);
 
     return {
       avatarUrl,
       coverUrl,
     };
-  }, [records, changedRecords, uniqueTokens, avatar?.imageUrl, mode, cover?.imageUrl]);
+  }, [records, changedRecords, uniqueTokens, avatar, mode, cover]);
 
   return {
     changedRecords,
     images,
-    hasRecords,
   };
 }

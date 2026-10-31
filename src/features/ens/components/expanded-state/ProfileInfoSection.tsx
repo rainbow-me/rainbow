@@ -4,11 +4,10 @@ import { partition } from 'lodash';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Stack } from '@/design-system';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/features/ens/core/records';
 
-import { deprecatedTextRecordFields } from '../../core/records';
 import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
-import { ENS_RECORDS } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
@@ -29,11 +28,11 @@ export function ProfileInfoSection({
   records,
 }: {
   allowEdit?: boolean;
-  coinAddresses?: { [key: string]: string };
+  coinAddresses?: Records;
   ensName?: string;
   images?: ENSImages;
   isLoading?: boolean;
-  records?: Partial<Records>;
+  records?: Records;
 }) {
   const recordsArray = useMemo(
     () =>

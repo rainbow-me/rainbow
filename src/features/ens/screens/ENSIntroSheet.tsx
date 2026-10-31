@@ -12,6 +12,8 @@ import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActi
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { abbreviateName } from '@/features/address/core/formatAddress';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -21,10 +23,9 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { IntroMarquee } from '../components/registration/IntroMarquee';
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import useENSAvatar from '../hooks/useENSAvatar';
-import useENSRecords from '../hooks/useENSRecords';
+import { useAccountENSDomains } from '../hooks/useAccountENSDomains';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
 enum AnotherENSEnum {
@@ -97,13 +98,13 @@ export function ENSIntroSheet() {
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
 
-  const { controlledDomains, isLoading, isFetched, nonPrimaryDomains, uniqueDomain } = useAccountENSDomains();
-  const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
-    enabled: Boolean(uniqueDomain?.name),
-  });
-  const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
-    enabled: Boolean(uniqueDomain?.name),
-  });
+  const accountAddress = useAccountAddress();
+  const { data: names, isFetched: hasSettled } = useAccountENSDomains(accountAddress);
+  const primaryName = useEnsNameStore(s => (accountAddress ? s.get(accountAddress) : undefined));
+  const ownsPrimaryName = !!primaryName && !!names?.includes(primaryName);
+  const suggestedName = ownsPrimaryName ? primaryName : names?.length === 1 ? names[0] : undefined;
+  const ensRecords = useEnsRecordsStore(s => (suggestedName ? s.get({ name: suggestedName }) : undefined));
+  const ensAvatar = useEnsImageStore(s => (suggestedName ? s.get({ name: suggestedName, field: 'avatar' }) : undefined));
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -116,13 +117,12 @@ export function ENSIntroSheet() {
     () =>
       ensRecords?.contenthash ||
       Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
-      ensAvatar?.imageUrl ||
+      ensAvatar ||
       Object.keys(ensRecords?.records || {}).length > 0,
-    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.contenthash, ensRecords?.records]
+    [ensAvatar, ensRecords?.coinAddresses, ensRecords?.contenthash, ensRecords?.records]
   );
 
   const { navigate } = useNavigation();
-  const accountAddress = useAccountAddress();
 
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();
@@ -143,11 +143,11 @@ export function ENSIntroSheet() {
     [navigate, params, accountAddress]
   );
 
-  const handleSelectUniqueDomain = useCallback(() => {
-    if (uniqueDomain?.name) {
-      navigateToAssignRecords(uniqueDomain?.name);
+  const handleSelectSuggestedName = useCallback(() => {
+    if (suggestedName) {
+      navigateToAssignRecords(suggestedName);
     }
-  }, [navigateToAssignRecords, uniqueDomain]);
+  }, [navigateToAssignRecords, suggestedName]);
 
   const handleSelectExistingName = useCallback(() => {
     navigate(Routes.SELECT_ENS_SHEET, {
@@ -208,14 +208,14 @@ export function ENSIntroSheet() {
             <Row height="content">
               <Box paddingBottom="4px">
                 <Inset bottom={{ custom: insets.bottom + 8 }} space="19px (Deprecated)">
-                  {isLoading && (
+                  {!!accountAddress && !hasSettled && (
                     <Box alignItems="center" paddingBottom="15px (Deprecated)">
                       <ActivityIndicator />
                     </Box>
                   )}
-                  {isFetched && (
+                  {hasSettled && (
                     <>
-                      {controlledDomains?.length === 0 ? (
+                      {names?.length === 0 ? (
                         <Inset bottom={Platform.OS === 'android' ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
@@ -229,14 +229,14 @@ export function ENSIntroSheet() {
                         </Inset>
                       ) : (
                         <Stack space="12px">
-                          {uniqueDomain?.name ? (
+                          {suggestedName ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               label={i18n.t(profileExists ? i18n.l.profiles.intro.edit_name : i18n.l.profiles.intro.use_name, {
-                                name: abbreviateName(uniqueDomain?.name, 15) as string,
+                                name: abbreviateName(suggestedName, 15) as string,
                               })}
                               lightShadows
-                              onPress={handleSelectUniqueDomain}
+                              onPress={handleSelectSuggestedName}
                               weight="heavy"
                             />
                           ) : (
@@ -248,7 +248,7 @@ export function ENSIntroSheet() {
                               weight="heavy"
                             />
                           )}
-                          {nonPrimaryDomains?.length > 0 ? (
+                          {(names?.length ?? 0) > (ownsPrimaryName ? 1 : 0) ? (
                             <ChooseAnotherNameButton
                               handleNavigateToSearch={handleNavigateToSearch}
                               handleSelectExistingName={handleSelectExistingName}

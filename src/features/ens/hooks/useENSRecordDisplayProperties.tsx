@@ -6,6 +6,7 @@ import URL from 'url-parse';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -14,7 +15,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
+import { REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {

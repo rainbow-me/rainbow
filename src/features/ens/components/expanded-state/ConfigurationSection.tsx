@@ -26,8 +26,8 @@ export function ConfigurationSection({
   externalAvatarUrl,
 }: {
   isLoading?: boolean;
-  owner?: { name?: string; address?: string };
-  registrant?: { name?: string; address?: string };
+  owner?: { name?: string | null; address: string } | null;
+  registrant?: { name?: string | null; address: string } | null;
   isExternal?: boolean;
   isOwner?: boolean;
   isPrimary?: boolean;

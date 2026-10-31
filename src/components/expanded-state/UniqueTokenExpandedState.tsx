@@ -35,9 +35,10 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInfoRow';
 import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
 import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
@@ -592,7 +593,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                                 coinAddresses={ensData?.coinAddresses}
                                 ensName={asset.name}
                                 images={ensData?.images}
-                                isLoading={ensProfile.isLoading}
+                                isLoading={!ensProfile.hasRecordsOutcome}
                                 records={ensData?.records}
                               />
                             </Section>
@@ -605,7 +606,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <ConfigurationSection
                               externalAvatarUrl={asset.images.lowResUrl}
                               isExternal={external}
-                              isLoading={ensProfile.isLoading}
+                              isLoading={!ensProfile.hasOwnershipOutcome}
                               isOwner={ensProfile?.isOwner}
                               isPrimary={ensProfile?.isPrimaryName}
                               isProfilesEnabled={profilesEnabled}

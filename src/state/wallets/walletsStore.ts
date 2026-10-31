@@ -6,8 +6,8 @@ import { getAddress, type Address } from 'viem';
 
 import { normalizeAddress } from '@/features/address/core/address';
 import { parseTimestampFromBackupFile } from '@/features/backup/backupFile';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
-import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import * as kc from '@/features/local-auth/keychain';
 import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
 import {
@@ -659,8 +659,10 @@ async function refreshAccountInfo(
       let newImage = account.image;
 
       if (shouldFetchAvatar) {
-        const avatar = await fetchENSAvatarWithRetry(ens);
-        newImage = avatar?.imageUrl || null;
+        newImage = await useEnsImageStore
+          .getState()
+          .refresh({ name: ens, field: 'avatar' })
+          .catch(() => account.image ?? null);
       }
 
       return {

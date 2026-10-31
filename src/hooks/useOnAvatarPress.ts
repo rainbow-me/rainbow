@@ -8,10 +8,9 @@ import { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import useENSAvatar, { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
-import useENSOwner from '@/features/ens/hooks/useENSOwner';
-import { prefetchENSRecords } from '@/features/ens/hooks/useENSRecords';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsOwnerStore } from '@/features/ens/data/stores/ownershipStores';
+import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
@@ -41,14 +40,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const profileEnabled = Boolean(accountENS);
 
-  const { isOwner } = useENSOwner(accountENS || '', {
-    enabled: !!accountENS && profileEnabled && profilesEnabled,
-  });
+  const owner = useEnsOwnerStore(s => (accountENS && profilesEnabled ? s.get(accountENS) : undefined));
+  const isOwner = owner?.toLowerCase() === accountAddress.toLowerCase();
 
-  const { data: avatar } = useENSAvatar(accountENS || '', {
-    enabled: !!accountENS && profileEnabled && profilesEnabled,
-  });
-  const hasENSAvatar = Boolean(avatar?.imageUrl);
+  const avatar = useEnsImageStore(s => (accountENS && profilesEnabled ? s.get({ name: accountENS, field: 'avatar' }) : undefined));
+  const hasENSAvatar = Boolean(avatar);
 
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
@@ -258,9 +254,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const onAvatarPress = useCallback(() => {
     if (accountENS) {
-      prefetchENSAvatar(accountENS);
-      prefetchENSCover(accountENS);
-      prefetchENSRecords(accountENS);
+      void Promise.allSettled([
+        useEnsImageStore.getState().load({ name: accountENS, field: 'avatar' }),
+        useEnsImageStore.getState().load({ name: accountENS, field: 'header' }),
+        useEnsRecordsStore.getState().load({ name: accountENS }),
+      ]);
     }
 
     if (hasENSAvatar && accountENS) {

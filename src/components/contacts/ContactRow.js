@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { getAddress } from 'viem';
@@ -6,9 +6,8 @@ import { getAddress } from 'viem';
 import { opacity } from '@/design-system/utils/opacity';
 import { getNameService } from '@/features/address/core/address';
 import { abbreviateAddress } from '@/features/address/core/formatAddress';
-import { resolveEnsName } from '@/features/ens/data/ens';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import styled from '@/framework/ui/styled-thing';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
@@ -81,28 +80,14 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const initialENSName =
     typeof ens === 'string' ? ens : accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : '';
 
-  const [ensName, setENSName] = useState(initialENSName);
-
-  const { data: ensAvatar } = useENSAvatar(ensName, {
-    enabled: Boolean(ensName),
-  });
+  const resolvedName = useEnsNameStore(s => (accountType === 'contacts' ? s.get(getAddress(address)) : undefined));
+  const ensName = resolvedName === undefined ? initialENSName : (resolvedName ?? '');
+  const ensAvatar = useEnsImageStore(s => (ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
 
   useEffect(() => {
-    if (accountType === 'contacts') {
-      const fetchENSName = async () => {
-        try {
-          const name = (await resolveEnsName(getAddress(address), ChainId.mainnet)) ?? '';
-          if (name !== ensName) {
-            setENSName(name);
-            onAddOrUpdateContacts(address, nickname === ensName ? name : nickname, color, name);
-          }
-        } catch {
-          // Keep the saved name and label when the lookup fails.
-        }
-      };
-      fetchENSName();
-    }
-  }, [accountType, onAddOrUpdateContacts, address, color, ensName, nickname, setENSName]);
+    if (resolvedName === undefined || ensName === initialENSName) return;
+    onAddOrUpdateContacts(address, nickname === initialENSName ? ensName : nickname, color, ensName);
+  }, [resolvedName, ensName, initialENSName, onAddOrUpdateContacts, address, nickname, color]);
 
   let cleanedUpLabel = null;
   if (label) {
@@ -118,7 +103,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     }
   }, [accountType, address, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = ensAvatar?.imageUrl ?? image;
+  const imageAvatar = ensAvatar ?? image;
 
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [address]);
   const emojiAvatar = avatar || emoji || nickname || label;

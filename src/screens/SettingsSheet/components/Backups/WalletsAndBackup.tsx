@@ -17,7 +17,7 @@ import { abbreviateAddress, abbreviateName } from '@/features/address/core/forma
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { type RainbowAccount } from '@/features/wallet/types';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -59,7 +59,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
   const accountImage = account.emoji || addressHashedEmoji(account.address);
 
-  const { data: ENSAvatar } = useENSAvatar(label);
+  const ENSAvatar = useEnsImageStore(s => (label ? s.get({ name: label, field: 'avatar' }) : undefined));
 
   return (
     <Box
@@ -72,8 +72,8 @@ const WalletPill = ({ account }: WalletPillProps) => {
       paddingRight={{ custom: 8 }}
       padding={{ custom: 4 }}
     >
-      {ENSAvatar?.imageUrl ? (
-        <ImageAvatar image={ENSAvatar.imageUrl} marginRight={6} size="smaller_shadowless" />
+      {ENSAvatar ? (
+        <ImageAvatar image={ENSAvatar} marginRight={6} size="smaller_shadowless" />
       ) : (
         <ContactAvatar alignSelf="center" color={account.color} marginRight={6} size="smaller" value={accountImage} />
       )}

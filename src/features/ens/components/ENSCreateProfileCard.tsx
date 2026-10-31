@@ -8,6 +8,8 @@ import { ORB_SIZE } from '@/components/cards/reusables/IconOrb';
 import ImgixImage from '@/components/images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
@@ -18,8 +20,6 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ENSAvatarGrid from '../assets/ensAvatarGrid.png';
 import ENSIcon from '../assets/ensIcon.png';
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import { prefetchENSAvatar } from '../hooks/useENSAvatar';
-import { prefetchENSRecords } from '../hooks/useENSRecords';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
@@ -44,8 +44,14 @@ export const ENSCreateProfileCard = () => {
   const handlePress = useCallback(() => {
     if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       if (uniqueDomain?.name) {
-        prefetchENSAvatar(uniqueDomain.name);
-        prefetchENSRecords(uniqueDomain.name);
+        void useEnsImageStore
+          .getState()
+          .load({ name: uniqueDomain.name, field: 'avatar' })
+          .catch(() => undefined);
+        useEnsRecordsStore
+          .getState()
+          .load({ name: uniqueDomain.name })
+          .catch(() => undefined);
       }
 
       analytics.track(analytics.event.cardPressed, {

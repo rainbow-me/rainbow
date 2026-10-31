@@ -20,8 +20,7 @@ import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
-import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistrationActionHandler } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
@@ -463,7 +462,7 @@ export function SendSheet() {
       canUseSponsoredSend,
       hasResolvedSponsoredSend,
       isENS,
-      isENSProfileLoaded: ensProfile.isSuccess,
+      isENSProfileLoaded: ensProfile.hasTransferData,
       isGasFeeReady,
       isPreparingSponsoredSend,
       isSponsoredSend,
@@ -482,7 +481,7 @@ export function SendSheet() {
     canUseSponsoredSend,
     debouncedAssetAmount,
     isENS,
-    ensProfile.isSuccess,
+    ensProfile.hasTransferData,
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
@@ -573,8 +572,10 @@ export function SendSheet() {
       setRecipient(text);
       setNickname(text);
       if (profilesEnabled && getNameService(text) === 'ens') {
-        prefetchENSAvatar(text);
-        prefetchENSCover(text);
+        void Promise.allSettled([
+          useEnsImageStore.getState().load({ name: text, field: 'avatar' }),
+          useEnsImageStore.getState().load({ name: text, field: 'header' }),
+        ]);
       }
     },
     [profilesEnabled]

@@ -2,9 +2,10 @@ import { useCallback, useEffect } from 'react';
 
 import { atom, useRecoilState } from 'recoil';
 
-import { deprecatedTextRecordFields } from '../core/records';
+import { deprecatedTextRecordFields, type ENS_RECORDS } from '@/features/ens/core/records';
+
 import type { Records } from '../types/registration';
-import { REGISTRATION_MODES, textRecordFields, type ENS_RECORDS, type TextRecordField } from '../utils/helpers';
+import { REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { useENSModifiedRegistration } from './useENSModifiedRegistration';
 import { useENSRegistration } from './useENSRegistration';
 

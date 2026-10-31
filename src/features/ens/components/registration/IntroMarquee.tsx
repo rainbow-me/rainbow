@@ -9,10 +9,8 @@ import { MarqueeList } from '@/framework/ui/components/MarqueeList';
 import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { queryClient } from '@/react-query';
 
-import type useENSRecords from '../../hooks/useENSRecords';
-import { ensRecordsQueryKey } from '../../hooks/useENSRecords';
+import { useEnsRecordsStore } from '../../data/stores/recordsStore';
 import ensIntroMarqueeNames from '../../references/ens-intro-marquee-names.json';
 import { useEnsMarquee } from '../../resources/marqueeQuery';
 
@@ -45,7 +43,7 @@ export function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      const data = queryClient.getQueryData<ReturnType<typeof useENSRecords>['data']>(ensRecordsQueryKey({ name: ensName }));
+      const data = useEnsRecordsStore.getState().get({ name: ensName });
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,

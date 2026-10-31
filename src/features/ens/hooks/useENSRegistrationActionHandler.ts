@@ -5,7 +5,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type ImagePickerAsset } from 'expo-image-picker';
 import { noop } from 'lodash';
 import { useRecoilValue } from 'recoil';
-import { type Hex } from 'viem';
+import { getAddress } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -21,16 +21,13 @@ import timeUnits from '@/references/time-units.json';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import labelhash from '@/utils/labelhash';
 
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/registration/RegistrationCover';
 import { executeENSRap } from '../raps/actions';
 import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
 import { type Records, type RegistrationParameters } from '../types/registration';
-import { fetchResolver } from '../utils/handlers';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
-import { saveNameFromLabelhash } from '../utils/localStorage';
 import { useENSRegistration } from './useENSRegistration';
 
 // Generic type for action functions
@@ -151,9 +148,6 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
       ]);
-
-      const hash = labelhash(registrationParameters.name.replace(ENS_DOMAIN, ''));
-      await saveNameFromLabelhash(hash, registrationParameters.name);
 
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -311,15 +305,17 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
           avatar: avatarMetadata,
           header: coverMetadata,
         }),
-        fetchResolver(registrationParameters.name),
+        getProvider({ chainId: ChainId.mainnet }).getResolver(registrationParameters.name),
       ]);
+
+      if (!resolver) throw new Error('ENS name has no resolver');
 
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
         records: uploadedRecords,
-        resolverAddress: resolver?.address as Hex,
+        resolverAddress: getAddress(resolver.address),
         setReverseRecord: sendReverseRecord,
       };
 

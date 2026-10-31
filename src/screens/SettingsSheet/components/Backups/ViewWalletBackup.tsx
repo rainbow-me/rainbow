@@ -21,7 +21,7 @@ import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { createAccountInExistingWallet } from '@/features/wallet/data/createAccountInExistingWallet';
 import { type RainbowAccount } from '@/features/wallet/types';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -69,11 +69,11 @@ type WalletAvatarProps = {
 const WalletAvatar = ({ account }: WalletAvatarProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
 
-  const { data: ENSAvatar } = useENSAvatar(label);
+  const ENSAvatar = useEnsImageStore(s => (label ? s.get({ name: label, field: 'avatar' }) : undefined));
   const accountImage = account.emoji || addressHashedEmoji(account.address);
 
-  return ENSAvatar?.imageUrl ? (
-    <ImageAvatar image={ENSAvatar.imageUrl} marginRight={12} size="rewards" />
+  return ENSAvatar ? (
+    <ImageAvatar image={ENSAvatar} marginRight={12} size="rewards" />
   ) : (
     <ContactAvatar alignSelf="center" color={account.color} marginRight={8} size="small" value={accountImage} />
   );

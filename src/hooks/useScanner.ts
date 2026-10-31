@@ -6,10 +6,11 @@ import { isValidAddress } from 'ethereumjs-util';
 import qs from 'qs';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
+import { getAddress } from 'viem';
 
 import { analytics } from '@/analytics';
 import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
 import * as i18n from '@/languages';
@@ -54,7 +55,10 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
     async (address: string) => {
       triggerHaptics('notificationSuccess');
       analytics.track(analytics.event.qrCodeScannedAddress);
-      const ensName = await fetchReverseRecord(address);
+      const ensName = await useEnsNameStore
+        .getState()
+        .load(getAddress(address))
+        .catch(() => null);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
@@ -80,7 +84,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
       const isValid = await isValidAddressOrDomain(addressOrENS);
       if (isValid) {
-        const ensName = isValidAddress(addressOrENS) ? await fetchReverseRecord(addressOrENS) : addressOrENS;
+        const ensName = isValidAddress(addressOrENS)
+          ? await useEnsNameStore
+              .getState()
+              .load(getAddress(addressOrENS))
+              .catch(() => null)
+          : addressOrENS;
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { useQueries } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
+import { getAddress } from 'viem';
 
 import useGas from '@/features/gas/hooks/useGas';
 import gasUtils from '@/features/gas/utils/gas';
@@ -15,13 +16,13 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
+import { useEnsNameStore } from '../data/useEnsNameStore';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
   estimateENSRenewGasLimit,
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
-  fetchReverseRecord,
 } from '../utils/handlers';
 import {
   ENS_DOMAIN,
@@ -174,7 +175,7 @@ export default function useENSRegistrationCosts({
   }, [registrationParameters?.name, duration]);
 
   const getReverseRecord = useCallback(async () => {
-    const reverseRecord = await fetchReverseRecord(accountAddress);
+    const reverseRecord = await useEnsNameStore.getState().load(getAddress(accountAddress));
     return Boolean(reverseRecord);
   }, [accountAddress]);
 

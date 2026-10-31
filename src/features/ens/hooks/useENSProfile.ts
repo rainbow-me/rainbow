@@ -1,104 +1,46 @@
-import { useQuery } from '@tanstack/react-query';
+import { getAddress } from 'viem';
 
-import { queryClient, type QueryConfigDeprecated, type UseQueryData } from '@/react-query';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 
-import { getENSProfile, saveENSProfile } from '../utils/localStorage';
-import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
-import { ensCoverQueryKey, fetchENSCover } from './useENSCover';
-import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
-import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
-import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
-import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
-
-const queryKey = (name: string, { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}) => [
-  'ens-profile',
-  name,
-  { supportedRecordsOnly },
-];
-
-const STALE_TIME = 10000;
-
-async function fetchENSProfile(name: string, { supportedRecordsOnly = true }: { supportedRecordsOnly?: boolean } = {}) {
-  const cachedProfile = await getENSProfile(name);
-  if (cachedProfile) {
-    queryClient.setQueryData(queryKey(name, { supportedRecordsOnly }), cachedProfile);
-  }
-
-  const [avatar, header, owner, { coinAddresses, contenthash, records }, { registration, registrant }, resolver] = await Promise.all([
-    queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
-    queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
-    queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
-    queryClient.fetchQuery(ensRecordsQueryKey({ name, supportedOnly: supportedRecordsOnly }), () =>
-      fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })
-    ),
-    queryClient.fetchQuery(ensRegistrantQueryKey(name), () => fetchENSRegistrant(name)),
-    queryClient.fetchQuery(ensResolverQueryKey(name), () => fetchENSResolver(name)),
-  ]);
-
-  const profile = {
-    address: coinAddresses.ETH ?? null,
-    coinAddresses,
-    contenthash,
-    images: {
-      avatar,
-      header,
-    },
-    owner,
-    records,
-    registrant,
-    registration,
-    resolver,
-  };
-  saveENSProfile(name, profile);
-  return profile;
-}
+import { useEnsImageStore } from '../data/stores/imageStore';
+import { useEnsOwnerStore, useEnsRegistrationMetadataStore } from '../data/stores/ownershipStores';
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
+import { useEnsNameStore } from '../data/useEnsNameStore';
 
 /**
- * @description Hook to fetch a whole ENS profile.
- *
- * WARNING: This will invoke several requests to the RPC. You may
- * be better off using the individual hooks (e.g. `useENSAvatar`, `useENSRecords`, etc)
- * if you do not need everything.
+ * Combines independently cached profile fields with the active wallet's permissions.
  */
-export default function useENSProfile(
-  name: string,
-  {
-    supportedRecordsOnly = true,
-    ...config
-  }: QueryConfigDeprecated<typeof fetchENSProfile> & {
-    supportedRecordsOnly?: boolean;
-  } = {}
-) {
+export default function useENSProfile(name: string, { enabled = true, supportedRecordsOnly = true } = {}) {
   const accountAddress = useAccountAddress();
-  const walletNames = useWalletsStore(state => state.walletNames);
-  const { data, isLoading, isSuccess } = useQuery<UseQueryData<typeof fetchENSProfile>>(
-    queryKey(name, { supportedRecordsOnly }),
-    async () => fetchENSProfile(name, { supportedRecordsOnly }),
-    {
-      ...config,
-      // Data will be stale for 10s to avoid dupe queries
-      staleTime: STALE_TIME,
-    }
-  );
-
-  const isOwner = data?.owner?.address?.toLowerCase() === accountAddress?.toLowerCase();
-  const isRegistrant = data?.registrant?.address?.toLowerCase() === accountAddress?.toLowerCase();
-
-  // if a ENS NFT is sent, the ETH coinAddress record doesn't change
-  // if the user tries to use it to set primary name the tx will go through
-  // but the name won't be set. Disabling it to avoid these cases
-  const isSetNameEnabled = data?.coinAddresses?.ETH?.toLowerCase() === accountAddress?.toLowerCase();
-
-  const isPrimaryName = walletNames?.[accountAddress]?.toLowerCase() === name?.toLowerCase();
+  const primaryName = useWalletsStore(s => s.walletNames[accountAddress]);
+  const active = enabled && !!name;
+  const records = useEnsRecordsStore(s => (active ? s.get({ name, supportedOnly: supportedRecordsOnly }) : undefined));
+  const hasRecordsOutcome = useEnsRecordsStore(s => active && s.hasSettled({ name, supportedOnly: supportedRecordsOnly }));
+  const hasOwnerOutcome = useEnsOwnerStore(s => active && s.hasSettled(name));
+  const hasRegistrationOutcome = useEnsRegistrationMetadataStore(s => active && s.hasSettled(name));
+  const ownerAddress = useEnsOwnerStore(s => (active ? s.get(name) : undefined));
+  const registration = useEnsRegistrationMetadataStore(s => (active ? s.get(name) : undefined));
+  const avatar = useEnsImageStore(s => (active ? s.get({ name, field: 'avatar' }) : undefined));
+  const header = useEnsImageStore(s => (active ? s.get({ name, field: 'header' }) : undefined));
+  const registrantAddress = registration?.registrant?.id;
+  const ownerName = useEnsNameStore(s => (ownerAddress ? s.get(ownerAddress) : undefined));
+  const registrantName = useEnsNameStore(s => (registrantAddress ? s.get(getAddress(registrantAddress)) : undefined));
 
   return {
-    data,
-    isLoading,
-    isOwner,
-    isPrimaryName,
-    isRegistrant,
-    isSetNameEnabled,
-    isSuccess,
+    data: {
+      ...records,
+      address: records?.coinAddresses.ETH,
+      images: { avatar: { imageUrl: avatar }, header: { imageUrl: header } },
+      owner: ownerAddress && { address: ownerAddress, name: ownerName },
+      registrant: registration === undefined ? undefined : registrantAddress ? { address: registrantAddress, name: registrantName } : null,
+      registration,
+    },
+    hasTransferData: records !== undefined && ownerAddress !== undefined && registration !== undefined,
+    hasRecordsOutcome,
+    hasOwnershipOutcome: hasOwnerOutcome && hasRegistrationOutcome,
+    isOwner: !!ownerAddress && ownerAddress.toLowerCase() === accountAddress.toLowerCase(),
+    isRegistrant: !!registrantAddress && registrantAddress.toLowerCase() === accountAddress.toLowerCase(),
+    isSetNameEnabled: records?.coinAddresses.ETH?.toLowerCase() === accountAddress.toLowerCase(),
+    isPrimaryName: primaryName?.toLowerCase() === name.toLowerCase(),
   };
 }

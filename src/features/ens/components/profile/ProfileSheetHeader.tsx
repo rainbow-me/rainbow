@@ -8,6 +8,8 @@ import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { ENS_RECORDS } from '@/features/ens/core/records';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -16,12 +18,9 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
+import { useEnsRecordsStore } from '../../data/stores/recordsStore';
 import { useEnsAddressStore } from '../../data/useEnsAddressStore';
-import useENSAvatar from '../../hooks/useENSAvatar';
-import useENSCover from '../../hooks/useENSCover';
-import useENSRecords from '../../hooks/useENSRecords';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { ENS_RECORDS } from '../../utils/helpers';
 import { ActionButtons } from './ActionButtons/ActionButtons';
 import { ProfileAvatar } from './ProfileAvatar';
 import { ProfileCover } from './ProfileCover';
@@ -47,16 +46,12 @@ export function ProfileSheetHeader({
   const profileAddress = useEnsAddressStore(s =>
     profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined
   );
-  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(ensName, {
-    enabled: profilesEnabled,
-  });
-  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
-    enabled: profilesEnabled,
-  });
-  const { data: cover, isFetched: isCoverFetched } = useENSCover(ensName, {
-    enabled: profilesEnabled,
-  });
-  const isImagesFetched = isAvatarFetched && isCoverFetched;
+  const { coinAddresses, contenthash, records } =
+    useEnsRecordsStore(s => (profilesEnabled && ensName ? s.get({ name: ensName }) : undefined)) ?? {};
+  const avatar = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
+  const isAvatarFetched = useEnsImageStore(s => (profilesEnabled && ensName ? s.hasSettled({ name: ensName, field: 'avatar' }) : false));
+  const cover = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'header' }) : undefined));
+  const isCoverFetched = useEnsImageStore(s => (profilesEnabled && ensName ? s.hasSettled({ name: ensName, field: 'header' }) : false));
 
   const {
     data: { nfts: uniqueTokens },
@@ -64,7 +59,7 @@ export function ProfileSheetHeader({
     address: profileAddress ?? '',
   });
 
-  const avatarUrl = avatar?.imageUrl;
+  const avatarUrl = avatar;
   const { onPress: onPressAvatar } = useOpenENSNFTHandler({
     uniqueTokens,
     value: records?.avatar,
@@ -86,12 +81,7 @@ export function ProfileSheetHeader({
   return (
     <Box background="body (Deprecated)" {...(Platform.OS === 'ios' && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
       <Stack space={{ custom: 18 }}>
-        <ProfileCover
-          coverUrl={cover?.imageUrl}
-          enableZoomOnPress={enableZoomOnPressCover}
-          handleOnPress={onPressCover}
-          isFetched={isImagesFetched}
-        />
+        <ProfileCover coverUrl={cover} enableZoomOnPress={enableZoomOnPressCover} handleOnPress={onPressCover} isFetched={isCoverFetched} />
         <Bleed top={{ custom: 38 }}>
           <Inset left="19px (Deprecated)" right="15px (Deprecated)" top={{ custom: 1 }}>
             <Columns>
@@ -101,7 +91,7 @@ export function ProfileSheetHeader({
                   avatarUrl={avatarUrl}
                   enableZoomOnPress={enableZoomOnPressAvatar}
                   handleOnPress={onPressAvatar}
-                  isFetched={isImagesFetched}
+                  isFetched={isAvatarFetched}
                 />
               </Column>
               {!isLoading && (

@@ -14,6 +14,7 @@ import { TintButton } from '@/components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { abbreviateName } from '@/features/address/core/formatAddress';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -31,16 +32,16 @@ import RegistrationAvatar from '../components/registration/RegistrationAvatar';
 import RegistrationCover from '../components/registration/RegistrationCover';
 import { SelectableButton } from '../components/registration/SelectableButton';
 import { TextRecordsForm } from '../components/registration/TextRecordsForm';
+import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../data/profilePreferences';
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
-import useENSRecords from '../hooks/useENSRecords';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { type ENSRoutes } from '../navigation/RegisterENSNavigator';
-import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
-import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../utils/localStorage';
+import { accentColorAtom, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
 const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
@@ -79,7 +80,7 @@ export function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const { data: { records } = {} } = useENSRecords(name);
+  const records = useEnsRecordsStore(s => (name ? s.get({ name })?.records : undefined));
   const isEmptyProfile = isEmpty(records);
 
   const displayTitleLabel = params?.mode !== REGISTRATION_MODES.EDIT || !isLoading;
@@ -217,7 +218,7 @@ export function ENSAssignRecordsBottomActions({
   const insets = useSafeAreaInsets();
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const { disabled, errors, isEmpty: isEmptyForm, selectedFields, toggleField, submit, values } = useENSRegistrationForm();
-  const { hasRecords } = useENSModifiedRegistration();
+  const hasRecords = useEnsRecordsStore(s => mode === REGISTRATION_MODES.EDIT && !!name && s.get({ name }) !== undefined);
   const handlePressBack = useCallback(() => {
     delayNext();
     if (fromRoute) {

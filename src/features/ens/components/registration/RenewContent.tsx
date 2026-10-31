@@ -6,7 +6,7 @@ import { Inset, Separator, Stack } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import timeUnits from '@/references/time-units.json';
 
-import useENSRegistrant from '../../hooks/useENSRegistrant';
+import { useEnsRegistrationMetadataStore } from '../../data/stores/ownershipStores';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '../../utils/helpers';
 import { RegistrationReviewRows } from './RegistrationReviewRows';
 
@@ -23,7 +23,7 @@ export const RenewContent = ({
 }) => {
   const { isSmallPhone } = useDimensions();
 
-  const { data: { registration } = {} } = useENSRegistrant(name + ENS_DOMAIN);
+  const registration = useEnsRegistrationMetadataStore(s => s.get(name + ENS_DOMAIN));
   const expiryDate = registration?.expiryDate || 0;
 
   const newExpiryDateFormatted = format(new Date(Number(expiryDate * 1000) + yearsDuration * timeUnits.secs.year * 1000), 'MMM d, yyyy');

@@ -11,6 +11,7 @@ import { AvatarCoverPhotoMaskSvg } from '@/components/svg/AvatarCoverPhotoMaskSv
 import { AccentColorProvider, BackgroundProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_TEST } from '@/env';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import { type UploadImageReturnData } from '@/handlers/pinata';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
@@ -18,7 +19,6 @@ import magicMemo from '@/utils/magicMemo';
 import { useENSModifiedRegistration } from '../../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import { ENS_RECORDS } from '../../utils/helpers';
 import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({

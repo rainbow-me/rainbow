@@ -4,11 +4,12 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { getProvider } from '@/handlers/web3';
 
-import { readEnsText, resolveEnsAddress } from '../data/ens';
-import { fetchENSImage } from './fetchENSImage';
+import { readEnsRecords, readEnsText, resolveEnsAddress } from '../ens';
+import { useEnsImageStore } from './imageStore';
+import { useEnsRecordsStore } from './recordsStore';
 
-const { cache } = vi.hoisted(() => ({ cache: new Map<string, unknown>() }));
-vi.mock('../data/ens', () => ({ readEnsText: vi.fn(), resolveEnsAddress: vi.fn() }));
+vi.mock('../ens', () => ({ readEnsRecords: vi.fn(), readEnsText: vi.fn(), resolveEnsAddress: vi.fn() }));
+vi.mock('@/graphql', () => ({ ensClient: {} }));
 vi.mock('@/components/images', () => ({ ImgixImage: { preload: () => undefined } }));
 vi.mock('@/handlers/web3', async () => {
   const { StaticJsonRpcProvider } = await import('@ethersproject/providers');
@@ -16,16 +17,11 @@ vi.mock('@/handlers/web3', async () => {
   return { getProvider: () => provider };
 });
 vi.mock('@/handlers/svgs', () => ({ default: (uri: string) => uri.replace('.svg', '.png') }));
-vi.mock('./localStorage', () => ({
-  getENSData: async (type: string, name: string) => cache.get(`${type}:${name}`),
-  saveENSData: (type: string, name: string, value: unknown) => cache.set(`${type}:${name}`, value),
-}));
 
 const ADDRESS = '0x2222222222222222222222222222222222222222';
 const IMAGE = 'https://example.com/avatar.png';
 beforeEach(() => {
   vi.restoreAllMocks();
-  cache.clear();
   vi.mocked(resolveEnsAddress).mockResolvedValue(ADDRESS);
   vi.mocked(readEnsText).mockReset().mockResolvedValue(IMAGE);
   vi.spyOn(getProvider({ chainId: ChainId.mainnet }), 'call').mockRejectedValue(new Error('Unexpected contract read'));
@@ -43,16 +39,34 @@ it('converts an NFT avatar owned by another address and reads the header indepen
     key === 'avatar' ? `eip155:1/erc721:${ADDRESS}/42` : 'https://example.com/header.png'
   );
 
-  await expect(fetchENSImage('avatar', 'alice.eth')).resolves.toEqual({ imageUrl: IMAGE });
-  await expect(fetchENSImage('header', 'alice.eth')).resolves.toEqual({ imageUrl: 'https://example.com/header.png' });
+  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).resolves.toBe(IMAGE);
+  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'header' })).resolves.toBe('https://example.com/header.png');
 });
 
 it('retains an image on lookup failure but clears it when the record is removed', async () => {
-  await fetchENSImage('avatar', 'alice.eth');
+  await useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' });
   vi.mocked(readEnsText).mockRejectedValueOnce(new Error('Gateway unavailable'));
-  await expect(fetchENSImage('avatar', 'alice.eth')).resolves.toEqual({ imageUrl: IMAGE });
+  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).rejects.toThrow('Gateway unavailable');
+  expect(useEnsImageStore.getState().get({ name: 'alice.eth', field: 'avatar' })).toBe(IMAGE);
   vi.mocked(readEnsText).mockResolvedValueOnce(null);
-  await expect(fetchENSImage('avatar', 'alice.eth')).resolves.toEqual({ imageUrl: null });
+  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).resolves.toBeNull();
   vi.mocked(readEnsText).mockRejectedValueOnce(new Error('Gateway unavailable'));
-  await expect(fetchENSImage('avatar', 'alice.eth')).resolves.toEqual({ imageUrl: null });
+  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).rejects.toThrow('Gateway unavailable');
+  expect(useEnsImageStore.getState().get({ name: 'alice.eth', field: 'avatar' })).toBeNull();
+});
+
+it('makes the record baseline available while image processing is pending', async () => {
+  const pending = Promise.withResolvers<string | null>();
+  vi.mocked(readEnsText).mockReturnValue(pending.promise);
+  vi.mocked(readEnsRecords).mockImplementation(async (_name, keys) => ({
+    texts: Object.fromEntries(keys.texts.map(key => [key, key === 'avatar' ? 'raw avatar record' : null])),
+    coins: Object.fromEntries(keys.coins.map(key => [key, null])),
+    contentHash: null,
+  }));
+  const image = useEnsImageStore.getState().refresh({ name: 'baseline.eth', field: 'avatar' });
+  const records = await useEnsRecordsStore.getState().load({ name: 'baseline.eth' });
+  expect(records?.records).toEqual({ avatar: 'raw avatar record' });
+  expect(useEnsImageStore.getState().hasSettled({ name: 'baseline.eth', field: 'avatar' })).toBe(false);
+  pending.resolve(null);
+  await expect(image).resolves.toBeNull();
 });

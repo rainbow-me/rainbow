@@ -8,6 +8,7 @@ import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
 import { Column, Columns, Inset } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -15,7 +16,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import useENSAvatar from '../hooks/useENSAvatar';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
@@ -38,7 +38,7 @@ export function ENSBriefTokenInfoRow({
   const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { data: avatar } = useENSAvatar(ensName, { enabled: profilesEnabled });
+  const avatar = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
@@ -51,11 +51,11 @@ export function ENSBriefTokenInfoRow({
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
         externalAvatarUrl,
-        longFormHeight: ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
+        longFormHeight: ENSConfirmRenewSheetHeight + (avatar ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [ensName, accountAddress, navigate, externalAvatarUrl, avatar?.imageUrl]);
+  }, [ensName, accountAddress, navigate, externalAvatarUrl, avatar]);
 
   return (
     <Columns space="10px">

@@ -8,13 +8,12 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Icon } from '@/components/icons';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/features/ens/core/records';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { deprecatedTextRecordFields } from '../../core/records';
 import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
-import { ENS_RECORDS } from '../../utils/helpers';
 
 const getRecordType = (recordKey: string) => {
   switch (recordKey) {
