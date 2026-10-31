@@ -3,6 +3,7 @@ import contentHash from '@ensdomains/content-hash';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { ETHEREUM_COIN_TYPE, readEnsRecords, type EnsRecordKeys } from '@/features/ens/data/ens';
+import { time } from '@/framework/core/utils/time';
 import { ensClient } from '@/graphql';
 import { queryClient, type QueryConfigDeprecated } from '@/react-query';
 
@@ -20,7 +21,7 @@ type ProfileRecords = {
 
 // ============ Constants ====================================================== //
 
-const STALE_TIME = 10000;
+const STALE_TIME = time.seconds(10);
 const PROFILE_RECORDS = getProfileRecordKeys();
 const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
   'ipfs-ns': 'ipfs',
