@@ -289,6 +289,7 @@
     "moti": "0.28",
     "multiformats": "9.6.2",
     "nanoid": "3.2.0",
+    "ox": "0.14.33",
     "p-wait-for": "4.1.0",
     "pako": "2.0.4",
     "parse-ms": "2.1.0",

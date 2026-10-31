@@ -7,6 +7,7 @@ import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
@@ -15,11 +16,11 @@ import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTran
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
+import { useEnsAddressStore } from '../../data/useEnsAddressStore';
 import useENSAvatar from '../../hooks/useENSAvatar';
 import useENSCover from '../../hooks/useENSCover';
 import useENSRecords from '../../hooks/useENSRecords';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { useENSAddress } from '../../resources/addressQuery';
 import { ENS_RECORDS } from '../../utils/helpers';
 import { ActionButtons } from './ActionButtons/ActionButtons';
 import { ProfileAvatar } from './ProfileAvatar';
@@ -43,11 +44,8 @@ export function ProfileSheetHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
 
-  const { data: profileAddress } = useENSAddress(
-    { name: ensName },
-    {
-      enabled: profilesEnabled,
-    }
+  const profileAddress = useEnsAddressStore(s =>
+    profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined
   );
   const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(ensName, {
     enabled: profilesEnabled,
