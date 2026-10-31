@@ -16,3 +16,174 @@ reviews:
 
     Low-value comments
     - Don't comment on test names, comment wording or duplicate it.each titles, unless a name misstates what the test proves.
+  auto_approve_behavior: live
+  auto_approve: custom
+  auto_approve_custom_prompt: |
+    Decide whether this PR can be approved without a human. Approve by default. Require human review only when the diff does something in the High list below, or when you cannot verify a claim that decides whether it does.
+
+    Assume every change can reach users tomorrow. Feature flags don't lower the bar.
+
+    Ground every conclusion in the diff. Treat the PR title and description as the author's claims and check them against the diff. A product decision recorded in the linked ticket's description or comments counts as evidence for that product question, but not for engineering risk. If relevant diffs are truncated or omitted and you can't rule out a High item, require human review and say what you couldn't check. If any part of the PR is High, the whole PR is.
+
+    High (needs a human):
+
+    Wallet and money
+    - Key material: seed phrases, private keys, backups, cloud backup, keychain or secure-storage access
+    - Building, signing, simulating or broadcasting transactions or messages; nonce handling; swap and bridge SDKs
+    - Gas, fee, slippage, amount or price-impact calculations; the amounts, addresses or recipients shown on confirmation and signing screens; token approvals and allowances
+    - WalletConnect, dapp browser provider injection, deep links and universal links
+    - Money-movement and identity flows (such as Cash): authentication, passkeys, sessions and tokens, order submission, KYC, and compliance or eligibility decisions
+
+    Security and data
+    - Authentication or authorization anywhere; secrets, API keys, environment config
+    - Sending user data (addresses, balances, identifiers, device info) to a new party or endpoint; analytics SDK changes; new analytics events that carry user-identifying data
+    - Any dependency change: adding, removing or upgrading a dependency (package.json, yarn.lock)
+
+    Platform and hard to reverse
+    - Native code: ios/, android/, and patches that change native code; permissions, entitlements, Info.plist, AndroidManifest; release version bumps
+    - Persisted-state migrations: store version or migrate changes, renamed or removed storage keys
+    - Build, CI, release and code-signing config (babel and metro config, .github/workflows, bitrise, fastlane, signing, install and CI scripts), and review or approval config (cubic.yaml)
+
+    Everything else is approvable, including new features, new screens, new stores and network calls to existing backends, changed calculations outside the list above, removed features, refactors and performance work. Touching business logic, size, or the theoretical chance of a bug are not reasons to decline; Cubic has already reviewed the implementation.
+
+    When you require human review, name the High item and the file where the diff hits it. A generic reason doesn't count.
+  auto_approve_rules:
+    exclude_external_contributors: true
+    # Bots aren't org members either: dependabot, renovate and app-authored PRs
+    exclude_authors:
+      - '*[bot]'
+    # Any changed file matching one of these blocks auto-approval, whatever the prompt decides.
+    # Transaction globs cover code that signs, sends, picks nonces, or builds orders and calldata.
+    # Amount, fee and slippage math in feature files is left to the prompt's High list: path-blocking
+    # it would send most feature work to a human.
+    exclude:
+      # Native, platform and patched dependencies
+      - 'ios/**'
+      - 'android/**'
+      - 'patches/**'
+      - 'app.json'
+      - 'app.config.ts'
+      - 'react-native.config.js'
+      - 'rock.config.mjs'
+      - 'Gemfile'
+      - 'Gemfile.lock'
+      - '.xcode-version'
+      - '.ruby-version'
+      - '.node-version'
+      - 'mise.toml'
+      - 'index.js'
+      - 'shim.js'
+      - 'InjectedJSBundle.js'
+      # Build, CI, release, supply chain
+      - '.github/**'
+      - 'bitrise.yml'
+      - 'babel.config.js'
+      - 'metro.config.js'
+      - 'audit-ci.jsonc'
+      - '.yarnrc.yml'
+      - '.yarn/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'src/graphql/package.json'
+      - 'src/graphql/yarn.lock'
+      - 'scripts/postinstall.sh'
+      - 'scripts/setup-ci.sh'
+      - 'scripts/check-env.sh'
+      - 'scripts/rc-push.sh'
+      - 'scripts/fetch-rainbow-env-file.sh'
+      - 'scripts/graph-ens-key.sh'
+      - 'scripts/e2e-*ci*.sh'
+      - 'scripts/e2e-ios-enroll-biometrics.sh'
+      - 'ios/.xcode.env'
+      - 'ios/AppIcons/.xcode.env'
+      # Review config and the instructions reviewers read
+      - 'cubic.yaml'
+      - 'AGENTS.md'
+      # Secrets and environment
+      - '.env*'
+      - 'src/env.ts'
+      - 'globals.d.ts'
+      # Keys, backups, local auth
+      - 'src/model/wallet.ts'
+      - 'src/helpers/signingWallet.ts'
+      - 'src/utils/wallet.ts'
+      - 'src/utils/signingUtils.ts'
+      - 'src/features/wallet/**'
+      - 'src/features/local-auth/**'
+      - 'src/features/backup/**'
+      - 'src/handlers/cloudBackup.ts'
+      - 'src/handlers/aesEncryption.ts'
+      - 'src/components/secret-display/**'
+      - 'src/features/hardware-wallet/**'
+      # Building, signing and sending transactions
+      - 'src/raps/**'
+      - 'src/features/ens/raps/**'
+      - 'src/systems/funding/execution/**'
+      - 'src/helpers/buildTransaction.ts'
+      - 'src/handlers/web3.ts'
+      - 'src/handlers/swap.ts'
+      - 'src/resources/transactions/transactionSimulation.ts'
+      - 'src/state/nonces/index.ts'
+      - 'src/features/token/core/services/erc20Calldata.ts'
+      - 'src/features/token/data/api/erc20Read.ts'
+      - 'src/__swaps__/screens/Swap/providers/swap-provider.tsx'
+      - 'src/__swaps__/utils/quotes.ts'
+      - 'src/features/perps/stores/hyperliquidAccountStore.ts'
+      - 'src/features/perps/utils/orders.ts'
+      - 'src/systems/funding/hooks/useDepositHandler.ts'
+      - 'src/systems/funding/stores/createDepositGasStores.ts'
+      - 'src/features/ens/hooks/useENSRegistrationActionHandler.ts'
+      - 'src/screens/Airdrops/utils.ts'
+      - 'src/screens/token-launcher/state/tokenLauncherStore.ts'
+      - 'src/features/gas/**'
+      - 'src/features/transfer/**'
+      - 'src/features/delegation/**'
+      - 'src/screens/SpeedUpAndCancelSheet.tsx'
+      - 'src/screens/claimables/transaction/**'
+      - 'src/features/perps/services/**'
+      - 'src/features/polymarket/utils/loadViemWallet.ts'
+      - 'src/features/polymarket/stores/derived/usePolymarketClients.ts'
+      - 'src/features/polymarket/utils/executePolymarketOrder.ts'
+      - 'src/features/polymarket/utils/relayExecution.ts'
+      - 'src/features/polymarket/utils/tradingApprovals.ts'
+      - 'src/features/polymarket/utils/erc20Approval.ts'
+      - 'src/features/polymarket/utils/collateral.ts'
+      - 'src/features/polymarket/utils/collectPolymarketTradeFee.ts'
+      - 'src/features/polymarket/utils/redeemPosition.ts'
+      - 'src/features/polymarket/utils/polymarketWallet.ts'
+      - 'src/features/polymarket/utils/handlePolymarketDepositSubmitted.ts'
+      - 'src/features/rnbw-staking/utils/**'
+      - 'src/features/rnbw-rewards/utils/**'
+      - 'src/features/*/depositConfig.ts'
+      - 'src/features/*/withdrawalConfig.ts'
+      # dapp signing requests, injected provider, WalletConnect, deep links
+      - 'src/features/dapp-request/**'
+      - 'src/features/dapp-browser/services/**'
+      - 'src/browser/**'
+      - 'src/features/wallet-connect/**'
+      - 'src/handlers/deeplinks.ts'
+      - 'src/utils/branch.ts'
+      - 'src/app/navigation/DeeplinkHandler.tsx'
+      - 'src/app/navigation/TestDeeplinkHandler.tsx'
+      # Cash: auth, passkeys, sessions, orders, KYC
+      - 'src/features/cash/services/**'
+      - 'src/features/cash/stores/**'
+      - 'src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts'
+      - 'src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts'
+      # Persisted-state migrations and storage
+      - 'src/migrations/**'
+      - 'src/model/migrations.ts'
+      - 'src/model/mmkv.ts'
+      - 'src/storage/**'
+      - 'src/handlers/localstorage/common.ts'
+      - 'src/handlers/localstorage/migrations.ts'
+      - 'src/handlers/localstorage/mmkvStorageBackend.ts'
+      - 'src/state/internal/rainbowStorage.ts'
+      - 'src/state/internal/persistStorage.ts'
+      - 'src/state/internal/migrations/**'
+      # Analytics SDK and user-identifying properties; event.ts stays approvable
+      - 'src/analytics/index.ts'
+      - 'src/analytics/appsflyer.ts'
+      - 'src/analytics/userProperties.ts'
+      - 'src/analytics/getWalletContext.ts'
+      - 'src/analytics/utils.ts'
