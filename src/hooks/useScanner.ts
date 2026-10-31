@@ -8,10 +8,10 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import URL from 'url-parse';
 
 import { analytics } from '@/analytics';
+import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect } from '@/features/wallet-connect/services/pair';
-import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
@@ -78,7 +78,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
-      const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+      const isValid = await isValidAddressOrDomain(addressOrENS);
       if (isValid) {
         const ensName = isValidAddress(addressOrENS) ? await fetchReverseRecord(addressOrENS) : addressOrENS;
         // First navigate to wallet screen

@@ -37,6 +37,7 @@ import {
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type TextColor } from '@/design-system/color/palettes';
 import { opacity } from '@/design-system/utils/opacity';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -57,7 +58,6 @@ import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/st
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { address } from '@/utils/abbreviations';
 import { deviceUtils } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -157,7 +157,7 @@ export const ControlPanel = () => {
             ) : (
               <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} />
             ),
-            label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
+            label: removeFirstEmojiFromString(account.label) || abbreviateAddress(account.address, 6, 4),
             secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],

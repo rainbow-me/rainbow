@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { Box } from '@/design-system';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import styled from '@/framework/ui/styled-thing';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { padding, shadow } from '@/styles';
-import abbreviations from '@/utils/abbreviations';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { CopyFloatingEmojis } from '../components/floating-emojis';
@@ -58,7 +58,7 @@ export default function ReceiveModal() {
   const [copiedText, setCopiedText] = useState(undefined);
   const [copyCount, setCopyCount] = useState(0);
   const handleCopiedText = useCallback(text => {
-    setCopiedText(abbreviations.formatAddressForDisplay(text));
+    setCopiedText(formatAddressForDisplay(text));
     setCopyCount(count => count + 1);
   }, []);
 

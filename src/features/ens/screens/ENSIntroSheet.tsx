@@ -11,13 +11,13 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
 import { IntroMarquee } from '../components/registration/IntroMarquee';
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
@@ -232,7 +232,7 @@ export function ENSIntroSheet() {
                             <SheetActionButton
                               color={colors.appleBlue}
                               label={i18n.t(profileExists ? i18n.l.profiles.intro.edit_name : i18n.l.profiles.intro.use_name, {
-                                name: abbreviateEnsForDisplay(uniqueDomain?.name, 15) as string,
+                                name: abbreviateName(uniqueDomain?.name, 15) as string,
                               })}
                               lightShadows
                               onPress={handleSelectUniqueDomain}

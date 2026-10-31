@@ -15,6 +15,7 @@ import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import { IS_STORE_INSTALL } from '@/env';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import {
   isRainbowDelegated as hasRainbowDelegation,
@@ -23,7 +24,6 @@ import {
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { address } from '@/utils/abbreviations';
 import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
 
 import { PANEL_INSET_HORIZONTAL } from '../layout';
@@ -112,7 +112,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
         }}
       >
         {draggableItems.map(account => {
-          const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
+          const walletName = removeFirstEmojiFromString(account.label) || abbreviateAddress(account.address, 4, 4);
           const filteredMenuItems = menuItems.filter(item => (account.isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true));
           return (
             <Draggable id={account.address} key={account.address}>

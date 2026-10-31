@@ -19,12 +19,12 @@ import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { useStableValue } from '@/hooks/useStableValue';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { Row } from '@/screens/expandedAssetSheet/components/shared/Row';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useTheme } from '@/theme/ThemeContext';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 type CreatorInfoRowProps = {
@@ -48,10 +48,8 @@ const CreatorAddress = ({
   const { accentColors } = useExpandedAssetSheetContext();
 
   const loadingColor = opacity(accentColors.color, 0.3);
-  const ensAddressOrFallback = useDerivedValue(() => {
-    if (ensOrAddress.value) return ensOrAddress.value;
-    return formatAddressForDisplay(creatorAddress, 4, 6);
-  });
+  const fallbackAddress = formatAddressForDisplay(creatorAddress, 4, 6);
+  const ensAddressOrFallback = useDerivedValue(() => ensOrAddress.value || fallbackAddress);
 
   const animatedTextOpacity = useAnimatedStyle(() => ({
     color: withTiming(loading.value ? loadingColor : accentColors.color, TIMING_CONFIGS.slowFadeConfig),

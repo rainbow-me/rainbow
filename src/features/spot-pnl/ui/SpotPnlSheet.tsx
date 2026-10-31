@@ -12,6 +12,7 @@ import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';
 import { getUniqueId } from '@/entities/assetId';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
@@ -30,7 +31,6 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import {
@@ -311,7 +311,7 @@ function WalletChip({
         />
       </Box>
       <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
-        {abbreviateEnsForDisplay(displayEns) ?? abbreviateAddress(walletAddress, 4, 6)}
+        {abbreviateName(displayEns) ?? abbreviateAddress(walletAddress, 4, 6)}
       </Text>
     </Box>
   );

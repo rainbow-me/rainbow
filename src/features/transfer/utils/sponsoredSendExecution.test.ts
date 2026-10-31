@@ -2,9 +2,9 @@ import { encodeFunctionData, erc20Abi, type Address } from 'viem';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
-import { resolveNameOrAddress } from '@/handlers/web3';
 
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 
@@ -12,7 +12,7 @@ vi.mock('@/handlers/assets', () => ({
   isNativeAsset: vi.fn(),
 }));
 
-vi.mock('@/handlers/web3', () => ({
+vi.mock('@/features/address/data/resolveAddress', () => ({
   resolveNameOrAddress: vi.fn(),
 }));
 

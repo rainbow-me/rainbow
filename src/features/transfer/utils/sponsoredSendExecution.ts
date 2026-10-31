@@ -5,12 +5,12 @@ import { isAddress, type Address } from 'viem';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { requireAddress } from '@/features/address/core/requireAddress';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { encodeErc20Transfer } from '@/features/token/core/services/erc20Calldata';
 import { parsePositiveRawAmount } from '@/features/token/core/services/tokenAmount';
 import { isNativeAsset } from '@/handlers/assets';
-import { resolveNameOrAddress } from '@/handlers/web3';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { buildPendingSendTransaction } from './sponsoredSend';
