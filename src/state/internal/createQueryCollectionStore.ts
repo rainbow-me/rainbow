@@ -83,6 +83,7 @@ export function createQueryCollectionStore<Input, Data>(
   let demandedKeys: Key[] = [];
   let demandUpdatePending = false;
   let destroyed = false;
+  let pendingEntries: State<Input, Data>['queryCache'] | undefined;
 
   const store = createQueryStore<Results<Data>, Params<Input>, QueryCollectionState<Input, Data>>(
     {
@@ -203,8 +204,19 @@ export function createQueryCollectionStore<Input, Data>(
 
   function publish(key: Key, request: Request<Data>, entry: CacheEntry<Results<Data>>): void {
     if (!destroyed && !request.controller.signal.aborted && requests[key] === request) {
-      store.setState(s => ({ queryCache: { ...s.queryCache, [`:${key}`]: entry } }));
+      if (!pendingEntries) {
+        pendingEntries = {};
+        queueMicrotask(flushEntries);
+      }
+      pendingEntries[`:${key}`] = entry;
     }
+  }
+
+  function flushEntries(): void {
+    const entries = pendingEntries;
+    pendingEntries = undefined;
+    if (destroyed) return;
+    store.setState(s => ({ queryCache: { ...s.queryCache, ...entries } }));
   }
 
   async function fetchMembers({ inputs, refresh }: Params<Input>, controller: AbortController | null): Promise<Results<Data>> {
@@ -237,8 +249,8 @@ export function createQueryCollectionStore<Input, Data>(
 
   function batchEntry(inputs: KeyedInput<Input>[], queryCache: State<Input, Data>['queryCache']): CacheEntry<Results<Data>> {
     let lastFetchedAt = Date.now();
-    for (const { key } of inputs) {
-      const cached = queryCache[`:${key}`];
+    for (const input of inputs) {
+      const cached = queryCache[`:${input.key}`];
       lastFetchedAt = Math.min(lastFetchedAt, Math.max(cached?.lastFetchedAt ?? 0, cached?.errorInfo?.lastFailedAt ?? 0));
     }
     return { data: null, lastFetchedAt, cacheTime: 0, errorInfo: null };
@@ -266,7 +278,7 @@ export function createQueryCollectionStore<Input, Data>(
       const queryKey = getQueryKey({ inputs: demandedKeys, refresh: false, retained: false });
       delete queryCache[queryKey];
 
-      if (inputs.length && inputs.every(({ key }) => queryCache[`:${key}`]?.errorInfo == null)) {
+      if (inputs.length && inputs.every(input => queryCache[`:${input.key}`]?.errorInfo == null)) {
         queryCache[queryKey] = batchEntry(inputs, queryCache);
       }
       return { inputs, queryCache };
