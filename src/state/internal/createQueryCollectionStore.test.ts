@@ -26,9 +26,9 @@ it('shares requests across consumers while selecting independent values', async 
   expect(requests).toHaveLength(0);
 
   const listener = vi.fn();
+  const bob = store.subscribe(s => s.get(BOB), vi.fn());
   const alice = store.subscribe(s => s.get(ALICE), listener);
   const sameAlice = store.subscribe(s => s.get({ ...ALICE }), vi.fn());
-  const bob = store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
   expect(requests.map(request => request.input)).toEqual([ALICE, BOB]);
 
@@ -62,7 +62,6 @@ it('fetches only newly demanded members and retains data after readers leave', a
 
   alice();
   await flush();
-  expect(store.getState().inputs).toEqual([BOB]);
   expect(store.getState().get(ALICE)).toBe('alice address');
   expect(requests).toHaveLength(2);
   bob();
@@ -144,14 +143,16 @@ it('refreshes active readers through the native lifecycle and stops when demand 
   store.getState().reset();
 });
 
-it('explicitly refreshes fresh data and resolves after its publication', async () => {
+it('forces a fresh lookup even while a cached load is completing', async () => {
   const { store, requests } = createFixture();
   const stop = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
   requests[0].resolve(null);
   await flush();
 
-  const refreshed = store.getState().refresh(ALICE);
+  const cached = store.getState().load(ALICE);
+  const refreshed = store.getState().load(ALICE, { force: true });
+  await expect(cached).resolves.toBeNull();
   await flush();
   expect(requests).toHaveLength(2);
   expect(store.getState().get(ALICE)).toBeNull();
@@ -172,7 +173,7 @@ it('restores successful data without past failures or consumer demand', async ()
   first.requests[1].reject(new Error('Bob failed'));
   await flush();
 
-  const refresh = first.store.getState().refresh(ALICE);
+  const refresh = first.store.getState().load(ALICE, { force: true });
   await flush();
   first.requests[2].reject(new Error('Alice refresh failed'));
   await expect(refresh).rejects.toThrow('Alice refresh failed');
@@ -287,12 +288,14 @@ it('retains an imperatively loaded request after its last subscriber leaves', as
   const stop = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
   const loaded = store.getState().load(ALICE);
+  const forced = store.getState().load(ALICE, { force: true });
   stop();
   await flush();
   expect(requests).toHaveLength(1);
   expect(requests[0].signal?.aborted).toBe(false);
   requests[0].resolve('loaded');
   await expect(loaded).resolves.toBe('loaded');
+  await expect(forced).resolves.toBe('loaded');
   expect(store.getState().get(ALICE)).toBe('loaded');
   store.getState().reset();
 });
@@ -301,12 +304,14 @@ it('destroys pending work and prevents late publication', async () => {
   const { store, requests } = createFixture();
   const stop = store.subscribe(s => s.get(ALICE), vi.fn());
   await flush();
+  const loading = store.getState().load(ALICE);
+  await flush();
   store.getState().reset();
   const snapshot = store.getState();
   expect(requests[0].signal?.aborted).toBe(true);
   requests[0].resolve('late');
   stop();
-  await flush();
+  await expect(loading).resolves.toBeUndefined();
   expect(store.getState()).toBe(snapshot);
 });
 

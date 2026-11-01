@@ -14,25 +14,17 @@ import { createSelectorReadTracker } from '@/state/internal/utils/createSelector
 
 // ============ Types ========================================================== //
 
-type Key = string | number;
-type Results<Data> = Partial<Record<Key, Data>>;
-type Params<Input> = { inputs: Input[]; refresh: boolean; retained: boolean };
-type Request<Data> = { controller: AbortController; promise: Promise<Data>; retained: boolean };
-type State<Input, Data> = QueryStoreState<Results<Data>, Params<Input>, QueryCollectionState<Input, Data>>;
-
 /** Custom state connecting subscribed resource reads to the query store. */
 export type QueryCollectionState<Input, Data> = {
-  inputs: Input[];
+  inputs: KeyedInput<Input>[];
   /** Whether this input has completed a lookup, including absence or failure. Remains true during refresh. */
   hasSettled: (input: Input) => boolean;
   /** The latest lookup error, without discarding any previous data. */
   getError: (input: Input) => Error | null;
-  /** Loads a resource if stale, sharing any request already in progress. */
-  load: (input: Input) => Promise<Data | undefined>;
+  /** Fetches a resource if stale or forced, sharing any request already in progress. */
+  load: (input: Input, options?: { force?: boolean }) => Promise<Data | undefined>;
   /** Reads cached data. Subscribed reads also keep this input in the collection's refresh set. */
   get: (input: Input) => Data | undefined;
-  /** Fetches a resource again, preserving its previous value until the request completes. */
-  refresh: (input: Input) => Promise<Data | undefined>;
 };
 
 /** Defines a shared collection's resource identity, loader, and cache policy. */
@@ -55,9 +47,20 @@ export type QueryCollectionPersistence<Input, Data> = Pick<
   'storageKey' | 'storage' | 'version' | 'migrate' | 'persistThrottleMs'
 >;
 
+type Key = string | number;
+type KeyedInput<Input> = { key: Key; input: Input };
+type Request<Data> = { controller: AbortController; promise: Promise<Data>; retained: boolean };
+type Results<Data> = Partial<Record<Key, Data>>;
+
+type Params<Input> = { inputs: KeyedInput<Input>[]; refresh: boolean; retained: boolean };
+type State<Input, Data> = QueryStoreState<Results<Data>, Params<Input>, QueryCollectionState<Input, Data>>;
+
 // ============ Constants ====================================================== //
 
-const EMPTY_CUSTOM_STATE = Object.freeze({});
+const ABORT_OPTIONS = Object.freeze({ once: true });
+const EMPTY_OBJECT = Object.freeze({});
+const FETCH_OPTIONS = Object.freeze({ force: true, throwOnError: true });
+const RESOLVED_PROMISE = Promise.resolve();
 
 // ============ Factory ======================================================== //
 
@@ -90,12 +93,12 @@ export function createQueryCollectionStore<Input, Data>(
         const hasDemand = $(store, s => s.inputs.length > 0);
         return allowed && hasDemand;
       },
-      setData: ({ params, queryKey, set }) => {
-        set(s => ({ queryCache: { ...s.queryCache, [queryKey]: batchEntry(params.inputs, s.queryCache) } }));
+      setData: context => {
+        context.set(s => ({ queryCache: { ...s.queryCache, [context.queryKey]: batchEntry(context.params.inputs, s.queryCache) } }));
       },
       params: {
-        inputs: queryParam(($, store) => $(store, s => s.inputs), { key: inputs => inputs.map(getKey).sort() }),
-        refresh: queryParam(false, { key: false }),
+        inputs: queryParam(($, store) => $(store, s => s.inputs), { key: inputs => inputs.map(input => input.key) }),
+        refresh: false,
         retained: false,
       },
       staleTime,
@@ -118,25 +121,21 @@ export function createQueryCollectionStore<Input, Data>(
         return cached?.lastFetchedAt != null || cached?.errorInfo != null;
       },
 
-      load: async input => {
-        await get().fetch({ inputs: [input], refresh: false, retained: true }, { force: true, throwOnError: true });
-        return get().get(input);
-      },
-
-      refresh: async input => {
-        await get().fetch({ inputs: [input], refresh: true, retained: true }, { force: true, throwOnError: true });
-        return get().get(input);
+      load: async (input, { force = false } = EMPTY_OBJECT) => {
+        const key = getKey(input);
+        await get().fetch({ inputs: [{ key, input }], refresh: force, retained: true }, FETCH_OPTIONS);
+        return get().queryCache[`:${key}`]?.data?.[key];
       },
     }),
 
     persistence
       ? {
           ...persistence,
-          partialize: () => EMPTY_CUSTOM_STATE,
-          merge: (saved, current) => {
+          partialize: () => EMPTY_OBJECT,
+          merge: (persisted, current) => {
             const queryCache: State<Input, Data>['queryCache'] = {};
-            for (const key in saved?.queryCache) {
-              const cached = saved.queryCache[key];
+            for (const key in persisted?.queryCache) {
+              const cached = persisted.queryCache[key];
               if (key.startsWith(':') && cached?.lastFetchedAt != null) queryCache[key] = { ...cached, errorInfo: null };
             }
             return { ...current, queryCache };
@@ -146,13 +145,11 @@ export function createQueryCollectionStore<Input, Data>(
   );
 
   const reset = store.getState().reset;
-  store.setState({
-    reset: resetState => {
-      destroyed = true;
-      for (const key in requests) requests[key]?.controller.abort();
-      reset(resetState);
-    },
-  });
+  store.getState().reset = resetState => {
+    destroyed = true;
+    for (const key in requests) requests[key]?.controller.abort();
+    reset(resetState);
+  };
 
   function trackInput(input: Input): Key {
     const key = getKey(input);
@@ -160,8 +157,7 @@ export function createQueryCollectionStore<Input, Data>(
     return key;
   }
 
-  function request(input: Input, retained: boolean): Request<Data> {
-    const key = getKey(input);
+  function request({ key, input }: KeyedInput<Input>, retained: boolean): Request<Data> {
     const active = requests[key];
 
     if (active && !active.controller.signal.aborted) {
@@ -173,7 +169,7 @@ export function createQueryCollectionStore<Input, Data>(
     const current: Request<Data> = {
       controller,
       retained,
-      promise: Promise.resolve().then(() => {
+      promise: RESOLVED_PROMISE.then(() => {
         if (controller.signal.aborted) throw new Error('Query collection request cancelled');
         return fetcher(input, controller.signal);
       }),
@@ -211,36 +207,38 @@ export function createQueryCollectionStore<Input, Data>(
     }
   }
 
-  async function fetchMembers({ inputs, refresh, retained }: Params<Input>, controller: AbortController | null): Promise<Results<Data>> {
+  async function fetchMembers({ inputs, refresh }: Params<Input>, controller: AbortController | null): Promise<Results<Data>> {
     const queryCache = store.getState().queryCache;
     const staleCutoff = Date.now() - staleTime;
-    const staleInputs = refresh
-      ? inputs
-      : inputs.filter(input => {
-          const cached = queryCache[`:${getKey(input)}`];
-          return !cached?.lastFetchedAt || cached.errorInfo != null || cached.lastFetchedAt <= staleCutoff;
-        });
+    const pending: Promise<Data>[] = [];
 
-    const members = staleInputs.map(input => request(input, retained || controller === null));
-    const cancelUnused = (): void => {
-      for (let i = 0; i < members.length; i++) {
-        const member = members[i];
-        if (!member.retained && (!store.getState().enabled || !demandedKeys.includes(getKey(staleInputs[i])))) member.controller.abort();
+    for (const input of inputs) {
+      const cached = queryCache[`:${input.key}`];
+      if (refresh || !cached?.lastFetchedAt || cached.errorInfo != null || cached.lastFetchedAt <= staleCutoff) {
+        pending.push(request(input, controller === null).promise);
       }
-    };
+    }
 
-    controller?.signal.addEventListener('abort', cancelUnused, { once: true });
-    const settled = await Promise.allSettled(members.map(member => member.promise));
-    controller?.signal.removeEventListener('abort', cancelUnused);
+    controller?.signal.addEventListener('abort', cancelUnusedRequests, ABORT_OPTIONS);
+    const settled = await Promise.allSettled(pending);
+    controller?.signal.removeEventListener('abort', cancelUnusedRequests);
 
     if (settled.length && settled.every(result => result.status === 'rejected')) throw settled[0].reason;
-    return {};
+    return EMPTY_OBJECT;
   }
 
-  function batchEntry(inputs: Input[], queryCache: State<Input, Data>['queryCache']): CacheEntry<Results<Data>> {
+  function cancelUnusedRequests(): void {
+    const enabled = store.getState().enabled;
+    for (const key in requests) {
+      const request = requests[key];
+      if (request && !request.retained && (!enabled || !(key in inputsByKey))) request.controller.abort();
+    }
+  }
+
+  function batchEntry(inputs: KeyedInput<Input>[], queryCache: State<Input, Data>['queryCache']): CacheEntry<Results<Data>> {
     let lastFetchedAt = Date.now();
-    for (const input of inputs) {
-      const cached = queryCache[`:${getKey(input)}`];
+    for (const { key } of inputs) {
+      const cached = queryCache[`:${key}`];
       lastFetchedAt = Math.min(lastFetchedAt, Math.max(cached?.lastFetchedAt ?? 0, cached?.errorInfo?.lastFailedAt ?? 0));
     }
     return { data: null, lastFetchedAt, cacheTime: 0, errorInfo: null };
@@ -250,28 +248,25 @@ export function createQueryCollectionStore<Input, Data>(
     demandUpdatePending = false;
     if (destroyed) return;
 
-    const inputs: Input[] = [];
+    const inputs: KeyedInput<Input>[] = [];
     const nextInputs: Record<Key, Input> = nullObject();
 
-    for (const key of demandedKeys) {
+    for (const key of demandedKeys.sort()) {
       const input = inputsByKey[key];
-      inputs.push(input);
+      inputs.push({ key, input });
       nextInputs[key] = input;
     }
 
     inputsByKey = nextInputs;
-    for (const key in requests) {
-      const active = requests[key];
-      if (active && !active.retained && !(key in nextInputs)) active.controller.abort();
-    }
+    cancelUnusedRequests();
 
     store.setState(s => {
       const queryCache = { ...s.queryCache };
       delete queryCache[s.queryKey];
-      const queryKey = getQueryKey({ inputs: demandedKeys, retained: false });
+      const queryKey = getQueryKey({ inputs: demandedKeys, refresh: false, retained: false });
       delete queryCache[queryKey];
 
-      if (inputs.length && inputs.every(input => queryCache[`:${getKey(input)}`]?.errorInfo == null)) {
+      if (inputs.length && inputs.every(({ key }) => queryCache[`:${key}`]?.errorInfo == null)) {
         queryCache[queryKey] = batchEntry(inputs, queryCache);
       }
       return { inputs, queryCache };
@@ -279,7 +274,7 @@ export function createQueryCollectionStore<Input, Data>(
   }
 
   return readTracker.install(store, keys => {
-    demandedKeys = keys.sort();
+    demandedKeys = keys;
     if (demandUpdatePending) return;
     demandUpdatePending = true;
     queueMicrotask(updateDemand);

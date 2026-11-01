@@ -651,7 +651,7 @@ async function refreshAccountInfo(
     }
 
     const address = getAddress(account.address);
-    const ens = await useEnsNameStore.getState().refresh(address);
+    const ens = await useEnsNameStore.getState().load(address, { force: true });
 
     if (ens) {
       // Only fetch avatar if ENS changed or we don't have an image
@@ -661,7 +661,7 @@ async function refreshAccountInfo(
       if (shouldFetchAvatar) {
         newImage = await useEnsImageStore
           .getState()
-          .refresh({ name: ens, field: 'avatar' })
+          .load({ name: ens, field: 'avatar' }, { force: true })
           .catch(() => account.image ?? null);
       }
 

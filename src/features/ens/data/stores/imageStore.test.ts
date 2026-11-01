@@ -39,19 +39,25 @@ it('converts an NFT avatar owned by another address and reads the header indepen
     key === 'avatar' ? `eip155:1/erc721:${ADDRESS}/42` : 'https://example.com/header.png'
   );
 
-  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).resolves.toBe(IMAGE);
-  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'header' })).resolves.toBe('https://example.com/header.png');
+  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).resolves.toBe(IMAGE);
+  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'header' }, { force: true })).resolves.toBe(
+    'https://example.com/header.png'
+  );
 });
 
 it('retains an image on lookup failure but clears it when the record is removed', async () => {
-  await useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' });
+  await useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true });
   vi.mocked(readEnsText).mockRejectedValueOnce(new Error('Gateway unavailable'));
-  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).rejects.toThrow('Gateway unavailable');
+  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).rejects.toThrow(
+    'Gateway unavailable'
+  );
   expect(useEnsImageStore.getState().get({ name: 'alice.eth', field: 'avatar' })).toBe(IMAGE);
   vi.mocked(readEnsText).mockResolvedValueOnce(null);
-  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).resolves.toBeNull();
+  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).resolves.toBeNull();
   vi.mocked(readEnsText).mockRejectedValueOnce(new Error('Gateway unavailable'));
-  await expect(useEnsImageStore.getState().refresh({ name: 'alice.eth', field: 'avatar' })).rejects.toThrow('Gateway unavailable');
+  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).rejects.toThrow(
+    'Gateway unavailable'
+  );
   expect(useEnsImageStore.getState().get({ name: 'alice.eth', field: 'avatar' })).toBeNull();
 });
 
@@ -63,7 +69,7 @@ it('makes the record baseline available while image processing is pending', asyn
     coins: Object.fromEntries(keys.coins.map(key => [key, null])),
     contentHash: null,
   }));
-  const image = useEnsImageStore.getState().refresh({ name: 'baseline.eth', field: 'avatar' });
+  const image = useEnsImageStore.getState().load({ name: 'baseline.eth', field: 'avatar' }, { force: true });
   const records = await useEnsRecordsStore.getState().load({ name: 'baseline.eth' });
   expect(records?.records).toEqual({ avatar: 'raw avatar record' });
   expect(useEnsImageStore.getState().hasSettled({ name: 'baseline.eth', field: 'avatar' })).toBe(false);
