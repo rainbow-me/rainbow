@@ -183,6 +183,7 @@ export function SendSheet() {
   const recipientOverride = params?.address;
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
+  const [validatedRecipient, setValidatedRecipient] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
   const [maxEnabled, setMaxEnabled] = useState(false);
@@ -209,8 +210,14 @@ export function SendSheet() {
   });
   const toAddress = address ?? (shouldResolveName && recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
   const isValidAddress = Boolean(toAddress);
-  const canSelectAsset = address !== null || shouldResolveName;
+  const canSelectAsset = isValidAddress || validatedRecipient === input;
   const isResolvingAddress = shouldResolveName && recipientQuery.isFetching;
+
+  // Keep asset selection available while resolving the same recipient on another chain.
+  useEffect(() => {
+    setValidatedRecipient(previous => (isValidAddress || previous === input ? input : null));
+  }, [input, isValidAddress]);
+
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
