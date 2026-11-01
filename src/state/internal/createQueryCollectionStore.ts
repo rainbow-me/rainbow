@@ -73,51 +73,56 @@ export function createQueryCollectionStore<Input, Data>(
   { key: getKey, fetcher, staleTime, cacheTime, enabled = true, ...queryOptions }: QueryCollectionConfig<Input, Data>,
   persistence?: QueryCollectionPersistence<Input, Data>
 ): OptionallyPersistedStore<Omit<State<Input, Data>, 'fetch'>, Partial<State<Input, Data>>> {
-  const reads = createSelectorReadTracker<Key>();
+  const readTracker = createSelectorReadTracker<Key>();
+  const requests: Partial<Record<Key, Request<Data>>> = nullObject();
+
   let inputsByKey: Record<Key, Input> = nullObject();
   let demandedKeys: Key[] = [];
   let demandUpdatePending = false;
   let destroyed = false;
-  const requests: Partial<Record<Key, Request<Data>>> = nullObject();
 
   const store = createQueryStore<Results<Data>, Params<Input>, QueryCollectionState<Input, Data>>(
     {
       ...queryOptions,
-      params: {
-        inputs: queryParam(($, store) => $(store, s => s.inputs), { key: inputs => inputs.map(getKey).sort() }),
-        refresh: queryParam(false, { key: false }),
-        // Imperative loads must outlive changes to subscribed inputs.
-        retained: false,
-      },
+      fetcher: fetchMembers,
       enabled: ($, store) => {
         const allowed = typeof enabled === 'function' ? enabled($, store) : enabled;
         const hasDemand = $(store, s => s.inputs.length > 0);
         return allowed && hasDemand;
       },
-      staleTime,
-      cacheTime: 0,
-      keepPreviousData: true,
-      fetcher: fetchMembers,
       setData: ({ params, queryKey, set }) => {
         set(s => ({ queryCache: { ...s.queryCache, [queryKey]: batchEntry(params.inputs, s.queryCache) } }));
       },
+      params: {
+        inputs: queryParam(($, store) => $(store, s => s.inputs), { key: inputs => inputs.map(getKey).sort() }),
+        refresh: queryParam(false, { key: false }),
+        retained: false,
+      },
+      staleTime,
+      cacheTime: 0,
+      keepPreviousData: true,
     },
 
     (_, get) => ({
       inputs: [],
+
       get: input => {
         const key = trackInput(input);
         return get().queryCache[`:${key}`]?.data?.[key];
       },
+
+      getError: input => get().queryCache[`:${trackInput(input)}`]?.errorInfo?.error ?? null,
+
       hasSettled: input => {
         const cached = get().queryCache[`:${trackInput(input)}`];
         return cached?.lastFetchedAt != null || cached?.errorInfo != null;
       },
-      getError: input => get().queryCache[`:${trackInput(input)}`]?.errorInfo?.error ?? null,
+
       load: async input => {
         await get().fetch({ inputs: [input], refresh: false, retained: true }, { force: true, throwOnError: true });
         return get().get(input);
       },
+
       refresh: async input => {
         await get().fetch({ inputs: [input], refresh: true, retained: true }, { force: true, throwOnError: true });
         return get().get(input);
@@ -151,13 +156,14 @@ export function createQueryCollectionStore<Input, Data>(
 
   function trackInput(input: Input): Key {
     const key = getKey(input);
-    if (reads.track(key)) inputsByKey[key] = input;
+    if (readTracker.track(key)) inputsByKey[key] = input;
     return key;
   }
 
   function request(input: Input, retained: boolean): Request<Data> {
     const key = getKey(input);
     const active = requests[key];
+
     if (active && !active.controller.signal.aborted) {
       active.retained ||= retained;
       return active;
@@ -172,17 +178,18 @@ export function createQueryCollectionStore<Input, Data>(
         return fetcher(input, controller.signal);
       }),
     };
+
     requests[key] = current;
     current.promise = current.promise
       .then(
         value => {
-          publish({ data: { [key]: value }, lastFetchedAt: Date.now(), cacheTime, errorInfo: null });
+          publish(key, current, { data: { [key]: value }, lastFetchedAt: Date.now(), cacheTime, errorInfo: null });
           return value;
         },
         reason => {
           const error = reason instanceof Error ? reason : new Error(String(reason));
           const previous = store.getState().queryCache[`:${key}`];
-          publish({
+          publish(key, current, {
             data: previous?.data ?? null,
             lastFetchedAt: previous?.lastFetchedAt ?? null,
             cacheTime,
@@ -194,12 +201,13 @@ export function createQueryCollectionStore<Input, Data>(
       .finally(() => {
         if (requests[key] === current) delete requests[key];
       });
-    return current;
 
-    function publish(entry: CacheEntry<Results<Data>>): void {
-      if (!destroyed && !controller.signal.aborted && requests[key] === current) {
-        store.setState(s => ({ queryCache: { ...s.queryCache, [`:${key}`]: entry } }));
-      }
+    return current;
+  }
+
+  function publish(key: Key, request: Request<Data>, entry: CacheEntry<Results<Data>>): void {
+    if (!destroyed && !request.controller.signal.aborted && requests[key] === request) {
+      store.setState(s => ({ queryCache: { ...s.queryCache, [`:${key}`]: entry } }));
     }
   }
 
@@ -220,23 +228,13 @@ export function createQueryCollectionStore<Input, Data>(
         if (!member.retained && (!store.getState().enabled || !demandedKeys.includes(getKey(staleInputs[i])))) member.controller.abort();
       }
     };
+
     controller?.signal.addEventListener('abort', cancelUnused, { once: true });
     const settled = await Promise.allSettled(members.map(member => member.promise));
     controller?.signal.removeEventListener('abort', cancelUnused);
-    const data: Results<Data> = nullObject();
-    let firstFailure: PromiseRejectedResult | undefined;
-    let succeeded = false;
 
-    for (let i = 0; i < settled.length; i++) {
-      const result = settled[i];
-      if (result.status === 'fulfilled') {
-        data[getKey(staleInputs[i])] = result.value;
-        succeeded = true;
-      } else firstFailure ??= result;
-    }
-
-    if (!succeeded && firstFailure) throw firstFailure.reason;
-    return data;
+    if (settled.length && settled.every(result => result.status === 'rejected')) throw settled[0].reason;
+    return {};
   }
 
   function batchEntry(inputs: Input[], queryCache: State<Input, Data>['queryCache']): CacheEntry<Results<Data>> {
@@ -251,6 +249,7 @@ export function createQueryCollectionStore<Input, Data>(
   function updateDemand(): void {
     demandUpdatePending = false;
     if (destroyed) return;
+
     const inputs: Input[] = [];
     const nextInputs: Record<Key, Input> = nullObject();
 
@@ -271,6 +270,7 @@ export function createQueryCollectionStore<Input, Data>(
       delete queryCache[s.queryKey];
       const queryKey = getQueryKey({ inputs: demandedKeys, retained: false });
       delete queryCache[queryKey];
+
       if (inputs.length && inputs.every(input => queryCache[`:${getKey(input)}`]?.errorInfo == null)) {
         queryCache[queryKey] = batchEntry(inputs, queryCache);
       }
@@ -278,7 +278,7 @@ export function createQueryCollectionStore<Input, Data>(
     });
   }
 
-  return reads.install(store, keys => {
+  return readTracker.install(store, keys => {
     demandedKeys = keys.sort();
     if (demandUpdatePending) return;
     demandUpdatePending = true;

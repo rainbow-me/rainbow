@@ -163,13 +163,19 @@ it('explicitly refreshes fresh data and resolves after its publication', async (
   store.getState().reset();
 });
 
-it('persists each resource once and restores its data without restoring consumer demand', async () => {
+it('restores successful data without past failures or consumer demand', async () => {
   const storage = createMemoryStorage();
   const first = createFixture(storage);
-  const stop = first.store.subscribe(s => s.get(ALICE), vi.fn());
+  const stop = first.store.subscribe(s => [s.get(ALICE), s.get(BOB)], vi.fn());
   await flush();
   first.requests[0].resolve('saved');
+  first.requests[1].reject(new Error('Bob failed'));
   await flush();
+
+  const refresh = first.store.getState().refresh(ALICE);
+  await flush();
+  first.requests[2].reject(new Error('Alice refresh failed'));
+  await expect(refresh).rejects.toThrow('Alice refresh failed');
 
   const persisted = JSON.parse(storage.get('collection') ?? 'null');
   expect(persisted.state.inputs).toBeUndefined();
@@ -181,6 +187,9 @@ it('persists each resource once and restores its data without restoring consumer
   const restored = createFixture(storage);
   expect(restored.store.getState().inputs).toEqual([]);
   expect(restored.store.getState().get(ALICE)).toBe('saved');
+  expect(restored.store.getState().getError(ALICE)).toBeNull();
+  expect(restored.store.getState().hasSettled(BOB)).toBe(false);
+  expect(restored.store.getState().getError(BOB)).toBeNull();
   const alice = restored.store.subscribe(s => s.get(ALICE), vi.fn());
   const bob = restored.store.subscribe(s => s.get(BOB), vi.fn());
   await flush();
