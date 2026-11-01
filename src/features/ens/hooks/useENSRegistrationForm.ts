@@ -6,7 +6,6 @@ import { deprecatedTextRecordFields, type ENS_RECORDS } from '@/features/ens/cor
 
 import type { Records } from '../types/registration';
 import { REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
-import { useENSModifiedRegistration } from './useENSModifiedRegistration';
 import { useENSRegistration } from './useENSRegistration';
 
 const uploadsAtom = atom<Record<string, boolean>>({ default: {}, key: 'ensProfileForm.uploads' });
@@ -27,12 +26,12 @@ export default function useENSRegistrationForm({
     mode,
     initialRecords,
     registrationParameters,
+    changedRecords,
     records: values,
     removeRecordByKey,
     updateRecordByKey,
     updateRecords,
   } = useENSRegistration();
-  const { changedRecords, hasRecords } = useENSModifiedRegistration();
   const [errors, setErrors] = useRecoilState(errorsAtom);
   const [uploads, setUploads] = useRecoilState(uploadsAtom);
   const uploadKey = `${accountAddress}:${name}`;
@@ -126,7 +125,6 @@ export default function useENSRegistrationForm({
     errors,
     isEmpty: !Object.values(values).some(Boolean),
     isLoading,
-    hasRecords,
     toggleField,
     onChangeField,
     onRemoveField,

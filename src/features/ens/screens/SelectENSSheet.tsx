@@ -22,8 +22,6 @@ import { deviceUtils } from '@/utils/deviceUtils';
 
 import { useAccountENSDomains } from '../hooks/useAccountENSDomains';
 
-export const SelectENSSheetHeight = 400;
-
 const deviceHeight = deviceUtils.dimensions.height;
 const rowHeight = 40;
 const rowPadding = 19;

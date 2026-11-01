@@ -14,7 +14,7 @@ import { SelectableButton } from '../components/registration/SelectableButton';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import { accentColorAtom, textRecordFields } from '../utils/helpers';
 
-export const ENSAdditionalRecordsSheetHeight = 262;
+const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
 
 export const getENSAdditionalRecordsSheetHeight = () => {

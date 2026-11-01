@@ -80,11 +80,7 @@ export function TextRecordsForm({
                 placeholder={placeholder}
                 selectionColor={selectionColor}
                 shouldFormatText={
-                  key === ENS_RECORDS.name ||
-                  key === ENS_RECORDS.description ||
-                  key === ENS_RECORDS.notice ||
-                  key === ENS_RECORDS.keywords ||
-                  key === ENS_RECORDS.pronouns
+                  key === ENS_RECORDS.name || key === ENS_RECORDS.description || key === ENS_RECORDS.notice || key === ENS_RECORDS.keywords
                 }
                 startsWith={startsWith}
                 testID={`ens-text-record-${key}`}

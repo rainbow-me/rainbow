@@ -210,7 +210,6 @@ export function useENSRecordDisplayProperties({
     ContextMenuButton: Button,
     icon,
     isImageValue,
-    isUrlValue,
     label,
     url,
     value,

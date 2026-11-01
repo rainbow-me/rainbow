@@ -8,7 +8,6 @@ const supportedTLDs = ['eth'];
 
 const ERROR_CODES = {
   INVALID_DOMAIN: 'invalid-domain',
-  INVALID_DOMAIN_NAME: 'invalid-domain-name',
   INVALID_LENGTH: 'invalid-length',
   INVALID_SUBDOMAIN_NAME: 'invalid-subdomain-name',
   INVALID_TLD: 'invalid-tld',

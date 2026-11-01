@@ -3,9 +3,10 @@ import { Platform, StyleSheet } from 'react-native';
 
 import { getAddress } from 'viem';
 
+import Text from '@/components/text/Text';
 import { opacity } from '@/design-system/utils/opacity';
 import { getNameService } from '@/features/address/core/address';
-import { abbreviateAddress } from '@/features/address/core/formatAddress';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import styled from '@/framework/ui/styled-thing';
@@ -20,7 +21,7 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helper
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
+import { TruncatedAddress, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 
@@ -36,12 +37,14 @@ const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite
   width: '100%',
 });
 
-const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+const ContactENS = styled(Text).attrs(({ theme: { colors } }) => ({
+  adjustsFontSizeToFit: true,
   align: 'left',
   color: opacity(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
+  minimumFontScale: 0.5,
+  numberOfLines: 1,
   size: 'smedium',
-  truncationLength: 18,
   weight: 'medium',
 }))({
   width: '100%',
@@ -146,7 +149,11 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {getNameService(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
+              {getNameService(address) ? (
+                <ContactENS>{abbreviateName(address, 18)}</ContactENS>
+              ) : (
+                <ContactAddress address={address} lite={!!showcaseItem} />
+              )}
             </Fragment>
           )}
         </Column>

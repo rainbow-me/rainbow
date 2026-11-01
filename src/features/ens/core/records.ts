@@ -22,10 +22,9 @@ export enum ENS_RECORDS {
   reddit = 'com.reddit',
   instagram = 'com.instagram',
   snapchat = 'com.snapchat',
-  twitter = 'com.twitter', // correct as of 2025
+  twitter = 'com.twitter',
   telegram = 'org.telegram',
   ensDelegate = 'eth.ens.delegate',
-  pronouns = 'pronouns',
 }
 
 export const deprecatedTextRecordFields: Partial<Record<string, string>> = {

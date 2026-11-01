@@ -23,7 +23,7 @@ export const estimateENSCommitGasLimit = async ({
     type: ENSRegistrationTransactionType.COMMIT,
   });
 
-export const estimateENSMulticallGasLimit = async ({
+const estimateENSMulticallGasLimit = async ({
   name,
   records,
   ownerAddress,
@@ -39,7 +39,7 @@ export const estimateENSMulticallGasLimit = async ({
     type: ENSRegistrationTransactionType.MULTICALL,
   });
 
-export const estimateENSRegisterWithConfigGasLimit = async ({
+const estimateENSRegisterWithConfigGasLimit = async ({
   name,
   ownerAddress,
   duration,
@@ -108,7 +108,7 @@ export const estimateENSSetAddressGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_ADDR,
   });
 
-export const estimateENSSetContenthashGasLimit = async ({
+const estimateENSSetContenthashGasLimit = async ({
   name,
   records,
   ownerAddress,
@@ -124,7 +124,7 @@ export const estimateENSSetContenthashGasLimit = async ({
     type: ENSRegistrationTransactionType.SET_CONTENTHASH,
   });
 
-export const estimateENSSetTextGasLimit = async ({
+const estimateENSSetTextGasLimit = async ({
   name,
   records,
   ownerAddress,

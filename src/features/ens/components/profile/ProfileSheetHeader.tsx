@@ -140,7 +140,6 @@ export function ProfileSheetHeader({
                         ENS_RECORDS.snapchat,
                         ENS_RECORDS.telegram,
                         ENS_RECORDS.reddit,
-                        ENS_RECORDS.pronouns,
                         ENS_RECORDS.notice,
                         ENS_RECORDS.keywords,
                         ENS_RECORDS.LTC,

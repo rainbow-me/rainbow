@@ -106,25 +106,6 @@ export const saveShowcaseTokens = (showcaseTokens: any, accountAddress: any, net
   saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
 
 /**
- * @desc get web data enabled preference
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Array}
- */
-export const getWebDataEnabled = (accountAddress: any, network: any) =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
-  getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, null);
-
-/**
- * @desc save web showcase enabled preference
- * @param  {Boolean}  [value]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveWebDataEnabled = (preference: any, accountAddress: any, network: any) =>
-  saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);
-
-/**
  * Get hidden tokens
  */
 export const getHiddenTokens = (accountAddress: string, network: string) => getAccountLocal(HIDDEN_TOKENS, accountAddress, network, []);

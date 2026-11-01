@@ -26,7 +26,7 @@ const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 
-export const defaultScreenOptions = {
+const defaultScreenOptions = {
   [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
     scrollEnabled: true,
     useAccentAsSheetBackground: true,

@@ -173,6 +173,6 @@ export function Placeholder() {
   );
 }
 
-export function PlaceholderItem() {
+function PlaceholderItem() {
   return <Box background="body (Deprecated)" borderRadius={30} height={{ custom: 30 }} width={{ custom: 140 }} />;
 }

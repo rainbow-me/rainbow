@@ -327,19 +327,6 @@ export const textRecordFields = {
       validator: value => /^([\w#.])*$/.test(value),
     },
   },
-  [ENS_RECORDS.pronouns]: {
-    id: 'pronouns',
-    inputProps: {
-      maxLength: 42,
-    },
-    key: ENS_RECORDS.pronouns,
-    get label() {
-      return i18n.t(i18n.l.profiles.create.pronouns);
-    },
-    get placeholder() {
-      return i18n.t(i18n.l.profiles.create.pronouns_placeholder);
-    },
-  },
   [ENS_RECORDS.notice]: {
     id: 'notice',
     inputProps: {
@@ -738,11 +725,7 @@ const accentColorAtom = atom({
 
 export {
   generateSalt,
-  getENSRegistryContract,
   getENSRegistrarControllerContract,
-  getENSBaseRegistrarImplementationContract,
-  getENSPublicResolverContract,
-  getENSReverseRegistrarContract,
   getAvailable,
   getNameExpires,
   getNameOwner,

@@ -57,7 +57,6 @@ export default function useENSPendingRegistrations() {
   );
 
   return {
-    accountRegistrations,
     finishRegistration,
     pendingRegistrations,
     registrationImages,
