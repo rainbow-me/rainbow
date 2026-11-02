@@ -36,7 +36,7 @@ import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../hooks/useENSRegistration';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';

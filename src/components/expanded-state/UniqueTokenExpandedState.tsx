@@ -607,7 +607,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               externalAvatarUrl={asset.images.lowResUrl}
                               isExternal={external}
                               isLoading={!ensProfile.hasOwnershipOutcome}
-                              isOwner={ensProfile?.isOwner}
                               isPrimary={ensProfile?.isPrimaryName}
                               isProfilesEnabled={profilesEnabled}
                               isReadOnlyWallet={isReadOnlyWallet}

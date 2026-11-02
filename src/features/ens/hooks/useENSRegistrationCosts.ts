@@ -25,8 +25,8 @@ import {
 } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
-export default function useENSRegistrationCosts({
-  name: inputName,
+export function useENSRegistrationCosts({
+  name,
   rentPrice,
   sendReverseRecord,
   step,
@@ -42,7 +42,7 @@ export default function useENSRegistrationCosts({
   const nativeCurrency = userAssetsStoreManager(s => s.currency);
   const { registrationParameters, mode, changedRecords } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
-  const name = inputName.replace(ENS_DOMAIN, '');
+  const label = name.endsWith(ENS_DOMAIN) ? name.slice(0, -ENS_DOMAIN.length) : null;
   const rentPriceInWei = rentPrice?.wei.toString();
   const { salt, rentPrice: committedRentPrice } = registrationParameters ?? {};
   const gas = useGas({ enableTracking: true });
@@ -56,26 +56,26 @@ export default function useENSRegistrationCosts({
     isValidGas,
     isSufficientGas,
   } = gas;
-  const hasInput = name.length > 2 && !!accountAddress;
+  const hasInput = !!name && !!accountAddress;
   const reverseName = useEnsNameStore(s =>
     hasInput && step === REGISTRATION_STEPS.COMMIT ? s.get(getAddress(accountAddress)) : undefined
   );
 
   const commitGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && step === REGISTRATION_STEPS.COMMIT && rentPriceInWei
-      ? s.get({ action: 'commit', name, duration, ownerAddress: accountAddress, rentPrice: rentPriceInWei })
+    hasInput && label && step === REGISTRATION_STEPS.COMMIT && rentPriceInWei
+      ? s.get({ action: 'commit', name: label, duration, ownerAddress: accountAddress, rentPrice: rentPriceInWei })
       : undefined
   );
   const setNameGasLimit = useEnsGasEstimateStore(s =>
     hasInput && (step === REGISTRATION_STEPS.SET_NAME || (step === REGISTRATION_STEPS.COMMIT && reverseName === null))
-      ? s.get({ action: 'setName', name: name + ENS_DOMAIN, ownerAddress: accountAddress })
+      ? s.get({ action: 'setName', name, ownerAddress: accountAddress })
       : undefined
   );
   const setRecordsGasLimit = useEnsGasEstimateStore(s =>
     hasInput && (step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT)
       ? s.get({
           action: 'setRecords',
-          name: name + ENS_DOMAIN,
+          name,
           records: changedRecords,
           ownerAddress: mode === REGISTRATION_MODES.EDIT ? accountAddress : undefined,
           setReverseRecord: sendReverseRecord,
@@ -83,15 +83,15 @@ export default function useENSRegistrationCosts({
       : undefined
   );
   const renewGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && step === REGISTRATION_STEPS.RENEW && rentPriceInWei
-      ? s.get({ action: 'renew', name, duration, rentPrice: rentPriceInWei })
+    hasInput && label && step === REGISTRATION_STEPS.RENEW && rentPriceInWei
+      ? s.get({ action: 'renew', name: label, duration, rentPrice: rentPriceInWei })
       : undefined
   );
   const registerGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && step === REGISTRATION_STEPS.REGISTER && salt && committedRentPrice
+    hasInput && label && step === REGISTRATION_STEPS.REGISTER && salt && committedRentPrice
       ? s.get({
           action: 'register',
-          name,
+          name: label,
           duration,
           ownerAddress: accountAddress,
           records: changedRecords,

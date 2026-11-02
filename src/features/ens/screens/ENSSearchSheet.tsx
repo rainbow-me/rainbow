@@ -21,7 +21,7 @@ import { SearchResultGradientIndicator } from '../components/registration/Search
 import { normalizeEnsName } from '../core/name';
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
 import { useENSRegistration } from '../hooks/useENSRegistration';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '../utils/helpers';
@@ -52,7 +52,7 @@ export function ENSSearchSheet() {
 
   const { step } = useENSRegistrationStepHandler();
   const registrationCostsData = useENSRegistrationCosts({
-    name: debouncedSearchQuery,
+    name: registrationData?.valid ? debouncedSearchQuery.replace(ENS_DOMAIN, '') + ENS_DOMAIN : '',
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,

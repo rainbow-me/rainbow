@@ -16,7 +16,6 @@ export function ConfigurationSection({
   isLoading,
   owner,
   registrant,
-  isOwner,
   isPrimary,
   isProfilesEnabled,
   isExternal,
@@ -29,7 +28,6 @@ export function ConfigurationSection({
   owner?: { name?: string | null; address: string } | null;
   registrant?: { name?: string | null; address: string } | null;
   isExternal?: boolean;
-  isOwner?: boolean;
   isPrimary?: boolean;
   isProfilesEnabled?: boolean;
   isSetNameEnabled?: boolean;
@@ -62,7 +60,6 @@ export function ConfigurationSection({
                   name,
                 });
               }}
-              switchDisabled={!isOwner}
               switchValue={isPrimary}
               useAccentColor
             />

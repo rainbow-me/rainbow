@@ -38,7 +38,7 @@ import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
@@ -126,7 +126,7 @@ export function ENSConfirmRegisterSheet() {
 
   const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
-    name,
+    name: mode === REGISTRATION_MODES.CREATE || mode === REGISTRATION_MODES.RENEW ? name : '',
     yearsDuration: duration,
   });
 
