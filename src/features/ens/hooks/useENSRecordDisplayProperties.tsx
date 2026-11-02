@@ -11,7 +11,7 @@ import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
@@ -167,7 +167,6 @@ export function useENSRecordDisplayProperties({
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
-  const accountAddress = useAccountAddress();
 
   const handlePressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -179,7 +178,7 @@ export function useENSRecordDisplayProperties({
         setClipboard(recordValue);
       }
       if (actionKey === 'edit' && ensName) {
-        useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.EDIT);
+        useEnsRegistrationStore.getState().start(useWalletsStore.getState().accountAddress, ensName, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
@@ -187,7 +186,7 @@ export function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, accountAddress, url]
+    [ensName, navigate, recordKey, recordValue, url]
   );
 
   const Button = useCallback(
