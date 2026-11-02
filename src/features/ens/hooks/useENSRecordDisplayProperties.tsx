@@ -17,19 +17,6 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
 
-type ImageSource = { imageUrl?: string | null };
-type ENSImages = {
-  avatar?: ImageSource;
-  cover?: ImageSource;
-};
-
-const imageKeyMap = {
-  [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.header]: 'coverUrl',
-} as {
-  [key: string]: 'avatarUrl' | 'coverUrl';
-};
-
 const icons = {
   [ENS_RECORDS.twitter]: 'x',
   [ENS_RECORDS.github]: 'github',
@@ -54,26 +41,26 @@ const links = {
 export function useENSRecordDisplayProperties({
   allowEdit,
   ensName,
-  images,
+  imageUrl,
   key: recordKey,
   value: recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
-  images?: ENSImages;
+  imageUrl?: string | null;
   key: string;
   value: string;
   type: 'address' | 'record';
 }) {
-  const isImageValue = useMemo(() => Object.keys(imageKeyMap).includes(recordKey), [recordKey]);
+  const isImageValue = recordKey === ENS_RECORDS.avatar || recordKey === ENS_RECORDS.header;
 
   const isUrlRecord = useMemo(() => [ENS_RECORDS.url, ENS_RECORDS.website].includes(recordKey as ENS_RECORDS), [recordKey]);
   const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
     if (isImageValue) {
-      return images?.[recordKey as 'avatar' | 'cover']?.imageUrl || undefined;
+      return imageUrl || undefined;
     }
     if (isUrlValue || isUrlRecord) {
       return recordValue.match(/^http/) ? recordValue : `https://${recordValue}`;
@@ -81,7 +68,7 @@ export function useENSRecordDisplayProperties({
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
     }
-  }, [images, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
+  }, [imageUrl, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
 
   const { displayUrl, displayUrlUsername } = useMemo(() => {
     const urlObj = url ? new URL(url) : { hostname: '', pathname: '' };

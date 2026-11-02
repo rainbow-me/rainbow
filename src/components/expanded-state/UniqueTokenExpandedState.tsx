@@ -594,7 +594,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                                 allowEdit={hasEditButton}
                                 coinAddresses={ensData?.coinAddresses}
                                 ensName={asset.name}
-                                images={ensData?.images}
                                 isLoading={!ensProfile.hasRecordsOutcome}
                                 records={ensData?.records}
                               />
@@ -614,8 +613,8 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               isReadOnlyWallet={isReadOnlyWallet}
                               isSetNameEnabled={ensProfile?.isSetNameEnabled}
                               name={cleanENSName}
-                              owner={ensData?.owner}
-                              registrant={ensData?.registrant}
+                              ownerAddress={ensData?.owner?.address}
+                              registrantAddress={ensData?.registrant?.address}
                             />
                           </Section>
                         </>

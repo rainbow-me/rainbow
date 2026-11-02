@@ -1,11 +1,7 @@
-import { getAddress } from 'viem';
-
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 
-import { useEnsImageStore } from '../data/stores/imageStore';
 import { useEnsOwnerStore, useEnsRegistrationMetadataStore } from '../data/stores/ownershipStores';
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
-import { useEnsNameStore } from '../data/useEnsNameStore';
 
 /**
  * Combines independently cached profile fields with the active wallet's permissions.
@@ -20,19 +16,14 @@ export function useENSProfile(name: string, { enabled = true, supportedRecordsOn
   const hasRegistrationOutcome = useEnsRegistrationMetadataStore(s => active && s.hasSettled(name));
   const ownerAddress = useEnsOwnerStore(s => (active ? s.get(name) : undefined));
   const registration = useEnsRegistrationMetadataStore(s => (active ? s.get(name) : undefined));
-  const avatar = useEnsImageStore(s => (active ? s.get({ name, field: 'avatar' }) : undefined));
-  const header = useEnsImageStore(s => (active ? s.get({ name, field: 'header' }) : undefined));
   const registrantAddress = registration?.registrant?.id;
-  const ownerName = useEnsNameStore(s => (ownerAddress ? s.get(ownerAddress) : undefined));
-  const registrantName = useEnsNameStore(s => (registrantAddress ? s.get(getAddress(registrantAddress)) : undefined));
 
   return {
     data: {
       ...records,
       address: records?.coinAddresses.ETH,
-      images: { avatar: { imageUrl: avatar }, header: { imageUrl: header } },
-      owner: ownerAddress && { address: ownerAddress, name: ownerName },
-      registrant: registration === undefined ? undefined : registrantAddress ? { address: registrantAddress, name: registrantName } : null,
+      owner: ownerAddress && { address: ownerAddress },
+      registrant: registration === undefined ? undefined : registrantAddress ? { address: registrantAddress } : null,
       registration,
     },
     hasTransferData: records !== undefined && ownerAddress !== undefined && registration !== undefined,

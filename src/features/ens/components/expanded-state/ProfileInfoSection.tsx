@@ -6,6 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Stack } from '@/design-system';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/features/ens/core/records';
 
+import { useEnsImageStore } from '../../data/stores/imageStore';
 import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 import type { Records } from '../../types/registration';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
@@ -13,27 +14,20 @@ import { InfoRow, InfoRowSkeleton } from './InfoRow';
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
 const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.name, ENS_RECORDS.description];
 
-type ImageSource = { imageUrl?: string | null };
-type ENSImages = {
-  avatar?: ImageSource;
-  header?: ImageSource;
-};
-
 export function ProfileInfoSection({
   allowEdit,
   coinAddresses: coinAddressMap,
   ensName,
-  images,
   isLoading,
   records,
 }: {
   allowEdit?: boolean;
   coinAddresses?: Records;
   ensName?: string;
-  images?: ENSImages;
   isLoading?: boolean;
   records?: Records;
 }) {
+  const headerImage = useEnsImageStore(s => (ensName && records?.header ? s.get({ name: ensName, field: 'header' }) : undefined));
   const recordsArray = useMemo(
     () =>
       Object.entries(records || {})
@@ -68,7 +62,7 @@ export function ProfileInfoSection({
               <ProfileInfoRow
                 allowEdit={allowEdit}
                 ensName={ensName}
-                images={images}
+                imageUrl={recordKey === ENS_RECORDS.header ? headerImage : undefined}
                 key={recordKey}
                 recordKey={recordKey}
                 recordValue={recordValue}
@@ -109,14 +103,14 @@ export function ProfileInfoSection({
 function ProfileInfoRow({
   allowEdit,
   ensName,
-  images,
+  imageUrl,
   recordKey,
   recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
-  images?: ENSImages;
+  imageUrl?: string | null;
   recordKey: string;
   recordValue: string;
   type: 'address' | 'record';
@@ -124,7 +118,7 @@ function ProfileInfoRow({
   const { ContextMenuButton, icon, isImageValue, label, url, value } = useENSRecordDisplayProperties({
     allowEdit,
     ensName,
-    images,
+    imageUrl,
     key: recordKey,
     type,
     value: recordValue,

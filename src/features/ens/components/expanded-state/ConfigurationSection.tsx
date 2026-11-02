@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+
+import { getAddress, type Address } from 'viem';
 
 import { Stack } from '@/design-system';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
@@ -8,14 +10,15 @@ import Routes from '@/navigation/routesNames';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 import { useEnsRegistrationStore } from '../../data/stores/registrationStore';
+import { useEnsNameStore } from '../../data/useEnsNameStore';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
 export function ConfigurationSection({
   isLoading,
-  owner,
-  registrant,
+  ownerAddress,
+  registrantAddress,
   isPrimary,
   isProfilesEnabled,
   isExternal,
@@ -25,8 +28,8 @@ export function ConfigurationSection({
   externalAvatarUrl,
 }: {
   isLoading?: boolean;
-  owner?: { name?: string | null; address: string } | null;
-  registrant?: { name?: string | null; address: string } | null;
+  ownerAddress?: Address | null;
+  registrantAddress?: string | null;
   isExternal?: boolean;
   isPrimary?: boolean;
   isProfilesEnabled?: boolean;
@@ -37,6 +40,9 @@ export function ConfigurationSection({
 }) {
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
+  const registrant = useMemo(() => (registrantAddress ? getAddress(registrantAddress) : null), [registrantAddress]);
+  const ownerName = useEnsNameStore(s => (ownerAddress ? s.get(ownerAddress) : undefined));
+  const registrantName = useEnsNameStore(s => (registrant ? s.get(registrant) : undefined));
 
   return (
     <Stack space="15px (Deprecated)">
@@ -69,15 +75,15 @@ export function ConfigurationSection({
               explainSheetType="ens_owner"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.owner)}
               useAccentColor
-              value={registrant.name || formatAddressForDisplay(registrant.address || '', 4, 4) || ''}
+              value={registrantName || formatAddressForDisplay(registrant, 4, 4) || ''}
             />
           )}
-          {owner && (
+          {ownerAddress && (
             <InfoRow
               explainSheetType="ens_manager"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.manager)}
               useAccentColor
-              value={owner.name || formatAddressForDisplay(owner.address || '', 4, 4) || ''}
+              value={ownerName || formatAddressForDisplay(ownerAddress, 4, 4) || ''}
             />
           )}
         </>
