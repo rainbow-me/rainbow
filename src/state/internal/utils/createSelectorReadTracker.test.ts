@@ -169,7 +169,7 @@ describe('createSelectorReadTracker', () => {
       },
     }));
 
-    const trackedStore = reads.install(store, subscribedKeys => store.setState({ subscribedKeys }));
+    const trackedStore = reads.install(store, () => store.setState({ subscribedKeys: reads.getKeys() }));
 
     const unsubscribe = trackedStore.subscribe(
       state => state.read(0),
@@ -199,5 +199,5 @@ function createTestStore(): Store<TestState> {
     tick: () => set(state => ({ version: state.version + 1 })),
   }));
 
-  return reads.install(store, subscribedKeys => store.setState({ subscribedKeys }));
+  return reads.install(store, () => store.setState({ subscribedKeys: reads.getKeys() }));
 }

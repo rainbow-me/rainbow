@@ -80,7 +80,6 @@ export function createQueryCollectionStore<Input, Data>(
   const requests: Partial<Record<Key, Request<Data>>> = nullObject();
 
   let inputsByKey: Record<Key, Input> = nullObject();
-  let demandedKeys: Key[] = [];
   let demandUpdatePending = false;
   let destroyed = false;
   let pendingEntries: State<Input, Data>['queryCache'] | undefined;
@@ -260,10 +259,11 @@ export function createQueryCollectionStore<Input, Data>(
     demandUpdatePending = false;
     if (destroyed) return;
 
+    const demandedKeys = readTracker.getKeys().sort();
     const inputs: KeyedInput<Input>[] = [];
     const nextInputs: Record<Key, Input> = nullObject();
 
-    for (const key of demandedKeys.sort()) {
+    for (const key of demandedKeys) {
       const input = inputsByKey[key];
       inputs.push({ key, input });
       nextInputs[key] = input;
@@ -285,8 +285,7 @@ export function createQueryCollectionStore<Input, Data>(
     });
   }
 
-  return readTracker.install(store, keys => {
-    demandedKeys = keys;
+  return readTracker.install(store, () => {
     if (demandUpdatePending) return;
     demandUpdatePending = true;
     queueMicrotask(updateDemand);

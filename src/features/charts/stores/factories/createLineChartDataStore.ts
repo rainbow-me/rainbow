@@ -154,7 +154,7 @@ export function createLineChartDataStore(
     });
   }
 
-  return chartReadTracker.install(store, updateSubscribedChartIds);
+  return chartReadTracker.install(store, () => updateSubscribedChartIds(chartReadTracker.getKeys()));
 }
 
 // ============ Store Options ================================================== //
