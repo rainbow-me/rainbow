@@ -46,6 +46,7 @@ export const useEnsGasEstimateStore = createQueryCollectionStore({
     }
   },
   disableAutoRefetching: true,
+  paramChangeThrottle: { delay: time.ms(300) },
   staleTime: time.seconds(15),
   cacheTime: time.minutes(5),
 });

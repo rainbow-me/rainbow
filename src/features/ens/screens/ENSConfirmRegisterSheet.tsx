@@ -127,6 +127,7 @@ export function ENSConfirmRegisterSheet() {
   const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name,
+    yearsDuration: duration,
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
