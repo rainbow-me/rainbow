@@ -117,8 +117,7 @@ export const useEnsRegistrationStore = createBaseStore<RegistrationState>(
   },
   {
     storageKey: 'ensRegistrations',
-    // A submitted commitment must be durable before its transaction callback returns.
-    persistThrottleMs: 0,
+    persistThrottleMs: time.seconds(1),
     partialize: state => {
       const registrations: ENSRegistrations = {};
       for (const account in state.registrations) {

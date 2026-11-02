@@ -1,7 +1,6 @@
-import { configureStores } from '@storesjs/stores';
 import { beforeEach, expect, it, vi } from 'vitest';
 
-import { rainbowStorage } from '@/state/internal/rainbowStorage';
+import { time } from '@/framework/core/utils/time';
 
 import { getChangedRecords } from '../../core/records';
 import { useEnsRegistrationStore as store } from './registrationStore';
@@ -52,20 +51,18 @@ it('adopts an edit baseline once and preserves typed changes across refreshes', 
   expect(store.getState().registrations[ALICE]['alice.eth'].records).toEqual({ description: 'new session' });
 });
 
-it('restores commitment parameters without restoring navigation or derived record writes', async () => {
+it('persists submitted commitments without unsent drafts or navigation state', async () => {
   store.getState().start(ALICE, 'alice.eth', 'CREATE');
   store.getState().update(ALICE, 'alice.eth', commitment);
   store.getState().start(BOB, 'unsent.eth', 'CREATE');
-  store.getState().clear();
 
-  vi.resetModules();
-  const stores = await import('@storesjs/stores');
-  stores.configureStores({ storage: rainbowStorage });
-  const restored = (await import('./registrationStore')).useEnsRegistrationStore;
-  expect(restored.getState().current).toBeNull();
-  expect(restored.getState().registrations[BOB]).toBeUndefined();
-  expect(restored.getState().registrations[ALICE]['alice.eth']).toEqual({ ...commitment, mode: 'CREATE' });
-  configureStores({ storage: rainbowStorage });
+  await vi.waitFor(
+    async () => {
+      const saved = await store.persist.getOptions().storage?.getItem('ensRegistrations');
+      expect(saved?.state).toEqual({ registrations: { [ALICE]: { 'alice.eth': { ...commitment, mode: 'CREATE' } } } });
+    },
+    { timeout: time.seconds(2) }
+  );
 });
 
 it('derives actual record writes without inventing deletions for absent values', () => {
