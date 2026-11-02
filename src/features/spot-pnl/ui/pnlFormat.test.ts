@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
 
-import { formatNativeAmount, formatPnlAmount, formatPnlPercentage } from './pnlFormat';
+import { formatNativeAmount, formatPerTokenFigure, formatPnlAmount, formatPnlPercentage } from './pnlFormat';
 
 describe('formatNativeAmount', () => {
   it.each<{ amount: string; currency: NativeCurrencyKey; expected: string }>([
@@ -43,6 +43,29 @@ describe('formatNativeAmount', () => {
     { amount: '184000', currency: 'ETH', expected: 'Ξ184.0K' },
   ])('$currency $amount → $expected', ({ amount, currency, expected }) => {
     expect(formatNativeAmount(amount, currency)).toBe(expected);
+  });
+});
+
+describe('formatPerTokenFigure', () => {
+  it.each<{ marketCap: string; currency: NativeCurrencyKey; expected: string }>([
+    { marketCap: '999.4', currency: 'USD', expected: '$999' },
+    { marketCap: '999.5', currency: 'USD', expected: '$1.0K' },
+    { marketCap: '1000', currency: 'USD', expected: '$1.0K' },
+    { marketCap: '82699', currency: 'USD', expected: '$82.7K' },
+
+    { marketCap: '82699', currency: 'JPY', expected: '¥82.7K' },
+    { marketCap: '82699', currency: 'EUR', expected: '€82.7K' },
+    { marketCap: '1.4567', currency: 'ETH', expected: 'Ξ1.457' },
+  ])('market cap $currency $marketCap → $expected', ({ marketCap, currency, expected }) => {
+    expect(formatPerTokenFigure(marketCap, '1', currency)).toBe(expected);
+  });
+
+  it('shows the market cap at the price when a circulating supply is given', () => {
+    expect(formatPerTokenFigure('0.0000827', '1000000000', 'USD')).toBe('$82.7K');
+  });
+
+  it('shows the price without a circulating supply', () => {
+    expect(formatPerTokenFigure('0.0000827', null, 'USD')).toBe('$0.0₄827');
   });
 });
 
