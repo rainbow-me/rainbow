@@ -78,8 +78,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
-  const initialENSName =
-    typeof ens === 'string' ? ens : accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : '';
+  const initialENSName = typeof ens === 'string' ? ens : '';
 
   const contactAddress = useMemo(() => (accountType === 'contacts' ? normalizeAddress(address) : null), [accountType, address]);
   const resolvedName = useEnsNameStore(s => (contactAddress ? s.get(contactAddress) : undefined));
@@ -100,10 +99,9 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient = accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : address;
-      onPress(recipient, nickname ?? recipient);
+      onPress(address, nickname ?? address);
     }
-  }, [accountType, address, nickname, onPress, showcaseItem]);
+  }, [address, nickname, onPress, showcaseItem]);
 
   const imageAvatar = ensAvatar ?? image;
 

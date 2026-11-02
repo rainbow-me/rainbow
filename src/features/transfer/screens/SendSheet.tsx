@@ -21,7 +21,6 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
-import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistrationActionHandler } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
@@ -53,7 +52,6 @@ import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
-import { addressHashedColorIndex } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { SendAssetForm } from '../components/SendAssetForm';
@@ -598,31 +596,6 @@ export function SendSheet() {
     }
   }, [selected, showAssetForm, showAssetList]);
 
-  const suggestionInput = debouncedRecipient.trim();
-  const suggestionAddress = useMemo(
-    () => (chainId === ChainId.mainnet && !recipientOverride && isAddress(suggestionInput) ? getAddress(suggestionInput) : undefined),
-    [chainId, recipientOverride, suggestionInput]
-  );
-  const suggestionName = useEnsNameStore(s => (suggestionAddress ? s.get(suggestionAddress) : undefined));
-  const suggestionsSettled = useEnsNameStore(s => !!suggestionAddress && s.hasSettled(suggestionAddress));
-  const loadingEnsSuggestions = !!suggestionAddress && !suggestionsSettled;
-  const ensSuggestions = useMemo(
-    () =>
-      suggestionAddress && suggestionName
-        ? [
-            {
-              address: suggestionAddress,
-              nickname: suggestionName,
-              uniqueId: suggestionAddress,
-              color: addressHashedColorIndex(suggestionAddress),
-              ens: true,
-              network: 'mainnet',
-            },
-          ]
-        : [],
-    [suggestionAddress, suggestionName]
-  );
-
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
 
@@ -687,8 +660,6 @@ export function SendSheet() {
     analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
-  const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
-
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
   const filteredUserAccountsFromContacts = useMemo(() => {
@@ -722,9 +693,6 @@ export function SendSheet() {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
-            ensSuggestions={ensSuggestions}
-            key={sendContactListDataKey}
-            loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
               setRecipient(recipient);
               setNickname(nickname);
