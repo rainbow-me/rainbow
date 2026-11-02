@@ -16,9 +16,9 @@ import { type UploadImageReturnData } from '@/handlers/pinata';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
 
-import { useENSModifiedRegistration } from '../../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
+import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
@@ -39,9 +39,7 @@ const RegistrationAvatar = ({
   onShowExplainSheet: () => void;
   enableNFTs: boolean;
 }) => {
-  const {
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration();
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { isLoading, values, onChangeField, onRemoveField, setUploading } = useENSRegistrationForm();
   const { name } = useENSRegistration();
 

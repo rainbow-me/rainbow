@@ -35,11 +35,11 @@ import { RenewContent } from '../components/registration/RenewContent';
 import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
 import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
 import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
@@ -96,11 +96,8 @@ function TransactionActionRow({
 
 export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
-  const { name: ensName, mode } = useENSRegistration();
-  const {
-    changedRecords,
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration();
+  const { name: ensName, mode, changedRecords } = useENSRegistration();
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { isSmallPhone } = useDimensions();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);

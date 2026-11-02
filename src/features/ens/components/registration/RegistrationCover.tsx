@@ -17,9 +17,9 @@ import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
-import { useENSModifiedRegistration } from '../../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
+import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
@@ -36,9 +36,7 @@ const RegistrationCover = ({
   onShowExplainSheet: () => void;
   enableNFTs: boolean;
 }) => {
-  const {
-    images: { coverUrl: initialCoverUrl },
-  } = useENSModifiedRegistration();
+  const initialCoverUrl = useENSRegistrationImage('header');
   const { isLoading, onChangeField, onRemoveField, setUploading, uploading, values } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);

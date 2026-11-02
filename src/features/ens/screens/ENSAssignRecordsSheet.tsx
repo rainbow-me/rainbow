@@ -34,9 +34,10 @@ import { SelectableButton } from '../components/registration/SelectableButton';
 import { TextRecordsForm } from '../components/registration/TextRecordsForm';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../data/profilePreferences';
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
-import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
 import { type ENSRoutes } from '../navigation/RegisterENSNavigator';
 import { accentColorAtom, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
@@ -49,15 +50,11 @@ export function ENSAssignRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
-  const { name } = useENSRegistration();
+  const { name, mode, accountAddress } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
-  const {
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration({
-    setInitialRecordsWhenInEditMode: true,
-  });
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
 
   const defaultFields = useMemo(
     () =>
@@ -72,8 +69,17 @@ export function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const records = useEnsRecordsStore(s => (name ? s.get({ name })?.records : undefined));
-  const isEmptyProfile = isEmpty(records);
+  const profile = useEnsRecordsStore(s => (name ? s.get({ name }) : undefined));
+  const isEmptyProfile = isEmpty(profile?.records);
+
+  useEffect(() => {
+    if (mode !== REGISTRATION_MODES.EDIT || !profile) return;
+    useEnsRegistrationStore.getState().initializeRecords(accountAddress, name, {
+      contenthash: profile.contenthash,
+      ...profile.records,
+      ...profile.coinAddresses,
+    });
+  }, [accountAddress, name, mode, profile]);
 
   const displayTitleLabel = params?.mode !== REGISTRATION_MODES.EDIT || !isLoading;
 
