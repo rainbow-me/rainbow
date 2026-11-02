@@ -22,7 +22,7 @@ import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistrationActionHandler } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';

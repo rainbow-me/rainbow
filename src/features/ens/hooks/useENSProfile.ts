@@ -10,7 +10,7 @@ import { useEnsNameStore } from '../data/useEnsNameStore';
 /**
  * Combines independently cached profile fields with the active wallet's permissions.
  */
-export default function useENSProfile(name: string, { enabled = true, supportedRecordsOnly = true } = {}) {
+export function useENSProfile(name: string, { enabled = true, supportedRecordsOnly = true } = {}) {
   const accountAddress = useAccountAddress();
   const primaryName = useWalletsStore(s => s.walletNames[accountAddress]);
   const active = enabled && !!name;
@@ -37,6 +37,7 @@ export default function useENSProfile(name: string, { enabled = true, supportedR
     },
     hasTransferData: records !== undefined && ownerAddress !== undefined && registration !== undefined,
     hasRecordsOutcome,
+    hasRegistrationOutcome,
     hasOwnershipOutcome: hasOwnerOutcome && hasRegistrationOutcome,
     isOwner: !!ownerAddress && ownerAddress.toLowerCase() === accountAddress.toLowerCase(),
     isRegistrant: !!registrantAddress && registrantAddress.toLowerCase() === accountAddress.toLowerCase(),

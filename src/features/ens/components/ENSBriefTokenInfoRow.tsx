@@ -28,8 +28,8 @@ export function ENSBriefTokenInfoRow({
   externalAvatarUrl,
 }: {
   color?: string;
-  expiryDate?: number;
-  registrationDate?: number;
+  expiryDate?: number | null;
+  registrationDate?: number | null;
   ensName: string;
   showExtendDuration?: boolean;
   externalAvatarUrl?: string | null;
@@ -64,12 +64,12 @@ export function ENSBriefTokenInfoRow({
         color={colors.whiteLabel}
         isENS
         isNft
-        loading={!registrationDate}
+        loading={registrationDate === undefined}
         size="larger"
         title={i18n.t(i18n.l.ens.registered_on)}
         weight="heavy"
       >
-        {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : ''}
+        {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : '—'}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
@@ -104,7 +104,7 @@ export function ENSBriefTokenInfoRow({
         enableHapticFeedback
         isENS
         isNft
-        loading={!expiryDate}
+        loading={expiryDate === undefined}
         onPress={handlePressExpiryDate}
         size="larger"
         title={i18n.t(
@@ -116,7 +116,7 @@ export function ENSBriefTokenInfoRow({
           ? showExpiryDistance
             ? formatDistanceStrict(new Date(), new Date(expiryDate * 1000))
             : format(new Date(expiryDate * 1000), 'MMM d, yyyy')
-          : ''}
+          : '—'}
       </TokenInfoItem>
     </Columns>
   );

@@ -12,7 +12,7 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
-import type useENSProfile from '@/features/ens/hooks/useENSProfile';
+import { type useENSProfile } from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';

@@ -36,7 +36,7 @@ import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInf
 import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
 import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
 import { ENS_RECORDS } from '@/features/ens/core/records';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -546,9 +546,11 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={asset.name}
-                              expiryDate={ensData?.registration?.expiryDate}
+                              expiryDate={ensData?.registration?.expiryDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)}
                               externalAvatarUrl={asset.images.lowResUrl}
-                              registrationDate={ensData?.registration?.registrationDate}
+                              registrationDate={
+                                ensData?.registration?.registrationDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)
+                              }
                               showExtendDuration={hasExtendDurationButton}
                             />
                           )}
