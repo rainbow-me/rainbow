@@ -141,7 +141,7 @@ export function createQueryCollectionStore<Input, Data>(
             const queryCache: State<Input, Data>['queryCache'] = {};
             for (const key in persisted?.queryCache) {
               const cached = persisted.queryCache[key];
-              if (key.startsWith(':') && cached?.lastFetchedAt != null) queryCache[key] = { ...cached, errorInfo: null };
+              if (key.startsWith(':') && cached?.lastFetchedAt != null) queryCache[key] = { ...cached, cacheTime, errorInfo: null };
             }
             return { ...current, queryCache };
           },
