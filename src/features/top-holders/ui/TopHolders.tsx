@@ -5,10 +5,8 @@ import Animated from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { LAYOUT_ANIMATION } from '@/components/collapsible/CollapsibleSectionBase';
-import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
@@ -17,6 +15,7 @@ import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { formatNativeAmount, formatPerTokenFigure, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
 import { useCirculatingSupply } from '@/features/spot-pnl/ui/useCirculatingSupply';
+import { useTokenPrice } from '@/features/spot-pnl/ui/useTokenPrice';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -201,7 +200,7 @@ function UnrealizedHolderRows({
   token: { address: string; chainId: ChainId };
   usdToNativeRate: number;
 }) {
-  const price = useLiveTokenValue({ tokenId: getUniqueId(token.address, token.chainId), fallback: '' });
+  const price = useTokenPrice({ chainId: token.chainId, nativeCurrency, tokenAddress: token.address });
   const circulatingSupply = useCirculatingSupply({ chainId: token.chainId, nativeCurrency, price, tokenAddress: token.address });
 
   return (

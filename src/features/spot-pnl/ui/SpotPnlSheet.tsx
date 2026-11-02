@@ -8,7 +8,6 @@ import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { type TextProps } from '@/design-system/components/Text/Text';
@@ -54,6 +53,7 @@ import {
   pnlSign,
 } from './pnlFormat';
 import { useCirculatingSupply } from './useCirculatingSupply';
+import { useTokenPrice } from './useTokenPrice';
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;
@@ -168,8 +168,6 @@ function SpotPnlSheetContent({
         balance={balance}
         chainId={chainId}
         decimals={accountAsset?.decimals ?? externalToken?.decimals ?? 18}
-        initialPrice={accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? ''}
-        initialPriceUpdatedAt={accountAsset?.price?.changed_at ?? 0}
         isReceivedOnly={isReceivedOnly}
         isSettled={isSettled}
         isSuccess={isSuccess}
@@ -178,7 +176,6 @@ function SpotPnlSheetContent({
         tokenAddress={tokenAddress}
         tokenName={accountAsset?.name ?? externalToken?.name}
         trades={trades}
-        uniqueId={uniqueId}
         viewContext={{ entryPoint, hasEnsName: !!displayEns, isOwnWallet: isSelectedWallet }}
       />
     </Box>
@@ -189,8 +186,6 @@ function SpotPnlSection({
   balance,
   chainId,
   decimals,
-  initialPrice,
-  initialPriceUpdatedAt,
   isReceivedOnly,
   isSettled,
   isSuccess,
@@ -199,14 +194,11 @@ function SpotPnlSection({
   tokenAddress,
   tokenName,
   trades,
-  uniqueId,
   viewContext,
 }: {
   balance: string;
   chainId: ChainId;
   decimals: number;
-  initialPrice: string;
-  initialPriceUpdatedAt: number;
   isReceivedOnly: boolean;
   isSettled: boolean;
   isSuccess: boolean;
@@ -215,16 +207,11 @@ function SpotPnlSection({
   tokenAddress: string;
   tokenName: string | undefined;
   trades: WalletTokenTrades | null;
-  uniqueId: string;
   /** Sent with the view event. */
   viewContext: { entryPoint: SpotPnlSheetEntryPoint; hasEnsName: boolean; isOwnWallet: boolean };
 }) {
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
-  const price = useLiveTokenValue({
-    tokenId: uniqueId,
-    fallback: initialPrice,
-    fallbackUpdatedAt: initialPriceUpdatedAt,
-  });
+  const price = useTokenPrice({ chainId, nativeCurrency, tokenAddress });
   const circulatingSupply = useCirculatingSupply({ chainId, nativeCurrency, price, tokenAddress });
 
   const pnl = useMemo(
