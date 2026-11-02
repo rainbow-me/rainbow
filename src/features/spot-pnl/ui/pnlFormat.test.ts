@@ -54,7 +54,7 @@ describe('formatPerTokenFigure', () => {
     { marketCap: '82699', currency: 'USD', expected: '$82.7K' },
 
     { marketCap: '82699', currency: 'JPY', expected: '¥82.7K' },
-    { marketCap: '82699', currency: 'RUB', expected: '82.7K ₽' },
+    { marketCap: '82699', currency: 'EUR', expected: '€82.7K' },
     { marketCap: '1.4567', currency: 'ETH', expected: 'Ξ1.457' },
   ])('market cap $currency $marketCap → $expected', ({ marketCap, currency, expected }) => {
     expect(formatPerTokenFigure(marketCap, '1', currency)).toBe(expected);
