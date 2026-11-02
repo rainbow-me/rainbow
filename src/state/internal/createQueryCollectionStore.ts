@@ -55,6 +55,11 @@ type Results<Data> = Partial<Record<Key, Data>>;
 type Params<Input> = { inputs: KeyedInput<Input>[]; refresh: boolean; retained: boolean };
 type State<Input, Data> = QueryStoreState<Results<Data>, Params<Input>, QueryCollectionState<Input, Data>>;
 
+type PublicState<Input, Data> = Omit<
+  State<Input, Data>,
+  'fetch' | 'getData' | 'getStatus' | 'isDataExpired' | 'isStale' | 'lastFetchedAt' | 'status' | 'error' | 'inputs' | 'queryKey'
+>;
+
 // ============ Constants ====================================================== //
 
 const ABORT_OPTIONS = Object.freeze({ once: true });
@@ -75,7 +80,7 @@ const RESOLVED_PROMISE = Promise.resolve();
 export function createQueryCollectionStore<Input, Data>(
   { key: getKey, fetcher, staleTime, cacheTime, enabled = true, ...queryOptions }: QueryCollectionConfig<Input, Data>,
   persistence?: QueryCollectionPersistence<Input, Data>
-): OptionallyPersistedStore<Omit<State<Input, Data>, 'fetch'>, Partial<State<Input, Data>>> {
+): OptionallyPersistedStore<PublicState<Input, Data>, Partial<State<Input, Data>>> {
   const readTracker = createSelectorReadTracker<Key>();
   const requests: Partial<Record<Key, Request<Data>>> = nullObject();
 

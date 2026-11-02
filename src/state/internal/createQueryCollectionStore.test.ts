@@ -85,7 +85,7 @@ it('keeps prior data for failed members while publishing successful refreshes', 
   await flush();
   expect(store.getState().get(ALICE)).toBe('old alice');
   expect(store.getState().get(BOB)).toBe('new bob');
-  expect(store.getState().status).toBe('success');
+  expect(store.getState()).toHaveProperty('status', 'success');
 
   alice();
   bob();
@@ -102,8 +102,8 @@ it('uses native failure and retry handling when every requested member fails', a
   requests[0].reject(error);
   requests[1].reject(new Error('Bob failed'));
   await flush();
-  expect(store.getState().status).toBe('error');
-  expect(store.getState().error).toBe(error);
+  expect(store.getState()).toHaveProperty('status', 'error');
+  expect(store.getState()).toHaveProperty('error', error);
 
   vi.advanceTimersByTime(time.ms(50));
   await flush();
@@ -113,7 +113,7 @@ it('uses native failure and retry handling when every requested member fails', a
   await flush();
   expect(store.getState().get(ALICE)).toBeNull();
   expect(store.getState().get(BOB)).toBe('bob');
-  expect(store.getState().error).toBeNull();
+  expect(store.getState()).toHaveProperty('error', null);
   alice();
   bob();
   await flush();
@@ -186,7 +186,7 @@ it('restores successful data without past failures or consumer demand', async ()
   first.store.getState().reset();
 
   const restored = createFixture(storage);
-  expect(restored.store.getState().inputs).toEqual([]);
+  expect(restored.store.getState()).toHaveProperty('inputs', []);
   expect(restored.store.getState().get(ALICE)).toBe('saved');
   expect(restored.store.getState().getError(ALICE)).toBeNull();
   expect(restored.store.getState().hasSettled(BOB)).toBe(false);
