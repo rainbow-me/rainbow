@@ -1,11 +1,9 @@
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import { getAddress } from 'viem';
-
 import Text from '@/components/text/Text';
 import { opacity } from '@/design-system/utils/opacity';
-import { getNameService } from '@/features/address/core/address';
+import { getNameService, normalizeAddress } from '@/features/address/core/address';
 import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
@@ -83,7 +81,8 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const initialENSName =
     typeof ens === 'string' ? ens : accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : '';
 
-  const resolvedName = useEnsNameStore(s => (accountType === 'contacts' ? s.get(getAddress(address)) : undefined));
+  const contactAddress = useMemo(() => (accountType === 'contacts' ? normalizeAddress(address) : null), [accountType, address]);
+  const resolvedName = useEnsNameStore(s => (contactAddress ? s.get(contactAddress) : undefined));
   const ensName = resolvedName === undefined ? initialENSName : (resolvedName ?? '');
   const ensAvatar = useEnsImageStore(s => (ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
 
@@ -162,4 +161,4 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   );
 };
 
-export default magicMemo(React.forwardRef(ContactRow), ['address', 'color', 'nickname']);
+export default magicMemo(React.forwardRef(ContactRow), ['address', 'color', 'ens', 'nickname']);
