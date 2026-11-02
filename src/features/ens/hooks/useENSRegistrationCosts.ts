@@ -1,28 +1,20 @@
 import { useEffect, useMemo } from 'react';
 
 import { type BigNumberish } from '@ethersproject/bignumber';
-import { getAddress } from 'viem';
+import { useIsFocused } from '@react-navigation/native';
 
 import useGas from '@/features/gas/hooks/useGas';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
-import ethUnits from '@/references/ethereum-units.json';
+import { useCleanup } from '@/hooks/useCleanup';
 import timeUnits from '@/references/time-units.json';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-import { useEnsGasEstimateStore } from '../data/stores/gasEstimateStore';
-import { useEnsNameStore } from '../data/useEnsNameStore';
-import {
-  ENS_DOMAIN,
-  formatEstimatedNetworkFee,
-  formatRentPrice,
-  formatTotalRegistrationCost,
-  REGISTRATION_MODES,
-  REGISTRATION_STEPS,
-} from '../utils/helpers';
+import { createEnsGasEstimateStore } from '../data/stores/createEnsGasEstimateStore';
+import { formatEstimatedNetworkFee, formatRentPrice, formatTotalRegistrationCost, REGISTRATION_STEPS } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
 export function useENSRegistrationCosts({
@@ -40,9 +32,9 @@ export function useENSRegistrationCosts({
 }) {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(s => s.currency);
-  const { registrationParameters, mode, changedRecords } = useENSRegistration();
-  const duration = yearsDuration * timeUnits.secs.year;
-  const label = name.endsWith(ENS_DOMAIN) ? name.slice(0, -ENS_DOMAIN.length) : null;
+  const { registrationParameters, changedRecords } = useENSRegistration();
+  const isFocused = useIsFocused();
+  const duration = step === REGISTRATION_STEPS.REGISTER ? registrationParameters?.duration : yearsDuration * timeUnits.secs.year;
   const rentPriceInWei = rentPrice?.wei.toString();
   const { salt, rentPrice: committedRentPrice } = registrationParameters ?? {};
   const gas = useGas({ enableTracking: true });
@@ -56,83 +48,34 @@ export function useENSRegistrationCosts({
     isValidGas,
     isSufficientGas,
   } = gas;
-  const hasInput = !!name && !!accountAddress;
-  const reverseName = useEnsNameStore(s =>
-    hasInput && step === REGISTRATION_STEPS.COMMIT ? s.get(getAddress(accountAddress)) : undefined
-  );
-
-  const commitGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && label && step === REGISTRATION_STEPS.COMMIT && rentPriceInWei
-      ? s.get({ action: 'commit', name: label, duration, ownerAddress: accountAddress, rentPrice: rentPriceInWei })
-      : undefined
-  );
-  const setNameGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && (step === REGISTRATION_STEPS.SET_NAME || (step === REGISTRATION_STEPS.COMMIT && reverseName === null))
-      ? s.get({ action: 'setName', name, ownerAddress: accountAddress })
-      : undefined
-  );
-  const setRecordsGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && (step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.EDIT)
-      ? s.get({
-          action: 'setRecords',
+  const gasEstimateStore = useMemo(
+    () =>
+      createEnsGasEstimateStore(
+        {
           name,
-          records: changedRecords,
-          ownerAddress: mode === REGISTRATION_MODES.EDIT ? accountAddress : undefined,
-          setReverseRecord: sendReverseRecord,
-        })
-      : undefined
-  );
-  const renewGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && label && step === REGISTRATION_STEPS.RENEW && rentPriceInWei
-      ? s.get({ action: 'renew', name: label, duration, rentPrice: rentPriceInWei })
-      : undefined
-  );
-  const registerGasLimit = useEnsGasEstimateStore(s =>
-    hasInput && label && step === REGISTRATION_STEPS.REGISTER && salt && committedRentPrice
-      ? s.get({
-          action: 'register',
-          name: label,
-          duration,
           ownerAddress: accountAddress,
-          records: changedRecords,
-          rentPrice: committedRentPrice,
+          step,
+          duration,
+          rentPrice: step === REGISTRATION_STEPS.REGISTER ? committedRentPrice : rentPriceInWei,
           salt,
+          records: changedRecords,
           setReverseRecord: sendReverseRecord,
-        })
-      : undefined
+        },
+        isFocused
+      ),
+    [name, accountAddress, step, duration, committedRentPrice, rentPriceInWei, salt, changedRecords, sendReverseRecord, isFocused]
   );
-
-  const stepGasLimit = useMemo(() => {
-    switch (step) {
-      case REGISTRATION_STEPS.COMMIT:
-        return commitGasLimit;
-      case REGISTRATION_STEPS.RENEW:
-        return renewGasLimit;
-      case REGISTRATION_STEPS.EDIT:
-        return setRecordsGasLimit;
-      case REGISTRATION_STEPS.REGISTER:
-        return registerGasLimit;
-      case REGISTRATION_STEPS.SET_NAME:
-        return setNameGasLimit;
-      default:
-        return undefined;
-    }
-  }, [step, commitGasLimit, renewGasLimit, setRecordsGasLimit, registerGasLimit, setNameGasLimit]);
-
-  const reverseGasLimit = reverseName === undefined ? undefined : reverseName === null ? setNameGasLimit : '0';
-  const estimatedGasLimit =
-    step !== REGISTRATION_STEPS.COMMIT
-      ? stepGasLimit
-      : commitGasLimit != null && setRecordsGasLimit != null && reverseGasLimit != null
-        ? add(add(commitGasLimit, setRecordsGasLimit), add(ethUnits.ens_register_with_config, reverseGasLimit))
-        : undefined;
+  useCleanup(() => gasEstimateStore.getState().reset(), [gasEstimateStore]);
+  const estimate = gasEstimateStore(s => s.getData());
+  const stepGasLimit = estimate?.stepGasLimit;
+  const estimatedGasLimit = estimate?.estimatedGasLimit;
 
   useEffect(() => {
-    startPollingGasFees();
-  }, [startPollingGasFees, step]);
+    if (isFocused) startPollingGasFees();
+  }, [isFocused, startPollingGasFees]);
   useEffect(() => {
-    if (stepGasLimit && stepGasLimit !== gasLimit && Object.keys(gasFeeParamsBySpeed).length) updateTxFee(stepGasLimit, null);
-  }, [stepGasLimit, gasLimit, gasFeeParamsBySpeed, updateTxFee]);
+    if (isFocused && stepGasLimit && stepGasLimit !== gasLimit && Object.keys(gasFeeParamsBySpeed).length) updateTxFee(stepGasLimit, null);
+  }, [isFocused, stepGasLimit, gasLimit, gasFeeParamsBySpeed, updateTxFee]);
 
   return useMemo(() => {
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });

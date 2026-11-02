@@ -36,10 +36,7 @@ import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useENSModifiedRegistration } from '../hooks/useENSModifiedRegistration';
 import { useENSRegistration } from '../hooks/useENSRegistration';
-import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
-import useENSSearch from '../hooks/useENSSearch';
 import { type ENSRoutes } from '../navigation/RegisterENSNavigator';
 import { accentColorAtom, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
@@ -62,11 +59,6 @@ export function ENSAssignRecordsSheet() {
     setInitialRecordsWhenInEditMode: true,
   });
 
-  const { data: registrationData } = useENSSearch({
-    name,
-  });
-  const { step } = useENSRegistrationStepHandler();
-
   const defaultFields = useMemo(
     () =>
       [ENS_RECORDS.name, ENS_RECORDS.description, ENS_RECORDS.url, ENS_RECORDS.twitter].map(
@@ -84,13 +76,6 @@ export function ENSAssignRecordsSheet() {
   const isEmptyProfile = isEmpty(records);
 
   const displayTitleLabel = params?.mode !== REGISTRATION_MODES.EDIT || !isLoading;
-
-  useENSRegistrationCosts({
-    name,
-    rentPrice: registrationData?.rentPrice,
-    step,
-    yearsDuration: 1,
-  });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
