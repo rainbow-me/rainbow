@@ -3654,9 +3654,9 @@
     "spot_pnl_sheet": {
       "unrealized_position": "Unrealized Position",
       "invested": "Invested",
-      "avg_entry": "Avg. Entry",
+      "avg_entry": "Avg Entry",
       "current": "Current",
-      "avg_exit": "Avg. Exit",
+      "avg_exit": "Avg Exit",
       "avg_entry_mc": "Avg Entry MC",
       "current_mc": "Current MC",
       "avg_exit_mc": "Avg Exit MC",

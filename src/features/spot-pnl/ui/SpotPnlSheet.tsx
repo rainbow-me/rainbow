@@ -18,10 +18,8 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
-import { divWorklet, greaterThanWorklet, lessThanWorklet, mulWorklet } from '@/framework/core/safeMath';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { greaterThanWorklet } from '@/framework/core/safeMath';
 import useAccountAsset from '@/hooks/useAccountAsset';
-import useAdditionalAssetData from '@/hooks/useAdditionalAssetData';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -31,7 +29,6 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { type TokenData } from '@/state/liveTokens/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { address as abbreviateAddress, abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -48,7 +45,15 @@ import {
 import { type UnrealizedPnl } from '../core/unrealizedPnl';
 import { createTokenTradesStore, useSpotPnlTokenId, useTokenTradesStore } from '../data/tokenTradesStore';
 import { PnlArrow, pnlColor } from './pnlDisplay';
-import { formatCompactTokenAmount, formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from './pnlFormat';
+import {
+  formatCompactTokenAmount,
+  formatNativeAmount,
+  formatPerTokenFigure,
+  formatPnlAmount,
+  formatPnlPercentage,
+  pnlSign,
+} from './pnlFormat';
+import { useCirculatingSupply } from './useCirculatingSupply';
 
 const SHEET_BORDER_RADIUS = 38;
 const CARD_BORDER_RADIUS = 22;
@@ -215,26 +220,12 @@ function SpotPnlSection({
   viewContext: { entryPoint: SpotPnlSheetEntryPoint; hasEnsName: boolean; isOwnWallet: boolean };
 }) {
   const usdToNativeRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate);
-  const { data: metadata } = useAdditionalAssetData({ address: tokenAddress, chainId, currency: nativeCurrency });
   const price = useLiveTokenValue({
     tokenId: uniqueId,
     fallback: initialPrice,
     fallbackUpdatedAt: initialPriceUpdatedAt,
   });
-  const liveMarketCap = useLiveTokenValue({
-    tokenId: uniqueId,
-    fallback: '0',
-    selector: selectCirculatingMarketCap,
-  });
-  const marketCap = greaterThanWorklet(liveMarketCap, 0) ? liveMarketCap : String(metadata?.marketCap ?? 0);
-  // Tokens priced under $1 show entry and current market caps in place of prices
-  const circulatingSupply =
-    usdToNativeRate &&
-    greaterThanWorklet(price || '0', 0) &&
-    lessThanWorklet(divWorklet(price, usdToNativeRate), 1) &&
-    greaterThanWorklet(marketCap, 0)
-      ? divWorklet(marketCap, price)
-      : null;
+  const circulatingSupply = useCirculatingSupply({ chainId, nativeCurrency, price, tokenAddress });
 
   const pnl = useMemo(
     () => (trades && usdToNativeRate ? calculateSpotPnl({ trades, balance, price: price || '0', usdToNativeRate }) : null),
@@ -271,10 +262,6 @@ function SpotPnlSection({
   ) : (
     <SpotPnlPlaceholder isNothingToShow={isNothingToShow} isReceivedOnly={isReceivedOnly} />
   );
-}
-
-function selectCirculatingMarketCap(token: TokenData): string {
-  return token.marketData.circulatingMarketCap;
 }
 
 function SpotPnlPlaceholder({ isNothingToShow, isReceivedOnly }: { isNothingToShow: boolean; isReceivedOnly: boolean }) {
@@ -356,8 +343,7 @@ function SpotPnlBody({
   pnl: SpotPnl;
 }) {
   const format = (amount: string) => formatNativeAmount(amount, nativeCurrency);
-  const formatPerToken = (price: string) =>
-    circulatingSupply ? format(mulWorklet(price, circulatingSupply)) : formatAssetPrice({ value: price, currency: nativeCurrency });
+  const formatPerToken = (price: string) => formatPerTokenFigure(price, circulatingSupply, nativeCurrency);
   const labels = circulatingSupply
     ? {
         avgEntry: i18n.l.spot_pnl_sheet.avg_entry_mc,

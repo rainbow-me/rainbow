@@ -5,17 +5,19 @@ import Animated from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { LAYOUT_ANIMATION } from '@/components/collapsible/CollapsibleSectionBase';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { getUniqueId } from '@/entities/assetId';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
-import { formatNativeAmount, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
+import { formatNativeAmount, formatPerTokenFigure, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
+import { useCirculatingSupply } from '@/features/spot-pnl/ui/useCirculatingSupply';
 import { lessThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -129,22 +131,14 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
   if (!topHolders) return null;
 
   const entryPoint = TAB_ENTRY_POINTS[tab];
-  const rows =
-    tab === 'holding'
-      ? topHolders.holding.map((row, index) => (
-          <HoldingHolderRow
-            key={row.address}
-            entryPoint={entryPoint}
-            nativeCurrency={nativeCurrency}
-            rank={index + 1}
-            row={row}
-            token={token}
-            usdToNativeRate={usdToNativeRate}
-          />
-        ))
-      : tab === 'unrealized'
-        ? topHolders.unrealized.map((row, index) => (
-            <UnrealizedHolderRow
+
+  return (
+    // Clipped so a longer list is revealed as the height grows instead of overlapping the sections below
+    <Box as={Animated.View} layout={LAYOUT_ANIMATION} style={{ overflow: 'hidden' }}>
+      {tab === 'holding' && (
+        <SeparatedRows
+          rows={topHolders.holding.map((row, index) => (
+            <HoldingHolderRow
               key={row.address}
               entryPoint={entryPoint}
               nativeCurrency={nativeCurrency}
@@ -153,8 +147,21 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
               token={token}
               usdToNativeRate={usdToNativeRate}
             />
-          ))
-        : topHolders.realized.map((row, index) => (
+          ))}
+        />
+      )}
+      {tab === 'unrealized' && (
+        <UnrealizedHolderRows
+          entryPoint={entryPoint}
+          nativeCurrency={nativeCurrency}
+          rows={topHolders.unrealized}
+          token={token}
+          usdToNativeRate={usdToNativeRate}
+        />
+      )}
+      {tab === 'realized' && (
+        <SeparatedRows
+          rows={topHolders.realized.map((row, index) => (
             <RealizedHolderRow
               key={row.address}
               entryPoint={entryPoint}
@@ -164,18 +171,55 @@ function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainI
               token={token}
               usdToNativeRate={usdToNativeRate}
             />
-          ));
+          ))}
+        />
+      )}
+    </Box>
+  );
+}
+
+function SeparatedRows({ rows }: { rows: React.ReactElement[] }) {
+  return rows.map((row, index) => (
+    <React.Fragment key={row.key}>
+      {index > 0 && <RowSeparator />}
+      {row}
+    </React.Fragment>
+  ));
+}
+
+/** Holds the price and market-cap subscriptions that only the Unrealized rows need; rows get display strings so a tick re-renders only rows whose text changes. */
+function UnrealizedHolderRows({
+  entryPoint,
+  nativeCurrency,
+  rows,
+  token,
+  usdToNativeRate,
+}: {
+  entryPoint: SpotPnlSheetEntryPoint;
+  nativeCurrency: NativeCurrencyKey;
+  rows: UnrealizedRow[];
+  token: { address: string; chainId: ChainId };
+  usdToNativeRate: number;
+}) {
+  const price = useLiveTokenValue({ tokenId: getUniqueId(token.address, token.chainId), fallback: '' });
+  const circulatingSupply = useCirculatingSupply({ chainId: token.chainId, nativeCurrency, price, tokenAddress: token.address });
 
   return (
-    // Clipped so a longer list is revealed as the height grows instead of overlapping the sections below
-    <Box as={Animated.View} layout={LAYOUT_ANIMATION} style={{ overflow: 'hidden' }}>
-      {rows.map((row, index) => (
-        <React.Fragment key={row.key}>
-          {index > 0 && <RowSeparator />}
-          {row}
-        </React.Fragment>
+    <SeparatedRows
+      rows={rows.map((row, index) => (
+        <UnrealizedHolderRow
+          key={row.address}
+          avgEntry={formatPerTokenFigure(mulWorklet(row.avgEntryUsd, usdToNativeRate), circulatingSupply, nativeCurrency)}
+          entryPoint={entryPoint}
+          isMarketCap={!!circulatingSupply}
+          nativeCurrency={nativeCurrency}
+          rank={index + 1}
+          row={row}
+          token={token}
+          usdToNativeRate={usdToNativeRate}
+        />
       ))}
-    </Box>
+    />
   );
 }
 
@@ -224,13 +268,15 @@ const HoldingHolderRow = memo(function HoldingHolderRow({
 });
 
 const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
+  avgEntry,
   entryPoint,
+  isMarketCap,
   nativeCurrency,
   rank,
   row,
   token,
   usdToNativeRate,
-}: RowProps<UnrealizedRow>) {
+}: RowProps<UnrealizedRow> & { avgEntry: string; isMarketCap: boolean }) {
   return (
     <HolderRow
       address={row.address}
@@ -239,10 +285,10 @@ const UnrealizedHolderRow = memo(function UnrealizedHolderRow({
       subtitle={
         <Box flexDirection="row" gap={3}>
           <Text color="labelQuinary" size="13pt" weight="semibold">
-            {i18n.t(i18n.l.spot_pnl_sheet.avg_entry)}
+            {i18n.t(isMarketCap ? i18n.l.spot_pnl_sheet.avg_entry_mc : i18n.l.spot_pnl_sheet.avg_entry)}
           </Text>
           <Text color="labelQuaternary" size="13pt" weight="semibold" numberOfLines={1}>
-            {formatAssetPrice({ value: mulWorklet(row.avgEntryUsd, usdToNativeRate), currency: nativeCurrency })}
+            {avgEntry}
           </Text>
         </Box>
       }

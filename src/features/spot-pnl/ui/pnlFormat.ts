@@ -1,13 +1,22 @@
 import { supportedCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
-import { divWorklet, equalWorklet, greaterThanOrEqualToWorklet, lessThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanOrEqualToWorklet,
+  lessThanWorklet,
+  mulWorklet,
+  toFixedWorklet,
+} from '@/framework/core/safeMath';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { convertAmountToBalanceDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 
 export type PnlDirection = 'profit' | 'loss' | 'flat';
 
 const COMPACT_AMOUNT_FROM = 100_000;
+const COMPACT_MARKET_CAP_FROM = 1_000;
 const COMPACT_PERCENTAGE_FROM = 1_000;
 const COMPACT_TOKEN_AMOUNT_FROM = 10_000;
 const SUFFIXES = [
@@ -51,18 +60,36 @@ export function formatPnlAmount(amount: string, nativeCurrency: NativeCurrencyKe
  */
 export function formatNativeAmount(amount: string, nativeCurrency: NativeCurrencyKey): string {
   const magnitude = amount.replace('-', '');
-  const { alignment, decimals, symbol } = supportedCurrencies[nativeCurrency];
+  const { decimals } = supportedCurrencies[nativeCurrency];
   const minorUnit = decimals === 0 ? '1' : `0.${'1'.padStart(decimals, '0')}`;
   if (lessThanWorklet(magnitude, minorUnit)) return convertAmountToNativeDisplay(magnitude, nativeCurrency);
 
-  if (greaterThanOrEqualToWorklet(toFixedWorklet(magnitude, 0), COMPACT_AMOUNT_FROM)) {
-    const display = abbreviate(magnitude);
-    return alignment === 'left' ? `${symbol}${display}` : `${display} ${symbol}`;
-  }
+  if (greaterThanOrEqualToWorklet(toFixedWorklet(magnitude, 0), COMPACT_AMOUNT_FROM)) return abbreviateNative(magnitude, nativeCurrency);
 
   const rounded = toFixedWorklet(magnitude, decimals);
   if (decimals > 2 || lessThanWorklet(rounded, 1)) return convertAmountToNativeDisplay(rounded, nativeCurrency);
   return convertAmountToNativeDisplay(toFixedWorklet(magnitude, 0), nativeCurrency, undefined, true);
+}
+
+/**
+ * A per-token native price, or the market cap at that price when a circulating supply is given. A market cap shows as
+ * {@link formatNativeAmount} does, but abbreviated from a thousand, e.g. `$82.7K`.
+ */
+export function formatPerTokenFigure(price: string, circulatingSupply: string | null, nativeCurrency: NativeCurrencyKey): string {
+  return circulatingSupply
+    ? formatMarketCap(mulWorklet(price, circulatingSupply), nativeCurrency)
+    : formatAssetPrice({ value: price, currency: nativeCurrency });
+}
+
+function formatMarketCap(amount: string, nativeCurrency: NativeCurrencyKey): string {
+  if (lessThanWorklet(toFixedWorklet(amount, 0), COMPACT_MARKET_CAP_FROM)) return formatNativeAmount(amount, nativeCurrency);
+  return abbreviateNative(amount, nativeCurrency);
+}
+
+function abbreviateNative(magnitude: string, nativeCurrency: NativeCurrencyKey): string {
+  const { alignment, symbol } = supportedCurrencies[nativeCurrency];
+  const display = abbreviate(magnitude);
+  return alignment === 'left' ? `${symbol}${display}` : `${display} ${symbol}`;
 }
 
 /** A token amount with its symbol, abbreviated from ten thousand up, e.g. `86.2M HABS`. */
