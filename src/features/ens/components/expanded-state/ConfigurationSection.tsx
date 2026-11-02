@@ -40,6 +40,7 @@ export function ConfigurationSection({
 }) {
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
+
   const registrant = useMemo(() => (registrantAddress ? getAddress(registrantAddress) : null), [registrantAddress]);
   const ownerName = useEnsNameStore(s => (ownerAddress ? s.get(ownerAddress) : undefined));
   const registrantName = useEnsNameStore(s => (registrant ? s.get(registrant) : undefined));
@@ -53,7 +54,7 @@ export function ConfigurationSection({
         </>
       ) : (
         <>
-          {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled && (
+          {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled ? (
             <InfoRow
               explainSheetType="ens_primary_name"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.set_primary_name)}
@@ -69,23 +70,25 @@ export function ConfigurationSection({
               switchValue={isPrimary}
               useAccentColor
             />
-          )}
-          {registrant && (
+          ) : null}
+
+          {registrant ? (
             <InfoRow
               explainSheetType="ens_owner"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.owner)}
               useAccentColor
               value={registrantName || formatAddressForDisplay(registrant, 4, 4) || ''}
             />
-          )}
-          {ownerAddress && (
+          ) : null}
+
+          {ownerAddress ? (
             <InfoRow
               explainSheetType="ens_manager"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.manager)}
               useAccentColor
               value={ownerName || formatAddressForDisplay(ownerAddress, 4, 4) || ''}
             />
-          )}
+          ) : null}
         </>
       )}
     </Stack>
