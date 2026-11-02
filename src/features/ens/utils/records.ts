@@ -1,8 +1,8 @@
-import uts46 from 'idna-uts46-hx';
-
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import * as i18n from '@/languages';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
+
+import { normalizeEnsName } from '../core/name';
 
 const supportedTLDs = ['eth'];
 
@@ -42,14 +42,6 @@ export function isENSNFTRecord(avatar?: string) {
   return avatar?.includes('eip155:1');
 }
 
-export function normalizeENS(name: string) {
-  try {
-    return uts46.toUnicode(name, { useStd3ASCII: true });
-  } catch (err) {
-    return name;
-  }
-}
-
 /**
  * @description Converts the ENS NFT record string to a unique token metadata object
  */
@@ -77,21 +69,6 @@ export function stringifyENSNFTRecord({
 }) {
   return `eip155:1/${standard.toLowerCase()}:${contractAddress}/${tokenId}`;
 }
-
-const SPECIAL_CHARACTERS = [`’`, '‘'];
-const validateSpecialCharacters = (domainName: string) => {
-  try {
-    uts46.toUnicode(domainName, { useStd3ASCII: true });
-  } catch (err) {
-    return false;
-  }
-  return !SPECIAL_CHARACTERS.some(element => {
-    if (domainName.includes(element)) {
-      return true;
-    }
-    return false;
-  });
-};
 
 /**
  * @description Checks if an ENS name is valid
@@ -132,7 +109,7 @@ export function validateENS(
     };
   }
 
-  if (domainName.length < 3) {
+  if (Array.from(domainName).length < 3) {
     return {
       code: ERROR_CODES.INVALID_LENGTH,
       hint: i18n.t(i18n.l.profiles.search_validation.invalid_length),
@@ -140,25 +117,14 @@ export function validateENS(
     };
   }
 
-  const validDomainName = validateSpecialCharacters(domainName);
-
-  if (!validDomainName) {
+  try {
+    normalizeEnsName(domain);
+  } catch {
     return {
       code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
       hint: i18n.t(i18n.l.profiles.search_validation.invalid_special_characters),
       valid: false,
     };
-  }
-
-  if (subDomainName) {
-    const validSubDomainName = validateSpecialCharacters(subDomainName);
-    if (!validSubDomainName) {
-      return {
-        code: ERROR_CODES.INVALID_SUBDOMAIN_NAME,
-        hint: i18n.t(i18n.l.profiles.search_validation.invalid_special_characters),
-        valid: false,
-      };
-    }
   }
 
   return { valid: true };
