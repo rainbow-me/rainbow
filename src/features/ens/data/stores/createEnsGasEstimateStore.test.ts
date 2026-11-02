@@ -1,9 +1,15 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
+import Routes from '@/navigation/routesNames';
 import ethUnits from '@/references/ethereum-units.json';
 
 import * as estimates from '../../utils/handlers';
 import { createEnsGasEstimateStore } from './createEnsGasEstimateStore';
+
+vi.mock('@/state/navigation/navigationStore', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  return { useNavigationStore: createBaseStore(() => ({ isRouteActive: () => true })) };
+});
 
 vi.mock('../../utils/handlers', () => ({
   estimateENSCommitGasLimit: vi.fn(),
@@ -41,7 +47,8 @@ afterEach(() => {
 
 it('separates the commit fee from the total and includes only selected reverse writes', async () => {
   for (const setReverseRecord of [false, true]) {
-    const store = createEnsGasEstimateStore({ ...input, step: 'COMMIT', setReverseRecord }, true);
+    const store = createEnsGasEstimateStore(Routes.ENS_CONFIRM_REGISTER_SHEET);
+    store.setState({ input: { ...input, step: 'COMMIT', setReverseRecord } });
     stores.push(store);
     expect(await store.getState().fetch()).toEqual({
       stepGasLimit: '50000',
@@ -63,7 +70,8 @@ it.each([
   ['REGISTER', 'estimateENSRegisterSetRecordsAndNameGasLimit'],
 ] as const)('estimates only the %s operation, retaining the full name', async (step, method) => {
   vi.mocked(estimates[method]).mockResolvedValue('120000');
-  const store = createEnsGasEstimateStore({ ...input, step }, true);
+  const store = createEnsGasEstimateStore(Routes.ENS_CONFIRM_REGISTER_SHEET);
+  store.setState({ input: { ...input, step } });
   stores.push(store);
   expect(await store.getState().fetch()).toEqual({ stepGasLimit: '120000', estimatedGasLimit: '120000' });
   expect(estimates[method]).toHaveBeenCalledWith(expect.objectContaining({ name: input.name }));
