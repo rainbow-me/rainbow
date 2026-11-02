@@ -17,7 +17,6 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { textSizes } from '@/design-system/typography/typography';
 import { opacity } from '@/design-system/utils/opacity';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
@@ -157,15 +156,6 @@ const flexStyles = {
   flex: 1,
 };
 
-// Keep the text's scaled negative margins inside the clipping bounds without changing row spacing.
-const amountContainerStyles = {
-  flex: 1,
-  paddingTop: -textSizes['17pt'].marginTop,
-  paddingBottom: -textSizes['17pt'].marginBottom,
-  marginTop: textSizes['17pt'].marginTop,
-  marginBottom: textSizes['17pt'].marginBottom,
-};
-
 const calculateContainerHeight = (interactions: TokenInteraction[], isExpanded: boolean) => {
   'worklet';
 
@@ -268,7 +258,7 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
           </Text>
         </Box>
         <Box flexDirection="row" gap={12} justifyContent="space-between" alignItems="center">
-          <Box style={amountContainerStyles} overflow="hidden">
+          <Box style={flexStyles}>
             <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
               <Text
                 size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'}
@@ -278,7 +268,7 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
                 {symbol}
               </Text>
               <Box flexDirection="row" alignItems="center" style={flexStyles}>
-                <Text size="17pt" color="labelSecondary" weight="medium">
+                <Text size="17pt" color="labelSecondary" weight="medium" numberOfLines={1} style={{ flexShrink: 1 }}>
                   {currencyAmount}
                 </Text>
                 <Text size="17pt" ellipsizeMode="tail" numberOfLines={1} color="labelQuaternary" weight="medium" style={flexStyles}>
