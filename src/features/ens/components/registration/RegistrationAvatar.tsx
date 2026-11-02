@@ -106,20 +106,17 @@ const RegistrationAvatar = ({
       onRemoveField({ key: ENS_RECORDS.avatar });
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
-      setUploading('avatar', false);
       setTimeout(() => {
         setAvatarUrl('');
       }, 100);
     },
     onUploadError: () => {
-      setUploading('avatar', false);
       onChangeField({ key: 'avatar', value: '' });
       setAvatarUrl('');
     },
-    onUploading: () => setUploading('avatar', true),
+    onUploading: uploading => setUploading('avatar', uploading),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onChangeField({ key: 'avatar', value: data.url });
-      setUploading('avatar', false);
     },
     showRemove: Boolean(avatarUrl),
     uploadToIPFS: true,

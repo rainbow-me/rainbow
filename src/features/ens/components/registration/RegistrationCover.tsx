@@ -101,22 +101,17 @@ const RegistrationCover = ({
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
       setCoverMetadata(undefined);
-      setUploading('header', false);
       setTimeout(() => {
         setCoverUrl('');
       }, 100);
     },
     onUploadError: () => {
-      setUploading('header', false);
       onChangeField({ key: 'header', value: '' });
       setCoverUrl('');
     },
-    onUploading: () => {
-      setUploading('header', true);
-    },
+    onUploading: uploading => setUploading('header', uploading),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
       onChangeField({ key: 'header', value: data.url });
-      setUploading('header', false);
       setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),
