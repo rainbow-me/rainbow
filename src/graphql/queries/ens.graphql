@@ -1,13 +1,5 @@
 # https://api.thegraph.com/subgraphs/name/ensdomains/ens
 
-fragment BaseEnsDomain on Domain {
-  name
-  labelhash
-  owner {
-    id
-  }
-}
-
 query getCoinTypesByName($name: String!) {
   domains(first: 1, where: { name: $name }) {
     resolver {
@@ -47,23 +39,6 @@ query getRegistration($id: ID!) {
     expiryDate
     registrant {
       id
-    }
-  }
-}
-
-query getSuggestions($name: String!, $first: Int!) {
-  domains(
-    first: $first
-    where: { name_starts_with: $name, resolvedAddress_not: "0x0000000000000000000000000000000000000000" }
-    orderBy: labelName
-    orderDirection: asc
-  ) {
-    ...BaseEnsDomain
-    resolver {
-      texts
-      addr {
-        id
-      }
     }
   }
 }
