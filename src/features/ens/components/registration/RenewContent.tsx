@@ -3,6 +3,7 @@ import React from 'react';
 import { format } from 'date-fns';
 
 import { Inset, Separator, Stack } from '@/design-system';
+import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import timeUnits from '@/references/time-units.json';
 
@@ -23,10 +24,8 @@ export const RenewContent = ({
 }) => {
   const { isSmallPhone } = useDimensions();
 
-  const registration = useEnsRegistrationMetadataStore(s => s.get(name + ENS_DOMAIN));
-  const expiryDate = registration?.expiryDate || 0;
-
-  const newExpiryDateFormatted = format(new Date(Number(expiryDate * 1000) + yearsDuration * timeUnits.secs.year * 1000), 'MMM d, yyyy');
+  const expiryDate = useEnsRegistrationMetadataStore(s => s.get(name + ENS_DOMAIN)?.expiryDate);
+  const newExpiryDate = expiryDate ? format(time.seconds(Number(expiryDate) + yearsDuration * timeUnits.secs.year), 'MMM d, yyyy') : '—';
 
   return (
     <Inset vertical={isSmallPhone ? '12px' : '30px (Deprecated)'}>
@@ -38,7 +37,7 @@ export const RenewContent = ({
           maxDuration={99}
           mode={REGISTRATION_MODES.RENEW}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
-          newExpiryDate={newExpiryDateFormatted}
+          newExpiryDate={newExpiryDate}
           onChangeDuration={setDuration}
           registrationFee={registrationCostsData?.estimatedRentPrice?.total?.display}
           totalCost={registrationCostsData?.estimatedTotalRegistrationCost?.display}
