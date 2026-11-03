@@ -145,7 +145,7 @@ it('reuses order details when only the snapshot price changes', async () => {
   expect(fetchMock).not.toHaveBeenCalled();
 });
 
-it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }])(
+it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }, { id: 'other-market' }])(
   'rejects an unavailable market: %j',
   async flags => {
     const event = predictionEvent(outcome.eventId);
@@ -157,6 +157,7 @@ it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrd
     );
     usePolymarketOrderStore.setState({ params: outcome });
     await settle();
+    expect(usePolymarketOrderStore.getState().getStatus('isSuccess')).toBe(true);
     expect(usePolymarketOrderStore.getState().getData()).toBeNull();
     expect(marketInfo).not.toHaveBeenCalled();
   }
@@ -188,7 +189,10 @@ it('reports a details timeout as an error and allows retrying', async () => {
   usePolymarketOrderStore.setState({ params: outcome });
   await settle();
 
-  await vi.advanceTimersByTimeAsync(15_000);
+  await vi.advanceTimersByTimeAsync(14_999);
+  expect(usePolymarketOrderStore.getState().getStatus('isLoading')).toBe(true);
+
+  await vi.advanceTimersByTimeAsync(1);
   expect(usePolymarketOrderStore.getState().getStatus()).toMatchObject({
     isError: true,
     isInitialLoad: false,

@@ -24,7 +24,8 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
+import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
@@ -70,9 +71,7 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
             <OrderDetailsLoader outcome={params.outcome} accentColor={accentColor} fromRoute={params.fromRoute} />
           ) : (
             <NewPositionForm
-              event={params.event}
-              market={params.market}
-              outcomeIndex={params.outcomeIndex}
+              details={{ event: params.event, market: params.market, outcomeIndex: params.outcomeIndex }}
               accentColor={accentColor}
               fromRoute={params.fromRoute}
             />
@@ -109,25 +108,19 @@ function OrderDetailsLoader({ outcome, accentColor, fromRoute }: { outcome: Poly
     );
   }
 
-  return (
-    <NewPositionForm
-      key={outcome.tokenId}
-      event={details.event}
-      market={details.market}
-      outcomeIndex={details.outcomeIndex}
-      accentColor={accentColor}
-      fromRoute={fromRoute}
-    />
-  );
+  return <NewPositionForm key={outcome.tokenId} details={details} accentColor={accentColor} fromRoute={fromRoute} />;
 }
 
 function NewPositionForm({
-  market,
-  event,
-  outcomeIndex,
   accentColor,
   fromRoute,
-}: PolymarketOrderDetails & { accentColor: string; fromRoute: Route }) {
+  details,
+}: {
+  accentColor: string;
+  fromRoute: Route;
+  details: PolymarketOrderDetails | SportsOrderDetails;
+}) {
+  const { market, event, outcomeIndex } = details;
   const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
