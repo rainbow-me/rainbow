@@ -5,44 +5,42 @@ import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-ev
 import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 
 export type RawPolymarketPosition = {
-  proxyWallet: string;
+  proxy_wallet: string;
+  token_id: string;
+  condition_id: string;
+  current_size: number;
+  entry_cost_usdc: number;
+  current_value: number;
+  unrealized_pnl: number;
+  current_price: number;
+  redeemable: boolean;
+  slug: string;
+  icon: string;
+  event_id: string;
+  event_slug: string;
+  outcome: string;
+  outcome_index: number;
+  negative_risk: boolean;
+};
+
+export type PolymarketPosition = {
+  proxyWallet: Address;
   asset: string;
   conditionId: string;
   size: number;
-  avgPrice: number;
   initialValue: number;
   currentValue: number;
   cashPnl: number;
-  percentPnl: number;
-  totalBought: number;
-  realizedPnl: number;
-  percentRealizedPnl: number;
   curPrice: number;
   redeemable: boolean;
-  mergeable: boolean;
-  title: string;
   slug: string;
   icon: string;
   eventId: string;
   eventSlug: string;
   outcome: string;
   outcomeIndex: number;
-  oppositeOutcome: string;
-  oppositeAsset: string;
-  endDate: string;
   negativeRisk: boolean;
-};
-
-export type PolymarketPosition = Omit<RawPolymarketPosition, 'proxyWallet'> & {
-  proxyWallet: Address;
-  // These are returned in the response as stringified JSON arrays
-  clobTokenIds: string[];
   outcomes: string[];
-  outcomePrices: string[];
-  nativeCurrency: {
-    currentValue: number;
-    cashPnl: number;
-  };
   market: PolymarketMarket;
   /**
    * Some events have a unique image for each market, such as "Who will win the 2028 presidential election?"
