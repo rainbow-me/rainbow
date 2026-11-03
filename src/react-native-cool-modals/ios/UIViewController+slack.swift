@@ -1,28 +1,37 @@
-
 import PanModal
 import UIKit
 
+final class PanModalViewController: UIViewController, PanModalPresentable {
+  private var screen: RNCMScreen?
+  private var config: RNCMScreenView? { screen?.screenView }
+  private var state: PanModalPresentationController.PresentationState
+  private var forceDisableShortForm = false
+  private var isShortFormEnabledInternal = 2
+  private weak var selectedScrollView: UIScrollView?
 
-class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSupport {
-  @objc var config : RNCMScreenView?
-  var length: CGFloat = 0
-  var topAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
-  var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
-  var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
-  var state: PanModalPresentationController.PresentationState? = nil;
   @objc private(set) var hiding = false
   @objc var dismissing: Bool { (presentationController as? PanModalPresentationController)?.isDismissing ?? isBeingDismissed }
 
-  weak var viewController: UIViewController?
-  private weak var selectedScrollView: UIScrollView?
+  init(screen: RNCMScreen) {
+    self.screen = screen
+    state = screen.screenView.startFromShortForm ? .shortForm : .longForm
+    super.init(nibName: nil, bundle: nil)
 
-  convenience init(_ viewControllerToPresent: UIViewController) {
-    self.init(nibName: nil, bundle: nil)
+    let content = screen.screenView
+    let root = UIView(frame: content.bounds)
+    root.backgroundColor = .clear
+    root.isOpaque = false
+    view = root
+    addChild(screen)
+    content.frame = root.bounds
+    content.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    root.addSubview(content)
+    screen.didMove(toParent: self)
+  }
 
-    viewControllerToPresent.setValue(self, forKey: "_parentVC")
-    viewController = viewControllerToPresent
-    config = (viewControllerToPresent.view as! RNCMScreenView)
-    state = (config?.startFromShortForm ?? false) ? PanModalPresentationController.PresentationState.shortForm : PanModalPresentationController.PresentationState.longForm;
+  @available(*, unavailable)
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) is unavailable")
   }
 
   @objc func hide() {
@@ -39,51 +48,38 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     guard presentationController is PanModalPresentationController else { return }
     panModalSetNeedsLayoutUpdate(transitionTo: {
       hiding = false
-      return state == .hidden ? (config?.startFromShortForm == true ? .shortForm : .longForm) : state ?? .longForm
+      return state == .hidden ? (config?.startFromShortForm == true ? .shortForm : .longForm) : state
     })
   }
 
-  @objc func panModalSetNeedsLayoutUpdateWrapper() {
+  @objc func setNeedsPanModalLayoutUpdate() {
     panModalSetNeedsLayoutUpdate()
   }
-  
-  var forceDisableShortForm = false
-  
+
   func willTransition(to state: PanModalPresentationController.PresentationState) {
     if state == .longForm, !forceDisableShortForm, config?.disableShortFormAfterTransitionToLongForm == true {
       forceDisableShortForm = true
-      self.panModalSetNeedsLayoutUpdate()
+      panModalSetNeedsLayoutUpdate()
     }
-    self.state = state;
+    self.state = state
   }
-
 
   func onTouchTop(_ dismissing: Bool) {
-    let selector = NSSelectorFromString("onTouchTopWrapper:")
-    config?.perform(selector, with: NSNumber.init(value: dismissing))
-  }
-
-  override var bottomLayoutGuide: UILayoutSupport {
-    get {
-      if self.isViewLoaded {
-        return super.bottomLayoutGuide
-      }
-      return self
-    }
+    config?.notifyTouchTop(dismissing)
   }
 
   var cornerRadius: CGFloat {
-    if (self.config?.cornerRadius == 0.666) {
+    if config?.cornerRadius == 0.666 {
       return UIScreen.main.displayCornerRadius
     }
-    return CGFloat(truncating: self.config?.cornerRadius ?? 0)
+    return CGFloat(truncating: config?.cornerRadius ?? 0)
   }
 
   var ignoreBottomOffset: Bool {
-    return self.config!.ignoreBottomOffset;
+    return config?.ignoreBottomOffset ?? false
   }
 
-  var isHapticFeedbackEnabled: Bool = false
+  let isHapticFeedbackEnabled = false
 
   func willReceivePanTouch(_ touch: UITouch) {
     guard config?.interactWithScrollView == true else {
@@ -135,18 +131,6 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     return false
   }
 
-  override var view: UIView! {
-    get {
-      if (viewController == nil) {
-        return UIView()
-      }
-      return viewController!.view
-    }
-    set {
-
-    }
-  }
-
   func panModalWillDismiss() {
     config?.willDismiss()
   }
@@ -158,20 +142,20 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var allowsDragToDismiss: Bool {
-    return self.config?.allowsDragToDismiss ?? false
+    return config?.allowsDragToDismiss ?? false
   }
 
   var allowsTapToDismiss: Bool {
-    return self.config?.allowsTapToDismiss ?? false
+    return config?.allowsTapToDismiss ?? false
   }
 
   var anchorModalToLongForm: Bool {
-    return self.config?.anchorModalToLongForm ?? false
+    return config?.anchorModalToLongForm ?? false
   }
-  
+
   var panModalBackgroundColor: UIColor {
-    let backgroundColor: UIColor = self.config?.modalBackgroundColor ?? UIColor.black
-    return backgroundColor.withAlphaComponent(CGFloat(truncating: self.config?.backgroundOpacity ?? 1))
+    let backgroundColor = config?.modalBackgroundColor ?? .black
+    return backgroundColor.withAlphaComponent(CGFloat(truncating: config?.backgroundOpacity ?? 1))
   }
 
   var scrollIndicatorInsets: UIEdgeInsets {
@@ -202,53 +186,51 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     return location.y < CGFloat(truncating: config?.headerHeight ?? 0)
   }
 
-  var isShortFormEnabledInternal = 2
   var isShortFormEnabled: Bool {
-    let startFromShortForm = self.config?.startFromShortForm ?? true;
+    let startFromShortForm = config?.startFromShortForm ?? true
     if isShortFormEnabledInternal > 0 && !startFromShortForm {
       isShortFormEnabledInternal -= 1
       return false
     }
-    return self.config?.isShortFormEnabled ?? true
+    return config?.isShortFormEnabled ?? true
   }
 
   var shortFormHeight: PanModalHeight {
-    let height: CGFloat = CGFloat(truncating: self.config?.shortFormHeight ?? 0.0)
+    let height = CGFloat(truncating: config?.shortFormHeight ?? 0)
     return (isShortFormEnabled && !forceDisableShortForm) ? .contentHeight(height) : longFormHeight
   }
 
   var springDamping: CGFloat {
-    return CGFloat(truncating: self.config?.springDamping ?? 0)
+    return CGFloat(truncating: config?.springDamping ?? 0)
   }
 
   var transitionDuration: Double {
-    return Double(truncating: self.config?.transitionDuration ?? 300)
+    return Double(truncating: config?.transitionDuration ?? 300)
   }
-
 
   var topOffset: CGFloat {
     return CGFloat(truncating: config?.topOffset ?? 0)
   }
 
   var panScrollable: UIScrollView? {
-    if !(self.config?.interactWithScrollView ?? false){
-      return nil
-    }
-    return selectedScrollView
+    return config?.interactWithScrollView == true ? selectedScrollView : nil
   }
 
   var longFormHeight: PanModalHeight {
-    return .contentHeight(CGFloat(truncating: self.config?.longFormHeight ?? 0.0))
+    return .contentHeight(CGFloat(truncating: config?.longFormHeight ?? 0))
   }
 
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
-    guard isBeingDismissed || presentingViewController == nil, let config = config else { return }
+    guard isBeingDismissed || presentingViewController == nil,
+          let screen = screen, screen.parent === self else { return }
+    let config = screen.screenView
+    self.screen = nil
+    selectedScrollView = nil
+    screen.willMove(toParent: nil)
+    screen.view.removeFromSuperview()
+    screen.removeFromParent()
     (config.reactSuperview() as? RNCMScreenStackView)?.screenDidDisappear(config)
-    if (viewController as? RNCMScreen)?.parentVC() === self {
-      viewController?.setValue(nil, forKey: "_parentVC")
-    }
-    self.config = nil
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -257,32 +239,29 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   override func viewWillDisappear(_ animated: Bool) {
-    if self.isBeingDismissed && !(presentationController is PanModalPresentationController) {
+    if isBeingDismissed && !(presentationController is PanModalPresentationController) {
       config?.willDismiss()
     }
 
     super.viewWillDisappear(animated)
   }
-
-
 }
 
 extension UIViewController {
   @objc public func obtainDelegate() -> UIViewControllerTransitioningDelegate? {
-    let delegate = PanModalPresentationDelegate.default
-    return delegate
+    return PanModalPresentationDelegate.default
   }
 
-  @objc public func presentModally(_ viewControllerToPresent: UIViewController,
-                                   animated flag: Bool,
-                                   completion: (() -> Void)? = nil,
-                                   slackStack:Bool) -> Void
+  @objc public func presentModally(
+    _ viewControllerToPresent: RNCMScreen,
+    animated flag: Bool,
+    completion: (() -> Void)? = nil,
+    slackStack: Bool
+  ) {
+    let controller = PanModalViewController(screen: viewControllerToPresent)
 
-  {
-    let controller = PanModalViewController(viewControllerToPresent)
-    
     controller.transitioningDelegate = slackStack ? viewControllerToPresent.transitioningDelegate : nil
     controller.modalPresentationStyle = slackStack ? viewControllerToPresent.modalPresentationStyle : .pageSheet
-    self.present(controller, animated: flag, completion: completion)
+    present(controller, animated: flag, completion: completion)
   }
 }

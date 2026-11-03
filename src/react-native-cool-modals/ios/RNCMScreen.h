@@ -3,6 +3,8 @@
 #import <React/RCTComponent.h>
 
 @class RNCMScreenStackView;
+@class RNCMScreenView;
+@class PanModalViewController;
 
 typedef NS_ENUM(NSInteger, RNSScreenStackPresentation) {
   RNSScreenStackPresentationPush,
@@ -31,8 +33,9 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @interface RNCMScreen : UIViewController
 
 @property (nonatomic, strong) id<UIViewControllerTransitioningDelegate> transDelegate;
-- (instancetype)initWithView:(UIView *)view;
-- (UIViewController*) parentVC;
+@property (nonatomic, readonly, nonnull) RNCMScreenView *screenView;
+@property (nonatomic, readonly, nullable) PanModalViewController *panModalController;
+- (instancetype)initWithView:(RNCMScreenView * _Nonnull)view;
 
 @end
 
@@ -47,7 +50,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
 @property (nonatomic, copy) RCTDirectEventBlock onTouchTop;
 @property (weak, nonatomic) UIView *reactSuperview;
-@property (nonatomic, retain) UIViewController *controller;
+@property (nonatomic, readonly, strong, nullable) RNCMScreen *controller;
 @property (nonatomic, readonly) BOOL dismissed;
 @property (nonatomic) NSInteger presentationRequest;
 @property (nonatomic) BOOL inStack;
@@ -81,10 +84,7 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 - (void)willDismiss;
 - (void)notifyDismissed;
 - (void)notifyAppear;
+- (void)notifyTouchTop:(BOOL)dismissing;
 - (void)applyConfiguration;
 - (void)cancelTouchesWithCompletion:(void (^)(void))completion;
-@end
-
-@interface UIView (RNSScreen)
-- (UIViewController *)parentViewController;
 @end
