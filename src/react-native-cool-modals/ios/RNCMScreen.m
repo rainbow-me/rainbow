@@ -107,7 +107,7 @@
 }
 
 - (void)applyConfiguration {
-  PanModalViewController *presenter = (PanModalViewController *)[_controller parentVC];
+  PanModalViewController *presenter = _controller.panModalController;
   BOOL restore = _presentationChanged && _inStack;
   if (_presentationChanged) {
     _dismissed = NO;
@@ -127,30 +127,27 @@
       }];
     }
   } else if (_inStack && !_skipsOnReturn && !presenter.dismissing && !presenter.hiding) {
-    if (_layoutChanged) [presenter panModalSetNeedsLayoutUpdateWrapper];
+    if (_layoutChanged) [presenter setNeedsPanModalLayoutUpdate];
   }
   _presentationChanged = NO;
   _layoutChanged = NO;
 }
 
-- (void)onTouchTopWrapper:(NSNumber*)dismissing {
+- (void)notifyTouchTop:(BOOL)dismissing {
   if (_onTouchTop) {
-    _onTouchTop(@{ @"dismissing": dismissing });
+    _onTouchTop(@{ @"dismissing": @(dismissing) });
   }
 }
 
 - (void)reactSetFrame:(CGRect)frame
 {
-  if (![self.reactViewController.parentViewController
-        isKindOfClass:[UINavigationController class]]) {
+  UIViewController *parent = _controller.parentViewController;
+  if (![parent isKindOfClass:[UINavigationController class]] &&
+      ![parent isKindOfClass:[PanModalViewController class]]) {
     [super reactSetFrame:frame];
   }
-  // when screen is mounted under UINavigationController it's size is controller
-  // by the navigation controller itself. That is, it is set to fill space of
-  // the controller. In that case we ignore react layout system from managing
-  // the screen dimentions and we wait for the screen VC to update and then we
-  // pass the dimentions to ui view manager to take into account when laying out
-  // subviews
+  // Native containers own the screen frame. The screen controller publishes
+  // its resulting bounds to Yoga so React can lay out the content inside it.
 }
 
 - (UIViewController *)reactViewController
@@ -438,10 +435,9 @@
 
 @implementation RNCMScreen {
   CGSize _lastViewSize;
-  UIViewController *_parentVC;
 }
 
-- (instancetype)initWithView:(UIView *)view
+- (instancetype)initWithView:(RNCMScreenView *)view
 {
   if (self = [super init]) {
     self.view = view;
@@ -454,10 +450,6 @@
   return self;
 }
 
-- (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion  slackStack:(BOOL)slackStack {
-  return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion slackStack:slackStack];
-}
-
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
   if (self.parentViewController) {
     [self.parentViewController dismissViewControllerAnimated:flag completion:completion];
@@ -466,29 +458,23 @@
   }
 }
 
-- (UIViewController *)presentedViewController {
-  return [_parentVC presentedViewController];
-}
-
-- (UIViewController *)presentingViewController {
-  return [_parentVC presentingViewController];
-}
-
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
   
   if (!CGSizeEqualToSize(_lastViewSize, self.view.bounds.size)) {
     _lastViewSize = self.view.bounds.size;
-    [((RNCMScreenView *)self.viewIfLoaded) updateBounds];
+    [self.screenView updateBounds];
   }
 }
 
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion {
   BOOL isContextMenu = [viewControllerToPresent isKindOfClass:NSClassFromString(@"_UIContextMenuActionsOnlyViewController")];
   
-  if (isContextMenu) {
-    [_parentVC presentViewController:viewControllerToPresent animated:flag completion:completion];
+  // Route iOS 18 context menus through the sheet's presentation host.
+  PanModalViewController *presenter = self.panModalController;
+  if (isContextMenu && presenter != nil) {
+    [presenter presentViewController:viewControllerToPresent animated:flag completion:completion];
   } else {
     [super presentViewController:viewControllerToPresent animated:flag completion:completion];
   }
@@ -497,20 +483,20 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
   [super viewDidDisappear:animated];
-  RNCMScreenView *screen = (RNCMScreenView *)self.view;
+  RNCMScreenView *screen = self.screenView;
   if (screen.stackPresentation == RNSScreenStackPresentationPush &&
       self.parentViewController == nil && self.presentingViewController == nil) {
     [screen notifyDismissed];
   }
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-  [super viewDidAppear:animated];
+- (RNCMScreenView *)screenView {
+  return (RNCMScreenView *)self.view;
 }
 
-- (PanModalViewController*) parentVC {
-  return (PanModalViewController*) _parentVC;
+- (PanModalViewController *)panModalController {
+  UIViewController *parent = self.parentViewController;
+  return [parent isKindOfClass:[PanModalViewController class]] ? (PanModalViewController *)parent : nil;
 }
 
 @end
