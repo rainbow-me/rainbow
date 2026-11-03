@@ -1,11 +1,9 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
-import { AddressZero } from '@ethersproject/constants';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty } from 'lodash';
-import { isAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
@@ -32,18 +30,16 @@ import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ENSCircleIcon } from '@/features/ens/components/ENSCircleIcon';
+import { ensContracts } from '@/features/ens/core/contracts';
+import { isNameToken } from '@/features/ens/data/ownership';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
-import { type ENSProfile } from '@/features/ens/types/profile';
-import {
-  estimateENSReclaimGasLimit,
-  estimateENSSetAddressGasLimit,
-  estimateENSSetRecordsGasLimit,
-  formatRecordsForTransaction,
-} from '@/features/ens/utils/handlers';
+import { useEnsOwnershipStore, useEnsPermissionsStore } from '@/features/ens/data/stores/ownershipStores';
+import { estimateEnsTransactions } from '@/features/ens/data/transactions';
+import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
+import type { EnsTransferAction } from '@/features/ens/types/transactions';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { type ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
@@ -65,7 +61,6 @@ import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import promiseUtils from '@/utils/promise';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { SendButton } from '../components/SendButton';
@@ -77,78 +72,24 @@ const Container = styled(Centered).attrs({
   ...position.coverAsObject,
 }));
 
-export type Checkbox = {
-  checked: boolean;
+type Checkbox = {
   id: 'clear-records' | 'set-address' | 'transfer-control' | 'has-wallet-that-supports';
   label: string;
 };
 
-const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
-  isEmpty({
-    ...ensProfile?.data?.records,
-    ...ensProfile?.data?.coinAddresses,
-  }) && !ensProfile?.data?.contenthash;
-const doesNamePointToRecipient = (ensProfile?: ENSProfile, recipientAddress?: string) =>
-  ensProfile?.data?.address?.toLowerCase() === recipientAddress?.toLowerCase();
-const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
-
 const gasOffset = 120;
 const checkboxOffset = 44;
-
-export function getDefaultCheckboxes({
-  isENS,
-  ensProfile,
-  chainId,
-  toAddress,
-}: {
-  isENS: boolean;
-  ensProfile: ENSProfile;
-  chainId: ChainId;
-  toAddress: string;
-}): Checkbox[] {
-  if (isENS) {
-    return [
-      !hasClearProfileInfo(ensProfile) &&
-        ensProfile?.isOwner && {
-          checked: false,
-          id: 'clear-records',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.clear_profile_information),
-        },
-      !doesNamePointToRecipient(ensProfile, toAddress) &&
-        ensProfile?.isOwner && {
-          checked: false,
-          id: 'set-address',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.point_name_to_recipient),
-        },
-      isRegistrant(ensProfile) &&
-        ensProfile?.data?.owner?.address?.toLowerCase() !== toAddress.toLowerCase() && {
-          checked: false,
-          id: 'transfer-control',
-          label: i18n.t(i18n.l.wallet.transaction.checkboxes.transfer_control),
-        },
-    ].filter(Boolean) as Checkbox[];
-  }
-  return [
-    {
-      checked: false,
-      id: 'has-wallet-that-supports',
-      label: i18n.t(i18n.l.wallet.transaction.checkboxes.has_a_wallet_that_supports, {
-        networkName: useBackendNetworksStore.getState().getChainsLabel()[chainId],
-      }),
-    },
-  ];
-}
 
 export function getSheetHeight({
   shouldShowChecks,
   isL2,
   isENS,
-  checkboxes,
+  checkboxCount = 0,
 }: {
   shouldShowChecks: boolean;
   isL2: boolean;
   isENS: boolean;
-  checkboxes: Checkbox[];
+  checkboxCount?: number;
 }) {
   let height =
     SheetHandleFixedToTopHeight +
@@ -161,7 +102,7 @@ export function getSheetHeight({
   if (shouldShowChecks) height = height + 80;
   if (isENS) {
     height = height + gasOffset + 20;
-    height = height + checkboxes?.length * checkboxOffset || 0;
+    height += checkboxCount * checkboxOffset;
   }
   return height;
 }
@@ -192,7 +133,7 @@ export const SendConfirmationSheet = () => {
   const { isDarkMode } = useColorMode();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
-  const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
+  const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_CONFIRMATION_SHEET>();
   const { height: deviceHeight, isSmallPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const { contacts } = useContacts();
@@ -205,7 +146,7 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isSponsored = false, isUniqueAsset, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, isL2, isSponsored = false, isUniqueAsset, chainId, to, toAddress },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -233,103 +174,87 @@ export const SendConfirmationSheet = () => {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const isENS = asset.type === AssetType.ens && profilesEnabled;
+  const isENS = asset.type === AssetType.ens && profilesEnabled && assetIsUniqueAsset(asset);
+  const ownership = useEnsOwnershipStore(s => (isENS ? s.get(asset.name) : undefined));
+  const holder = ownership?.version === 1 ? ownership.registrant : ownership?.owner;
+  const matchesToken = isENS && holder?.toLowerCase() === accountAddress.toLowerCase() && isNameToken(ownership, asset);
+  const permissions = useEnsPermissionsStore(s => (matchesToken ? s.get({ name: asset.name, account: accountAddress }) : undefined));
+  const address = useEnsAddressStore(s =>
+    matchesToken && permissions?.canSetAddress ? s.get({ addressOrName: asset.name, chainId }) : undefined
+  );
 
-  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
+  const [checked, setChecked] = useState<Partial<Record<Checkbox['id'], boolean>>>({});
+  const checkboxes: Checkbox[] = [];
+  const labels = i18n.l.wallet.transaction.checkboxes;
+  if (isENS) {
+    if (matchesToken && permissions?.canClearRecords) {
+      checkboxes.push({ id: 'clear-records', label: i18n.t(labels.clear_profile_information) });
+    }
+    if (matchesToken && permissions?.canSetAddress && address?.toLowerCase() !== toAddress.toLowerCase()) {
+      const linkedNames = permissions.resolver?.permissioned && !checked['clear-records'];
+      checkboxes.push({
+        id: 'set-address',
+        label: i18n.t(linkedNames ? labels.point_linked_names_to_recipient : labels.point_name_to_recipient),
+      });
+    }
+    if (
+      matchesToken &&
+      ownership?.version === 1 &&
+      ownership.token?.contractAddress === ensContracts.legacyRegistrar &&
+      ownership.registrant?.toLowerCase() === accountAddress.toLowerCase() &&
+      ownership.owner?.toLowerCase() !== toAddress.toLowerCase()
+    ) {
+      checkboxes.push({ id: 'transfer-control', label: i18n.t(labels.transfer_control) });
+    }
+  } else if (isL2) {
+    checkboxes.push({
+      id: 'has-wallet-that-supports',
+      label: i18n.t(labels.has_a_wallet_that_supports, {
+        networkName: useBackendNetworksStore.getState().getChainsLabel()[chainId],
+      }),
+    });
+  }
+
+  const isChecked = (id: Checkbox['id']) => !!checked[id] && checkboxes.some(option => option.id === id);
+  const clearRecords = isChecked('clear-records');
+  const setAddress = isChecked('set-address');
+  const transferControl = isChecked('transfer-control');
+  const action = useMemo((): EnsTransferAction | undefined => {
+    if (!isENS || !(clearRecords || setAddress || transferControl)) return undefined;
+    return {
+      type: 'transfer',
+      name: asset.name,
+      token: { contractAddress: asset.contractAddress, tokenId: asset.tokenId },
+      toAddress,
+      clearRecords,
+      setAddress,
+      transferControl,
+    };
+  }, [asset, isENS, clearRecords, setAddress, transferControl, toAddress]);
+  const [estimatedAction, setEstimatedAction] = useState<EnsTransferAction | null>();
 
   useEffect(() => {
-    const provider = getProvider({ chainId });
-    if (isENS) {
-      const promises = [
-        estimateGasLimit(
-          {
-            address: accountAddress,
-            amount: '0',
-            asset,
-            recipient: toAddress,
-          },
-          true,
-          provider
-        ),
-      ];
-      const sendENSOptions = Object.fromEntries(checkboxes.map(option => [option.id, option.checked])) as {
-        [key in Checkbox['id']]: Checkbox['checked'];
-      };
-      const cleanENSName = asset?.name?.split(' ')?.[0] ?? asset?.name;
-
-      if (sendENSOptions['clear-records']) {
-        let records = Object.keys({
-          ...(ensProfile?.data?.contenthash ? { contenthash: ensProfile?.data?.contenthash } : {}),
-          ...(ensProfile?.data?.coinAddresses ?? {}),
-          ...(ensProfile?.data?.records ?? {}),
-        }).reduce((records, recordKey) => {
-          return {
-            ...records,
-            [recordKey]: '',
-          };
-        }, {});
-        if (sendENSOptions['set-address']) {
-          records = { ...records, ETH: toAddress };
-        } else {
-          records = { ...records, ETH: AddressZero };
-        }
-        promises.push(
-          estimateENSSetRecordsGasLimit({
-            name: cleanENSName,
-            ownerAddress: accountAddress,
-            records,
-          })
-        );
-      } else if (sendENSOptions['set-address']) {
-        promises.push(
-          estimateENSSetAddressGasLimit({
-            name: cleanENSName,
-            ownerAddress: accountAddress,
-            records: formatRecordsForTransaction({ ETH: toAddress }),
-          })
-        );
-      }
-      if (sendENSOptions['transfer-control']) {
-        promises.push(
-          estimateENSReclaimGasLimit({
-            name: cleanENSName,
-            ownerAddress: accountAddress,
-            toAddress,
-          })
-        );
-      }
-      promiseUtils
-        .PromiseAllWithFails(promises)
-        .then(gasLimits => {
-          const gasLimit = gasLimits.reduce(add, 0);
-          updateTxFee(gasLimit, null);
-        })
-        .catch(e => {
-          logger.error(new RainbowError(`[SendConfirmationSheet]: error calculating gas limit: ${e}`));
-          updateTxFee(null, null);
-        });
-    }
-  }, [
-    accountAddress,
-    asset,
-    chainId,
-    checkboxes,
-    ensProfile?.data?.coinAddresses,
-    ensProfile?.data?.contenthash,
-    ensProfile?.data?.records,
-    isENS,
-    toAddress,
-    updateTxFee,
-  ]);
-
-  const handleCheckbox = useCallback(
-    (checkbox: Checkbox & { index: number }) => {
-      const newCheckboxesState = [...checkboxes];
-      newCheckboxesState[checkbox.index] = checkbox;
-      setCheckboxes(newCheckboxesState);
-    },
-    [checkboxes]
-  );
+    if (!isENS) return;
+    let active = true;
+    setEstimatedAction(undefined);
+    Promise.all([
+      estimateGasLimit({ address: accountAddress, amount: '0', asset, recipient: toAddress }, true, getProvider({ chainId }), chainId),
+      action ? estimateEnsTransactions(action, getAddress(accountAddress)) : '0',
+    ])
+      .then(([transferGas, preparationGas]) => {
+        if (!active || !transferGas) return;
+        updateTxFee(add(transferGas, preparationGas), null);
+        setEstimatedAction(action ?? null);
+      })
+      .catch(error => {
+        if (!active) return;
+        logger.error(new RainbowError('[SendConfirmationSheet] Unable to estimate ENS transfer', error));
+        updateTxFee(null, null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [accountAddress, action, asset, chainId, isENS, toAddress, updateTxFee]);
 
   const handleENSConfigurationPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -359,12 +284,13 @@ export const SendConfirmationSheet = () => {
   const shouldShowChecks = isL2 && !isSendingToUserAccount && lessThanThreeInteractions;
 
   useEffect(() => {
-    setParams({ shouldShowChecks });
-  }, [setParams, shouldShowChecks]);
+    setParams({ shouldShowChecks, checkboxCount: checkboxes.length });
+  }, [setParams, shouldShowChecks, checkboxes.length]);
 
   const canSubmit =
     (isSponsored || (isSufficientGas && isValidGas)) &&
-    (!shouldShowChecks || checkboxes.filter(check => check.checked === false).length === 0);
+    (!isENS || estimatedAction === (action ?? null)) &&
+    (!shouldShowChecks || !!checked['has-wallet-that-supports']);
 
   const insufficientEth = !isSponsored && isSufficientGas === false && isValidGas;
 
@@ -375,23 +301,14 @@ export const SendConfirmationSheet = () => {
 
     try {
       setIsAuthorizing(true);
-      if (isENS) {
-        const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
-        const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
-        const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-        await callback({
-          ens: { clearRecords, setAddress, transferControl },
-        });
-      } else {
-        await callback();
-      }
+      await callback(action);
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${error.message}`, error));
     } finally {
       setIsAuthorizing(false);
     }
-  }, [callback, canSubmit, checkboxes, isENS]);
+  }, [action, callback, canSubmit]);
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;
@@ -433,7 +350,7 @@ export const SendConfirmationSheet = () => {
   }, [asset]);
 
   const contentHeight = getSheetHeight({
-    checkboxes,
+    checkboxCount: checkboxes.length,
     isENS,
     isL2,
     shouldShowChecks,
@@ -635,19 +552,13 @@ export const SendConfirmationSheet = () => {
                 {(isENS || shouldShowChecks) && checkboxes.length > 0 && (
                   <Inset horizontal="10px">
                     <Stack space="24px">
-                      {checkboxes.map((check, i) => (
+                      {checkboxes.map(check => (
                         <CheckboxField
                           color={color}
-                          isChecked={check.checked}
-                          key={`check_${i}`}
+                          isChecked={!!checked[check.id]}
+                          key={check.id}
                           label={check.label}
-                          onPress={() =>
-                            handleCheckbox({
-                              ...check,
-                              checked: !check.checked,
-                              index: i,
-                            })
-                          }
+                          onPress={() => setChecked(previous => ({ ...previous, [check.id]: !previous[check.id] }))}
                           testID={check.id}
                         />
                       ))}

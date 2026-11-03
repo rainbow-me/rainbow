@@ -104,7 +104,7 @@ export function ENSIntroSheet() {
   const primaryName = useEnsNameStore(s => s.get(accountAddress));
   const ownsPrimaryName = !!primaryName && !!names?.includes(primaryName);
   const suggestedName = ownsPrimaryName ? primaryName : names?.length === 1 ? names[0] : undefined;
-  const ensRecords = useEnsRecordsStore(s => s.get(suggestedName ? { name: suggestedName } : undefined));
+  const ensRecords = useEnsRecordsStore(s => s.get(suggestedName || undefined));
   const ensAvatar = useEnsImageStore(s => s.get(suggestedName ? { name: suggestedName, field: 'avatar' } : undefined));
 
   const profileExists = useMemo(() => {

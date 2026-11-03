@@ -54,7 +54,7 @@ export function ENSAssignRecordsSheet() {
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
-  const profile = useEnsRecordsStore(s => s.get(name ? { name } : undefined));
+  const profile = useEnsRecordsStore(s => s.get(name || undefined));
   const initialAvatarUrl = useENSRegistrationImage('avatar');
 
   const defaultFields = useMemo(
@@ -208,7 +208,7 @@ export function ENSAssignRecordsBottomActions({
   const insets = useSafeAreaInsets();
   const { mode, name } = useENSRegistration();
   const shouldLoadRecords = mode === REGISTRATION_MODES.EDIT && !!name;
-  const hasRecords = useEnsRecordsStore(s => s.get(shouldLoadRecords ? { name } : undefined) !== undefined);
+  const hasRecords = useEnsRecordsStore(s => s.get(shouldLoadRecords ? name : undefined) !== undefined);
   const { disabled, errors, isEmpty: isEmptyForm, selectedFields, toggleField, submit, values } = useENSRegistrationForm();
 
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);

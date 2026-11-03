@@ -254,7 +254,7 @@ export function useOnAvatarPress({ screenType = 'transaction' }: UseOnAvatarPres
       void Promise.allSettled([
         useEnsImageStore.getState().load({ name: accountENS, field: 'avatar' }),
         useEnsImageStore.getState().load({ name: accountENS, field: 'header' }),
-        useEnsRecordsStore.getState().load({ name: accountENS }),
+        useEnsRecordsStore.getState().load(accountENS),
       ]);
     }
 

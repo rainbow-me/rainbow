@@ -10,10 +10,9 @@ export function useEnsTokenDetails(name: string) {
   const accountAddress = useAccountAddress();
   const primaryName = useWalletsStore(s => s.walletNames[accountAddress]);
   const profileName = name || undefined;
-  const recordsInput = profileName ? { name: profileName } : undefined;
 
-  const records = useEnsRecordsStore(s => s.get(recordsInput));
-  const hasRecordsOutcome = useEnsRecordsStore(s => s.hasSettled(recordsInput));
+  const records = useEnsRecordsStore(s => s.get(profileName));
+  const hasRecordsOutcome = useEnsRecordsStore(s => s.hasSettled(profileName));
 
   const ownership = useEnsOwnershipStore(s => s.get(profileName));
   const hasOwnershipOutcome = useEnsOwnershipStore(s => s.hasSettled(profileName));

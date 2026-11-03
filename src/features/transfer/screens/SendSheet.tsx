@@ -21,9 +21,6 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
-import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
-import { useENSRegistrationActionHandler } from '@/features/ens/hooks/useENSRegistrationActionHandler';
-import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -65,7 +62,6 @@ import { useSendSheetInputRefs } from '../hooks/useSendSheetInputRefs';
 import { useSendSubmit } from '../hooks/useSendSubmit';
 import { useSponsoredSendPreparation } from '../hooks/useSponsoredSendPreparation';
 import { getSendSubmitButtonState } from '../utils/sendSheetUtils';
-import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (Platform.OS === 'android' ? 30 : 10);
 
@@ -155,10 +151,6 @@ export function SendSheet() {
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
 
-  const { action: transferENS } = useENSRegistrationActionHandler({
-    step: REGISTRATION_STEPS.TRANSFER,
-  });
-
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const { pinnedCoinsObj } = useCoinListEditOptions();
   const [amountDetails, setAmountDetails] = useState({
@@ -179,6 +171,7 @@ export function SendSheet() {
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
   const [maxEnabled, setMaxEnabled] = useState(false);
+  const isENS = selected?.type === AssetType.ens;
 
   const [debouncedRecipient] = useDebounce(recipient, 500);
   const [debouncedAssetAmount] = useDebounce(amountDetails.assetAmount, 500);
@@ -227,7 +220,6 @@ export function SendSheet() {
 
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
-  const isENS = selected?.type === AssetType.ens;
 
   const { currentChainId, currentProvider, isL2 } = useSendChainState({
     accountChainId: chainId,
@@ -263,9 +255,6 @@ export function SendSheet() {
   if (isUniqueAsset) {
     colorForAsset = uniqueAssetColor;
   }
-
-  const ensName = isENS ? selected?.name : '';
-  const ensProfile = useENSProfile(ensName, { supportedRecordsOnly: false });
 
   const sendUpdateAssetAmount = useCallback(
     (newAssetAmount: string) => {
@@ -429,7 +418,7 @@ export function SendSheet() {
     amountDetails,
     currentChainId,
     currentProvider,
-    ens: { ensName, ensProfile, isENS, transferENS },
+    isENS,
     gas: { gasLimit, isSufficientGas, isValidGas, selectedGasFee, updateTxFee, updateTxFeeForOptimism },
     isHardwareWallet,
     isSponsoredSend,
@@ -463,8 +452,6 @@ export function SendSheet() {
       assetAmount: amountDetails.assetAmount,
       canUseSponsoredSend,
       hasResolvedSponsoredSend,
-      isENS,
-      isENSProfileLoaded: ensProfile.hasTransferData,
       isGasFeeReady,
       isPreparingSponsoredSend,
       isSponsoredSend,
@@ -482,8 +469,6 @@ export function SendSheet() {
     amountDetails.isSufficientBalance,
     canUseSponsoredSend,
     debouncedAssetAmount,
-    isENS,
-    ensProfile.hasTransferData,
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
@@ -521,19 +506,11 @@ export function SendSheet() {
       navigate(Routes.WALLET_ERROR_SHEET);
       return;
     }
-    const checkboxes = getDefaultCheckboxes({
-      ensProfile,
-      isENS,
-      chainId,
-      toAddress,
-    });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
-      checkboxes,
-      ensProfile,
-      isENS,
+      isENS: isENS && profilesEnabled,
       isL2,
       isSponsored: isSponsoredSend,
       isUniqueAsset,
@@ -550,9 +527,7 @@ export function SendSheet() {
     isUniqueAsset,
     assetInputRef,
     nativeCurrencyInputRef,
-    ensProfile,
     isENS,
-    chainId,
     navigate,
     amountDetails,
     submitTransaction,

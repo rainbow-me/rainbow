@@ -16,6 +16,8 @@ import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
+import { ensContracts } from '@/features/ens/core/contracts';
+import { currentEnsTokenId } from '@/features/ens/data/registry';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -449,7 +451,7 @@ export const getTransferNftTransaction = async (
   }
 
   const { from, nonce, asset: { contractAddress } = {} } = transaction;
-  const data = getDataForNftTransfer(from, recipient, transaction.asset);
+  const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -557,12 +559,20 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param asset The asset to transfer.
  * @return The data string if the transfer can be attempted, otherwise undefined.
  */
-export const getDataForNftTransfer = (
+const getDataForNftTransfer = async (
   from: string,
   to: string,
-  { chainId, contractAddress, tokenId, standard }: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'standard'>>
-): string | undefined => {
-  if (!tokenId || !contractAddress) return;
+  asset: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'standard'>> & { type?: string }
+): Promise<string | undefined> => {
+  const { chainId, contractAddress, standard } = asset;
+  if (!asset.tokenId || !contractAddress) return;
+  const tokenId =
+    asset.type === AssetType.ens &&
+    chainId === ChainId.mainnet &&
+    standard === NftTokenType.Erc1155 &&
+    contractAddress.toLowerCase() !== ensContracts.nameWrapper
+      ? await currentEnsTokenId({ contractAddress, tokenId: asset.tokenId }, from)
+      : asset.tokenId;
   let data: string | undefined;
   if (contractAddress === CRYPTO_KITTIES_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
@@ -635,7 +645,7 @@ export const buildTransferTransaction = async (
     value,
   };
   if (assetIsUniqueAsset(asset)) {
-    const data = getDataForNftTransfer(address, _recipient, asset);
+    const data = await getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,

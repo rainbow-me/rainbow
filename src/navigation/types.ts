@@ -19,7 +19,7 @@ import { type BackupFile, type CloudBackups } from '@/features/backup/backupFile
 import { type ActiveTabRef } from '@/features/dapp-browser/types';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
 import { type RevokeReason } from '@/features/delegation/types/revokeReason';
-import { type ENSProfile } from '@/features/ens/types/profile';
+import { type EnsTransferAction } from '@/features/ens/types/transactions';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/types/gas';
 import { type LEDGER_ERROR_CODES } from '@/features/hardware-wallet/utils/ledger';
@@ -30,7 +30,6 @@ import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent
 import { type RainbowPosition } from '@/features/positions/types';
 import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
-import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
 import { type RainbowWallet } from '@/features/wallet/types';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
@@ -383,9 +382,9 @@ type ParamsByRoute = {
       nativeAmount: string;
     };
     asset: ParsedAddressAsset | UniqueAsset;
-    callback: (props?: { ens?: { setAddress: boolean; transferControl: boolean; clearRecords: boolean } }) => Promise<boolean | undefined>;
-    checkboxes: Checkbox[];
-    ensProfile: ENSProfile;
+    callback: (action?: EnsTransferAction) => Promise<boolean | undefined>;
+    checkboxCount?: number;
+    shouldShowChecks?: boolean;
     isENS: boolean;
     isL2: boolean;
     isSponsored?: boolean;

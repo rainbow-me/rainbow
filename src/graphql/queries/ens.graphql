@@ -1,13 +1,3 @@
-# https://api.thegraph.com/subgraphs/name/ensdomains/ens
-
-query getCoinTypesByName($name: String!) {
-  domains(first: 1, where: { name: $name }) {
-    resolver {
-      coinTypes
-    }
-  }
-}
-
 query getDomainsByAddress($address: ID!) {
   account(id: $address) {
     domains(orderBy: createdAt, orderDirection: desc) {
@@ -24,11 +14,10 @@ query getDomainsByAddress($address: ID!) {
   }
 }
 
-query getTextRecordKeysByName($name: String!) {
-  domains(first: 1, where: { name: $name }) {
-    resolver {
-      texts
-    }
+query getResolverKeys($resolver: Bytes!, $node: String!) {
+  resolvers(first: 1, where: { address: $resolver, domain: $node }) {
+    texts
+    coinTypes
   }
 }
 

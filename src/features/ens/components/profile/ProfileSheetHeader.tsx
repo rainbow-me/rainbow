@@ -42,9 +42,9 @@ export function ProfileSheetHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const ensName = defaultEnsName || params?.address;
-  const profileName = profilesEnabled ? ensName : undefined;
+  const profileName = profilesEnabled && ensName ? ensName : undefined;
   const profileAddress = useEnsAddressStore(s => s.get(profilesEnabled ? { addressOrName: ensName, chainId: ChainId.mainnet } : undefined));
-  const profile = useEnsRecordsStore(s => s.get(profileName ? { name: profileName } : undefined));
+  const profile = useEnsRecordsStore(s => s.get(profileName));
   const avatar = useEnsProfileImage(profileName, 'avatar');
   const cover = useEnsProfileImage(profileName, 'header');
 

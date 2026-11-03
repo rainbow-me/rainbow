@@ -15,7 +15,6 @@ import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import timeUnits from '@/references/time-units.json';
 import { getNextNonce } from '@/state/nonces';
-import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 
 import { executeENSRap } from '../raps/actions';
@@ -34,21 +33,6 @@ export type ActionTypes = {
   [REGISTRATION_STEPS.RENEW]: ActionFunction<[callback?: () => void]>;
   [REGISTRATION_STEPS.EDIT]: ActionFunction<[callback?: () => void]>;
   [REGISTRATION_STEPS.SET_NAME]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.TRANSFER]: ActionFunction<
-    [
-      params: {
-        clearRecords: boolean;
-        records: any;
-        name: string;
-        setAddress: boolean;
-        toAddress: string;
-        transferControl: boolean;
-        wallet?: any;
-      },
-      callback?: () => void,
-    ],
-    { nonce: number | undefined } | undefined
-  >;
   [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: ActionFunction<[accentColor: string]>;
   [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: ActionFunction;
 };
@@ -309,53 +293,12 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
     [accountAddress, registrationParameters, changedRecords, sendReverseRecord]
   );
 
-  const transferAction: ActionTypes[typeof REGISTRATION_STEPS.TRANSFER] = useCallback(
-    async ({ clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }, callback = noop) => {
-      let wallet = walletOverride;
-      if (!wallet) {
-        const provider = getProvider({ chainId: ChainId.mainnet });
-        wallet = await loadWallet({
-          provider,
-        });
-      }
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-
-      const transferEnsParameters: ENSActionParameters = {
-        ...formatENSActionParams({
-          ...registrationParameters,
-          name,
-          records: records ?? registrationParameters?.records,
-        }),
-        clearRecords,
-        name,
-        nonce,
-        ownerAddress: accountAddress,
-        setAddress,
-        toAddress,
-        transferControl,
-      };
-
-      const { nonce: newNonce } = await executeFn(executeENSRap, {
-        screen: Screens.SEND_ENS,
-        operation: TimeToSignOperation.BroadcastTransaction,
-      })(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);
-
-      return { nonce: newNonce };
-    },
-    [accountAddress, registrationParameters]
-  );
-
   const actions: ActionTypes = {
     [REGISTRATION_STEPS.COMMIT]: commitAction,
     [REGISTRATION_STEPS.EDIT]: setRecordsAction,
     [REGISTRATION_STEPS.REGISTER]: registerAction,
     [REGISTRATION_STEPS.RENEW]: renewAction,
     [REGISTRATION_STEPS.SET_NAME]: setNameAction,
-    [REGISTRATION_STEPS.TRANSFER]: transferAction,
     [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
     [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => Promise.resolve(),
   };

@@ -1024,7 +1024,7 @@ export type EventProperties = {
   [event.ensExtended]: { category: string };
   [event.ensTransferredControl]: { category: string };
   [event.ensSetPrimary]: { category: string };
-  [event.ensRapFailed]: { category: string; failed_action: ENSRapActionType; label: string };
+  [event.ensRapFailed]: { category: string; failed_action: ENSRapActionType | 'transfer'; label: string };
   [event.ensRapStarted]: { category: string; label: string };
   [event.ensRapCompleted]: { category: string; label: string };
 

@@ -1,13 +1,13 @@
-import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
+import { formatsByCoinType } from '@ensdomains/address-encoder';
 import contentHash from '@ensdomains/content-hash';
 
-import { readEnsRecords, type EnsRecordKeys } from '@/features/ens/data/ens';
+import { readEnsRecords } from '@/features/ens/data/ens';
 import { time } from '@/framework/core/utils/time';
-import { ensClient } from '@/graphql';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
-import { ENS_RECORDS, ETHEREUM_COIN_TYPE } from '../../core/records';
+import { ETHEREUM_COIN_TYPE } from '../../core/records';
 import type { Records } from '../../types/registration';
+import { PROFILE_RECORD_KEYS } from '../recordKeys';
 
 // ============ Types ========================================================== //
 
@@ -20,7 +20,7 @@ export type ProfileRecords = {
 // ============ Constants ====================================================== //
 
 const STALE_TIME = time.seconds(10);
-const PROFILE_RECORDS = getProfileRecordKeys();
+
 const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
   'arweave-ns': 'arweave',
   'ipfs-ns': 'ipfs',
@@ -35,34 +35,23 @@ const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
 
 export const useEnsRecordsStore = createQueryCollectionStore(
   {
-    key: ({ name, supportedOnly = true }: { name: string; supportedOnly?: boolean }) => `${name}:${supportedOnly}`,
+    key: (name: string) => name,
     fetcher: fetchProfileRecords,
     disableAutoRefetching: true,
     staleTime: STALE_TIME,
     cacheTime: Infinity,
   },
-  { storageKey: 'ensProfileRecords' }
+  { storageKey: 'ensProfileRecords', version: 2 }
 );
 
 /**
  * Loads profile records and formats coin addresses and contenthash for display.
  *
- * Expanded reads include indexed keys for editing. Unset or unsupported fields
- * and coin addresses without a usable display format are omitted. Lookup and
- * contenthash errors reject before the new result is saved.
+ * Unset fields and coin addresses without a display format are omitted.
+ * Lookup and contenthash errors reject before the new result is saved.
  */
-async function fetchProfileRecords(
-  { name, supportedOnly = true }: { name: string; supportedOnly?: boolean },
-  signal?: AbortSignal
-): Promise<ProfileRecords> {
-  let keys: EnsRecordKeys = PROFILE_RECORDS;
-  if (!supportedOnly) {
-    const [textIndex, coinIndex] = await Promise.all([ensClient.getTextRecordKeysByName({ name }), ensClient.getCoinTypesByName({ name })]);
-    keys = {
-      texts: [...new Set([...PROFILE_RECORDS.texts, ...(textIndex.domains[0]?.resolver?.texts ?? [])])],
-      coins: [...new Set([...PROFILE_RECORDS.coins, ...(coinIndex.domains[0]?.resolver?.coinTypes ?? [])])],
-    };
-  }
+async function fetchProfileRecords(name: string, signal?: AbortSignal): Promise<ProfileRecords> {
+  const keys = PROFILE_RECORD_KEYS;
   const result = await readEnsRecords(name, keys, signal);
 
   const records: Record<string, string> = Object.create(null);
@@ -99,18 +88,4 @@ async function fetchProfileRecords(
   }
 
   return { coinAddresses, contenthash, records };
-}
-
-function getProfileRecordKeys(): EnsRecordKeys {
-  const texts: string[] = [];
-  const coins: number[] = [];
-
-  for (const key of Object.values(ENS_RECORDS)) {
-    if (key === ENS_RECORDS.contenthash) continue;
-    const format = formatsByName[key];
-    if (format) coins.push(format.coinType);
-    else texts.push(key);
-  }
-
-  return { texts, coins };
 }

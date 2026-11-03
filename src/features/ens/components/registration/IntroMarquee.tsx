@@ -32,7 +32,7 @@ export function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      const data = useEnsRecordsStore.getState().get({ name: ensName });
+      const data = useEnsRecordsStore.getState().get(ensName);
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,

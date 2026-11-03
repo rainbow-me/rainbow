@@ -42,7 +42,7 @@ export function SelectENSSheet() {
       void Promise.allSettled([
         useEnsImageStore.getState().load({ name: ensName, field: 'avatar' }),
         useEnsImageStore.getState().load({ name: ensName, field: 'header' }),
-        useEnsRecordsStore.getState().load({ name: ensName }),
+        useEnsRecordsStore.getState().load(ensName),
       ]);
       goBack();
       params?.onSelectENS(ensName);

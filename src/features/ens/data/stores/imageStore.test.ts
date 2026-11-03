@@ -73,7 +73,7 @@ it('makes the record baseline available while image processing is pending', asyn
     contentHash: null,
   }));
   const image = useEnsImageStore.getState().load({ name: 'baseline.eth', field: 'avatar' }, { force: true });
-  const records = await useEnsRecordsStore.getState().load({ name: 'baseline.eth' });
+  const records = await useEnsRecordsStore.getState().load('baseline.eth');
   expect(records?.records).toEqual({ avatar: 'raw avatar record' });
   expect(useEnsImageStore.getState().hasSettled({ name: 'baseline.eth', field: 'avatar' })).toBe(false);
   pending.resolve(null);

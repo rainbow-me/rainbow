@@ -2943,7 +2943,8 @@
         },
         "checkboxes": {
           "clear_profile_information": "Clear profile information",
-          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+            "point_linked_names_to_recipient": "Point this name and any linked names to recipient",
+        "point_name_to_recipient": "Point this name to the recipient’s wallet address",
           "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The address I’m sending to supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"

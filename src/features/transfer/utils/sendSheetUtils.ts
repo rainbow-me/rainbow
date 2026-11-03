@@ -5,8 +5,6 @@ type GetSendSubmitButtonStateParams = {
   assetAmount: string;
   canUseSponsoredSend: boolean;
   hasResolvedSponsoredSend: boolean;
-  isENSProfileLoaded: boolean;
-  isENS: boolean;
   isGasFeeReady: boolean;
   isPreparingSponsoredSend: boolean;
   isSponsoredSend: boolean;
@@ -21,8 +19,6 @@ export function getSendSubmitButtonState({
   assetAmount,
   canUseSponsoredSend,
   hasResolvedSponsoredSend,
-  isENS,
-  isENSProfileLoaded,
   isGasFeeReady,
   isPreparingSponsoredSend,
   isSponsoredSend,
@@ -43,13 +39,6 @@ export function getSendSubmitButtonState({
     return {
       buttonDisabled: true,
       buttonLabel: i18n.t(i18n.l.button.confirm_exchange.enter_amount),
-    };
-  }
-
-  if (isENS && !isENSProfileLoaded) {
-    return {
-      buttonDisabled: true,
-      buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading),
     };
   }
 

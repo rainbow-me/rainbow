@@ -12,9 +12,8 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
-import { type useENSProfile } from '@/features/ens/hooks/useENSProfile';
-import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
-import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
+import { executeEnsTransactions } from '@/features/ens/data/executeTransactions';
+import type { EnsTransferAction } from '@/features/ens/types/transactions';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -62,17 +61,6 @@ type AmountDetails = {
   nativeAmount: string;
 };
 
-type TransferENSAction = ActionTypes[REGISTRATION_STEPS.TRANSFER];
-type EnsProfile = ReturnType<typeof useENSProfile>;
-
-type OnSubmitProps = {
-  ens?: {
-    setAddress: boolean;
-    transferControl: boolean;
-    clearRecords: boolean;
-  };
-};
-
 type GasProps = {
   gasLimit: string;
   isSufficientGas: boolean;
@@ -88,19 +76,12 @@ type RecipientProps = {
   toAddress: string;
 };
 
-type EnsProps = {
-  ensName: string | undefined;
-  ensProfile: EnsProfile;
-  isENS: boolean;
-  transferENS: TransferENSAction;
-};
-
 type UseSendSubmitParams = {
   accountAddress: string;
   amountDetails: AmountDetails;
   currentChainId: ChainId;
   currentProvider: StaticJsonRpcProvider | undefined;
-  ens: EnsProps;
+  isENS: boolean;
   gas: GasProps;
   isHardwareWallet: boolean;
   isSponsoredSend: boolean;
@@ -112,7 +93,7 @@ type UseSendSubmitParams = {
 };
 
 type UseSendSubmitResult = {
-  submitTransaction: (args?: OnSubmitProps) => Promise<boolean | undefined>;
+  submitTransaction: (args?: EnsTransferAction) => Promise<boolean | undefined>;
 };
 
 export function useSendSubmit({
@@ -120,7 +101,7 @@ export function useSendSubmit({
   amountDetails,
   currentChainId,
   currentProvider,
-  ens: { ensName, ensProfile, isENS, transferENS },
+  isENS,
   gas: { gasLimit, isSufficientGas, isValidGas, selectedGasFee, updateTxFee, updateTxFeeForOptimism },
   isHardwareWallet,
   isSponsoredSend,
@@ -135,7 +116,7 @@ export function useSendSubmit({
   const rainbowToastsEnabled = useRainbowToastEnabled();
 
   const onSubmit = useCallback(
-    async ({ ens }: OnSubmitProps = {}) => {
+    async (ens?: EnsTransferAction) => {
       if (!selected || !currentProvider) return;
 
       const screen = isENS ? Screens.SEND_ENS : Screens.SEND;
@@ -173,46 +154,6 @@ export function useSendSubmit({
         );
         return false;
       }
-
-      let nextNonce: number | undefined;
-
-      if (isENS && toAddress && (ens?.clearRecords || ens?.setAddress || ens?.transferControl)) {
-        const transferENSResult = await transferENS({
-          clearRecords: ens.clearRecords,
-          name: ensName ?? '',
-          records: {
-            ...(ensProfile?.data?.contenthash ? { contenthash: ensProfile?.data?.contenthash } : {}),
-            ...(ensProfile?.data?.records || {}),
-            ...(ensProfile?.data?.coinAddresses || {}),
-          },
-          setAddress: ens.setAddress,
-          toAddress,
-          transferControl: ens.transferControl,
-          wallet,
-        });
-
-        if (!transferENSResult) {
-          logger.error(new RainbowError(`[useSendSubmit]: transferENS failed`), {
-            transferENSResult,
-          });
-          return;
-        }
-
-        if (typeof transferENSResult.nonce === 'number') {
-          nextNonce = transferENSResult.nonce + 1;
-        }
-      }
-
-      const nonce = nextNonce ?? (await getNextNonce({ address: accountAddress, chainId: currentChainId }));
-      const txDetails: SendSubmitTransaction = {
-        amount: amountDetails.assetAmount,
-        asset: selected,
-        network: currentChainIdNetwork,
-        chainId: currentChainId,
-        from: accountAddress,
-        nonce,
-        to: toAddress,
-      };
 
       // The interactions count query has a 15-minute cache TTL; without invalidation
       // the recipient's interaction count would stay stale after a send.
@@ -256,6 +197,23 @@ export function useSendSubmit({
           return false;
         }
 
+        let nonce = await getNextNonce({ address: accountAddress, chainId: currentChainId });
+        if (ens) {
+          nonce = await executeFn(executeEnsTransactions, {
+            screen,
+            operation: TimeToSignOperation.BroadcastTransaction,
+          })(wallet, ens, nonce);
+        }
+        const txDetails: SendSubmitTransaction = {
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          network: currentChainIdNetwork,
+          chainId: currentChainId,
+          from: accountAddress,
+          nonce,
+          to: toAddress,
+        };
+
         const didSubmitPaidSend = await submitPaidSend({
           accountAddress,
           amount: amountDetails.assetAmount,
@@ -289,7 +247,7 @@ export function useSendSubmit({
         }
 
         logger.error(new RainbowError(`[useSendSubmit]: onSubmit error`), {
-          txDetails,
+          asset: selected.uniqueId,
           error,
         });
 
@@ -305,10 +263,6 @@ export function useSendSubmit({
       amountDetails.isSufficientBalance,
       currentChainId,
       currentProvider,
-      ensName,
-      ensProfile?.data?.coinAddresses,
-      ensProfile?.data?.contenthash,
-      ensProfile?.data?.records,
       gasLimit,
       isENS,
       isSponsoredSend,
@@ -322,14 +276,13 @@ export function useSendSubmit({
       selectedGasFee,
       sponsoredSendPreparedCalls,
       toAddress,
-      transferENS,
       updateTxFee,
       updateTxFeeForOptimism,
     ]
   );
 
   const submitTransaction = useCallback(
-    async (args?: OnSubmitProps) => {
+    async (args?: EnsTransferAction) => {
       if (!greaterThan(amountDetails.assetAmount, 0)) {
         logger.error(new RainbowError(`[useSendSubmit]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
           amountDetails,

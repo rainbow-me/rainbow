@@ -1,11 +1,11 @@
-import { getAddress, labelhash, zeroAddress, type Address } from 'viem';
+import { getAddress, labelhash, type Address } from 'viem';
 
 import { time } from '@/framework/core/utils/time';
 import { ensClient } from '@/graphql';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
 import { normalizeEnsName } from '../../core/name';
-import { ENS_DOMAIN, getNameOwner } from '../../utils/helpers';
+import { ENS_DOMAIN } from '../../utils/helpers';
 import { readEnsOwnership } from '../ownership';
 import { readEnsPermissions } from '../permissions';
 
@@ -54,23 +54,6 @@ export const useEnsRegistrationDateStore = createQueryCollectionStore({
   staleTime: time.minutes(5),
   cacheTime: time.hours(1),
 });
-
-/**
- * Ownership and registration metadata for the legacy registry and its index.
- */
-export const useEnsOwnerStore = createQueryCollectionStore(
-  {
-    key: (name: string) => name,
-    fetcher: async name => {
-      const address = getAddress(await getNameOwner(name));
-      return address === zeroAddress ? null : address;
-    },
-    disableAutoRefetching: true,
-    staleTime: time.seconds(10),
-    cacheTime: Infinity,
-  },
-  { storageKey: 'ensOwners' }
-);
 
 export const useEnsRegistrationMetadataStore = createQueryCollectionStore(
   {
