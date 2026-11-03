@@ -5,7 +5,7 @@ import StepIndicator from '@/components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
-import { ENS_SECONDS_WAIT } from '../../utils/helpers';
+import { ENS_MIN_COMMITMENT_AGE } from '../../core/contracts';
 
 export const WaitENSConfirmationContent = ({ seconds }: { seconds: number | undefined }) => (
   <>
@@ -17,7 +17,11 @@ export const WaitENSConfirmationContent = ({ seconds }: { seconds: number | unde
         <Box flexGrow={1} justifyContent="center">
           <Inset horizontal="34px (Deprecated)">
             <Stack space="34px (Deprecated)">
-              <LargeCountdownClock initialSeconds={ENS_SECONDS_WAIT} onFinished={() => {}} seconds={seconds || ENS_SECONDS_WAIT} />
+              <LargeCountdownClock
+                initialSeconds={ENS_MIN_COMMITMENT_AGE}
+                onFinished={() => {}}
+                seconds={seconds || ENS_MIN_COMMITMENT_AGE}
+              />
               <Stack alignHorizontal="center" space="19px (Deprecated)">
                 <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
                   {i18n.t(i18n.l.profiles.confirm.wait_one_minute)}

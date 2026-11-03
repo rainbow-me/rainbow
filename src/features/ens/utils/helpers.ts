@@ -1,71 +1,22 @@
 import { formatsByName } from '@ensdomains/address-encoder';
-import { hash } from '@ensdomains/eth-ens-namehash';
-import { type Signer } from '@ethersproject/abstract-signer';
-import { BigNumber, type BigNumberish } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
 import { atom } from 'recoil';
+import { formatUnits } from 'viem';
 
 import { type InlineFieldProps } from '@/components/inputs/InlineField';
-import type { EthereumAddress } from '@/entities/wallet';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { gweiToWei } from '@/features/gas/core/gasParams';
-import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider, toHex } from '@/handlers/web3';
-import { add, addBuffer, divide, fromWei, handleSignificantDecimals, multiply } from '@/helpers/utilities';
+import { add, divide, fromWei, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
-import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
-import labelhash from '@/utils/labelhash';
 
+import { encodeContenthash } from '../core/contenthash';
+import { ENS_MIN_COMMITMENT_AGE } from '../core/contracts';
 import { ENS_RECORDS } from '../core/records';
-import {
-  ENSBaseRegistrarImplementationABI,
-  ensBaseRegistrarImplementationAddress,
-  ENSETHRegistrarControllerABI,
-  ensETHRegistrarControllerAddress,
-  ENSPublicResolverABI,
-  ensPublicResolverAddress,
-  ensRegistryAddress,
-  ENSRegistryWithFallbackABI,
-  ENSReverseRegistrarABI,
-  ensReverseRegistrarAddress,
-} from '../references';
-import type { ENSRegistrationRecords } from '../types/registration';
+import { ENS_PAYMENT_TOKEN } from '../data/registration';
 
-export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;
-export const ENS_SECONDS_WAIT_WITH_PADDING = ENS_SECONDS_WAIT + ENS_SECONDS_PADDING;
-export const ENS_SECONDS_WAIT_PROVIDER_PADDING = ENS_SECONDS_WAIT + 4 * ENS_SECONDS_PADDING;
-
-export enum ENSRegistrationTransactionType {
-  COMMIT = 'commit',
-  REGISTER_WITH_CONFIG = 'registerWithConfig',
-  RENEW = 'renew',
-  SET_ADDR = 'setAddr',
-  RECLAIM = 'reclaim',
-  SET_CONTENTHASH = 'setContenthash',
-  SET_TEXT = 'setText',
-  SET_NAME = 'setName',
-  MULTICALL = 'multicall',
-}
-
-export enum REGISTRATION_STEPS {
-  COMMIT = 'COMMIT',
-  EDIT = 'EDIT',
-  REGISTER = 'REGISTER',
-  RENEW = 'RENEW',
-  SET_NAME = 'SET_NAME',
-  WAIT_COMMIT_CONFIRMATION = 'WAIT_COMMIT_CONFIRMATION',
-  WAIT_ENS_COMMITMENT = 'WAIT_ENS_COMMITMENT',
-}
-
-export enum REGISTRATION_MODES {
-  CREATE = 'CREATE',
-  EDIT = 'EDIT',
-  RENEW = 'RENEW',
-  SEARCH = 'SEARCH',
-  SET_NAME = 'SET_NAME',
-}
+export const ENS_SECONDS_WAIT_WITH_PADDING = ENS_MIN_COMMITMENT_AGE + ENS_SECONDS_PADDING;
+export const ENS_SECONDS_WAIT_PROVIDER_PADDING = ENS_MIN_COMMITMENT_AGE + 4 * ENS_SECONDS_PADDING;
 
 export type TextRecordField = {
   id: string;
@@ -412,7 +363,7 @@ export const textRecordFields = {
       get message() {
         return i18n.t(i18n.l.profiles.create.invalid_content_hash);
       },
-      validator: value => validateContentHashRecordValue(value),
+      validator: value => encodeContenthash(value) !== null,
     },
   },
 } as {
@@ -420,223 +371,6 @@ export const textRecordFields = {
 };
 
 export const ENS_DOMAIN = '.eth';
-
-const getENSRegistrarControllerContract = async (wallet?: Signer, registrarAddress?: string) => {
-  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
-  return new Contract(registrarAddress || ensETHRegistrarControllerAddress, ENSETHRegistrarControllerABI, signerOrProvider);
-};
-
-const getENSPublicResolverContract = async (wallet?: Signer, resolverAddress?: EthereumAddress) => {
-  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
-  return new Contract(resolverAddress || ensPublicResolverAddress, ENSPublicResolverABI, signerOrProvider);
-};
-
-const getENSReverseRegistrarContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
-  return new Contract(ensReverseRegistrarAddress, ENSReverseRegistrarABI, signerOrProvider);
-};
-
-const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
-  return new Contract(ensBaseRegistrarImplementationAddress, ENSBaseRegistrarImplementationABI, signerOrProvider);
-};
-
-const getENSRegistryContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet ?? (await getProvider({ chainId: ChainId.mainnet }));
-  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, signerOrProvider);
-};
-
-const getAvailable = async (name: string, contract?: Contract): Promise<boolean> => {
-  const ensContract = contract ?? (await getENSRegistrarControllerContract());
-  return ensContract.available(name);
-};
-
-const getNameExpires = async (name: string): Promise<string> => {
-  const contract = await getENSBaseRegistrarImplementationContract();
-  return contract.nameExpires(labelhash(name));
-};
-
-const getNameOwner = async (name: string): Promise<string> => {
-  const contract = await getENSRegistryContract();
-  return contract.owner(hash(name));
-};
-
-const getRentPrice = async (name: string, duration: number, contract?: Contract): Promise<any> => {
-  const ensContract = contract ?? (await getENSRegistrarControllerContract());
-  return ensContract.rentPrice(name, duration);
-};
-
-const setupMulticallRecords = (name: string, records: ENSRegistrationRecords, resolverInstance: Contract): string[] => {
-  const resolver = resolverInstance.interface;
-  const namehash = hash(name);
-
-  const data = [];
-  // ens associated address
-  const ensAssociatedRecord = records.ensAssociatedAddress;
-
-  if (Boolean(ensAssociatedRecord) && typeof ensAssociatedRecord === 'string' && parseInt(ensAssociatedRecord, 16) !== 0) {
-    data.push(resolver.encodeFunctionData('setAddr(bytes32,address)', [namehash, ensAssociatedRecord]));
-  }
-  if (typeof records.contenthash === 'string') {
-    // content hash address
-    const { encoded: encodedContentHash } = encodeContenthash(records.contenthash || '');
-    const contentHashAssociatedRecord = records.contenthash === '' ? Buffer.from('') : encodedContentHash;
-    data.push(resolver.encodeFunctionData('setContenthash', [namehash, contentHashAssociatedRecord]));
-  }
-  // coin addresses
-  const coinAddressesAssociatedRecord = records.coinAddress;
-  if (coinAddressesAssociatedRecord) {
-    data.push(
-      coinAddressesAssociatedRecord.map(coinRecord => {
-        const { decoder, coinType } = formatsByName[coinRecord.key];
-        let addressAsBytes;
-        if (!coinRecord.address || coinRecord.address === '') {
-          addressAsBytes = Buffer.from('');
-        } else {
-          addressAsBytes = decoder(coinRecord.address);
-        }
-        return resolver.encodeFunctionData('setAddr(bytes32,uint256,bytes)', [namehash, coinType, addressAsBytes]);
-      })
-    );
-  }
-  // text addresses
-  const textAssociatedRecord = records.text;
-  if (textAssociatedRecord) {
-    data.push(
-      textAssociatedRecord
-        .filter(textRecord => Boolean(textRecord.value) || textRecord.value === '')
-        .map(textRecord => {
-          return resolver.encodeFunctionData('setText', [namehash, textRecord.key, textRecord.value]);
-        })
-    );
-  }
-  // flatten textrecords and addresses and remove undefined
-  return data.flat().filter(Boolean);
-};
-
-const generateSalt = () => {
-  const random = new Uint8Array(32);
-  crypto.getRandomValues(random);
-  const salt =
-    '0x' +
-    Array.from(random)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
-  return salt;
-};
-
-const getENSExecutionDetails = async ({
-  name,
-  type,
-  ownerAddress,
-  salt,
-  toAddress,
-  rentPrice,
-  duration,
-  records,
-  wallet,
-  resolverAddress,
-}: {
-  name?: string;
-  type: ENSRegistrationTransactionType;
-  ownerAddress?: string;
-  rentPrice?: string;
-  duration?: number;
-  records?: ENSRegistrationRecords;
-  toAddress?: string;
-  wallet?: Signer;
-  salt?: string;
-  resolverAddress?: EthereumAddress;
-}): Promise<{
-  methodArguments: any[] | null;
-  value: BigNumberish | null;
-  contract: Contract | null;
-}> => {
-  let args: any[] | null = null;
-  let value: string | null = null;
-  let contract: Contract | null = null;
-
-  switch (type) {
-    case ENSRegistrationTransactionType.COMMIT: {
-      if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const registrarController = await getENSRegistrarControllerContract(wallet);
-      const commitment = await registrarController.makeCommitmentWithConfig(
-        name.replace(ENS_DOMAIN, ''),
-        ownerAddress,
-        salt,
-        ensPublicResolverAddress,
-        ownerAddress
-      );
-      args = [commitment];
-      contract = registrarController;
-      break;
-    }
-    case ENSRegistrationTransactionType.MULTICALL: {
-      if (!name || !records) throw new Error('Bad arguments for multicall');
-      contract = await getENSPublicResolverContract(wallet, resolverAddress);
-      const data = setupMulticallRecords(name, records, contract) || [];
-      args = [data];
-      break;
-    }
-    case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
-      if (!name || !ownerAddress || !duration || !rentPrice) throw new Error('Bad arguments for registerWithConfig');
-      value = toHex(addBuffer(rentPrice, 1.1));
-      args = [name.replace(ENS_DOMAIN, ''), ownerAddress, duration, salt, ensPublicResolverAddress, ownerAddress];
-      contract = await getENSRegistrarControllerContract(wallet);
-      break;
-    }
-    case ENSRegistrationTransactionType.RENEW: {
-      if (!name || !duration || !rentPrice) throw new Error('Bad arguments for renew');
-      value = toHex(addBuffer(rentPrice, 1.1));
-      args = [name.replace(ENS_DOMAIN, ''), duration];
-      contract = await getENSRegistrarControllerContract(wallet);
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_NAME:
-      if (!name) throw new Error('Bad arguments for setName');
-      args = [name];
-      contract = await getENSReverseRegistrarContract(wallet);
-      break;
-    case ENSRegistrationTransactionType.SET_ADDR: {
-      if (!name || !records || !records?.coinAddress?.[0]) throw new Error('Bad arguments for setAddr');
-      const record = records?.coinAddress[0];
-      const namehash = hash(name);
-      const coinType = formatsByName[record.key].coinType;
-      args = [namehash, coinType, record.address];
-      contract = await getENSPublicResolverContract(wallet, resolverAddress);
-      break;
-    }
-    case ENSRegistrationTransactionType.RECLAIM: {
-      if (!name || !toAddress) throw new Error('Bad arguments for reclaim');
-      const id = BigNumber.from(labelhash(name.replace(ENS_DOMAIN, ''))).toString();
-      args = [id, toAddress];
-      contract = await getENSBaseRegistrarImplementationContract(wallet);
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_TEXT: {
-      if (!name || !records || !records?.text?.[0]) throw new Error('Bad arguments for setText');
-      const record = records?.text[0];
-      const namehash = hash(name);
-      args = [namehash, record.key, record.value];
-      contract = await getENSPublicResolverContract(wallet, resolverAddress);
-      break;
-    }
-    case ENSRegistrationTransactionType.SET_CONTENTHASH: {
-      if (!name || !records || typeof records?.contenthash !== 'string') throw new Error('Bad arguments for contenthash');
-      const namehash = hash(name);
-      const { encoded: encodedContentHash } = encodeContenthash(records?.contenthash || '');
-      const contentHash = records.contenthash === '' ? Buffer.from('') : encodedContentHash;
-      args = [namehash, contentHash];
-      contract = await getENSPublicResolverContract(wallet, resolverAddress);
-      break;
-    }
-  }
-  return {
-    contract,
-    methodArguments: args,
-    value,
-  };
-};
 
 const formatEstimatedNetworkFee = (
   gasLimit: string,
@@ -657,20 +391,6 @@ const formatEstimatedNetworkFee = (
   };
 };
 
-const formatTotalRegistrationCost = (wei: string, nativeCurrency: any, nativeAssetPrice: any) => {
-  const networkFeeInEth = fromWei(wei);
-  const eth = handleSignificantDecimals(networkFeeInEth, 3);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(networkFeeInEth, nativeAssetPrice, nativeCurrency);
-
-  return {
-    amount,
-    display,
-    eth,
-    wei,
-  };
-};
-
 const validateCoinRecordValue = (value: string, coin: string) => {
   try {
     formatsByName[coin].decoder(value);
@@ -680,58 +400,21 @@ const validateCoinRecordValue = (value: string, coin: string) => {
   }
 };
 
-const validateContentHashRecordValue = (value: string) => {
-  const { encoded, error: encodeError } = encodeContenthash(value);
-  if (!encodeError && encoded) {
-    return isValidContenthash(encoded);
-  } else {
-    return false;
-  }
-};
-
-const getRentPricePerYear = (rentPrice: string, duration: number) => divide(rentPrice, duration);
-
-const formatRentPrice = (rentPrice: BigNumberish, duration: number, nativeCurrency: any, nativeAssetPrice: any) => {
-  const rentPriceInETH = fromWei(rentPrice.toString());
-  const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
-  const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
-
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(rentPriceInETH, nativeAssetPrice, nativeCurrency);
-  const { display: displayPerYear, amount: amountPerYear } = convertAmountAndPriceToNativeDisplay(
-    rentPricePerYear,
-    nativeAssetPrice,
-    nativeCurrency
-  );
-
+/**
+ * Formats the registrar's USDC quote without treating token units as wei.
+ */
+export function formatRentPrice(rawAmount: string, duration: number) {
+  const amount = formatUnits(BigInt(rawAmount), ENS_PAYMENT_TOKEN.decimals);
   return {
-    perYear: {
-      amount: amountPerYear,
-      display: displayPerYear,
-      wei: rentPricePerYearInWei,
-    },
-    total: {
-      amount,
-      display,
-    },
-    wei: rentPrice,
+    amount,
+    perYear: { display: `${divide(amount, duration)} ${ENS_PAYMENT_TOKEN.symbol}` },
+    total: { display: `${amount} ${ENS_PAYMENT_TOKEN.symbol}` },
   };
-};
+}
 
 const accentColorAtom = atom({
   default: colors.purple,
   key: 'ens.accentColor',
 });
 
-export {
-  generateSalt,
-  getENSRegistrarControllerContract,
-  getAvailable,
-  getNameExpires,
-  getNameOwner,
-  getRentPrice,
-  getENSExecutionDetails,
-  formatEstimatedNetworkFee,
-  formatTotalRegistrationCost,
-  formatRentPrice,
-  accentColorAtom,
-};
+export { formatEstimatedNetworkFee, accentColorAtom };

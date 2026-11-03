@@ -12,7 +12,7 @@ import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsPermissionsStore } from '@/features/ens/data/stores/ownershipStores';
 import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
-import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';

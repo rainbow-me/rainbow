@@ -2053,13 +2053,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ensdomains/eth-ens-namehash@npm:2.0.15":
-  version: 2.0.15
-  resolution: "@ensdomains/eth-ens-namehash@npm:2.0.15"
-  checksum: 10c0/78bfff7379ab33e4c5be58111166fbace3d555e3d8315c7997958953d9e03438c8df4f3bc29ebafaf5bb98166db05097e14aec46e2d414789f014900f06c6ee9
-  languageName: node
-  linkType: hard
-
 "@esbuild/aix-ppc64@npm:0.25.12":
   version: 0.25.12
   resolution: "@esbuild/aix-ppc64@npm:0.25.12"
@@ -9330,7 +9323,6 @@ __metadata:
     "@domir/react-native-measure-text": "npm:0.1.8"
     "@ensdomains/address-encoder": "npm:0.2.16"
     "@ensdomains/content-hash": "npm:2.5.7"
-    "@ensdomains/eth-ens-namehash": "npm:2.0.15"
     "@ethersproject/abi": "npm:5.8.0"
     "@ethersproject/abstract-provider": "npm:5.8.0"
     "@ethersproject/abstract-signer": "npm:5.8.0"

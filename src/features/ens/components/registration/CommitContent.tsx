@@ -5,10 +5,10 @@ import { type Source } from 'react-native-fast-image';
 import brain from '@/assets/brain.png';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 
-import { REGISTRATION_MODES } from '../../utils/helpers';
 import { RegistrationReviewRows } from './RegistrationReviewRows';
 
 export const CommitContent = ({
@@ -36,7 +36,6 @@ export const CommitContent = ({
         </Inline>
         <RegistrationReviewRows
           duration={duration}
-          estimatedCostETH={registrationCostsData?.estimatedTotalRegistrationCost?.eth}
           maxDuration={99}
           mode={REGISTRATION_MODES.CREATE}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}

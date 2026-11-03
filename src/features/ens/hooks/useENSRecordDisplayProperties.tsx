@@ -7,6 +7,7 @@ import URL from 'url-parse';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { ENS_RECORDS } from '@/features/ens/core/records';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -15,7 +16,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import { REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
+import { textRecordFields } from '../utils/helpers';
 
 const icons = {
   [ENS_RECORDS.twitter]: 'x',

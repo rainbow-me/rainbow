@@ -14,6 +14,7 @@ import { IS_TEST } from '@/env';
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -26,7 +27,6 @@ import { IntroMarquee } from '../components/registration/IntroMarquee';
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useAccountENSDomains } from '../hooks/useAccountENSDomains';
-import { REGISTRATION_MODES } from '../utils/helpers';
 
 enum AnotherENSEnum {
   search = 'search',

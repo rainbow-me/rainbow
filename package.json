@@ -170,7 +170,6 @@
     "@domir/react-native-measure-text": "0.1.8",
     "@ensdomains/address-encoder": "0.2.16",
     "@ensdomains/content-hash": "2.5.7",
-    "@ensdomains/eth-ens-namehash": "2.0.15",
     "@ethersproject/abi": "5.8.0",
     "@ethersproject/abstract-provider": "5.8.0",
     "@ethersproject/abstract-signer": "5.8.0",

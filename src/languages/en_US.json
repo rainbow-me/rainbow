@@ -1787,6 +1787,8 @@
       "confirm": {
         "confirm_registration": "Confirm Registration",
         "confirm_updates": "Confirm Updates",
+        "insufficient_payment_token": "Insufficient {{symbol}}",
+        "shared_records_notice": "Other names linked to these records will update too",
         "duration_plural": "%{content} years",
         "duration_singular": "1 year",
         "estimated_fees": "Estimated network fees",
@@ -2943,8 +2945,8 @@
         },
         "checkboxes": {
           "clear_profile_information": "Clear profile information",
-            "point_linked_names_to_recipient": "Point this name and any linked names to recipient",
-        "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "point_linked_names_to_recipient": "Point this name and any linked names to recipient",
           "transfer_control": "Transfer control to the recipient",
           "has_a_wallet_that_supports": "The address I’m sending to supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"

@@ -3,16 +3,17 @@ import { useCallback, useEffect } from 'react';
 import { atom, useRecoilState } from 'recoil';
 
 import { deprecatedTextRecordFields, type ENS_RECORDS } from '@/features/ens/core/records';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 
 import type { Records } from '../types/registration';
-import { REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
+import { textRecordFields, type TextRecordField } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
 const uploadsAtom = atom<Record<string, boolean>>({ default: {}, key: 'ensProfileForm.uploads' });
 const errorsAtom = atom<Record<string, string>>({ default: {}, key: 'ensProfileForm.errors' });
 const submittingAtom = atom({ default: false, key: 'ensProfileForm.submitting' });
 
-export default function useENSRegistrationForm({
+export function useENSRegistrationForm({
   defaultFields,
   initializeForm = false,
 }: {

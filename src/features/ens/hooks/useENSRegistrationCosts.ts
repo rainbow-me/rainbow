@@ -1,56 +1,50 @@
 import { useLayoutEffect, useMemo } from 'react';
 
-import { type BigNumberish } from '@ethersproject/bignumber';
 import { useListen } from '@storesjs/stores';
 
+import { getUniqueId } from '@/entities/assetId';
+import { REGISTRATION_STEPS } from '@/features/ens/types/registration';
 import useGas from '@/features/gas/hooks/useGas';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
+import { fromWei, greaterThanOrEqualTo, handleSignificantDecimals } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useRoute } from '@/navigation/RouteContext';
 import timeUnits from '@/references/time-units.json';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
+import { ENS_PAYMENT_TOKEN } from '../data/registration';
 import { createEnsGasEstimateStore } from '../data/stores/createEnsGasEstimateStore';
-import { formatEstimatedNetworkFee, formatRentPrice, formatTotalRegistrationCost, REGISTRATION_STEPS } from '../utils/helpers';
+import { formatEstimatedNetworkFee, type formatRentPrice } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
 export function useENSRegistrationCosts({
   name,
   rentPrice,
-  sendReverseRecord,
+  sendReverseRecord = false,
   step,
   yearsDuration,
 }: {
   name: string;
-  rentPrice?: { wei: BigNumberish; perYear: { wei: string } };
+  rentPrice?: ReturnType<typeof formatRentPrice>;
   sendReverseRecord?: boolean;
   step: keyof typeof REGISTRATION_STEPS;
   yearsDuration: number;
 }) {
-  const accountAddress = useAccountAddress();
+  const account = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const usdc = useUserAssetsStore(s => s.getLegacyUserAsset(getUniqueId(ENS_PAYMENT_TOKEN.address, ChainId.mainnet)));
   const { registrationParameters, changedRecords } = useENSRegistration();
-  const route = useRoute().name;
+  const duration = yearsDuration * timeUnits.secs.year;
+  const commitment = registrationParameters?.commitment;
   const gas = useGas({ enableTracking: true });
-
-  const duration = step === REGISTRATION_STEPS.REGISTER ? registrationParameters?.duration : yearsDuration * timeUnits.secs.year;
-  const rentPriceInWei = rentPrice?.wei.toString();
-  const { salt, rentPrice: committedRentPrice } = registrationParameters ?? {};
-  const {
-    startPollingGasFees,
-    updateTxFee,
-    gasLimit,
-    gasFeeParamsBySpeed,
-    selectedGasFeeOption,
-    currentBlockParams,
-    isValidGas,
-    isSufficientGas,
-  } = gas;
+  const route = useRoute().name;
+  const { startPollingGasFees, updateTxFee, gasLimit, gasFeeParamsBySpeed } = gas;
+  const hasQuote = !!rentPrice;
 
   const gasEstimateStore = useMemo(() => createEnsGasEstimateStore(route), [route]);
 
@@ -58,18 +52,12 @@ export function useENSRegistrationCosts({
 
   useLayoutEffect(() => {
     gasEstimateStore.setState({
-      input: {
-        name,
-        ownerAddress: accountAddress,
-        step,
-        duration,
-        rentPrice: step === REGISTRATION_STEPS.REGISTER ? committedRentPrice : rentPriceInWei,
-        salt,
-        records: changedRecords,
-        setReverseRecord: sendReverseRecord,
-      },
+      input:
+        name && account && (step !== REGISTRATION_STEPS.COMMIT || hasQuote)
+          ? { name, account, step, duration, commitment, records: changedRecords, setReverseRecord: sendReverseRecord }
+          : null,
     });
-  }, [gasEstimateStore, name, accountAddress, step, duration, committedRentPrice, rentPriceInWei, salt, changedRecords, sendReverseRecord]);
+  }, [gasEstimateStore, name, account, step, duration, commitment, changedRecords, sendReverseRecord, hasQuote]);
 
   useListen(
     useNavigationStore,
@@ -82,7 +70,7 @@ export function useENSRegistrationCosts({
 
   useListen(
     gasEstimateStore,
-    s => (s.enabled ? s.getData()?.stepGasLimit : null),
+    s => (s.enabled ? s.getData()?.step : null),
     limit => {
       if (limit) updateTxFee(limit, null);
     },
@@ -90,56 +78,37 @@ export function useENSRegistrationCosts({
   );
 
   const estimate = gasEstimateStore(s => s.getData());
-  const stepGasLimit = estimate?.stepGasLimit;
-  const estimatedGasLimit = estimate?.estimatedGasLimit;
+  const stepGasLimit = estimate?.step;
 
-  return useMemo(() => {
-    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
-    const baseFee = currentBlockParams?.baseFeePerGas?.gwei;
-    const priorityFee = gasFeeParamsBySpeed?.[selectedGasFeeOption || gasUtils.NORMAL]?.maxPriorityFeePerGas?.gwei;
-
-    const estimatedNetworkFee =
-      estimatedGasLimit && baseFee && priorityFee
-        ? formatEstimatedNetworkFee(estimatedGasLimit, baseFee, priorityFee, nativeCurrency, nativeAssetPrice)
-        : undefined;
-
-    const estimatedRentPrice = rentPrice?.perYear.wei
-      ? formatRentPrice(multiply(rentPrice.perYear.wei, yearsDuration), yearsDuration, nativeCurrency, nativeAssetPrice)
+  const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
+  const baseFee = gas.currentBlockParams?.baseFeePerGas?.gwei;
+  const priorityFee = gasFeeParamsBySpeed?.[gas.selectedGasFeeOption || gasUtils.NORMAL]?.maxPriorityFeePerGas?.gwei;
+  const estimatedNetworkFee =
+    estimate && baseFee && priorityFee
+      ? formatEstimatedNetworkFee(estimate.total, baseFee, priorityFee, nativeCurrency, nativeAssetPrice)
       : undefined;
+  const paysRegistration = step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.REGISTER || step === REGISTRATION_STEPS.RENEW;
+  const sufficientPayment = !paysRegistration
+    ? true
+    : rentPrice
+      ? greaterThanOrEqualTo(usdc?.balance?.amount ?? '0', rentPrice.amount)
+      : undefined;
+  const nativeBalance = ethereumUtils.getNetworkNativeAsset({ chainId: ChainId.mainnet })?.balance?.amount ?? '0';
 
-    const totalWei =
-      estimatedNetworkFee && estimatedRentPrice ? add(estimatedNetworkFee.wei, estimatedRentPrice.wei.toString()) : undefined;
-
-    const estimatedTotalRegistrationCost =
-      totalWei && estimatedNetworkFee && estimatedRentPrice
+  return {
+    estimatedNetworkFee,
+    isSufficientPayment: sufficientPayment,
+    estimatedRentPrice: rentPrice,
+    estimatedTotalRegistrationCost:
+      estimatedNetworkFee && rentPrice
         ? {
-            ...formatTotalRegistrationCost(totalWei, nativeCurrency, nativeAssetPrice),
-            display: addDisplay(estimatedNetworkFee.display, estimatedRentPrice.total.display),
+            display: `${rentPrice.amount} ${ENS_PAYMENT_TOKEN.symbol} + ${handleSignificantDecimals(fromWei(estimatedNetworkFee.wei), 4)} ETH`,
           }
-        : undefined;
-
-    const balance = ethereumUtils.getNetworkNativeAsset({ chainId: ChainId.mainnet })?.balance?.amount ?? 0;
-
-    return {
-      estimatedNetworkFee,
-      estimatedRentPrice,
-      estimatedTotalRegistrationCost,
-      isSufficientGasForRegistration: !!totalWei && greaterThanOrEqualTo(balance, fromWei(addBuffer(totalWei, 1.1))),
-      isSufficientGasForStep: !!stepGasLimit && stepGasLimit === gasLimit && isValidGas && isSufficientGas,
-      isValidGas,
-      stepGasLimit,
-    };
-  }, [
-    currentBlockParams,
-    gasFeeParamsBySpeed,
-    selectedGasFeeOption,
-    estimatedGasLimit,
-    nativeCurrency,
-    rentPrice?.perYear.wei,
-    yearsDuration,
-    isSufficientGas,
+        : undefined,
+    isSufficientGasForRegistration:
+      sufficientPayment && !!estimatedNetworkFee && greaterThanOrEqualTo(nativeBalance, fromWei(estimatedNetworkFee.wei)),
+    isSufficientGasForStep: sufficientPayment && !!stepGasLimit && stepGasLimit === gasLimit && gas.isValidGas && gas.isSufficientGas,
+    isValidGas: gas.isValidGas,
     stepGasLimit,
-    gasLimit,
-    isValidGas,
-  ]);
+  };
 }

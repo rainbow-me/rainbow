@@ -11,7 +11,7 @@ import { type RootStackParamList } from '@/navigation/types';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { SelectableButton } from '../components/registration/SelectableButton';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationForm } from '../hooks/useENSRegistrationForm';
 import { accentColorAtom, textRecordFields } from '../utils/helpers';
 
 const ENSAdditionalRecordsSheetHeight = 262;

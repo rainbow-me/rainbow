@@ -10,7 +10,7 @@ import { abbreviateName } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
 import { colors } from '@/styles';
 
-import useENSPendingRegistrations from '../../hooks/useENSPendingRegistrations';
+import { useENSPendingRegistrations } from '../../hooks/useENSPendingRegistrations';
 import type { RegistrationParameters } from '../../types/registration';
 
 const PendingRegistration = ({

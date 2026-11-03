@@ -40,7 +40,7 @@ import { isNameToken } from '@/features/ens/data/ownership';
 import { useEnsPermissionsStore, useEnsRegistrationDateStore } from '@/features/ens/data/stores/ownershipStores';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { useEnsTokenDetails } from '@/features/ens/hooks/useEnsTokenDetails';
-import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';

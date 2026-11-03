@@ -11,7 +11,7 @@ import { type TelemetryErrorReason } from '@/features/cash/utils/getTelemetryErr
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
 import { type RequestSource } from '@/features/dapp-request/types';
-import { type ENSRapActionType } from '@/features/ens/raps/common';
+import { type EnsAction } from '@/features/ens/types/transactions';
 import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
 import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/types';
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
@@ -1024,7 +1024,7 @@ export type EventProperties = {
   [event.ensExtended]: { category: string };
   [event.ensTransferredControl]: { category: string };
   [event.ensSetPrimary]: { category: string };
-  [event.ensRapFailed]: { category: string; failed_action: ENSRapActionType | 'transfer'; label: string };
+  [event.ensRapFailed]: { category: string; failed_action: EnsAction['type']; label: string };
   [event.ensRapStarted]: { category: string; label: string };
   [event.ensRapCompleted]: { category: string; label: string };
 

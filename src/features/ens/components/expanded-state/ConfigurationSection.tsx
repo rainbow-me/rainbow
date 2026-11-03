@@ -4,7 +4,7 @@ import { getAddress, type Address } from 'viem';
 
 import { Stack } from '@/design-system';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
-import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

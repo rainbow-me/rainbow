@@ -15,6 +15,7 @@ import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { ENS_RECORDS } from '@/features/ens/core/records';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -33,13 +34,14 @@ import RegistrationCover from '../components/registration/RegistrationCover';
 import { SelectableButton } from '../components/registration/SelectableButton';
 import { TextRecordsForm } from '../components/registration/TextRecordsForm';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../data/profilePreferences';
+import { useEnsPermissionsStore } from '../data/stores/ownershipStores';
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useENSRegistration } from '../hooks/useENSRegistration';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationForm } from '../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
 import { type ENSRoutes } from '../navigation/RegisterENSNavigator';
-import { accentColorAtom, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
+import { accentColorAtom, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
 const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
@@ -51,6 +53,9 @@ export function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name, mode, accountAddress } = useENSRegistration();
+  const permissionedResolver = useEnsPermissionsStore(s =>
+    mode === REGISTRATION_MODES.EDIT ? s.get({ name, account: accountAddress })?.resolver?.permissioned : false
+  );
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
@@ -172,6 +177,11 @@ export function ENSAssignRecordsSheet() {
                     : ''}
                 </Text>
               </Stack>
+              {permissionedResolver && (
+                <Text align="center" color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)">
+                  {i18n.t(i18n.l.profiles.confirm.shared_records_notice)}
+                </Text>
+              )}
               <Box flexGrow={1}>
                 <TextRecordsForm
                   autoFocusKey={params?.autoFocusKey}

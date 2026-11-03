@@ -19,8 +19,8 @@ import { type BackupFile, type CloudBackups } from '@/features/backup/backupFile
 import { type ActiveTabRef } from '@/features/dapp-browser/types';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
 import { type RevokeReason } from '@/features/delegation/types/revokeReason';
+import { type REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { type EnsTransferAction } from '@/features/ens/types/transactions';
-import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/types/gas';
 import { type LEDGER_ERROR_CODES } from '@/features/hardware-wallet/utils/ledger';
 import { type ChainId } from '@/features/network/types/backendNetworks';

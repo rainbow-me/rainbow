@@ -3,16 +3,22 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { time } from '@/framework/core/utils/time';
 
 import { getChangedRecords } from '../../core/records';
+import type { EnsCommitment } from '../../types/registration';
 import { useEnsRegistrationStore as store } from './registrationStore';
 
 const ALICE = '0x1111111111111111111111111111111111111111';
 const BOB = '0x2222222222222222222222222222222222222222';
 const commitment = {
   name: 'alice.eth',
-  duration: 31536000,
-  ownerAddress: ALICE,
-  salt: 'original secret',
-  rentPrice: '100',
+  commitment: {
+    registrar: ALICE,
+    owner: ALICE,
+    duration: 31536000,
+    secret: '0x1234',
+    resolver: BOB,
+    subregistry: ALICE,
+    referrer: '0x00',
+  } satisfies EnsCommitment,
   commitTransactionHash: 'original transaction',
   records: { description: 'saved draft' },
 };

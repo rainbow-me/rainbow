@@ -1,37 +1,26 @@
 import { createQueryStore } from '@storesjs/stores';
+import { getAddress } from 'viem';
 
 import { time } from '@/framework/core/utils/time';
-import { add } from '@/helpers/utilities';
 import { type Route } from '@/navigation/routesNames';
-import ethUnits from '@/references/ethereum-units.json';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-import type { Records } from '../../types/registration';
-import {
-  estimateENSCommitGasLimit,
-  estimateENSRegisterSetRecordsAndNameGasLimit,
-  estimateENSRenewGasLimit,
-  estimateENSSetNameGasLimit,
-  estimateENSSetRecordsGasLimit,
-} from '../../utils/handlers';
-import { ENS_DOMAIN, generateSalt, REGISTRATION_STEPS } from '../../utils/helpers';
+import { REGISTRATION_STEPS, type EnsCommitment, type Records } from '../../types/registration';
+import type { EnsAction } from '../../types/transactions';
+import { createEnsCommitment } from '../registration';
+import { estimateEnsRegistration, estimateEnsTransactions } from '../transactions';
 
 type GasEstimateInput = {
   name: string;
-  ownerAddress: string;
+  account: string;
   step: keyof typeof REGISTRATION_STEPS;
-  duration?: number;
-  rentPrice?: string;
-  salt?: string;
+  duration: number;
+  commitment?: EnsCommitment;
   records: Records;
-  setReverseRecord?: boolean;
+  setReverseRecord: boolean;
 };
 
-type GasEstimate = {
-  stepGasLimit: string | null;
-  estimatedGasLimit: string | null;
-} | null;
-
+type GasEstimate = { step: string; total: string } | null;
 type GasEstimateParams = { input: GasEstimateInput | null };
 
 /**
@@ -44,8 +33,7 @@ export function createEnsGasEstimateStore(route: Route) {
       enabled: ($, store) => {
         const input = $(store, s => s.input);
         const isActive = $(useNavigationStore, s => s.isRouteActive(route));
-        if (!isActive || !input?.name || !input?.ownerAddress) return false;
-        return true;
+        return isActive && input !== null;
       },
       params: { input: ($, store) => $(store, s => s.input) },
       disableAutoRefetching: true,
@@ -60,47 +48,39 @@ async function estimateGas(params: GasEstimateParams): Promise<GasEstimate> {
   const input = params.input;
   if (!input) return null;
 
-  let stepGasLimit: string | null;
-
+  const account = getAddress(input.account);
+  let action: EnsAction;
   switch (input.step) {
     case REGISTRATION_STEPS.COMMIT: {
-      if (!input.name.endsWith(ENS_DOMAIN) || !input.duration || !input.rentPrice) return null;
-      const [commit, records, reverse] = await Promise.all([
-        estimateENSCommitGasLimit({ ...input, salt: generateSalt() }),
-        estimateENSSetRecordsGasLimit({ name: input.name, records: input.records }),
-        input.setReverseRecord ? estimateENSSetNameGasLimit(input) : '0',
-      ]);
-
-      return {
-        stepGasLimit: commit,
-        estimatedGasLimit:
-          commit === null || records === null || reverse === null
-            ? null
-            : add(add(commit, records), add(ethUnits.ens_register_with_config, reverse)),
-      };
+      const commitment = await createEnsCommitment(account, input.duration);
+      return estimateEnsRegistration(
+        { type: 'register', name: input.name, commitment, records: input.records, setReverseRecord: input.setReverseRecord },
+        account
+      );
     }
-
     case REGISTRATION_STEPS.REGISTER:
-      if (!input.name.endsWith(ENS_DOMAIN) || !input.duration || !input.rentPrice || !input.salt) return null;
-      stepGasLimit = await estimateENSRegisterSetRecordsAndNameGasLimit(input);
+      if (!input.commitment) return null;
+      action = {
+        type: 'register',
+        name: input.name,
+        commitment: input.commitment,
+        records: input.records,
+        setReverseRecord: input.setReverseRecord,
+      };
       break;
-
     case REGISTRATION_STEPS.RENEW:
-      if (!input.name.endsWith(ENS_DOMAIN) || !input.duration || !input.rentPrice) return null;
-      stepGasLimit = await estimateENSRenewGasLimit({ name: input.name, duration: input.duration, rentPrice: input.rentPrice });
+      action = { type: 'renew', name: input.name, duration: input.duration };
       break;
-
     case REGISTRATION_STEPS.EDIT:
-      stepGasLimit = await estimateENSSetRecordsGasLimit(input);
+      action = { type: 'records', name: input.name, records: input.records, setReverseRecord: input.setReverseRecord };
       break;
-
     case REGISTRATION_STEPS.SET_NAME:
-      stepGasLimit = await estimateENSSetNameGasLimit(input);
+      action = { type: 'primary', name: input.name };
       break;
-
     default:
       return null;
   }
 
-  return { stepGasLimit, estimatedGasLimit: stepGasLimit };
+  const gas = await estimateEnsTransactions(action, account);
+  return { step: gas, total: gas };
 }

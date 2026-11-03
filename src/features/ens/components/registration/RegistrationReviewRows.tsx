@@ -3,10 +3,9 @@ import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import useInterval from '@/hooks/useInterval';
 import * as i18n from '@/languages';
-
-import { REGISTRATION_MODES } from '../../utils/helpers';
 
 const MIN_LONG_PRESS_DURATION = 200;
 const LONG_PRESS_INTERVAL = 69;
@@ -59,7 +58,6 @@ export function RegistrationReviewRows({
   networkFee,
   totalCost,
   registrationFee,
-  estimatedCostETH,
   mode,
   newExpiryDate,
 }: {
@@ -68,7 +66,6 @@ export function RegistrationReviewRows({
   onChangeDuration: React.Dispatch<React.SetStateAction<number>>;
   networkFee: string;
   totalCost: string;
-  estimatedCostETH: string;
   registrationFee: string;
   newExpiryDate?: string;
   mode: REGISTRATION_MODES.CREATE | REGISTRATION_MODES.RENEW;
@@ -191,27 +188,6 @@ export function RegistrationReviewRows({
             </Box>
           </Column>
         </Columns>
-
-        {mode === REGISTRATION_MODES.CREATE && (
-          <Columns>
-            <Column width="2/3">
-              <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
-                {i18n.t(i18n.l.profiles.confirm.estimated_total_eth)}
-              </Text>
-            </Column>
-            <Column width="1/3">
-              <Box height={{ custom: 16 }}>
-                {networkFee ? (
-                  <Text align="right" color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                    {estimatedCostETH} ETH
-                  </Text>
-                ) : (
-                  <LoadingPlaceholder />
-                )}
-              </Box>
-            </Column>
-          </Columns>
-        )}
 
         <Columns>
           <Column width="2/3">

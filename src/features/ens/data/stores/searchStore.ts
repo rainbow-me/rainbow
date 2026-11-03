@@ -1,22 +1,19 @@
 import { time } from '@/framework/core/utils/time';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
-import { ENS_DOMAIN, getAvailable, getENSRegistrarControllerContract, getNameExpires, getRentPrice } from '../../utils/helpers';
+import { normalizeEnsName } from '../../core/name';
 import { validateENS } from '../../utils/records';
-import { useEnsRegistrationMetadataStore } from './ownershipStores';
+import { readEnsRegistration } from '../registration';
 
 export const useEnsSearchStore = createQueryCollectionStore({
-  key: ({ name, duration }: { name: string; duration: number }) => `${name}:${duration}`,
-  fetcher: async ({ name, duration }) => {
-    const validation = validateENS(name + ENS_DOMAIN, { includeSubdomains: false });
+  key: (input: { name: string; duration: number; renew?: boolean }) => `${input.name}:${input.duration}:${input.renew ?? false}`,
+  fetcher: async (input, signal) => {
+    const validation = validateENS(input.name + '.eth', { includeSubdomains: false });
     if (!validation.valid) return { valid: false as const, code: validation.code, hint: validation.hint };
 
-    const contract = await getENSRegistrarControllerContract();
-    const [available, price] = await Promise.all([getAvailable(name, contract), getRentPrice(name, duration, contract)]);
-    const [registration, expirationDate] = available
-      ? [null, null]
-      : await Promise.all([useEnsRegistrationMetadataStore.getState().load(name + ENS_DOMAIN), getNameExpires(name)]);
-    return { valid: true as const, available, rentPrice: String(price), registrationDate: registration?.registrationDate, expirationDate };
+    const name = normalizeEnsName(input.name);
+    const registration = await readEnsRegistration(name + '.eth', input.duration, input.renew ?? false, signal);
+    return { valid: true as const, ...registration, name: name + '.eth' };
   },
   retry: false,
   staleTime: Infinity,

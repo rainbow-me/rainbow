@@ -11,6 +11,7 @@ import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { abbreviateName } from '@/features/address/core/formatAddress';
+import { REGISTRATION_MODES, REGISTRATION_STEPS } from '@/features/ens/types/registration';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -20,6 +21,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import timeUnits from '@/references/time-units.json';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -33,16 +35,17 @@ import { RegisterContent } from '../components/registration/RegisterContent';
 import { RenewContent } from '../components/registration/RenewContent';
 import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
 import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
+import { ENS_MIN_COMMITMENT_AGE, ensContracts } from '../core/contracts';
+import { ENS_PAYMENT_TOKEN } from '../data/registration';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
 import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
-import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationForm } from '../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
-import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
-import useENSSearch from '../hooks/useENSSearch';
-import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
-import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '../utils/helpers';
+import { useENSRegistrationStepHandler } from '../hooks/useENSRegistrationStepHandler';
+import { useENSSearch } from '../hooks/useENSSearch';
+import { accentColorAtom, ENS_DOMAIN } from '../utils/helpers';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -55,6 +58,7 @@ function TransactionActionRow({
   label,
   isValidGas,
   isSufficientGas,
+  isSufficientPayment,
   testID,
 }: {
   action: any;
@@ -62,8 +66,10 @@ function TransactionActionRow({
   label: string;
   isValidGas: boolean;
   isSufficientGas: boolean;
+  isSufficientPayment?: boolean;
   testID: string;
 }) {
+  const insufficientPayment = isSufficientPayment === false;
   const insufficientEth = isSufficientGas === false && isValidGas;
   return (
     <>
@@ -73,10 +79,16 @@ function TransactionActionRow({
             backgroundColor={accentColor ?? ''}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
-            label={insufficientEth ? i18n.t(i18n.l.profiles.confirm.insufficient_eth) : label}
+            label={
+              insufficientPayment
+                ? i18n.t(i18n.l.profiles.confirm.insufficient_payment_token, { symbol: ENS_PAYMENT_TOKEN.symbol })
+                : insufficientEth
+                  ? i18n.t(i18n.l.profiles.confirm.insufficient_eth)
+                  : label
+            }
             onLongPress={action}
             parentHorizontalPadding={19}
-            showBiometryIcon={!insufficientEth}
+            showBiometryIcon={!insufficientEth && !insufficientPayment}
             testID={`ens-transaction-action-${testID}`}
           />
         </SheetActionButtonRow>
@@ -95,7 +107,7 @@ function TransactionActionRow({
 
 export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
-  const { name: ensName, mode, changedRecords } = useENSRegistration();
+  const { name: ensName, mode, registrationParameters, changedRecords } = useENSRegistration();
   const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { isSmallPhone } = useDimensions();
 
@@ -110,7 +122,13 @@ export function ENSConfirmRegisterSheet() {
     }
   }, [avatarImage, dominantColor, setAccentColor]);
 
-  const [duration, setDuration] = useState(1);
+  const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(false);
+
+  const [requestedDuration, setDuration] = useState(1);
+  const duration =
+    step !== REGISTRATION_STEPS.COMMIT && registrationParameters?.commitment
+      ? registrationParameters.commitment.duration / timeUnits.secs.year
+      : requestedDuration;
 
   const { navigate, goBack } = useNavigation();
 
@@ -123,12 +141,12 @@ export function ENSConfirmRegisterSheet() {
   const { data: registrationData } = useENSSearch({
     name: mode === REGISTRATION_MODES.CREATE || mode === REGISTRATION_MODES.RENEW ? name : '',
     yearsDuration: duration,
+    renew: mode === REGISTRATION_MODES.RENEW,
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
     accountProfile.accountENS !== ensName && (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
-  const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(false);
   const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     step,
@@ -151,7 +169,7 @@ export function ENSConfirmRegisterSheet() {
       }, 100);
 
       // revalidate nft data for ens collection
-      const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
+      const ensCollectionId = `${Network.mainnet}_${ensContracts.ethRegistry}`;
       useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
       useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
 
@@ -212,7 +230,7 @@ export function ENSConfirmRegisterSheet() {
       ),
       [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
         <WaitENSConfirmationContent
-          seconds={ENS_SECONDS_WAIT - (onMountSecondsSinceCommitConfirmed > 0 ? onMountSecondsSinceCommitConfirmed : 0)}
+          seconds={ENS_MIN_COMMITMENT_AGE - (onMountSecondsSinceCommitConfirmed > 0 ? onMountSecondsSinceCommitConfirmed : 0)}
         />
       ),
     }),
@@ -237,6 +255,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={action}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
+          isSufficientPayment={registrationCostsData.isSufficientPayment}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
           label={i18n.t(i18n.l.profiles.confirm.hold_to_begin)}
           testID={step}
@@ -247,6 +266,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={() => (action as ActionTypes[REGISTRATION_STEPS.REGISTER])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
+          isSufficientPayment={registrationCostsData.isSufficientPayment}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
           label={i18n.t(i18n.l.profiles.confirm.hold_to_register)}
           testID={step}
@@ -257,6 +277,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={() => (action as ActionTypes[REGISTRATION_STEPS.RENEW])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
+          isSufficientPayment={registrationCostsData.isSufficientPayment}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
           label={i18n.t(i18n.l.profiles.confirm.hold_to_extend)}
           testID={step}
@@ -267,6 +288,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={() => (action as ActionTypes[REGISTRATION_STEPS.EDIT])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
+          isSufficientPayment={registrationCostsData.isSufficientPayment}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
           label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
           testID={step}
@@ -277,6 +299,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           action={() => (action as ActionTypes[REGISTRATION_STEPS.SET_NAME])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
+          isSufficientPayment={registrationCostsData.isSufficientPayment}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
           label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
           testID={step}
@@ -290,6 +313,7 @@ export function ENSConfirmRegisterSheet() {
       action,
       registrationCostsData?.isSufficientGasForRegistration,
       registrationCostsData?.isSufficientGasForStep,
+      registrationCostsData.isSufficientPayment,
       registrationCostsData?.isValidGas,
       registrationCostsData?.stepGasLimit,
       step,

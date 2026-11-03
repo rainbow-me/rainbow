@@ -6,6 +6,7 @@ import { useSetRecoilState } from 'recoil';
 
 import { SlackSheet } from '@/components/sheet';
 import { Box } from '@/design-system';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import useDimensions from '@/hooks/useDimensions';
 import usePrevious from '@/hooks/usePrevious';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -19,7 +20,7 @@ import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENSAssignRecordsBottomActions, ENSAssignRecordsSheet } from '../screens/ENSAssignRecordsSheet';
 import { ENSIntroSheet } from '../screens/ENSIntroSheet';
 import { ENSSearchSheet } from '../screens/ENSSearchSheet';
-import { accentColorAtom, REGISTRATION_MODES } from '../utils/helpers';
+import { accentColorAtom } from '../utils/helpers';
 
 const Swipe = createMaterialTopTabNavigator();
 

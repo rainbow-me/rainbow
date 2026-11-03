@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { differenceInSeconds } from 'date-fns';
 
+import { REGISTRATION_MODES, REGISTRATION_STEPS } from '@/features/ens/types/registration';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
@@ -10,16 +11,10 @@ import usePrevious from '@/hooks/usePrevious';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
+import { ENS_MAX_COMMITMENT_AGE, ENS_MIN_COMMITMENT_AGE } from '../core/contracts';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { RegistrationParameters } from '../types/registration';
-import {
-  ENS_SECONDS_PADDING,
-  ENS_SECONDS_WAIT,
-  ENS_SECONDS_WAIT_PROVIDER_PADDING,
-  ENS_SECONDS_WAIT_WITH_PADDING,
-  REGISTRATION_MODES,
-  REGISTRATION_STEPS,
-} from '../utils/helpers';
+import { ENS_SECONDS_PADDING, ENS_SECONDS_WAIT_PROVIDER_PADDING, ENS_SECONDS_WAIT_WITH_PADDING } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
 const checkRegisterBlockTimestamp = async ({
@@ -52,7 +47,7 @@ const checkRegisterBlockTimestamp = async ({
 
 const getBlockMsTimestamp = (block: { timestamp: number }) => time.seconds(block.timestamp);
 
-export default function useENSRegistrationStepHandler(observer = true) {
+export function useENSRegistrationStepHandler(observer = true) {
   const accountAddress = useAccountAddress();
   const { registrationParameters, mode } = useENSRegistration();
   const commitTransactionHash = registrationParameters?.commitTransactionHash;
@@ -69,7 +64,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
 
   const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
 
-  const [readyToRegister, setReadyToRegister] = useState<boolean>(secondsSinceCommitConfirmed > ENS_SECONDS_WAIT);
+  const [readyToRegister, setReadyToRegister] = useState<boolean>(secondsSinceCommitConfirmed > ENS_MIN_COMMITMENT_AGE);
 
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
   const shouldLoopForConfirmation = useRef(connectedToAnvil);
@@ -79,7 +74,12 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;
     if (mode === REGISTRATION_MODES.SET_NAME) return REGISTRATION_STEPS.SET_NAME;
     // still waiting for the COMMIT tx to be sent
-    if (!registrationParameters?.commitTransactionHash) return REGISTRATION_STEPS.COMMIT;
+    if (
+      !registrationParameters?.commitment ||
+      !registrationParameters.commitTransactionHash ||
+      (registrationParameters.commitTransactionConfirmedAt && secondsSinceCommitConfirmed >= ENS_MAX_COMMITMENT_AGE)
+    )
+      return REGISTRATION_STEPS.COMMIT;
     // COMMIT tx sent, but not confirmed yet
     if (!registrationParameters?.commitTransactionConfirmedAt || secondsSinceCommitConfirmed <= ENS_SECONDS_PADDING)
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
@@ -88,6 +88,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT_WITH_PADDING || !readyToRegister) return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     return REGISTRATION_STEPS.REGISTER;
   }, [
+    registrationParameters?.commitment,
     registrationParameters?.commitTransactionHash,
     registrationParameters?.commitTransactionConfirmedAt,
     mode,
@@ -168,7 +169,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
 
   useEffect(() => {
     // we need to check from blocks if the time has passed or not
-    if (!observer && secondsSinceCommitConfirmed % 2 === 0 && secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT && !readyToRegister) {
+    if (!observer && secondsSinceCommitConfirmed % 2 === 0 && secondsSinceCommitConfirmed >= ENS_MIN_COMMITMENT_AGE && !readyToRegister) {
       const checkIfReadyToRegister = async () => {
         const readyToRegister = await checkRegisterBlockTimestamp({
           connectedToAnvil,

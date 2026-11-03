@@ -3,12 +3,12 @@ import React from 'react';
 import { format } from 'date-fns';
 
 import { Inset, Separator, Stack } from '@/design-system';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import timeUnits from '@/references/time-units.json';
 
-import { useEnsRegistrationMetadataStore } from '../../data/stores/ownershipStores';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '../../utils/helpers';
+import { useEnsSearchStore } from '../../data/stores/searchStore';
 import { RegistrationReviewRows } from './RegistrationReviewRows';
 
 export const RenewContent = ({
@@ -24,7 +24,8 @@ export const RenewContent = ({
 }) => {
   const { isSmallPhone } = useDimensions();
 
-  const expiryDate = useEnsRegistrationMetadataStore(s => s.get(name + ENS_DOMAIN)?.expiryDate);
+  const registration = useEnsSearchStore(s => s.get({ name, duration: yearsDuration * timeUnits.secs.year, renew: true }));
+  const expiryDate = registration?.valid ? registration.expirationDate : undefined;
   const newExpiryDate = expiryDate ? format(time.seconds(Number(expiryDate) + yearsDuration * timeUnits.secs.year), 'MMM d, yyyy') : '—';
 
   return (
@@ -33,7 +34,6 @@ export const RenewContent = ({
         <Separator color="divider60 (Deprecated)" />
         <RegistrationReviewRows
           duration={yearsDuration}
-          estimatedCostETH={registrationCostsData?.estimatedTotalRegistrationCost?.eth}
           maxDuration={99}
           mode={REGISTRATION_MODES.RENEW}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}

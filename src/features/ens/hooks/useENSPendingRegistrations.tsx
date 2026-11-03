@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { time } from '@/framework/core/utils/time';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -9,10 +10,9 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { findRecordNft, parseNftRecord } from '../core/nftRecord';
 import { isDirectImagePath } from '../core/records';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
-import { REGISTRATION_MODES } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
-export default function useENSPendingRegistrations() {
+export function useENSPendingRegistrations() {
   const accountAddress = useAccountAddress();
   const { removeRegistrationByName, startRegistration } = useENSRegistration();
   const { navigate } = useNavigation();

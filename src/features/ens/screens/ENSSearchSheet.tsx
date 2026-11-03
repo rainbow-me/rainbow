@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
+import { format } from 'date-fns';
 import { type Source } from 'react-native-fast-image';
 import { useDebounce } from 'use-debounce';
 
@@ -10,6 +11,8 @@ import { TintButton } from '@/components/buttons/TintButton';
 import { ImgixImage } from '@/components/images';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { Box, Heading, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
+import { time } from '@/framework/core/utils/time';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -18,13 +21,15 @@ import { colors } from '@/styles';
 import { PendingRegistrations } from '../components/registration/PendingRegistrations';
 import { SearchInput } from '../components/registration/SearchInput';
 import { SearchResultGradientIndicator } from '../components/registration/SearchResultGradientIndicator';
+import { ensContracts } from '../core/contracts';
 import { normalizeEnsName } from '../core/name';
-import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
+import { useEnsRegistrationDateStore } from '../data/stores/ownershipStores';
+import { useENSPendingRegistrations } from '../hooks/useENSPendingRegistrations';
 import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
-import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
-import useENSSearch from '../hooks/useENSSearch';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '../utils/helpers';
+import { useENSRegistrationStepHandler } from '../hooks/useENSRegistrationStepHandler';
+import { useENSSearch } from '../hooks/useENSSearch';
+import { ENS_DOMAIN } from '../utils/helpers';
 
 export function ENSSearchSheet() {
   const { navigate } = useNavigation();
@@ -40,6 +45,7 @@ export function ENSSearchSheet() {
 
   const {
     data: registrationData,
+    hint,
     isIdle,
     isRegistered,
     isPending,
@@ -49,6 +55,15 @@ export function ENSSearchSheet() {
   } = useENSSearch({
     name: debouncedSearchQuery,
   });
+
+  const registrationDate = useEnsRegistrationDateStore(s =>
+    registrationData && !registrationData.available
+      ? s.get({
+          name: registrationData.name,
+          registry: registrationData.registrar === ensContracts.registrar ? ensContracts.ethRegistry : undefined,
+        })
+      : null
+  );
 
   const { step } = useENSRegistrationStepHandler();
   const registrationCostsData = useENSRegistrationCosts({
@@ -130,7 +145,7 @@ export function ENSSearchSheet() {
           {isInvalid && (
             <Inset horizontal="30px (Deprecated)">
               <Text align="center" color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                {registrationData?.hint}
+                {hint}
               </Text>
             </Inset>
           )}
@@ -168,11 +183,11 @@ export function ENSSearchSheet() {
                   )}
                 </Inline>
                 {isRegistered ? (
-                  registrationData?.registrationDate ? (
+                  registrationDate ? (
                     <Inset horizontal="15px (Deprecated)">
                       <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                         {i18n.t(i18n.l.profiles.search.registered_on, {
-                          content: registrationData?.registrationDate,
+                          content: format(time.seconds(Number(registrationDate)), 'MMMM d, y'),
                         })}
                       </Text>
                     </Inset>

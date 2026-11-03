@@ -15,7 +15,7 @@ import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
 
 import { nftImageRecord } from '../../core/nftRecord';
-import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
+import { useENSRegistrationForm } from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 
 const size = 70;

@@ -1,11 +1,11 @@
 import { useCallback, useMemo } from 'react';
 
+import { type REGISTRATION_MODES } from '@/features/ens/types/registration';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 import { getChangedRecords } from '../core/records';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { Records } from '../types/registration';
-import type { REGISTRATION_MODES } from '../utils/helpers';
 
 const EMPTY_RECORDS: Records = {};
 

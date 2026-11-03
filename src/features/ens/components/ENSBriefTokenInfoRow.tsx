@@ -9,6 +9,7 @@ import { Column, Columns, Inset } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -17,7 +18,6 @@ import { useTheme } from '@/theme/ThemeContext';
 
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
-import { REGISTRATION_MODES } from '../utils/helpers';
 
 export function ENSBriefTokenInfoRow({
   color,

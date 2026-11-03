@@ -16,7 +16,7 @@ import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
 import { nftImageRecord } from '../../core/nftRecord';
-import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
+import { useENSRegistrationForm } from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 
 const RegistrationCover = ({

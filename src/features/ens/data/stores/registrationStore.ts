@@ -2,8 +2,8 @@ import { createBaseStore } from '@storesjs/stores';
 
 import { time } from '@/framework/core/utils/time';
 
-import type { ENSRegistrations, Records, RegistrationParameters } from '../../types/registration';
-import type { REGISTRATION_MODES } from '../../utils/helpers';
+import { ENS_MAX_COMMITMENT_AGE } from '../../core/contracts';
+import type { ENSRegistrations, Records, REGISTRATION_MODES, RegistrationParameters } from '../../types/registration';
 
 // ============ Types ========================================================== //
 
@@ -87,7 +87,7 @@ export const useEnsRegistrationStore = createBaseStore<RegistrationState>(
 
       removeExpired: accountAddress => {
         const account = accountAddress.toLowerCase();
-        const cutoff = Date.now() - time.days(7);
+        const cutoff = Date.now() - time.seconds(ENS_MAX_COMMITMENT_AGE);
         set(state => ({
           registrations: {
             ...state.registrations,
@@ -117,6 +117,9 @@ export const useEnsRegistrationStore = createBaseStore<RegistrationState>(
   },
   {
     storageKey: 'ensRegistrations',
+    // V1 commitments cannot be revealed through the ENSv2 registrar.
+    version: 1,
+    migrate: () => ({ registrations: {} }),
     persistThrottleMs: time.seconds(1),
     partialize: state => {
       const registrations: ENSRegistrations = {};

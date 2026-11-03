@@ -6,7 +6,7 @@ import { useLegacyNFTs, type NFTData } from '@/resources/nfts';
 import { findRecordNft, parseNftRecord } from '../core/nftRecord';
 import { isDirectImagePath } from '../core/records';
 import { useEnsImageStore, type EnsImageField } from '../data/stores/imageStore';
-import { REGISTRATION_MODES } from '../utils/helpers';
+import { REGISTRATION_MODES } from '../types/registration';
 import { useENSRegistration } from './useENSRegistration';
 
 /**

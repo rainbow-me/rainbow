@@ -11,6 +11,7 @@ import store from '@/redux/store';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 
 import type { EnsAction } from '../types/transactions';
+import { useEnsRegistrationStore } from './stores/registrationStore';
 import { prepareEnsTransactions } from './transactions';
 
 /**
@@ -39,8 +40,22 @@ export async function executeEnsTransactions(wallet: Signer, action: EnsAction, 
       });
       nextNonce = tx.nonce + 1;
 
-      if (prepared.operation === 'records') {
+      if (action.type === 'commit' && prepared.operation === 'commit') {
+        useEnsRegistrationStore.getState().update(account, action.name, {
+          commitment: action.commitment,
+          commitTransactionHash: tx.hash,
+          commitTransactionConfirmedAt: undefined,
+        });
+        analytics.track(analytics.event.ensInitiatedRegistration, { category: 'profiles' });
+      } else if (prepared.operation === 'register') {
+        useEnsRegistrationStore.getState().update(account, action.name, { registerTransactionHash: tx.hash });
+        analytics.track(analytics.event.ensCompletedRegistration, { category: 'profiles' });
+      } else if (prepared.operation === 'records') {
         analytics.track(analytics.event.ensEditedRecords, { category: 'profiles' });
+      } else if (prepared.operation === 'renew') {
+        analytics.track(analytics.event.ensExtended, { category: 'profiles' });
+      } else if (prepared.operation === 'primary') {
+        analytics.track(analytics.event.ensSetPrimary, { category: 'profiles' });
       } else if (prepared.operation === 'reclaim') {
         analytics.track(analytics.event.ensTransferredControl, { category: 'profiles' });
       }
@@ -48,6 +63,7 @@ export async function executeEnsTransactions(wallet: Signer, action: EnsAction, 
       const transaction = {
         chainId: ChainId.mainnet,
         data: tx.data,
+        ensCommitRegistrationName: prepared.operation === 'commit' ? action.name : undefined,
         ensRegistration: true,
         from: account,
         hash: tx.hash,
@@ -61,7 +77,7 @@ export async function executeEnsTransactions(wallet: Signer, action: EnsAction, 
         status: TransactionStatus.pending,
       } satisfies NewTransaction;
       addNewTransaction({ address: account, transaction, chainId: ChainId.mainnet });
-      await tx.wait();
+      if (action.type === 'transfer' || index < transactions.length - 1) await tx.wait();
     }
     onSubmitted?.();
     analytics.track(analytics.event.ensRapCompleted, { category: 'raps', label: action.type });

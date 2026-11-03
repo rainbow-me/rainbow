@@ -5,7 +5,6 @@ import { ensClient } from '@/graphql';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
 import { normalizeEnsName } from '../../core/name';
-import { ENS_DOMAIN } from '../../utils/helpers';
 import { readEnsOwnership } from '../ownership';
 import { readEnsPermissions } from '../permissions';
 
@@ -54,14 +53,3 @@ export const useEnsRegistrationDateStore = createQueryCollectionStore({
   staleTime: time.minutes(5),
   cacheTime: time.hours(1),
 });
-
-export const useEnsRegistrationMetadataStore = createQueryCollectionStore(
-  {
-    key: (name: string) => name,
-    fetcher: async name => (await ensClient.getRegistration({ id: labelhash(name.replace(ENS_DOMAIN, '')) })).registration ?? null,
-    disableAutoRefetching: true,
-    staleTime: time.seconds(10),
-    cacheTime: Infinity,
-  },
-  { storageKey: 'ensRegistrationMetadata' }
-);

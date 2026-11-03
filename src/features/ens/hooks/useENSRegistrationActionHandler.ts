@@ -3,79 +3,44 @@ import { Platform } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { noop } from 'lodash';
-import { getAddress } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
+import { REGISTRATION_STEPS } from '@/features/ens/types/registration';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
 import timeUnits from '@/references/time-units.json';
 import { getNextNonce } from '@/state/nonces';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 
-import { executeENSRap } from '../raps/actions';
-import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
-import { type RegistrationParameters } from '../types/registration';
-import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
+import { executeEnsTransactions } from '../data/executeTransactions';
+import { createEnsCommitment } from '../data/registration';
 import { useENSRegistration } from './useENSRegistration';
 
-// Generic type for action functions
-type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
+type RegistrationAction = (onSubmitted?: () => void) => Promise<void>;
 
-// Define action types using the generic ActionFunction
 export type ActionTypes = {
-  [REGISTRATION_STEPS.COMMIT]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.REGISTER]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.RENEW]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.EDIT]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.SET_NAME]: ActionFunction<[callback?: () => void]>;
-  [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: ActionFunction<[accentColor: string]>;
-  [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: ActionFunction;
+  [REGISTRATION_STEPS.COMMIT]: RegistrationAction;
+  [REGISTRATION_STEPS.REGISTER]: RegistrationAction;
+  [REGISTRATION_STEPS.RENEW]: RegistrationAction;
+  [REGISTRATION_STEPS.EDIT]: RegistrationAction;
+  [REGISTRATION_STEPS.SET_NAME]: RegistrationAction;
+  [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (accentColor: string) => Promise<void>;
+  [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => Promise<void>;
 };
 
-// Generic helper type to extract parameters from a function type
-type ParamsOf<T> = T extends (...args: infer P) => any ? P : never;
-
-// StepParams type derived from ActionTypes
-type StepParams = {
-  [K in keyof ActionTypes]: ParamsOf<ActionTypes[K]>[0] extends object ? ParamsOf<ActionTypes[K]>[0] : Record<string, never>;
-};
-
-// Generic hook type
-type UseENSRegistrationActionHandler = <T extends keyof StepParams>(params: {
-  step: T;
-  sendReverseRecord?: boolean;
-  yearsDuration?: number;
-}) => {
-  action: ActionTypes[T];
-};
-
-const formatENSActionParams = (registrationParameters: RegistrationParameters): ENSActionParameters => {
-  const { selectedGasFee, gasFeeParamsBySpeed } = store.getState().gas;
-
-  return {
-    duration: registrationParameters?.duration,
-    mode: registrationParameters?.mode,
-    name: registrationParameters?.name,
-    ownerAddress: registrationParameters?.ownerAddress,
-    records: registrationParameters?.records,
-    rentPrice: registrationParameters?.rentPrice,
-    salt: registrationParameters?.salt,
-    setReverseRecord: registrationParameters?.setReverseRecord,
-    gasFeeParamsBySpeed,
-    selectedGasFee,
-  };
-};
-
-export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({
+export function useENSRegistrationActionHandler<Step extends keyof ActionTypes>({
   step,
   sendReverseRecord = false,
   yearsDuration = 1,
-}) => {
+}: {
+  step: Step;
+  sendReverseRecord?: boolean;
+  yearsDuration?: number;
+}): { action: ActionTypes[Step] } {
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
@@ -117,31 +82,18 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
       if (!wallet) {
         return;
       }
-      const salt = generateSalt();
-
-      const [nonce, rentPrice] = await Promise.all([
+      const [nonce, commitment] = await Promise.all([
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
+        createEnsCommitment(accountAddress, duration),
       ]);
-
-      const commitEnsRegistrationParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
-        duration,
-        nonce,
-        ownerAddress: accountAddress,
-        records: changedRecords,
-        rentPrice: rentPrice.toString(),
-        salt,
-      };
-
-      await executeENSRap(wallet, ENSRapActionType.commitENS, commitEnsRegistrationParameters, () => {
+      await executeEnsTransactions(wallet, { type: 'commit', name: registrationParameters.name, commitment }, nonce, () => {
         if (isHardwareWallet) {
           goBack();
         }
         callback();
       });
     },
-    [registrationParameters, changedRecords, duration, accountAddress, isHardwareWallet, goBack]
+    [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
   );
 
   const speedUpCommitAction: ActionTypes[typeof REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION] = useCallback(
@@ -171,8 +123,8 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
   const registerAction: ActionTypes[typeof REGISTRATION_STEPS.REGISTER] = useCallback(
     async (callback = noop) => {
       if (!registrationParameters) throw new Error('No active ENS registration');
-      const { name, duration, salt } = registrationParameters;
-      if (!duration || !salt) throw new Error('Registration requires a saved commitment');
+      const { name, commitment } = registrationParameters;
+      if (!commitment) throw new Error('Registration requires a saved commitment');
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
@@ -182,22 +134,14 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, rentPrice] = await Promise.all([
-        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
-      ]);
+      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
 
-      const registerEnsRegistrationParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
-        duration,
+      await executeEnsTransactions(
+        wallet,
+        { type: 'register', name, commitment, records: changedRecords, setReverseRecord: sendReverseRecord },
         nonce,
-        ownerAddress: accountAddress,
-        records: changedRecords,
-        rentPrice: rentPrice.toString(),
-        setReverseRecord: sendReverseRecord,
-      };
-
-      await executeENSRap(wallet, ENSRapActionType.registerENS, registerEnsRegistrationParameters, callback);
+        callback
+      );
 
       updateAvatarsOnNextBlock.current = true;
     },
@@ -218,16 +162,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
       }
 
       const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-      const rentPrice = await getRentPrice(name.replace(ENS_DOMAIN, ''), duration);
-
-      const registerEnsRegistrationParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
-        duration,
-        nonce,
-        rentPrice: rentPrice.toString(),
-      };
-
-      await executeENSRap(wallet, ENSRapActionType.renewENS, registerEnsRegistrationParameters, callback);
+      await executeEnsTransactions(wallet, { type: 'renew', name, duration }, nonce, callback);
     },
     [accountAddress, duration, registrationParameters]
   );
@@ -247,14 +182,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
       const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
 
-      const registerEnsRegistrationParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
-        name,
-        nonce,
-        ownerAddress: accountAddress,
-      };
-
-      await executeENSRap(wallet, ENSRapActionType.setNameENS, registerEnsRegistrationParameters, callback);
+      await executeEnsTransactions(wallet, { type: 'primary', name }, nonce, callback);
     },
     [accountAddress, registrationParameters]
   );
@@ -270,23 +198,14 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, resolver] = await Promise.all([
-        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        getProvider({ chainId: ChainId.mainnet }).getResolver(registrationParameters.name),
-      ]);
+      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
 
-      if (!resolver) throw new Error('ENS name has no resolver');
-
-      const setRecordsEnsRegistrationParameters: ENSActionParameters = {
-        ...formatENSActionParams(registrationParameters),
+      await executeEnsTransactions(
+        wallet,
+        { type: 'records', name: registrationParameters.name, records: changedRecords, setReverseRecord: sendReverseRecord },
         nonce,
-        ownerAddress: accountAddress,
-        records: changedRecords,
-        resolverAddress: getAddress(resolver.address),
-        setReverseRecord: sendReverseRecord,
-      };
-
-      await executeENSRap(wallet, ENSRapActionType.setRecordsENS, setRecordsEnsRegistrationParameters, callback);
+        callback
+      );
 
       updateAvatarsOnNextBlock.current = true;
     },
@@ -304,6 +223,6 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
   };
 
   return {
-    action: actions[step] as ActionTypes[typeof step],
+    action: actions[step],
   };
-};
+}

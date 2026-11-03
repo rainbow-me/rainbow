@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { REGISTRATION_MODES } from '@/features/ens/types/registration';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
