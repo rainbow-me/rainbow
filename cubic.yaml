@@ -143,6 +143,7 @@ reviews:
       - 'src/features/perps/services/**'
       - 'src/features/polymarket/utils/loadViemWallet.ts'
       - 'src/features/polymarket/stores/derived/usePolymarketClients.ts'
+      - 'src/features/polymarket/utils/marketProtocol.ts'
       - 'src/features/polymarket/utils/polymarketOrderExecution.ts'
       - 'src/features/polymarket/utils/polymarketOrderReconciliation.ts'
       - 'src/features/polymarket/utils/relayExecution.ts'
