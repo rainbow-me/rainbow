@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useListen } from '@storesjs/stores';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,12 +18,14 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStore';
 import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useVerifyPhoneFlowStore } from '../../stores/verifyPhoneFlowStore';
 import { CashDepositSetupNavigation, CashDepositSetupNavigator, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
+import { KycReturnCheck } from './components/KycReturnCheck';
 import { SetupActionButton } from './components/SetupActionButton';
 import { SetupStepHeader } from './components/SetupStepHeader';
 import { createSetupContext, SetupProvider } from './setupContext';
-import { cancelSetup, completeSetupStep } from './setupNavigation';
+import { cancelSetup, completeSetupStep, endSetupSession, restartSetupWithoutCredential } from './setupNavigation';
 import { SETUP_STEP_ORDER } from './steps';
 import { AllDoneStep } from './steps/AllDoneStep';
 import { CardAddedStep } from './steps/CardAddedStep';
@@ -33,9 +36,9 @@ import { PasskeyStep } from './steps/PasskeyStep';
 import { PhoneStep } from './steps/PhoneStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { SsnStep } from './steps/SsnStep';
-import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
-import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
+import { selectIsPasskeyCeremonyPending, useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 const STEP_COMPONENTS: Record<CashDepositSetupRoute, React.ReactElement> = {
   [Routes.CASH_SETUP_PHONE]: <PhoneStep />,
@@ -56,7 +59,8 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
 
   useHardwareBackOnFocus(
     () => {
-      if (setup.useActionStore.getState().loading || getIsCashHalfSheetOpen()) return true;
+      if (setup.useActionStore.getState().loading || useSubmitReviewFlowStore.getState().kycSubmitted || getIsCashHalfSheetOpen())
+        return true;
       const { activeRoute, history } = useCashDepositSetupNavigationStore.getState();
       if (history.length) {
         CashDepositSetupNavigation.goBack();
@@ -71,14 +75,18 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
     []
   );
 
+  useListen(useCashSetupSessionStore, s => s.session.status === 'empty', restartSetupWithoutCredential);
+  useListen(useAddPasskeyFlowStore, selectIsPasskeyCeremonyPending, restartSetupWithoutCredential);
+
   useCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();
-    useCashSetupSessionStore.getState().reset();
+    endSetupSession();
     useSubmitPhoneFlowStore.getState().reset();
     useVerifyPhoneFlowStore.getState().reset();
-    useSubmitKycFlowStore.getState().reset();
+    useSubmitReviewFlowStore.getState().reset();
     useAddPasskeyFlowStore.getState().reset();
     useCardLinkFlowStore.getState().reset();
+    useKycReturnFlowStore.getState().reset();
   });
 
   return (
@@ -90,25 +98,27 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
         style={[styles.keyboardAvoidingView, { backgroundColor: surfacePrimaryElevated }]}
       >
         <SetupProvider value={setup}>
-          {useStableValue(() => (
-            <SmoothPager
-              enableSwipeToGoBack={false}
-              enableSwipeToGoForward={false}
-              lazy
-              navigation={CashDepositSetupNavigator.Pager}
-              onPageActivated={setup.focusInput}
-              scaleTo={1}
-              springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
-            >
-              {SETUP_STEP_ORDER.map(route => (
-                <SmoothPager.Page id={route} key={route}>
-                  <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
-                </SmoothPager.Page>
-              ))}
-            </SmoothPager>
-          ))}
-          <SetupStepHeader />
-          <SetupActionButton />
+          <KycReturnCheck>
+            {useStableValue(() => (
+              <SmoothPager
+                enableSwipeToGoBack={false}
+                enableSwipeToGoForward={false}
+                lazy
+                navigation={CashDepositSetupNavigator.Pager}
+                onPageActivated={setup.focusInput}
+                scaleTo={1}
+                springConfig={SPRING_CONFIGS.snappyMediumSpringConfig}
+              >
+                {SETUP_STEP_ORDER.map(route => (
+                  <SmoothPager.Page id={route} key={route}>
+                    <CashDepositSetupNavigator.Route name={route}>{STEP_COMPONENTS[route]}</CashDepositSetupNavigator.Route>
+                  </SmoothPager.Page>
+                ))}
+              </SmoothPager>
+            ))}
+            <SetupStepHeader />
+            <SetupActionButton />
+          </KycReturnCheck>
         </SetupProvider>
       </KeyboardAvoidingView>
       <AbsolutePortalRoot />

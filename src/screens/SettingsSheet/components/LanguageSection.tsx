@@ -4,9 +4,9 @@ import { analytics } from '@/analytics';
 import useAccountSettings from '@/hooks/useAccountSettings';
 
 import { resources, supportedLanguages } from '../../../languages';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 const languageListItems = Object.keys(supportedLanguages)
   .filter(code => resources[code as keyof typeof resources]?.translation?.wallet) // Only show languages that have 'wallet' translations available.
@@ -15,7 +15,7 @@ const languageListItems = Object.keys(supportedLanguages)
     name: (supportedLanguages as any)[code].label,
   }));
 
-const LanguageSection = () => {
+export const LanguageSection = () => {
   const { language, settingsChangeLanguage } = useAccountSettings();
 
   const onSelectLanguage = useCallback(
@@ -42,5 +42,3 @@ const LanguageSection = () => {
     </MenuContainer>
   );
 };
-
-export default LanguageSection;

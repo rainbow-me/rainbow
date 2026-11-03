@@ -4,7 +4,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AccountImage } from '@/components/AccountImage';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, Text, TextIcon } from '@/design-system';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';

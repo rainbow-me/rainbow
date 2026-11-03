@@ -7,11 +7,11 @@ import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { HeaderHeightWithStatusBar } from '@/components/header';
 import AvatarCircle from '@/components/profile/AvatarCircle';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/constants';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
-import colors from '@/theme/currentColors';
-import deviceUtils from '@/utils/deviceUtils';
+import { currentColors as colors } from '@/theme/currentColors';
+import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { type BottomSheetNavigationOptions } from './bottom-sheet/types';

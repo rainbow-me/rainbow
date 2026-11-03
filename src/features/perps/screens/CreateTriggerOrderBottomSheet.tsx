@@ -7,12 +7,13 @@ import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { CurrencyInput, type CurrencyInputRef } from '@/components/CurrencyInput/CurrencyInput';
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Panel } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
-import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -34,7 +35,6 @@ import {
   subWorklet,
 } from '@/framework/core/safeMath';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -130,10 +130,11 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
   const inputValue = useSharedValue(initialPrice);
 
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
   const liveTokenPrice = useLiveTokenSharedValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: market.price,
-    selector: state => state.price,
+    tokenId,
+    fallback: market.price,
   });
 
   const liquidationPrice = useDerivedValue(() => {

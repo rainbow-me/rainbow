@@ -1,14 +1,11 @@
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 
-import { userAssetsStore } from './userAssets';
+import { type UserAssetsStoreType } from './types';
 
 let unsubscribe: (() => void) | null = null;
 
-/**
- * Sets up a subscription to the positions store to reprocess assets
- * only when position token addresses actually change.
- */
-export function setupPositionsAssetsSync() {
+/** Reprocesses user assets when the set of position token addresses changes. */
+export function setupPositionsAssetsSync(userAssetsStore: UserAssetsStoreType): void {
   cleanupPositionsAssetsSync();
 
   unsubscribe = usePositionsStore.subscribe(
@@ -29,7 +26,7 @@ export function setupPositionsAssetsSync() {
   );
 }
 
-export function cleanupPositionsAssetsSync() {
+export function cleanupPositionsAssetsSync(): void {
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;

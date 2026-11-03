@@ -12,7 +12,6 @@ export type NftParams = {
   limit: number;
   pageKey: string | null;
   collectionId?: CollectionId;
-  isMigration?: boolean;
 };
 
 export type PaginationInfo = {

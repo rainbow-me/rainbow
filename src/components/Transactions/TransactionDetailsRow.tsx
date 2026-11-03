@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { DetailBadge, DetailIcon, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { type DetailInfo, type DetailType } from '@/components/Transactions/types';

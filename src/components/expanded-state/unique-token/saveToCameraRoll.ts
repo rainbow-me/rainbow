@@ -4,7 +4,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import { shouldCreateImgixClient } from '@/handlers/imgix';
+import { shouldCreateImgixClient, withImageHost } from '@/handlers/imgix';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 
@@ -72,13 +72,13 @@ async function downloadImageIOS(url: string): Promise<void> {
   }
 }
 
-const saveToCameraRoll = async (url: string): Promise<void> => {
+export const saveToCameraRoll = async (url: string): Promise<void> => {
   const staticImgixClient = shouldCreateImgixClient();
   if (!staticImgixClient) {
     alertError();
     return;
   }
-  const url2Download = staticImgixClient?.buildURL(url, { fm: 'png' });
+  const url2Download = withImageHost(staticImgixClient.buildURL(url, { fm: 'png' }));
 
   if (Platform.OS === 'android') {
     await downloadImageAndroid(url2Download);
@@ -86,5 +86,3 @@ const saveToCameraRoll = async (url: string): Promise<void> => {
     await downloadImageIOS(url2Download);
   }
 };
-
-export default saveToCameraRoll;

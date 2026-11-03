@@ -28,6 +28,13 @@ export type EthereumWalletFromSeed = {
   walletType: WalletLibraryType;
 };
 
+export interface EthereumWalletFromMnemonic extends EthereumWalletFromSeed {
+  root: EthereumHDKey;
+  type: EthereumWalletType.mnemonic;
+  wallet: LibWallet;
+  walletType: WalletLibraryType.bip39;
+}
+
 /**
  * Determines the {@link EthereumWalletType} based on the provided wallet seed.
  */

@@ -4,11 +4,11 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Columns, Stack } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { isAwaitingRelayTransactionHash, TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

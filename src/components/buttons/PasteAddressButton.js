@@ -1,37 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { opacity } from '@/framework/ui/utils/opacity';
-import { checkIsValidAddressOrDomain } from '@/helpers/validators';
+import { opacity } from '@/design-system/utils/opacity';
+import { isValidAddressOrDomainFormat } from '@/features/address/core/address';
 import useClipboard from '@/hooks/useClipboard';
 import useInvalidPaste from '@/hooks/useInvalidPaste';
 import * as i18n from '@/languages';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Text } from '../text';
 
 export default function PasteAddressButton({ onPress }) {
-  const [isValid, setIsValid] = useState(false);
   const { colors } = useTheme();
   const { onInvalidPaste } = useInvalidPaste();
   const { clipboard, enablePaste, getClipboard, hasClipboardData } = useClipboard();
 
-  useEffect(() => {
-    async function validate() {
-      const isValidAddress = await checkIsValidAddressOrDomain(clipboard);
-      setIsValid(isValidAddress);
-    }
-
-    if (!deviceUtils.isIOS14) {
-      validate();
-    }
-  }, [clipboard]);
+  const isValid = useMemo(() => isValidAddressOrDomainFormat(clipboard), [clipboard]);
 
   const handlePress = useCallback(() => {
     if (!enablePaste) return;
 
-    getClipboard(async clipboardData => {
-      const isValidAddress = await checkIsValidAddressOrDomain(clipboardData);
+    getClipboard(clipboardData => {
+      const isValidAddress = isValidAddressOrDomainFormat(clipboardData);
 
       if (isValidAddress) {
         return onPress?.(clipboardData);

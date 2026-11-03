@@ -15,13 +15,13 @@ import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { device } from '@/storage';
 
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
-const PrivacySection = () => {
+export const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { navigate } = useNavigation();
@@ -98,5 +98,3 @@ const PrivacySection = () => {
     </MenuContainer>
   );
 };
-
-export default PrivacySection;

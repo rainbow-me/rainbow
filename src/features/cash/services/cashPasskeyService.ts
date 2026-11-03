@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
+
 import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
-import { create, get } from 'react-native-passkeys';
+import { cancel, create, get } from 'react-native-passkeys';
 
 import { time } from '@/framework/core/utils/time';
 import { delay } from '@/utils/delay';
@@ -51,10 +53,24 @@ export async function getPasskeyAssertion(publicKeyOptionsJson: string): Promise
   return JSON.stringify(assertion);
 }
 
+export async function cancelPasskeyRequest(): Promise<void> {
+  if (Platform.OS !== 'ios') return;
+  await cancel();
+}
+
 export function isPasskeyCancellation(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
   return code === 'ERR_USER_CANCELLED' || error.message === 'UserCancelled';
+}
+
+// Registration excludes the account's enrolled passkeys, so the platform refuses to create another one
+// when the device already holds one of them. The iOS code comes from our react-native-passkeys patch;
+// Android only reports WebAuthn's InvalidStateError in the message.
+export function isPasskeyAlreadyOnDevice(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
+  return code === 'ERR_PASSKEY_EXCLUDED_CREDENTIAL' || error.message.startsWith('DomError: InvalidStateError');
 }
 
 export function getPasskeyName(): string {

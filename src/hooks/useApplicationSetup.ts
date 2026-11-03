@@ -6,7 +6,7 @@ import {
   initListeners as initWalletConnectListeners,
   initWalletConnectPushNotifications,
 } from '@/features/wallet-connect/handlers/listeners';
-import { loadAddress } from '@/model/wallet';
+import { loadAddress } from '@/features/wallet/data/walletKeychain';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { saveFCMToken } from '@/notifications/tokens';

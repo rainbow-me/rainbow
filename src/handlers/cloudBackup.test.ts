@@ -1,30 +1,28 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { CLOUD_BACKUP_ERRORS, getDataFromCloud, parseBackupJson } from './cloudBackup';
 
-jest.mock('react-native-cloud-fs', () => ({
-  getIcloudDocument: jest.fn(() => Promise.resolve('encrypted-blob')),
-  listFiles: jest.fn(() => Promise.resolve({ files: [{ id: 'file-id', name: 'UserData.json' }] })),
-  loginIfNeeded: jest.fn(),
+vi.mock('react-native-cloud-fs', () => ({
+  default: {
+    getIcloudDocument: vi.fn(() => Promise.resolve('encrypted-blob')),
+    listFiles: vi.fn(() => Promise.resolve({ files: [{ id: 'file-id', name: 'UserData.json' }] })),
+    loginIfNeeded: vi.fn(),
+  },
 }));
 
-jest.mock('react-native-fs', () => ({ unlink: jest.fn(), writeFile: jest.fn() }));
+vi.mock('react-native-fs', () => ({ default: { unlink: vi.fn(), writeFile: vi.fn() } }));
 
-jest.mock('./aesEncryption', () => {
-  const state = { plaintext: '' };
+const state = vi.hoisted(() => ({ plaintext: '' }));
 
+vi.mock('./aesEncryption', () => {
   return {
-    __esModule: true,
     default: class AesEncryptor {
-      decrypt() {
+      decrypt(): Promise<string> {
         return Promise.resolve(state.plaintext);
       }
     },
-    state,
   };
 });
-
-const encryptor = jest.requireMock<{ state: { plaintext: string } }>('./aesEncryption');
 
 // Decryption has already succeeded by the time the parse runs, so what fails to parse here is
 // decrypted backup contents. A phrase is the worst case that can be sitting in it.
@@ -32,11 +30,11 @@ const DECRYPTED_PLAINTEXT = 'abandon abandon abandon abandon abandon abandon aba
 
 describe('getDataFromCloud', () => {
   beforeEach(() => {
-    encryptor.state.plaintext = '';
+    state.plaintext = '';
   });
 
   test('returns the backup when it parses', async () => {
-    encryptor.state.plaintext = JSON.stringify({ wallets: { id: 'wallet' } });
+    state.plaintext = JSON.stringify({ wallets: { id: 'wallet' } });
 
     await expect(getDataFromCloud('password', 'UserData.json')).resolves.toEqual({ wallets: { id: 'wallet' } });
   });
@@ -44,7 +42,7 @@ describe('getDataFromCloud', () => {
   test('reports a malformed backup as its own error, not as a wrong password', async () => {
     // Reusing ERROR_DECRYPTING_DATA would tell the user their password was wrong and drop the report,
     // because restoreCloudBackup matches that constant and returns before it reaches logger.error.
-    encryptor.state.plaintext = DECRYPTED_PLAINTEXT;
+    state.plaintext = DECRYPTED_PLAINTEXT;
 
     const error = await getDataFromCloud('password', 'UserData.json').catch((e: Error) => e);
 
@@ -55,7 +53,7 @@ describe('getDataFromCloud', () => {
   test('keeps the plaintext it failed to parse out of the error it throws', async () => {
     // JSON.parse quotes its own input back inside the SyntaxError, e.g. `Unexpected token 'a',
     // "abandon ab"... is not valid JSON`. That error must not be what travels onward.
-    encryptor.state.plaintext = DECRYPTED_PLAINTEXT;
+    state.plaintext = DECRYPTED_PLAINTEXT;
 
     const error = await getDataFromCloud('password', 'UserData.json').catch((e: Error) => e);
 

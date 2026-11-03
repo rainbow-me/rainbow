@@ -4,12 +4,12 @@ import { Platform } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { BubbleField } from '@/components/fields';
 import { Row, RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';

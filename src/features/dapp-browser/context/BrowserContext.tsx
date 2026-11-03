@@ -164,9 +164,11 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     (originalUrl: string, tabId?: string) => {
       const { url: activeTabUrl } = activeTabInfo.value;
       const tabIdToUse = tabId || activeTabId.value;
-      const url = addReferralToDappBrowserUrl(originalUrl);
+      const normalizedUrl = normalizeUrlWorklet(originalUrl);
+      if (!normalizedUrl) return;
+      const url = addReferralToDappBrowserUrl(normalizedUrl);
 
-      if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabUrl)) {
+      if (url === activeTabUrl) {
         refreshPage();
       } else {
         goToPage(url, tabIdToUse);
@@ -174,7 +176,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
       runOnUI(() => {
         const tabIdToUse = tabId || activeTabId.value;
-        animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: normalizeUrlWorklet(url) }));
+        animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: url }));
       })();
     },
     [activeTabId, activeTabInfo, animatedTabUrls, goToPage, refreshPage]

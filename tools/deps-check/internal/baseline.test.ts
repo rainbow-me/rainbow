@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { planUpdate } from './baseline';
 import { cycle } from './test-fixtures';
 

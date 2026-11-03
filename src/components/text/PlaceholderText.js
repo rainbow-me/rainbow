@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useState } from 'react';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 import Text from './Text';
 

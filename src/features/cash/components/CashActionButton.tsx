@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useForegroundColor, type TextProps } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 type CashActionButtonProps = {
   color?: 'blue' | 'red';
@@ -15,6 +15,7 @@ type CashActionButtonProps = {
   shadow?: boolean;
   testID: string;
   textSize?: TextProps['size'];
+  textWeight?: TextProps['weight'];
   variant?: 'solid' | 'tinted' | 'plain';
 };
 
@@ -27,6 +28,7 @@ export const CashActionButton = memo(function CashActionButton({
   shadow = false,
   testID,
   textSize = '22pt',
+  textWeight = 'heavy',
   variant = 'solid',
 }: CashActionButtonProps) {
   const blue = useForegroundColor('blue');
@@ -57,7 +59,7 @@ export const CashActionButton = memo(function CashActionButton({
         ]}
         width="full"
       >
-        <Text align="center" color={textColor} size={textSize} weight="heavy">
+        <Text align="center" color={textColor} size={textSize} weight={textWeight}>
           {label}
         </Text>
 

@@ -1,4 +1,5 @@
 import { type Address } from 'viem';
+import { expect, test } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { DAI_ADDRESS } from '@/references/constants';

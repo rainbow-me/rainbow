@@ -1,34 +1,48 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
+import { createBaseStore, useStableValue, type Store } from '@storesjs/stores';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
+
+import type { NumberPadProps } from '@/components/number-pad/NumberPad';
+import { useShakeAnimation } from '@/hooks/useShakeAnimation';
 
 import {
   ADD_CASH_AMOUNT_FIELD_ID,
   ADD_CASH_DEFAULT_VALUE,
   createCashAmountField,
   isSubmittableCashAmount,
+  isValidCashAmountChange,
   type CashFieldId,
 } from './addCashAmountModel';
 
-/**
- * Owns the Add Cash amount as one canonical JS string while exposing the shared
- * values the on-thread NumberPad and AnimatedText need.
- */
+export type AddCashStoreState = {
+  amount: string;
+  canSubmit: () => boolean;
+  getSelectedAmountPreset: () => number;
+  setAmount: (amount: string) => void;
+};
+
+/** Owns the Add Cash amount, submit eligibility, and keypad rejection feedback. */
 export function useAddCashAmount(defaultPresetAmount: number) {
   const defaultPresetValue = String(defaultPresetAmount);
+  const [shakeOffset, shake] = useShakeAnimation(10);
+
   const fields = useSharedValue(createCashAmountField());
   const activeFieldId = useSharedValue<CashFieldId>(ADD_CASH_AMOUNT_FIELD_ID);
-  const displayedAmount = useSharedValue(ADD_CASH_DEFAULT_VALUE);
+  const displayedAmount = useSharedValue(defaultPresetValue);
 
-  const [amount, setAmount] = useState(defaultPresetValue);
-  const [selectedPresetAmount, setSelectedPresetAmount] = useState(defaultPresetAmount);
+  const addCashStore = useStableValue(() => createAddCashStore(defaultPresetAmount));
+  const { setAmount } = addCashStore.getState();
 
-  const selectPresetAmount = useCallback((presetAmount: number) => {
-    setSelectedPresetAmount(presetAmount);
-    setAmount(String(presetAmount));
-  }, []);
+  const selectPresetAmount = useCallback(
+    (presetAmount: number) => {
+      const nextAmount = String(presetAmount);
+      setAmount(nextAmount);
+      displayedAmount.value = nextAmount;
+    },
+    [displayedAmount, setAmount]
+  );
 
-  // The NumberPad calls this on the UI thread, so it must be a worklet.
   const onValueChange = useCallback(
     (_fieldId: CashFieldId, newValue: string | number) => {
       'worklet';
@@ -36,8 +50,21 @@ export function useAddCashAmount(defaultPresetAmount: number) {
       displayedAmount.value = nextAmount;
       runOnJS(setAmount)(nextAmount);
     },
-    [displayedAmount]
+    [displayedAmount, setAmount]
   );
+
+  const onBeforeChange = useCallback<NonNullable<NumberPadProps<CashFieldId>['onBeforeChange']>>(
+    (_fieldId, currentValue, newValue, key) => {
+      'worklet';
+      return { isValid: isValidCashAmountChange(currentValue, newValue, key) };
+    },
+    []
+  );
+
+  const onInputRejected = useCallback(() => {
+    'worklet';
+    shake('notificationWarning');
+  }, [shake]);
 
   const resetKeypadAmount = useCallback(() => {
     setAmount(ADD_CASH_DEFAULT_VALUE);
@@ -47,17 +74,27 @@ export function useAddCashAmount(defaultPresetAmount: number) {
       current[ADD_CASH_AMOUNT_FIELD_ID].value = ADD_CASH_DEFAULT_VALUE;
       return current;
     });
-  }, [displayedAmount, fields]);
+  }, [displayedAmount, fields, setAmount]);
 
   return {
     activeFieldId,
-    amount,
-    canSubmit: isSubmittableCashAmount(amount),
     displayedAmount,
     fields,
+    onBeforeChange,
+    onInputRejected,
     onValueChange,
     resetKeypadAmount,
     selectPresetAmount,
-    selectedPresetAmount,
+    shakeOffset,
+    useAddCashStore: addCashStore,
   };
+}
+
+function createAddCashStore(defaultPresetAmount: number): Store<AddCashStoreState> {
+  return createBaseStore((set, get) => ({
+    amount: String(defaultPresetAmount),
+    canSubmit: () => isSubmittableCashAmount(get().amount),
+    getSelectedAmountPreset: () => Number(get().amount),
+    setAmount: amount => set(state => (state.amount === amount ? state : { amount })),
+  }));
 }

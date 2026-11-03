@@ -8,8 +8,8 @@ import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import useBiometryType from '../hooks/useBiometryType';
-import BiometryTypes from '../types/biometryTypes';
+import { useBiometryType } from '../hooks/useBiometryType';
+import { BiometryTypes } from '../types/biometryTypes';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 
@@ -45,7 +45,7 @@ export function useBiometryIconString({ showIcon, isHardwareWallet }) {
   return !biometryType || biometryType === none || !showIcon ? '' : `${getBiometryIconString()} `;
 }
 
-export default function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
+export function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
   const isHardwareWallet = useIsHardwareWallet();
   const biometryIcon = useBiometryIconString({ showIcon: Platform.OS !== 'android' && showIcon, isHardwareWallet });
   const { colors } = useTheme();

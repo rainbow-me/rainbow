@@ -11,7 +11,7 @@ import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import * as kc from '@/features/local-auth/keychain';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
-import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
+import { type AllRainbowWallets, type RainbowWallet } from '@/features/wallet/types';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
   CLOUD_BACKUP_ERRORS,
@@ -26,17 +26,17 @@ import {
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { getUserError } from '@/hooks/useWalletCloudBackup';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { clearAllStorages } from '@/model/mmkv';
-import { createWallet, type AllRainbowWallets, type RainbowWallet } from '@/model/wallet';
+import { createWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 
+import { getBackupErrorMessage } from './getBackupErrorMessage';
 import { backupsStore, CloudBackupState } from './stores/backupsStore';
 
 const { DeviceUUID } = NativeModules;
@@ -181,7 +181,7 @@ export async function backupAllWalletsToCloud({
     onSuccess?.(password);
   } catch (error) {
     if (error instanceof Error) {
-      const userError = getUserError(error);
+      const userError = getBackupErrorMessage(error);
       onError?.(userError);
       captureException(error);
       analytics.track(analytics.event.backupError, {
@@ -237,7 +237,7 @@ export async function restoreBackup(data: string | { secrets: string }) {
   // ANDROID ONLY - pin auth if biometrics are disabled
   let userPIN: string | undefined;
   try {
-    userPIN = await maybeAuthenticateWithPINAndCreateIfNeeded();
+    userPIN = await kc.maybeAuthenticateWithPINAndCreateIfNeeded();
   } catch (e) {
     return RestoreCloudBackupResultStates.incorrectPinCode;
   }
@@ -319,7 +319,7 @@ export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<stri
     if (!userPIN && Object.values(processedSecrets).some(secret => secret.includes('cipher'))) {
       try {
         // eslint-disable-next-line require-atomic-updates
-        userPIN = await authenticateWithPIN();
+        userPIN = await kc.authenticateWithPIN();
       } catch (e) {
         throw new Error(CLOUD_BACKUP_ERRORS.WRONG_PIN);
       }
@@ -407,7 +407,7 @@ export async function restoreCloudBackup({
 
 async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, userPin?: string): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
-  const backupPIN = await decryptPIN(encryptedBackupPinData);
+  const backupPIN = await kc.decryptPIN(encryptedBackupPinData);
 
   // TODO: Eventual refactor of `createWallet` needed
   /**

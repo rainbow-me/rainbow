@@ -11,9 +11,10 @@ import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 
 import Divider from '@/components/Divider';
+import { opacity } from '@/design-system/utils/opacity';
 import { canReplacePendingTransaction, GasFeeTypes, TransactionStatus, type GasFeeType } from '@/entities/transactions';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/features/ens/redux/registration';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { updateGasFeeForSpeed } from '@/features/gas/redux/gas';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/features/gas/types/gas';
@@ -21,7 +22,6 @@ import gasUtils from '@/features/gas/utils/gas';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
@@ -34,7 +34,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import ethUnits from '@/references/ethereum-units.json';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -127,7 +127,7 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
   return Number(newWeiValue);
 };
 
-export default function SpeedUpAndCancelSheet() {
+export function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
   const { chainId } = useAccountSettings();
   const accountAddress = useAccountAddress();

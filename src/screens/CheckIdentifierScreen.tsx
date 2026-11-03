@@ -6,7 +6,7 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { Alert } from '@/components/alerts';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
@@ -23,7 +23,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 
 const imageSize = 40;
 
-export default function CheckIdentifierScreen() {
+export function CheckIdentifierScreen() {
   const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHECK_IDENTIFIER_SCREEN>>();
 

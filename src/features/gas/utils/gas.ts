@@ -4,7 +4,7 @@ import { type TextColor } from '@/design-system/color/palettes';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import * as i18n from '@/languages';
-import { colors } from '@/styles';
+import colors from '@/styles/colors';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';

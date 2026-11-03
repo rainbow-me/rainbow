@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import Skeleton from '@/components/skeleton/Skeleton';
-import AvatarCoverPhotoMaskSvg from '@/components/svg/AvatarCoverPhotoMaskSvg';
+import { AvatarCoverPhotoMaskSvg } from '@/components/svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, Cover } from '@/design-system';
 import useFadeImage from '@/hooks/useFadeImage';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -14,7 +14,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 const imagePreviewOverlayTopOffset = Platform.OS === 'ios' ? 68 + sharedCoolModalTopOffset : 107;
 const size = 70;
 
-export default function ProfileAvatar({
+export function ProfileAvatar({
   accountSymbol,
   avatarUrl,
   enableZoomOnPress,

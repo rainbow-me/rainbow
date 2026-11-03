@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { values } from 'lodash';
 
+import { type RainbowAccount } from '@/features/wallet/types';
 import walletTypes from '@/helpers/walletTypes';
-import { type RainbowAccount } from '@/model/wallet';
 
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 

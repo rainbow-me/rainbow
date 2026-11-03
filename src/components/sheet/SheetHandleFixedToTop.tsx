@@ -4,7 +4,7 @@ import styled from '@/framework/ui/styled-thing';
 import { padding } from '@/styles';
 
 import { Centered } from '../layout';
-import SheetHandle, { SHEET_HANDLE_HEIGHT } from './SheetHandle';
+import { SHEET_HANDLE_HEIGHT, SheetHandle } from './SheetHandle';
 
 const DEFAULT_PADDING_VERTICAL = 6;
 
@@ -25,7 +25,7 @@ const Container = styled(Centered)((props: { paddingTop: number; paddingBottom: 
   zIndex: 9,
 }));
 
-export default function SheetHandleFixedToTop({ color, showBlur = false, top = DEFAULT_PADDING_VERTICAL }: SheetHandleFixedToTopProps) {
+export function SheetHandleFixedToTop({ color, showBlur = false, top = DEFAULT_PADDING_VERTICAL }: SheetHandleFixedToTopProps) {
   return (
     <Container paddingTop={top} paddingBottom={Math.max(0, SheetHandleFixedToTopHeight - top)}>
       <SheetHandle color={color} showBlur={showBlur} />

@@ -99,7 +99,9 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   const updateTabUrlWorklet = useCallback(
     ({ tabId, url }: { tabId: string; url: string }) => {
       'worklet';
-      animatedTabUrls.modify(urls => ({ ...urls, [tabId]: normalizeUrlWorklet(url) }));
+      const normalizedUrl = normalizeUrlWorklet(url);
+      if (!normalizedUrl) return;
+      animatedTabUrls.modify(urls => ({ ...urls, [tabId]: normalizedUrl }));
     },
     [animatedTabUrls]
   );

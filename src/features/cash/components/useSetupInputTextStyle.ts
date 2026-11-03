@@ -18,6 +18,7 @@ export function useSetupInputTextStyle(): TextStyle {
       letterSpacing: 0.37,
       paddingLeft: 14,
       paddingRight: 16,
+      textAlign: 'left',
       // Fixed height + zero vertical padding lets Android gravity center the text; a snug
       // padding-derived height positions it baseline-from-top, which sits high with this font.
       ...(Platform.OS === 'android'

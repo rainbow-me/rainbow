@@ -1,20 +1,30 @@
 import { analytics } from '@/analytics';
 import { time } from '@/framework/core/utils/time';
+import { withTimeout } from '@/utils/promise';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
-import { getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
+import { isCashAccessRefusedError } from './cashAccessRefusal';
+import { cancelPasskeyRequest, getPasskeyAssertion, isPasskeyCancellation } from './cashPasskeyService';
 import { finalizeAuth, finishLogin, startLogin, type StartLoginParams } from './userClient';
 
-export type CashSignInTrigger = 'cardLink' | 'addCash' | 'signInScreen';
+export type CashSignInTrigger =
+  | 'cardLink'
+  | 'addCash'
+  | 'signInScreen'
+  | 'existingAccountPrompt'
+  | 'passkeyOnDevicePrompt'
+  | 'developerSettings';
 
 const TOKEN_EXPIRY_MARGIN = time.seconds(30);
+const PASSKEY_ASSERTION_TIMEOUT = time.minutes(2);
+const PASSKEY_ASSERTION_TIMEOUT_MESSAGE = 'Cash passkey assertion timed out';
 
 let pendingSignIn: Promise<string> | null = null;
 
-function getCachedAccessToken(): string | null {
+export function getCachedAccessToken(): string | null {
   const token = useCashAuthTokenStore.getState().token;
   if (!token) return null;
   const remaining = token.expiresAt - Date.now();
@@ -43,7 +53,11 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
   analytics.track(analytics.event.cashSignInSubmitted, { trigger });
   try {
     const start = await startLogin(resolveIdentifier());
-    const credentialAssertionJson = await getPasskeyAssertion(start.publicKeyOptionsJson);
+    const credentialAssertionJson = await withTimeout(
+      getPasskeyAssertion(start.publicKeyOptionsJson),
+      PASSKEY_ASSERTION_TIMEOUT,
+      PASSKEY_ASSERTION_TIMEOUT_MESSAGE
+    );
     const finish = await finishLogin({ sessionId: start.sessionId, sessionToken: start.sessionToken, credentialAssertionJson });
 
     // setUserId drops account-scoped state when the record changes, so it must precede setToken.
@@ -54,16 +68,23 @@ async function runLoginCeremony(trigger: CashSignInTrigger, resolveIdentifier: (
     analytics.track(analytics.event.cashSignInSucceeded, { trigger });
     return token.accessToken;
   } catch (error) {
+    const isPasskeyAssertionTimeout = error instanceof Error && error.message === PASSKEY_ASSERTION_TIMEOUT_MESSAGE;
+    if (isPasskeyAssertionTimeout) {
+      await cancelPasskeyRequest().catch(() => undefined);
+    }
     if (isPasskeyCancellation(error)) {
       analytics.track(analytics.event.cashSignInCancelled, { trigger });
-    } else {
-      analytics.track(analytics.event.cashSignInFailed, { trigger, reason: getTelemetryErrorReason(error) });
+    } else if (!isCashAccessRefusedError(error)) {
+      analytics.track(analytics.event.cashSignInFailed, {
+        trigger,
+        reason: isPasskeyAssertionTimeout ? 'timeout' : getTelemetryErrorReason(error),
+      });
     }
     throw error;
   }
 }
 
 // Signs in a device with no stored account: the phone number identifies the user instead.
-export async function signInWithPhone(nationalNumber: string): Promise<void> {
-  await runLoginCeremony('signInScreen', () => ({ phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber } }));
+export async function signInWithPhone(nationalNumber: string, trigger: CashSignInTrigger = 'signInScreen'): Promise<void> {
+  await runLoginCeremony(trigger, () => ({ phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber } }));
 }

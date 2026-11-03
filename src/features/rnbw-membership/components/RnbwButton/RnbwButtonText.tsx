@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import GradientText from '@/components/text/GradientText';
+import { GradientText } from '@/components/text/GradientText';
 import { Text, useColorMode, type TextProps } from '@/design-system';
 import { getValueForColorMode } from '@/design-system/color/palettes';
 import { RNBW_BUTTON_CONFIG } from '@/features/rnbw-membership/rnbwButtonTheme';

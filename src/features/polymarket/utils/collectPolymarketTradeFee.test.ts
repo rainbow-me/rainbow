@@ -1,4 +1,5 @@
 import { OperationType } from '@polymarket/builder-relayer-client';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
 import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
@@ -10,44 +11,44 @@ import { collectPolymarketTradeFee } from './collectPolymarketTradeFee';
 
 const expectedFeeRecipient = '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a';
 
-jest.mock('@/state/wallets/walletsStore', () => ({
+vi.mock('@/state/wallets/walletsStore', () => ({
   useWalletsStore: {
-    getState: jest.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
+    getState: vi.fn(() => ({ accountAddress: '0x1208C8B837F68468457c83DD256e817BD5B3E0b7' })),
   },
 }));
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
   POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a',
 }));
 
-jest.mock('@/features/polymarket/utils/confirmation', () => ({
-  awaitPolygonConfirmation: jest.fn(),
+vi.mock('@/features/polymarket/utils/confirmation', () => ({
+  awaitPolygonConfirmation: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/collateral', () => ({
-  buildUnwrapPusdToUsdcTransactions: jest.fn(),
+vi.mock('@/features/polymarket/utils/collateral', () => ({
+  buildUnwrapPusdToUsdcTransactions: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/utils/polymarketWallet', () => ({
-  getPolymarketWallet: jest.fn(async () => ({ address: '0xProxy' })),
+vi.mock('@/features/polymarket/utils/polymarketWallet', () => ({
+  getPolymarketWallet: vi.fn(async () => ({ address: '0xProxy' })),
 }));
 
-jest.mock('@/features/polymarket/utils/relayExecution', () => ({
-  executeRelayTransaction: jest.fn(),
+vi.mock('@/features/polymarket/utils/relayExecution', () => ({
+  executeRelayTransaction: vi.fn(),
 }));
 
-jest.mock('@/logger', () => ({
+vi.mock('@/logger', () => ({
   ensureError: (error: unknown) => (error instanceof Error ? error : new Error(String(error))),
-  logger: { error: jest.fn() },
+  logger: { error: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-const mockBuildUnwrapPusdToUsdcTransactions = jest.mocked(buildUnwrapPusdToUsdcTransactions);
-const mockExecuteRelayTransaction = jest.mocked(executeRelayTransaction);
-const mockGetPolymarketWallet = jest.mocked(getPolymarketWallet);
-const mockAwaitPolygonConfirmation = jest.mocked(awaitPolygonConfirmation);
-const mockLoggerError = jest.mocked(logger.error);
+const mockBuildUnwrapPusdToUsdcTransactions = vi.mocked(buildUnwrapPusdToUsdcTransactions);
+const mockExecuteRelayTransaction = vi.mocked(executeRelayTransaction);
+const mockGetPolymarketWallet = vi.mocked(getPolymarketWallet);
+const mockAwaitPolygonConfirmation = vi.mocked(awaitPolygonConfirmation);
+const mockLoggerError = vi.mocked(logger.error);
 
 describe('collectPolymarketTradeFee', () => {
   beforeEach(() => {

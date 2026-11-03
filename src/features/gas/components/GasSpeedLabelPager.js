@@ -3,11 +3,11 @@ import { Platform } from 'react-native';
 
 import { upperFirst } from 'lodash';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Row } from '@/components/layout';
 import { Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { margin, padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 
@@ -39,7 +39,7 @@ const GasSpeedLabel = styled(Text).attrs({
   ...padding.object(0, 3),
 });
 
-const GasSpeedLabelPager = ({ label, theme, onPress, colorForAsset, dropdownEnabled }) => {
+const GasSpeedLabelPager = ({ label, theme, onPress = undefined, colorForAsset, dropdownEnabled }) => {
   const { colors } = useTheme();
 
   return (

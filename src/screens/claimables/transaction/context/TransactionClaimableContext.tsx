@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { formatUnits, getAddress } from 'viem';
 
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
@@ -13,9 +12,11 @@ import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet } fro
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import {
@@ -26,7 +27,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
@@ -239,7 +239,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
+      const gasFeeWei = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
 
       const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[claimable.chainId];
       const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(claimable.chainId);

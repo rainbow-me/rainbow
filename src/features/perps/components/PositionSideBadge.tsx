@@ -1,8 +1,8 @@
 import React, { memo, useMemo } from 'react';
 
 import { Bleed, Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { PerpPositionSide } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 type PositionSideBadgeProps = {
   side: PerpPositionSide;

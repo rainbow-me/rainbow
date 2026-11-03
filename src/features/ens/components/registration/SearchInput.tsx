@@ -9,7 +9,7 @@ import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 
-import SearchInputGradientBackground from './SearchInputGradientBackground';
+import { SearchInputGradientBackground } from './SearchInputGradientBackground';
 
 export type SearchInputProps = {
   isLoading?: boolean;
@@ -21,7 +21,7 @@ export type SearchInputProps = {
   testID: string;
 };
 
-const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', selectionColor, state, testID }: SearchInputProps) => {
+export const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', selectionColor, state, testID }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({
     color: 'primary (Deprecated)',
@@ -122,5 +122,3 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
     </Box>
   );
 };
-
-export default SearchInput;

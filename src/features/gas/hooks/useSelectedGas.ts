@@ -90,3 +90,9 @@ export function getSelectedGas(chainId: ChainId): GasSettings | undefined {
   const selectedGasSpeed = getSelectedGasSpeed(chainId);
   return getGasSettings(selectedGasSpeed, chainId);
 }
+
+export function getSelectedSpeedSuggestion(chainId: ChainId): GasSettings | undefined {
+  const speed = getSelectedGasSpeed(chainId);
+  if (speed === GasSpeed.CUSTOM) return undefined;
+  return getCachedGasSuggestions(chainId)?.[speed];
+}

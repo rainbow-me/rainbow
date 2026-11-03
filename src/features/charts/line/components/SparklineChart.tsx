@@ -1,16 +1,12 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Canvas, Picture } from '@shopify/react-native-skia';
 import { useListen } from '@storesjs/stores';
 import Animated, { runOnUI, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
-import { useCleanup } from '@/hooks/useCleanup';
+import { SkiaPictureView, useSkiaRenderer } from '@/framework/ui/components/SkiaPictureView';
 import { useOnChange } from '@/hooks/useOnChange';
-import { useStableValue } from '@/hooks/useStableValue';
-import { createBlankPicture } from '@/worklets/skia';
 
 import { COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW, CompactLineChartRenderer } from '../compact/CompactLineChartRenderer';
 import { type CompactLineChartData, type LineChartDataStore, type SparklineChartProps } from '../compact/types';
@@ -37,19 +33,9 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
 }: SparklineChartProps<S>) {
   const isColorString = typeof color === 'string';
   const renderWidth = width + COMPACT_LINE_CHART_HORIZONTAL_OVERDRAW * 2;
-  const initialPicture = useStableValue(() => createBlankPicture(renderWidth, height));
-
-  const chartPicture = useSharedValue(initialPicture);
+  const renderer = useSkiaRenderer<CompactLineChartRenderer>();
   const entranceProgress = useSharedValue(0);
   const hasRenderedData = useSharedValue(false);
-
-  const renderer = useWorkletClass(
-    () => ({ blankPicture: initialPicture, chartPicture, contentWidth: width, height }),
-    config => {
-      'worklet';
-      return new CompactLineChartRenderer(config);
-    }
-  );
 
   const animatedStyle = useAnimatedStyle(() => {
     const progress = entranceProgress.value;
@@ -63,21 +49,21 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
         const hasData = data !== undefined;
         const shouldAnimateIn = hasData && !hasRenderedData.value;
 
-        renderer.value?.setData(data, resolvedLineColor);
+        renderer.manager?.setData(data, resolvedLineColor, width, height);
         hasRenderedData.value = hasData;
 
         if (shouldAnimateIn) entranceProgress.value = 0;
         entranceProgress.value = withSpring(hasData ? 1 : 0, SPRING_CONFIGS.softerSpringConfig);
       })(nextData);
     },
-    [color, entranceProgress, hasRenderedData, isColorString, renderer]
+    [color, entranceProgress, hasRenderedData, height, isColorString, renderer, width]
   );
 
   useAnimatedReaction(
     () => (isColorString ? color : color.value),
     (nextColor, previousColor) => {
       if (previousColor === null || nextColor === previousColor) return;
-      renderer.value?.recolor(nextColor);
+      renderer.manager?.recolor(nextColor);
     },
     [color]
   );
@@ -93,14 +79,6 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
     drawChart(store.getState().getChartData(chartId));
   }, [chartId, drawChart, store]);
 
-  useCleanup(() => {
-    initialPicture.dispose();
-    runOnUI(() => {
-      renderer.value?.dispose?.();
-      renderer.value = undefined;
-    })();
-  });
-
   return (
     <View style={[styles.frame, { height, width }]}>
       <Animated.View
@@ -114,9 +92,14 @@ export const SparklineChart = memo(function SparklineChart<S extends LineChartDa
           animatedStyle,
         ]}
       >
-        <Canvas style={[styles.canvas, { height, width: renderWidth }]}>
-          <Picture picture={chartPicture} />
-        </Canvas>
+        <SkiaPictureView
+          initialize={output => {
+            'worklet';
+            return new CompactLineChartRenderer(output);
+          }}
+          renderer={renderer}
+          style={[styles.canvas, { height, width: renderWidth }]}
+        />
       </Animated.View>
       {livePointer ? <LiveSparklinePointer chartId={chartId} color={color} height={height} store={store} width={width} /> : null}
     </View>

@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 
 import { backupsStore, CloudBackupState } from '@/features/backup/stores/backupsStore';
 import * as keychain from '@/features/local-auth/keychain';
-import { maybeAuthenticateWithPIN } from '@/features/local-auth/pinAuthentication';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import {
   deleteAllBackups,
@@ -102,7 +101,7 @@ export default function useManageCloudBackups() {
               if (nextButtonIndex === 0) {
                 try {
                   try {
-                    await maybeAuthenticateWithPIN();
+                    await keychain.maybeAuthenticateWithPIN();
                   } catch (e) {
                     Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
                     return;

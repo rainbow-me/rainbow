@@ -3,10 +3,9 @@ import { NativeModules, Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 import { analytics } from '@/analytics';
-import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
-import currentColors from '@/theme/currentColors';
+import { currentColors } from '@/theme/currentColors';
 
 import Navigation from './Navigation';
 import Routes from './routesNames';
@@ -14,11 +13,16 @@ import Routes from './routesNames';
 let memState;
 let memRouteName;
 let memPrevRouteName;
+let splashScreenHidden = false;
+
+export function markSplashScreenHidden() {
+  splashScreenHidden = true;
+}
 
 export function onHandleStatusBar(currentState, prevState) {
   // Skip updating the system bars while the splash screen is visible
   // this will be called again once splash screen is hidden.
-  if (!isSplashScreenHidden()) return;
+  if (!splashScreenHidden) return;
 
   const routeName = Navigation.getActiveRouteName();
   if (currentColors.theme === 'dark') {
@@ -42,7 +46,7 @@ export function onHandleStatusBar(currentState, prevState) {
     }
 
     // Full light screens - dark status bar and navigation bar.
-    case Routes.KING_OF_THE_HILL:
+    case Routes.SPORTS_SCREEN:
     case Routes.RNBW_MEMBERSHIP_SCREEN:
     case Routes.EXPANDED_ASSET_SHEET_V2:
     case Routes.PROFILE_SCREEN:

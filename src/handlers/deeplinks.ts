@@ -12,11 +12,12 @@ import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { getUniqueId } from '@/entities/assetId';
 import { FiatProviderName } from '@/entities/f2c';
+import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
+import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
-import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { logger } from '@/logger';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Navigation from '@/navigation/Navigation';
@@ -27,7 +28,6 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -232,10 +232,10 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
          * here.
          */
         if (addressOrENS) {
-          const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+          const isValid = await isValidAddressOrDomain(addressOrENS);
 
           if (isValid) {
-            const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
+            const ensName = isAddress(addressOrENS) ? await fetchReverseRecord(addressOrENS) : addressOrENS;
             return Navigation.handleAction(Routes.PROFILE_SHEET, {
               address: ensName || addressOrENS,
               fromRoute: 'Deeplink',

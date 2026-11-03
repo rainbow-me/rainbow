@@ -1,23 +1,24 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 
 import { RNBW_TOKEN_ADDRESS, STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { buildStakeRnbwCalls, buildStakeRnbwExecutionPlan } from './stakeRnbwCalls';
 
-const mockCanUseSponsoredRnbwStaking = jest.fn<Promise<boolean>, [Address, number]>();
-const mockCheckIfStakingNeedsApproval = jest.fn<Promise<boolean>, [unknown]>();
+const mockCanUseSponsoredRnbwStaking = vi.fn<(...args: [Address, number]) => Promise<boolean>>();
+const mockCheckIfStakingNeedsApproval = vi.fn<(...args: [unknown]) => Promise<boolean>>();
 
-jest.mock('./canUseSponsoredRnbwStaking', () => ({
+vi.mock('./canUseSponsoredRnbwStaking', () => ({
   canUseSponsoredRnbwStaking: (address: Address, chainId: number) => mockCanUseSponsoredRnbwStaking(address, chainId),
 }));
 
-jest.mock('./checkIfStakingNeedsApproval', () => ({
+vi.mock('./checkIfStakingNeedsApproval', () => ({
   checkIfStakingNeedsApproval: (params: unknown) => mockCheckIfStakingNeedsApproval(params),
 }));
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
@@ -52,7 +53,7 @@ function buildStakeCall(): Call {
 
 describe('stakeRnbwCalls', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(false);
     mockCheckIfStakingNeedsApproval.mockResolvedValue(false);
   });

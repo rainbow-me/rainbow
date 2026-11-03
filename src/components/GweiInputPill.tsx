@@ -4,11 +4,11 @@ import { Platform, type TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Inset, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { buildTextStyles, padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

@@ -10,15 +10,8 @@ import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
 import { darkModeThemeColors, lightModeThemeColors, type Colors } from '../styles/colors';
-import currentColors from './currentColors';
-
-export const Themes = {
-  DARK: 'dark',
-  LIGHT: 'light',
-  SYSTEM: 'system',
-} as const;
-
-export type ThemesType = (typeof Themes)[keyof typeof Themes];
+import { currentColors } from './currentColors';
+import { Themes, type ThemesType } from './themes';
 
 export interface ThemeContextProps {
   colors: Colors;

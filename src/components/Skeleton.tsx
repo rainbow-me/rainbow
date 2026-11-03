@@ -1,9 +1,9 @@
 import React from 'react';
 import { type DimensionValue } from 'react-native';
 
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 export const Skeleton = ({
   borderRadius = 18,

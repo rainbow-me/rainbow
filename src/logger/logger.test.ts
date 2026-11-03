@@ -1,15 +1,15 @@
-import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
 import { nanoid } from 'nanoid';
+import { describe, expect, test, vi } from 'vitest';
 
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
 import { defaultOptions } from '@/logger/sentry';
 
-jest.mock('@sentry/react-native', () => ({
-  addBreadcrumb: jest.fn(),
-  captureException: jest.fn(),
-  captureMessage: jest.fn(),
+vi.mock('@sentry/react-native', () => ({
+  addBreadcrumb: vi.fn(),
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
   Severity: {
     Debug: 'debug',
     Info: 'info',
@@ -18,7 +18,7 @@ jest.mock('@sentry/react-native', () => ({
   },
 }));
 
-jest.mock('react-native-version-number', () => ({
+vi.mock('react-native-version-number', () => ({
   appVersion: '1.0.0',
   buildVersion: '1',
   bundleIdentifier: 'com.test',
@@ -45,7 +45,7 @@ describe('general functionality', () => {
   test('supports extra metadata', () => {
     const logger = new Logger();
 
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     logger.addTransport(mockTransport);
 
@@ -58,9 +58,9 @@ describe('general functionality', () => {
   test('supports nullish/falsy metadata', () => {
     const logger = new Logger();
 
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
-    const remove = logger.addTransport(mockTransport);
+    logger.addTransport(mockTransport);
 
     // @ts-expect-error testing the JS case
     logger.warn('a', null);
@@ -73,34 +73,46 @@ describe('general functionality', () => {
     // @ts-expect-error testing the JS case
     logger.warn('c', 0);
     expect(mockTransport).toHaveBeenCalledWith(LogLevel.Warn, 'c', {});
-
-    remove();
-
-    logger.addTransport((level, message, metadata) => {
-      expect(typeof metadata).toEqual('object');
-    });
-
-    // @ts-expect-error testing the JS case
-    logger.warn('message', null);
   });
 
-  test('logger.error expects a RainbowError', () => {
+  test('logger.error keeps a non-RainbowError as the cause', () => {
     const logger = new Logger();
-
-    const mockTransport = jest.fn();
-
+    const mockTransport = vi.fn();
     logger.addTransport(mockTransport);
 
-    logger.error(new Error());
+    const original = new Error('boom');
+    logger.error(original as unknown as RainbowError);
 
-    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
+    const [, reported] = mockTransport.mock.calls[0] as [LogLevel, RainbowError, unknown];
+    expect(reported).toBeInstanceOf(RainbowError);
+    expect(reported.message).toBe('logger.error was not provided a RainbowError');
+    expect(reported.cause).toBe(original);
+  });
+
+  test('a throwing transport does not stop the others or escape to the caller', ({ onTestFinished }) => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    onTestFinished(() => consoleError.mockRestore());
+
+    const logger = new Logger();
+    const error = new Error('transport exploded');
+    const next = vi.fn();
+
+    logger.addTransport(() => {
+      throw error;
+    });
+    logger.addTransport(next);
+
+    logger.error(new RainbowError('x'));
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(consoleError).toHaveBeenCalledExactlyOnceWith('[logger]: transport threw', error);
   });
 
   test('createServiceLogger debug honors context filtering and prefixes messages', () => {
     const logger = new Logger({
       debug: 'delegation',
     });
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
     logger.addTransport(mockTransport);
 
     logger.createServiceLogger('delegation').debug('matched');
@@ -113,7 +125,7 @@ describe('general functionality', () => {
 
   test('createServiceLogger error wraps external errors into RainbowError', () => {
     const logger = new Logger({ level: LogLevel.Error });
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
     logger.addTransport(mockTransport);
 
     const cause = new Error('boom');
@@ -134,7 +146,7 @@ describe('general functionality', () => {
   });
 
   test('sentryTransport', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const message = 'message';
 
@@ -202,7 +214,7 @@ describe('general functionality', () => {
   });
 
   test('sentryTransport always calls captureException for RainbowError', () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const fetchError = new RainbowFetchError({ message: 'Internal Server Error' });
     const error = new RainbowError('fetch failed', fetchError);
@@ -217,7 +229,7 @@ describe('general functionality', () => {
 
   test('add/remove transport', () => {
     const logger = new Logger();
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     const remove = logger.addTransport(mockTransport);
 
@@ -233,7 +245,7 @@ describe('general functionality', () => {
 });
 
 describe('debug contexts', () => {
-  const mockTransport = jest.fn();
+  const mockTransport = vi.fn();
 
   test('specific', () => {
     const message = nanoid();
@@ -278,7 +290,7 @@ describe('supports levels', () => {
       level: LogLevel.Debug,
     });
     const message = nanoid();
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     logger.addTransport(mockTransport);
 
@@ -301,7 +313,7 @@ describe('supports levels', () => {
       level: LogLevel.Info,
     });
     const message = nanoid();
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     logger.addTransport(mockTransport);
 
@@ -317,7 +329,7 @@ describe('supports levels', () => {
       level: LogLevel.Warn,
     });
     const message = nanoid();
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     logger.addTransport(mockTransport);
 
@@ -336,7 +348,7 @@ describe('supports levels', () => {
       level: LogLevel.Error,
     });
     const message = nanoid();
-    const mockTransport = jest.fn();
+    const mockTransport = vi.fn();
 
     logger.addTransport(mockTransport);
 

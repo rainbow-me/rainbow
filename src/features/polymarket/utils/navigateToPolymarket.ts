@@ -1,7 +1,6 @@
-import { CATEGORIES, DEFAULT_SPORTS_LEAGUE_KEY, type CategoryKey } from '@/features/polymarket/constants';
-import { getLeagueId } from '@/features/polymarket/leagues';
-import { usePolymarketSportsEventsStore, type PolymarketSportsLeagueId } from '@/features/polymarket/stores/polymarketSportsEventsStore';
+import { CATEGORIES, type CategoryKey } from '@/features/polymarket/constants';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
+import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -15,22 +14,19 @@ export function navigateToPolymarketEvent(params: RootStackParamList[typeof Rout
   Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, params);
 }
 
+/** Opens a Predictions category; unknown tags open the navigator without changing its category. */
 export function navigateToPolymarketCategory(tagId: string): void {
-  const categoryKey = parseCategoryKey(tagId);
-  if (!categoryKey) return;
+  if (!isCategoryKey(tagId)) return navigateToPolymarket();
 
-  usePolymarketCategoryStore.getState().setTagId(categoryKey);
-  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(DEFAULT_SPORTS_LEAGUE_KEY);
+  usePolymarketCategoryStore.getState().setTagId(tagId);
 
   navigateToPolymarketBrowse();
 }
 
-export function navigateToPolymarketSportsLeague(leagueId: string): void {
-  const selectedLeagueId = parseSportsLeagueKey(leagueId);
-  if (!selectedLeagueId) return;
-
+/** Opens a Sports scope in the Predictions browse tab. */
+export function navigateToPolymarketSportsLeague(scopeId: string): void {
+  sportsNavigationStores.predictions.getState().select(scopeId);
   usePolymarketCategoryStore.getState().setTagId('sports');
-  usePolymarketSportsEventsStore.getState().setSelectedLeagueId(selectedLeagueId);
   navigateToPolymarketBrowse();
 }
 
@@ -49,17 +45,8 @@ function navigateToPolymarketBrowse(): void {
   });
 }
 
-function parseCategoryKey(tagId: string): CategoryKey | undefined {
-  return isCategoryKey(tagId) ? tagId : undefined;
-}
-
 function isCategoryKey(tagId: string): tagId is CategoryKey {
   return Object.prototype.hasOwnProperty.call(CATEGORIES, tagId);
-}
-
-function parseSportsLeagueKey(leagueId: string): PolymarketSportsLeagueId | undefined {
-  if (leagueId === DEFAULT_SPORTS_LEAGUE_KEY) return DEFAULT_SPORTS_LEAGUE_KEY;
-  return getLeagueId(leagueId);
 }
 
 function navigateToPolymarketSection(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {

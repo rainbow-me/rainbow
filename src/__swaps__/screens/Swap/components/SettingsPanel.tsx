@@ -2,17 +2,18 @@ import React from 'react';
 
 import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { NetworkSelectorButton } from '@/features/network/components/NetworkSelectorButton';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { SlippageRow } from './ReviewPanel';
 

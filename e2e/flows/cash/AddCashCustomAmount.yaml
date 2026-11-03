@@ -16,9 +16,10 @@ tags:
       FLAG: Cash
       VALUE: 'true'
 - runFlow: ../../utils/SetCashDepositReady.yaml
-# A ready member lands straight on the Add Cash presets sheet.
+# A ready member reauthenticates before the Add Cash presets sheet is shown.
 - tapOn:
     id: buy-button
+- runFlow: ../../utils/ReauthenticateCash.yaml
 - assertVisible:
     id: cash-deposit-add-cash-amount-more
 # Tapping the "•••" chip flips the sheet into the full-screen keypad amount entry.

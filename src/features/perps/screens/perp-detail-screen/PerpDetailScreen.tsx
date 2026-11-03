@@ -11,6 +11,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { Chart } from '@/components/value-chart/Chart';
 import { Bleed, Box, Inline, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpsNameRow } from '@/features/perps/components/PerpsNameRow';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
@@ -20,7 +21,6 @@ import { TriggerOrdersSection } from '@/features/perps/screens/perp-detail-scree
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { PerpPositionSide, type PerpMarket } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';

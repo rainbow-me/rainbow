@@ -3,13 +3,13 @@ import { Platform } from 'react-native';
 
 import { type UserCredentials } from 'react-native-keychain';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Column } from '@/components/layout';
 import { SheetActionButton } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Stack, Text } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -66,7 +66,7 @@ export function DiagnosticsContent({
         </Stack>
       </Box>
       <Box paddingBottom="36px" justifyContent="center" alignItems="center">
-        <ButtonPressAnimation onPress={copyUUID} overflowMargin={20}>
+        <ButtonPressAnimation onPress={copyUUID}>
           <Text color="label" size="20pt" weight="semibold">
             {uuid ?? i18n.t(i18n.l.wallet.diagnostics.loading)}
           </Text>

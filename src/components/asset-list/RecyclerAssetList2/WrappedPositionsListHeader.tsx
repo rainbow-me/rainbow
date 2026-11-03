@@ -7,7 +7,7 @@ import * as i18n from '@/languages';
 
 import CaretImageSource from '../../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../../theme/ThemeContext';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 

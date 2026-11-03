@@ -5,10 +5,13 @@ import chroma from 'chroma-js';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { abbreviateName, formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
+import { createAccountInExistingWallet } from '@/features/wallet/data/createAccountInExistingWallet';
+import { type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -16,14 +19,13 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { createWallet, type RainbowAccount, type RainbowWallet } from '@/model/wallet';
+import { createWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { createAccountInExistingWallet, getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
 import profileUtils from '@/utils/profileUtils';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
@@ -190,7 +192,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {(accounts[0].ens && abbreviateEnsForDisplay(accounts[0].ens)) || formatAddressForDisplay(accounts[0].address, 4, 4)}
+            {(accounts[0].ens && abbreviateName(accounts[0].ens)) || formatAddressForDisplay(accounts[0].address, 4, 4)}
           </Text>
           {accounts.length > 1 && (
             <View

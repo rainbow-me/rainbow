@@ -7,10 +7,10 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Border, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
 import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 

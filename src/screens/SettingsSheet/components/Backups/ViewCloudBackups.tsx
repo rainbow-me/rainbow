@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import { Text as RNText } from '@/components/text';
@@ -16,9 +16,9 @@ import Routes from '@/navigation/routesNames';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuItem from '../MenuItem';
+import { Menu } from '../Menu';
+import { MenuContainer } from '../MenuContainer';
+import { MenuItem } from '../MenuItem';
 
 type LoadingTextProps = {
   theme: ThemeContextProps;
@@ -33,7 +33,7 @@ const LoadingText = styled(RNText).attrs(({ theme: { colors } }: LoadingTextProp
   marginLeft: 8,
 });
 
-const ViewCloudBackups = () => {
+export const ViewCloudBackups = () => {
   const { navigate } = useNavigation();
 
   const { colors } = useTheme();
@@ -162,5 +162,3 @@ const ViewCloudBackups = () => {
     </MenuContainer>
   );
 };
-
-export default ViewCloudBackups;

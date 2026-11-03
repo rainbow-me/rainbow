@@ -1,4 +1,4 @@
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
 export const MEMBERSHIP_CARD_BORDER_RADIUS = 32;
 

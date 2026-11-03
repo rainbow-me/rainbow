@@ -9,6 +9,7 @@ import { analytics } from '@/analytics';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PerpsSheetActionButtons } from '@/features/perps/components/PerpsSheetActionButtons';
@@ -20,7 +21,6 @@ import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/
 import { buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
 import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { divide } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';

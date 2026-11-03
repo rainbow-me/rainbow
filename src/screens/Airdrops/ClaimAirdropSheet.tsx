@@ -17,10 +17,11 @@ import { type Address } from 'viem';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import {
   AnimatedText,
   Bleed,
@@ -37,12 +38,13 @@ import {
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { opacity } from '@/design-system/utils/opacity';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
@@ -56,7 +58,6 @@ import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { darkModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';

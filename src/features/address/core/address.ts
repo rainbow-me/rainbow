@@ -1,37 +1,60 @@
 import { getAddress, isAddress, type Address } from 'viem';
 
+import { normalizeEnsName } from '@/features/ens/core/name';
+
+const UNSTOPPABLE_SUFFIXES = ['888', 'bitcoin', 'blockchain', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];
+
 /**
- * Strict EIP-55 validator for user-typed/pasted addresses.
- *
- * Accepts pure lowercase, pure uppercase, or canonical EIP-55 mixed case. Rejects mixed case with a bad
- * checksum — that's the typo signal EIP-55 is designed to surface.
- *
- * Use at every user-input boundary (e.g. watch wallet, send recipient, scanner, paste, deeplinks). Catching
- * bad-checksum input here is what protects users from silent typos.
+ * Accepts lowercase or correctly checksummed Ethereum addresses.
+ * Use this check before trusting a user-supplied address.
  */
 export function isValidAddress(input: string): input is Address {
   return isAddress(input);
 }
 
 /**
- * Lax shape check: returns true for any `0x` + 40 hex chars regardless of EIP-55 casing. Useful for
- * branching on "the user pasted something that looks like an address but failed strict checksum" so we
- * can show a specific error rather than falling through to a generic failure.
- *
- * Do NOT use as the gate for trusting an address.
+ * Checks for 0x followed by 40 hex characters, without validating capitalization.
+ * Use for format checks or to distinguish a checksum error from malformed input.
  */
 export function looksLikeAddress(input: string): boolean {
   return isAddress(input, { strict: false });
 }
 
 /**
- * Normalize a trusted-source address to canonical EIP-55 form.
- *
- * Use for storage rehydration, RPC responses, ENS resolution results, and any path where the bytes are
- * trusted but the casing isn't guaranteed canonical. Returns null if the input isn't a valid address shape.
- *
- * Do NOT use for user input — lazy-normalizing a user-pasted address defeats EIP-55's typo protection.
- * Use `isValidAddress` for input.
+ * Checks address shape or supported name syntax.
+ * Does not validate address checksums or look up destination records.
+ */
+export function isValidAddressOrDomainFormat(input: string | null | undefined): boolean {
+  if (!input) return false;
+
+  const value = input.trim();
+  return looksLikeAddress(value) || getNameService(value) !== null;
+}
+
+/**
+ * Recognizes ENS name syntax and supported non-DNS Unstoppable suffixes.
+ * Does not check registration or destination records.
+ */
+export function getNameService(input: string | null | undefined): 'ens' | 'unstoppable' | null {
+  if (!input) return null;
+
+  const name = input.trim();
+  if (name.startsWith('0x') || !name.includes('.')) return null;
+
+  const suffix = name.slice(name.lastIndexOf('.') + 1).toLowerCase();
+  if (UNSTOPPABLE_SUFFIXES.includes(suffix)) return 'unstoppable';
+
+  try {
+    normalizeEnsName(name);
+    return 'ens';
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Checksums a trusted address of any capitalization, returning null for invalid input.
+ * Validate user-supplied addresses before normalizing them.
  */
 export function normalizeAddress(input: string): Address | null {
   try {

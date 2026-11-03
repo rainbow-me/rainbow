@@ -5,12 +5,12 @@ import { isAddress, type Address } from 'viem';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { requireAddress } from '@/features/address/core/requireAddress';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { encodeErc20Transfer } from '@/features/token/core/services/erc20Calldata';
-import { parsePositiveRawAmount } from '@/framework/core/utils/units';
+import { parsePositiveRawAmount } from '@/features/token/core/services/tokenAmount';
 import { isNativeAsset } from '@/handlers/assets';
-import { resolveNameOrAddress } from '@/handlers/web3';
 import { type Call, type ExecuteCallsResult, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { buildPendingSendTransaction } from './sponsoredSend';
@@ -49,7 +49,7 @@ export async function buildSendCallFromSendDetails({
   chainId,
   toAddress,
 }: BuildSendCallFromSendDetailsParams): Promise<Call> {
-  const recipient = await resolveSendAddress(toAddress);
+  const recipient = await resolveSendAddress(toAddress, chainId);
   const rawAmount = parsePositiveRawAmount(amount, asset.decimals, '[buildSendCallFromSendDetails]: invalid send amount');
 
   if (isNativeAsset(asset.address, chainId)) {
@@ -92,7 +92,7 @@ export async function executeSponsoredSendIfAvailable({
   return Boolean(sponsoredExecution);
 }
 
-async function resolveSendAddress(address: string): Promise<Address> {
-  const resolved = await resolveNameOrAddress(address);
+async function resolveSendAddress(address: string, chainId: ChainId): Promise<Address> {
+  const resolved = await resolveNameOrAddress(address, chainId);
   return requireAddress(resolved, '[buildSendCallFromSendDetails]: invalid recipient');
 }

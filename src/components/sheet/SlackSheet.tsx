@@ -25,7 +25,7 @@ import { position } from '@/styles';
 
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
+import { SheetHandleFixedToTop, SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 
 const AnimatedRNGHScrollView = Animated.createAnimatedComponent(ScrollView);
 

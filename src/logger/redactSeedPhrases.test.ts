@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 
 import { redactIdentifiers } from '@/logger/redactIdentifiers';
 import { redactSeedPhrases } from '@/logger/redactSeedPhrases';

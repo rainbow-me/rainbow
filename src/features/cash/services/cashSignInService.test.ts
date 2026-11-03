@@ -1,14 +1,18 @@
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { useCashAccountStore } from '../stores/cashAccountStore';
 import { useCashAuthTokenStore } from '../stores/cashAuthTokenStore';
-import { getPasskeyAssertion } from './cashPasskeyService';
+import { CashAccessRefusedError } from './cashAccessRefusal';
+import { cancelPasskeyRequest, getPasskeyAssertion } from './cashPasskeyService';
 import { ensureAccessToken, signInWithPhone } from './cashSignInService';
 import { finalizeAuth, finishLogin, startLogin } from './userClient';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashSignInSubmitted: 'cash.sign_in_submitted',
       cashSignInSucceeded: 'cash.sign_in_succeeded',
@@ -18,22 +22,24 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('./userClient', () => ({
-  startLogin: jest.fn(),
-  finishLogin: jest.fn(),
-  finalizeAuth: jest.fn(),
+vi.mock('./userClient', () => ({
+  startLogin: vi.fn(),
+  finishLogin: vi.fn(),
+  finalizeAuth: vi.fn(),
 }));
 
-jest.mock('./cashPasskeyService', () => ({
-  getPasskeyAssertion: jest.fn(),
-  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+vi.mock('./cashPasskeyService', () => ({
+  cancelPasskeyRequest: vi.fn(),
+  getPasskeyAssertion: vi.fn(),
+  isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
 }));
 
-const mockStartLogin = startLogin as jest.Mock;
-const mockFinishLogin = finishLogin as jest.Mock;
-const mockFinalizeAuth = finalizeAuth as jest.Mock;
-const mockGetPasskeyAssertion = getPasskeyAssertion as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockStartLogin = startLogin as Mock;
+const mockFinishLogin = finishLogin as Mock;
+const mockFinalizeAuth = finalizeAuth as Mock;
+const mockCancelPasskeyRequest = cancelPasskeyRequest as Mock;
+const mockGetPasskeyAssertion = getPasskeyAssertion as Mock;
+const track = analytics.track as Mock;
 
 const USER_ID = 'user-1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
@@ -42,13 +48,18 @@ const ASSERTION_JSON = '{"id":"cred-1"}';
 const tokenStore = () => useCashAuthTokenStore.getState();
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCashAccountStore.getState().setUserId(USER_ID);
   tokenStore().clearToken();
   mockStartLogin.mockResolvedValue({ sessionId: 'sess-1', sessionToken: 'tok-1', publicKeyOptionsJson: OPTIONS_JSON });
+  mockCancelPasskeyRequest.mockResolvedValue(undefined);
   mockGetPasskeyAssertion.mockResolvedValue(ASSERTION_JSON);
   mockFinishLogin.mockResolvedValue({ sessionId: 'sess-2', sessionToken: 'tok-2', userId: 'user-2' });
   mockFinalizeAuth.mockResolvedValue({ accessToken: 'jwt-1', expiresAt: Date.now() + 3_600_000 });
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('ensureAccessToken', () => {
@@ -104,6 +115,7 @@ describe('ensureAccessToken', () => {
 
     await expect(ensureAccessToken('cardLink')).rejects.toThrow('UserCancelled');
     expect(mockFinishLogin).not.toHaveBeenCalled();
+    expect(mockCancelPasskeyRequest).not.toHaveBeenCalled();
     expect(tokenStore().token).toBeNull();
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'cardLink' }],
@@ -122,12 +134,91 @@ describe('ensureAccessToken', () => {
     ]);
   });
 
+  it('propagates a network policy response without tracking a generic failure', async () => {
+    const error = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
+    mockStartLogin.mockRejectedValue(error);
+
+    await expect(ensureAccessToken('cardLink')).rejects.toBe(error);
+
+    expect(tokenStore().token).toBeNull();
+    expect(track.mock.calls).toEqual([['cash.sign_in_submitted', { trigger: 'cardLink' }]]);
+  });
+
   it('runs a fresh ceremony after a failure', async () => {
     mockFinishLogin.mockRejectedValueOnce(new Error('login rejected'));
 
     await expect(ensureAccessToken('cardLink')).rejects.toThrow('login rejected');
     await expect(ensureAccessToken('cardLink')).resolves.toBe('jwt-1');
     expect(mockStartLogin).toHaveBeenCalledTimes(2);
+  });
+
+  it('times out a stuck passkey assertion and allows a fresh shared ceremony', async () => {
+    vi.useFakeTimers();
+    let resolveStuckAssertion: (assertion: string) => void;
+    let releaseNativeCancellation: () => void = () => {
+      throw new Error('Native cancellation did not start');
+    };
+    mockGetPasskeyAssertion.mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          resolveStuckAssertion = resolve;
+        })
+    );
+    mockCancelPasskeyRequest.mockImplementationOnce(
+      () =>
+        new Promise<void>(resolve => {
+          releaseNativeCancellation = resolve;
+        })
+    );
+
+    const first = ensureAccessToken('cardLink');
+    const concurrent = ensureAccessToken('cardLink');
+    await Promise.resolve();
+
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
+
+    const joinedDuringCancellation = ensureAccessToken('cardLink');
+    await Promise.resolve();
+    expect(mockStartLogin).toHaveBeenCalledTimes(1);
+
+    const results = Promise.allSettled([first, concurrent, joinedDuringCancellation]);
+    releaseNativeCancellation();
+    await expect(results).resolves.toEqual([
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+    ]);
+
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'cardLink' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'timeout' }],
+    ]);
+
+    resolveStuckAssertion!(ASSERTION_JSON);
+    await Promise.resolve();
+    expect(mockFinishLogin).not.toHaveBeenCalled();
+
+    await expect(ensureAccessToken('cardLink')).resolves.toBe('jwt-1');
+    expect(mockStartLogin).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports the original timeout when native cleanup fails', async () => {
+    vi.useFakeTimers();
+    mockGetPasskeyAssertion.mockReturnValue(new Promise(() => undefined));
+    mockCancelPasskeyRequest.mockRejectedValue(new Error('cleanup failed'));
+
+    const result = Promise.allSettled([ensureAccessToken('cardLink')]);
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(mockCancelPasskeyRequest).toHaveBeenCalledTimes(1);
+    await expect(result).resolves.toEqual([
+      { status: 'rejected', reason: expect.objectContaining({ message: 'Cash passkey assertion timed out' }) },
+    ]);
+
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'cardLink' }],
+      ['cash.sign_in_failed', { trigger: 'cardLink', reason: 'timeout' }],
+    ]);
   });
 
   it('fails without a stored userId and never starts the ceremony', async () => {
@@ -157,6 +248,15 @@ describe('signInWithPhone', () => {
     expect(track.mock.calls).toEqual([
       ['cash.sign_in_submitted', { trigger: 'signInScreen' }],
       ['cash.sign_in_succeeded', { trigger: 'signInScreen' }],
+    ]);
+  });
+
+  it('defaults to the signInScreen trigger but tracks a caller-provided trigger instead', async () => {
+    await expect(signInWithPhone('4155550100', 'existingAccountPrompt')).resolves.toBeUndefined();
+
+    expect(track.mock.calls).toEqual([
+      ['cash.sign_in_submitted', { trigger: 'existingAccountPrompt' }],
+      ['cash.sign_in_succeeded', { trigger: 'existingAccountPrompt' }],
     ]);
   });
 

@@ -8,9 +8,9 @@ import timeUnits from '@/references/time-units.json';
 
 import useENSRegistrant from '../../hooks/useENSRegistrant';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '../../utils/helpers';
-import RegistrationReviewRows from './RegistrationReviewRows';
+import { RegistrationReviewRows } from './RegistrationReviewRows';
 
-const RenewContent = ({
+export const RenewContent = ({
   yearsDuration,
   registrationCostsData,
   setDuration,
@@ -48,5 +48,3 @@ const RenewContent = ({
     </Inset>
   );
 };
-
-export default RenewContent;

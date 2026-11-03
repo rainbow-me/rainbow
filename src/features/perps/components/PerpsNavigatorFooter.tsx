@@ -8,11 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/design-system/utils/opacity';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -23,7 +24,6 @@ import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/feature
 import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -128,7 +128,7 @@ const PerpsAccountScreenFooter = () => {
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   return (
     <>
@@ -153,7 +153,11 @@ const PerpsAccountScreenFooter = () => {
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
-            Navigation.handleAction(hasNoAssets ? addCashRoute : Routes.PERPS_DEPOSIT_SCREEN);
+            if (hasNoAssets) {
+              navigateToAddCash();
+            } else {
+              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+            }
           } else {
             PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
           }

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { cycle, edge } from './test-fixtures';
 import { describeViolation, differenceByIdentity, tagByPlatform, violationKey, type Violation } from './violation';
 

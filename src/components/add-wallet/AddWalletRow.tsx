@@ -6,9 +6,9 @@ import { type Source } from 'react-native-fast-image';
 import { Box, Stack, Text, useForegroundColor } from '@/design-system';
 import { type TextColor } from '@/design-system/color/palettes';
 import styled from '@/framework/ui/styled-thing';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Icon } from '../icons';
 import { ImgixImage } from '../images';
 

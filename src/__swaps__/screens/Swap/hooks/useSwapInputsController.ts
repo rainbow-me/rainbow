@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import {
   runOnJS,
@@ -104,6 +104,14 @@ export function useSwapInputsController({
 }) {
   const inputValues = useSharedValue<InputValues>(applyInitialInputValues(initialValues));
   const inputMethod = useSharedValue<InputMethods>(initialValues.inputMethod || 'slider');
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
@@ -224,6 +232,7 @@ export function useSwapInputsController({
   });
 
   const updateQuoteStore = useCallback((data: Quote | CrosschainQuote | QuoteError | null) => {
+    if (!isMounted.current) return;
     swapsStore.setState({ quote: data });
   }, []);
 
@@ -378,6 +387,7 @@ export function useSwapInputsController({
   );
 
   const fetchAndUpdateQuote = async ({ inputAmount, lastTypedInput: lastTypedInputParam, outputAmount }: RequestNewQuoteParams) => {
+    if (!isMounted.current) return;
     const originalInputAssetUniqueId = internalSelectedInputAsset.value?.uniqueId;
     const originalOutputAssetUniqueId = internalSelectedOutputAsset.value?.uniqueId;
 
@@ -386,6 +396,7 @@ export function useSwapInputsController({
       (isSwappingMaxBalance && internalSelectedInputAsset.value?.maxSwappableAmount) || inputValues.value.inputAmount;
 
     const currentAddress = getAccountAddress();
+    const { slippage, source } = swapsStore.getState();
 
     const params = buildQuoteParams({
       currentAddress,
@@ -394,6 +405,8 @@ export function useSwapInputsController({
       lastTypedInput: lastTypedInputParam,
       outputAmount,
       outputAsset: internalSelectedOutputAsset.value,
+      slippage,
+      source,
     });
 
     const isCrosschainSwap = internalSelectedInputAsset.value?.chainId !== internalSelectedOutputAsset.value?.chainId;
@@ -417,6 +430,7 @@ export function useSwapInputsController({
 
     try {
       const quoteResponse = await (isCrosschainSwap ? getCrosschainQuote(params) : getQuote(params));
+      if (!isMounted.current) return;
 
       const inputAsset = internalSelectedInputAsset.value;
       const outputAsset = internalSelectedOutputAsset.value;
@@ -475,6 +489,7 @@ export function useSwapInputsController({
         });
       })();
     } catch {
+      if (!isMounted.current) return;
       runOnUI(resetFetchingStatus)({ fromError: true, quoteFetchingInterval });
     }
   };

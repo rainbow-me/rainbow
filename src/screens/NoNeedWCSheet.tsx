@@ -4,8 +4,8 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import { analytics } from '@/analytics';
 import { Box } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';

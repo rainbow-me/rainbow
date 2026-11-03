@@ -5,9 +5,9 @@ import { ADDYS_BASE_URL } from 'react-native-dotenv';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { analytics } from '@/analytics';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { type Claimable, type ClaimResponse, type SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { useClaimablesStore } from '@/state/claimables/claimables';

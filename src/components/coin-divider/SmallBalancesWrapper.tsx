@@ -16,7 +16,7 @@ type SmallBalancesWrapperProps = {
   assets: React.ReactNode[];
 };
 
-export default function SmallBalancesWrapper({ assets = [] }: SmallBalancesWrapperProps) {
+export function SmallBalancesWrapper({ assets = [] }: SmallBalancesWrapperProps) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const delayedIsSmallBalancesOpen = useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
   const height = useMemo(() => assets.length * CoinRowHeight, [assets.length]);

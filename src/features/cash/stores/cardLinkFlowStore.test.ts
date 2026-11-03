@@ -1,16 +1,19 @@
 import type { BivoSecureStore } from '@bivoglobal/payment-react-native';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { analytics } from '@/analytics';
+import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
-import { linkCardWithVault } from '../services/cardLinkService';
+import { linkCardWithVault, type CardLinkProgress } from '../services/cardLinkService';
+import { CashAccessRefusedError } from '../services/cashAccessRefusal';
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import type { CardBrand } from '../services/rampClient';
 import { useCardLinkFlowStore } from './cardLinkFlowStore';
-import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
+import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashCardLinked: 'cash.card_linked',
       cashCardLinkFailed: 'cash.card_link_failed',
@@ -18,29 +21,29 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../services/cardLinkService', () => ({
-  linkCardWithVault: jest.fn(),
+vi.mock('../services/cardLinkService', () => ({
+  linkCardWithVault: vi.fn(),
 }));
 
-jest.mock('../services/cashPasskeyService', () => ({
-  isPasskeyCancellation: jest.fn(),
+vi.mock('../services/cashPasskeyService', () => ({
+  isPasskeyCancellation: vi.fn(),
 }));
 
-const mockLinkCardWithVault = linkCardWithVault as jest.Mock;
-const mockIsPasskeyCancellation = isPasskeyCancellation as jest.Mock;
-const track = analytics.track as jest.Mock;
+const mockLinkCardWithVault = linkCardWithVault as Mock;
+const mockIsPasskeyCancellation = isPasskeyCancellation as Mock;
+const track = analytics.track as Mock;
 
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const CARD_BRAND = 'CARD_BRAND_VISA' as CardBrand;
 const BIVO_STORE = {} as BivoSecureStore;
 
 const flow = () => useCardLinkFlowStore.getState();
-const linkedCard = () => useCashPaymentMethodStore.getState().linkedCard;
+const linkedCard = () => selectCashLinkedCard(useCashPaymentMethodStore.getState());
 
 function deferLink() {
   let settle!: (result: { card?: LinkedCard; error?: unknown }) => void;
@@ -56,9 +59,9 @@ function deferLink() {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   flow().reset();
-  useCashPaymentMethodStore.getState().clearLinkedCard();
+  useCashPaymentMethodStore.getState().clear();
   mockLinkCardWithVault.mockResolvedValue(CARD);
   mockIsPasskeyCancellation.mockReturnValue(false);
 });
@@ -83,6 +86,32 @@ describe('cardLinkFlowStore', () => {
     expect(track).not.toHaveBeenCalled();
   });
 
+  it('retries only card-link completion after a network policy response', async () => {
+    const progress: CardLinkProgress = { cardBrand: CARD_BRAND, providerCardId: 'provider-card-1' };
+    const error = new CashAccessRefusedError('networkPolicy', new RainbowFetchError({ message: 'network policy' }));
+    mockLinkCardWithVault
+      .mockImplementationOnce(async (_store, _brand, _controller, options) => {
+        options.onProgress(progress);
+        throw error;
+      })
+      .mockResolvedValueOnce(CARD);
+
+    await flow().submit(BIVO_STORE, CARD_BRAND);
+
+    expect(flow().state).toBe('entry');
+    expect(flow().pendingProgress).toEqual(progress);
+    expect(linkedCard()).toBeNull();
+    expect(track).not.toHaveBeenCalled();
+
+    await flow().submit(BIVO_STORE, CARD_BRAND);
+
+    expect(mockLinkCardWithVault).toHaveBeenCalledTimes(2);
+    expect(mockLinkCardWithVault.mock.calls[1][3]).toMatchObject({ progress });
+    expect(flow().pendingProgress).toBeNull();
+    expect(flow().state).toBe('success');
+    expect(linkedCard()).toEqual(CARD);
+  });
+
   it('reports a failure without storing a card', async () => {
     mockLinkCardWithVault.mockRejectedValue(new Error('vault exploded'));
 
@@ -90,6 +119,17 @@ describe('cardLinkFlowStore', () => {
 
     expect(flow().state).toBe('submitError');
     expect(linkedCard()).toBeNull();
+    expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'unknown' });
+  });
+
+  it('reports a timed-out request as a failure, not a cancellation', async () => {
+    const timeout = new Error('The operation was aborted.');
+    timeout.name = 'AbortError';
+    mockLinkCardWithVault.mockRejectedValue(timeout);
+
+    await expect(flow().submit(BIVO_STORE, CARD_BRAND)).resolves.toBe('failed');
+
+    expect(flow().state).toBe('submitError');
     expect(track).toHaveBeenCalledWith('cash.card_link_failed', { reason: 'unknown' });
   });
 

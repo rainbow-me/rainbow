@@ -3,23 +3,22 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, View } from 'react-native';
 
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { isEmpty, isNaN, isNil, noop } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { ContextMenu } from '@/components/context-menu';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Centered, Column, Row } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -37,7 +36,7 @@ import { type GasSpeed } from '../types/gasSpeed';
 import gasUtils from '../utils/gas';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 
-const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
+const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, NORMAL, getGasLabel } = gasUtils;
 
 type WithThemeProps = {
   borderColor: string;
@@ -159,7 +158,7 @@ type GasSpeedButtonProps = {
   loading?: boolean;
 };
 
-const GasSpeedButton = ({
+export const GasSpeedButton = ({
   asset,
   chainId,
   horizontalPadding = 19,
@@ -321,25 +320,6 @@ const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handlePressSpeedOption(NORMAL);
-          break;
-        case 1:
-          handlePressSpeedOption(FAST);
-          break;
-        case 2:
-          handlePressSpeedOption(URGENT);
-          break;
-        case 3:
-          handlePressSpeedOption(CUSTOM);
-      }
-    },
-    [handlePressSpeedOption]
-  );
-
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
     return useBackendNetworksStore.getState().getChainsGasSpeeds()[chainId];
@@ -396,39 +376,14 @@ const GasSpeedButton = ({
             : opacity(colors.blueGreyDark, 0.12)
         }
         dropdownEnabled={gasOptionsAvailable}
-        onPress={noop}
         label={label}
         theme={theme}
       />
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
 
-    if (Platform.OS === 'android') {
-      return (
-        <ContextMenu
-          activeOpacity={0}
-          enableContextMenu
-          isAnchoredToRight
-          isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
-          options={speedOptions}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <Centered>{pager}</Centered>
-        </ContextMenu>
-      );
-    }
-
     return (
-      <ContextMenuButton
-        enableContextMenu
-        isAnchoredToRight
-        isMenuPrimaryAction
-        menuConfig={menuConfig}
-        onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
-      >
+      <ContextMenuButton enableContextMenu anchorAndroidMenuToRight menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         {pager}
       </ContextMenuButton>
     );
@@ -436,10 +391,8 @@ const GasSpeedButton = ({
     colors,
     gasIsNotReady,
     gasOptionsAvailable,
-    handlePressActionSheet,
     handlePressMenuItem,
     menuConfig,
-    speedOptions,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
@@ -560,5 +513,3 @@ const GasSpeedButton = ({
     </Container>
   );
 };
-
-export default GasSpeedButton;

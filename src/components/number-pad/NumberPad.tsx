@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming, type SharedValu
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Columns } from '@/design-system';
 
-import { NumberPadKey, type NumberPadField } from './NumberPadKey';
+import { NumberPadKey, type NumberPadCharacter, type NumberPadField } from './NumberPadKey';
 
 const BOTTOM_PADDING = 16;
 export const CUSTOM_KEYBOARD_HEIGHT = 202 + BOTTOM_PADDING;
@@ -19,10 +19,11 @@ export type NumberPadProps<K extends string> = {
   activeFieldId: SharedValue<K>;
   fields: SharedValue<Record<K, NumberPadField>>;
   formattedValues?: SharedValue<Record<K, string>>;
-  onBeforeChange?: (fieldId: K, currentValue: string, newValue: string) => ValidationResult;
+  /** Worklet admission check, called before field constraints and value updates. */
+  onBeforeChange?: (fieldId: K, currentValue: string, newValue: string, key: NumberPadCharacter) => ValidationResult;
+  /** Worklet feedback for a keypress rejected by admission or field constraints. */
+  onInputRejected?: () => void;
   onValueChange?: (fieldId: K, newValue: string | number) => void;
-  onStaleStateChange?: (isStale: boolean) => void;
-  shouldMarkStale?: (fieldId: K, oldValue: string, newValue: string) => boolean;
   onIntervalStop?: () => void;
   isVisible?: SharedValue<boolean>;
   height?: number;
@@ -33,147 +34,58 @@ export const NumberPad = <K extends string>({
   activeFieldId,
   fields,
   onBeforeChange,
+  onInputRejected,
   onValueChange,
-  onStaleStateChange,
-  shouldMarkStale,
   onIntervalStop,
   isVisible,
   height = CUSTOM_KEYBOARD_HEIGHT,
   stripFormatting = (value: string) => value.replace(/[^0-9.-]/g, ''),
 }: NumberPadProps<K>) => {
   const longPressTimer = useSharedValue(0);
-  const isStale = useSharedValue(false);
 
-  const getCurrentFieldValue = () => {
+  const applyKey = (key: NumberPadCharacter): boolean => {
     'worklet';
     const fieldId = activeFieldId.value;
     const field = fields.value[fieldId];
-    if (!field) return '0';
-
-    const rawValue = String(field.value);
-    return stripFormatting(rawValue);
-  };
-
-  const validateChange = (currentValue: string, newValue: string, addingDecimal = false) => {
-    'worklet';
-    const fieldId = activeFieldId.value;
-    const field = fields.value[fieldId];
-
     if (!field) return false;
 
-    if (addingDecimal && field.allowDecimals === false) {
-      return false;
+    const currentValue = stripFormatting(String(field.value));
+    let newValue: string;
+
+    if (key === 'backspace') {
+      newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
+    } else if (key === '.') {
+      if (currentValue.includes('.')) return false;
+      newValue = `${currentValue}.`;
+    } else {
+      newValue = currentValue === '0' ? String(key) : `${currentValue}${key}`;
     }
 
-    if (field.maxDecimals !== undefined && newValue.includes('.')) {
-      const decimals = newValue.split('.')[1]?.length || 0;
-      if (decimals > field.maxDecimals) {
-        return false;
-      }
-    }
+    if (onBeforeChange && !onBeforeChange(fieldId, currentValue, newValue, key).isValid) return false;
 
-    if (field.maxLength !== undefined && newValue.length > field.maxLength) {
-      return false;
-    }
-
-    if (!field.allowNegative && newValue.startsWith('-')) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const updateFieldValue = (newValue: string | number) => {
-    'worklet';
-    const fieldId = activeFieldId.value;
-    const oldValue = getCurrentFieldValue();
-
-    if (shouldMarkStale && shouldMarkStale(fieldId, oldValue, String(newValue))) {
-      isStale.value = true;
-      if (onStaleStateChange) {
-        onStaleStateChange(true);
-      }
+    if (key !== 'backspace') {
+      if (key === '.' && field.allowDecimals === false) return false;
+      const decimalIndex = newValue.indexOf('.');
+      if (field.maxDecimals !== undefined && decimalIndex !== -1 && newValue.length - decimalIndex - 1 > field.maxDecimals) return false;
+      if (field.maxLength !== undefined && newValue.length > field.maxLength) return false;
+      if (!field.allowNegative && newValue.startsWith('-')) return false;
+    } else {
+      onIntervalStop?.();
     }
 
     fields.modify(currentFields => {
       currentFields[fieldId].value = newValue;
       return currentFields;
     });
-
-    if (onValueChange) {
-      onValueChange(fieldId, newValue);
-    }
+    onValueChange?.(fieldId, newValue);
+    return true;
   };
 
-  const addNumber = (number?: number) => {
+  const onKeyPress = (key: NumberPadCharacter): boolean => {
     'worklet';
-    if (number === undefined) return;
-
-    const currentValue = getCurrentFieldValue();
-    const fieldId = activeFieldId.value;
-
-    // Replace 0 with the new number, otherwise append
-    const newValue = currentValue === '0' ? String(number) : `${currentValue}${number}`;
-
-    if (!validateChange(currentValue, newValue)) {
-      return;
-    }
-
-    if (onBeforeChange) {
-      const result = onBeforeChange(fieldId, currentValue, newValue);
-      if (!result.isValid) {
-        return;
-      }
-    }
-
-    updateFieldValue(newValue);
-  };
-
-  const addDecimalPoint = () => {
-    'worklet';
-    const currentValue = getCurrentFieldValue();
-    const fieldId = activeFieldId.value;
-
-    if (currentValue.includes('.')) {
-      return;
-    }
-
-    const newValue = `${currentValue}.`;
-
-    if (!validateChange(currentValue, newValue, true)) {
-      return;
-    }
-
-    if (onBeforeChange) {
-      const result = onBeforeChange(fieldId, currentValue, newValue);
-      if (!result.isValid) {
-        return;
-      }
-    }
-
-    updateFieldValue(newValue);
-  };
-
-  const deleteLastCharacter = () => {
-    'worklet';
-    const currentValue = getCurrentFieldValue();
-    const fieldId = activeFieldId.value;
-
-    // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
-    const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
-
-    if (onBeforeChange) {
-      const result = onBeforeChange(fieldId, currentValue, newValue);
-      if (!result.isValid) {
-        return;
-      }
-    }
-
-    if (onIntervalStop) {
-      onIntervalStop();
-    }
-
-    updateFieldValue(newValue);
+    const accepted = applyKey(key);
+    if (!accepted) onInputRejected?.();
+    return accepted;
   };
 
   const containerStyle = useAnimatedStyle(() => {
@@ -187,27 +99,27 @@ export const NumberPad = <K extends string>({
     <Box as={Animated.View} style={containerStyle} height={{ custom: height }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
         <Columns space="6px">
-          <NumberPadKey char={1} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={2} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={3} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={1} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={2} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={3} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char={4} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={5} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={6} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={4} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={5} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={6} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char={7} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={8} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={9} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={7} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={8} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={9} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char="." onPressWorklet={addDecimalPoint} transparent fields={fields} activeFieldId={activeFieldId} />
-          <NumberPadKey char={0} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char="." onPressWorklet={onKeyPress} transparent fields={fields} activeFieldId={activeFieldId} />
+          <NumberPadKey char={0} onPressWorklet={onKeyPress} fields={fields} activeFieldId={activeFieldId} />
           <NumberPadKey
             char="backspace"
             longPressTimer={longPressTimer}
-            onPressWorklet={deleteLastCharacter}
+            onPressWorklet={onKeyPress}
             small
             transparent
             fields={fields}

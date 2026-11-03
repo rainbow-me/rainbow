@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 
 import { Box, globalColors } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 type FadeGradientProps = { side: 'top' | 'bottom'; style?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>> };

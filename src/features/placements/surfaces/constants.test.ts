@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { DISPLAYS, EVENT_CARD_DISPLAY_VALUES, isEventCardDisplay, MARKET_DISPLAY_VALUES, PREDICTION_DISPLAY_VALUES } from './constants';
 
 describe('isEventCardDisplay', () => {

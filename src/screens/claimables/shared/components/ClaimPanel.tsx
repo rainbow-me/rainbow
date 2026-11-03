@@ -1,7 +1,8 @@
 import React from 'react';
 import { Platform } from 'react-native';
 
-import { controlPanelStyles, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { controlPanelStyles, Panel } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { Box } from '@/design-system';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

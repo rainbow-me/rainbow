@@ -5,7 +5,7 @@ import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import infinityIcon from '@/assets/infinity.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, Separator, Text, useColorMode } from '@/design-system';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';

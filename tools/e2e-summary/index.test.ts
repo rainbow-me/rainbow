@@ -3,6 +3,8 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { describe, expect, it } from 'vitest';
+
 // Driven as a CLI rather than by importing the render functions: the contract is
 // "ledger files on disk in, markdown out", so reading and merging the per-shard
 // files is part of what needs pinning, as are the exit codes.

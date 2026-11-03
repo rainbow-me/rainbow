@@ -1,9 +1,9 @@
 import { createBaseStore } from '@storesjs/stores';
 
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { divWorklet, greaterThanWorklet, powWorklet, subWorklet } from '@/framework/core/safeMath';
 import { isNativeAsset } from '@/handlers/assets';
 
@@ -57,7 +57,7 @@ export function computeMaxSwappableAmount(
 ): string | undefined {
   if (!asset?.balance.amount) return undefined;
 
-  const gasFee = gasSettings != null && gasLimit != null ? calculateGasFeeWorklet(gasSettings, gasLimit) : null;
+  const gasFee = gasSettings != null && gasLimit != null ? calculateMaxGasFeeWorklet(gasSettings, gasLimit) : null;
 
   if (gasFee != null && isNativeAsset(asset.address, asset.chainId)) {
     const result = subWorklet(asset.balance.amount, divWorklet(gasFee, powWorklet(10, asset.decimals)));

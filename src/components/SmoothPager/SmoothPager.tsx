@@ -17,7 +17,7 @@ import { alignVerticalToFlexAlign, type AlignVertical } from '@/design-system/la
 import { IS_DEV } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { type PagerNavigation, type PagerNavigationState } from '@/navigation/pagerNavigation';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import {
   beginPagerGesture,

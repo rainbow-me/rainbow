@@ -4,21 +4,21 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 // import {
 //   polymarketRecommendationsActions,
 //   usePolymarketRecommendationsStore,
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-import { formatOdds } from '@/features/polymarket/utils/sportsEventBetData';
+import { formatOdds } from '@/features/polymarket/utils/formatOdds';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -134,10 +134,10 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               />
               <View style={styles.row}>
                 <LiveTokenText
-                  autoSubscriptionEnabled={false}
                   color={colors.textColor}
-                  initialValue={markets[0].odds}
-                  selector={token => formatOdds(token.price)}
+                  fallback={markets[0].odds}
+                  format={formatOdds}
+                  autoSubscribe={false}
                   size="13pt"
                   tokenId={markets[0].tokenId ?? ''}
                   weight="heavy"
@@ -154,10 +154,10 @@ export const PolymarketEventsListItem = memo(function PolymarketEventsListItem({
               {markets[1] ? (
                 <View style={styles.row}>
                   <LiveTokenText
-                    autoSubscriptionEnabled={false}
                     color={colors.textColor}
-                    initialValue={markets[1].odds}
-                    selector={token => formatOdds(token.price)}
+                    fallback={markets[1].odds}
+                    format={formatOdds}
+                    autoSubscribe={false}
                     size="13pt"
                     tokenId={markets[1].tokenId ?? ''}
                     weight="heavy"
@@ -261,17 +261,6 @@ export function getPolymarketEventsListOutcomes(event: PolymarketEvent): Polymar
     title: market.groupItemTitle || market.outcomes[0],
     tokenId: market.clobTokenIds[0] ? getPolymarketTokenId(market.clobTokenIds[0], 'sell') : undefined,
   }));
-}
-
-/**
- * Token ids for the outcomes this list item renders. Derived from the SAME selection
- * as the render, so subscribed == rendered by construction.
- */
-export function getPolymarketEventsListTokenIds(event: PolymarketEvent): string[] {
-  const tokenIds = getPolymarketEventsListOutcomes(event)
-    .map(outcome => outcome.tokenId)
-    .filter((tokenId): tokenId is string => Boolean(tokenId));
-  return Array.from(new Set(tokenIds));
 }
 
 function navigateToEvent(event: PolymarketEvent): void {

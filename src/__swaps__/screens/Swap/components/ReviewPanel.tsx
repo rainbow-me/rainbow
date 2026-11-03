@@ -13,8 +13,9 @@ import Animated, {
 
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import {
   AnimatedText,
@@ -30,12 +31,12 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/utils/willDelegate';
+import { useEstimatedGasTime } from '@/features/gas/hooks/useEstimatedGasTime';
 import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
-import { useEstimatedTime } from '@/features/gas/utils/meteorology';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
@@ -47,7 +48,7 @@ import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 import { REVIEW_SHEET_ROW_HEIGHT } from '../constants';
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
@@ -117,7 +118,7 @@ function EstimatedGasFee() {
 function EstimatedArrivalTime() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const speed = useSelectedGasSpeed(chainId);
-  const { data: estimatedTime } = useEstimatedTime({ chainId, speed });
+  const { data: estimatedTime } = useEstimatedGasTime({ chainId, speed });
   if (!estimatedTime) return null;
   return (
     <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">

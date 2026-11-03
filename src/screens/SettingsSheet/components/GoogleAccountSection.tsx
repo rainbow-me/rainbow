@@ -7,8 +7,8 @@ import { getGoogleAccountUserData, logoutFromGoogleDrive, type GoogleDriveUserDa
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 
-import Menu from './Menu';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuItem } from './MenuItem';
 
 export const GoogleAccountSection: React.FC = () => {
   const [accountDetails, setAccountDetails] = useState<GoogleDriveUserData | undefined>(undefined);

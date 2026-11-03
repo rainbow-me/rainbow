@@ -4,14 +4,14 @@ import { Platform } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 
 import Divider from '@/components/Divider';
+import { opacity } from '@/design-system/utils/opacity';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 import { Column, Row } from './layout';
 import { Text } from './text';
 

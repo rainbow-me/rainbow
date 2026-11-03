@@ -9,10 +9,8 @@ import { logger, RainbowError } from '@/logger';
 import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-import { isPasskeyCancellation } from '../../services/cashPasskeyService';
+import { isHandledCashError } from '../../services/cashHandledError';
 import { signInWithPhone } from '../../services/cashSignInService';
-import { listCards } from '../../services/rampClient';
-import { useCashPaymentMethodStore } from '../../stores/cashPaymentMethodStore';
 import { extractNationalDigits, formatNationalNumber, NATIONAL_NUMBER_LENGTH, US_COUNTRY_CALLING_CODE } from '../../utils/phoneNumber';
 
 const l = i18n.l.cash.sign_in;
@@ -29,7 +27,10 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
   const inputTextStyle = useSetupInputTextStyle();
 
   const setDigits = useCallback((text: string) => {
-    setRawDigits(extractNationalDigits(text));
+    const digits = extractNationalDigits(text);
+    if (digits === null) return;
+
+    setRawDigits(digits);
     setState(s => (s === 'submitting' ? s : 'entry'));
   }, []);
 
@@ -38,22 +39,13 @@ export const CashSignInScreen = memo(function CashSignInScreen() {
     try {
       await signInWithPhone(digits);
     } catch (e) {
-      if (isPasskeyCancellation(e)) {
+      if (isHandledCashError(e)) {
         setState('entry');
         return;
       }
       logger.error(new RainbowError('[CashSignInScreen]: Failed to sign in', e));
       setState('error');
       return;
-    }
-
-    // Best effort: signed in either way, and the Add Cash sheet offers card linking when no card is stored.
-    try {
-      // An account can hold only one card today; picking among several lands with multi-card support.
-      const [card] = await listCards();
-      if (card) useCashPaymentMethodStore.getState().setLinkedCard(card);
-    } catch (e) {
-      logger.error(new RainbowError('[CashSignInScreen]: Failed to fetch cards', e));
     }
 
     replace(Routes.ADD_CASH_SHEET);

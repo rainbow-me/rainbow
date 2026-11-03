@@ -13,11 +13,12 @@ import {
 } from '@/features/rnbw-rewards/types/claimRewardsTypes';
 import { getPlatformResult } from '@/features/rnbw-rewards/utils/getPlatformResult';
 import { pollClaimStatus, type PollClaimStatusResult } from '@/features/rnbw-rewards/utils/pollClaimStatus';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { time } from '@/framework/core/utils/time';
 import { type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet, signTypedDataMessage } from '@/model/wallet';
+import { signTypedDataMessage } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import { getPlatformClient } from '@/resources/platform/client';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

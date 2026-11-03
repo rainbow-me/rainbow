@@ -1,16 +1,19 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import Animated, { useAnimatedStyle, useDerivedValue, type DerivedValue } from 'react-native-reanimated';
 
+import { analytics } from '@/analytics';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue, useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { useChartType } from '@/features/charts/stores/chartsStore';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
+import { SpotPnlPill } from '@/features/spot-pnl/ui/SpotPnlPill';
 import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
@@ -23,23 +26,22 @@ import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
-  const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, accountAsset: asset, basicAsset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
   const chartType = useChartType();
 
   const balanceAmount = asset?.balance?.amount ?? '0';
-  const tokenId = asset?.uniqueId ?? '';
+  const tokenId = asset?.uniqueId;
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId,
-    initialValue: asset?.native?.price?.amount ?? '0',
-    initialValueLastUpdated: asset?.price?.changed_at ?? 0,
-    selector: token => token.price,
+    fallback: asset?.native?.price?.amount ?? '0',
+    fallbackUpdatedAt: asset?.price?.changed_at ?? 0,
   });
 
   const liveTokenLiquidityCap = useLiveTokenValue({
     tokenId,
-    initialValue: '',
+    fallback: '',
     selector: token => token.reliability.metadata.liquidityCap,
   });
 
@@ -49,6 +51,17 @@ export function BalanceSection() {
   });
 
   useListenerRouteGuard(candlestickPriceListener);
+
+  // Held here rather than in the pill, which remounts when the asset becomes owned or not owned
+  const hasTrackedPill = useRef(false);
+  const onPillShown = useCallback(
+    (variant: SpotPnlVariant) => {
+      if (hasTrackedPill.current) return;
+      hasTrackedPill.current = true;
+      analytics.track(analytics.event.spotPnlPillShown, { tokenAddress: basicAsset.address, chainId: basicAsset.chainId, variant });
+    },
+    [basicAsset.address, basicAsset.chainId]
+  );
 
   const tokenBalanceData = useDerivedValue(() => {
     const priceToUse =
@@ -86,7 +99,23 @@ export function BalanceSection() {
     return tokenBalanceData.value.displayValue;
   });
 
-  if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
+  if (!isOwnedAsset) {
+    return (
+      <SpotPnlPill
+        surfaceColor={accentColors.opacity6}
+        onShown={onPillShown}
+        token={{
+          address: basicAsset.address,
+          balance: '0',
+          chainId: basicAsset.chainId,
+          initialPrice: '',
+          initialPriceUpdatedAt: 0,
+          uniqueId: basicAsset.uniqueId,
+        }}
+      />
+    );
+  }
+  if (!asset?.balance || !asset?.native?.balance) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
@@ -146,6 +175,18 @@ export function BalanceSection() {
             </Text>
           </Box>
         </Animated.View>
+        <SpotPnlPill
+          surfaceColor={accentColors.opacity6}
+          onShown={onPillShown}
+          token={{
+            address: asset.address,
+            balance: balanceAmount,
+            chainId: asset.chainId,
+            initialPrice: asset.native.price?.amount ?? '',
+            initialPriceUpdatedAt: asset.price?.changed_at ?? 0,
+            uniqueId: asset.uniqueId,
+          }}
+        />
       </Box>
       <SheetSeparator />
     </Box>

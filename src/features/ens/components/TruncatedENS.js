@@ -1,12 +1,12 @@
 import React from 'react';
 
 import Text from '@/components/text/Text';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
-import abbreviations from '@/utils/abbreviations';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
   const text = React.useMemo(
-    () => (ens ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength) : i18n.t(i18n.l.wallet.error_displaying_address)),
+    () => (ens ? abbreviateName(ens, truncationLength) : i18n.t(i18n.l.wallet.error_displaying_address)),
     [ens, truncationLength]
   );
   return (

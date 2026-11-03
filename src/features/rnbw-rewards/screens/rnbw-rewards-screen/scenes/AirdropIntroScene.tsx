@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import Animated, { runOnJS } from 'react-native-reanimated';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text } from '@/design-system';
 import {
   createScaleInFadeInSlideEnterAnimation,

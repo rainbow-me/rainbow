@@ -4,10 +4,10 @@ import { Blur, Canvas, Group, LinearGradient, Oval, Rect, vec } from '@shopify/r
 
 import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
 import { Box, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { FloatingSparks } from '@/features/perps/screens/perps-trade-details-sheet/FloatingSparks';
 import { PerspectiveGrid } from '@/features/perps/screens/perps-trade-details-sheet/PerspectiveGrid';
 import { TradeExecutionType, type HlTrade } from '@/features/perps/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDimensions from '@/hooks/useDimensions';
 
 const CONFIG = {

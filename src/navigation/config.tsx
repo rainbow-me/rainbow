@@ -12,7 +12,7 @@ import { Box } from '@/design-system';
 import { RequestSource } from '@/features/dapp-request/types';
 import { getENSAdditionalRecordsSheetHeight } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/features/ens/screens/ENSConfirmRegisterSheet';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/constants';
 import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
 import { getSheetHeight as getSendConfirmationSheetHeight } from '@/features/transfer/screens/SendConfirmationSheet';
 import styled from '@/framework/ui/styled-thing';
@@ -28,9 +28,9 @@ import {
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { fonts } from '@/styles';
-import colors from '@/theme/currentColors';
+import { currentColors as colors } from '@/theme/currentColors';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import type Routes from './routesNames';

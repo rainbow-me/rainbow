@@ -1,10 +1,9 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { isHexString } from '@ethersproject/bytes';
-import isEmpty from 'lodash/isEmpty';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PasteAddressButton } from '@/components/buttons';
 import showDeleteContactActionSheet from '@/components/contacts/showDeleteContactActionSheet';
 import Divider from '@/components/Divider';
@@ -13,18 +12,17 @@ import { Row } from '@/components/layout';
 import { SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Label, Text } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { type RainbowAccount } from '@/features/wallet/types';
 import styled from '@/framework/ui/styled-thing';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { opacity } from '@/framework/ui/utils/opacity';
-import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import type useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { padding } from '@/styles';
@@ -78,7 +76,8 @@ const defaultContactItem = {
 type SendHeaderProps = {
   contacts: ReturnType<typeof useContacts>['contacts'];
   hideDivider: boolean;
-  isValidAddress: boolean;
+  isResolvingAddress: boolean;
+  toAddress: string;
   fromProfile?: boolean;
   nickname: string;
   onChangeAddressInput: (text: string) => void;
@@ -96,7 +95,8 @@ type SendHeaderProps = {
 export function SendHeader({
   contacts,
   hideDivider,
-  isValidAddress,
+  isResolvingAddress,
+  toAddress,
   fromProfile = false,
   nickname,
   onChangeAddressInput,
@@ -110,38 +110,18 @@ export function SendHeader({
   userAccounts,
   watchedAccounts,
 }: SendHeaderProps) {
+  const isValidAddress = Boolean(toAddress);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-  const [hexAddress, setHexAddress] = useState('');
-
-  useEffect(() => {
-    if (isValidAddress) {
-      resolveAndStoreAddress();
-    } else {
-      setHexAddress('');
-    }
-
-    async function resolveAndStoreAddress() {
-      const hex = await resolveNameOrAddress(recipient);
-      if (!hex) {
-        return;
-      }
-      setHexAddress(hex);
-    }
-  }, [isValidAddress, recipient, setHexAddress]);
-
   const contact = useMemo(() => {
-    return contacts?.[hexAddress.toLowerCase()] ?? defaultContactItem;
-  }, [contacts, hexAddress]);
+    return contacts?.[toAddress.toLowerCase()] ?? defaultContactItem;
+  }, [contacts, toAddress]);
 
   const userWallet = useMemo(() => {
-    return [...userAccounts, ...watchedAccounts].find(
-      account => account.address.toLowerCase() === (hexAddress || recipient)?.toLowerCase()
-    );
-  }, [recipient, userAccounts, watchedAccounts, hexAddress]);
+    return [...userAccounts, ...watchedAccounts].find(account => account.address.toLowerCase() === (toAddress || recipient)?.toLowerCase());
+  }, [recipient, userAccounts, watchedAccounts, toAddress]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
@@ -154,14 +134,14 @@ export function SendHeader({
     if (!profilesEnabled) {
       color = contact?.color;
       if (color !== 0 && !color) {
-        color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
+        color = profileUtils.addressHashedColorIndex(toAddress) || 0;
       }
     }
 
     Platform.OS === 'android' && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
-      address: hexAddress,
+      address: toAddress,
       color,
       contact,
       ens: recipient,
@@ -169,7 +149,7 @@ export function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, hexAddress, name, navigate, onRefocusInput, profilesEnabled, recipient]);
+  }, [contact, toAddress, name, navigate, onRefocusInput, profilesEnabled, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -186,7 +166,7 @@ export function SendHeader({
       async buttonIndex => {
         if (buttonIndex === 0) {
           showDeleteContactActionSheet({
-            address: hexAddress,
+            address: toAddress,
             nickname: name,
             onDelete: () => {
               onChangeAddressInput(contact?.ens ? contact?.ens : contact?.address);
@@ -197,30 +177,12 @@ export function SendHeader({
           handleNavigateToContact();
           onRefocusInput?.();
         } else if (buttonIndex === 2) {
-          setClipboard(hexAddress);
+          setClipboard(toAddress);
           onRefocusInput?.();
         }
       }
     );
-  }, [
-    hexAddress,
-    name,
-    removeContact,
-    onChangeAddressInput,
-    contact?.ens,
-    contact?.address,
-    handleNavigateToContact,
-    onRefocusInput,
-    setClipboard,
-  ]);
-
-  const onChange = useCallback(
-    (text: string) => {
-      onChangeAddressInput(text);
-      setHexAddress('');
-    },
-    [onChangeAddressInput]
-  );
+  }, [toAddress, name, removeContact, onChangeAddressInput, contact?.ens, contact?.address, handleNavigateToContact, onRefocusInput]);
 
   return (
     <Fragment>
@@ -234,12 +196,12 @@ export function SendHeader({
           editable={!fromProfile}
           isValid={isValidAddress}
           name={name}
-          onChangeText={onChange}
+          onChangeText={onChangeAddressInput}
           onFocus={onFocus}
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && Boolean(hexAddress) && (
+        {isValidAddress && (
           <ButtonPressAnimation onPress={isPreExistingContact ? handleOpenContactActionSheet : handleNavigateToContact}>
             <Text
               align="right"
@@ -253,7 +215,7 @@ export function SendHeader({
             </Text>
           </ButtonPressAnimation>
         )}
-        {isValidAddress && !hexAddress && isEmpty(contact?.address) && <LoadingSpinner />}
+        {isResolvingAddress ? <LoadingSpinner /> : null}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}

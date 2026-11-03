@@ -1,10 +1,10 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { type PositionAsset } from '@/features/positions/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 import {
   convertAmountToBalanceDisplay,
   convertAmountToPercentageDisplay,

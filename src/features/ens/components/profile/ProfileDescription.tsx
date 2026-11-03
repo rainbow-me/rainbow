@@ -2,12 +2,12 @@ import React from 'react';
 
 import { Inline, Text } from '@/design-system';
 
-import RecordHyperlink from './RecordHyperlink';
+import { RecordHyperlink } from './RecordHyperlink';
 
 const LINK_REGEX = /[^\s]+\.(eth|com|net|xyz|org|co|us|me)/g;
 const DIVIDER = 'ㅤㅤㅤㅤ';
 
-const ProfileDescription = ({ description }: { description?: string }) => {
+export const ProfileDescription = ({ description }: { description?: string }) => {
   if (!description) return null;
   const hyperlinks = description.match(LINK_REGEX);
   const text = description.replace(LINK_REGEX, DIVIDER).split(DIVIDER);
@@ -25,5 +25,3 @@ const ProfileDescription = ({ description }: { description?: string }) => {
     </Inline>
   );
 };
-
-export default ProfileDescription;

@@ -6,8 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
 import { Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 

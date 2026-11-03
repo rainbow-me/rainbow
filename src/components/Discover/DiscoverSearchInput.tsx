@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { analytics } from '@/analytics';
 import Spinner from '@/assets/chartSpinner.png';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -12,14 +12,15 @@ import { ImgixImage } from '@/components/images';
 import { ClearInputDecorator, Input } from '@/components/inputs';
 import { Row } from '@/components/layout';
 import { TextIcon } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
@@ -110,7 +111,7 @@ type DiscoverSearchInputProps = {
   currentChainId?: ChainId;
 };
 
-const DiscoverSearchInput = ({
+export const DiscoverSearchInput = ({
   isDiscover,
   onFocus,
   onBlur,
@@ -225,5 +226,3 @@ const DiscoverSearchInput = ({
     </Container>
   );
 };
-
-export default DiscoverSearchInput;

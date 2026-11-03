@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { InteractionManager } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -14,35 +14,35 @@ import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Stack } from '@/design-system';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { executeFnIfCloudBackupAvailable } from '@/features/backup/backup';
 import { useCreateBackup } from '@/features/backup/hooks/useCreateBackup';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { createAccountInExistingWallet } from '@/features/wallet/data/createAccountInExistingWallet';
+import { type RainbowAccount } from '@/features/wallet/types';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { type RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { createAccountInExistingWallet, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
-import abbreviations from '@/utils/abbreviations';
+import { formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
 import { isWalletBackedUpForCurrentAccount } from '../../utils';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuHeader from '../MenuHeader';
-import MenuItem from '../MenuItem';
+import { Menu } from '../Menu';
+import { MenuContainer } from '../MenuContainer';
+import { MenuHeader } from '../MenuHeader';
+import { MenuItem } from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
 
 type ViewWalletBackupParams = {
@@ -79,42 +79,7 @@ const WalletAvatar = ({ account }: WalletAvatarProps) => {
   );
 };
 
-type ContextMenuWrapperProps = {
-  children: React.ReactNode;
-  account: RainbowAccount;
-  menuConfig: {
-    menuTitle: string;
-    menuItems: {
-      actionKey: WalletMenuAction;
-      actionTitle: string;
-      icon: {
-        iconType: string;
-        iconValue: string;
-      };
-    }[];
-  };
-  onPressMenuItem: (e: MenuEvent) => void;
-};
-
-const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
-  return Platform.OS === 'ios' ? (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={e => onPressMenuItem({ ...e, account })}>
-      {children}
-    </ContextMenuButton>
-  ) : (
-    <ContextCircleButton
-      options={menuConfig.menuItems.map(item => item.actionTitle)}
-      onPressActionSheet={(buttonIndex: number) => {
-        const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
-        onPressMenuItem({ nativeEvent: { actionKey }, account });
-      }}
-    >
-      {children}
-    </ContextCircleButton>
-  );
-};
-
-const ViewWalletBackup = () => {
+export const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
 
   const createBackup = useCreateBackup();
@@ -277,9 +242,9 @@ const ViewWalletBackup = () => {
         const title =
           formatAccountLabel({
             address: account.address,
-            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            ens: abbreviateName(account.ens ?? undefined, 8, 4),
             label: account.label,
-          }) || abbreviations.address(account.address, 6, 4);
+          }) || abbreviateAddress(account.address, 6, 4);
 
         navigate(Routes.VIEW_WALLET_DELEGATIONS, {
           walletId,
@@ -292,9 +257,9 @@ const ViewWalletBackup = () => {
         const title =
           formatAccountLabel({
             address: account.address,
-            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            ens: abbreviateName(account.ens ?? undefined, 8, 4),
             label: account.label,
-          }) || abbreviations.address(account.address, 6, 4);
+          }) || abbreviateAddress(account.address, 6, 4);
 
         navigate(Routes.SECRET_WARNING, {
           walletId,
@@ -463,16 +428,21 @@ const ViewWalletBackup = () => {
             .map((account: RainbowAccount) => {
               const nameOrENS = formatAccountLabel({
                 address: account.address,
-                ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+                ens: abbreviateName(account.ens ?? undefined, 8, 4),
                 label: account.label,
               });
-              const label = nameOrENS ? abbreviations.address(account.address, 4, 4) : undefined;
-              const title = nameOrENS || abbreviations.address(account.address, 4, 4);
+              const label = nameOrENS ? abbreviateAddress(account.address, 4, 4) : undefined;
+              const title = nameOrENS || abbreviateAddress(account.address, 4, 4);
 
               return (
-                <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
+                <ContextMenuButton
+                  key={account.address}
+                  anchorAndroidMenuToRight
+                  menuConfig={menuConfig}
+                  onPressMenuItem={e => onPressMenuItem({ ...e, account })}
+                  testID="wallet-backup-button"
+                >
                   <MenuItem
-                    testID={'wallet-backup-button'}
                     size={60}
                     disabled
                     leftComponent={<WalletAvatar account={account} />}
@@ -480,7 +450,7 @@ const ViewWalletBackup = () => {
                     titleComponent={<MenuItem.Title text={title} weight="semibold" />}
                     rightComponent={<MenuItem.TextIcon disabled icon="􀍡" />}
                   />
-                </ContextMenuWrapper>
+                </ContextMenuButton>
               );
             })}
         </Menu>
@@ -502,5 +472,3 @@ const ViewWalletBackup = () => {
     </MenuContainer>
   );
 };
-
-export default ViewWalletBackup;

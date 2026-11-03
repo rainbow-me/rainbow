@@ -15,14 +15,7 @@ interface EmojiProps {
   style?: StyleProp<TextStyle>;
 }
 
-export default function Emoji({
-  children = undefined,
-  letterSpacing = 'zero',
-  lineHeight = 'none',
-  name,
-  size = 'h4',
-  ...props
-}: EmojiProps) {
+export function Emoji({ children = undefined, letterSpacing = 'zero', lineHeight = 'none', name, size = 'h4', ...props }: EmojiProps) {
   return (
     <Text {...props} isEmoji letterSpacing={letterSpacing} lineHeight={lineHeight} size={size}>
       {children || resolveEmoji(name)}

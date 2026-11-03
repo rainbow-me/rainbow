@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import { useAnimatedStyle, useDerivedValue, type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
-import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/useLiveTokenValue';
 import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { type AnimatedTextSelectorProps } from '@/design-system/components/Text/AnimatedText';
@@ -13,7 +13,7 @@ import { type PerpMarket } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { type LiquidationData } from '@/features/perps/utils/buildLiquidationInfo';
 import * as i18n from '@/languages';
-import { type TokenData } from '@/state/liveTokens/liveTokensStore';
+import { selectMidPrice } from '@/state/liveTokens/selectors';
 
 type LiquidationInfoProps = {
   getInfo?: (leverage: number, midPrice: string) => LiquidationData | null;
@@ -22,9 +22,11 @@ type LiquidationInfoProps = {
 };
 
 export const LiquidationInfo = memo(function LiquidationInfo({ getInfo: getInfoOverride, leverage, market }: LiquidationInfoProps) {
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
   const midPrice = useLiveTokenSharedValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: market.price,
+    tokenId,
+    fallback: market.price,
     selector: selectMidPrice,
   });
 
@@ -125,10 +127,6 @@ const LiquidationInfoContent = memo(function LiquidationInfoContent({
     </Box>
   );
 });
-
-function selectMidPrice(state: TokenData): string {
-  return state.midPrice ?? state.price;
-}
 
 const styles = StyleSheet.create({
   flex: {

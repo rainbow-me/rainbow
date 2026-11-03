@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import { getLocal, saveLocal } from '@/handlers/localstorage/common';
 import { logger } from '@/logger';
-import { getPermissionStatus, isNotificationPermissionGranted } from '@/notifications/permissions';
+import { getNotificationPermissionStatus, isNotificationPermissionGranted } from '@/notifications/permissionStatus';
 
 const RAINBOW_FCM_TOKEN_KEY = 'rainbowFcmToken';
 
@@ -13,7 +13,7 @@ export const registerTokenRefreshListener = () =>
 
 export const saveFCMToken = async (): Promise<string | null> => {
   try {
-    const permissionStatus = await getPermissionStatus();
+    const permissionStatus = await getNotificationPermissionStatus();
     if (!isNotificationPermissionGranted(permissionStatus)) {
       // Expected state for users who declined permission prompt or have not yet been prompted.
       return null;

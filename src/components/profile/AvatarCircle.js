@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import ContextMenu from '@/components/native-context-menu/contextMenu';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import useOnAvatarPress from '@/hooks/useOnAvatarPress';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -11,7 +11,7 @@ import { position } from '@/styles';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
@@ -90,7 +90,6 @@ export default function AvatarCircle({
         marginTop={2}
         onPress={disableChangeAvatar ? null : onAvatarPressProfile}
         onLongPress={() => null}
-        overflowMargin={30}
         pressOutDuration={200}
         scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
         {...props}

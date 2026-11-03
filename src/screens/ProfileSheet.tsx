@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -6,9 +6,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
-import ProfileSheetHeader from '@/features/ens/components/profile/ProfileSheetHeader';
+import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
+import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
+import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
 import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { useENSAddress } from '@/features/ens/resources/addressQuery';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -23,13 +25,7 @@ import { addressHashedColorIndex } from '@/utils/profileUtils';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import Skeleton from '../components/skeleton/Skeleton';
 
-export const ProfileSheetConfigContext = createContext<{
-  enableZoomableImages: boolean;
-}>({
-  enableZoomableImages: false,
-});
-
-export default function ProfileSheet() {
+export function ProfileSheet() {
   const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
   const { colors } = useTheme();
   const accountAddress = useAccountAddress();
@@ -38,9 +34,7 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
-    name: ensName,
-  });
+  const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }));
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
@@ -84,7 +78,7 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isPreview && (!isAddressSuccess || !hasListFetched || !hasFirstTxTimestampFetched) ? (
+              {!isPreview && (profileAddress === undefined || !hasListFetched || !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />

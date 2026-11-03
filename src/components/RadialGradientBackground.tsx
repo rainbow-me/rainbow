@@ -10,7 +10,7 @@ export type RadialGradientBackgroundProps = RadialGradientProps & {
   height: number;
 };
 
-const RadialGradientBackground = ({ height, width, style, ...props }: RadialGradientBackgroundProps) => {
+export const RadialGradientBackground = ({ height, width, style, ...props }: RadialGradientBackgroundProps) => {
   const center = useMemo(() => [width, width / 2], [width]);
 
   return (
@@ -33,5 +33,3 @@ const RadialGradientBackground = ({ height, width, style, ...props }: RadialGrad
     />
   );
 };
-
-export default RadialGradientBackground;

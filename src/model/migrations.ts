@@ -13,6 +13,7 @@ import { type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import type { RainbowToken } from '@/entities/tokens';
 import type { EthereumAddress } from '@/entities/wallet';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { unlockableAppIcons, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { unlockableAppIconStorage } from '@/features/app-icon/utils/unlockableAppIconCheck';
 import { standardizeUrl, useFavoriteDappsStore } from '@/features/dapp-browser/stores/favoriteDappsStore';
@@ -29,9 +30,11 @@ import {
   signingWalletAddress,
 } from '@/features/local-auth/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from '@/features/local-auth/legacyKeychain';
+import { ChainId } from '@/features/network/types/backendNetworks';
+import { getAllWallets, loadAddress, saveAddress } from '@/features/wallet/data/walletKeychain';
+import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
@@ -44,23 +47,15 @@ import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from 
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
-import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
+import { getGlobal } from '../handlers/localstorage/common';
 import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { type BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
+import { removeLegacyAsyncStorageValue } from '../storage/legacyAsyncStorage';
 import colors, { getRandomColor } from '../styles/colors';
-import {
-  DEFAULT_WALLET_NAME,
-  EncryptionType,
-  getAllWallets,
-  loadAddress,
-  saveAddress,
-  type RainbowAccount,
-  type RainbowWallet,
-} from './wallet';
 
 export default async function runMigrations() {
   // get current version
@@ -312,7 +307,7 @@ export default async function runMigrations() {
 
   const v8 = async () => {
     logger.debug('[runMigrations]: wiping old metadata');
-    await deprecatedRemoveLocal(IMAGE_METADATA);
+    removeLegacyAsyncStorageValue(IMAGE_METADATA);
   };
 
   migrations.push(v8);
@@ -401,7 +396,7 @@ export default async function runMigrations() {
         if (!returnStringFirstEmoji(nickname)) {
           let address = null;
           try {
-            address = await resolveNameOrAddress(contact.address);
+            address = await resolveNameOrAddress(contact.address, ChainId.mainnet);
             if (address) {
               const emoji = profileUtils.addressHashedEmoji(address);
               const color = profileUtils.addressHashedColorIndex(address);

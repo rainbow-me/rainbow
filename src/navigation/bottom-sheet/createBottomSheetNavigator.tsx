@@ -17,7 +17,7 @@ import { type RootStackParamList } from '@/navigation/types';
 
 import { router } from './router';
 import type { BottomSheetNavigationConfig, BottomSheetNavigationEventMap, BottomSheetNavigationOptions } from './types';
-import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
+import { BottomSheetNavigatorView } from './views/BottomSheetNavigatorView';
 
 type Props = DefaultNavigatorOptions<
   RootStackParamList,

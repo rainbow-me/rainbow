@@ -1,44 +1,50 @@
-import { Platform } from 'react-native';
-
 import { type TransactionRequest } from '@ethersproject/abstract-provider';
 import { type Signer } from '@ethersproject/abstract-signer';
 import { arrayify } from '@ethersproject/bytes';
-import { HDNode } from '@ethersproject/hdnode';
 import { type Provider, type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { signTypedData, type SignTypedDataVersion, type TypedMessage } from '@metamask/eth-sig-util';
 import { generateMnemonic } from 'bip39';
 import { toBuffer, toChecksumAddress } from 'ethereumjs-util';
-import { type default as LibWallet } from 'ethereumjs-wallet';
+import type LibWallet from 'ethereumjs-wallet';
 import { findKey, isEmpty } from 'lodash';
-import { type GetOptions, type SetOptions } from 'react-native-keychain';
 
 import { analytics } from '@/analytics';
 import type { EthereumAddress } from '@/entities/wallet';
-import { setHardwareTXError } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
-import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
+import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
+import type { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import * as kc from '@/features/local-auth/keychain';
-import {
-  addressKey,
-  allWalletsKey,
-  oldSeedPhraseMigratedKey,
-  pinKey,
-  privateKeyKey,
-  seedPhraseKey,
-  selectedWalletKey,
-} from '@/features/local-auth/keychainConstants';
+import { oldSeedPhraseMigratedKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
-import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/pinAuthentication';
 import {
-  identifyWalletType,
-  type EthereumPrivateKey,
   type EthereumWallet,
   type EthereumWalletFromSeed,
   type EthereumWalletSeed,
+  type ReadOnlyWallet,
 } from '@/features/wallet/core/walletDerivation';
-import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
+import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { hasPreviousTransactions } from '@/features/wallet/data/hasPreviousTransactions';
+import { initializeWalletProfilePreference } from '@/features/wallet/data/initializeWalletProfilePreference';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
+import {
+  getAllWallets,
+  getSeedPhrase,
+  loadAddress,
+  migrateWalletSecrets,
+  saveAddress,
+  saveAllWallets,
+  saveKeyForWallet,
+  saveSeedPhrase,
+  setSelectedWallet,
+} from '@/features/wallet/data/walletKeychain';
+import {
+  DEFAULT_WALLET_NAME,
+  EncryptionType,
+  type AllRainbowWallets,
+  type RainbowAccount,
+  type RainbowWallet,
+} from '@/features/wallet/types';
 import { addHexPrefix, isHexString } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { createSignature } from '@/helpers/signingWallet';
@@ -46,21 +52,14 @@ import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
 import type { AddressWithRelationship } from '@/notifications/settings/types';
-import { executeFn, type ExecuteFnParams, type Screen } from '@/state/performance/performance';
-import { getIsDamagedWallet, getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, setWalletDamaged } from '@/state/wallets/walletsStore';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 
-import { lightModeThemeColors } from '../styles/colors';
-import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import { PreferenceActionType, setPreference } from './preferences';
-
-type HardwareKey = `${string}/${number}`;
+import { addressHashedColorIndex } from '../utils/profileUtils';
 
 interface WalletInitialized {
   isNew: boolean;
@@ -95,112 +94,9 @@ interface TypedData {
   message: object;
 }
 
-export interface RainbowAccount {
-  index: number;
-  label: string;
-  address: EthereumAddress;
-  avatar: null | string;
-  color: number;
-  visible: boolean;
-  emoji?: string;
-  ens?: string | null;
-  image?: string | null;
+function isLibWallet(wallet: EthereumWallet): wallet is LibWallet {
+  return 'getPrivateKey' in wallet && typeof wallet.getPrivateKey === 'function';
 }
-
-export enum EncryptionType {
-  rainbowPin = 'rainbowPin',
-  keychain = 'keychain',
-  none = 'none',
-}
-
-export interface RainbowWallet {
-  addresses: RainbowAccount[];
-  color: number;
-  id: string;
-  imported: boolean;
-  name: string;
-  primary: boolean;
-  type: EthereumWalletType;
-  backedUp?: boolean;
-  backupFile?: string | null;
-  backupDate?: number;
-  backupType?: string;
-  damaged?: boolean;
-  deviceId?: string;
-  encryptionType: EncryptionType;
-}
-
-export interface AllRainbowWallets {
-  [key: string]: RainbowWallet;
-}
-
-export interface AllRainbowWalletsData {
-  wallets: AllRainbowWallets;
-  version: string;
-}
-
-export interface RainbowSelectedWalletData {
-  wallet: RainbowWallet;
-}
-
-export interface PrivateKeyData {
-  privateKey: EthereumPrivateKey | HardwareKey;
-  version: string;
-}
-
-interface SeedPhraseData {
-  seedphrase: EthereumPrivateKey;
-  version: string;
-}
-
-interface MigratedSecretsResult {
-  hdnode: undefined | HDNode;
-  privateKey: EthereumPrivateKey;
-  seedphrase: EthereumWalletSeed;
-  type: EthereumWalletType;
-}
-
-const privateKeyVersion = 1.0;
-const seedPhraseVersion = 1.0;
-const selectedWalletVersion = 1.0;
-export const allWalletsVersion = 1.0;
-
-export const DEFAULT_WALLET_NAME = 'My Wallet';
-
-const authenticationPrompt = {
-  get title() {
-    return i18n.t(i18n.l.wallet.authenticate.please);
-  },
-};
-
-export const createdWithBiometricError = 'createdWithBiometricError';
-
-export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
-  if ('getPrivateKey' in wallet) {
-    throw new Error(`Not expected: LibWallet not Wallet`);
-  }
-  if ('signTransaction' in wallet) {
-    return wallet as any;
-  }
-}
-
-export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
-  if ('signTransaction' in wallet) {
-    throw new Error(`Not expected: Wallet not LibWallet`);
-  }
-  // @ts-expect-error it's not directly "in" but it exists
-  if (typeof wallet.getPrivateKey !== 'function') {
-    return wallet as any;
-  }
-}
-
-export const isHardwareWalletKey = (key: string | null) => {
-  const data = key?.split('/');
-  if (data && data.length > 1) {
-    return true;
-  }
-  return false;
-};
 
 export type InitializeWalletParams = CreateWalletParams & {
   network?: string;
@@ -242,8 +138,8 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
       silent,
       userPin,
     });
-    ensureEthereumWallet(wallet!);
-    walletAddress = wallet?.address;
+    if (!wallet) throw new RainbowError('Error creating wallet');
+    walletAddress = wallet.address;
     return { isNew, walletAddress };
   }
 
@@ -251,66 +147,13 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
 
   if (!walletAddress) {
     const wallet = await createWallet();
-    ensureEthereumWallet(wallet!);
-    if (!wallet?.address) {
-      throw new RainbowError('Error creating wallet address');
-    }
+    if (!wallet) throw new RainbowError('Error creating wallet address');
 
     walletAddress = wallet.address;
     isNew = true;
   }
 
   return { isNew, walletAddress };
-};
-
-export const loadWallet = async <S extends Screen>({
-  address,
-  provider,
-  timeTracking,
-}: {
-  address?: EthereumAddress;
-  provider: Provider;
-  timeTracking?: ExecuteFnParams<S>;
-}): Promise<null | Wallet | LedgerSigner> => {
-  const addressToUse = address || (await loadAddress());
-  if (!addressToUse) {
-    return null;
-  }
-
-  // checks if the address is a hardware wallet for proper handling
-  const selectedWallet = getWalletWithAccount(addressToUse);
-  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
-
-  let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
-  if (timeTracking) {
-    privateKey = await executeFn(loadPrivateKey, timeTracking)(addressToUse, isHardwareWallet);
-  } else {
-    privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
-  }
-
-  // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
-  if (privateKey === kc.ErrorType.UserCanceled) {
-    return null;
-  }
-
-  if (selectedWallet) {
-    setWalletDamaged(selectedWallet.id, !privateKey || privateKey === kc.ErrorType.NotAuthenticated);
-  }
-
-  if (privateKey !== kc.ErrorType.NotAuthenticated) {
-    if (isHardwareWalletKey(privateKey)) {
-      const index = privateKey?.split('/')[1];
-      const deviceId = privateKey?.split('/')[0];
-      if (typeof index !== undefined && deviceId) {
-        return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
-      }
-    } else if (privateKey) {
-      return new Wallet(privateKey, provider);
-    }
-  }
-
-  Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-  return null;
 };
 
 export const sendTransaction = async ({
@@ -341,7 +184,7 @@ export const sendTransaction = async ({
     } catch (error) {
       logger.error(new RainbowError(`[wallet]: Failed to send transaction`), { error });
       if (isHardwareWallet) {
-        setHardwareTXError(true);
+        setHardwareWalletTxError(true);
       } else {
         Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
       }
@@ -350,7 +193,7 @@ export const sendTransaction = async ({
     }
   } catch (error) {
     if (isHardwareWallet) {
-      setHardwareTXError(true);
+      setHardwareWalletTxError(true);
     } else {
       Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
     }
@@ -387,7 +230,7 @@ export const signTransaction = async ({
       return { result };
     } catch (error) {
       if (isHardwareWallet) {
-        setHardwareTXError(true);
+        setHardwareWalletTxError(true);
       } else {
         Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_transaction));
       }
@@ -396,7 +239,7 @@ export const signTransaction = async ({
     }
   } catch (error) {
     if (isHardwareWallet) {
-      setHardwareTXError(true);
+      setHardwareWalletTxError(true);
     } else {
       Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
     }
@@ -435,7 +278,7 @@ export const signPersonalMessage = async (
       return { result };
     } catch (error) {
       if (isHardwareWallet) {
-        setHardwareTXError(true);
+        setHardwareWalletTxError(true);
       } else {
         Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_sign_message));
       }
@@ -446,7 +289,7 @@ export const signPersonalMessage = async (
     }
   } catch (error) {
     if (isHardwareWallet) {
-      setHardwareTXError(true);
+      setHardwareWalletTxError(true);
     } else {
       Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
     }
@@ -513,7 +356,7 @@ export const signTypedDataMessage = async (
       }
     } catch (error) {
       if (isHardwareWallet) {
-        setHardwareTXError(true);
+        setHardwareWalletTxError(true);
       } else {
         Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.failed_sign_message));
       }
@@ -524,7 +367,7 @@ export const signTypedDataMessage = async (
     }
   } catch (error) {
     if (isHardwareWallet) {
-      setHardwareTXError(true);
+      setHardwareWalletTxError(true);
     } else {
       Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.authentication));
     }
@@ -532,57 +375,6 @@ export const signTypedDataMessage = async (
     return null;
   }
 };
-
-export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> => {
-  const seedPhrase = await keychain.loadString(seedPhraseKey, {
-    authenticationPrompt,
-  });
-  return seedPhrase as string | null;
-};
-
-export const loadAddress = (): Promise<null | EthereumAddress> => keychain.loadString(addressKey) as Promise<string | null>;
-
-export const loadPrivateKey = async (
-  address: EthereumAddress,
-  hardware: boolean
-): Promise<null | EthereumPrivateKey | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
-  try {
-    const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
-
-    // We need to migrate the seedphrase & private key first
-    // In that case we regenerate the existing private key to store it with the new format
-    let privateKey = null;
-    if (!isSeedPhraseMigrated) {
-      const migratedSecrets = await migrateSecrets();
-      privateKey = migratedSecrets?.privateKey;
-    }
-
-    if (!privateKey) {
-      const privateKeyData = await getKeyForWallet(address, hardware);
-      if (privateKeyData === kc.ErrorType.UserCanceled || privateKeyData === kc.ErrorType.NotAuthenticated) {
-        return privateKeyData;
-      }
-      privateKey = privateKeyData?.privateKey ?? null;
-    }
-
-    return privateKey;
-  } catch (error) {
-    logger.error(new RainbowError(`[wallet]: Error loading private key`), { error });
-    return null;
-  }
-};
-
-export const saveAddress = async (address: EthereumAddress, accessControlOptions = keychain.publicAccessControlOptions): Promise<void> => {
-  return keychain.saveString(addressKey, address, accessControlOptions);
-};
-
-/** Starts writing the account's initial profile color and symbol. */
-export function initializeWalletProfilePreference(address: EthereumAddress, colorIndex: number): void {
-  void setPreference(PreferenceActionType.init, 'profile', address, {
-    accountColor: lightModeThemeColors.avatarBackgrounds[colorIndex],
-    accountSymbol: addressHashedEmoji(address),
-  });
-}
 
 type CreateWalletParams = {
   seed?: null | EthereumWalletSeed;
@@ -608,7 +400,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams = {}): Promise<null | EthereumWallet> => {
+}: CreateWalletParams = {}): Promise<Wallet | ReadOnlyWallet | null> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -664,7 +456,7 @@ export const createWallet = async ({
     }
     const walletAddress = address;
     if (isHDWallet) {
-      ensureLibWallet(walletResult);
+      if (!isLibWallet(walletResult)) throw new Error('[wallet]: Expected an HD wallet');
       pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
@@ -725,7 +517,7 @@ export const createWallet = async ({
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = await maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
+    const androidEncryptionPin = await kc.maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
 
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
@@ -772,13 +564,13 @@ export const createWallet = async ({
       // for each account. If there's history we add it to the wallet.
       // We stop once we 2 accounts with no history
       while (lookup < 2) {
-        let nextWallet: any = null;
+        let nextWallet: { address: EthereumAddress; privateKey: string | null } | null = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
           if (!walletObj.wallet) {
             throw new Error(`No wallet (unreachable)`);
           }
-          ensureEthereumWallet(walletObj.wallet);
+          if (isLibWallet(walletObj.wallet)) throw new Error('[wallet]: Expected a hardware wallet account');
           nextWallet = {
             address: walletObj.wallet.address,
             privateKey: walletObj.wallet.privateKey,
@@ -791,6 +583,8 @@ export const createWallet = async ({
             nextWallet = new Wallet(addHexPrefix(pkey));
           }
         }
+
+        if (!nextWallet) throw new Error('[wallet]: Failed to derive an account');
 
         let hasTxHistory = false;
         try {
@@ -807,7 +601,7 @@ export const createWallet = async ({
             account => toChecksumAddress(account.address) === toChecksumAddress(nextWallet.address)
           );
           if (existingAccount) {
-            discoveredAccount = existingAccount as RainbowAccount;
+            discoveredAccount = existingAccount;
             discoveredWalletId = someWallet.id;
             return true;
           }
@@ -927,10 +721,7 @@ export const createWallet = async ({
       if (analyticsParams) {
         analytics.track(analytics.event.walletCreateSucceeded, analyticsParams);
       }
-      const walletRes =
-        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);
-
-      return walletRes;
+      return isLibWallet(walletResult) ? new Wallet(pkey) : walletResult;
     }
     return null;
   } catch (e) {
@@ -949,252 +740,6 @@ export const createWallet = async ({
   }
 };
 
-/**
- * @desc Saves wallet keys for the given address depending wallet type
- * @param address The wallet address.
- * @param privateKey The private key for the given address.
- * @param hardware If the wallet is a hardware wallet.
- * @return null
- */
-export const saveKeyForWallet = async (
-  address: EthereumAddress,
-  walletKey: null | EthereumPrivateKey | HardwareKey,
-  hardware: boolean,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
-) => {
-  if (hardware) {
-    return await saveHardwareKey(address, walletKey as HardwareKey, {
-      androidEncryptionPin,
-    });
-  } else {
-    return await savePrivateKey(address, walletKey, { androidEncryptionPin });
-  }
-};
-
-/**
- * @desc Gets wallet keys for the given address depending wallet type
- * @param address The wallet address.
- * @param hardware If the wallet is a hardware wallet.
- * @return null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated
- */
-export const getKeyForWallet = async (
-  address: EthereumAddress,
-  hardware: boolean
-): Promise<null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
-  if (hardware) {
-    return await getHardwareKey(address);
-  } else {
-    return await getPrivateKey(address);
-  }
-};
-
-/**
- * @desc Saves wallet private key to private keychain for a given address.
- * @param address The wallet address.
- * @param privateKey The private key for the given address.
- * @return null
- */
-export const savePrivateKey = async (
-  address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
-) => {
-  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
-
-  const key = `${address}_${privateKeyKey}`;
-  const val = {
-    address,
-    privateKey,
-    version: privateKeyVersion,
-  };
-  // if its a hardware wallet we dont want in the private keychain
-  await kc.setObject(key, val, {
-    ...privateAccessControlOptions,
-    androidEncryptionPin,
-  });
-};
-
-/**
- * @desc Saves hardware wallet details to public keychain for a given address.
- * @param address The wallet address for the hardware wallet.
- * @param privateKey The hardware wallet key for the given address.
- * @return null
- */
-export const saveHardwareKey = async (
-  address: EthereumAddress,
-  privateKey: null | HardwareKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
-) => {
-  const key = `${address}_${privateKeyKey}`;
-  const val = {
-    address,
-    privateKey,
-    version: privateKeyVersion,
-  };
-
-  await keychain.saveObject(key, val, keychain.publicAccessControlOptions);
-};
-
-/**
- * @desc Gets wallet private key for a given address.
- * @param address The wallet address.
- * @return null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated
- */
-export const getPrivateKey = async (
-  address: EthereumAddress
-): Promise<null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
-  try {
-    const key = `${address}_${privateKeyKey}`;
-    const options = { authenticationPrompt };
-
-    const androidEncryptionPin = await maybeAuthenticateWithPIN();
-    const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
-      ...options,
-      androidEncryptionPin,
-    });
-
-    switch (error) {
-      case kc.ErrorType.UserCanceled:
-        // User Cancelled - We want to bubble up this error code. No need to track it.
-        return kc.ErrorType.UserCanceled;
-      case kc.ErrorType.NotAuthenticated:
-        // Not Authenticated - We want to bubble up this error code. No need to track it.
-        return kc.ErrorType.NotAuthenticated;
-      case kc.ErrorType.Unavailable: {
-        // Retry with checksummed address if needed
-        // (This is to mimic the behavior of other wallets like CB)
-        const checksumAddress = toChecksumAddress(address);
-        if (address !== checksumAddress) {
-          return getPrivateKey(checksumAddress);
-        }
-        // This means we couldn't find any matches for this key.
-        logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
-        break;
-      }
-      default:
-        // This is an unknown error
-        if (error) {
-          logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
-        }
-        break;
-    }
-    return pkey || null;
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getPrivateKey'), { error });
-    return null;
-  }
-};
-
-/**
- * @desc Gets the hardware wallet details for a given address.
- * @param address The wallet address for the hardware wallet.
- * @return PrivateKeyData | null
- */
-export const getHardwareKey = async (address: EthereumAddress): Promise<null | PrivateKeyData> => {
-  try {
-    const key = `${address}_${privateKeyKey}`;
-    const hardwareKey = (await keychain.loadObject(key)) as PrivateKeyData;
-
-    return hardwareKey || null;
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getHardwareKey'), { error });
-    return null;
-  }
-};
-
-export const saveSeedPhrase = async (
-  seedphrase: EthereumWalletSeed,
-  keychain_id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
-): Promise<void> => {
-  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
-  const key = `${keychain_id}_${seedPhraseKey}`;
-  const val = {
-    id: keychain_id,
-    seedphrase,
-    version: seedPhraseVersion,
-  };
-
-  return kc.setObject(key, val, {
-    ...privateAccessControlOptions,
-    androidEncryptionPin,
-  });
-};
-
-export const getSeedPhrase = async (
-  id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions<GetOptions>, 'androidEncryptionPin'> = {}
-): Promise<null | SeedPhraseData> => {
-  try {
-    const key = `${id}_${seedPhraseKey}`;
-    const { value: seedPhraseData, error } = await kc.getObject<SeedPhraseData>(key, {
-      authenticationPrompt,
-      androidEncryptionPin,
-    });
-
-    if (error === kc.ErrorType.UserCanceled) {
-      return null;
-    }
-
-    if (!seedPhraseData) {
-      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-      return null;
-    }
-
-    return seedPhraseData;
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSeedPhrase'), { error });
-    return null;
-  }
-};
-
-export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> => {
-  const val = {
-    version: selectedWalletVersion,
-    wallet,
-  };
-
-  return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
-};
-
-export const resetSelectedWallet = async (): Promise<void> => {
-  return keychain.saveObject(selectedWalletKey, {}, keychain.publicAccessControlOptions);
-};
-
-export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
-  try {
-    const selectedWalletData = await keychain.loadObject(selectedWalletKey);
-    if (selectedWalletData) {
-      return selectedWalletData as RainbowSelectedWalletData;
-    }
-    return null;
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSelectedWallet'), { error });
-    return null;
-  }
-};
-
-export const saveAllWallets = async (wallets: AllRainbowWallets) => {
-  const val = {
-    version: allWalletsVersion,
-    wallets,
-  };
-
-  await keychain.saveObject(allWalletsKey, val, keychain.publicAccessControlOptions);
-};
-
-export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => {
-  try {
-    const allWallets = await keychain.loadObject(allWalletsKey);
-    if (allWallets) {
-      return allWallets as AllRainbowWalletsData;
-    }
-    return null;
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getAllWallets'), { error });
-    return null;
-  }
-};
 let callbackAfterSeeds: null | (() => void) = null;
 
 export function setCallbackAfterObtainingSeedsFromKeychainOrError(callback: () => void) {
@@ -1209,13 +754,13 @@ export async function generateAccount(id: RainbowWallet['id'], index: number): P
     // We need to migrate the seedphrase & private key first
     // In that case we regenerate the existing private key to store it with the new format
     if (!isSeedPhraseMigrated) {
-      const migratedSecrets = await migrateSecrets();
+      const migratedSecrets = await migrateWalletSecrets();
       seedphrase = migratedSecrets?.seedphrase;
     }
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = await maybeAuthenticateWithPIN();
+    const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
@@ -1230,8 +775,6 @@ export async function generateAccount(id: RainbowWallet['id'], index: number): P
       throw new Error(`Can't access secret phrase to create new accounts`);
     }
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase, index);
-    if (!ethereumJSWallet) return null;
-    ensureLibWallet(ethereumJSWallet);
     const walletAddress = addHexPrefix(toChecksumAddress(ethereumJSWallet.getAddress().toString('hex')));
     const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
@@ -1258,114 +801,6 @@ export async function generateAccount(id: RainbowWallet['id'], index: number): P
   }
 }
 
-const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
-  try {
-    logger.debug('[wallet]: Migrating wallet secrets', {}, DebugContext.wallet);
-    const seedphrase = await oldLoadSeedPhrase();
-
-    if (!seedphrase) {
-      logger.debug('[wallet]: old seed doesnt exist!', {}, DebugContext.wallet);
-      // Save the migration flag to prevent this flow in the future
-      await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);
-      logger.debug('[wallet]: marking secrets as migrated', {}, DebugContext.wallet);
-      return null;
-    }
-
-    const type = identifyWalletType(seedphrase);
-    logger.debug(`[wallet]: wallet type: ${type}`, {}, DebugContext.wallet);
-    let hdnode: undefined | HDNode, node: undefined | HDNode, existingAccount: undefined | Wallet;
-    switch (type) {
-      case EthereumWalletType.privateKey:
-        existingAccount = new Wallet(addHexPrefix(seedphrase));
-        break;
-      case EthereumWalletType.mnemonic:
-        {
-          const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase);
-          if (!ethereumJSWallet) return null;
-          ensureLibWallet(ethereumJSWallet);
-          const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
-
-          existingAccount = new Wallet(walletPkey);
-        }
-        break;
-      case EthereumWalletType.seed:
-        hdnode = HDNode.fromSeed(seedphrase);
-        break;
-      default:
-    }
-
-    if (!existingAccount && hdnode) {
-      logger.debug('[wallet]: No existing account, so we have to derive it', {}, DebugContext.wallet);
-      node = hdnode.derivePath(getHdPath({ type: WalletLibraryType.ethers, index: 0 }));
-      existingAccount = new Wallet(node.privateKey);
-      logger.debug('[wallet]: Got existing account', {}, DebugContext.wallet);
-    }
-
-    if (!existingAccount) {
-      return null;
-    }
-
-    // Check that wasn't migrated already!
-    const pkeyExists = await keychain.hasKey(`${existingAccount.address}_${privateKeyKey}`);
-    if (!pkeyExists) {
-      logger.debug('[wallet]: new pkey didnt exist so we should save it', {}, DebugContext.wallet);
-      // Save the private key in the new format
-      await saveKeyForWallet(existingAccount.address, existingAccount.privateKey, false);
-      logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
-    }
-
-    const selectedWalletData = await getSelectedWallet();
-    const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
-    if (!wallet) {
-      return null;
-    }
-
-    // Save the seedphrase in the new format
-    const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
-    if (!seedExists) {
-      logger.debug('[wallet]: new seed didnt exist so we should save it', {}, DebugContext.wallet);
-      await saveSeedPhrase(seedphrase, wallet.id);
-      logger.debug('[wallet]: new seed saved', {}, DebugContext.wallet);
-    }
-    // Save the migration flag to prevent this flow in the future
-    await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);
-    logger.debug('[wallet]: saved migrated key', {}, DebugContext.wallet);
-    return {
-      hdnode,
-      privateKey: existingAccount.privateKey,
-      seedphrase,
-      type,
-    };
-  } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error while migrating secrets'), { error });
-    return null;
-  }
-};
-
-export const cleanUpWalletKeys = async (): Promise<boolean> => {
-  const keys = [addressKey, allWalletsKey, oldSeedPhraseMigratedKey, pinKey, selectedWalletKey];
-
-  try {
-    await Promise.all(
-      keys.map(key => {
-        try {
-          keychain.remove(key);
-        } catch (error) {
-          // key might not exists
-          logger.warn('[wallet]: failure to delete key', {
-            key,
-            error,
-          });
-        }
-        return true;
-      })
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
 export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']): Promise<null | EthereumWalletSeed> => {
   try {
     let seedPhrase = null;
@@ -1382,14 +817,14 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       // We need to migrate the seedphrase & private key first
       // In that case we regenerate the existing private key to store it with the new format
       if (!isSeedPhraseMigrated) {
-        const migratedSecrets = await migrateSecrets();
+        const migratedSecrets = await migrateWalletSecrets();
         seedPhrase = migratedSecrets?.seedphrase ?? null;
       } else {
         logger.error(new RainbowError('[wallet]: Migrated flag was set but there is no key!'), { id });
       }
     } else {
       logger.debug('[wallet]: Getting seed directly', {}, DebugContext.wallet);
-      const androidEncryptionPin = await maybeAuthenticateWithPIN();
+      const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 
@@ -1405,69 +840,4 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
     logger.error(new RainbowError('[wallet]: Error in loadSeedPhraseAndMigrateIfNeeded'), { error });
     throw error;
   }
-};
-
-/**
- * Checks the integrity of keychain encrypted wallets and returns a map of wallet state to be updated.
- */
-export const checkWalletsDamagedState = async (wallets: AllRainbowWallets): Promise<Map<string, boolean>> => {
-  const updatedWalletDamagedStates = new Map<string, boolean>();
-  const keychainWallets = Object.values(wallets).filter(wallet => wallet.encryptionType === EncryptionType.keychain);
-  if (keychainWallets.length === 0) {
-    logger.debug('[wallet]: No keychain-encrypted wallets found, skipping checks', {}, DebugContext.wallet);
-    return updatedWalletDamagedStates;
-  }
-
-  // Try to detect cases where wallets will be unusable and might need to be re-imported
-  if (Platform.OS === 'ios') {
-    // Passcode is disabled - the keychain data will be inaccessible until the user re-enables it.
-    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
-    if (!isPasscodeAuthAvailable) {
-      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
-      keychainWallets.forEach(wallet => {
-        updatedWalletDamagedStates.set(wallet.id, true);
-      });
-    } else {
-      const damagedWallets = keychainWallets.filter(wallet => wallet.damaged);
-      if (damagedWallets.length > 0) {
-        logger.debug('[wallet]: Keychain appears healthy again, repairing damaged wallets', {}, DebugContext.wallet);
-        damagedWallets.forEach(wallet => {
-          updatedWalletDamagedStates.set(wallet.id, false);
-        });
-      }
-
-      // Device migration - the keychain cache will be transferred, but not the keychain data itself.
-      await Promise.all(
-        keychainWallets.map(async wallet => {
-          // It is enough to just check the first address of each wallet.
-          const key = `${wallet.addresses[0].address}_${privateKeyKey}`;
-          let hasKey = false;
-          try {
-            hasKey = await kc.has(key);
-          } catch (e) {
-            logger.debug(
-              `[wallet]: Error checking keychain key existence for wallet ${wallet.id}: ${ensureError(e).message}`,
-              {},
-              DebugContext.wallet
-            );
-          }
-          if (!hasKey) {
-            logger.debug(`[wallet]: No private key found in keychain for wallet ${wallet.id}, marking as damaged`, {}, DebugContext.wallet);
-            updatedWalletDamagedStates.set(wallet.id, true);
-          }
-        })
-      );
-    }
-  } else {
-    // Passcode is disabled - the keychain data will be inaccessible permanently.
-    const isPasscodeAuthAvailable = await kc.isPasscodeAuthAvailable();
-    if (!isPasscodeAuthAvailable) {
-      logger.debug('[wallet]: Passcode is disabled, marking keychain encrypted wallets as damaged', {}, DebugContext.wallet);
-      keychainWallets.forEach(wallet => {
-        updatedWalletDamagedStates.set(wallet.id, true);
-      });
-    }
-  }
-
-  return updatedWalletDamagedStates;
 };

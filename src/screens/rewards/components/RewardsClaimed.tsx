@@ -4,7 +4,7 @@ import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date
 import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getNumberFormatter } from '@/helpers/intl';
@@ -90,7 +90,7 @@ export const RewardsClaimed: React.FC<Props> = ({
 
     return (
       <Box paddingBottom="36px">
-        <ButtonPressAnimation onPress={navigateToAmountsExplainer} scaleTo={0.96} overflowMargin={50}>
+        <ButtonPressAnimation onPress={navigateToAmountsExplainer} scaleTo={0.96}>
           <RewardsSectionCard>
             <Stack space="16px">
               <Stack space="12px">

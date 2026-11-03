@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
+import { type RainbowWallet } from '@/features/wallet/types';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
-import { type RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
   [key: string]: RainbowWallet;

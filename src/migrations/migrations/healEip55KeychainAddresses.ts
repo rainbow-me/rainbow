@@ -1,6 +1,13 @@
 import { normalizeAddress } from '@/features/address/core/address';
+import {
+  getAllWallets,
+  getSelectedWallet,
+  loadAddress,
+  saveAddress,
+  saveAllWallets,
+  setSelectedWallet,
+} from '@/features/wallet/data/walletKeychain';
 import { MigrationName, type Migration } from '@/migrations/types';
-import { getAllWallets, getSelectedWallet, loadAddress, saveAddress, saveAllWallets, setSelectedWallet } from '@/model/wallet';
 
 /**
  * One-shot heal: canonicalize EIP-55 addresses persisted in keychain.

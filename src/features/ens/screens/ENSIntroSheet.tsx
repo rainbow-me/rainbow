@@ -1,26 +1,25 @@
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager, Platform, View } from 'react-native';
+import { InteractionManager, Platform } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { ContextMenu } from '@/components/context-menu';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { SheetActionButton } from '@/components/sheet';
+import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 
-import IntroMarquee from '../components/registration/IntroMarquee';
+import { IntroMarquee } from '../components/registration/IntroMarquee';
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar from '../hooks/useENSAvatar';
 import useENSRecords from '../hooks/useENSRecords';
@@ -36,13 +35,13 @@ const topPadding = Platform.OS === 'android' ? 29 : 19;
 
 const minHeight = 740;
 
-type ContextMenuRendererProps = {
-  children: React.ReactNode;
+type ChooseAnotherNameButtonProps = {
   handleSelectExistingName: () => void;
   handleNavigateToSearch: () => void;
 };
 
-const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigateToSearch }: ContextMenuRendererProps) => {
+const ChooseAnotherNameButton = ({ handleSelectExistingName, handleNavigateToSearch }: ChooseAnotherNameButtonProps) => {
+  const { colors } = useTheme();
   const menuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -68,8 +67,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
   }, []);
 
   const handlePressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === AnotherENSEnum.my_ens) {
         handleSelectExistingName();
       } else if (actionKey === AnotherENSEnum.search) {
@@ -79,42 +77,21 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
     [handleNavigateToSearch, handleSelectExistingName]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handleSelectExistingName();
-          break;
-        case 1:
-          handleNavigateToSearch();
-          break;
-      }
-    },
-    [handleNavigateToSearch, handleSelectExistingName]
-  );
-
-  if (Platform.OS === 'android') {
-    return (
-      <ContextMenu
-        activeOpacity={0}
-        cancelButtonIndex={menuConfig.menuItems.length - 1}
-        dynamicOptions={undefined}
-        onPressActionSheet={handlePressActionSheet}
-        options={menuConfig.menuItems.map(i => i.actionTitle)}
-      >
-        <View>{children}</View>
-      </ContextMenu>
-    );
-  }
-
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} useActionSheetFallback={false}>
-      {children}
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+      <SheetActionButton
+        color={colors.transparent}
+        isTransparent
+        label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
+        textColor={colors.appleBlue}
+        textSize="lmedium"
+        weight="bold"
+      />
     </ContextMenuButton>
   );
 };
 
-export default function ENSIntroSheet() {
+export function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
@@ -255,7 +232,7 @@ export default function ENSIntroSheet() {
                             <SheetActionButton
                               color={colors.appleBlue}
                               label={i18n.t(profileExists ? i18n.l.profiles.intro.edit_name : i18n.l.profiles.intro.use_name, {
-                                name: abbreviateEnsForDisplay(uniqueDomain?.name, 15) as string,
+                                name: abbreviateName(uniqueDomain?.name, 15) as string,
                               })}
                               lightShadows
                               onPress={handleSelectUniqueDomain}
@@ -271,19 +248,10 @@ export default function ENSIntroSheet() {
                             />
                           )}
                           {nonPrimaryDomains?.length > 0 ? (
-                            <ContextMenuRenderer
+                            <ChooseAnotherNameButton
                               handleNavigateToSearch={handleNavigateToSearch}
                               handleSelectExistingName={handleSelectExistingName}
-                            >
-                              <SheetActionButton
-                                color={colors.transparent}
-                                isTransparent
-                                label={i18n.t(i18n.l.profiles.intro.choose_another_name)}
-                                textColor={colors.appleBlue}
-                                textSize="lmedium"
-                                weight="bold"
-                              />
-                            </ContextMenuRenderer>
+                            />
                           ) : (
                             <SheetActionButton
                               color={colors.transparent}

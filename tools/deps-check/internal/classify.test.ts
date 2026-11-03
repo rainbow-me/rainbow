@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { classifyPlatform } from './classify';
 import { cycle, edge } from './test-fixtures';
 

@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { useCashAccountStore } from './cashAccountStore';
 import { useCashDepositSetupStatusStore } from './cashDepositSetupStore';
 import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
@@ -7,7 +9,7 @@ const A_CARD: LinkedCard = { id: 'card-1', brand: 'Visa', last4: '4242' };
 describe('useCashDepositSetupStatusStore', () => {
   beforeEach(() => {
     useCashAccountStore.getState().clearUserId();
-    useCashPaymentMethodStore.setState({ linkedCard: null });
+    useCashPaymentMethodStore.getState().clear();
   });
 
   it('is needsCard with an account but no card', () => {
@@ -17,7 +19,7 @@ describe('useCashDepositSetupStatusStore', () => {
 
   it('regresses from ready to needsIdentity when the account record clears', () => {
     useCashAccountStore.getState().setUserId('user-1');
-    useCashPaymentMethodStore.setState({ linkedCard: A_CARD });
+    useCashPaymentMethodStore.getState().addLinkedCard(A_CARD);
     expect(useCashDepositSetupStatusStore.getState()).toBe('ready');
 
     useCashAccountStore.getState().clearUserId();

@@ -1,28 +1,21 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
-import { Box, Text, type TextProps } from '@/design-system';
+import visaBadge from '@/assets/visaBadge.png';
+import visaBadgeLarge from '@/assets/visaBadgeLarge.png';
+import { Box } from '@/design-system';
 
 const SIZES = {
-  small: { height: 20, textSize: 'icon 8px', width: 28 },
-  large: { height: 26, textSize: 'icon 10px', width: 36 },
-} satisfies Record<string, { height: number; textSize: TextProps['size']; width: number }>;
+  small: { badge: { borderRadius: 7, height: 22, width: 32 }, image: { height: 7, width: 21 }, source: visaBadge },
+  large: { badge: { borderRadius: 8, height: 26, width: 36 }, image: { height: 8, width: 25 }, source: visaBadgeLarge },
+};
 
 export function VisaBadge({ size = 'small' }: { size?: keyof typeof SIZES }) {
-  const { height, textSize, width } = SIZES[size];
+  const { badge, image, source } = SIZES[size];
 
   return (
-    <Box
-      alignItems="center"
-      borderRadius={6}
-      height={{ custom: height }}
-      justifyContent="center"
-      style={styles.badge}
-      width={{ custom: width }}
-    >
-      <Text align="center" color="white" size={textSize} weight="heavy">
-        {'VISA'}
-      </Text>
+    <Box alignItems="center" justifyContent="center" style={[styles.badge, badge]}>
+      <Image source={source} style={image} />
     </Box>
   );
 }

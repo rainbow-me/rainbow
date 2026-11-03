@@ -1,22 +1,21 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import { startCase } from 'lodash';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import styled from '@/framework/ui/styled-thing';
-import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { opacity } from '@/framework/ui/utils/opacity';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { fonts, fontWithWidth, padding } from '@/styles';
-import abbreviations from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';
@@ -91,34 +90,10 @@ const buildBlockExplorerAction = chainId => {
 };
 
 const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
-  const { setClipboard } = useClipboard();
-  const handleCopyAddress = useCallback(
-    address => {
-      triggerHaptics('selection');
-      setClipboard(address);
-    },
-    [setClipboard]
-  );
-
-  const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId }))}`;
-    const androidContractActions = [i18n.t(i18n.l.wallet.action.copy_contract_address), blockExplorerText, i18n.t(i18n.l.button.cancel)];
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: 2,
-        options: androidContractActions,
-        title: `${item?.name}`,
-      },
-      idx => {
-        if (idx === 0) {
-          handleCopyAddress(item?.address);
-        }
-        if (idx === 1) {
-          ethereumUtils.openAddressInBlockExplorer({ address: item?.address, chainId });
-        }
-      }
-    );
-  }, [item?.name, item?.address, handleCopyAddress, chainId]);
+  const handleCopyAddress = useCallback(address => {
+    triggerHaptics('selection');
+    setClipboard(address);
+  }, []);
 
   const menuConfig = useMemo(() => {
     const blockExplorerAction = buildBlockExplorerAction(chainId);
@@ -127,7 +102,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
         blockExplorerAction,
         {
           ...ContactRowActions[ContactRowActionsEnum.copyAddress],
-          discoverabilityTitle: abbreviations.formatAddressForDisplay(item?.address),
+          discoverabilityTitle: formatAddressForDisplay(item?.address),
         },
       ],
       menuTitle: `${item?.name}`,
@@ -149,15 +124,7 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
 
   return (
     <Container>
-      <ContextMenuButton
-        activeOpacity={0}
-        menuConfig={menuConfig}
-        {...(Platform.OS === 'android' ? { onPress: onPressAndroid } : {})}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressMenuItem}
-        useActionSheetFallback={false}
-        wrapNativeComponent={false}
-      >
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         <ButtonPressAnimation scaleTo={scaleTo}>
           {children || (
             <Circle>

@@ -5,9 +5,9 @@ import { type SharedValue } from 'react-native-reanimated';
 import { AccentColorContext } from './AccentColorContext';
 import { ColorModeContext } from './ColorMode';
 import {
-  foregroundColors,
   getDefaultAccentColorForColorMode,
   getValueForColorMode,
+  palettes,
   type BackgroundColorValue,
   type ColorMode,
   type ContextualColorValue,
@@ -15,71 +15,67 @@ import {
   type TextColor,
 } from './palettes';
 
+/** A literal color, optionally varied by color mode. */
 export type CustomColor<Value extends string = string> = {
   custom: Value | ContextualColorValue<Value>;
 };
 
-type ForegroundColorOrAccent = ForegroundColor | 'accent';
+/** Foreground palettes by color mode. Keeps background palettes out of worklet closures. */
+const foregroundColorsByMode: Record<ColorMode, Partial<Record<string, string>>> = {
+  dark: palettes.dark.foregroundColors,
+  darkTinted: palettes.darkTinted.foregroundColors,
+  light: palettes.light.foregroundColors,
+  lightTinted: palettes.lightTinted.foregroundColors,
+};
 
 /**
- * @description Given an array of colors, resolves the foreground color for the current color mode.
+ * Resolves foreground colors for the current color mode.
  */
 export function useForegroundColors(
-  colors: (ForegroundColorOrAccent | ContextualColorValue<ForegroundColorOrAccent> | CustomColor)[]
+  colors: (ForegroundColor | 'accent' | ContextualColorValue<ForegroundColor | 'accent'> | CustomColor)[]
 ): string[] {
   const { colorMode, foregroundColors } = useContext(ColorModeContext);
   const accentColor = useContext(AccentColorContext);
 
-  return colors.map(color => {
-    if (color === 'accent') {
-      return accentColor ? accentColor.color : getDefaultAccentColorForColorMode(colorMode).color;
-    }
+  const resolvedColors: string[] = [];
+  for (let i = 0; i < colors.length; i++) {
+    let color = colors[i];
+    if (typeof color === 'object' && !('custom' in color)) color = getValueForColorMode(color, colorMode);
 
-    if (typeof color === 'object') {
-      if ('custom' in color) {
-        return getValueForColorMode(color.custom, colorMode);
-      }
+    resolvedColors[i] =
+      typeof color === 'string' && color !== 'accent' ? foregroundColors[color] : getColorForTheme(color, colorMode, accentColor);
+  }
 
-      const colorForColorMode = getValueForColorMode(color, colorMode);
-
-      return colorForColorMode === 'accent'
-        ? (accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color)
-        : foregroundColors[colorForColorMode];
-    }
-
-    return foregroundColors[color];
-  });
+  return resolvedColors;
 }
 
 /**
- * @description Resolves the foreground color for the current color mode.
+ * Resolves a foreground color for the current color mode.
  */
 export function useForegroundColor(color: ForegroundColor | 'accent' | CustomColor): string {
-  return useForegroundColors([color])[0];
+  return getColorForTheme(color, useContext(ColorModeContext).colorMode, useContext(AccentColorContext));
 }
 
-function isForegroundColor(color: string | ForegroundColor): color is ForegroundColor {
-  'worklet';
-  return color in foregroundColors;
-}
-
+/**
+ * Resolves a color for the given color mode.
+ */
 export function getColorForTheme(
-  color: ForegroundColor | TextColor | CustomColor | string | 'accent' | SharedValue<TextColor> | SharedValue<string>,
+  color: string | CustomColor | SharedValue<TextColor> | SharedValue<string>,
   colorMode: ColorMode,
   accentColor?: BackgroundColorValue | null
 ): string {
   'worklet';
-  const binaryColorMode = colorMode === 'dark' || colorMode === 'darkTinted' ? 'dark' : 'light';
-  const colorValue = typeof color === 'object' && 'value' in color ? color.value : color;
+  let colorValue = color;
 
-  switch (colorValue) {
-    case 'accent':
-      return accentColor?.color ?? getDefaultAccentColorForColorMode(binaryColorMode).color;
-    default:
-      if (typeof colorValue === 'object' && 'custom' in colorValue) {
-        return typeof colorValue.custom === 'string' ? colorValue.custom : colorValue.custom[binaryColorMode];
-      }
-      if (isForegroundColor(colorValue)) return foregroundColors[colorValue][binaryColorMode];
-      return colorValue;
+  if (typeof colorValue === 'object') {
+    if ('custom' in colorValue) {
+      const custom = colorValue.custom;
+      return typeof custom === 'string' ? custom : getValueForColorMode(custom, colorMode);
+    }
+    colorValue = colorValue.value;
   }
+
+  if (colorValue === 'accent') return accentColor?.color ?? getDefaultAccentColorForColorMode(colorMode).color;
+
+  return foregroundColorsByMode[colorMode][colorValue] ?? colorValue;
 }

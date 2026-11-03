@@ -49,5 +49,3 @@ export function SecretDisplayCard({ seed, type = EthereumWalletType.seed }: Secr
     </Centered>
   );
 }
-
-export default SecretDisplayCard;

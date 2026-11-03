@@ -1,119 +1,154 @@
 import { createBaseStore } from '@storesjs/stores';
 
 import { analytics } from '@/analytics';
-import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
-import { delay } from '@/utils/delay';
 
+import { isCashAccessRefusedError } from '../services/cashAccessRefusal';
+import { readKycOutcome, trackKycOutcome } from '../services/kycStatusService';
 import {
   finishSignupResume,
-  getUserStatus,
-  KycStatus,
   resendPhoneCode,
+  startRecovery,
   startSignupResume,
   verifyPhone,
   type KycOutcome,
+  type KycRejectionReason,
 } from '../services/userClient';
 import { getTelemetryErrorReason } from '../utils/getTelemetryErrorReason';
 import { useCashSetupSessionStore, type PhoneChallenge } from './cashSetupSessionStore';
 
 export const OTP_LENGTH = 6;
 
-export type VerifyPhoneState = 'entry' | 'verifying' | 'verified' | 'error';
+export type VerifyPhoneState = 'entry' | 'verifying' | 'submitted' | 'error';
 
-export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | 'signupAlreadyComplete';
+export type VerifyPhoneResult = 'verified' | 'verifiedKycOutcome' | 'failed' | 'recoveryCodeAccepted' | 'recoveryStarted';
 
-// Null means the wizard proceeds to the KYC steps: either nothing was ever
-// submitted, or the status could not be read and a redundant pass is the safe
-// guess — showing "we're reviewing" to someone who never submitted strands them.
-function toKycOutcome(status: KycStatus): KycOutcome | null {
-  switch (status) {
-    case KycStatus.Approved:
-      return 'approved';
-    case KycStatus.Rejected:
-      return 'rejected';
-    case KycStatus.Pending:
-    case KycStatus.Review:
-      return 'reviewing';
-    case KycStatus.Unspecified:
-      return null;
-  }
-}
-
-// Best-effort: failing only costs the user a redundant pass through KYC entry,
-// so a transient status failure gets one delayed retry.
-async function getResumeKycOutcome(bootstrapToken: string): Promise<KycOutcome | null> {
-  const check = async () => toKycOutcome((await getUserStatus({ bootstrapToken })).kycStatus);
-  return check()
-    .catch(() => delay(time.seconds(2)).then(check))
-    .catch(() => null);
-}
+type ResumeCredential = { bootstrapToken: string; expiresAt: number };
+type PendingResumeStatus = {
+  challenge: Extract<PhoneChallenge, { kind: 'resume' }>;
+  credential: ResumeCredential;
+};
 
 type VerifyPhoneFlowStore = {
   state: VerifyPhoneState;
   code: string;
   kycOutcome: KycOutcome | null;
+  kycRejectionReason: KycRejectionReason | undefined;
+  pendingResumeStatus: PendingResumeStatus | null;
   resending: PhoneChallenge | null;
   setCode: (code: string) => void;
   submit: () => Promise<VerifyPhoneResult>;
   resend: () => Promise<void>;
+  rejectCode: () => void;
   clearKycOutcome: () => void;
   reset: () => void;
 };
+
+let activeKycCheck: object | null = null;
 
 export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((set, get) => ({
   state: 'entry',
   code: '',
   kycOutcome: null,
+  kycRejectionReason: undefined,
+  pendingResumeStatus: null,
   resending: null,
 
   setCode: code => {
     const { state } = get();
-    if (state === 'verifying' || state === 'verified') return;
+    if (state === 'verifying' || state === 'submitted') return;
     set({ code, state: state === 'error' ? 'entry' : state });
   },
 
   submit: async () => {
-    const { code, resending, state } = get();
-    if (code.length !== OTP_LENGTH || resending !== null || state === 'verifying' || state === 'verified') return 'failed';
+    const { code, pendingResumeStatus, resending, state } = get();
+    if (code.length !== OTP_LENGTH || resending !== null || state === 'verifying' || state === 'submitted') return 'failed';
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
-    if (session.status !== 'phoneSubmitted') return 'failed';
-    const { challenge } = session;
+    if (session.status !== 'phoneSubmitted' && session.status !== 'recovery') return 'failed';
 
-    set({ state: 'verifying' });
+    if (session.status === 'recovery') {
+      set({ state: 'submitted' });
+      return 'recoveryCodeAccepted';
+    }
+    const { challenge } = session;
+    const kycCheck = {};
+    activeKycCheck = kycCheck;
+    let resumeCredential =
+      challenge.kind === 'resume' && pendingResumeStatus?.challenge === challenge && pendingResumeStatus.credential.expiresAt > Date.now()
+        ? pendingResumeStatus.credential
+        : null;
+
+    set({ pendingResumeStatus: resumeCredential ? pendingResumeStatus : null, state: 'verifying' });
     try {
       const result =
         challenge.kind === 'signup'
           ? { outcome: 'verified' as const, ...(await verifyPhone({ userId: challenge.userId, code })) }
-          : await finishSignupResume({ resumeId: challenge.resumeId, code });
+          : resumeCredential
+            ? { outcome: 'verified' as const, ...resumeCredential }
+            : await finishSignupResume({ resumeId: challenge.resumeId, code });
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
         return 'failed';
       }
 
       if (result.outcome === 'signupAlreadyComplete') {
-        analytics.track(analytics.event.cashPhoneAlreadyRegistered, { outcome: 'signupAlreadyComplete' });
-        sessionStore.setPhoneAlreadyRegistered(session.phoneNationalNumber);
+        const { recoveryId, resendAfter } = await startRecovery({ nationalNumber: session.phoneNationalNumber });
+        if (!sessionStore.getIsCurrentChallenge(challenge)) {
+          set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+          return 'failed';
+        }
+        sessionStore.setPhoneSubmitted({
+          challenge: { kind: 'recovery', recoveryId },
+          phoneNationalNumber: session.phoneNationalNumber,
+          resendAfter,
+        });
+        analytics.track(analytics.event.cashPhoneSubmitted, { mode: 'recovery' });
         set({ code: '', state: 'entry' });
-        return 'signupAlreadyComplete';
+        return 'recoveryStarted';
       }
 
-      sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
-      analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
       // A resumed account may have submitted KYC in an earlier signup attempt.
-      const kycOutcome = challenge.kind === 'resume' ? await getResumeKycOutcome(result.bootstrapToken) : null;
-      if (kycOutcome === 'approved') analytics.track(analytics.event.cashKycApproved);
-      else if (kycOutcome === 'reviewing') analytics.track(analytics.event.cashKycAwaitingDecision, { source: 'resume' });
-      else if (kycOutcome === 'rejected') analytics.track(analytics.event.cashKycFailed, { reason: 'rejected' });
-      // Terminal, and deliberately not 'verifying': Setup's submission lock reads
-      // that state, so lingering there would disable every exit for the rest of
-      // the flow. Screen cleanup or a fresh phone submission resets the store.
-      set({ kycOutcome, state: 'verified' });
-      return kycOutcome ? 'verifiedKycOutcome' : 'verified';
-    } catch (e) {
+      if (challenge.kind === 'resume') resumeCredential = result;
+      const kycResult = resumeCredential
+        ? await readKycOutcome(resumeCredential.bootstrapToken).catch(error => {
+            if (isCashAccessRefusedError(error)) throw error;
+            return null;
+          })
+        : null;
+      const kycOutcome = kycResult?.outcome ?? null;
+      if (activeKycCheck !== kycCheck) return 'failed';
+      activeKycCheck = null;
       if (!sessionStore.getIsCurrentChallenge(challenge)) {
         set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+        return 'failed';
+      }
+      sessionStore.setPhoneVerified(challenge, { bootstrapToken: result.bootstrapToken, expiresAt: result.expiresAt });
+      analytics.track(analytics.event.cashPhoneVerified, { mode: challenge.kind });
+      if (kycOutcome) {
+        sessionStore.markKycSubmitted(result.bootstrapToken);
+        trackKycOutcome(kycOutcome, 'resume');
+      }
+      // Keep the retained OTP input disabled without leaving setup controls loading.
+      set({
+        kycOutcome,
+        kycRejectionReason: kycResult?.kycRejectionReason,
+        pendingResumeStatus: null,
+        state: 'submitted',
+      });
+      return kycOutcome ? 'verifiedKycOutcome' : 'verified';
+    } catch (e) {
+      if (activeKycCheck !== kycCheck) return 'failed';
+      activeKycCheck = null;
+      if (!sessionStore.getIsCurrentChallenge(challenge)) {
+        set(state => (state.state === 'verifying' ? { code: '', state: 'entry' } : state));
+        return 'failed';
+      }
+      if (isCashAccessRefusedError(e)) {
+        set({
+          pendingResumeStatus: challenge.kind === 'resume' && resumeCredential ? { challenge, credential: resumeCredential } : null,
+          state: 'entry',
+        });
         return 'failed';
       }
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to verify phone', e));
@@ -128,26 +163,33 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
 
   resend: async () => {
     const { resending, state } = get();
-    if (resending !== null || state === 'verifying' || state === 'verified') return;
+    if (resending !== null || state === 'verifying' || state === 'submitted') return;
     const sessionStore = useCashSetupSessionStore.getState();
     const { session } = sessionStore;
-    if (session.status !== 'phoneSubmitted' || Date.now() < session.resendAfter) return;
+    if ((session.status !== 'phoneSubmitted' && session.status !== 'recovery') || Date.now() < session.resendAfter) return;
     const { challenge, phoneNationalNumber } = session;
 
     set(({ state }) => ({ resending: challenge, state: state === 'error' ? 'entry' : state }));
     try {
       if (challenge.kind === 'signup') {
         const { resendAfter } = await resendPhoneCode({ userId: challenge.userId });
+        if (!sessionStore.getIsCurrentChallenge(challenge)) return;
         sessionStore.setResendAfter(challenge, resendAfter);
-      } else {
+      } else if (challenge.kind === 'resume') {
         // Resume has no resend endpoint; re-arming the OTP means a fresh
         // StartSignupResume, whose resumeId replaces the current challenge.
         const { resumeId, resendAfter } = await startSignupResume({ nationalNumber: phoneNationalNumber });
         if (!sessionStore.getIsCurrentChallenge(challenge)) return;
         sessionStore.setPhoneSubmitted({ challenge: { kind: 'resume', resumeId }, phoneNationalNumber, resendAfter });
+      } else {
+        const { recoveryId, resendAfter } = await startRecovery({ nationalNumber: phoneNationalNumber });
+        if (!sessionStore.getIsCurrentChallenge(challenge)) return;
+        sessionStore.replaceRecoveryChallenge(challenge, { kind: 'recovery', recoveryId }, resendAfter);
       }
+      set({ code: '', pendingResumeStatus: null });
     } catch (e) {
       if (!sessionStore.getIsCurrentChallenge(challenge)) return;
+      if (isCashAccessRefusedError(e)) return;
       logger.error(new RainbowError('[useVerifyPhoneFlow]: Failed to resend code', e));
       analytics.track(analytics.event.cashPhoneResendFailed, { reason: getTelemetryErrorReason(e), mode: challenge.kind });
     } finally {
@@ -155,8 +197,13 @@ export const useVerifyPhoneFlowStore = createBaseStore<VerifyPhoneFlowStore>((se
     }
   },
 
-  // Dismiss the outcome without undoing the session's completed phone verification.
-  clearKycOutcome: () => set({ kycOutcome: null }),
+  rejectCode: () => set({ code: '', state: 'error' }),
 
-  reset: () => set({ code: '', kycOutcome: null, resending: null, state: 'entry' }),
+  // Dismiss the outcome without undoing the session's completed phone verification.
+  clearKycOutcome: () => set({ kycOutcome: null, kycRejectionReason: undefined }),
+
+  reset: () => {
+    activeKycCheck = null;
+    set({ code: '', kycOutcome: null, kycRejectionReason: undefined, pendingResumeStatus: null, resending: null, state: 'entry' });
+  },
 }));

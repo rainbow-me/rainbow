@@ -10,7 +10,8 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ImgixImage } from '@/components/images';
 import { SheetActionButtonRow, SlackSheet } from '@/components/sheet';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import GasSpeedButton from '@/features/gas/components/GasSpeedButton';
+import { abbreviateName } from '@/features/address/core/formatAddress';
+import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
@@ -19,24 +20,23 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
-import CommitContent from '../components/registration/CommitContent';
-import EditContent from '../components/registration/EditContent';
-import RegisterContent from '../components/registration/RegisterContent';
+import { CommitContent } from '../components/registration/CommitContent';
+import { EditContent } from '../components/registration/EditContent';
+import { RegisterContent } from '../components/registration/RegisterContent';
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import RenewContent from '../components/registration/RenewContent';
-import WaitCommitmentConfirmationContent from '../components/registration/WaitCommitmentConfirmationContent';
-import WaitENSConfirmationContent from '../components/registration/WaitENSConfirmationContent';
+import { RenewContent } from '../components/registration/RenewContent';
+import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
+import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
 import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
 import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationActionHandler, { type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
+import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
 import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
@@ -93,7 +93,7 @@ function TransactionActionRow({
   );
 }
 
-export default function ENSConfirmRegisterSheet() {
+export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
   const { name: ensName, mode } = useENSRegistration();
   const {
@@ -157,7 +157,7 @@ export default function ENSConfirmRegisterSheet() {
       // revalidate nft data for ens collection
       const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
       useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
-      useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
+      useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
@@ -360,7 +360,7 @@ export default function ENSConfirmRegisterSheet() {
                   )}
                   <Inset horizontal="30px (Deprecated)">
                     <Heading align="center" numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                      {abbreviateEnsForDisplay(ensName, 15)}
+                      {abbreviateName(ensName, 15)}
                     </Heading>
                   </Inset>
                   <Text color="accent" size="16px / 22px (Deprecated)" testID={`ens-confirm-register-label-${step}`} weight="heavy">

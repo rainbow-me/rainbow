@@ -7,12 +7,13 @@ import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'r
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { controlPanelStyles, Panel, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
-import { TapToDismiss } from '@/features/dapp-browser/screens/ControlPanel';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SLIDER_MAX } from '@/features/perps/components/Slider/Slider';
@@ -26,12 +27,12 @@ import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/
 import { waitForTradeByOrderId } from '@/features/perps/utils/waitForTradeByOrderId';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { selectMidPrice } from '@/state/liveTokens/selectors';
 import { colors } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -100,10 +101,12 @@ function PanelContent({ symbol }: PanelContentProps) {
     [position]
   );
 
+  const tokenId = getHyperliquidTokenId(symbol);
+
   const liveTokenPrice = useLiveTokenValue({
-    tokenId: getHyperliquidTokenId(symbol),
-    initialValue: '0',
-    selector: state => state.midPrice ?? state.price,
+    tokenId,
+    fallback: '0',
+    selector: selectMidPrice,
   });
 
   const positionEquity = position ? position.equity : '0';

@@ -3,9 +3,9 @@ import React, { type ReactNode } from 'react';
 import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 
 import { type TextColor } from '../../design-system/color/palettes';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 
-const TintButton = ({
+export const TintButton = ({
   children,
   disabled,
   onPress,
@@ -47,5 +47,3 @@ const TintButton = ({
     </Box>
   );
 };
-
-export default TintButton;

@@ -7,7 +7,6 @@ import { type Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import { JsonRpcBatchProvider, StaticJsonRpcProvider, type Block, type TransactionRequest } from '@ethersproject/providers';
 import { parseEther, parseUnits } from '@ethersproject/units';
-import Resolution from '@unstoppabledomains/resolution';
 import { replace, startsWith } from 'lodash';
 import { type Address, type Hex } from 'viem';
 
@@ -16,6 +15,7 @@ import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type NewTransaction } from '@/entities/transactions';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { chainAnvil, ChainId } from '@/features/network/types/backendNetworks';
 import { NftTokenType } from '@/graphql/__generated__/arc';
@@ -30,7 +30,6 @@ import {
   multiply,
   omitFlatten,
 } from '@/helpers/utilities';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { logger, RainbowError } from '@/logger';
 import { CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references/constants';
 import ethUnits from '@/references/ethereum-units.json';
@@ -431,49 +430,6 @@ export const getTxDetails = async (transaction: TransactionDetailsInput): Promis
 };
 
 /**
- * @desc Resolves an Unstoppable domain string.
- * @param domain The domain as a string.
- * @return The resolved address, or undefined if none could be found.
- */
-export const resolveUnstoppableDomain = async (domain: string): Promise<string | null> => {
-  // This parameter doesn't line up with the `Resolution` type declaration,
-  // but it can be casted to `any` as it does match the documentation here:
-  // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
-  const resolution = new Resolution();
-  const res = resolution
-    .addr(domain, 'ETH')
-    .then((address: string) => {
-      return address;
-    })
-    .catch(error => {
-      logger.error(new RainbowError(`[web3]: resolveUnstoppableDomain error`), {
-        message: error.message,
-      });
-      return null;
-    });
-  return res;
-};
-
-/**
- * @desc Resolves a name or address to an Ethereum hex-formatted address.
- * @param nameOrAddress The name or address to resolve.
- * @return The address, or null if one could not be resolved.
- */
-export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
-  if (!isHexString(nameOrAddress)) {
-    if (isUnstoppableAddressFormat(nameOrAddress)) {
-      const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
-      return resolvedAddress;
-    }
-    const p = getProvider({ chainId: ChainId.mainnet });
-    const resolvedAddress = await p?.resolveName(nameOrAddress);
-
-    return resolvedAddress;
-  }
-  return nameOrAddress;
-};
-
-/**
  * @desc Gets transaction details for a new transfer NFT transaction.
  * @param transaction The new transaction. The `asset`, `from`, `to`,
  * `gasPrice`, and `gasLimit` fields from a `NewTransaction` are required.
@@ -486,7 +442,7 @@ export const getTransferNftTransaction = async (
     'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas' | 'chainId'
   >
 ): Promise<TransactionDetailsReturned> => {
-  const recipient = await resolveNameOrAddress(transaction.to);
+  const recipient = await resolveNameOrAddress(transaction.to, transaction.chainId);
 
   if (!recipient) {
     throw new Error(`Invalid recipient "${transaction.to}"`);
@@ -519,7 +475,8 @@ export const getTransferTokenTransaction = async (
   >
 ): Promise<TransactionDetailsReturned> => {
   const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
-  const recipient = (await resolveNameOrAddress(transaction.to)) as string;
+  const recipient = await resolveNameOrAddress(transaction.to, transaction.chainId);
+  if (!recipient) throw new Error(`Invalid recipient "${transaction.to}"`);
   const data = getDataForTokenTransfer(value, recipient);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -669,7 +626,8 @@ export const buildTransferTransaction = async (
 
   const _amount = hasPositiveAmount && rawAmount !== null ? rawAmount : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
-  const _recipient = (await resolveNameOrAddress(recipient)) as string;
+  const _recipient = await resolveNameOrAddress(recipient, chainId);
+  if (!_recipient) throw new Error(`Invalid recipient "${recipient}"`);
   let txData: TransactionRequest = {
     data: '0x',
     from: address,

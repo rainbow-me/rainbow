@@ -21,6 +21,7 @@ import rainbowTextLogo from '@/assets/rainbowTextLogo.png';
 import { PANEL_WIDTH } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
+import { opacity } from '@/design-system/utils/opacity';
 import { PERPS_COLORS } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { type HlTrade } from '@/features/perps/types';
@@ -28,7 +29,6 @@ import { calculateTradePnlPercentage } from '@/features/perps/utils/calculateTra
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { extractBaseSymbol } from '@/features/perps/utils/hyperliquidSymbols';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

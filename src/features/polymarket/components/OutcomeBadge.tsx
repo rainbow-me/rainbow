@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 
 import { Box, globalColors, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 const RedGreenOutcomes = {

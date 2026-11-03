@@ -5,8 +5,8 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 
 import { analytics } from '@/analytics';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { SlackSheet } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Text, useBackgroundColor } from '@/design-system';
@@ -21,7 +21,7 @@ import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl'
 
 const HEADER_HEIGHT = 60;
 
-export default function LearnWebViewScreen() {
+export function LearnWebViewScreen() {
   const {
     params: { key, displayType, category, url, routeName },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.LEARN_WEB_VIEW_SCREEN>>();

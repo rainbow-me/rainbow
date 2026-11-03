@@ -5,11 +5,11 @@ import { upperFirst } from 'lodash';
 import URL from 'url-parse';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useClipboard from '@/hooks/useClipboard';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
@@ -165,7 +165,6 @@ export default function useENSRecordDisplayProperties({
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
-  const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
 
   const handlePressMenuItem = useCallback(
@@ -186,7 +185,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, setClipboard, startRegistration, url]
+    [ensName, navigate, recordKey, recordValue, startRegistration, url]
   );
 
   const Button = useCallback(
@@ -195,10 +194,8 @@ export default function useENSRecordDisplayProperties({
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}
         {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
-        isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
         style={{ flexGrow: isImageValue ? 1 : 0, flexShrink: 1 }}
-        useActionSheetFallback={false}
         {...props}
       >
         {children}

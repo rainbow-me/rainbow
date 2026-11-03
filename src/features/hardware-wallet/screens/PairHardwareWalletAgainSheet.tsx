@@ -14,14 +14,14 @@ import { useTheme } from '@/theme/ThemeContext';
 
 import { GRID_DOTS_SIZE, LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '../components/NanoXDeviceAnimation';
 import { TryAgainButton } from '../components/TryAgainButton';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '../navigation/constants';
 import {
   HARDWARE_TX_ERROR_KEY,
-  HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
-  LedgerIsReadyAtom,
-  ledgerStorage,
+  hardwareWalletTxStorage,
+  ledgerIsReadyAtom,
   readyForPollingAtom,
   triggerPollerCleanupAtom,
-} from '../navigation/HardwareWalletTxNavigator';
+} from '../state/hardwareWalletTxState';
 import { TRANSLATIONS } from './constants';
 
 const INDICATOR_SIZE = 9;
@@ -29,11 +29,11 @@ const INDICATOR_SIZE = 9;
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
 
-  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
+  const [isReady, setIsReady] = useRecoilState(ledgerIsReadyAtom);
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
   const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
 
-  const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(HARDWARE_TX_ERROR_KEY, ledgerStorage);
+  const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(HARDWARE_TX_ERROR_KEY, hardwareWalletTxStorage);
 
   const onPressTryAgain = useCallback(() => {
     setTriggerPollerCleanup(true);

@@ -27,20 +27,20 @@ import {
   type Space,
   type TextProps,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import ENSBriefTokenInfoRow from '@/features/ens/components/ENSBriefTokenInfoRow';
-import ConfigurationSection from '@/features/ens/components/expanded-state/ConfigurationSection';
-import ProfileInfoSection from '@/features/ens/components/expanded-state/ProfileInfoSection';
+import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInfoRow';
+import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
+import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
 import useENSProfile from '@/features/ens/hooks/useENSProfile';
 import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import useBooleanState from '@/hooks/useBooleanState';
@@ -64,8 +64,8 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import partyLogo from '../../assets/partyLogo.png';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
+import { ImagePreviewOverlay } from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';

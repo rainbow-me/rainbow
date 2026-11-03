@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Inset, Text, useForegroundColor, type Space } from '@/design-system';
 import { type BackgroundColor } from '@/design-system/color/palettes';
 
@@ -14,14 +14,7 @@ type ActionButtonProps = {
   testID?: string;
 };
 
-export default function ActionButton({
-  children,
-  icon,
-  onPress,
-  paddingHorizontal = '12px',
-  variant = 'solid',
-  testID,
-}: ActionButtonProps) {
+export function ActionButton({ children, icon, onPress, paddingHorizontal = '12px', variant = 'solid', testID }: ActionButtonProps) {
   const appleBlue = useForegroundColor('action (Deprecated)');
   const divider100 = useForegroundColor('divider100 (Deprecated)');
   const shadow = useForegroundColor('shadowFar');
@@ -35,7 +28,7 @@ export default function ActionButton({
 
   const isIconOnly = Boolean(icon && !children);
   return (
-    <ButtonPressAnimation onPress={onPress} overflowMargin={20} testID={testID}>
+    <ButtonPressAnimation onPress={onPress} testID={testID}>
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"

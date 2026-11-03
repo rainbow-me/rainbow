@@ -1,7 +1,7 @@
 import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import { getGlobal, saveGlobal } from '@/handlers/localstorage/common';
 
-export type ENSDataType = 'avatar' | 'header' | 'registrant' | 'owner' | 'address' | 'records' | 'resolver' | 'firstTxTimestamp';
+export type ENSDataType = 'avatar' | 'header' | 'registrant' | 'owner' | 'records' | 'resolver';
 
 const ensProfileVersion = '0.2.0';
 

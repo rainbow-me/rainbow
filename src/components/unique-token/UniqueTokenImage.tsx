@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 
 import { Text, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import { type Colors } from '@/styles';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
@@ -117,5 +117,3 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
     </Centered>
   );
 });
-
-export default UniqueTokenImage;

@@ -2,8 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { createMMKV } from 'react-native-mmkv';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
@@ -17,37 +16,11 @@ import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useLedgerConnect } from '../hooks/useLedgerConnect';
 import { PairHardwareWalletAgainSheet } from '../screens/PairHardwareWalletAgainSheet';
 import { PairHardwareWalletErrorSheet } from '../screens/PairHardwareWalletErrorSheet';
+import { ledgerIsReadyAtom, readyForPollingAtom, setHardwareWalletTxError, triggerPollerCleanupAtom } from '../state/hardwareWalletTxState';
 import { LEDGER_ERROR_CODES } from '../utils/ledger';
-
-export const ledgerStorage = createMMKV({
-  id: 'ledgerStorage',
-});
-
-export const HARDWARE_TX_ERROR_KEY = 'hardwareTXError';
-
-export const setHardwareTXError = (value: boolean) => {
-  logger.warn(`[HardwareWalletTxNavigator]: setHardwareTXError`, { value });
-  ledgerStorage.set(HARDWARE_TX_ERROR_KEY, value);
-};
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './constants';
 
 const Swipe = createMaterialTopTabNavigator();
-
-export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
-
-// atoms used for navigator state
-export const LedgerIsReadyAtom = atom({
-  default: false,
-  key: 'ledgerIsReady',
-});
-export const readyForPollingAtom = atom({
-  default: true,
-  key: 'readyForPolling',
-});
-
-export const triggerPollerCleanupAtom = atom({
-  default: false,
-  key: 'triggerPollerCleanup',
-});
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
@@ -59,7 +32,7 @@ export const HardwareWalletTxNavigator = () => {
   const { navigate } = useNavigation();
 
   const deviceId = selectedWallet?.deviceId ?? '';
-  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
+  const [isReady, setIsReady] = useRecoilState(ledgerIsReadyAtom);
   const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
   const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
 
@@ -82,7 +55,7 @@ export const HardwareWalletTxNavigator = () => {
     if (!isReady) {
       setReadyForPolling(false);
       setIsReady(true);
-      setHardwareTXError(false);
+      setHardwareWalletTxError(false);
       submit();
     } else {
       logger.debug('[HardwareWalletTxNavigator]: already submitted', {});
@@ -100,7 +73,7 @@ export const HardwareWalletTxNavigator = () => {
   useEffect(() => {
     setIsReady(false);
     setReadyForPolling(true);
-    setHardwareTXError(false);
+    setHardwareWalletTxError(false);
     setTriggerPollerCleanup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

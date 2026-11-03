@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import * as i18n from '@/languages';
 

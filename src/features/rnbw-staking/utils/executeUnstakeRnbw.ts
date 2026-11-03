@@ -7,7 +7,7 @@ import { canUseDelegatedExecution } from '@/features/delegation/utils/willDelega
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { RainbowError } from '@/logger';
 import { extractReplayableExecution } from '@/raps/replay';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { type PreparedCallsExecution } from '@rainbow-me/sdk';
 
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS, STAKING_UNSTAKE_GAS_LIMIT } from '../constants';

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { type Source } from 'react-native-fast-image';
 
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -15,7 +15,7 @@ import { useSelectedWallet } from '@/state/wallets/walletsStore';
 
 const imageSize = 72;
 
-export default function ManualBackupPrompt() {
+export function ManualBackupPrompt() {
   const { navigate, goBack } = useNavigation();
   const selectedWallet = useSelectedWallet();
 

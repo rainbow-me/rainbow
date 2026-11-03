@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, View } from 'react-native';
 
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 

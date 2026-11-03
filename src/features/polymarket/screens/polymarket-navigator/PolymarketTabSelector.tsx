@@ -17,11 +17,11 @@ import Animated, {
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation, usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { usePolymarketContext } from '@/features/polymarket/screens/polymarket-navigator/PolymarketContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
@@ -50,7 +50,7 @@ const CONTENT_WIDTH = PILL.width * Object.keys(TABS).length + PILL.gap * (Object
 
 export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
   const { isDarkMode } = useColorMode();
-  const { accountScrollRef, eventsListRef } = usePolymarketContext();
+  const { accountScrollRef, scrollBrowseToTop } = usePolymarketContext();
 
   const buttonWidth = useDerivedValue<number>(() => PILL.width);
   const initialIndex = TABS[usePolymarketNavigationStore.getState().activeRoute as Tab]?.index ?? 0;
@@ -76,7 +76,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
       if (PolymarketNavigation.isRouteActive(tab)) {
         switch (tab) {
           case Routes.POLYMARKET_BROWSE_EVENTS_SCREEN:
-            eventsListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+            scrollBrowseToTop();
             break;
           case Routes.POLYMARKET_ACCOUNT_SCREEN:
             accountScrollRef.current?.scrollTo({ animated: true, y: 0 });
@@ -86,7 +86,7 @@ export const PolymarketTabSelector = memo(function PolymarketTabSelector() {
         PolymarketNavigation.navigate(tab);
       }
     },
-    [accountScrollRef, eventsListRef]
+    [accountScrollRef, scrollBrowseToTop]
   );
 
   const onPress = useCallback(

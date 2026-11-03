@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Text } from '@/design-system';
 import * as i18n from '@/languages';
 
@@ -14,9 +14,10 @@ import { useVerifyPhoneFlow } from './useVerifyPhoneFlow';
 const l = i18n.l.cash.deposit_setup.confirm_phone;
 
 export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
-  const { state, code, kycOutcome, continueAfterKyc, setCode, submit, resend, resending, resendCooldownSeconds } = useVerifyPhoneFlow();
-  // Verification is single-flight and terminal once the code is accepted.
-  const submitted = state === 'verifying' || state === 'verified';
+  const { state, code, kycOutcome, kycRejectionReason, continueAfterKyc, setCode, submit, resend, resending, resendCooldownSeconds } =
+    useVerifyPhoneFlow();
+  // Keep the retained OTP input disabled after advancing.
+  const submitted = state === 'verifying' || state === 'submitted';
   const inputRef = useSetupInputRef();
   const cooling = resendCooldownSeconds > 0;
   const resendDisabled = submitted || cooling || resending;
@@ -48,7 +49,7 @@ export const ConfirmPhoneStep = memo(function ConfirmPhoneStep() {
         </Box>
       </SetupStepLayout>
 
-      {kycOutcome && <KycOutcomeSheet onContinue={continueAfterKyc} outcome={kycOutcome} />}
+      {kycOutcome && <KycOutcomeSheet onContinue={continueAfterKyc} outcome={kycOutcome} kycRejectionReason={kycRejectionReason} />}
     </>
   );
 });

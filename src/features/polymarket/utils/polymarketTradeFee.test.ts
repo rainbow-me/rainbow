@@ -1,6 +1,8 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { calculateFeeToCollectUsd, calculateTradeFeeUsd, getTradeFeeAmount } from './polymarketTradeFee';
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
 }));
 

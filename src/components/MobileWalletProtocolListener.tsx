@@ -9,15 +9,9 @@ import {
 } from '@coinbase/mobile-wallet-protocol-host';
 
 import { IS_DEV } from '@/env';
+import { MobileWalletProtocolUserErrors } from '@/features/dapp-request/utils/mobileWalletProtocolErrors';
 import { handleMobileWalletProtocolRequest } from '@/features/dapp-request/utils/requestNavigationHandlers';
 import { logger, RainbowError } from '@/logger';
-
-export enum MobileWalletProtocolUserErrors {
-  USER_REJECTED_HANDSHAKE = 'User rejected the handshake',
-  USER_REJECTED_REQUEST = 'User rejected request',
-  ABORTED = 'Aborted',
-  READ_ONLY_WALLET = 'This wallet is read-only',
-}
 
 const ERROR_MESSAGES_TO_IGNORE = Object.values(MobileWalletProtocolUserErrors);
 

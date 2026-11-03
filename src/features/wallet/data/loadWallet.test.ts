@@ -1,0 +1,69 @@
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
+import { beforeEach, expect, test, vi } from 'vitest';
+
+import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
+import { isHardwareWalletKey } from '@/features/wallet/core/hardwareWalletKey';
+import { loadPrivateKey } from '@/features/wallet/data/walletKeychain';
+import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
+import { EthereumWalletType } from '@/helpers/walletTypes';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { getWalletWithAccount, setWalletDamaged } from '@/state/wallets/walletsStore';
+
+import { loadWallet } from './loadWallet';
+
+vi.mock('@ethersproject/wallet', () => ({ Wallet: vi.fn() }));
+vi.mock('@/features/hardware-wallet/utils/LedgerSigner', () => ({ LedgerSigner: vi.fn() }));
+vi.mock('@/features/wallet/core/hardwareWalletKey', () => ({ isHardwareWalletKey: vi.fn() }));
+vi.mock('@/features/wallet/data/walletKeychain', () => ({
+  loadAddress: vi.fn(),
+  loadPrivateKey: vi.fn(),
+}));
+vi.mock('@/navigation/Navigation', () => ({
+  default: { handleAction: vi.fn() },
+}));
+vi.mock('@/navigation/routesNames', () => ({
+  default: { WALLET_ERROR_SHEET: 'WalletErrorSheet' },
+}));
+vi.mock('@/state/wallets/walletsStore', () => ({
+  getWalletWithAccount: vi.fn(),
+  setWalletDamaged: vi.fn(),
+}));
+
+const ADDRESS = '0x0000000000000000000000000000000000000001';
+const HARDWARE_WALLET: RainbowWallet = {
+  addresses: [
+    {
+      address: ADDRESS,
+      avatar: null,
+      color: 0,
+      index: 0,
+      label: 'Main',
+      visible: true,
+    },
+  ],
+  color: 0,
+  encryptionType: EncryptionType.none,
+  id: 'hardware-wallet',
+  imported: false,
+  name: 'Ledger',
+  primary: true,
+  type: EthereumWalletType.bluetooth,
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+test('rejects malformed hardware metadata without constructing a software wallet', async () => {
+  vi.mocked(getWalletWithAccount).mockReturnValue(HARDWARE_WALLET);
+  vi.mocked(loadPrivateKey).mockResolvedValue('device-id/account');
+  vi.mocked(isHardwareWalletKey).mockReturnValue(false);
+
+  await expect(loadWallet({ address: ADDRESS, provider: new StaticJsonRpcProvider() })).resolves.toBeNull();
+  expect(Wallet).not.toHaveBeenCalled();
+  expect(LedgerSigner).not.toHaveBeenCalled();
+  expect(setWalletDamaged).toHaveBeenCalledWith(HARDWARE_WALLET.id, false);
+  expect(Navigation.handleAction).toHaveBeenCalledWith(Routes.WALLET_ERROR_SHEET);
+});

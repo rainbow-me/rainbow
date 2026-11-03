@@ -8,7 +8,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { shadow as shadowUtil } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import { UniqueTokenImage } from './UniqueTokenImage';
@@ -87,5 +87,3 @@ export const UniqueTokenCard = React.memo(function UniqueTokenCard({
     </Container>
   );
 });
-
-export default UniqueTokenCard;

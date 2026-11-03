@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
-import RadialGradientBackground, { type RadialGradientBackgroundProps } from '@/components/RadialGradientBackground';
+import { RadialGradientBackground, type RadialGradientBackgroundProps } from '@/components/RadialGradientBackground';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { type SearchInputProps } from './SearchInput';
@@ -15,7 +15,7 @@ type SearchInputGradientBackgroundProps = {
   type?: 'default' | 'tint';
 };
 
-const SearchInputGradientBackground = ({ variant, width, height, state, type = 'default' }: SearchInputGradientBackgroundProps) => {
+export const SearchInputGradientBackground = ({ variant, width, height, state, type = 'default' }: SearchInputGradientBackgroundProps) => {
   const { colors } = useTheme();
 
   const gradientSets = useMemo(
@@ -77,8 +77,6 @@ const SearchInputGradientBackground = ({ variant, width, height, state, type = '
     </>
   );
 };
-
-export default SearchInputGradientBackground;
 
 const AnimatedRadialGradient = ({
   variant,

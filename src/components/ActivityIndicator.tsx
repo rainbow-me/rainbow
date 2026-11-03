@@ -17,7 +17,7 @@ type ActivityIndicatorProps = {
   size?: number;
 };
 
-export default function ActivityIndicator({ color, isInteraction = false, size = 25, ...props }: ActivityIndicatorProps) {
+export function ActivityIndicator({ color, isInteraction = false, size = 25, ...props }: ActivityIndicatorProps) {
   const { colors } = useTheme();
   return (
     <Container size={size} {...props}>

@@ -8,13 +8,13 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { analytics } from '@/analytics';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { RainbowButton } from '@/components/buttons';
-import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
+import { RainbowButtonTypes } from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '@/components/fields';
 import { ImgixImage } from '@/components/images';
 import { Text } from '@/components/text';
 import { Box, Inset, Stack } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
 import useMagicAutofocus from '@/hooks/useMagicAutofocus';
@@ -204,8 +204,6 @@ export function BackupCloudStep() {
     </Box>
   );
 }
-
-export default BackupCloudStep;
 
 const keyboardAvoidingViewStyle = { flex: 1 } as const;
 

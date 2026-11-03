@@ -35,19 +35,13 @@ export interface ButtonPressAnimationProps
   isInteraction?: boolean;
 
   /** @platform android */
-  reanimatedButton?: boolean;
-  /** @platform android */
   backgroundColor?: string;
   /** @platform android */
   borderRadius?: number;
   /** @platform android */
-  contentContainerStyle?: StyleProp<ViewStyle>;
-  /** @platform android */
   exclusive?: boolean;
   /** @platform android */
-  overflowMargin?: number;
-  /** @platform android */
-  skipTopMargin?: boolean;
+  importantForAccessibility?: ViewProps['importantForAccessibility'];
   /** @platform android */
   wrapperStyle?: StyleProp<ViewStyle>;
   /** @platform android */

@@ -2,30 +2,30 @@ import { type TransactionReceipt, type TransactionRequest } from '@ethersproject
 import { type Wallet } from '@ethersproject/wallet';
 import { formatUnits, type Address } from 'viem';
 
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { analytics } from '@/analytics';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings } from '@/features/gas/types/gas';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { type LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { getProvider, toHex } from '@/handlers/web3';
 import { formatNumber, multiply } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getNextNonce } from '@/state/nonces';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export interface GasInfo {
@@ -212,7 +212,7 @@ export async function getGasInfo({
   if (!gasLimit || gasLimit === '0') return { gasFeeDisplay: undefined, gasLimit: undefined, sufficientFundsForGas: false };
 
   const chainNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
-  const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
+  const gasFeeWei = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
   const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
   const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
   const nativeAssetBalance = userNativeAsset?.balance?.amount || '0';

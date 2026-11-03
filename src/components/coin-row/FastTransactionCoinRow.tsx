@@ -5,96 +5,24 @@ import smartWalletIcon from '@/assets/smartWalletIcon.png';
 import smartWalletRevoke from '@/assets/smartWalletRevoke.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/design-system';
-import { TransactionStatus, type RainbowTransaction, type TransactionType } from '@/entities/transactions';
+import { opacity } from '@/design-system/utils/opacity';
+import { type RainbowTransaction } from '@/entities/transactions';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
-import { address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import { ImgixImage } from '../images';
-import Spinner from '../Spinner';
 import { CardSize } from '../unique-token/CardSize';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-
-const getIconTopMargin = (type: TransactionType) => {
-  switch (type) {
-    case 'swap':
-      return 1;
-    case 'mint':
-      return -1;
-
-    default:
-      return 0;
-  }
-};
-const activityTypeIcon: Record<TransactionType, string> = {
-  airdrop: '􀐚',
-  approve: '􀁢',
-  contract_interaction: '􀉆',
-  receive: '􀄩',
-  send: '􀈟',
-  swap: '􀖅',
-  bid: '􀑍',
-  burn: '􀙬',
-  mint: '􀫸',
-  purchase: '􀍣',
-  sale: '􀋡',
-  wrap: '􀑉',
-  unwrap: '􀑉',
-  cancel: '􀁠',
-  repay: '􀄹',
-  bridge: '􀄹',
-  stake: '􀄷',
-  unstake: '􀄲',
-  withdraw: '􀄲',
-  deposit: '􀄷',
-  delegate: '􀁢',
-  revoke: '􀁎',
-  revoke_delegation: '􀁎',
-  speed_up: '􀓎',
-  claim: '􀄩',
-  borrow: '􀄩',
-  deployment: '􀄩',
-  launch: '􀓎',
-};
-
-export const ActivityTypeIcon = ({
-  transaction: { status, type },
-  color,
-}: {
-  transaction: Pick<RainbowTransaction, 'status' | 'type'>;
-  color: string;
-}) => {
-  if (status === TransactionStatus.pending) {
-    return <Spinner color={color} size={11} style={{ marginTop: -1, paddingRight: 2 }} />;
-  }
-
-  if (status === 'failed')
-    return (
-      <Text color={{ custom: color }} weight="semibold" size="12pt" align="center">
-        {'􀀲'}
-      </Text>
-    );
-
-  const symbol = activityTypeIcon[type];
-  if (!symbol) return null;
-  return (
-    <View style={{ marginTop: getIconTopMargin(type) }}>
-      <Text color={{ custom: color }} weight="semibold" size="12pt">
-        {symbol}
-      </Text>
-    </View>
-  );
-};
 
 const BottomRow = React.memo(function BottomRow({
   transaction,
@@ -113,7 +41,7 @@ const BottomRow = React.memo(function BottomRow({
   let description = transaction.description;
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
+    description = transaction.contract?.name || abbreviateAddress(to, 6, 4);
     tag = transaction.description;
   }
 

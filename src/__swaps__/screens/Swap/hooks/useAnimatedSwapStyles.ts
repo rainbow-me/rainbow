@@ -21,6 +21,7 @@ import {
   SETTINGS_SHEET_HEIGHT,
   SETTINGS_SHEET_ROW_GAP,
 } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { SwapWarningType, type useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
@@ -30,13 +31,11 @@ import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/con
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
-
-import { NavigationSteps } from '../providers/swap-provider';
 
 const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
 

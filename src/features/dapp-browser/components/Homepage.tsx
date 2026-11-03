@@ -8,7 +8,7 @@ import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Draggable } from '@/components/drag-and-drop/components/Draggable';
 import { DndProvider } from '@/components/drag-and-drop/DndProvider';
 import { DraggableGrid, type DraggableGridProps } from '@/components/drag-and-drop/features/sort/components/DraggableGrid';
@@ -31,6 +31,7 @@ import {
   useBackgroundColor,
   useColorMode,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
 import { FEATURED_RESULTS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
@@ -38,7 +39,6 @@ import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useTrendingDApps } from '@/features/dapp/resources/trendingDapps';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { HTTP_PREFIX, HTTPS_PREFIX } from '@/framework/core/utils/url';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type DApp } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

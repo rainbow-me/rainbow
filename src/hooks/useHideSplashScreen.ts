@@ -3,22 +3,18 @@ import { InteractionManager, NativeModules, Platform } from 'react-native';
 
 import { SystemBars } from 'react-native-edge-to-edge';
 
-import { type AppIconKey } from '@/features/app-icon/models/appIcons';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { logger, RainbowError } from '@/logger';
-import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+import { markSplashScreenHidden, onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
 
 const { RainbowSplashScreen } = NativeModules;
 
 let alreadyLoggedPerformance = false;
-let splashScreenHidden = false;
-
-export const isSplashScreenHidden = () => splashScreenHidden;
 
 export const hideSplashScreen = async () => {
-  splashScreenHidden = true;
+  markSplashScreenHidden();
   try {
     if (RainbowSplashScreen?.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
@@ -42,7 +38,7 @@ export const hideSplashScreen = async () => {
       PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
 
       // need to load setting straight from storage, redux isnt ready yet
-      const appIcon = (await getAppIcon()) as AppIconKey;
+      const appIcon = await getAppIcon();
       if (appIcon === 'poolboy') {
         const Sound = require('react-native-sound');
 

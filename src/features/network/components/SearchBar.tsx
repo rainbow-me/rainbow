@@ -4,10 +4,10 @@ import { StyleSheet, type TextInput } from 'react-native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 
 import { networkSwitcherStore } from '../stores/networkSwitcherStore';

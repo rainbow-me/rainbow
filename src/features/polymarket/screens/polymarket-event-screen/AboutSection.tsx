@@ -4,12 +4,12 @@ import ConditionalWrap from 'conditional-wrap';
 import { format } from 'date-fns';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { CATEGORIES } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

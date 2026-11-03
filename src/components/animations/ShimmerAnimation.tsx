@@ -13,8 +13,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { useTheme } from '@/theme/ThemeContext';
 
 const timingConfig = {
@@ -32,7 +32,7 @@ type ShimmerAnimationProps = {
   width?: number;
 };
 
-export default function ShimmerAnimation({
+export function ShimmerAnimation({
   color,
   animationDuration = timingConfig.duration,
   enabled = true,
@@ -41,7 +41,7 @@ export default function ShimmerAnimation({
 }: ShimmerAnimationProps) {
   const containerWidth = useSharedValue(width);
   const translateX = useSharedValue(0);
-  const opacityValue = useSharedValue(1);
+  const opacityValue = useSharedValue(enabled ? 1 : 0);
   const isEnabled = useSharedValue(enabled);
 
   const { colors } = useTheme();

@@ -10,15 +10,15 @@ import { EstimateGasExecutionError, IntrinsicGasTooLowError } from 'viem';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Separator, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import useGas from '@/features/gas/hooks/useGas';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -27,27 +27,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getNextNonce } from '@/state/nonces';
 import { delegation } from '@rainbow-me/sdk';
 
-/**
- * Reasons for revoking delegation - determines the panel's appearance and messaging
- */
-export enum RevokeReason {
-  // User-triggered
-  /** Toggle off Smart Wallet — revokes all chains */
-  DISABLE_SMART_WALLET = 'disable_smart_wallet',
-  /** Disable a single Rainbow-delegated chain */
-  DISABLE_SINGLE_NETWORK = 'disable_single_network',
-  /** Disable a third-party delegated chain */
-  DISABLE_THIRD_PARTY = 'disable_third_party',
-  // Backend-triggered (from shouldRevokeDelegation())
-  /** Contract has a known exploit */
-  ALERT_VULNERABILITY = 'alert_vulnerability',
-  /** Contract has a known bug */
-  ALERT_BUG = 'alert_bug',
-  /** Unrecognized revoke reason from backend */
-  ALERT_UNRECOGNIZED = 'alert_unrecognized',
-  /** Catch-all for unspecified backend revoke signals */
-  ALERT_UNSPECIFIED = 'alert_unspecified',
-}
+import { RevokeReason } from '../types/revokeReason';
 
 export type RevokeStatus =
   | 'notReady' // preparing the data necessary to revoke

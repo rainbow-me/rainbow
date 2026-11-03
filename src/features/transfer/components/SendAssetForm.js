@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Column } from '@/components/layout';
 import { Text } from '@/components/text';
 import styled from '@/framework/ui/styled-thing';
@@ -102,7 +102,7 @@ export function SendAssetForm({
       extraKeyboardSpace={isIOS26OrHigher ? IOS_26_FOOTER_HEIGHT : Platform.OS === 'ios' ? 0 : -NAVIGATION_BAR_HEIGHT}
     >
       <Container>
-        <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
+        <ButtonPressAnimation onPress={onResetAssetSelection} scaleTo={0.925}>
           <ShadowStack
             alignSelf="center"
             backgroundColor={colors.white}

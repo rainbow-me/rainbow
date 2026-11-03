@@ -2,8 +2,8 @@ import React, { forwardRef, useCallback, type Ref } from 'react';
 import { Platform, View, type TextInput, type TextInputProps } from 'react-native';
 
 import { Box } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import useDimensions from '@/hooks/useDimensions';
 import { padding, position } from '@/styles';

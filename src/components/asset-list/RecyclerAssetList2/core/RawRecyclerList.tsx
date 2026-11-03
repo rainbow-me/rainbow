@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef, type LegacyRef } from 'react';
-import { type LayoutChangeEvent } from 'react-native';
+import React, { useCallback, useMemo, useRef, type LegacyRef } from 'react';
 
 import { useListen } from '@storesjs/stores';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
@@ -18,20 +18,21 @@ import {
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
-import usePrevious from '@/hooks/usePrevious';
-import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
+import { useOnChange } from '@/hooks/useOnChange';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useOnTabReselect } from '@/navigation/tabEvents';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type AssetListType } from '..';
 import { useWalletsStore } from '../../../../state/wallets/walletsStore';
+import { AssetListItemAnimator } from './assetListItemAnimator';
 import { useRecyclerAssetListPosition } from './Contexts';
-import ExternalScrollViewWithRef from './ExternalScrollView';
-import getLayoutProvider from './getLayoutProvider';
-import RefreshControl from './RefreshControl';
+import { ExternalScrollViewWithRef } from './ExternalScrollView';
+import { getLayoutProvider } from './getLayoutProvider';
+import { RefreshControlWrapped as RefreshControl } from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
 
 const dimensions = {
@@ -57,17 +58,10 @@ export type ExtendedState = {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
-export type ViewableItemsChangedCallback = ({
-  viewableItems,
-  viewableItemsAdded,
-  viewableItemsRemoved,
-}: {
-  viewableItems: BaseCellType[];
-  viewableItemsAdded: BaseCellType[];
-  viewableItemsRemoved: BaseCellType[];
-}) => void;
+/** Receives the complete visible row set, including identity changes at unchanged indices. */
+export type ViewableItemsChangedCallback = ({ viewableItems }: { viewableItems: BaseCellType[] }) => void;
 
-const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
+export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
   disablePullDownToRefresh,
   scrollIndicatorInsets,
@@ -91,8 +85,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition();
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const viewableIndicesRef = useRef<number[]>([]);
-  const baseCellItems = useMemo(() => briefSectionsData.map(item => ({ uid: item.uid, type: item.type })), [briefSectionsData]);
-  const previousBaseCellItems = usePrevious(baseCellItems);
 
   const layoutProvider = useMemo(
     () =>
@@ -105,81 +97,38 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
-  const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
-
-  const topMarginRef = useRef<number>(0);
+  const topInset = useSafeAreaInsets().top;
   const ref = useRef<RecyclerListViewRef>(undefined);
+  const itemAnimator = useStableValue(() => new AssetListItemAnimator(ref));
 
   useListen(
     useWalletsStore,
     state => state.accountAddress,
     () => {
       ref.current?.scrollToTop();
-      topMarginRef.current = 0;
       y?.setValue(0);
     }
   );
 
-  useEffect(() => {
-    if (!ref.current) return;
-
-    setScrollToTopRef(ref.current);
-  }, [ref, setScrollToTopRef]);
-
-  const onLayout = useCallback(
-    () =>
-      ({ nativeEvent }: LayoutChangeEvent) => {
-        topMarginRef.current = nativeEvent.layout.y;
-      },
-    []
-  );
-
-  const layoutItemAnimator = useLayoutItemAnimator(ref, topMarginRef);
+  useOnTabReselect(() => ref.current?.scrollToOffset(0, -topInset, true));
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
   const handleViewableIndicesChanged = useCallback(
-    (viewableIndices: number[], viewableIndicesAdded: number[], viewableIndicesRemoved: number[]) => {
-      if (!onViewableItemsChanged) return;
+    (viewableIndices: number[]) => {
       viewableIndicesRef.current = viewableIndices;
-
-      const viewableItems = viewableIndices.map(index => briefSectionsData[index]);
-      const viewableItemsAdded = viewableIndicesAdded.map(index => briefSectionsData[index]);
-      const viewableItemsRemoved = viewableIndicesRemoved.map(index => briefSectionsData[index]);
-
-      onViewableItemsChanged({ viewableItems, viewableItemsAdded, viewableItemsRemoved });
+      onViewableItemsChanged?.({ viewableItems: viewableIndices.map(index => briefSectionsData[index]) });
     },
     [onViewableItemsChanged, briefSectionsData]
   );
 
-  // If viewable indices remain the same but the data changes, we need to trigger onViewableItemsChanged
-  useEffect(() => {
-    if (!onViewableItemsChanged || viewableIndicesRef.current.length === 0 || !previousBaseCellItems) return;
-
-    const currentViewableIndices = viewableIndicesRef.current;
-
-    const hasDataChanged = currentViewableIndices.some(index => {
-      const prevItem = previousBaseCellItems[index];
-      const currItem = baseCellItems[index];
-
-      return !prevItem || !currItem || prevItem.uid !== currItem.uid;
-    });
-
-    if (hasDataChanged) {
-      const viewableItems = currentViewableIndices.map(index => baseCellItems[index]);
-      const previousViewableItems = currentViewableIndices.map(index => previousBaseCellItems[index]).filter(Boolean);
-
-      const currentUids = new Set(viewableItems.map(item => item.uid));
-      const previousUids = new Set(previousViewableItems.map(item => item.uid));
-
-      const viewableItemsAdded = viewableItems.filter(item => !previousUids.has(item.uid));
-      const viewableItemsRemoved = previousViewableItems.filter(item => !currentUids.has(item.uid));
-
-      onViewableItemsChanged({ viewableItems, viewableItemsAdded, viewableItemsRemoved });
-    }
-  }, [onViewableItemsChanged, previousBaseCellItems, baseCellItems]);
+  // RecyclerListView only reports when visible indices change, ignoring item changes.
+  // This compensates by firing when list data changes.
+  useOnChange(() => {
+    handleViewableIndicesChanged(viewableIndicesRef.current);
+  }, [handleViewableIndicesChanged]);
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
@@ -218,11 +167,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
             ? ExternalSelectNFTScrollViewWithRef
             : ExternalScrollViewWithRef
       }
-      itemAnimator={layoutItemAnimator}
+      itemAnimator={itemAnimator}
       layoutProvider={layoutProvider}
       onEndReachedThreshold={0.5}
       onEndReached={onEndReached}
-      onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
@@ -230,9 +178,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       canChangeSize={type === 'wallet'}
       layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      scrollViewProps={itemAnimator.scrollViewProps}
       onVisibleIndicesChanged={handleViewableIndicesChanged}
     />
   );
 });
-
-export default RawMemoRecyclerAssetList;

@@ -8,9 +8,9 @@ import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ColorCircle from '../components/avatar-builder/ColorCircle';
+import { ColorCircle } from '../components/avatar-builder/ColorCircle';
 import { EmojiSelector } from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';

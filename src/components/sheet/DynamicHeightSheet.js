@@ -14,7 +14,7 @@ import { position } from '@/styles';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
-import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
+import { SheetHandleFixedToTop, SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,

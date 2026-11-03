@@ -6,22 +6,12 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
-import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
-import { fetchHiddenTokens, getHidden } from '@/hooks/useFetchHiddenTokens';
-import { fetchShowcaseTokens, getShowcase } from '@/hooks/useFetchShowcaseTokens';
 import { logger, RainbowError } from '@/logger';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import {
-  getHiddenAndShowcaseCollectionIds,
-  mergeMaps,
-  migrateTokens,
-  pruneStaleAndClosedCollections,
-  replaceEthereumWithMainnet,
-} from '@/state/nfts/utils';
-import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
+import { getHiddenAndShowcaseCollectionIds, pruneStaleAndClosedCollections } from './collectionPruning';
+import { NFTS_PAGE_SIZE, NFTS_PAGINATION_STALE_TIME, NFTS_PRUNE_INTERVAL, NFTS_STALE_TIME } from './constants';
+import { fetchHiddenTokens, fetchShowcaseTokens } from './tokenPreferences';
 import {
   type Collection,
   type CollectionId,
@@ -31,11 +21,8 @@ import {
   type PaginationInfo,
   type UniqueId,
 } from './types';
+import { mergeMaps, replaceEthereumWithMainnet } from './utils';
 
-export const PAGE_SIZE = 12;
-export const STALE_TIME = time.minutes(10);
-export const PAGINATION_STALE_TIME = time.seconds(30);
-export const TIME_BETWEEN_PRUNES = time.minutes(10);
 const MAX_RETRIES = 3;
 
 const EMPTY_RETURN_DATA: NftsQueryData = {
@@ -49,21 +36,13 @@ let paginationPromise: { address: Address | string; promise: Promise<void> } | n
 const collectionsPromises: Map<Address | string, Map<string, Promise<void>>> = new Map();
 let prunePromise: { address: Address | string; promise: Promise<void>; lastPruneAt: number } | null = null;
 
-const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string, isMigration = false): Promise<NftsQueryData> => {
+const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
   let tokensForCategory: string[] = [];
 
   if (collectionId === 'showcase') {
-    tokensForCategory = isMigration
-      ? (await getShowcase(walletAddress, true)) || []
-      : (await fetchShowcaseTokens({ address: walletAddress })) || [];
+    tokensForCategory = (await fetchShowcaseTokens({ address: walletAddress })) || [];
   } else if (collectionId === 'hidden') {
-    tokensForCategory = isMigration
-      ? (await getHidden(walletAddress, true)) || []
-      : (await fetchHiddenTokens({ address: walletAddress })) || [];
-  }
-
-  if (isMigration) {
-    tokensForCategory = (await migrateTokens(walletAddress, tokensForCategory)) || [];
+    tokensForCategory = (await fetchHiddenTokens({ address: walletAddress })) || [];
   }
 
   const tokens = tokensForCategory
@@ -110,18 +89,6 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
     }
   });
 
-  if (isMigration) {
-    const isReadOnlyWallet = getIsReadOnlyWallet();
-    if (!isReadOnlyWallet) {
-      if (collectionId === 'showcase') {
-        await updateWebShowcase(walletAddress, tokensForCategory);
-        useOpenCollectionsStore.getState(walletAddress).setCollectionOpen('showcase', true);
-      } else if (collectionId === 'hidden') {
-        await updateWebHidden(walletAddress, tokensForCategory);
-      }
-    }
-  }
-
   return {
     collections: new Map(),
     nftsByCollection,
@@ -131,13 +98,13 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
 
 const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
   try {
-    const { walletAddress, collectionId, isMigration = false } = params;
+    const { walletAddress, collectionId } = params;
 
     if (collectionId) {
       const nftsByCollection = new Map<CollectionId, Map<UniqueId, UniqueAsset>>();
 
       if (collectionId === 'showcase' || collectionId === 'hidden') {
-        const results = await fetchMultipleCollectionNfts(collectionId, walletAddress, isMigration);
+        const results = await fetchMultipleCollectionNfts(collectionId, walletAddress);
         for (const [id, nftsMap] of results.nftsByCollection) {
           nftsByCollection.set(id.toLowerCase(), nftsMap);
         }
@@ -186,6 +153,7 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
 };
 
 function createSelector<T>(
+  get: () => NftsState,
   selectorFn: (
     collections: Map<CollectionId, Collection>,
     nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
@@ -199,7 +167,7 @@ function createSelector<T>(
   let lastPagination: PaginationInfo | null = null;
 
   return () => {
-    const { collections, nftsByCollection, pagination } = useNftsStore.getState();
+    const { collections, nftsByCollection, pagination } = get();
 
     if (
       cachedResult !== uninitialized &&
@@ -222,6 +190,7 @@ function createSelector<T>(
 }
 
 function createParameterizedSelector<T, Args extends unknown[]>(
+  get: () => NftsState,
   selectorFn: (
     collections: Map<CollectionId, Collection>,
     nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
@@ -236,7 +205,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   let lastPagination: PaginationInfo | null = null;
 
   return (...args: Args) => {
-    const { collections, nftsByCollection, pagination } = useNftsStore.getState();
+    const { collections, nftsByCollection, pagination } = get();
     const argsChanged = !lastArgs || args.length !== lastArgs.length || args.some((arg, i) => arg !== lastArgs?.[i]);
 
     if (
@@ -273,11 +242,11 @@ export const createNftsStore = (address: Address | string) =>
       abortInterruptedFetches: false,
       params: {
         walletAddress: address,
-        limit: PAGE_SIZE,
+        limit: NFTS_PAGE_SIZE,
         pageKey: null,
         collectionId: undefined,
       },
-      staleTime: STALE_TIME,
+      staleTime: NFTS_STALE_TIME,
     },
 
     (set, get) => ({
@@ -301,7 +270,7 @@ export const createNftsStore = (address: Address | string) =>
         // Set an initial timestamp to prevent immediate refetch
         const currentFetchedPages = { ...fetchedPages };
         if (collections.size > 0 && Object.keys(currentFetchedPages).length === 0) {
-          currentFetchedPages.initial = Date.now() - PAGINATION_STALE_TIME / 2; // Set to half stale time ago
+          currentFetchedPages.initial = Date.now() - NFTS_PAGINATION_STALE_TIME / 2; // Set to half stale time ago
           set({ fetchedPages: currentFetchedPages });
         }
 
@@ -314,7 +283,7 @@ export const createNftsStore = (address: Address | string) =>
           const lastFetchTime =
             Object.values(currentFetchedPages).length > 0 ? Math.max(...Object.values(currentFetchedPages)) : currentFetchedPages.initial;
 
-          const isPageKeyStale = lastFetchTime ? now - lastFetchTime > PAGINATION_STALE_TIME : true; // Default to stale if no timestamp
+          const isPageKeyStale = lastFetchTime ? now - lastFetchTime > NFTS_PAGINATION_STALE_TIME : true; // Default to stale if no timestamp
 
           // Clean up old pageKey timestamps (older than 1 minute) to prevent memory leaks
           const cleanedFetchedPages = Object.entries(currentFetchedPages).reduce(
@@ -331,7 +300,7 @@ export const createNftsStore = (address: Address | string) =>
             // Try to fetch with the current pageKey
             paginationPromise = {
               address,
-              promise: fetch({ pageKey: nextPageKey, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
+              promise: fetch({ pageKey: nextPageKey, limit: NFTS_PAGE_SIZE }, { force: true, skipStoreUpdates: true })
                 .then(data => {
                   if (!data) return;
                   const { collections } = get();
@@ -343,7 +312,7 @@ export const createNftsStore = (address: Address | string) =>
                 })
                 .catch(async () => {
                   // If the pageKey is expired or invalid, refetch from the beginning
-                  const data = await fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true });
+                  const data = await fetch({ pageKey: null, limit: NFTS_PAGE_SIZE }, { force: true, skipStoreUpdates: true });
                   if (!data) return;
 
                   // Set initial data
@@ -356,7 +325,7 @@ export const createNftsStore = (address: Address | string) =>
                   // If there's a next page, fetch it immediately
                   if (data.pagination?.hasNext && data.pagination?.pageKey) {
                     const nextPageData = await fetch(
-                      { pageKey: data.pagination.pageKey, limit: PAGE_SIZE },
+                      { pageKey: data.pagination.pageKey, limit: NFTS_PAGE_SIZE },
                       { force: true, skipStoreUpdates: true }
                     );
 
@@ -381,7 +350,7 @@ export const createNftsStore = (address: Address | string) =>
           // PageKey is stale, refetch from the beginning and then fetch next page
           paginationPromise = {
             address,
-            promise: fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
+            promise: fetch({ pageKey: null, limit: NFTS_PAGE_SIZE }, { force: true, skipStoreUpdates: true })
               .then(async data => {
                 if (!data) return;
 
@@ -395,7 +364,7 @@ export const createNftsStore = (address: Address | string) =>
                 // If there's a next page, fetch it immediately
                 if (data.pagination?.hasNext && data.pagination?.pageKey) {
                   const nextPageData = await fetch(
-                    { pageKey: data.pagination.pageKey, limit: PAGE_SIZE },
+                    { pageKey: data.pagination.pageKey, limit: NFTS_PAGE_SIZE },
                     { force: true, skipStoreUpdates: true }
                   );
 
@@ -433,11 +402,11 @@ export const createNftsStore = (address: Address | string) =>
         }
 
         const now = Date.now();
-        if (!prunePromise || prunePromise.address !== address || now - prunePromise.lastPruneAt > TIME_BETWEEN_PRUNES) {
+        if (!prunePromise || prunePromise.address !== address || now - prunePromise.lastPruneAt > NFTS_PRUNE_INTERVAL) {
           prunePromise = {
             address,
             lastPruneAt: now,
-            promise: pruneStaleAndClosedCollections({ address, set }).finally(() => {
+            promise: pruneStaleAndClosedCollections({ address, state: get(), set }).finally(() => {
               prunePromise = null;
             }),
           };
@@ -520,7 +489,7 @@ export const createNftsStore = (address: Address | string) =>
         return promise;
       },
 
-      getNftCollections: createSelector(collections => {
+      getNftCollections: createSelector(get, collections => {
         if (!collections.size) {
           const { getData } = get();
           return getData()?.collections ?? null;
@@ -528,7 +497,7 @@ export const createNftsStore = (address: Address | string) =>
         return collections;
       }),
 
-      getNftCollection: createParameterizedSelector(collections => collectionId => {
+      getNftCollection: createParameterizedSelector(get, collections => collectionId => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!collections.size) {
           const { getData } = get();
@@ -537,7 +506,7 @@ export const createNftsStore = (address: Address | string) =>
         return collections.get(normalizedCollectionId) || null;
       }),
 
-      getNftsByCollection: createParameterizedSelector((_, nftsByCollection) => collectionId => {
+      getNftsByCollection: createParameterizedSelector(get, (_, nftsByCollection) => collectionId => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
           const { getData } = get();
@@ -546,7 +515,7 @@ export const createNftsStore = (address: Address | string) =>
         return nftsByCollection.get(normalizedCollectionId) || null;
       }),
 
-      getNftByUniqueId: createParameterizedSelector((_, nftsByCollection) => (collectionId, uniqueId) => {
+      getNftByUniqueId: createParameterizedSelector(get, (_, nftsByCollection) => (collectionId, uniqueId) => {
         const normalizedCollectionId = collectionId.toLowerCase();
         const normalizedUniqueId = uniqueId.toLowerCase();
         if (!nftsByCollection.size) {
@@ -558,7 +527,7 @@ export const createNftsStore = (address: Address | string) =>
 
       // TODO: Need to think about this one more
       // I don't like having to create a new Array for each call to this accessor
-      getNft: createParameterizedSelector((_, nftsByCollection) => (collectionId, index) => {
+      getNft: createParameterizedSelector(get, (_, nftsByCollection) => (collectionId, index) => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
           const { getData } = get();
@@ -569,7 +538,7 @@ export const createNftsStore = (address: Address | string) =>
         return nftArray[index] || null;
       }),
 
-      getNftPaginationInfo: createSelector((_, __, pagination) => {
+      getNftPaginationInfo: createSelector(get, (_, __, pagination) => {
         if (!pagination) {
           const { getData } = get();
           return getData()?.pagination ?? null;
@@ -577,7 +546,7 @@ export const createNftsStore = (address: Address | string) =>
         return pagination;
       }),
 
-      hasNextNftCollectionPage: createSelector((_, __, pagination) => {
+      hasNextNftCollectionPage: createSelector(get, (_, __, pagination) => {
         if (!pagination) {
           const { getData } = get();
           return Boolean(getData()?.pagination?.hasNext);
@@ -585,7 +554,7 @@ export const createNftsStore = (address: Address | string) =>
         return Boolean(pagination?.hasNext);
       }),
 
-      getCurrentNftCollectionPageKey: createSelector((_, __, pagination) => {
+      getCurrentNftCollectionPageKey: createSelector(get, (_, __, pagination) => {
         if (!pagination) {
           const { getData } = get();
           return getData()?.pagination?.pageKey ?? null;
@@ -593,7 +562,7 @@ export const createNftsStore = (address: Address | string) =>
         return pagination?.pageKey ?? null;
       }),
 
-      getNextNftCollectionPageKey: createSelector((_, __, pagination) => {
+      getNextNftCollectionPageKey: createSelector(get, (_, __, pagination) => {
         if (!pagination) {
           const { getData } = get();
           const data = getData();
@@ -625,7 +594,7 @@ async function setOrPruneNftsData(
 ): Promise<void> {
   const now = Date.now();
   // Handle initial fetch or pull-to-refresh essentially resetting the pagination state
-  if (!params.pageKey && params.limit === PAGE_SIZE && params.walletAddress) {
+  if (!params.pageKey && params.limit === NFTS_PAGE_SIZE && params.walletAddress) {
     set(state => ({
       ...state,
       collections: data.collections,

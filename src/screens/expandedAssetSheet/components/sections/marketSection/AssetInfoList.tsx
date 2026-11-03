@@ -4,11 +4,11 @@ import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { AnimatedText, Box, Text, TextIcon, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -122,10 +122,12 @@ export function AssetInfoList() {
     };
   });
 
+  const tokenId = `${asset.address}_${asset.chainId}`;
+
   const liveTokenMarketCap = useLiveTokenValue({
-    tokenId: `${asset.address}_${asset.chainId}`,
-    initialValue: String(metadata?.marketCap ?? 0),
-    initialValueLastUpdated: 0,
+    tokenId,
+    fallback: String(metadata?.marketCap ?? 0),
+    fallbackUpdatedAt: 0,
     selector: state => state.marketData.circulatingMarketCap,
   });
 

@@ -29,7 +29,7 @@ interface Props {
   shouldAnimate: SharedValue<boolean>;
 }
 
-const SingleRainbow = ({ details, shouldAnimate }: Props) => {
+export const SingleRainbow = ({ details, shouldAnimate }: Props) => {
   const { delay, source, x, y, rotate: finalRotate, scale: finalScale } = details;
 
   const animationProgress = useSharedValue(0);
@@ -78,5 +78,3 @@ const SingleRainbow = ({ details, shouldAnimate }: Props) => {
 
   return <RainbowImage Component={Animated.Image} source={source} style={animatedStyle} />;
 };
-
-export default SingleRainbow;

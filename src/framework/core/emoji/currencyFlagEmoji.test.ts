@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 
 import { resolveCurrencyFlagEmoji } from './currencyFlagEmoji';

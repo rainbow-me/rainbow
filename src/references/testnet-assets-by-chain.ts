@@ -211,5 +211,3 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
     },
   },
 };
-
-export default chainAssets;

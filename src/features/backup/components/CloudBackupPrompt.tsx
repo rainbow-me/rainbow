@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { type Source } from 'react-native-fast-image';
 
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -19,7 +19,7 @@ import { backupsStore } from '../stores/backupsStore';
 
 const imageSize = 72;
 
-export default function CloudBackupPrompt() {
+export function CloudBackupPrompt() {
   const { navigate, goBack } = useNavigation();
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
   const selectedWallet = useSelectedWallet();

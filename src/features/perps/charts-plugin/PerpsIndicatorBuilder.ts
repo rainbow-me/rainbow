@@ -26,6 +26,7 @@ import {
   type IndicatorStyle,
   type IndicatorTypeConfig,
   type PerpsIndicatorConfig,
+  type PerpsIndicatorDrawParams,
   type PerpsIndicatorPlugin,
 } from './PerpsIndicator';
 
@@ -509,7 +510,7 @@ export class PerpsIndicatorBuilder {
     return positions;
   }
 
-  public drawLines(canvas: SkCanvas, params: DrawParams): IndicatorPosition[] {
+  public drawLines(canvas: SkCanvas, params: PerpsIndicatorDrawParams): IndicatorPosition[] {
     const positions = this.calculatePositions(params);
 
     let maxBubbleWidth = 0;

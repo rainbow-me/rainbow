@@ -30,7 +30,7 @@ const sandConfig: AnimationConfigOptions = {
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-export default function HourglassAnimation() {
+export function HourglassAnimation() {
   const accentColor = useForegroundColor('accent');
   const rotateHourglass = useDerivedValue(() =>
     withRepeat(withSequence(withTiming(180, rotationConfig), withTiming(0, rotationConfig), withTiming(-180, rotationConfig)), -1)

@@ -4,17 +4,17 @@ import { StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import GradientText from '@/components/text/GradientText';
+import { GradientText } from '@/components/text/GradientText';
 import { Text, useColorMode } from '@/design-system';
 import { getValueForColorMode, globalColors } from '@/design-system/color/palettes';
 import type { TextSize, TextWeight } from '@/design-system/components/Text/Text';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { RainbowShimmerFill } from '@/features/rnbw-membership/components/RainbowShimmerFill';
 import { ShadowLayers } from '@/features/rnbw-membership/components/ShadowLayers';
 import { SkiaGradientShadow } from '@/features/rnbw-membership/components/SkiaGradientShadow';
 import { getTierBadgeTheme } from '@/features/rnbw-membership/tierVisuals';
 import type { Tier as TierType } from '@/features/rnbw-membership/types';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const BORDER_GRADIENT_START = { x: 0, y: 1 };
 const BORDER_GRADIENT_END = { x: 0, y: 0 };

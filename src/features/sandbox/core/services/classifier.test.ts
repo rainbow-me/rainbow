@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { type SandboxTestCaseResult } from '../models/cases';
 import {
   classifyHttpAllowed,

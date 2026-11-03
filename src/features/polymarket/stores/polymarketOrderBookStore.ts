@@ -1,14 +1,17 @@
 import { createQueryStore } from '@storesjs/stores';
 
 import { POLYMARKET_CLOB_PROXY_URL } from '@/features/polymarket/constants';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
+/** One price level in a Polymarket order book. */
 export type OrderBookLevel = {
   price: string;
   size: string;
 };
 
+/** A Polymarket order book. */
 export type OrderBook = {
   market: string;
   asset_id: string;
@@ -33,27 +36,28 @@ const EMPTY_ORDER_BOOK: OrderBook = {
   neg_risk: false,
 };
 
-type PolymarketOrderBookStoreState = {
-  tokenId: string | null;
-  setTokenId: (tokenId: string | null) => void;
-};
-
 type FetchParams = {
   tokenId: string | null;
 };
 
-export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams, PolymarketOrderBookStoreState>(
-  {
-    fetcher: fetchPolymarketOrderBook,
-    params: { tokenId: ($, store) => $(store).tokenId },
-    cacheTime: time.minutes(1),
-    staleTime: time.seconds(1),
-  },
-  set => ({
-    tokenId: null,
-    setTokenId: (tokenId: string | null) => set({ tokenId }),
-  })
-);
+/**
+ * Order book for the selected Polymarket outcome.
+ */
+export const usePolymarketOrderBookStore = createQueryStore<OrderBook, FetchParams>({
+  fetcher: fetchPolymarketOrderBook,
+  params: { tokenId: $ => $(usePolymarketOrderStore, s => s.params?.tokenId ?? null) },
+  cacheTime: time.minutes(1),
+  staleTime: time.seconds(1),
+});
+
+/**
+ * Compares `OrderBook` snapshots by their provider hash.
+ */
+export function isSameOrderBook(previousOrderBook: OrderBook | null, nextOrderBook: OrderBook | null): boolean {
+  if (previousOrderBook === nextOrderBook) return true;
+  if (!previousOrderBook || !nextOrderBook) return false;
+  return previousOrderBook.hash === nextOrderBook.hash;
+}
 
 async function fetchPolymarketOrderBook({ tokenId }: FetchParams): Promise<OrderBook> {
   if (!tokenId) return EMPTY_ORDER_BOOK;

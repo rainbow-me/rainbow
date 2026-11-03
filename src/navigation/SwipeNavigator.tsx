@@ -26,10 +26,10 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AssetUpdateTransactionWatcher } from '@/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { discoverOpenSearchFnRef, discoverScrollToTopFnRef } from '@/components/Discover/DiscoverScreenContext';
+import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { FlexItem } from '@/components/layout';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
@@ -44,38 +44,37 @@ import {
 } from '@/components/tab-bar/dimensions';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { Box, ColorModeProvider, Column, Columns, globalColors, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
-import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS } from '@/features/config/constants/experimental';
+import { DAPP_BROWSER, LAZY_TABS, RNBW_MEMBERSHIP, RNBW_REWARDS, SIDE_DRAWER } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { BrowserTabIcon } from '@/features/dapp-browser/components/BrowserTabIcon';
 import { BROWSER_BACKGROUND_COLOR_DARK, BROWSER_BACKGROUND_COLOR_LIGHT } from '@/features/dapp-browser/constants/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/features/dapp-browser/context/BrowserContext';
 import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
-import { KingOfTheHillScreen } from '@/features/king-of-the-hill/screens/KingOfTheHillScreen';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
+import { SportsScreen } from '@/features/sports/ui/SportsScreen';
+import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
-import {
-  RecyclerListViewScrollToTopProvider,
-  useRecyclerListViewScrollToTopContext,
-} from '@/navigation/RecyclerListViewScrollToTopContext';
+import { tabReselectEvents } from '@/navigation/tabEvents';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, deviceUtils } from '@/utils/deviceUtils';
 
-import ProfileScreen from '../screens/ProfileScreen';
-import { MainListProvider, useMainList } from './MainListContext';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { MainSideDrawer } from './MainSideDrawer';
 import Routes, { type Route } from './routesNames';
 
 const DOUBLE_PRESS_DELAY = 400;
@@ -86,10 +85,12 @@ const TAB_BAR_ICONS = {
   [Routes.DISCOVER_SCREEN]: 'tabDiscover',
   [Routes.DAPP_BROWSER_SCREEN]: 'tabDappBrowser',
   [Routes.PROFILE_SCREEN]: 'tabActivity',
-  [Routes.KING_OF_THE_HILL]: 'tabKingOfTheHill',
+  [Routes.SPORTS_SCREEN]: 'tabSports',
   [Routes.RNBW_MEMBERSHIP_SCREEN]: 'tabMembership',
   [Routes.RNBW_REWARDS_SCREEN]: 'tabPoints',
 } as const;
+
+const SwipeNavigatorContainer = getExperimentalFlag(SIDE_DRAWER) ? MainSideDrawer : React.Fragment;
 
 type TabIconKey = (typeof TAB_BAR_ICONS)[keyof typeof TAB_BAR_ICONS];
 
@@ -107,8 +108,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { extraWebViewHeight, tabViewProgress } = useBrowserTabBarContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  const recyclerList = useRecyclerListViewScrollToTopContext();
-  const mainList = useMainList();
 
   const { dapp_browser, discover_enabled, rnbw_rewards_enabled, rnbw_membership_enabled } = useRemoteConfig(
     'dapp_browser',
@@ -121,7 +120,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useShowSportsTab();
 
   const numberOfTabs = 2 + (showDiscoverTab ? 1 : 0) + (showRnbwRewardsOrMembershipTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
@@ -134,12 +133,12 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
     const routes: Route[] = [Routes.WALLET_SCREEN];
     if (showDiscoverTab) routes.push(Routes.DISCOVER_SCREEN);
     if (showDappBrowserTab) routes.push(Routes.DAPP_BROWSER_SCREEN);
-    routes.push(showKingOfTheHillTab ? Routes.KING_OF_THE_HILL : Routes.PROFILE_SCREEN);
+    routes.push(showSportsTab ? Routes.SPORTS_SCREEN : Routes.PROFILE_SCREEN);
     if (showRnbwRewardsOrMembershipTab) {
       routes.push(showRnbwMembership ? Routes.RNBW_MEMBERSHIP_SCREEN : Routes.RNBW_REWARDS_SCREEN);
     }
     return routes;
-  }, [showDappBrowserTab, showDiscoverTab, showKingOfTheHillTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
+  }, [showDappBrowserTab, showDiscoverTab, showSportsTab, showRnbwMembership, showRnbwRewardsOrMembershipTab]);
 
   const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
@@ -204,7 +203,10 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 
   const onPress = useCallback(
-    ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: string }) => {
+    ({ route, index }: { route: { key: string; name: string }; index: number }): void => {
+      const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+      if (event.defaultPrevented) return;
+
       const isFocused = getIsFocused(index);
       const time = new Date().getTime();
       const delta = time - (lastPressRef.current || 0);
@@ -213,33 +215,16 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         reanimatedPosition.value = index;
         jumpTo(route.key);
         setActiveRoute(route.name as Route);
+      } else if (route.name === Routes.DISCOVER_SCREEN && delta < DOUBLE_PRESS_DELAY) {
+        discoverOpenSearchFnRef?.();
+        return;
       } else {
-        switch (tabBarIcon) {
-          case TAB_BAR_ICONS[Routes.WALLET_SCREEN]:
-            recyclerList.scrollToTop?.();
-            break;
-          case TAB_BAR_ICONS[Routes.DISCOVER_SCREEN]:
-            if (delta < DOUBLE_PRESS_DELAY) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            if (discoverScrollToTopFnRef?.() === 0) {
-              discoverOpenSearchFnRef?.();
-              return;
-            }
-            break;
-          case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
-            mainList?.scrollToTop();
-            break;
-          case TAB_BAR_ICONS[Routes.KING_OF_THE_HILL]:
-            mainList?.scrollToTop();
-            break;
-        }
+        tabReselectEvents.emit(route.key);
       }
 
       lastPressRef.current = time;
     },
-    [getIsFocused, jumpTo, mainList, reanimatedPosition, recyclerList]
+    [getIsFocused, jumpTo, navigation, reanimatedPosition]
   );
 
   const onLongPress = useCallback(
@@ -320,6 +305,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       showRnbwMembership,
       showRnbwRewardsTab,
       stateRef,
+      tabWidth,
     ]
   );
 
@@ -447,7 +433,7 @@ type BaseTabIconProps = {
   activeIndex: SharedValue<number>;
   index: number;
   onLongPress: ({ route, tabBarIcon }: { route: { key: string; name: string }; tabBarIcon: TabIconKey }) => void;
-  onPress: ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: TabIconKey }) => void;
+  onPress: ({ route, index }: { route: { key: string; name: string }; index: number }) => void;
   route: { key: string; name: string };
   tabBarIcon: TabIconKey;
 };
@@ -474,7 +460,7 @@ export const BaseTabIcon = memo(function BaseTabIcon({
         enableHapticFeedback
         scaleTo={0.75}
         onLongPress={() => onLongPress({ route, tabBarIcon })}
-        onPress={() => onPress({ route, index, tabBarIcon })}
+        onPress={() => onPress({ route, index })}
       >
         <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center">
           {tabBarIcon === TAB_BAR_ICONS[Routes.PROFILE_SCREEN] ? (
@@ -538,7 +524,7 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
           <ButtonPressAnimation
             disallowInterruption
             enableHapticFeedback={!showBrowserButtons}
-            onPress={() => onPress({ route, index, tabBarIcon })}
+            onPress={() => onPress({ route, index })}
             scaleTo={showBrowserButtons ? 1 : 0.75}
             style={{ pointerEvents: showBrowserButtons ? 'box-none' : 'auto' }}
           >
@@ -560,15 +546,22 @@ export const BrowserTabIconWrapper = memo(function BrowserTabIconWrapper({
   );
 });
 
+function getDefaultTabBackgroundColor(isDarkMode: boolean): string {
+  'worklet';
+  return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
+}
+
 function getTabBackgroundColor(route: RouteProp<ParamListBase, string>['name'], isDarkMode: boolean): string {
   'worklet';
   switch (route) {
+    case Routes.SPORTS_SCREEN:
+      return isDarkMode ? SPORTS_BACKGROUND_COLOR_DARK : SPORTS_BACKGROUND_COLOR_LIGHT;
     case Routes.DISCOVER_SCREEN:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.RNBW_REWARDS_SCREEN:
       return isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT;
     default:
-      return (isDarkMode ? darkModeThemeColors : lightModeThemeColors).white;
+      return getDefaultTabBackgroundColor(isDarkMode);
   }
 }
 
@@ -639,7 +632,7 @@ function SwipeNavigatorScreens() {
   );
   const showDiscoverTab = discover_enabled;
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
-  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const showSportsTab = useShowSportsTab();
   const showRnbwRewardsTab = useExperimentalFlag(RNBW_REWARDS) || rnbw_rewards_enabled || IS_TEST;
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
@@ -661,8 +654,8 @@ function SwipeNavigatorScreens() {
 
   const key = useMemo(() => {
     let key = 'swipe-navigator';
-    if (showKingOfTheHillTab) {
-      key += '-koth';
+    if (showSportsTab) {
+      key += '-sports';
     }
     if (showDiscoverTab) {
       key += '-discover';
@@ -677,14 +670,15 @@ function SwipeNavigatorScreens() {
       key += `-${language}`;
     }
     return key;
-  }, [showKingOfTheHillTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
+  }, [showSportsTab, showDiscoverTab, showRnbwRewardsTab, showRnbwMembership, language]);
 
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab, showRnbwRewardsTab or language changes
+      // required to force re-render when showSportsTab, showRnbwRewardsTab or language changes
       key={key}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
+      sceneContainerStyle={styles.sceneContainer}
       screenOptions={getScreenOptions}
       tabBar={TabBarContainer}
       tabBarPosition="bottom"
@@ -696,12 +690,8 @@ function SwipeNavigatorScreens() {
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
-      {showKingOfTheHillTab ? (
-        <Swipe.Screen
-          component={KingOfTheHillScreen}
-          name={Routes.KING_OF_THE_HILL}
-          options={{ title: TAB_BAR_ICONS[Routes.KING_OF_THE_HILL] }}
-        />
+      {showSportsTab ? (
+        <Swipe.Screen component={SportsScreen} name={Routes.SPORTS_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.SPORTS_SCREEN] }} />
       ) : (
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.PROFILE_SCREEN] }} />
       )}
@@ -724,23 +714,26 @@ function SwipeNavigatorScreens() {
 }
 
 export function SwipeNavigator() {
-  return (
-    <FlexItem backgroundColor={globalColors.white100}>
-      <BrowserTabBarContextProvider>
-        <MainListProvider>
-          <RecyclerListViewScrollToTopProvider>
-            <SwipeNavigatorScreens />
-          </RecyclerListViewScrollToTopProvider>
-        </MainListProvider>
-      </BrowserTabBarContextProvider>
+  const { isDarkMode } = useColorMode();
 
-      <PendingTransactionWatcher />
-      <AssetUpdateTransactionWatcher />
-    </FlexItem>
+  return (
+    <SwipeNavigatorContainer>
+      <FlexItem backgroundColor={getDefaultTabBackgroundColor(isDarkMode)}>
+        <BrowserTabBarContextProvider>
+          <SwipeNavigatorScreens />
+        </BrowserTabBarContextProvider>
+
+        <PendingTransactionWatcher />
+        <AssetUpdateTransactionWatcher />
+      </FlexItem>
+    </SwipeNavigatorContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  sceneContainer: {
+    backgroundColor: 'transparent',
+  },
   tabBarBackgroundFade: {
     bottom: 0,
     height: TAB_BAR_HEIGHT,

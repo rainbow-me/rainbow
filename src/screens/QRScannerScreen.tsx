@@ -15,12 +15,12 @@ import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-syst
 import { useHardwareBack } from '@/framework/ui/hooks/useHardwareBack';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
-import { useIsForeground } from '@/hooks/useIsForeground';
 import useScanner from '@/hooks/useScanner';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
+import { useAppStateStore } from '@/state/appState/appStateStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -46,7 +46,7 @@ const ScannerHeader = styled(Header).attrs({
   top: 48,
 });
 
-export default function QRScannerScreen() {
+export function QRScannerScreen() {
   const { width: deviceWidth } = useDimensions();
   const { result: isEmulator } = useIsEmulator();
   const { navigate } = useNavigation();
@@ -55,7 +55,7 @@ export default function QRScannerScreen() {
   const { colors } = useTheme();
   const { hasPermission, requestPermission } = useCameraPermission();
   const isFocused = useIsFocused();
-  const isForeground = useIsForeground();
+  const isForeground = useAppStateStore(s => s === 'active');
   const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
   const navigation = useNavigation();

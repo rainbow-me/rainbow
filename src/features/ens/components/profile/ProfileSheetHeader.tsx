@@ -5,30 +5,31 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { ProfileSheetConfigContext } from '@/screens/ProfileSheet';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
+import { useEnsAddressStore } from '../../data/useEnsAddressStore';
 import useENSAvatar from '../../hooks/useENSAvatar';
 import useENSCover from '../../hooks/useENSCover';
 import useENSRecords from '../../hooks/useENSRecords';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { useENSAddress } from '../../resources/addressQuery';
 import { ENS_RECORDS } from '../../utils/helpers';
-import ActionButtons from './ActionButtons/ActionButtons';
-import ProfileAvatar from './ProfileAvatar';
-import ProfileCover from './ProfileCover';
-import ProfileDescription from './ProfileDescription';
-import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags';
+import { ActionButtons } from './ActionButtons/ActionButtons';
+import { ProfileAvatar } from './ProfileAvatar';
+import { ProfileCover } from './ProfileCover';
+import { ProfileDescription } from './ProfileDescription';
+import { ProfileSheetConfigContext } from './ProfileSheetConfigContext';
+import { RecordTags, Placeholder as RecordTagsPlaceholder } from './RecordTags';
 
-export default function ProfileSheetHeader({
+export function ProfileSheetHeader({
   ensName: defaultEnsName,
   isLoading,
   isPreview,
@@ -43,11 +44,8 @@ export default function ProfileSheetHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const ensName = defaultEnsName || params?.address;
 
-  const { data: profileAddress } = useENSAddress(
-    { name: ensName },
-    {
-      enabled: profilesEnabled,
-    }
+  const profileAddress = useEnsAddressStore(s =>
+    profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined
   );
   const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(ensName, {
     enabled: profilesEnabled,
@@ -117,7 +115,7 @@ export default function ProfileSheetHeader({
         <Inset horizontal="19px (Deprecated)">
           <Stack space="19px (Deprecated)">
             <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-              {abbreviateEnsForDisplay(ensName)}
+              {abbreviateName(ensName)}
             </Heading>
             <>
               {isLoading ? (

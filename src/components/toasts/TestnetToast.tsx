@@ -12,7 +12,7 @@ import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 
-const TestnetToast = ({ chainId }: { chainId: ChainId }) => {
+export const TestnetToast = ({ chainId }: { chainId: ChainId }) => {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
@@ -46,5 +46,3 @@ const TestnetToast = ({ chainId }: { chainId: ChainId }) => {
     </Toast>
   );
 };
-
-export default TestnetToast;

@@ -5,7 +5,7 @@ import { Asterisk } from './svg/Asterisk';
 import BackspaceIcon from './svg/BackspaceIcon';
 import BTCIcon from './svg/BTCIcon';
 import CameraIcon from './svg/CameraIcon';
-import CaretDownIcon from './svg/CaretDownIcon';
+import { CaretDownIcon } from './svg/CaretDownIcon';
 import CaretIcon from './svg/CaretIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
 import CheckmarkIcon from './svg/CheckmarkIcon';
@@ -46,11 +46,11 @@ import { TabDiscoverInnerFill } from './svg/TabDiscoverInnerFill';
 import { TabHome } from './svg/TabHome';
 import { TabHomeInner } from './svg/TabHomeInner';
 import { TabHomeInnerFill } from './svg/TabHomeInnerFill';
-import { TabKingOfTheHill } from './svg/TabKingOfTheHill';
 import { TabMembership } from './svg/TabMembership';
 import { TabPoints } from './svg/TabPoints';
 import { TabPointsInner } from './svg/TabPointsInner';
 import { TabPointsInnerFill } from './svg/TabPointsInnerFill';
+import { TabSports } from './svg/TabSports';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import WarningCircledIcon from './svg/WarningCircledIcon';
@@ -107,7 +107,7 @@ const IconTypes = {
   tabDappBrowser: TabDappBrowser,
   tabDappBrowserInner: TabDappBrowserInner,
   tabDappBrowserInnerFill: TabDappBrowserInnerFill,
-  tabKingOfTheHill: TabKingOfTheHill,
+  tabSports: TabSports,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   warning: WarningIcon,

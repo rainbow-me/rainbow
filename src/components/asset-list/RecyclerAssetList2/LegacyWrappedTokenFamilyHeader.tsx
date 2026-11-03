@@ -4,7 +4,7 @@ import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIcon';
 import { Text } from '@/design-system';

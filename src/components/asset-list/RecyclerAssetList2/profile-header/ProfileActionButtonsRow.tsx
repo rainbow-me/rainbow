@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
@@ -129,17 +129,18 @@ function ActionButton({ children, icon, onPress, testID }: { children: string; i
 }
 
 function BuyButton() {
-  const { route: addCashRoute, isCashEnabled } = useAddCashRoute();
+  const { navigateToAddCash, isCashEnabled } = useAddCashRoute();
   const handlePress = React.useCallback(() => {
-    if (getIsDamagedWallet()) {
-      Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
-      return;
-    }
+    navigateToAddCash(route => {
+      if (getIsDamagedWallet()) {
+        Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
+        return;
+      }
 
-    analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
-
-    Navigation.handleAction(addCashRoute);
-  }, [addCashRoute]);
+      analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
+      Navigation.handleAction(route);
+    });
+  }, [navigateToAddCash]);
 
   return (
     <Box>

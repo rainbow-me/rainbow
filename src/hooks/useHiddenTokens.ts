@@ -5,9 +5,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { analytics } from '@/analytics';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
+import { hiddenTokensQueryKey } from '@/state/nfts/tokenPreferences';
 import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 
-import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
+import useFetchHiddenTokens from './useFetchHiddenTokens';
 
 export default function useHiddenTokens(address?: string) {
   const queryClient = useQueryClient();

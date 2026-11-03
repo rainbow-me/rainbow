@@ -5,7 +5,7 @@ import { type Verify } from '@walletconnect/types';
 import { type Address } from 'viem';
 
 import { Alert } from '@/components/alerts';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { AccentColorProvider, BackgroundProvider, Box, Separator, Text } from '@/design-system';

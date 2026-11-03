@@ -1,48 +1,48 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useRef } from 'react';
+
+import { useListen } from '@storesjs/stores';
 
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
-import { useDiscoverSurfaceStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
+import { useDiscoverSurface, useDiscoverSurfaceStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import {
   getMissingSurfacePlacementIds,
   isSurfaceNewerThanPlacements,
-  surfaceContainsPlacement,
 } from '@/features/placements/surfaces/stores/discoverSurfaceTransforms';
 
-export function useIsDiscoverSurfacePlacementPending(placementId: string): boolean {
-  const rawSurface = useDiscoverSurfaceStore(state => state.getData());
-  const surfaceLastFetchedAt = useDiscoverSurfaceStore(state => state.lastFetchedAt);
-  const placementsById = usePlacementsStore(state => state.placementsById);
-  const placementsLastFetchedAt = usePlacementsStore(state => state.lastFetchedAt);
-  const placementsLoading = usePlacementsStore(state => state.getStatus('isLoading') || state.getStatus('isInitialLoad'));
+/**
+ * Whether a rendered Discover section is waiting for its placement.
+ */
+export function useIsDiscoverPlacementPending(placementId: string): boolean {
+  const surfaceLastFetchedAt = useDiscoverSurfaceStore(s => s.lastFetchedAt);
 
-  if (!rawSurface || placementsById[placementId]) return false;
-  if (!surfaceContainsPlacement(rawSurface, placementId)) return false;
-  return placementsLoading || isSurfaceNewerThanPlacements(surfaceLastFetchedAt, placementsLastFetchedAt);
+  return usePlacementsStore(s => {
+    if (s.getPlacement(placementId)) return false;
+    return s.getStatus('isLoading') || s.getStatus('isInitialLoad') || isSurfaceNewerThanPlacements(surfaceLastFetchedAt, s.lastFetchedAt);
+  });
 }
 
 export function useSyncDiscoverSurfacePlacements(): void {
-  const rawSurface = useDiscoverSurfaceStore(state => state.getData());
-  const surfaceLastFetchedAt = useDiscoverSurfaceStore(state => state.lastFetchedAt);
-  const placementsById = usePlacementsStore(state => state.placementsById);
-  const placementsLastFetchedAt = usePlacementsStore(state => state.lastFetchedAt);
-  const placementsLoading = usePlacementsStore(state => state.getStatus('isLoading'));
   const lastRequestedKey = useRef<string | null>(null);
 
-  const missingPlacementIds = useMemo(() => {
-    if (!rawSurface) return [];
-    return getMissingSurfacePlacementIds(rawSurface, placementsById);
-  }, [placementsById, rawSurface]);
+  function syncPlacements(): void {
+    const surface = useDiscoverSurface.getState();
+    const surfaceLastFetchedAt = useDiscoverSurfaceStore.getState().lastFetchedAt;
+    const placements = usePlacementsStore.getState();
 
-  useEffect(() => {
-    if (!surfaceLastFetchedAt || !missingPlacementIds.length || placementsLoading) return;
+    if (!surface || placements.getStatus('isLoading') || !isSurfaceNewerThanPlacements(surfaceLastFetchedAt, placements.lastFetchedAt))
+      return;
 
-    const surfaceFetchedAfterPlacements = !placementsLastFetchedAt || surfaceLastFetchedAt > placementsLastFetchedAt;
-    if (!surfaceFetchedAfterPlacements) return;
+    const missingPlacementIds = getMissingSurfacePlacementIds(surface, placements.placementsById);
+    if (!missingPlacementIds.length) return;
 
     const requestKey = `${surfaceLastFetchedAt}:${missingPlacementIds.join(',')}`;
     if (lastRequestedKey.current === requestKey) return;
     lastRequestedKey.current = requestKey;
 
-    usePlacementsStore.getState().fetch(undefined, { force: true });
-  }, [missingPlacementIds, placementsLastFetchedAt, placementsLoading, surfaceLastFetchedAt]);
+    placements.fetch(undefined, { force: true });
+  }
+
+  useListen(useDiscoverSurface, s => s, syncPlacements, { fireImmediately: true });
+  useListen(useDiscoverSurfaceStore, s => s.lastFetchedAt, syncPlacements);
+  useListen(usePlacementsStore, s => s.getStatus('isLoading'), syncPlacements);
 }

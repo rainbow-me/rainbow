@@ -6,24 +6,24 @@ import { type SharedValue } from 'react-native-reanimated';
 
 import { FastTransactionCoinRow } from '@/components/coin-row';
 import { Skeleton } from '@/components/Skeleton';
+import { opacity } from '@/design-system/utils/opacity';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
-import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { useOnTabReselect } from '@/navigation/tabEvents';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import ActivityIndicator from '../ActivityIndicator';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ActivityIndicator } from '../ActivityIndicator';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import Spinner from '../Spinner';
 import Text from '../text/Text';
-import ActivityListEmptyState from './ActivityListEmptyState';
+import { ActivityListEmptyState } from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
@@ -155,6 +155,13 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
 
   const listRef = useRef<LegendListRef | null>(null);
 
+  useOnTabReselect(() => {
+    const list = listRef.current;
+    if (!list || list.getState().isAtStart) return;
+
+    list.scrollToIndex({ index: 0, viewOffset: 200, animated: true });
+  });
+
   const onScroll = useMemo(() => {
     if (!scrollY) return undefined;
     return (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -162,8 +169,6 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       scrollY.value = event.nativeEvent.contentOffset.y;
     };
   }, [scrollY]);
-
-  useLegendListNavBarScrollToTop(listRef);
 
   if (isLoadingTransactions) {
     return (

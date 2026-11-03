@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton, { type MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { Box, Stack, Text } from '@/design-system';
 import { canReplacePendingTransaction, TransactionStatus, type PendingTransaction, type RainbowTransaction } from '@/entities/transactions';

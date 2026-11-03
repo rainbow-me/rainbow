@@ -3,8 +3,9 @@ import { Keyboard, Platform, Share } from 'react-native';
 
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import useContacts from '@/hooks/useContacts';
 import useWatchWallet from '@/hooks/useWatchWallet';
 import * as i18n from '@/languages';
@@ -13,11 +14,10 @@ import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
-import More from '../MoreButton';
+import { MoreButton as More } from '../MoreButton';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -28,11 +28,10 @@ const ACTIONS = {
   SHARE: 'share',
 };
 
-export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
+export function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
   const selectedWallet = useSelectedWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
-  const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
     if (!selectedWallet?.addresses) return false;
@@ -142,7 +141,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         Share.share(Platform.OS === 'android' ? { message: shareLink } : { url: shareLink });
       }
     },
-    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard]
+    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(Platform.OS === 'ios' && { menuTitle: '' }) }), [menuItems]);
@@ -151,9 +150,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
       enableContextMenu
       menuConfig={menuConfig}
       {...(Platform.OS === 'android' ? { handlePressMenuItem } : {})}
-      isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
     >
       <More />
     </ContextMenuButton>

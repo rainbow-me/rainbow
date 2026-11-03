@@ -1,4 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
@@ -11,36 +12,36 @@ import { prepareApprovalCall } from './actions/unlock';
 import { resolveApprovalRequirement } from './approval';
 import { buildAtomicExecutionRequirements, prepareAtomicSwapCalls } from './atomicSwapPreparation';
 
-jest.mock('@rainbow-me/sdk', () => ({
+vi.mock('@rainbow-me/sdk', () => ({
   execute: {
     prepare: {
-      calls: jest.fn(),
+      calls: vi.fn(),
     },
   },
 }));
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
-    isSponsorshipEligible: jest.fn(),
+    isSponsorshipEligible: vi.fn(),
   },
 }));
 
-jest.mock('./approval', () => ({
-  resolveApprovalRequirement: jest.fn(),
+vi.mock('./approval', () => ({
+  resolveApprovalRequirement: vi.fn(),
 }));
 
-jest.mock('./actions/unlock', () => ({
-  prepareApprovalCall: jest.fn(),
+vi.mock('./actions/unlock', () => ({
+  prepareApprovalCall: vi.fn(),
 }));
 
-jest.mock('./actions/swap', () => ({
-  prepareSwapCall: jest.fn(),
+vi.mock('./actions/swap', () => ({
+  prepareSwapCall: vi.fn(),
 }));
 
-jest.mock('./actions/crosschainSwap', () => ({
-  prepareCrosschainSwapCall: jest.fn(),
+vi.mock('./actions/crosschainSwap', () => ({
+  prepareCrosschainSwapCall: vi.fn(),
 }));
 
 // ============ Helpers ======================================================= //
@@ -89,8 +90,8 @@ describe('atomicSwapPreparation', () => {
   const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545', 8453);
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.mocked(backendNetworksActions.isSponsorshipEligible).mockImplementation(chainId => chainId !== 1);
+    vi.clearAllMocks();
+    vi.mocked(backendNetworksActions.isSponsorshipEligible).mockImplementation(chainId => chainId !== 1);
   });
 
   it('builds the same-chain atomic call list without approval when none is required', async () => {
@@ -101,11 +102,11 @@ describe('atomicSwapPreparation', () => {
       value: 0n,
     };
 
-    jest.mocked(resolveApprovalRequirement).mockResolvedValue({
+    vi.mocked(resolveApprovalRequirement).mockResolvedValue({
       allowanceTargetAddress: null,
       requiresApprove: false,
     });
-    jest.mocked(prepareSwapCall).mockResolvedValue(swapCall);
+    vi.mocked(prepareSwapCall).mockResolvedValue(swapCall);
 
     await expect(
       prepareAtomicSwapCalls({
@@ -133,12 +134,12 @@ describe('atomicSwapPreparation', () => {
       value: 5n,
     };
 
-    jest.mocked(resolveApprovalRequirement).mockResolvedValue({
+    vi.mocked(resolveApprovalRequirement).mockResolvedValue({
       allowanceTargetAddress: '0x6666666666666666666666666666666666666666',
       requiresApprove: true,
     });
-    jest.mocked(prepareApprovalCall).mockResolvedValue(approvalCall);
-    jest.mocked(prepareCrosschainSwapCall).mockResolvedValue(bridgeCall);
+    vi.mocked(prepareApprovalCall).mockResolvedValue(approvalCall);
+    vi.mocked(prepareCrosschainSwapCall).mockResolvedValue(bridgeCall);
 
     await expect(
       prepareAtomicSwapCalls({

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import BigNumber from 'bignumber.js';
 import { debounce } from 'lodash';
@@ -8,8 +8,8 @@ import { create } from 'zustand';
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { analytics } from '@/analytics';
 import { getUniqueId } from '@/entities/assetId';
-import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { useSelectedGas } from '@/features/gas/hooks/useSelectedGas';
+import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import {
@@ -37,6 +37,7 @@ import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/s
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { useSwapContext } from './swap-provider';
+import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
 
 const BUFFER_RATIO = 0.5;
 
@@ -57,7 +58,7 @@ const setInternalSyncedSwapStore = debounce((state: InternalSyncedSwapState) => 
   trailing: true,
 });
 
-export const SyncQuoteSharedValuesToState = () => {
+const SyncQuoteSharedValuesToState = () => {
   const { internalSelectedInputAsset: assetToSell, quote } = useSwapContext();
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
@@ -91,25 +92,6 @@ export const SyncQuoteSharedValuesToState = () => {
 
   return null;
 };
-
-const isFeeNaNWorklet = (value: string | undefined) => {
-  'worklet';
-
-  return isNaN(Number(value)) || typeof value === 'undefined';
-};
-
-export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: string) {
-  'worklet';
-
-  if (gasSettings.isEIP1559) {
-    const maxBaseFee = isFeeNaNWorklet(gasSettings.maxBaseFee) ? '0' : gasSettings.maxBaseFee;
-    const maxPriorityFee = isFeeNaNWorklet(gasSettings.maxPriorityFee) ? '0' : gasSettings.maxPriorityFee;
-    return mulWorklet(gasLimit, sumWorklet(maxBaseFee, maxPriorityFee));
-  }
-
-  const gasPrice = isFeeNaNWorklet(gasSettings.gasPrice) ? '0' : gasSettings.gasPrice;
-  return mulWorklet(gasLimit, gasPrice);
-}
 
 export function formatUnitsWorklet(value: string, decimals: number) {
   'worklet';
@@ -165,7 +147,7 @@ const getHasEnoughFundsForGasWorklet = ({
   return hasEnoughFundsForGas;
 };
 
-export function SyncGasStateToSharedValues() {
+function SyncGasStateToSharedValues() {
   const {
     SwapInputController: { updateMaxSwappableAmount },
     hasEnoughFundsForGas,
@@ -264,7 +246,7 @@ export function SyncGasStateToSharedValues() {
     )
       return undefined;
 
-    const gasFee = calculateGasFeeWorklet(gasSettings, estimatedGasLimit);
+    const gasFee = calculateMaxGasFeeWorklet(gasSettings, estimatedGasLimit);
     return isNaN(Number(gasFee)) ? undefined : gasFee;
   }, [estimatedGasLimit, gasSettings]);
 
@@ -319,4 +301,14 @@ export function SyncGasStateToSharedValues() {
   }, [gasFee, gasFeeRange, hasEnoughFundsForGas, isLoadingNativeNetworkAsset, isSponsoredSwap, safeQuoteValue, userNativeNetworkAsset]);
 
   return null;
+}
+
+export function SyncSwapStateAndSharedValues(): ReactNode {
+  return (
+    <>
+      <SyncQuoteSharedValuesToState />
+      <SyncSwapRewardsEstimate />
+      <SyncGasStateToSharedValues />
+    </>
+  );
 }

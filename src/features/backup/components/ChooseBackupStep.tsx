@@ -5,7 +5,7 @@ import { type Source } from 'react-native-fast-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import ActivityIndicator from '@/components/ActivityIndicator';
+import { ActivityIndicator } from '@/components/ActivityIndicator';
 import { ImgixImage } from '@/components/images';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
@@ -17,9 +17,9 @@ import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import Menu from '@/screens/SettingsSheet/components/Menu';
-import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
-import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
+import { Menu } from '@/screens/SettingsSheet/components/Menu';
+import { MenuContainer } from '@/screens/SettingsSheet/components/MenuContainer';
+import { MenuItem } from '@/screens/SettingsSheet/components/MenuItem';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
 import { margin, padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
@@ -227,5 +227,3 @@ export function ChooseBackupStep() {
     </Box>
   );
 }
-
-export default ChooseBackupStep;

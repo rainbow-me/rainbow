@@ -1,15 +1,15 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_ICON_URL } from '@/features/perps/constants';
 import { PolymarketButton } from '@/features/polymarket/components/PolymarketButton';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -22,7 +22,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
-  const { route: addCashRoute } = useAddCashRoute();
+  const { navigateToAddCash } = useAddCashRoute();
 
   return (
     <Box
@@ -94,12 +94,12 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
         {isBalanceZero && (
           <PolymarketButton
             onPress={() => {
-              if (getIsReadOnlyWallet()) return;
               if (hasNoAssets) {
-                Navigation.handleAction(addCashRoute);
-              } else {
-                Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
+                navigateToAddCash();
+                return;
               }
+              if (getIsReadOnlyWallet()) return;
+              Navigation.handleAction(Routes.POLYMARKET_DEPOSIT_SCREEN);
             }}
             paddingHorizontal={'16px'}
             paddingVertical={'12px'}

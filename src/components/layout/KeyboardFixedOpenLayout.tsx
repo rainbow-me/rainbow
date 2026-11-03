@@ -14,7 +14,7 @@ interface KeyboardFixedOpenLayoutProps {
   children?: ReactNode;
 }
 
-export default function KeyboardFixedOpenLayout({
+export function KeyboardFixedOpenLayout({
   additionalPadding = 0,
   keyboardType = KeyboardType.default,
   position = 'absolute',

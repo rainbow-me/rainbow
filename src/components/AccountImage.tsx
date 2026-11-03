@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Navigation from '@/navigation/Navigation';
@@ -23,7 +23,7 @@ export const AccountImage = memo(function AccountImage({ onPress }: AccountImage
   }, [onPress]);
 
   return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={0.8} overflowMargin={50}>
+    <ButtonPressAnimation onPress={handlePress} scaleTo={0.8}>
       {accountImage ? (
         <ImageAvatar image={accountImage} marginRight={10} size="header" />
       ) : (

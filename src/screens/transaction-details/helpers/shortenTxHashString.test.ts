@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
 
 const exampleTransactionHash = '0x30f2e457cd93d7091bc3acefe82d091363dfb00b0e6d2b3fefdbda4c6031d2a8';

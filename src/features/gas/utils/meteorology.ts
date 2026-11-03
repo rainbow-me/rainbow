@@ -4,13 +4,11 @@ import { useQuery, type NotifyOnChangeProps } from '@tanstack/react-query';
 
 import { IS_TEST } from '@/env';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import { abs, isZero, lessThan, subtract } from '@/helpers/utilities';
+import { isZero } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { type GasSettings } from '../hooks/useCustomGas';
-import { getSelectedGasSpeed, useGasSettings } from '../hooks/useSelectedGas';
 import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '../types/gas';
 import { GasSpeed } from '../types/gasSpeed';
 import { rainbowMeteorologyGetData } from './gasFees';
@@ -171,35 +169,6 @@ export function useGasTrend({ chainId }: { chainId: ChainId }) {
   return useMeteorology({ chainId }, { select: selectGasTrend });
 }
 
-const diff = (a: string, b: string) => abs(subtract(a, b));
-function findClosestValue(target: string, array: string[]) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return array.find((value, index) => {
-    const nextValue = array[index + 1];
-    if (!nextValue) return true;
-    return lessThan(diff(value, target), diff(nextValue, target));
-  })!;
-}
-
-function selectEstimatedTime(result: MeteorologyResult, selectedGas: GasSettings | undefined) {
-  if (isLegacyMeteorologyFeeData(result)) return undefined;
-  if (!selectedGas?.isEIP1559) return undefined;
-  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(result.data?.confirmationTimeByPriorityFee || {}));
-  const [time] = Object.entries(result.data?.confirmationTimeByPriorityFee || {}).find(([, v]) => v === value) || [];
-  if (!time) return undefined;
-  return `${+time >= 3600 ? '> ' : '~'}${getMinimalTimeUnitStringForMs(+time * 1000)}`;
-}
-
-export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: GasSpeed }) {
-  const selectedGas = useGasSettings(chainId, speed);
-  return useMeteorology(
-    { chainId },
-    {
-      select: useCallback((data: MeteorologyResult) => selectEstimatedTime(data, selectedGas), [selectedGas]),
-    }
-  );
-}
-
 export type MeteorologyGasSuggestions = {
   urgent: GasSettings;
   fast: GasSettings;
@@ -281,11 +250,4 @@ export const getCachedGasSuggestions = (chainId: ChainId) => {
   const data = getMeteorologyCachedData(chainId);
   if (!data) return undefined;
   return selectGasSuggestions(data);
-};
-
-export const getSelectedSpeedSuggestion = (chainId: ChainId) => {
-  const suggestions = getCachedGasSuggestions(chainId);
-  const speed = getSelectedGasSpeed(chainId);
-  if (speed === 'custom') return;
-  return suggestions?.[speed];
 };

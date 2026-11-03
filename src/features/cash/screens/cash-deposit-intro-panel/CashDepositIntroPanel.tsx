@@ -5,33 +5,30 @@ import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
-import { Box, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { TapToDismiss } from '@/components/TapToDismiss';
+import { Box, Separator, Stack, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
+import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import { replace, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 
 import { CashDepositIntroFeatureRow } from '../../components/CashDepositIntroFeatureRow';
+import { CashStatusPanel } from '../../components/CashStatusHalfSheet';
 
 const HERO_DOLLAR_COLOR = '#0086FF';
-
-function VisaBadge({ color }: { color: string }) {
-  return (
-    <Box alignItems="center" justifyContent="center" paddingLeft="2px" style={[styles.visaBadge, { borderColor: color }]}>
-      <Text color="blue" size="11pt" weight="heavy">
-        {'VISA'}
-      </Text>
-    </Box>
-  );
-}
 
 export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
+  const isHardwareWallet = useIsHardwareWallet();
+  const { cash_signup_enabled } = useRemoteConfig('cash_signup_enabled');
 
   const backgroundGradientColors = isDarkMode
     ? ([opacity(HERO_DOLLAR_COLOR, 0.2), opacity(HERO_DOLLAR_COLOR, 0)] as const)
@@ -40,14 +37,21 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
 
   useFocusEffect(
     useCallback(() => {
-      analytics.track(analytics.event.cashDepositIntroViewed);
-    }, [])
+      analytics.track(cash_signup_enabled ? analytics.event.cashDepositIntroViewed : analytics.event.cashDepositSignupPausedViewed);
+    }, [cash_signup_enabled])
   );
 
   // Set Up Account → close the intro panel, then open the Cash Deposit Setup wizard.
   const handleSetUpAccount = useCallback(() => {
+    if (isHardwareWallet) {
+      Alert.alert(i18n.t(i18n.l.cash.add_wallet.unsupported_title), i18n.t(i18n.l.cash.add_wallet.hardware_description), [
+        { text: i18n.t(i18n.l.cash.add_wallet.cancel) },
+      ]);
+      return;
+    }
+
     replace(Routes.CASH_DEPOSIT_SETUP_SCREEN);
-  }, []);
+  }, [isHardwareWallet]);
 
   // Other Deposit Methods → legacy third-party provider widgets.
   const handleOtherDepositMethods = useCallback(() => {
@@ -58,6 +62,32 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
   const handleSignIn = useCallback(() => {
     replace(Routes.CASH_SIGN_IN_SCREEN);
   }, []);
+
+  if (!cash_signup_enabled) {
+    return (
+      <>
+        <CashStatusPanel
+          content={{
+            description: i18n.t(i18n.l.cash.deposit_intro.signup_paused_description),
+            primaryAction: {
+              label: i18n.t(i18n.l.cash.deposit_intro.sign_in),
+              onPress: handleSignIn,
+              testID: 'cash-deposit-intro-sign-in',
+            },
+            secondaryAction: {
+              label: i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods),
+              onPress: handleOtherDepositMethods,
+              testID: 'cash-deposit-intro-other-deposit-methods',
+            },
+            status: 'error',
+            testID: 'cash-deposit-intro-signup-paused',
+            title: i18n.t(i18n.l.cash.deposit_intro.signup_paused_title),
+          }}
+        />
+        <TapToDismiss />
+      </>
+    );
+  }
 
   return (
     <PanelSheet>
@@ -113,24 +143,39 @@ export const CashDepositIntroPanel = memo(function CashDepositIntroPanel() {
               }
               text={i18n.t(i18n.l.cash.deposit_intro.encrypted_feature)}
             />
-            <CashDepositIntroFeatureRow icon={<VisaBadge color={blue} />} text={i18n.t(i18n.l.cash.deposit_intro.visa_feature)} />
+            <CashDepositIntroFeatureRow
+              icon={
+                <Text align="center" color="blue" size="30pt" weight="medium">
+                  {'􀋦'}
+                </Text>
+              }
+              text={i18n.t(i18n.l.cash.deposit_intro.instant_feature)}
+            />
           </Stack>
         </Box>
 
-        <Box gap={32} paddingBottom="32px" paddingHorizontal="20px" paddingTop="44px">
-          <ButtonPressAnimation onPress={handleSetUpAccount} scaleTo={0.96} testID="cash-deposit-intro-set-up-account">
-            <Box
-              alignItems="center"
-              borderRadius={52}
-              height={{ custom: 48 }}
-              justifyContent="center"
-              style={[styles.cta, { backgroundColor: blue, shadowColor: blue }]}
-            >
-              <Text align="center" color="white" size="22pt" weight="heavy">
-                {i18n.t(i18n.l.cash.deposit_intro.set_up_account)}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+        <Box gap={24} paddingBottom="32px" paddingHorizontal="20px" paddingTop="44px">
+          <Box gap={16}>
+            <ButtonPressAnimation onPress={handleSetUpAccount} scaleTo={0.96} testID="cash-deposit-intro-set-up-account">
+              <Box
+                alignItems="center"
+                borderRadius={52}
+                height={{ custom: 48 }}
+                justifyContent="center"
+                style={[styles.cta, { backgroundColor: blue, shadowColor: blue }]}
+              >
+                <Text align="center" color="white" size="22pt" weight="heavy">
+                  {i18n.t(i18n.l.cash.deposit_intro.set_up_account)}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+            <Text align="center" color="labelTertiary" size="15pt" weight="semibold">
+              {i18n.t(i18n.l.cash.deposit_intro.availability_disclaimer)}
+            </Text>
+          </Box>
+          <Box marginHorizontal="-20px">
+            <Separator color="separator" thickness={1} />
+          </Box>
           <ButtonPressAnimation onPress={handleOtherDepositMethods} scaleTo={0.96} testID="cash-deposit-intro-other-deposit-methods">
             <Text align="center" color="blue" size="17pt" weight="heavy">
               {i18n.t(i18n.l.cash.deposit_intro.other_deposit_methods)}
@@ -184,11 +229,5 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 41,
     lineHeight: 45,
-  },
-  visaBadge: {
-    borderRadius: 8,
-    borderWidth: 2,
-    height: 25,
-    width: 40,
   },
 });

@@ -1,4 +1,3 @@
-import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { type SwapAssetType } from '@/__swaps__/types/swap';
 import { type CardType } from '@/components/cards/GenericCard';
@@ -7,6 +6,7 @@ import { type FiatProviderName } from '@/entities/f2c';
 import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
+import { type CashAuthIntent } from '@/features/cash/stores/cashAuthGateStore';
 import { type TelemetryErrorReason } from '@/features/cash/utils/getTelemetryErrorReason';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import { type FavoritedSite } from '@/features/dapp-browser/stores/favoriteDappsStore';
@@ -17,6 +17,7 @@ import { type PerpPositionSide, type TriggerOrderType } from '@/features/perps/t
 import { type Destination, type Display, type SectionId, type SurfaceDocument, type SurfaceId } from '@/features/placements/surfaces/types';
 import { type Placement, type PlacementItem } from '@/features/placements/types';
 import { type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type SpotPnlSheetEntryPoint, type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
 import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
 import { type PairHardwareWalletNavigatorParams } from '@/navigation/types';
@@ -123,6 +124,7 @@ export const event = {
   pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
   rewardsViewedSheet: 'rewards.viewed_sheet',
   cashDepositIntroViewed: 'cash.deposit_intro_viewed',
+  cashDepositSignupPausedViewed: 'cash.deposit_signup_paused_viewed',
   cashAmountEntered: 'cash.amount_entered',
   cashBuyOrderSubmitted: 'cash.buy_submitted',
   cashBuyOrderCompleted: 'cash.buy_completed',
@@ -132,6 +134,8 @@ export const event = {
   cashPhoneSubmitFailed: 'cash.phone_submit_failed',
   cashPhoneResendFailed: 'cash.phone_resend_failed',
   cashPhoneAlreadyRegistered: 'cash.phone_already_registered',
+  cashExistingAccountRecoverySelected: 'cash.existing_account_recovery_selected',
+  cashLostPasskeyRecoverySelected: 'cash.lost_passkey_recovery_selected',
   cashPhoneVerified: 'cash.phone_verified',
   cashPhoneVerifyFailed: 'cash.phone_verify_failed',
   cashKycSubmitted: 'cash.kyc_submitted',
@@ -326,6 +330,13 @@ export const event = {
   perpsAddedToPositionFailed: 'perps.added_to_position.failed',
   perpsTradeDetailsSharePressed: 'perps.trade_details.share_pressed',
 
+  // spot p&l
+  spotPnlSheetViewed: 'spot_pnl.sheet.viewed',
+  spotPnlPillShown: 'spot_pnl.pill.shown',
+
+  // top holders
+  topHoldersShown: 'top_holders.shown',
+
   // predictions
   predictionsPlaceOrder: 'predictions.place_order',
   predictionsPlaceOrderFailed: 'predictions.place_order.failed',
@@ -372,7 +383,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
   isHardwareWallet: boolean;
-  quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -533,10 +543,11 @@ export type EventProperties = {
   };
   [event.rewardsViewedSheet]: undefined;
   [event.cashDepositIntroViewed]: undefined;
+  [event.cashDepositSignupPausedViewed]: undefined;
   [event.cashAmountEntered]: {
-    /** The chosen USD amount. */
+    /** The USD amount confirmed with Hold to Add. */
     amount: number | undefined;
-    /** Which amount-entry surface the user used first. */
+    /** The amount-entry surface at confirmation. */
     entryMode: 'preset' | 'keypad';
   };
   [event.cashBuyOrderSubmitted]: {
@@ -560,32 +571,36 @@ export type EventProperties = {
     reason: TelemetryErrorReason;
   };
   [event.cashPhoneSubmitted]: {
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneSubmitFailed]: {
     reason: TelemetryErrorReason;
   };
   [event.cashPhoneResendFailed]: {
     reason: TelemetryErrorReason;
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneAlreadyRegistered]: {
-    outcome: 'registeredWithPasskey' | 'alreadyRegistered' | 'signupAlreadyComplete';
+    outcome: 'alreadyRegistered' | 'registeredWithPasskey';
+  };
+  [event.cashExistingAccountRecoverySelected]: undefined;
+  [event.cashLostPasskeyRecoverySelected]: {
+    intent: CashAuthIntent['kind'];
   };
   [event.cashPhoneVerified]: {
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashPhoneVerifyFailed]: {
     reason: TelemetryErrorReason;
-    mode: 'signup' | 'resume';
+    mode: 'signup' | 'resume' | 'recovery';
   };
   [event.cashKycSubmitted]: undefined;
   [event.cashKycApproved]: undefined;
   [event.cashKycAwaitingDecision]: {
-    source: 'submit' | 'resume';
+    source: 'submit' | 'resume' | 'return';
   };
   [event.cashKycFailed]: {
-    reason: TelemetryErrorReason | 'rejected';
+    reason: TelemetryErrorReason | 'rejected' | 'state_not_supported';
   };
   [event.cashPasskeySubmitted]: undefined;
   [event.cashPasskeyAdded]: undefined;
@@ -612,7 +627,7 @@ export type EventProperties = {
   };
   [event.cashSignInFailed]: {
     trigger: CashSignInTrigger;
-    reason: TelemetryErrorReason;
+    reason: TelemetryErrorReason | 'timeout';
   };
   [event.cashSignInCancelled]: {
     trigger: CashSignInTrigger;
@@ -1278,6 +1293,37 @@ export type EventProperties = {
     shared: boolean;
     success: boolean;
     message: string;
+  };
+
+  // spot p&l
+  /** Variant, amounts and `lastTradeAt` are `null` when the sheet has nothing to show. */
+  [event.spotPnlSheetViewed]: {
+    tokenName: string;
+    tokenAddress: string;
+    chainId: number;
+    chainName: string;
+    entryPoint: SpotPnlSheetEntryPoint;
+    variant: SpotPnlVariant | null;
+    /** `null` when nothing purchased is held. */
+    unrealizedPnlUsd: number | null;
+    /** `null` when nothing was sold. */
+    realizedPnlUsd: number | null;
+    /** Whether the position belongs to the selected wallet. */
+    isOwnWallet: boolean;
+    hasEnsName: boolean;
+    /** Unix seconds of the wallet's last trade or transfer of the token. */
+    lastTradeAt: number | null;
+  };
+  [event.spotPnlPillShown]: {
+    tokenAddress: string;
+    chainId: number;
+    variant: SpotPnlVariant;
+  };
+
+  // top holders
+  [event.topHoldersShown]: {
+    tokenAddress: string;
+    chainId: number;
   };
 
   // predictions

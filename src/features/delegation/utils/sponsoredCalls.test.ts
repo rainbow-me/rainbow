@@ -1,17 +1,18 @@
 import { type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
 import { isInsufficientSponsorBalanceError, predictSponsoredCallsExecution } from './sponsoredCalls';
 
-const mockCanUseDelegatedExecution = jest.fn<boolean, [Address]>();
-const mockIsSponsorshipEligible = jest.fn<boolean, [ChainId]>();
+const mockCanUseDelegatedExecution = vi.fn<(...args: [Address]) => boolean>();
+const mockIsSponsorshipEligible = vi.fn<(...args: [ChainId]) => boolean>();
 
-jest.mock('./willDelegate', () => ({
+vi.mock('./willDelegate', () => ({
   canUseDelegatedExecution: (address: Address) => mockCanUseDelegatedExecution(address),
 }));
 
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
   backendNetworksActions: {
     isSponsorshipEligible: (chainId: ChainId) => mockIsSponsorshipEligible(chainId),
   },
@@ -21,7 +22,7 @@ const ACCOUNT = '0x3333333333333333333333333333333333333333' satisfies Address;
 
 describe('sponsoredCalls', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCanUseDelegatedExecution.mockReturnValue(true);
     mockIsSponsorshipEligible.mockReturnValue(true);
   });

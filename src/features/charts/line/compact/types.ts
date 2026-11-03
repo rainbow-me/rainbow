@@ -1,6 +1,5 @@
 import { type BaseStore } from '@storesjs/stores';
-
-import { type SharedOrDerivedValue } from '@/types/reanimated';
+import { type DerivedValue, type SharedValue } from 'react-native-reanimated';
 
 /**
  * Price points drawn by a compact line chart.
@@ -25,7 +24,7 @@ export type LineChartDataStore = {
  */
 export type SparklineChartProps<S extends LineChartDataStore> = {
   chartId: string;
-  color: string | SharedOrDerivedValue<string>;
+  color: string | SharedValue<string> | DerivedValue<string>;
   height: number;
   livePointer?: boolean;
   store: BaseStore<S>;

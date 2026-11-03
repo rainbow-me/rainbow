@@ -7,14 +7,14 @@ import { type Source } from 'react-native-fast-image';
 
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { RainbowButton } from '@/components/buttons';
-import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
+import { RainbowButtonTypes } from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '@/components/fields';
 import { ImgixImage } from '@/components/images';
 import { Text } from '@/components/text';
 import { Box, Inset, Stack } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { normalizeAndroidBackupFilename } from '@/features/backup/backupFile';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -73,7 +73,7 @@ const Masthead = styled(Box).attrs({
   flexShrink: 0,
 });
 
-export default function RestoreCloudStep() {
+export function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const password = backupsStore(state => state.password);
   const loadingState = walletLoadingStore(state => state.loadingState);

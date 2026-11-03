@@ -1,8 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { type OrderBook } from '@/features/polymarket/stores/polymarketOrderBookStore';
 
 import { calculateSellExecution } from './calculateSellExecution';
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_PUSD_DECIMALS: 6,
 }));
 

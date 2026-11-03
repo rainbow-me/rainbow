@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { Box } from '@/design-system';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import styled from '@/framework/ui/styled-thing';
 import { toChecksumAddress } from '@/handlers/web3';
 import useDimensions from '@/hooks/useDimensions';
@@ -13,8 +14,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountAddress, useAccountProfileInfo, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { padding, shadow } from '@/styles';
-import abbreviations from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Column, ColumnWithMargins } from '../components/layout';
@@ -66,7 +66,7 @@ export default function ReceiveModal() {
         Navigation.handleAction(Routes.WALLET_ERROR_SHEET);
         return;
       }
-      setCopiedText(abbreviations.formatAddressForDisplay(text));
+      setCopiedText(formatAddressForDisplay(text));
       setCopyCount(count => count + 1);
     },
     [isDamagedWallet]

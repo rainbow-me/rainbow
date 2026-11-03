@@ -1,8 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { getRemoteConfig, useRemoteConfig, useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 
 import { setRemoteConfig, withRemoteConfig } from './mockRemoteConfig';
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 setRemoteConfig({ nfts_enabled: true });
 
 const nftsEnabled = () => getRemoteConfig().nfts_enabled;

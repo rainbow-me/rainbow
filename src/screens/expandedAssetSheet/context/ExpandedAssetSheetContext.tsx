@@ -7,12 +7,12 @@ import { type UniqueId } from '@/__swaps__/types/assets';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { getUniqueId } from '@/entities/assetId';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
 import useAccountAsset from '@/hooks/useAccountAsset';
@@ -26,7 +26,6 @@ import { useTheme } from '@/theme/ThemeContext';
 export enum SectionId {
   PROFIT = 'profit',
   MARKET_STATS = 'marketStats',
-  BUY = 'buy',
   BRIDGE = 'bridge',
   CLAIM = 'claim',
   HISTORY = 'history',
@@ -38,7 +37,6 @@ export enum SectionId {
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.PROFIT]: true,
   [SectionId.MARKET_STATS]: true,
-  [SectionId.BUY]: true,
   [SectionId.BRIDGE]: true,
   [SectionId.CLAIM]: true,
   [SectionId.HISTORY]: true,

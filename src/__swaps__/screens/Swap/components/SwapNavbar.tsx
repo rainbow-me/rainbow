@@ -3,8 +3,9 @@ import { Platform, Pressable, StyleSheet } from 'react-native';
 
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -21,10 +22,10 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { DEGEN_MODE } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

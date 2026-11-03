@@ -4,7 +4,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -19,7 +19,7 @@ interface Props {
   headerData: AllEmojiHeaderEntry;
 }
 
-const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
+export const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
   const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -78,5 +78,3 @@ const sx = StyleSheet.create({
     marginLeft: 12,
   },
 });
-
-export default EmojisStickyListItem;

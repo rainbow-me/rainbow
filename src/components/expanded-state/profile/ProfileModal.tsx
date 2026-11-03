@@ -2,14 +2,14 @@ import React, { useCallback, useRef } from 'react';
 import { Platform, View } from 'react-native';
 
 import Divider from '@/components/Divider';
-import BiometricButtonContent from '@/features/local-auth/components/BiometricButtonContent';
+import { opacity } from '@/design-system/utils/opacity';
+import { BiometricButtonContent } from '@/features/local-auth/components/BiometricButtonContent';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import CopyTooltip from '../../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../../layout';
 import { AvatarCircle } from '../../profile';
@@ -75,7 +75,7 @@ type ProfileModalProps = {
   disableChangeAvatar?: boolean;
 };
 
-const ProfileModal = ({
+export const ProfileModal = ({
   address,
   imageAvatar,
   emojiAvatar,
@@ -160,5 +160,3 @@ const ProfileModal = ({
     </Container>
   );
 };
-
-export default ProfileModal;

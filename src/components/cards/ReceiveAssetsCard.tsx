@@ -7,14 +7,14 @@ import { analytics } from '@/analytics';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useClipboard from '@/hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { GenericCard } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
@@ -26,7 +26,6 @@ const TRANSLATIONS = i18n.l.cards.receive;
 export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
-  const { setClipboard } = useClipboard();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const onPressCopy = useCallback(
@@ -41,7 +40,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
       onNewEmoji();
       setClipboard(accountAddress);
     },
-    [accountAddress, isToastActive, setClipboard, setToastActive]
+    [accountAddress, isToastActive, setToastActive]
   );
 
   const onPressQRCode = () => {
@@ -86,7 +85,7 @@ export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
               </Box>
             )}
           </Stack>
-          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8} overflowMargin={50}>
+          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
             <IconOrb color={accentColor} icon="􀖂" shadowColor="accent" loaded={accentColorLoaded} />
           </ButtonPressAnimation>
         </Inline>

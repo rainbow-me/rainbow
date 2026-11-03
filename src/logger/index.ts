@@ -235,7 +235,7 @@ export class Logger {
     if (error instanceof RainbowError) {
       this.transport(LogLevel.Error, error, metadata);
     } else {
-      this.transport(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), metadata);
+      this.transport(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`, ensureError(error)), metadata);
     }
   }
 
@@ -283,8 +283,13 @@ export class Logger {
 
     const resolvedMetadata = metadata || EMPTY_METADATA;
     for (const transport of this.transports) {
-      // metadata fallback accounts for JS usage
-      transport(level, message, resolvedMetadata);
+      try {
+        // metadata fallback accounts for JS usage
+        transport(level, message, resolvedMetadata);
+      } catch (e) {
+        // A transport that throws must not take the remaining transports or the caller down with it.
+        console.error('[logger]: transport threw', e);
+      }
     }
   }
 }

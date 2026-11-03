@@ -11,10 +11,10 @@ import { easing } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { ExplainerSheet, PANEL_INNER_WIDTH, type ExplainerSheetStep } from '@/components/explainer-sheet/ExplainerSheet';
 import { AnimatedText, Box, ColorModeProvider, Text, TextShadow } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { useRoute } from '@/navigation/RouteContext';
 

@@ -1,34 +1,36 @@
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+
 import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
 
 import { isPasskeyCancellation } from '../services/cashPasskeyService';
 import { deleteCard, listCards } from '../services/rampClient';
 import { useCardRemovalFlowStore } from './cardRemovalFlowStore';
-import { useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
+import { selectCashLinkedCard, useCashPaymentMethodStore, type LinkedCard } from './cashPaymentMethodStore';
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../services/rampClient', () => ({
-  ...jest.requireActual('../services/rampClient'),
-  deleteCard: jest.fn(),
-  listCards: jest.fn(),
+vi.mock('../services/rampClient', async () => ({
+  ...(await vi.importActual<typeof import('../services/rampClient')>('../services/rampClient')),
+  deleteCard: vi.fn(),
+  listCards: vi.fn(),
 }));
 
-jest.mock('../services/cashPasskeyService', () => ({
-  isPasskeyCancellation: jest.fn(),
+vi.mock('../services/cashPasskeyService', () => ({
+  isPasskeyCancellation: vi.fn(),
 }));
 
-const mockDeleteCard = deleteCard as jest.Mock;
-const mockListCards = listCards as jest.Mock;
-const mockIsPasskeyCancellation = isPasskeyCancellation as jest.Mock;
+const mockDeleteCard = deleteCard as Mock;
+const mockListCards = listCards as Mock;
+const mockIsPasskeyCancellation = isPasskeyCancellation as Mock;
 
 const CARD: LinkedCard = { id: 'card_1', brand: 'Visa Debit', last4: '8990' };
 const REPLACEMENT_CARD: LinkedCard = { id: 'card_2', brand: 'Visa Debit', last4: '1234' };
 
 const flow = () => useCardRemovalFlowStore.getState();
-const linkedCard = () => useCashPaymentMethodStore.getState().linkedCard;
+const linkedCard = () => selectCashLinkedCard(useCashPaymentMethodStore.getState());
 
 function fetchError(status: number): RainbowFetchError {
   return new RainbowFetchError({ message: 'request failed', response: { status } as Response });
@@ -47,9 +49,10 @@ function deferDelete() {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   useCardRemovalFlowStore.setState({ state: 'idle' });
-  useCashPaymentMethodStore.getState().setLinkedCard(CARD);
+  useCashPaymentMethodStore.getState().clear();
+  useCashPaymentMethodStore.getState().addLinkedCard(CARD);
   mockDeleteCard.mockResolvedValue(undefined);
   mockListCards.mockResolvedValue([CARD]);
   mockIsPasskeyCancellation.mockReturnValue(false);
@@ -106,8 +109,13 @@ describe('cardRemovalFlowStore', () => {
     expect(mockListCards).not.toHaveBeenCalled();
   });
 
-  it('clears the card when reconciliation confirms an ambiguous delete succeeded', async () => {
-    mockDeleteCard.mockRejectedValue(new Error('connection lost'));
+  it.each([
+    { label: 'a transport error', failure: new Error('connection lost') },
+    { label: 'a 408', failure: fetchError(408) },
+    { label: 'a 429', failure: fetchError(429) },
+    { label: 'a 500', failure: fetchError(500) },
+  ])('clears the card when reconciliation confirms $label was an ambiguous delete that succeeded', async ({ failure }) => {
+    mockDeleteCard.mockRejectedValue(failure);
     mockListCards.mockResolvedValue([]);
 
     expect(await flow().remove(CARD)).toBe('removed');
@@ -135,7 +143,7 @@ describe('cardRemovalFlowStore', () => {
     const settle = deferDelete();
 
     const removal = flow().remove(CARD);
-    useCashPaymentMethodStore.getState().setLinkedCard(REPLACEMENT_CARD);
+    useCashPaymentMethodStore.getState().addLinkedCard(REPLACEMENT_CARD);
     settle();
     await removal;
 

@@ -1,3 +1,5 @@
+import { expect, it, vi } from 'vitest';
+
 import { safeSum } from './safeSum';
 
 it('safeSum sums selected raw values', () => {
@@ -9,7 +11,7 @@ it('safeSum sums selected raw values', () => {
 });
 
 it('safeSum returns zero for undefined values', () => {
-  const mapper = jest.fn();
+  const mapper = vi.fn();
 
   const result = safeSum(undefined, mapper);
 

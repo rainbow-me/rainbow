@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, Text, TextIcon } from '@/design-system';
 
 export function SectionHeader({
@@ -18,7 +18,7 @@ export function SectionHeader({
   onPress?: () => void;
 }) {
   return (
-    <Box paddingLeft={{ custom: 24 }}>
+    <Box paddingLeft={{ custom: 24 }} zIndex={1}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9} style={styles.button} disabled={!onPress}>
         <Box flexDirection="row" alignItems="center" gap={4}>
           {leadingAccessory}

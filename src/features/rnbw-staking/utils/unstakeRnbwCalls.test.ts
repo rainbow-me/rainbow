@@ -1,4 +1,5 @@
 import { encodeFunctionData, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { withRemoteConfig } from '@/features/config/testing/mockRemoteConfig';
 import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
@@ -6,15 +7,15 @@ import { type Call, type CallsRequirements } from '@rainbow-me/sdk';
 import { STAKING_ABI, STAKING_CHAIN_ID, STAKING_CONTRACT_ADDRESS } from '../constants';
 import { buildUnstakeRnbwCalls, buildUnstakeRnbwExecutionPlan } from './unstakeRnbwCalls';
 
-const mockCanUseSponsoredRnbwStaking = jest.fn<Promise<boolean>, [Address, number]>();
+const mockCanUseSponsoredRnbwStaking = vi.fn<(...args: [Address, number]) => Promise<boolean>>();
 
-jest.mock('./canUseSponsoredRnbwStaking', () => ({
+vi.mock('./canUseSponsoredRnbwStaking', () => ({
   canUseSponsoredRnbwStaking: (address: Address, chainId: number) => mockCanUseSponsoredRnbwStaking(address, chainId),
 }));
 
-jest.mock('@/features/config/stores/remoteConfig');
+vi.mock('@/features/config/stores/remoteConfig');
 
-jest.mock('@/utils/ethereumUtils', () => ({
+vi.mock('@/utils/ethereumUtils', () => ({
   getUniqueId: (address: string, chainId: number) => `${address}_${chainId}`,
 }));
 
@@ -31,7 +32,7 @@ function buildUnstakeCall(): Call {
 
 describe('unstakeRnbwCalls', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockCanUseSponsoredRnbwStaking.mockResolvedValue(false);
   });
 

@@ -18,7 +18,7 @@ import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type BackupFile, type CloudBackups } from '@/features/backup/backupFile';
 import { type ActiveTabRef } from '@/features/dapp-browser/types';
 import { type RequestData, type RequestSource } from '@/features/dapp-request/types';
-import { type RevokeReason } from '@/features/delegation/screens/RevokeDelegationPanel';
+import { type RevokeReason } from '@/features/delegation/types/revokeReason';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { type GasTrend } from '@/features/gas/utils/meteorology';
@@ -28,20 +28,23 @@ import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSou
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
 import { type RainbowPosition } from '@/features/positions/types';
+import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
+import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { type Checkbox } from '@/features/transfer/screens/SendConfirmationSheet';
 import { type WalletconnectApprovalSheetRouteParams, type WalletconnectResultType } from '@/features/wallet-connect/types';
+import { type RainbowWallet } from '@/features/wallet/types';
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import type walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import type WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { type WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { type ChartTime } from '@/hooks/charts/useChartInfo';
-import { type RainbowWallet } from '@/model/wallet';
 import { type Route } from '@/navigation/routesNames';
 import type Routes from '@/navigation/routesNames';
 import { type WalletNotificationSettings } from '@/notifications/settings/types';
 import { type Contact } from '@/redux/contacts';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { type ResponseByTheme } from '@/theme/types';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 
 export type PortalSheetProps = {
@@ -684,10 +687,7 @@ type ParamsByRoute = {
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };
-  [Routes.POLYMARKET_EVENT_SCREEN]: {
-    eventId: string;
-    event: PolymarketMarketEvent | PolymarketEvent;
-  };
+  [Routes.POLYMARKET_EVENT_SCREEN]: { gameId: string } | { eventId: string; event: PolymarketMarketEvent | PolymarketEvent };
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;
   };
@@ -699,15 +699,16 @@ type ParamsByRoute = {
     event: PolymarketMarketEvent | PolymarketEvent;
   };
   [Routes.POLYMARKET_NEW_POSITION_SHEET]: {
-    market: PolymarketMarket;
-    outcomeIndex: number;
-    outcomeColor: string;
-    event: PolymarketMarketEvent | PolymarketEvent;
-    fromRoute:
-      | typeof Routes.POLYMARKET_EVENT_SCREEN
-      | typeof Routes.POLYMARKET_MARKET_SHEET
-      | typeof Routes.POLYMARKET_BROWSE_EVENTS_SCREEN;
-  };
+    fromRoute: Route;
+    accentColor: ResponseByTheme<string>;
+  } & (
+    | { outcome: PolymarketOutcome }
+    | {
+        market: PolymarketMarket;
+        outcomeIndex: number;
+        event: PolymarketMarketEvent | PolymarketEvent;
+      }
+  );
   [Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET]: {
     description: string;
   };
@@ -727,6 +728,17 @@ type ParamsByRoute = {
   [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
   [Routes.RNBW_STAKING_SCREEN]: undefined;
   [Routes.RNBW_UNSTAKE_SHEET]: undefined;
+  [Routes.SPOT_PNL_SHEET]: {
+    address: string;
+    chainId: ChainId;
+    /** Defaults to the selected wallet. */
+    walletAddress?: string;
+    /** The wallet's ENS name when already resolved, shown for wallets that are not the user's. */
+    ensName?: string;
+    /** The wallet's trades when already fetched, shown instead of fetching them. Ignored for the selected wallet, whose balance they could predate. */
+    trades?: WalletTokenTrades;
+    entryPoint: SpotPnlSheetEntryPoint;
+  };
   [Routes.REVOKE_DELEGATION_PANEL]: {
     address: Address;
     delegationsToRevoke: Array<{

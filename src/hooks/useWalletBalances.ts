@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { type Address } from 'viem';
 
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { type AllRainbowWallets } from '@/features/wallet/types';
 import { add } from '@/helpers/utilities';
-import { type AllRainbowWallets } from '@/model/wallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getWalletAddresses } from '@/state/wallets/walletsStore';
@@ -28,7 +28,7 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
+export const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
   const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
@@ -72,5 +72,3 @@ const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResu
     balances,
   };
 };
-
-export default useWalletBalances;

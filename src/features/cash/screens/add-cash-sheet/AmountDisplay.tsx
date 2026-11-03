@@ -1,58 +1,48 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { memo } from 'react';
 
-import { type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
-import { InputValueCaret } from '@/components/number-pad/InputValueCaret';
-import { AnimatedText, Box, useForegroundColor } from '@/design-system';
+import { RollMode, SkiaAnimatedNumber } from '@/components/animated-number/SkiaAnimatedNumber';
+import { PANEL_BACKGROUND_DARK, PANEL_BACKGROUND_LIGHT } from '@/components/PanelSheet/PanelSheet';
+import { Box, useColorMode } from '@/design-system';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-// Mirror the Deposit/Withdrawal amount formatting: "$" + comma-grouped value, "$0" when empty.
-const selectFormattedAmount = (value: SharedValue<string>) => {
-  'worklet';
-  const amount = value.value;
-  if (!amount || amount === '0') return '$0';
-  return `$${addCommasToNumber(amount, '0')}`;
-};
+export const AmountDisplay = memo(function AmountDisplay({
+  displayedAmount,
+  shakeOffset,
+}: {
+  displayedAmount: SharedValue<string>;
+  shakeOffset: SharedValue<number>;
+}) {
+  const { isDarkMode } = useColorMode();
 
-export function AmountDisplay({ displayedAmount }: { displayedAmount: SharedValue<string> }) {
-  const accent = useForegroundColor('accent');
+  const formattedAmount = useDerivedValue(() => `$${addCommasToNumber(displayedAmount.value || '0', '0')}`);
+  const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shakeOffset.value }] }));
 
   return (
     <Box
+      as={Animated.View}
       alignItems="center"
-      flexDirection="row"
       justifyContent="center"
-      paddingHorizontal="20px"
+      style={shakeStyle}
       testID="cash-deposit-add-cash-amount-display-container"
       width="full"
     >
-      <AnimatedText
+      <SkiaAnimatedNumber
         align="center"
+        backgroundColor={isDarkMode ? PANEL_BACKGROUND_DARK : PANEL_BACKGROUND_LIGHT}
+        bleedHorizontal={0}
         color="label"
-        ellipsizeMode="middle"
-        numberOfLines={1}
-        selector={selectFormattedAmount}
-        size="64pt"
-        style={styles.glyph}
-        tabularNumbers
+        fitToWidth
+        paddingHorizontal={32}
+        rollMode={RollMode.None}
+        size="76pt"
         testID="cash-deposit-add-cash-amount-display"
+        value={formattedAmount}
         weight="heavy"
-      >
-        {displayedAmount}
-      </AnimatedText>
-      <Box style={styles.caret}>
-        <InputValueCaret color={accent} height={57} value={displayedAmount} />
-      </Box>
+        width={DEVICE_WIDTH}
+      />
     </Box>
   );
-}
-
-const styles = StyleSheet.create({
-  caret: {
-    marginLeft: 4,
-  },
-  glyph: {
-    flexShrink: 1,
-  },
 });

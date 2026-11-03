@@ -28,8 +28,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { useSwapsSearchStore } from '../../resources/search/searchV2';
 import { ChainSelection } from './ChainSelection';
-
-export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 10; // paddingTop + height + paddingBottom
+import { BUY_LIST_HEADER_HEIGHT } from './constants';
 
 const SCROLL_INDICATOR_INSETS = {
   focused: {

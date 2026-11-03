@@ -18,7 +18,7 @@ type FlyInAnimationProps = {
   props: Omit<AnimatedProps<ViewProps>, 'entering' | 'exiting'>;
 };
 
-export default function FlyInAnimation({ distance = 16, duration = 100, ...props }: FlyInAnimationProps) {
+export function FlyInAnimation({ distance = 16, duration = 100, ...props }: FlyInAnimationProps) {
   const exitDuration = duration / 3;
   return (
     <AnimatedContainer

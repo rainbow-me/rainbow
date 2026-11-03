@@ -1,39 +1,15 @@
-import { getPlatformClient } from '@/resources/platform/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FIXTURE_LIST_POSITIONS_SUCCESS, FIXTURE_PARAMS } from '../__fixtures__/ListPositions';
 import { createMockPositionsData } from '../__fixtures__/mocks/positions';
+import { preparePositionsStore } from '../__fixtures__/positionsStore';
 import type { RainbowPositions } from '../types';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { usePositionsStore } from './positionsStore';
 
-jest.mock('@/resources/platform/client');
-jest.mock('@/features/config/hooks/experimentalHooks', () => ({}));
-jest.mock('@/features/config/stores/experimentalConfigStore', () => ({
-  getExperimentalFlag: jest.fn(() => false),
-}));
-jest.mock('@/features/network/stores/backendNetworksStore', () => ({
-  useBackendNetworksStore: {
-    getState: () => ({
-      getSupportedPositionsChainIds: () => [1, 10, 137],
-    }),
-    subscribe: jest.fn(),
-  },
-}));
-jest.mock('@/state/assets/userAssetsStoreManager', () => {
-  const { createStore: createZustandStore } = jest.requireActual<typeof import('zustand/vanilla')>('zustand/vanilla');
-  const { FIXTURE_PARAMS: params, FIXTURE_WALLET_ADDRESS: address } =
-    jest.requireActual<typeof import('../__fixtures__/ListPositions')>('../__fixtures__/ListPositions');
-  return {
-    userAssetsStoreManager: createZustandStore(() => ({
-      address,
-      currency: params.currency,
-    })),
-  };
-});
-
 // ============================= HELPERS ===============================
 
-const setStoreData = (data: RainbowPositions) => {
+function setStoreData(data: RainbowPositions): void {
   const store = usePositionsStore.getState();
   store.queryCache[store.queryKey] = {
     data,
@@ -41,28 +17,23 @@ const setStoreData = (data: RainbowPositions) => {
     cacheTime: 0,
     errorInfo: null,
   };
-};
+}
 
 // =============================== TESTS ===============================
 
 describe('positionsStore Integration Tests', () => {
-  let mockClient: { get: jest.Mock };
-
   beforeEach(() => {
-    jest.clearAllMocks();
-
-    // Setup mock client
-    mockClient = {
-      get: jest.fn(),
-    };
-    (getPlatformClient as jest.Mock).mockReturnValue(mockClient);
+    preparePositionsStore();
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Unexpected positions request'));
   });
+
+  afterEach(() => vi.restoreAllMocks());
 
   describe('Integration with Platform API', () => {
     it('should integrate with real fixture response', async () => {
-      mockClient.get.mockResolvedValueOnce({
-        data: FIXTURE_LIST_POSITIONS_SUCCESS,
-      });
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(JSON.stringify(FIXTURE_LIST_POSITIONS_SUCCESS), { headers: { 'Content-Type': 'application/json' } })
+      );
 
       const params: PositionsParams = FIXTURE_PARAMS;
 

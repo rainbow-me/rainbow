@@ -54,7 +54,7 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
     },
     cacheTime: time.zero,
     keepPreviousData: true,
-    maxRetries: 10,
+    retry: 10,
     staleTime: time.minutes(2),
   },
 

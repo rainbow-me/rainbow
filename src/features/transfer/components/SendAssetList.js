@@ -4,14 +4,14 @@ import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 
-import FlyInAnimation from '@/components/animations/FlyInAnimation';
+import { FlyInAnimation } from '@/components/animations/FlyInAnimation';
 import { CoinDividerOpenButton } from '@/components/coin-divider';
 import Divider, { DividerSize } from '@/components/Divider';
 import { Centered } from '@/components/layout';
 import TokenFamilyHeader from '@/components/token-family/TokenFamilyHeader';
 import styled from '@/framework/ui/styled-thing';
 import { buildCoinsList } from '@/helpers/assets';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { CollectiblesSendRow } from './CollectiblesSendRow';

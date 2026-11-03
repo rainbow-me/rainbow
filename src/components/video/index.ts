@@ -1,1 +1,1 @@
-export { default as SimpleVideo } from './SimpleVideo';
+export { SimpleVideo } from './SimpleVideo';

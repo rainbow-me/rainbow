@@ -1,6 +1,6 @@
-import { deprecatedGetLocal, deprecatedRemoveLocal } from '@/handlers/localstorage/common';
 import { logger, RainbowError } from '@/logger';
 import { Storage } from '@/storage';
+import { getLegacyAsyncStorageValue, removeLegacyAsyncStorageValue } from '@/storage/legacyAsyncStorage';
 import { type Legacy } from '@/storage/schema';
 
 export const REACT_QUERY_STORAGE_ID = 'rainbow.react-query';
@@ -28,9 +28,10 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Sc
 
     if (!res) {
       try {
-        const legacyValue = await deprecatedGetLocal(key); // get old value from AsyncStorage
+        const legacyValue = await getLegacyAsyncStorageValue<Schema[Key]>(key); // get old value from AsyncStorage
+        if (legacyValue === null) return undefined;
         this.set(scopes, legacyValue); // set first
-        deprecatedRemoveLocal(key); // then remove if successful
+        removeLegacyAsyncStorageValue(key); // then remove if successful
         return this.get(scopes); // continue as normal
       } catch (e) {
         logger.error(new RainbowError(`[storage]: error migrating legacy data`), {

@@ -3,10 +3,14 @@ package me.rainbow
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.webkit.WebView
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactRootView
 import com.facebook.react.modules.network.OkHttpClientProvider
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
 import com.zoontek.rnbootsplash.RNBootSplash
 import io.branch.rnbranch.RNBranchModule
@@ -56,5 +60,13 @@ class MainActivity : ReactActivity() {
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate =
-        ReactActivityDelegate(this, mainComponentName)
+        object : ReactActivityDelegate(this, mainComponentName) {
+            override fun createRootView(): ReactRootView =
+                object : ReactRootView(this@MainActivity) {
+                    override fun onChildStartedNativeGesture(childView: View?, event: MotionEvent) {
+                        super.onChildStartedNativeGesture(childView, event)
+                        RNGestureHandlerRootView.onNativeGestureStarted(childView, event)
+                    }
+                }
+        }
 }

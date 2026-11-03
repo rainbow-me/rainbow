@@ -5,7 +5,7 @@ import { toast } from 'sonner-native';
 
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';

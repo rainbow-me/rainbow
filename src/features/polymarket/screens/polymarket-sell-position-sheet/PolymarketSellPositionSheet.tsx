@@ -10,6 +10,7 @@ import { analytics } from '@/analytics';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, globalColors, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
@@ -17,11 +18,10 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -41,9 +41,10 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.manage_position.cashing_out));
-  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.asset) ?? initialPosition);
-  const tokenId = useMemo(() => position.clobTokenIds[position.outcomes.indexOf(position.outcome)], [position]);
+  const position = usePolymarketPositionsStore(s => s.getPosition(initialPosition.asset) ?? initialPosition);
+
   const sellAmountTokens = String(position.size);
+  const executionStore = useMemo(() => createSellExecutionStore(sellAmountTokens), [sellAmountTokens]);
 
   const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
     eventTitle: position.market.events[0]?.title ?? '',
@@ -52,20 +53,17 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     outcomeIndex: position.outcomeIndex,
   });
 
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
   const buttonBackgroundColor = getSolidColorEquivalent({
     background: opacity(accentColor, 0.7),
     foreground: '#000000',
     opacity: 0.4,
   });
+
   const gradientFillColors: [string, string] = isDarkMode
     ? [opacity(accentColor, 0.22), opacity(accentColor, 0)]
     : [opacity(accentColor, 0), opacity(accentColor, 0.06)];
 
-  const executionStore = useMemo(
-    () => createSellExecutionStore(tokenId, sellAmountTokens, position.conditionId),
-    [position.conditionId, sellAmountTokens, tokenId]
-  );
   const {
     worstPrice,
     bestPrice,
@@ -77,21 +75,24 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
     isQuoteReady,
-  } = executionStore(state => state);
+  } = executionStore(s => s);
+
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const canSubmit = isQuoteReady && !hasBlockedLiquidity;
+  const formattedBestPrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(bestPrice, 100), 1))}¢`;
+  const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
+
   const noLiquidityTitle = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_title)
     : i18n.t(i18n.l.predictions.cash_out.insufficient_liquidity_title);
   const noLiquidityDescription = hasNoLiquidityAtMarketPrice
     ? i18n.t(i18n.l.predictions.cash_out.no_liquidity_description)
     : i18n.t(i18n.l.predictions.cash_out.insufficient_liquidity_description);
-  const formattedBestPrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(bestPrice, 100), 1))}¢`;
-  const formattedAveragePrice = `${trimTrailingZeros(toFixedWorklet(mulWorklet(averagePrice, 100), 1))}¢`;
 
   const pnl = useMemo(() => {
     return subWorklet(expectedPayoutUsd, position.initialValue);
   }, [expectedPayoutUsd, position.initialValue]);
+
   const pnlColor = Number(pnl) >= 0 ? green : red;
   const pnlSign = Number(pnl) >= 0 ? '+' : '-';
   const absPnl = Math.abs(Number(pnl));

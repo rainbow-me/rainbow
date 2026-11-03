@@ -8,14 +8,15 @@ import { type CashDepositSetupRoute } from '@/navigation/types';
 
 import { CardBrand } from '../../services/rampClient';
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
-import { useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { selectCanSubmitReview, selectIsPhoneVerified, useCashSetupSessionStore } from '../../stores/cashSetupSessionStore';
+import { useKycReturnFlowStore, type KycReturnResult } from '../../stores/kycReturnFlowStore';
 import { NATIONAL_NUMBER_LENGTH } from '../../utils/phoneNumber';
 import { CashDepositSetupNavigation, useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
-import { completeSetupStep, goBackInSetup } from './setupNavigation';
+import { completeSetup, completeSetupStep } from './setupNavigation';
 import { isSetupEditDetour } from './steps';
 import { useAddPasskeyFlowStore } from './steps/useAddPasskeyFlow';
-import { useSubmitKycFlowStore } from './steps/useSubmitKycFlow';
 import { useSubmitPhoneFlowStore } from './steps/useSubmitPhoneFlow';
+import { useSubmitReviewFlowStore } from './steps/useSubmitReviewFlow';
 
 type SetupAction = {
   disabled?: boolean;
@@ -32,14 +33,62 @@ async function submitPhone(): Promise<void> {
   }
 }
 
+export async function signInToExistingAccount(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if (
+    (await useSubmitPhoneFlowStore.getState().signInWithExistingPasskey()) === 'signedIn' &&
+    CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)
+  ) {
+    completeSetup();
+  }
+}
+
+export async function recoverExistingAccount(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) return;
+  if ((await useSubmitPhoneFlowStore.getState().chooseRecovery()) && CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PHONE)) {
+    completeSetupStep();
+  }
+}
+
 export async function submitPhoneCode(): Promise<void> {
   const result = await useVerifyPhoneFlowStore.getState().submit();
   if (result === 'verified') completeSetupStep();
-  else if (result === 'signupAlreadyComplete') goBackInSetup();
+  else if (result === 'recoveryCodeAccepted') {
+    const sessionStore = useCashSetupSessionStore.getState();
+    if (sessionStore.getIdentity() && sessionStore.getGovernmentId()) {
+      CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_REVIEW);
+    } else {
+      completeSetupStep();
+    }
+  }
 }
 
 export async function submitPasskey(): Promise<void> {
-  if ((await useAddPasskeyFlowStore.getState().submit()) === 'completed') completeSetupStep();
+  const result = await useAddPasskeyFlowStore.getState().submit();
+  if (result === 'completed') completeSetupStep();
+  else if (result === 'recovered') completeSetup();
+}
+
+export async function signInWithPasskeyOnDevice(): Promise<void> {
+  if (!CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PASSKEY)) return;
+  if (
+    (await useAddPasskeyFlowStore.getState().signInWithPasskeyOnDevice()) === 'signedIn' &&
+    CashDepositSetupNavigation.isRouteActive(Routes.CASH_SETUP_PASSKEY)
+  ) {
+    completeSetup();
+  }
+}
+
+export async function submitReview(): Promise<void> {
+  const result = await useSubmitReviewFlowStore.getState().submit();
+  if (result === 'recovered') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PASSKEY);
+  else if (result === 'phoneCodeRequired') CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_CONFIRM_PHONE);
+}
+
+export async function checkKycOnReturn(isActive: () => boolean): Promise<KycReturnResult> {
+  const result = await useKycReturnFlowStore.getState().check();
+  if (result === 'expired' && isActive()) CashDepositSetupNavigation.navigate(Routes.CASH_SETUP_PHONE);
+  return result;
 }
 
 export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardFormStore: BaseStore<{ isReady: boolean }>) {
@@ -71,7 +120,10 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
 
     switch (activeRoute) {
       case Routes.CASH_SETUP_PHONE: {
-        const disabled = $(useSubmitPhoneFlowStore, s => s.digits.length !== NATIONAL_NUMBER_LENGTH);
+        const disabled = $(
+          useSubmitPhoneFlowStore,
+          s => s.digits.length !== NATIONAL_NUMBER_LENGTH || s.state === 'existingAccount' || s.state === 'signingIn'
+        );
         const loading = $(useSubmitPhoneFlowStore, s => s.state === 'submitting');
         return { disabled, label, loading, onPress: submitPhone };
       }
@@ -81,7 +133,7 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
         const isFullCode = $(useVerifyPhoneFlowStore, s => s.code.length === OTP_LENGTH);
         const isResending = $(useVerifyPhoneFlowStore, s => s.resending !== null);
         return {
-          disabled: !isFullCode || isResending || state === 'verified',
+          disabled: !isFullCode || isResending || state === 'submitted',
           label,
           loading: state === 'verifying',
           onPress: submitPhoneCode,
@@ -95,13 +147,21 @@ export function createSetupActionStore(getCardForm: () => BivoSecureStore, cardF
         return { disabled: $(useCashSetupSessionStore, s => s.getGovernmentId() === null), label, onPress: completeSetupStep };
 
       case Routes.CASH_SETUP_REVIEW: {
-        const isReady = $(useCashSetupSessionStore, s => s.getIdentity() !== null && s.getGovernmentId() !== null);
-        const state = $(useSubmitKycFlowStore, s => s.state);
+        const kycSubmitted = $(useSubmitReviewFlowStore, s => s.kycSubmitted);
+        const isReady = $(
+          useCashSetupSessionStore,
+          s =>
+            (selectCanSubmitReview(s) || (kycSubmitted && selectIsPhoneVerified(s))) &&
+            s.getIdentity() !== null &&
+            s.getGovernmentId() !== null
+        );
+        const state = $(useSubmitReviewFlowStore, s => s.state);
+        const checking = $(useKycReturnFlowStore, s => s.state === 'checking');
         return {
-          disabled: !isReady || state !== 'entry',
+          disabled: !isReady || state !== 'entry' || checking,
           label,
           loading: state === 'submitting',
-          onPress: useSubmitKycFlowStore.getState().submit,
+          onPress: submitReview,
         };
       }
 

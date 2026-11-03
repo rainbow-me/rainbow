@@ -3,9 +3,9 @@ import { LayoutProvider, type Dimension, type Layout, type LayoutManager } from 
 import { NFTS_ENABLED } from '@/features/config/constants/experimental';
 import { type ExperimentalConfigState } from '@/features/config/stores/experimentalConfigStore';
 import { type RainbowConfig } from '@/features/config/stores/remoteConfig';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ViewDimensions from './ViewDimensions';
+import { ViewDimensions } from './ViewDimensions';
 import { CellType, type CellTypes } from './ViewTypes';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
@@ -47,7 +47,7 @@ const NFTS = [
   CellType.LEGACY_NFT,
 ];
 
-const getLayoutProvider = ({
+export const getLayoutProvider = ({
   briefSectionsData,
   isCoinListEdited,
   experimentalConfig,
@@ -99,5 +99,3 @@ const getLayoutProvider = ({
     indicesToOverride
   );
 };
-
-export default getLayoutProvider;

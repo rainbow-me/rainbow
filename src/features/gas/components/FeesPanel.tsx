@@ -4,11 +4,11 @@ import { InteractionManager, Keyboard, KeyboardAvoidingView, Platform } from 're
 import { useIsFocused, useRoute, type RouteProp } from '@react-navigation/native';
 
 import { Alert } from '@/components/alerts';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import FeesGweiInput from '@/components/FeesGweiInput';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { FeesGweiInput } from '@/components/FeesGweiInput';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_TEST } from '@/env';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, isZero, lessThan, multiply, toFixedDecimals } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
@@ -58,7 +58,7 @@ type AlertInfo = {
 } | null;
 
 // send sheet fees panel
-export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
+export function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
   const { colors } = useTheme();

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import type { PositionAsset, RainbowUnderlyingAsset } from '../../../types';
 import { calculateLiquidityAllocation, calculateLiquidityRangeStatus, isConcentratedLiquidityProtocol } from './lp';
 

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { validateENS } from './records';
 
 describe('valid names', () => {

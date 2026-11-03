@@ -13,6 +13,8 @@ type PerpBottomSheetHeaderProps = {
 };
 
 export const PerpBottomSheetHeader = memo(function PerpBottomSheetHeader({ title, symbol }: PerpBottomSheetHeaderProps) {
+  const tokenId = getHyperliquidTokenId(symbol);
+
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full" paddingHorizontal={'12px'}>
       <Text size="20pt" weight="heavy" color={'label'}>
@@ -25,12 +27,12 @@ export const PerpBottomSheetHeader = memo(function PerpBottomSheetHeader({ title
         <Box flexDirection="row" alignItems="center" gap={4}>
           <HyperliquidTokenIcon symbol={symbol} size={14} />
           <LiveTokenText
-            tokenId={getHyperliquidTokenId(symbol)}
+            tokenId={tokenId}
             size="15pt"
             weight="heavy"
             color={'labelSecondary'}
-            initialValue={'-'}
-            selector={token => formatPerpAssetPrice(token.price)}
+            fallback={'-'}
+            format={formatPerpAssetPrice}
           />
         </Box>
       </Box>

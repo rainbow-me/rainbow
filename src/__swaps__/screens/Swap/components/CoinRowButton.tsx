@@ -1,10 +1,10 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export const CoinRowButton = ({
@@ -15,6 +15,7 @@ export const CoinRowButton = ({
   size,
   weight,
   disabled,
+  testID,
 }: {
   color?: string;
   icon: string;
@@ -23,6 +24,7 @@ export const CoinRowButton = ({
   size?: TextSize;
   weight?: TextWeight;
   disabled?: boolean;
+  testID?: string;
 }) => {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useForegroundColor('fillTertiary');
@@ -30,7 +32,7 @@ export const CoinRowButton = ({
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} disabled={disabled} testID={testID}>
       <Box
         alignItems="center"
         borderRadius={14}

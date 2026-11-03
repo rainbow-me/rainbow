@@ -1,3 +1,4 @@
+import { isImageCdnUrl } from '@/handlers/imageCdn';
 import { memoFn } from '@/utils/memoFn';
 
 const fastImageExtension = {
@@ -18,17 +19,16 @@ const pathRegex = /fm=([a-z]+)/;
 /**
  * Derives the image format a URL will return.
  *
- * For our image CDN (currently any `imgix.net` host) the path is a
- * percent-encoded source URL, so its file extension describes the source rather
- * than the response. The `fm` parameter is the only reliable signal there, and
- * png is assumed when it is absent.
+ * For our own image CDNs the path is a percent-encoded source URL, so its file
+ * extension describes the source rather than the response. The `fm` parameter
+ * is the only reliable signal there, and png is assumed when it is absent.
  *
  * Every other URL is sniffed from the file extension.
  */
 export const getImageType = memoFn((path: string): DetectedImageExtension => {
   try {
     const url = new URL(path);
-    if (url.host.includes('imgix.net')) {
+    if (isImageCdnUrl(url)) {
       const [, type = 'png'] = path.match(pathRegex) || [];
       return fastImageExtension[type as FastImageExtensions] || 'unknown';
     }

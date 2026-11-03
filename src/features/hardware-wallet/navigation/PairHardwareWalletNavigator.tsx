@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { atom, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import { analytics } from '@/analytics';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -15,14 +15,9 @@ import { NanoXDeviceAnimation } from '../components/NanoXDeviceAnimation';
 import { PairHardwareWalletIntroSheet } from '../screens/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '../screens/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSigningSheet } from '../screens/PairHardwareWalletSigningSheet';
+import { ledgerImportDeviceIdAtom } from '../state/pairHardwareWalletState';
 
 const Swipe = createMaterialTopTabNavigator();
-
-// atoms used for navigator state
-export const LedgerImportDeviceIdAtom = atom({
-  default: '',
-  key: 'ledgerImportDeviceId',
-});
 
 export function PairHardwareWalletNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET>>();
@@ -31,7 +26,7 @@ export function PairHardwareWalletNavigator() {
 
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
 
-  const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
+  const [deviceId, setDeviceId] = useRecoilState(ledgerImportDeviceIdAtom);
 
   // reset navigator state on unmount
   useEffect(() => {

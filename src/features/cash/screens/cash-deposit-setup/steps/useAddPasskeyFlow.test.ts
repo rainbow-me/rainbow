@@ -1,15 +1,18 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
 import { createPasskeyCredential } from '../../../services/cashPasskeyService';
+import { signInWithPhone } from '../../../services/cashSignInService';
 import { addPasskey, finishAddPasskey } from '../../../services/userClient';
 import { useCashAccountStore } from '../../../stores/cashAccountStore';
-import { useCashSetupSessionStore } from '../../../stores/cashSetupSessionStore';
+import { useCashSetupSessionStore, type RecoveryPhoneChallenge } from '../../../stores/cashSetupSessionStore';
 import { useAddPasskeyFlowStore } from './useAddPasskeyFlow';
 
-jest.mock('@/analytics', () => ({
+vi.mock('@/analytics', () => ({
   analytics: {
-    track: jest.fn(),
+    track: vi.fn(),
     event: {
       cashPasskeySubmitted: 'cash.passkey_submitted',
       cashPasskeyAdded: 'cash.passkey_added',
@@ -18,31 +21,38 @@ jest.mock('@/analytics', () => ({
   },
 }));
 
-jest.mock('@/logger', () => ({
-  logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+vi.mock('@/logger', () => ({
+  logger: { debug: vi.fn(), error: vi.fn(), warn: vi.fn() },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('../../../services/userClient', () => ({
-  addPasskey: jest.fn(),
-  finishAddPasskey: jest.fn(),
+vi.mock('../../../services/userClient', () => ({
+  addPasskey: vi.fn(),
+  finishAddPasskey: vi.fn(),
 }));
 
-jest.mock('../../../services/cashPasskeyService', () => ({
-  createPasskeyCredential: jest.fn(),
-  getPasskeyName: jest.fn(() => 'iPhone 15 Pro'),
-  isPasskeyCancellation: jest.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+vi.mock('../../../services/cashPasskeyService', () => ({
+  createPasskeyCredential: vi.fn(),
+  getPasskeyName: vi.fn(() => 'iPhone 15 Pro'),
+  isPasskeyCancellation: vi.fn((error: unknown) => error instanceof Error && error.message === 'UserCancelled'),
+  isPasskeyAlreadyOnDevice: vi.fn((error: unknown) => error instanceof Error && error.message === 'PasskeyOnDevice'),
 }));
 
-jest.mock('../../../stores/cashAccountStore', () => ({
-  useCashAccountStore: { getState: jest.fn() },
+vi.mock('../../../services/cashSignInService', () => ({
+  signInWithPhone: vi.fn(),
 }));
 
-const mockAddPasskey = addPasskey as jest.Mock;
-const mockFinishAddPasskey = finishAddPasskey as jest.Mock;
-const mockCreatePasskeyCredential = createPasskeyCredential as jest.Mock;
-const track = analytics.track as jest.Mock;
-const setUserId = jest.fn();
+vi.mock('../../../stores/cashAccountStore', () => {
+  const state = { userId: null, setUserId: vi.fn(), clearUserId: vi.fn() };
+  return { useCashAccountStore: { getState: vi.fn(() => state) } };
+});
+
+const mockAddPasskey = vi.mocked(addPasskey);
+const mockFinishAddPasskey = vi.mocked(finishAddPasskey);
+const mockCreatePasskeyCredential = vi.mocked(createPasskeyCredential);
+const mockSignInWithPhone = vi.mocked(signInWithPhone);
+const track = vi.mocked(analytics.track);
+const setUserId = vi.mocked(useCashAccountStore.getState().setUserId);
 
 const TOKEN = 'bst_1';
 const OPTIONS_JSON = '{"publicKey":{"challenge":"abc"}}';
@@ -55,10 +65,19 @@ const challenge = () => {
   if (current.status !== 'phoneSubmitted') throw new Error('expected a phoneSubmitted session');
   return current.challenge;
 };
+const verifyRecoverySession = () => {
+  session().reset();
+  const recoveryChallenge: RecoveryPhoneChallenge = { kind: 'recovery', recoveryId: 'recovery-1' };
+  session().setPhoneSubmitted({ challenge: recoveryChallenge, phoneNationalNumber: '4155550100', resendAfter: 0 });
+  session().setFirstName('Ada');
+  session().setLastName('Lovelace');
+  session().setDateOfBirth({ year: 1815, month: 12, day: 10 });
+  session().setSsnLast4('1234');
+  session().setPhoneVerified(recoveryChallenge, { bootstrapToken: TOKEN, expiresAt: Date.now() + 60_000 });
+};
 
 beforeEach(() => {
-  jest.clearAllMocks();
-  (useCashAccountStore.getState as jest.Mock).mockReturnValue({ setUserId });
+  vi.clearAllMocks();
   flow().reset();
   session().reset();
   session().setPhoneSubmitted({ challenge: { kind: 'signup', userId: 'user-1' }, phoneNationalNumber: '4155550100', resendAfter: 0 });
@@ -138,6 +157,15 @@ describe('useAddPasskeyFlowStore.submit', () => {
     expect(setUserId).toHaveBeenCalledWith('user-1');
   });
 
+  it('resolves recovered when enrolling from a recovery session', async () => {
+    verifyRecoverySession();
+
+    await expect(flow().submit()).resolves.toBe('recovered');
+
+    expect(setUserId).toHaveBeenCalledWith('user-1');
+    expect(mockFinishAddPasskey).toHaveBeenCalledTimes(1);
+  });
+
   it('skips a second submit while one is in flight', async () => {
     let resolveAdd!: (value: { passkeyId: string; publicKeyOptionsJson: string; userId: string }) => void;
     mockAddPasskey.mockReturnValue(
@@ -161,5 +189,45 @@ describe('useAddPasskeyFlowStore.submit', () => {
 
     expect(mockAddPasskey).not.toHaveBeenCalled();
     expect(track).not.toHaveBeenCalled();
+  });
+});
+
+describe('passkey already on the device', () => {
+  beforeEach(() => {
+    verifyRecoverySession();
+    mockCreatePasskeyCredential.mockRejectedValue(new Error('PasskeyOnDevice'));
+  });
+
+  it('offers sign-in instead of reporting a failure', async () => {
+    await expect(flow().submit()).resolves.toBe('failed');
+
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(mockFinishAddPasskey).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalledWith('cash.passkey_failed', expect.anything());
+  });
+
+  it('signs in with the verified phone number', async () => {
+    mockSignInWithPhone.mockResolvedValue(undefined);
+    await flow().submit();
+
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('signedIn');
+
+    expect(mockSignInWithPhone).toHaveBeenCalledWith('4155550100', 'passkeyOnDevicePrompt');
+    expect(flow().state).toBe('entry');
+  });
+
+  it('keeps the prompt when sign-in is cancelled or fails', async () => {
+    await flow().submit();
+
+    mockSignInWithPhone.mockRejectedValueOnce(new Error('UserCancelled'));
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('cancelled');
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(logger.error).not.toHaveBeenCalled();
+
+    mockSignInWithPhone.mockRejectedValueOnce(new Error('network down'));
+    await expect(flow().signInWithPasskeyOnDevice()).resolves.toBe('failed');
+    expect(flow().state).toBe('passkeyOnDevice');
+    expect(logger.error).toHaveBeenCalled();
   });
 });

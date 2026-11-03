@@ -4,14 +4,11 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
-import { type SwapsParams } from '../screens/Swap/navigateToSwaps';
-
 type SwapEventTypes = typeof analytics.event.swapsSubmitted | typeof analytics.event.swapsFailed;
 
 type SwapEventParameters<T extends SwapEventTypes> = {
   isHardwareWallet: boolean;
   parameters: Omit<RapSwapActionParameters<'swap' | 'crosschainSwap'>, 'gasFeeParamsBySpeed' | 'gasParams' | 'selectedGasFee'>;
-  quickBuyMetadata?: SwapsParams['quickBuyMetadata'];
   type: 'crosschainSwap' | 'swap';
 } & (T extends typeof analytics.event.swapsSubmitted
   ? {
@@ -23,7 +20,7 @@ type SwapEventParameters<T extends SwapEventTypes> = {
 
 export function trackSwapEvent<T extends SwapEventTypes>(
   event: T,
-  { errorMessage, isHardwareWallet, parameters, quickBuyMetadata, type }: SwapEventParameters<T>
+  { errorMessage, isHardwareWallet, parameters, type }: SwapEventParameters<T>
 ): void {
   const { degenMode, inputAsset, outputAsset } = useSwapsStore.getState();
   const isBridge =
@@ -67,7 +64,6 @@ export function trackSwapEvent<T extends SwapEventTypes>(
     outputAssetName,
     outputAssetSymbol,
     outputAssetType,
-    quickBuyMetadata: quickBuyMetadata?.outputAssetUniqueId === outputAsset?.uniqueId ? quickBuyMetadata : undefined,
     tradeAmountUSD: parameters.quote.tradeAmountUSD,
     type,
   };

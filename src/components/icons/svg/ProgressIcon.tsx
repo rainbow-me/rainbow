@@ -3,7 +3,7 @@ import React, { type PropsWithChildren } from 'react';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { position } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 

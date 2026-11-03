@@ -1,17 +1,22 @@
 import React, { memo } from 'react';
 
-import { TapToDismiss } from '@/components/PanelSheet/PanelSheet';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { CashStatusPanel } from '@/features/cash/components/CashStatusHalfSheet';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
+
+import { abandonSetupSession } from '../setupNavigation';
 
 const l = i18n.l.cash.deposit_setup.cancel_sheet;
 
 export const SetupCancelSheet = memo(function SetupCancelSheet() {
   const { goBack, pop } = useNavigation<typeof Routes.CASH_SETUP_CANCEL_SHEET>();
 
-  const confirm = () => pop(2);
+  const confirm = () => {
+    abandonSetupSession();
+    pop(2);
+  };
 
   return (
     <>

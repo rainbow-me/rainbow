@@ -1,8 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import chroma from 'chroma-js';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -15,10 +14,11 @@ import { toHex } from 'viem';
 
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { ImgixImage } from '@/components/images';
 import { SmoothPager, usePagerHistory } from '@/components/SmoothPager/SmoothPager';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import {
   AnimatedText,
   Bleed,
@@ -34,13 +34,15 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { type TextColor } from '@/design-system/color/palettes';
+import { opacity } from '@/design-system/utils/opacity';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
@@ -48,7 +50,6 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import * as i18n from '@/languages';
-import Navigation from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
@@ -57,8 +58,7 @@ import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/st
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
-import { address } from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -157,7 +157,7 @@ export const ControlPanel = () => {
             ) : (
               <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} />
             ),
-            label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
+            label: removeFirstEmojiFromString(account.label) || abbreviateAddress(account.address, 6, 4),
             secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
@@ -306,29 +306,6 @@ export const ControlPanel = () => {
   );
 };
 
-export const TapToDismiss = memo(function TapToDismiss() {
-  return (
-    <TouchableWithoutFeedback onPress={Navigation.goBack}>
-      <View style={controlPanelStyles.cover} />
-    </TouchableWithoutFeedback>
-  );
-});
-
-const getHighContrastAccentColor = (accentColor: string, isDarkMode: boolean) => {
-  const contrast = chroma.contrast(accentColor, isDarkMode ? '#191A1C' : globalColors.white100);
-  if (contrast < 2.125) {
-    if (isDarkMode) {
-      const brightenedColor = chroma(accentColor).brighten(1).saturate(0.5).css();
-      return brightenedColor;
-    } else {
-      const darkenedColor = chroma(accentColor).darken(1).saturate(0.5).css();
-      return darkenedColor;
-    }
-  } else {
-    return accentColor;
-  }
-};
-
 const AccentColorSetter = ({
   animatedAccentColor,
   selectedWallet,
@@ -339,7 +316,7 @@ const AccentColorSetter = ({
   const { isDarkMode } = useColorMode();
 
   const accountColor = usePersistentDominantColorFromImage(selectedWallet?.imageUrl) || selectedWallet?.color || globalColors.blue60;
-  const highContrastAccentColor = useMemo(() => getHighContrastAccentColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
+  const highContrastAccentColor = useMemo(() => getHighContrastColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
 
   useSyncSharedValue({
     sharedValue: animatedAccentColor,
@@ -1071,11 +1048,6 @@ const controlPanelStyles = StyleSheet.create({
     padding: 16,
     textShadowOffset: { height: 0, width: 0 },
     textShadowRadius: 16,
-  },
-  cover: {
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
   },
   homePanel: {
     height: '100%',

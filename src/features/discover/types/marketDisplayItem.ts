@@ -16,6 +16,7 @@ export type MarketDisplayItem = {
   initialPriceChange: string;
   leverage: number | undefined;
   liveTokenId: string;
-  priceChangeSelector: (token: TokenData) => string;
-  priceSelector: (token: TokenData) => string;
+  priceSelector?: (token: TokenData) => string;
+  priceFormatter: (value: string) => string;
+  priceChangeFormatter: (value: string) => string;
 };

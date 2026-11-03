@@ -5,24 +5,25 @@ import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import ImgixImage from '@/components/images/ImgixImage';
-import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { Bleed, Box, Separator, Text, useColorMode } from '@/design-system';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
+import { Bleed, Box, globalColors, Separator, Text, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { CheckOrXBadge } from '@/features/polymarket/components/CheckOrXBadge';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { OutcomeBadge } from '@/features/polymarket/components/OutcomeBadge';
 import { WinOrLossBadge } from '@/features/polymarket/components/WinOrLossBadge';
 import { type PolymarketPosition } from '@/features/polymarket/types';
+import { formatOutcomePercentage } from '@/features/polymarket/utils/formatOutcomePercentage';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
-import { getPositionAccentColor } from '@/features/polymarket/utils/getMarketColor';
+import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
-import { getPositionTokenId } from '@/features/polymarket/utils/getPositionTokenId';
-import { mulWorklet, subWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
 import { greaterThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -43,24 +44,25 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
   onPress?: () => void;
 }) {
   const { isDarkMode } = useColorMode();
-  const accentColor = getColorValueForThemeWorklet(getPositionAccentColor(position), isDarkMode);
+  const accentColor = getColorValueForThemeWorklet(getPositionColors(position), isDarkMode);
+
   const accentColors = useMemo(() => {
     return createOpacityPalette(accentColor, [0, 4, 6, 12, 14, 20, 24, 70, 100]);
   }, [accentColor]);
+
+  const buttonBackgroundColor = useMemo(
+    () =>
+      isDarkMode
+        ? getSolidColorEquivalent({ background: accentColors.opacity70, foreground: globalColors.grey100, opacity: 0.4 })
+        : accentColor,
+    [accentColor, accentColors.opacity70, isDarkMode]
+  );
+
   const eventTitle = position.market.events[0]?.title ?? '';
-
-  const buttonBackgroundColor = isDarkMode
-    ? getSolidColorEquivalent({
-        background: accentColors.opacity70,
-        foreground: 'rgb(0, 0, 0)',
-        opacity: 0.4,
-      })
-    : accentColor;
-
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
-  const actionButtonType = useMemo(() => getPositionAction(position), [position]);
 
+  const actionButtonType = getPositionAction(position);
   const actionButtonLabel = useMemo(() => {
     switch (actionButtonType) {
       case PositionAction.CLAIM:
@@ -74,9 +76,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
 
   const onPressActionButton = useCallback(
     (e?: GestureResponderEvent) => {
-      if (e && 'stopPropagation' in e) {
-        e.stopPropagation();
-      }
+      if (e && 'stopPropagation' in e) e.stopPropagation();
+
       if (position.redeemable) {
         Navigation.handleAction(Routes.POLYMARKET_MANAGE_POSITION_SHEET, { position });
       } else {
@@ -92,6 +93,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return tokenId;
   }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
 
+  const priceTokenId = getPolymarketTokenId(outcomeTokenId, 'buy');
+  const oddsTokenId = getPolymarketTokenId(outcomeTokenId, 'sell');
+
   const outcomeTitle = useMemo(() => {
     const { subtitle } = getOutcomeDescriptions({
       eventTitle,
@@ -102,11 +106,14 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     return subtitle;
   }, [eventTitle, position.market, position.outcome, position.outcomeIndex]);
 
+  const minTickSize = position.market.orderPriceMinTickSize;
+  const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
+
   const livePrice = useLiveTokenValue({
-    tokenId: getPositionTokenId(position),
-    initialValue: formatPrice(position.curPrice, position.market.orderPriceMinTickSize),
-    selector: token => formatPrice(token.price, position.market.orderPriceMinTickSize),
-    autoSubscriptionEnabled: !redeemable,
+    tokenId: priceTokenId,
+    fallback: formatLivePrice(position.curPrice),
+    autoSubscribe: !redeemable,
+    format: formatLivePrice,
   });
 
   const livePositionValue = useMemo(() => {
@@ -257,9 +264,9 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                         size="15pt"
                         weight="bold"
                         color="labelSecondary"
-                        tokenId={getPolymarketTokenId(outcomeTokenId, 'sell')}
-                        selector={token => `${toPercentageWorklet(token.price)}%`}
-                        initialValue={`${toPercentageWorklet(position.curPrice)}%`}
+                        tokenId={oddsTokenId}
+                        format={formatOutcomePercentage}
+                        fallback={formatOutcomePercentage(position.curPrice)}
                       />
                     </Box>
                     <Box flexDirection="row" alignItems="center" gap={3}>

@@ -4,7 +4,7 @@ import remoteConfig, { type FirebaseRemoteConfigTypes } from '@react-native-fire
 import { createQueryStore } from '@storesjs/stores';
 import { dequal } from 'dequal';
 
-import { IS_DEV, IS_STORE_INSTALL } from '@/env';
+import { IS_DEV, IS_STORE_INSTALL, IS_TEST } from '@/env';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
@@ -17,10 +17,7 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig extends Record<
-  string,
-  string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }
-> {
+export interface RainbowConfig extends Record<string, unknown> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;
@@ -41,6 +38,7 @@ export interface RainbowConfig extends Record<
   cash_kyc_review_delay_ms: number;
 
   /* Booleans */
+  image_cdn_enabled: boolean;
   f2c_enabled: boolean;
   op_rewards_enabled: boolean;
   swagg_enabled: boolean;
@@ -85,15 +83,15 @@ export interface RainbowConfig extends Record<
   nfts_enabled: boolean;
 
   prince_of_the_hill_enabled: boolean;
-  king_of_the_hill_enabled: boolean;
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
-  king_of_the_hill2_enabled: boolean;
   discover_enabled: boolean;
   perps_enabled: boolean;
   polymarket_enabled: boolean;
   cash_enabled: boolean;
+  cash_signup_enabled: boolean;
   cash_balance_enabled: boolean;
+  dev_section_enabled: boolean;
   rnbw_rewards_enabled: boolean;
   rnbw_membership_enabled: boolean;
   delegation_enabled: boolean;
@@ -104,6 +102,10 @@ export interface RainbowConfig extends Record<
   sponsored_rnbw_unstaking_enabled: boolean;
   discover_placements_enabled: boolean;
   go_relay_backend_enabled: boolean;
+  solana_enabled: boolean;
+  spot_pnl_enabled: boolean;
+  top_holders_enabled: boolean;
+  top_holders_wallet_filter: { categories: string[]; excludedLabels: string[] };
 }
 
 const Bips = {
@@ -177,6 +179,7 @@ export const DEFAULT_CONFIG = {
   cash_kyc_review_delay_ms: time.seconds(60),
 
   /* Booleans */
+  image_cdn_enabled: false,
   f2c_enabled: true,
   op_rewards_enabled: false,
   swagg_enabled: true,
@@ -221,8 +224,6 @@ export const DEFAULT_CONFIG = {
   claimables: true,
   nfts_enabled: true,
 
-  king_of_the_hill2_enabled: false,
-  king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: !IS_STORE_INSTALL,
   rainbow_toasts_enabled: !IS_STORE_INSTALL,
@@ -230,6 +231,7 @@ export const DEFAULT_CONFIG = {
   perps_enabled: true,
   polymarket_enabled: true,
   cash_enabled: false,
+  cash_signup_enabled: true,
   cash_balance_enabled: false,
   dev_section_enabled: IS_DEV,
   rnbw_rewards_enabled: false,
@@ -242,6 +244,13 @@ export const DEFAULT_CONFIG = {
   sponsored_rnbw_unstaking_enabled: true,
   discover_placements_enabled: true,
   go_relay_backend_enabled: true,
+  solana_enabled: false,
+  spot_pnl_enabled: false,
+  top_holders_enabled: false,
+  top_holders_wallet_filter: {
+    categories: ['NORMIE'],
+    excludedLabels: ['BOT', 'MEV_BOT', 'BRIDGE', 'DEX'],
+  },
 } as const satisfies Readonly<RainbowConfig>;
 
 export type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -253,6 +262,7 @@ type StringifiedFirebaseDefaults = Readonly<{
   default_slippage_bips_chainId: string;
   rewards_claim_networks: string;
   perps_feature_card_copy: string;
+  top_holders_wallet_filter: string;
 }>;
 
 const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
@@ -260,6 +270,7 @@ const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
   default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
   rewards_claim_networks: JSON.stringify(DEFAULT_CONFIG.rewards_claim_networks),
   perps_feature_card_copy: JSON.stringify(DEFAULT_CONFIG.perps_feature_card_copy),
+  top_holders_wallet_filter: JSON.stringify(DEFAULT_CONFIG.top_holders_wallet_filter),
 };
 
 type FirebaseConfigDefaults = Omit<RainbowConfig, keyof StringifiedFirebaseDefaults> &
@@ -284,7 +295,7 @@ export type RemoteConfigState = {
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
   {
     fetcher: fetchRemoteConfig,
-    retryDelay: (retryCount: number) => Math.min(retryCount > 1 ? 2 ** retryCount * 1_000 : 1_000, 30_000),
+    retryDelay: ({ retryCount }) => Math.min(retryCount > 0 ? 2 ** retryCount * 2_000 : 1_000, 30_000),
     setData: ({ data, set }) =>
       set(state => {
         const configChanged = !dequal(state.config, data);
@@ -299,7 +310,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
       }),
 
     cacheTime: time.weeks(1),
-    maxRetries: 3,
+    retry: 3,
     staleTime: time.minutes(10),
   },
 
@@ -355,6 +366,8 @@ const PARSERS = buildParsers(DEFAULT_CONFIG);
 let hasInitializedRemoteConfig = false;
 
 async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  if (IS_TEST) return DEFAULT_CONFIG;
+
   const rc = remoteConfig();
   const newConfig: RainbowConfig = { ...DEFAULT_CONFIG };
 

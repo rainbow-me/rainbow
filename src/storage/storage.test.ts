@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from '@jest/globals';
+import { beforeEach, expect, test } from 'vitest';
 
 import { Storage } from '@/storage';
 

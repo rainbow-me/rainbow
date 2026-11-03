@@ -3,22 +3,23 @@ import { Platform } from 'react-native';
 
 import { Switch } from 'react-native-gesture-handler';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { Icon } from '@/components/icons';
 import { ImgixImage } from '@/components/images';
 import { ImagePreviewOverlayTarget } from '@/components/images/ImagePreviewOverlay';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
+import { useEnsAddressStore } from '../../data/useEnsAddressStore';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
-import { useENSAddress } from '../../resources/addressQuery';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -52,7 +53,7 @@ export function InfoRowSkeleton() {
 
 type InfoRowExplainSheetType = 'ens_manager' | 'ens_owner' | 'ens_resolver' | 'ens_configuration' | 'ens_primary_name';
 
-export default function InfoRow({
+export function InfoRow({
   ensName,
   explainSheetType,
   icon = undefined,
@@ -176,7 +177,7 @@ export default function InfoRow({
 function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; value?: string }) {
   const accountAddress = useAccountAddress();
 
-  const { data: address } = useENSAddress({ name: ensName || '' });
+  const address = useEnsAddressStore(s => (ensName ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined));
 
   const {
     data: { nfts: uniqueTokensAccount },

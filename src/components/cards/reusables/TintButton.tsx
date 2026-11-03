@@ -4,9 +4,9 @@ import ConditionalWrap from 'conditional-wrap';
 
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 
 interface TintButtonProps {
   children: string;

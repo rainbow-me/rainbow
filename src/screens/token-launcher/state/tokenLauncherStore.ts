@@ -21,7 +21,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { type ParsedAsset } from '@/resources/assets/types';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { Protocol, TokenLauncherSDKError, type LaunchTokenResponse } from '@rainbow-me/token-launcher';
 
 import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';

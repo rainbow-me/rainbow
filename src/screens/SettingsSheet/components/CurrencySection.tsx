@@ -15,16 +15,16 @@ import { ETH_ADDRESS, WBTC_ADDRESS } from '@/references/constants';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import { Menu } from './Menu';
+import { MenuContainer } from './MenuContainer';
+import { MenuItem } from './MenuItem';
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
   ...item,
   currency,
 }));
 
-const CurrencySection = () => {
+export const CurrencySection = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
   const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
   const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
@@ -76,5 +76,3 @@ const CurrencySection = () => {
     </MenuContainer>
   );
 };
-
-export default CurrencySection;

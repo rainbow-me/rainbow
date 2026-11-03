@@ -5,14 +5,14 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
-import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
+import { useSwapFeeEstimateGasLimit } from './useSwapEstimatedGasLimit';
 
 export function useSwapEstimatedGasFee(overrideGasSettings?: GasSettings) {
   const preferredNetwork = useSwapsStore(s => s.preferredNetwork);
   const { assetToSell, quote, chainId = preferredNetwork || ChainId.mainnet } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
-  const estimatedGasLimit = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const estimatedGasLimit = useSwapFeeEstimateGasLimit({ chainId, assetToSell, quote });
   const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings: overrideGasSettings || gasSettings });
 
   return estimatedFee;

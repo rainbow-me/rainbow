@@ -9,7 +9,7 @@ import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { easing, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { AnimatedText, Text, TextShadow, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 import { type ResponseByTheme } from '@/theme/types';
 import { formatTimestamp, type FormatTimestampOptions } from '@/worklets/dates';

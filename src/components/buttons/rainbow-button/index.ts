@@ -1,1 +1,1 @@
-export { default as RainbowButton } from './RainbowButton';
+export { RainbowButton } from './RainbowButton';

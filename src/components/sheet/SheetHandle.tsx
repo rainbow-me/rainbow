@@ -1,8 +1,8 @@
 import React from 'react';
 import { Platform, View, type ViewProps } from 'react-native';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { type Colors } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -25,7 +25,7 @@ const Handle = styled(View)({
   zIndex: 9,
 });
 
-export default function SheetHandle({ color, showBlur = false, ...props }: { color?: string; showBlur?: boolean } & ViewProps) {
+export function SheetHandle({ color, showBlur = false, ...props }: { color?: string; showBlur?: boolean } & ViewProps) {
   const { isDarkMode } = useTheme();
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Handle {...props} color={color} isDarkMode={isDarkMode} showBlur={showBlur} />;

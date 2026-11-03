@@ -1,8 +1,30 @@
+# PATCH CONTEXT
+# On Android:
+# - Let Rainbow's native button extend RNGH's button and access the handler
+#   for its current gesture, so nested presses activate the correct button.
+# - Preserve native pointer IDs so buttons track the same finger through
+#   Android and RNGH event delivery.
+# - Report native scroll and pull-to-refresh gestures to RNGH so they cancel
+#   competing button presses and pager gestures.
+# - Keep delivering touches to a native scrolling view when RNGH intercepts
+#   normal Android delivery. Forward only after other handlers decide whether
+#   to intercept, so the same event is neither skipped nor delivered twice.
+# - Reset root interception before a new gesture, and clear native touches
+#   left unfinished when RNGH intercepted the previous gesture.
+# - Do not let handlers waiting for another gesture to fail cancel presses
+#   as though they were already active.
+#
+# On iOS:
+# - Deliver touches inside scroll views immediately, without the default delay.
+# - Reset manual-activation recognizers when the app loses focus, so they do not
+#   ignore the first interaction after the app returns to the foreground.
+#
+# Correct createNativeWrapper's ref type to the wrapped component instance.
+
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-index d515011..813c69c 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 +++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-@@ -153,7 +153,7 @@ class RNGestureHandlerButtonViewManager :
+@@ -153,7 +153,7 @@
 
    override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
 
@@ -12,7 +34,6 @@ index d515011..813c69c 100644
      NativeViewGestureHandler.NativeViewGestureHandlerHook,
      ReactPointerEventsView {
 diff --git a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
-index 667d600..9054037 100644
 --- a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
 +++ b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
 @@ -161,7 +161,7 @@
@@ -25,10 +46,9 @@ index 667d600..9054037 100644
 
  - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
-index 708172f..7f1d550 100644
 --- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
 +++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
-@@ -452,12 +452,28 @@
+@@ -452,9 +452,25 @@
      if (_recognizer.view != nil) {
        [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
      }
@@ -43,17 +63,352 @@ index 708172f..7f1d550 100644
 +                                                 object:nil];
      [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
      _manualActivationRecognizer = nil;
-   }
- }
-
++  }
++}
++
 +- (void)handleAppWillResignActive:(NSNotification *)notification
 +{
 +  if (_manualActivationRecognizer != nil && _manualActivationRecognizer.enabled) {
 +    _manualActivationRecognizer.enabled = NO;
 +    _manualActivationRecognizer.enabled = YES;
+   }
+ }
+
+diff --git a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+--- a/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
++++ b/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts
+@@ -1,4 +1,4 @@
+ import * as React from 'react';
+ import { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
+-export default function createNativeWrapper<P>(Component: React.ComponentType<P>, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentType<any>>>;
++export default function createNativeWrapper<C extends React.ElementType>(Component: C, config?: Readonly<NativeViewGestureHandlerProps>): React.ForwardRefExoticComponent<React.PropsWithoutRef<React.ComponentProps<C> & NativeViewGestureHandlerProps> & React.RefAttributes<React.ComponentRef<C>>>;
+ //# sourceMappingURL=createNativeWrapper.d.ts.map
+\ No newline at end of file
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt
+@@ -15,10 +15,9 @@
+ import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
+
+ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
+-  private val orchestrator: GestureHandlerOrchestrator?
++  private val gestureOrchestrator: GestureHandlerOrchestrator
+   private val jsGestureHandler: GestureHandler?
+   val rootView: ViewGroup
+-  private var shouldIntercept = false
+   private var passingTouch = false
+
+   init {
+@@ -32,7 +31,7 @@
+       ReactConstants.TAG,
+       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView",
+     )
+-    orchestrator = GestureHandlerOrchestrator(
++    gestureOrchestrator = GestureHandlerOrchestrator(
+       wrappedView,
+       registry,
+       RNViewConfigurationHelper(),
+@@ -71,10 +70,10 @@
+       // we shouldn't stop intercepting events when there is an active handler already, which could happen when
+       // adding a new pointer to the screen after a handler activates
+       if (currentState == STATE_UNDETERMINED &&
+-        (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)
++        (!gestureOrchestrator.shouldInterceptTouchEvents || !gestureOrchestrator.isAnyHandlerActive())
+       ) {
+         begin()
+-        shouldIntercept = false
++        gestureOrchestrator.shouldInterceptTouchEvents = false
+       }
+
+       if (event.actionMasked == MotionEvent.ACTION_UP ||
+@@ -89,7 +88,7 @@
+     override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
+
+     override fun onCancel() {
+-      shouldIntercept = true
++      gestureOrchestrator.shouldInterceptTouchEvents = true
+       val time = SystemClock.uptimeMillis()
+       val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
+         action = MotionEvent.ACTION_CANCEL
+@@ -104,21 +103,22 @@
+   fun requestDisallowInterceptTouchEvent() {
+     // If this method gets called it means that some native view is attempting to grab lock for
+     // touch event delivery. In that case we cancel all gesture recognizers
+-    if (orchestrator != null && !passingTouch) {
+-      // if we are in the process of delivering touch events via GH orchestrator, we don't want to
+-      // treat it as a native gesture capturing the lock
++    if (!passingTouch) {
++      // Requests made during RNGH delivery are not a native view taking over the touch stream.
+       tryCancelAllHandlers()
+     }
+   }
+
+   fun dispatchTouchEvent(event: MotionEvent): Boolean {
+-    // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
+-    // if `requestDisallow` has been called as a result of a normal gesture handling process or
+-    // as a result of one of the gesture handlers activating
++    // Reset before handlers activate, so a new touch cannot retain the previous stream's interception.
++    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
++      gestureOrchestrator.shouldInterceptTouchEvents = false
++    }
++    // Distinguish native interception from requests made while RNGH delivers events.
+     passingTouch = true
+-    orchestrator!!.onTouchEvent(event)
++    gestureOrchestrator.onTouchEvent(event)
+     passingTouch = false
+-    return shouldIntercept
++    return gestureOrchestrator.shouldInterceptTouchEvents
+   }
+
+   private fun tryCancelAllHandlers() {
+@@ -141,8 +141,12 @@
+     }
+   }
+
++  internal fun onNativeGestureStarted(view: View, event: MotionEvent) {
++    if (!passingTouch) gestureOrchestrator.onNativeGestureStarted(view, event)
++  }
++
+   fun activateNativeHandlers(view: View) {
+-    orchestrator?.activateNativeHandlersForView(view)
++    gestureOrchestrator.activateNativeHandlersForView(view)
+   }
+
+   companion object {
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+@@ -9,11 +9,15 @@
+ import com.facebook.react.bridge.UiThreadUtil
+ import com.facebook.react.common.ReactConstants
+ import com.facebook.react.uimanager.RootView
++import com.facebook.react.views.scroll.ReactHorizontalScrollView
++import com.facebook.react.views.scroll.ReactScrollView
++import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
+ import com.facebook.react.views.view.ReactViewGroup
+
+ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
+   private var rootViewEnabled = false
+   private var unstableForceActive = false
++  private var nativeTouchActive = false
+   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
+   override fun onAttachedToWindow() {
+@@ -34,10 +38,24 @@
+     rootHelper?.tearDown()
+   }
+
+-  override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
+-    true
+-  } else {
+-    super.dispatchTouchEvent(event)
++  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
++    if (event.actionMasked == MotionEvent.ACTION_DOWN && nativeTouchActive) {
++      val cancel = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
++      super.dispatchTouchEvent(cancel)
++      cancel.recycle()
++      nativeTouchActive = false
++    }
++
++    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event) && event.actionMasked != MotionEvent.ACTION_CANCEL) {
++      return true
++    }
++
++    val handled = super.dispatchTouchEvent(event)
++    when (event.actionMasked) {
++      MotionEvent.ACTION_DOWN -> nativeTouchActive = handled
++      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> nativeTouchActive = false
++    }
++    return handled
+   }
+
+   override fun dispatchGenericMotionEvent(ev: MotionEvent) =
+@@ -65,6 +83,20 @@
+   }
+
+   companion object {
++    /** Registers native scroll and refresh ownership reported by ReactRootView. */
++    @JvmStatic
++    fun onNativeGestureStarted(view: View?, event: MotionEvent) {
++      if (view !is ReactScrollView && view !is ReactHorizontalScrollView && view !is ReactSwipeRefreshLayout) return
++      var parent = view.parent
++      while (parent != null) {
++        if (parent is RNGestureHandlerRootView && parent.rootViewEnabled) {
++          parent.rootHelper?.onNativeGestureStarted(view, event)
++          return
++        }
++        parent = parent.parent
++      }
++    }
++
+     private fun hasGestureHandlerEnabledRootView(viewGroup: ViewGroup): Boolean {
+       UiThreadUtil.assertOnUiThread()
+
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt
+@@ -223,10 +223,14 @@
+
+   private fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
+
++  protected open fun shouldRemapPointerIds() = true
++
+   private fun needAdapt(event: MotionEvent): Boolean {
+     if (event.pointerCount != trackedPointersIDsCount) {
+       return true
+     }
++
++    if (!shouldRemapPointerIds()) return false
+
+     for (i in trackedPointerIDs.indices) {
+       val trackedPointer = trackedPointerIDs[i]
+@@ -241,6 +245,7 @@
+     if (!needAdapt(event)) {
+       return event
+     }
++    val remapPointerIds = shouldRemapPointerIds()
+     var action = event.actionMasked
+     var actionIndex = -1
+     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+@@ -279,7 +284,7 @@
+       val origPointerId = event.getPointerId(index)
+       if (trackedPointerIDs[origPointerId] != -1) {
+         event.getPointerProperties(index, pointerProps[count])
+-        pointerProps[count]!!.id = trackedPointerIDs[origPointerId]
++        if (remapPointerIds) pointerProps[count]!!.id = trackedPointerIDs[origPointerId]
+         event.getPointerCoords(index, pointerCoords[count])
+         if (index == actionIndex) {
+           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt
+@@ -35,6 +35,8 @@
+     shouldCancelWhenOutside = true
+   }
+
++  override fun shouldRemapPointerIds() = false
++
+   override fun resetConfig() {
+     super.resetConfig()
+     shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
+@@ -89,6 +91,7 @@
+       is ReactTextView -> this.hook = TextViewHook()
+       is ReactViewGroup -> this.hook = ReactViewGroupHook()
+     }
++    hook.onPrepare(this)
+   }
+
+   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+@@ -164,6 +167,7 @@
+   override fun onFail() = dispatchCancelEventToView()
+
+   override fun onReset() {
++    hook.onReset(this)
+     this.hook = defaultHook
+   }
+
+@@ -202,6 +206,12 @@
+   }
+
+   interface NativeViewGestureHandlerHook {
++    /** Associates the native view with this handler for the current touch stream. */
++    fun onPrepare(handler: NativeViewGestureHandler) = Unit
++
++    /** Releases the view's association with a handler after it stops tracking touches. */
++    fun onReset(handler: NativeViewGestureHandler) = Unit
++
+     /**
+      * Called when gesture is in the UNDETERMINED state, shouldActivateOnStart is set to false,
+      * and both tryIntercept and wantsToHandleEventBeforeActivation returned false.
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt
+@@ -24,6 +24,7 @@
+    * traversing view hierarchy and looking for gesture handlers.
+    */
+   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
++  internal var shouldInterceptTouchEvents = false
+   private val gestureHandlers = arrayListOf<GestureHandler>()
+   private val awaitingHandlers = arrayListOf<GestureHandler>()
+   private val preparedHandlers = arrayListOf<GestureHandler>()
+@@ -72,6 +73,15 @@
+
+   fun getHandlersForView(view: View) = handlerRegistry.getHandlersForView(view)
+
++  internal fun onNativeGestureStarted(view: View, event: MotionEvent) {
++    val handler = gestureHandlers.firstOrNull {
++      it is NativeViewTouchHandler && it.view === view
++    } ?: NativeViewTouchHandler().also { recordHandlerIfNotPresent(it, view) }
++    for (index in 0 until event.pointerCount) handler.startTrackingPointer(event.getPointerId(index))
++    handler.begin()
++    handler.activate()
++  }
++
+   private fun scheduleFinishedHandlersCleanup() {
+     if (isHandlingTouch || handlingChangeSemaphore != 0) {
+       finishedHandlersCleanupScheduled = true
+@@ -105,6 +115,7 @@
+
+   private fun shouldBeCancelledByActiveHandler(handler: GestureHandler) = gestureHandlers.any {
+     handler.hasCommonPointers(it) &&
++      it.isActive &&
+       it.state == GestureHandler.STATE_ACTIVE &&
+       !canRunSimultaneously(handler, it) &&
+       handler.isDescendantOf(it)
+@@ -546,6 +557,17 @@
+           }
+
+           recordHandlerIfNotPresent(handler, view)
++          handler.startTrackingPointer(pointerId)
++          found = true
++        }
++      }
++    }
++
++    if (event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
++      for (handler in gestureHandlers) {
++        if (handler is NativeViewTouchHandler &&
++          handler.view === view && handler.isWithinBounds(view, coords[0], coords[1])
++        ) {
+           handler.startTrackingPointer(pointerId)
+           found = true
+         }
+@@ -713,6 +735,13 @@
+     private val inverseMatrix = Matrix()
+     private val tempCoords = FloatArray(2)
+     private val handlersComparator = Comparator<GestureHandler> { a, b ->
++      val aUsesNativeDelivery = a is NativeViewTouchHandler
++      val bUsesNativeDelivery = b is NativeViewTouchHandler
++      if (aUsesNativeDelivery != bUsesNativeDelivery) {
++        // Native delivery must use the routing decision made by the recognizers for this event.
++        return@Comparator if (aUsesNativeDelivery) 1 else -1
++      }
++
+       return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
+         // both A and B are either active or awaiting activation, in which case we prefer one that
+         // has activated (or turned into "awaiting" state) earlier
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewTouchHandler.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewTouchHandler.kt
+new file mode 100644
+--- /dev/null
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewTouchHandler.kt
+@@ -0,0 +1,20 @@
++package com.swmansion.gesturehandler.core
++
++import android.view.MotionEvent
++import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
++
++/** Tracks a gesture already claimed by an Android view. */
++internal class NativeViewTouchHandler : GestureHandler() {
++  override fun shouldRemapPointerIds() = false
++
++  override fun shouldRecognizeSimultaneously(handler: GestureHandler) =
++    handler is RNGestureHandlerRootHelper.RootViewGestureHandler
++
++  override fun shouldBeCancelledBy(handler: GestureHandler) = handler is NativeViewTouchHandler
++
++  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
++    // Android normally delivers these touches. Forward only when RNGH intercepts the root.
++    if (orchestrator?.shouldInterceptTouchEvents == true) view?.onTouchEvent(event)
++    if (event.actionMasked == MotionEvent.ACTION_UP) end()
 +  }
 +}
-+
- - (void)bindManualActivationToView:(RNGHUIView *)view
- {
-   if (_manualActivationRecognizer != nil) {

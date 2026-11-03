@@ -37,9 +37,8 @@ import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { type ResponseByTheme } from '@/theme/types';
-import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams } from '@rainbow-me/swaps';
+import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams, type Source } from '@rainbow-me/swaps';
 
-import { swapsStore } from '../../state/swaps/swapsStore';
 import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '../types/assets';
 import { type InputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
@@ -543,13 +542,13 @@ type BuildQuoteParamsProps = {
   inputAsset: ExtendedAnimatedAssetWithColors | null;
   outputAsset: ExtendedAnimatedAssetWithColors | null;
   lastTypedInput: InputKeys;
+  slippage: string;
+  source: Source | 'auto';
 };
 
 /**
- * Builds the quote params for the swap based on the current state of the store.
- *
- * NOTE: Will return null if either asset isn't set.
- * @returns data needed to execute a swap or cross-chain swap
+ * Builds a quote request from the selected assets and input values.
+ * Returns `null` until both assets are selected.
  */
 export const buildQuoteParams = ({
   currentAddress,
@@ -558,8 +557,9 @@ export const buildQuoteParams = ({
   inputAsset,
   outputAsset,
   lastTypedInput,
+  slippage,
+  source,
 }: BuildQuoteParamsProps): QuoteParams | null => {
-  const { source, slippage } = swapsStore.getState();
   if (!inputAsset || !outputAsset) {
     return null;
   }

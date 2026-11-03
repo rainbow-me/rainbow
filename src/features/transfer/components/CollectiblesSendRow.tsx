@@ -1,20 +1,20 @@
 import React, { Fragment, useMemo } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import CoinName from '@/components/coin-row/CoinName';
 import CoinRow from '@/components/coin-row/CoinRow';
 import Divider from '@/components/Divider';
 import { Centered } from '@/components/layout';
 import { TruncatedText } from '@/components/text';
+import { opacity } from '@/design-system/utils/opacity';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { opacity } from '@/framework/ui/utils/opacity';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { buildAssetUniqueIdentifier } from '@/helpers/assets';
 import { padding } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import magicMemo from '@/utils/magicMemo';
 
 const dividerHeight = 22;

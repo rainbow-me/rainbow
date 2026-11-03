@@ -16,10 +16,11 @@ import type useENSProfile from '@/features/ens/hooks/useENSProfile';
 import { type ActionTypes } from '@/features/ens/hooks/useENSRegistrationActionHandler';
 import { type REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
-import { setHardwareTXError } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
+import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
@@ -33,14 +34,14 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan, lessThan } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { loadWallet, sendTransaction } from '@/model/wallet';
+import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { type Call, type PreparedCallsExecution } from '@rainbow-me/sdk';
 
@@ -293,7 +294,7 @@ export function useSendSubmit({
         });
 
         if (!(wallet instanceof Wallet)) {
-          setHardwareTXError(true);
+          setHardwareWalletTxError(true);
         }
         return false;
       }
@@ -362,7 +363,7 @@ export function useSendSubmit({
         if (assetIsUniqueAsset(selected)) {
           const collectionId = `${selected.network}_${selected.contractAddress}`;
           useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
-          useNftsStore.getState(accountAddress).fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
+          useNftsStore.getState(accountAddress).fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
         }
         executeFn(goBackAndNavigate, {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,

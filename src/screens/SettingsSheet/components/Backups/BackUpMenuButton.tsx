@@ -7,7 +7,7 @@ import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
-import MenuItem from '../MenuItem';
+import { MenuItem } from '../MenuItem';
 
 export const BackUpMenuItem = ({
   icon = '􀊯',

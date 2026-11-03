@@ -3,11 +3,12 @@ import { Platform, StyleSheet } from 'react-native';
 
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { GasSpeedMenu } from '@/features/gas/components/GasSpeedMenu';
 import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -21,7 +22,7 @@ import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
@@ -122,10 +123,12 @@ const GasMenu = ({
   backToReview = false,
   children,
   disabled = false,
+  anchorAndroidMenuToRight,
 }: {
   backToReview?: boolean;
   children: ReactNode;
   disabled?: boolean;
+  anchorAndroidMenuToRight?: boolean;
 }) => {
   const { SwapNavigation } = useSwapContext();
 
@@ -159,14 +162,6 @@ const GasMenu = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      if (buttonIndex < 0) return;
-      handlePressSpeedOption(menuOptions[buttonIndex]);
-    },
-    [handlePressSpeedOption, menuOptions]
-  );
-
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
@@ -192,20 +187,16 @@ const GasMenu = ({
       style={{ margin: Platform.OS === 'android' ? 0 : -GAS_BUTTON_HIT_SLOP, pointerEvents: disabled ? 'none' : 'auto' }}
       testID="gas-speed-pager"
     >
-      <GasSpeedMenu
+      <ContextMenuButton
+        anchorAndroidMenuToRight={anchorAndroidMenuToRight}
         menuConfig={menuConfig}
-        onPressActionSheet={handlePressActionSheet}
         onPressMenuItem={handlePressMenuItem}
-        options={menuOptions}
+        testID="gas-speed-pager-button"
       >
-        <ButtonPressAnimation
-          scaleTo={0.825}
-          style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}
-          testID={Platform.OS === 'android' ? undefined : 'gas-speed-pager-button'}
-        >
+        <ButtonPressAnimation scaleTo={0.825} style={Platform.OS === 'android' ? undefined : { padding: GAS_BUTTON_HIT_SLOP }}>
           {children}
         </ButtonPressAnimation>
-      </GasSpeedMenu>
+      </ContextMenuButton>
     </Box>
   );
 };
@@ -229,7 +220,7 @@ export function ReviewGasButton() {
 
   return (
     <Inline alignVertical="center" space="8px" wrap={false}>
-      <GasMenu backToReview>
+      <GasMenu backToReview anchorAndroidMenuToRight>
         <Animated.View style={[styles.reviewGasButtonPill, animatedBorderColor]}>
           <SelectedGas isPill />
         </Animated.View>

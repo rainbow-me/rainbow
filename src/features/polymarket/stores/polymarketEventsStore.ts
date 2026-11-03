@@ -43,9 +43,9 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEventsPage, P
     fetcher: fetchPolymarketEventsPage,
     staleTime: time.minutes(2),
     cacheTime: time.minutes(20),
-    enabled: $ => $(usePolymarketCategoryStore, state => state.tagId !== CATEGORIES.sports.tagId),
+    enabled: $ => $(usePolymarketCategoryStore, s => s.tagId !== CATEGORIES.sports.tagId),
     params: {
-      categoryKey: $ => $(usePolymarketCategoryStore).tagId,
+      categoryKey: $ => $(usePolymarketCategoryStore, s => s.tagId),
       offset: 0,
     },
     onFetched: ({ data, params, set }) => {
@@ -225,7 +225,7 @@ function mergeEventsById(existingEvents: PolymarketEvent[], nextEvents: Polymark
 }
 
 export async function fetchPolymarketEventsByIds(
-  eventIds: string[],
+  eventIds: readonly string[],
   abortController: AbortController | null
 ): Promise<RawPolymarketEvent[]> {
   if (eventIds.length === 0) return [];

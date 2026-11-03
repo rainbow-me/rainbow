@@ -13,14 +13,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, Separator, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';

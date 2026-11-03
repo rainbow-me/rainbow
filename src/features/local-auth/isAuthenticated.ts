@@ -1,7 +1,6 @@
 import { IS_DEV } from '@/env';
 
 import * as keychain from './keychain';
-import { authenticateWithPINAndCreateIfNeeded, getExistingPIN, shouldAuthenticateWithPIN } from './pinAuthentication';
 
 const FAKE_LOCAL_AUTH_KEY = `fake-local-auth-key`;
 const FAKE_LOCAL_AUTH_VALUE = `fake-local-auth-value`;
@@ -14,7 +13,7 @@ async function maybeSaveFakeAuthKey() {
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  const usePin = await shouldAuthenticateWithPIN();
+  const usePin = await keychain.shouldAuthenticateWithPIN();
   if (!usePin || IS_DEV) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
@@ -23,8 +22,8 @@ export async function isAuthenticated(): Promise<boolean> {
   } else {
     // if user does not have biometrics enabled, we fallback to PIN
     try {
-      const pin = await authenticateWithPINAndCreateIfNeeded();
-      return Boolean(pin === (await getExistingPIN()));
+      const pin = await keychain.authenticateWithPINAndCreateIfNeeded();
+      return Boolean(pin === (await keychain.getExistingPIN()));
     } catch (e) {
       // authenticatePin will throw if user rejects pin screen
       return false;

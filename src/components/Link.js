@@ -7,7 +7,7 @@ import magicMemo from '@/utils/magicMemo';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useTheme } from '../theme/ThemeContext';
-import ButtonPressAnimation from './animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from './animations/ButtonPressAnimation';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';

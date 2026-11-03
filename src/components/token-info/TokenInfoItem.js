@@ -4,13 +4,13 @@ import { Platform, View } from 'react-native';
 import ConditionalWrap from 'conditional-wrap';
 
 import { Column, Columns } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import useDelayedValueWithLayoutAnimation from '@/hooks/useDelayedValueWithLayoutAnimation';
 import { useTheme } from '@/theme/ThemeContext';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import ShimmerAnimation from '../animations/ShimmerAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
+import { ShimmerAnimation } from '../animations/ShimmerAnimation';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';

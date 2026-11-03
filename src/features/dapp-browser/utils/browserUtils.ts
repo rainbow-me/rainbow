@@ -2,7 +2,7 @@ import { Share } from 'react-native';
 
 import { type WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 
-import { HTTPS_PREFIX, isMissingValidProtocolWorklet } from '@/framework/core/utils/url';
+import { HTTPS_PREFIX, isMissingValidProtocolWorklet, isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import { ensureError, logger, RainbowError } from '@/logger';
 
 import { APP_STORE_URL_PREFIXES, RAINBOW_HOME } from '../constants/constants';
@@ -11,23 +11,17 @@ export function isValidAppStoreUrl(url: string): boolean {
   return APP_STORE_URL_PREFIXES.some(prefix => url.startsWith(prefix));
 }
 
-export const normalizeUrlWorklet = (url: string): string => {
+export const normalizeUrlWorklet = (url: string | undefined): string | undefined => {
   'worklet';
-  if (!url) {
-    return '';
-  }
+  let normalizedUrl = url?.trim();
+  if (!normalizedUrl) return undefined;
+  if (normalizedUrl === RAINBOW_HOME) return normalizedUrl;
 
-  if (url === RAINBOW_HOME || url.startsWith('blob:') || url.startsWith('data:')) {
-    return url;
-  }
-
-  let normalizedUrl = url;
   if (isMissingValidProtocolWorklet(normalizedUrl)) {
+    if (!isValidWebUrlWorklet(normalizedUrl)) return undefined;
     normalizedUrl = HTTPS_PREFIX + normalizedUrl;
   }
-  if (!normalizedUrl.endsWith('/') && !normalizedUrl.includes('?')) {
-    normalizedUrl += '/';
-  }
+
   return normalizedUrl;
 };
 

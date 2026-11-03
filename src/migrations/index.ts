@@ -18,6 +18,7 @@ import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQuer
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
+import { repairBrowserTabUrls } from './migrations/repairBrowserTabUrls';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -48,6 +49,7 @@ const migrations: (() => Migration)[] = [
   migrateNotificationSettingsToV3,
   healEip55KeychainAddresses,
   migrateExperimentalFlags,
+  repairBrowserTabUrls,
 ];
 
 /**

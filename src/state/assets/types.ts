@@ -6,7 +6,7 @@ import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 
-import { type LiveTokensData } from '../liveTokens/liveTokensStore';
+import { type LiveTokensData } from '../liveTokens/types';
 import { type UserAssetsStateToPersist } from './persistence';
 
 export type UserAssetsStoreType = OptionallyPersistedStore<

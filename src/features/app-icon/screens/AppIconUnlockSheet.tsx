@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { SheetActionButton } from '@/components/sheet';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -22,7 +22,7 @@ import { unlockableAppIcons } from '../models/appIcons';
 
 const APP_ICON_SIZE = 64;
 
-export default function AppIconUnlockSheet() {
+export function AppIconUnlockSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
   const { colors } = useTheme();

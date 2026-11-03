@@ -3,7 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/icons';
 import { Centered } from '@/components/layout';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { sheetVerticalOffset } from '@/navigation/effects';
 import { useTheme } from '@/theme/ThemeContext';
 

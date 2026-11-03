@@ -1,12 +1,14 @@
+import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 import { fetchPolymarketEventsByIds } from './polymarketEventsStore';
 
-jest.mock('@/framework/data/http/rainbowFetch', () => ({
-  rainbowFetch: jest.fn(),
+vi.mock('@/framework/data/http/rainbowFetch', () => ({
+  rainbowFetch: vi.fn(),
 }));
 
-jest.mock('@/features/polymarket/constants', () => ({
+vi.mock('@/features/polymarket/constants', () => ({
   CATEGORIES: {
     sports: { tagId: 'sports' },
   },
@@ -14,11 +16,11 @@ jest.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_GAMMA_API_URL: 'https://gamma-api.polymarket.com',
 }));
 
-jest.mock('@/features/polymarket/utils/transforms', () => ({
-  processRawPolymarketEvent: jest.fn(),
+vi.mock('@/features/polymarket/utils/transforms', () => ({
+  processRawPolymarketEvent: vi.fn(),
 }));
 
-const mockRainbowFetch = rainbowFetch as jest.MockedFunction<typeof rainbowFetch>;
+const mockRainbowFetch = rainbowFetch as MockedFunction<typeof rainbowFetch>;
 
 describe('fetchPolymarketEventsByIds', () => {
   beforeEach(() => {

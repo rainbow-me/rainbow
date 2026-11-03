@@ -1,0 +1,8 @@
+import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
+import { type Participant } from '@/features/sports/core/generated/external/sports/payload';
+
+export function getSportsTeamImage(team: PolymarketTeamInfo | undefined, participants?: Participant[]): string | undefined {
+  if (!team) return undefined;
+  const participant = participants?.find(participant => participant.id === String(team.id));
+  return participant ? participant.imageUrl : team.logo;
+}

@@ -19,10 +19,11 @@ tags:
     file: ../../utils/SetCashAccount.yaml
     env:
       VALUE: 'true'
-# An account holder with no linked card lands on the sheet: no Add From row,
-# the action button is a plain Add Credit Card that opens Setup at the card step.
+# An account holder reauthenticates before the sheet is shown. With no linked card,
+# there is no Add From row and the action button opens Setup at the card step.
 - tapOn:
     id: buy-button
+- runFlow: ../../utils/ReauthenticateCash.yaml
 - assertVisible:
     id: cash-deposit-add-cash-add-card
 - assertNotVisible:

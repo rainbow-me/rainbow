@@ -11,11 +11,11 @@ import { crosschainQuoteTargetsRecipient, isCrosschainQuote } from '@/__swaps__/
 import { isPreparedCallsExecutionSponsored } from '@/features/delegation/utils/calls';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation, { type Route } from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
 import Routes from '@/navigation/routesNames';

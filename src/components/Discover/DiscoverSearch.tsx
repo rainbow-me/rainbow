@@ -4,24 +4,25 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDebounce } from 'use-debounce';
 
-import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { analytics } from '@/analytics';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { IS_TEST } from '@/env';
 import { DISCOVER_HEADER_HEIGHT } from '@/features/discover/components/DiscoverHeader';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { Network } from '@/features/network/types/backendNetworks';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
-import useSearchCurrencyList from '@/hooks/useSearchCurrencyList';
+import { useSearchCurrencyList } from '@/hooks/useSearchCurrencyList';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { TAB_BAR_HEIGHT } from '@/navigation/constants';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-export default function DiscoverSearch() {
+export function DiscoverSearch() {
   const safeAreaInsets = useSafeAreaInsets();
 
   const { cancelSearch, sectionListRef } = useDiscoverScreenContext();

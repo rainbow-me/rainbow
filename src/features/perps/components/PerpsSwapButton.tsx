@@ -17,8 +17,8 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { Box, Cover, useColorMode, useForegroundColor } from '@/design-system';
 import { AnimatedText, type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
+import { opacity } from '@/design-system/utils/opacity';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacity } from '@/framework/ui/utils/opacity';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 

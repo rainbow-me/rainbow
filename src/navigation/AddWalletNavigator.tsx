@@ -10,7 +10,7 @@ import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type RootStackParamList } from './types';
 

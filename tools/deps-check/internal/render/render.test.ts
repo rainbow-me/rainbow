@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import type { Report } from '../report';
 import { check, cycle, edge } from '../test-fixtures';
 import type { Violation } from '../violation';

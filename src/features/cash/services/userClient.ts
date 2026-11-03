@@ -1,17 +1,24 @@
 import { IS_TESTING } from 'react-native-dotenv';
 
 import { time } from '@/framework/core/utils/time';
-import { RainbowFetchError } from '@/framework/data/http/rainbowFetch';
+import { RainbowFetchError, type RainbowFetchResponse } from '@/framework/data/http/rainbowFetch';
 import { delay } from '@/utils/delay';
 
 import { US_COUNTRY_CALLING_CODE } from '../utils/phoneNumber';
+import { handleCashUserServiceError, refuseCashAccess, USER_ACCESS_BLOCKED } from './cashAccessRefusal';
 import { buildAuthenticatedHeader, getCashPlatformClient } from './cashPlatformClient';
 import { type CashSetupDateOfBirth, type CashSetupGovernmentId, type CashSetupIdentity } from './cashSetupIdentityService';
 
 const PHONE_ALREADY_REGISTERED = 1300;
 const REGISTERED_WITH_PASSKEY = 1303;
 const REGISTERED_WITHOUT_PASSKEY = 1304;
+const RECOVERY_SESSION_INVALID = 1320;
+const RECOVERY_CODE_INVALID = 1321;
 const SIGNUP_ALREADY_COMPLETE = 1322;
+const SIGNUP_INCOMPLETE = 1323;
+const IDENTITY_MISMATCH = 403;
+
+const ACCESS_STATUS_BLOCKED = 'ACCESS_STATUS_BLOCKED';
 
 const MOCK_REGISTERED_WITHOUT_PASSKEY_NUMBER = '5550001304';
 const MOCK_REGISTERED_WITH_PASSKEY_NUMBER = '5550001303';
@@ -25,6 +32,14 @@ function getPlatformErrorCode(error: unknown): number | null {
   if (!(error instanceof RainbowFetchError)) return null;
   const code = error.responseBody?.code;
   return typeof code === 'number' ? code : null;
+}
+
+async function userServiceRequest<T>(request: () => Promise<RainbowFetchResponse<T>>): Promise<RainbowFetchResponse<T>> {
+  try {
+    return await request();
+  } catch (error) {
+    handleCashUserServiceError(error);
+  }
 }
 
 const BOOTSTRAP_TOKEN_PATTERN = /^bst_.+/;
@@ -78,8 +93,53 @@ export enum KycStatus {
   Review = 'KYC_STATUS_REVIEW',
 }
 
+// Set only when kycStatus is Rejected.
+export enum KycRejectionReasonCode {
+  Unspecified = 'KYC_REJECTION_REASON_UNSPECIFIED',
+  StateNotSupported = 'KYC_REJECTION_REASON_STATE_NOT_SUPPORTED',
+}
+
+export type UnsupportedLocation = {
+  countryCode?: string;
+  regionCode?: string;
+  regionName?: string;
+};
+
+export type KycRejectionReason = {
+  code: KycRejectionReasonCode;
+  unsupportedLocation?: UnsupportedLocation;
+};
+
+type KycStatusResult = {
+  kycStatus: KycStatus;
+  kycRejectionReason?: KycRejectionReason;
+};
+
+function toKycRejectionReason(
+  code: KycRejectionReasonCode | undefined,
+  unsupportedLocation: UnsupportedLocation | undefined
+): KycRejectionReason | undefined {
+  return code ? { code, unsupportedLocation } : undefined;
+}
+
 // Pending and Review are one state to the app: the provider has not decided yet.
-export type KycOutcome = 'reviewing' | 'approved' | 'rejected';
+export type KycOutcome = 'reviewing' | 'approved' | 'rejected' | 'unsupportedState';
+
+export function toKycOutcome(status: KycStatus, reason: KycRejectionReason | undefined): KycOutcome | null {
+  switch (status) {
+    case KycStatus.Approved:
+      return 'approved';
+    case KycStatus.Rejected:
+      return reason?.code === KycRejectionReasonCode.StateNotSupported ? 'unsupportedState' : 'rejected';
+    case KycStatus.Pending:
+    case KycStatus.Review:
+      return 'reviewing';
+    case KycStatus.Unspecified:
+      return null;
+    default:
+      return null;
+  }
+}
 
 export type CreateUserWithPhoneResult =
   | { outcome: 'created'; userId: string; resendAfter: number }
@@ -111,6 +171,8 @@ type SubmitOnboardingRequest = {
 
 type SubmitOnboardingResponse = {
   kycStatus: KycStatus;
+  kycRejectionReason?: KycRejectionReasonCode;
+  unsupportedLocation?: UnsupportedLocation;
 };
 
 type GetUserStatusParams = {
@@ -155,10 +217,20 @@ type FinishAddPasskeyParams = {
   passkeyName: string;
 };
 
+type FinishRecoveryParams = {
+  recoveryId: string;
+  code: string;
+  identity: CashSetupIdentity;
+  governmentId: CashSetupGovernmentId;
+};
+
 type GetUserStatusResponse = {
   status: {
+    access?: { status: string };
     kyc: {
       status: KycStatus;
+      reason?: KycRejectionReasonCode;
+      unsupportedLocation?: UnsupportedLocation;
     };
   };
 };
@@ -173,9 +245,11 @@ export async function createUserWithPhone({ nationalNumber }: { nationalNumber: 
   }
 
   try {
-    const { data } = await getCashPlatformClient().post<{ userId: string; resendAfter: unknown }>('/signup/CreateUserWithPhone', {
-      phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
-    });
+    const { data } = await userServiceRequest(() =>
+      getCashPlatformClient().post<{ userId: string; resendAfter: unknown }>('/signup/CreateUserWithPhone', {
+        phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+      })
+    );
     return { outcome: 'created', userId: data.userId, resendAfter: parseResendAfter(data.resendAfter) };
   } catch (e) {
     switch (getPlatformErrorCode(e)) {
@@ -204,17 +278,21 @@ export async function verifyPhone({
     return { bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
   }
 
-  const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/signup/VerifyPhone', {
-    userId,
-    code,
-  });
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/signup/VerifyPhone', {
+      userId,
+      code,
+    })
+  );
   return parseBootstrapCredential(data);
 }
 
 export async function resendPhoneCode({ userId }: { userId: string }): Promise<ResendPhoneCodeResponse> {
   if (IS_TESTING === 'true') return { resendAfter: Date.now() + time.seconds(30) };
 
-  const { data } = await getCashPlatformClient().post<{ resendAfter: unknown }>('/signup/ResendPhoneCode', { userId });
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<{ resendAfter: unknown }>('/signup/ResendPhoneCode', { userId })
+  );
   return { resendAfter: parseResendAfter(data.resendAfter) };
 }
 
@@ -223,7 +301,7 @@ export async function submitOnboarding({
   countryCode,
   identity,
   governmentId,
-}: SubmitOnboardingParams): Promise<SubmitOnboardingResponse> {
+}: SubmitOnboardingParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: KycStatus.Approved };
@@ -235,10 +313,15 @@ export async function submitOnboarding({
     dateOfBirth: identity.dateOfBirth,
     governmentId,
   };
-  const { data } = await getCashPlatformClient().post<SubmitOnboardingResponse>('/onboarding/SubmitOnboarding', request, {
-    headers: buildAuthenticatedHeader(bootstrapToken),
-  });
-  return data;
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<SubmitOnboardingResponse>('/onboarding/SubmitOnboarding', request, {
+      headers: buildAuthenticatedHeader(bootstrapToken),
+    })
+  );
+  return {
+    kycStatus: data.kycStatus,
+    kycRejectionReason: toKycRejectionReason(data.kycRejectionReason, data.unsupportedLocation),
+  };
 }
 
 export async function addPasskey({ bootstrapToken }: { bootstrapToken: string }): Promise<AddPasskeyResponse> {
@@ -247,10 +330,8 @@ export async function addPasskey({ bootstrapToken }: { bootstrapToken: string })
     return { passkeyId: 'e2e-passkey-id', publicKeyOptionsJson: '{}', userId: 'e2e-user-id' };
   }
 
-  const { data } = await getCashPlatformClient().post<AddPasskeyResponse>(
-    '/passkeys/AddPasskey',
-    {},
-    { headers: buildAuthenticatedHeader(bootstrapToken) }
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<AddPasskeyResponse>('/passkeys/AddPasskey', {}, { headers: buildAuthenticatedHeader(bootstrapToken) })
   );
   return data;
 }
@@ -266,10 +347,12 @@ export async function finishAddPasskey({
     return;
   }
 
-  await getCashPlatformClient().post(
-    '/passkeys/FinishAddPasskey',
-    { passkeyId, credentialCreationJson, passkeyName },
-    { headers: buildAuthenticatedHeader(bootstrapToken) }
+  await userServiceRequest(() =>
+    getCashPlatformClient().post(
+      '/passkeys/FinishAddPasskey',
+      { passkeyId, credentialCreationJson, passkeyName },
+      { headers: buildAuthenticatedHeader(bootstrapToken) }
+    )
   );
 }
 
@@ -279,7 +362,7 @@ export async function startLogin(identifier: StartLoginParams): Promise<StartLog
     return { sessionId: 'e2e-session-id', sessionToken: 'e2e-session-token', publicKeyOptionsJson: '{}' };
   }
 
-  const { data } = await getCashPlatformClient().post<StartLoginResponse>('/auth/StartLogin', identifier);
+  const { data } = await userServiceRequest(() => getCashPlatformClient().post<StartLoginResponse>('/auth/StartLogin', identifier));
   return { sessionId: data.sessionId, sessionToken: data.sessionToken, publicKeyOptionsJson: data.publicKeyOptionsJson };
 }
 
@@ -289,11 +372,13 @@ export async function finishLogin({ sessionId, sessionToken, credentialAssertion
     return { sessionId, sessionToken, userId: 'e2e-user-id' };
   }
 
-  const { data } = await getCashPlatformClient().post<FinishLoginResponse>('/auth/FinishLogin', {
-    sessionId,
-    sessionToken,
-    credentialAssertionJson,
-  });
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<FinishLoginResponse>('/auth/FinishLogin', {
+      sessionId,
+      sessionToken,
+      credentialAssertionJson,
+    })
+  );
   return { sessionId: data.sessionId, sessionToken: data.sessionToken, userId: data.userId };
 }
 
@@ -309,23 +394,40 @@ export async function finalizeAuth({
     return { accessToken: 'e2e-access-token', expiresAt: Date.now() + time.hours(1) };
   }
 
-  const { data } = await getCashPlatformClient().post<{ accessToken: unknown; expiresIn: unknown }>('/auth/FinalizeAuth', {
-    sessionId,
-    sessionToken,
-  });
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<{ accessToken: unknown; expiresIn: unknown }>('/auth/FinalizeAuth', {
+      sessionId,
+      sessionToken,
+    })
+  );
   return parseAccessCredential(data);
 }
 
-export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<{ kycStatus: KycStatus }> {
+export async function logout(accessToken: string): Promise<void> {
+  await userServiceRequest(() => getCashPlatformClient().post('/auth/Logout', {}, { headers: buildAuthenticatedHeader(accessToken) }));
+}
+
+/** Staging only: other platforms reject it. */
+export async function hardDeleteSelf(accessToken: string): Promise<void> {
+  await userServiceRequest(() => getCashPlatformClient().delete('/dev/HardDeleteSelf', { headers: buildAuthenticatedHeader(accessToken) }));
+}
+
+export async function getUserStatus({ bootstrapToken }: GetUserStatusParams): Promise<KycStatusResult> {
   if (IS_TESTING === 'true') {
     await delay(time.seconds(1));
     return { kycStatus: bootstrapToken === MOCK_KYC_PENDING_BOOTSTRAP_TOKEN ? KycStatus.Pending : KycStatus.Approved };
   }
 
-  const { data } = await getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
-    headers: buildAuthenticatedHeader(bootstrapToken),
-  });
-  return { kycStatus: data.status.kyc.status };
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().get<GetUserStatusResponse>('/status/GetUserStatus', {
+      headers: buildAuthenticatedHeader(bootstrapToken),
+    })
+  );
+  if (data.status.access?.status === ACCESS_STATUS_BLOCKED) refuseCashAccess('unavailable');
+  return {
+    kycStatus: data.status.kyc.status,
+    kycRejectionReason: toKycRejectionReason(data.status.kyc.reason, data.status.kyc.unsupportedLocation),
+  };
 }
 
 export async function startSignupResume({
@@ -339,10 +441,76 @@ export async function startSignupResume({
     return { resumeId, resendAfter: Date.now() + time.seconds(30) };
   }
 
-  const { data } = await getCashPlatformClient().post<{ resumeId: string; resendAfter: unknown }>('/signup/resume/StartSignupResume', {
-    phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
-  });
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<{ resumeId: string; resendAfter: unknown }>('/signup/resume/StartSignupResume', {
+      phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+    })
+  );
   return { resumeId: data.resumeId, resendAfter: parseResendAfter(data.resendAfter) };
+}
+
+export async function startRecovery({ nationalNumber }: { nationalNumber: string }): Promise<{ recoveryId: string; resendAfter: number }> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    return { recoveryId: 'e2e-recovery-id', resendAfter: Date.now() + time.seconds(30) };
+  }
+
+  const { data } = await userServiceRequest(() =>
+    getCashPlatformClient().post<{
+      recoveryId: string;
+      methods?: string[];
+      resendAfter: unknown;
+    }>('/recovery/StartRecovery', {
+      phone: { countryCode: US_COUNTRY_CALLING_CODE, nationalNumber },
+    })
+  );
+  if (!data.methods?.includes('RECOVERY_METHOD_PERSONAL_DETAILS')) {
+    throw new Error('UserService returned no supported recovery method');
+  }
+  return { recoveryId: data.recoveryId, resendAfter: parseResendAfter(data.resendAfter) };
+}
+
+export type FinishRecoveryResult =
+  | { outcome: 'recovered'; bootstrapToken: string; expiresAt: number }
+  | { outcome: 'identityMismatch' | 'sessionInvalid' | 'codeInvalid' | 'signupIncomplete' | 'accessBlocked' };
+
+export async function finishRecovery({ recoveryId, code, identity, governmentId }: FinishRecoveryParams): Promise<FinishRecoveryResult> {
+  if (IS_TESTING === 'true') {
+    await delay(time.seconds(1));
+    if (code !== '000000') return { outcome: 'codeInvalid' };
+    return { outcome: 'recovered', bootstrapToken: 'bst_e2e', expiresAt: Date.now() + time.hours(1) };
+  }
+
+  // Called directly rather than through userServiceRequest: here USER_ACCESS_BLOCKED is the recovery
+  // lockout, which this flow reports itself instead of the generic unavailable notice.
+  try {
+    const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/recovery/FinishRecovery', {
+      recoveryId,
+      code,
+      personalDetails: {
+        countryCode: governmentId.countryCode,
+        legalName: { firstName: identity.firstName, lastName: identity.lastName },
+        dateOfBirth: identity.dateOfBirth,
+        governmentId,
+      },
+    });
+    return { outcome: 'recovered', ...parseBootstrapCredential(data) };
+  } catch (e) {
+    switch (getPlatformErrorCode(e)) {
+      case IDENTITY_MISMATCH:
+        return { outcome: 'identityMismatch' };
+      case RECOVERY_SESSION_INVALID:
+        return { outcome: 'sessionInvalid' };
+      case RECOVERY_CODE_INVALID:
+        return { outcome: 'codeInvalid' };
+      case SIGNUP_INCOMPLETE:
+        return { outcome: 'signupIncomplete' };
+      case USER_ACCESS_BLOCKED:
+        return { outcome: 'accessBlocked' };
+      default:
+        handleCashUserServiceError(e);
+    }
+  }
 }
 
 export type FinishSignupResumeResult =
@@ -359,9 +527,8 @@ export async function finishSignupResume({ resumeId, code }: { resumeId: string;
   }
 
   try {
-    const { data } = await getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>(
-      '/signup/resume/FinishSignupResume',
-      { resumeId, code }
+    const { data } = await userServiceRequest(() =>
+      getCashPlatformClient().post<{ bootstrapToken: unknown; expiresIn: unknown }>('/signup/resume/FinishSignupResume', { resumeId, code })
     );
     return { outcome: 'verified', ...parseBootstrapCredential(data) };
   } catch (e) {

@@ -1,34 +1,31 @@
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { palettes } from '@/design-system/color/palettes';
+import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
+import { foregroundColors } from '@/design-system/color/palettes';
 import { type PolymarketPosition, type PolymarketTeamInfo } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
-import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { type ResponseByTheme } from '@/theme/types';
 
-type MarketColors = {
-  color: ResponseByTheme<string>;
-  secondaryColor: ResponseByTheme<string> | undefined;
-};
+const DRAW_COLOR = Object.freeze({ light: '#808080', dark: '#808080' });
 
-export function getMarketColors(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): MarketColors {
+/**
+ * Returns light and dark variants of a market's primary and optional secondary accent colors.
+ */
+export function getMarketColors(
+  market: RawPolymarketMarket,
+  eventColor: ResponseByTheme<string>
+): { color: ResponseByTheme<string>; secondaryColor: ResponseByTheme<string> | undefined } {
   if (market.seriesColor) {
     const [primary, secondary] = market.seriesColor.split(',');
     return {
-      color: getHighContrastColorTheme(primary),
-      secondaryColor: secondary ? getHighContrastColorTheme(secondary) : undefined,
+      color: primary ? getHighContrastColor(primary) : eventColor,
+      secondaryColor: secondary ? getHighContrastColor(secondary) : undefined,
     };
   }
 
-  if (isSingleMarketEvent(market)) {
-    return {
-      color: eventColor,
-      secondaryColor: undefined,
-    };
-  }
+  if (isSingleMarketEvent(market)) return { color: eventColor, secondaryColor: undefined };
 
   return {
     color: getColorBySeed(market.conditionId),
@@ -36,46 +33,35 @@ export function getMarketColors(market: RawPolymarketMarket, eventColor: Respons
   };
 }
 
-function isSingleMarketEvent(market: RawPolymarketMarket) {
-  return market.negRisk === false && market.groupItemTitle === '';
+/**
+ * Returns light and dark accent colors for a single Polymarket outcome.
+ */
+export function getOutcomeColors({
+  market,
+  outcome,
+  outcomeIndex,
+  teams,
+}: {
+  market: PolymarketMarket;
+  outcome: string;
+  outcomeIndex: number;
+  teams: PolymarketTeamInfo[] | undefined;
+}): ResponseByTheme<string> {
+  if (!teams) return outcomeIndex === 0 ? foregroundColors.green : foregroundColors.red;
+
+  return isDrawMarket(market) ? DRAW_COLOR : getOutcomeTeamColor({ outcome, outcomeIndex, teams });
 }
 
-export function getPositionAccentColor(position: PolymarketPosition): ResponseByTheme<string> {
+/**
+ * Returns light and dark accent colors for a Polymarket position.
+ */
+export function getPositionColors(position: PolymarketPosition): ResponseByTheme<string> {
   if (isTeamBasedOutcome(position.outcome) && position.teams) {
     return getOutcomeTeamColor({ outcome: position.outcome, outcomeIndex: position.outcomeIndex, teams: position.teams });
   }
   return position.market.color;
 }
 
-const drawColor = { light: '#808080', dark: '#808080' };
-
-export function getOutcomeColor({
-  market,
-  outcome,
-  outcomeIndex,
-  isDarkMode,
-  teams,
-}: {
-  market: PolymarketMarket;
-  outcome: string;
-  outcomeIndex: number;
-  isDarkMode: boolean;
-  teams?: PolymarketTeamInfo[];
-}): string {
-  const green = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.green;
-  const red = palettes[isDarkMode ? 'dark' : 'light'].foregroundColors.red;
-  if (!teams) return outcomeIndex === 0 ? green : red;
-
-  const teamColorTheme = getOutcomeTeamColor({ outcome, outcomeIndex, teams });
-  const isDraw = isDrawMarket(market);
-  const teamAccentColor = getColorValueForThemeWorklet(teamColorTheme, isDarkMode);
-  const drawAccentColor = getColorValueForThemeWorklet(drawColor, isDarkMode);
-  return isDraw ? drawAccentColor : teamAccentColor;
-}
-
-function getHighContrastColorTheme(color: string): ResponseByTheme<string> {
-  return {
-    light: getHighContrastColor(color, false),
-    dark: getHighContrastColor(color, true),
-  };
+function isSingleMarketEvent(market: RawPolymarketMarket) {
+  return market.negRisk === false && market.groupItemTitle === '';
 }

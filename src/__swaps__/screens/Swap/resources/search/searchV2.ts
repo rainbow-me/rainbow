@@ -7,6 +7,7 @@ import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 import { type SearchAsset, type TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { getUniqueId } from '@/entities/assetId';
+import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
@@ -54,11 +55,6 @@ type DiscoverSearchParams = {
   chainIds: string;
 };
 
-type DiscoverSearchQueryState = {
-  isSearching: boolean;
-  searchQuery: string;
-};
-
 export type VerifiedResults = {
   crosschainResults: SearchAsset[];
   results: SearchAsset[];
@@ -73,8 +69,6 @@ type DiscoverSearchResults = {
 // ============ Store Definitions ============================================== //
 
 export const useSwapsSearchStore = createBaseStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
-
-export const useDiscoverSearchQueryStore = createBaseStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
 
 export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>>(
   {

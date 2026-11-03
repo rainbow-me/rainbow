@@ -4,18 +4,18 @@ import { View, type ListRenderItem } from 'react-native';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { Sheet } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
 import useENSAvatar, { prefetchENSAvatar } from '../hooks/useENSAvatar';
@@ -29,7 +29,7 @@ const rowHeight = 40;
 const rowPadding = 19;
 const maxListHeight = deviceHeight - 220;
 
-export default function SelectENSSheet() {
+export function SelectENSSheet() {
   const { isSuccess, nonPrimaryDomains, primaryDomain } = useAccountENSDomains();
 
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
@@ -85,7 +85,7 @@ export default function SelectENSSheet() {
                 </Box>
                 <Box paddingLeft="10px">
                   <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                    {abbreviateEnsForDisplay(item.name ?? '', 25)}
+                    {abbreviateName(item.name ?? '', 25)}
                   </Text>
                 </Box>
               </AccentColorProvider>

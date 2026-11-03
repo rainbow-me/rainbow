@@ -6,7 +6,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import EmptyAssetList from '@/components/asset-list/EmptyAssetList';
+import { EmptyAssetList } from '@/components/asset-list/EmptyAssetList';
 import { Draggable } from '@/components/drag-and-drop/components/Draggable';
 import { DraggableScrollView, type DraggableScrollViewProps } from '@/components/drag-and-drop/components/DraggableScrollView';
 import { DndProvider } from '@/components/drag-and-drop/DndProvider';

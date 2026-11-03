@@ -16,8 +16,10 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ImgixImage } from '@/components/images';
 import RowWithMargins from '@/components/layout/RowWithMargins';
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, type TextProps } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/utils/status';
 import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
@@ -25,7 +27,6 @@ import { fetchReverseRecord } from '@/features/ens/utils/handlers';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { checkForPendingSwap } from '@/helpers/transactions';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, handleSignificantDecimals } from '@/helpers/utilities';
@@ -38,7 +39,6 @@ import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { safeSum } from '@/utils/safeSum';
@@ -309,7 +309,7 @@ const DoubleChevron = () => (
   </Cover>
 );
 
-export default function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
+export function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
   const isPendingSwap = checkForPendingSwap(transaction);

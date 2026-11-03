@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
-import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { Panel } from '@/components/SmoothPager/ListPanel';
+import { TapToDismiss } from '@/components/TapToDismiss';
 import { Box } from '@/design-system';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';

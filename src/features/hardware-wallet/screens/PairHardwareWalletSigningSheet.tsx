@@ -5,7 +5,7 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { useRecoilValue } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import useDimensions from '@/hooks/useDimensions';
 import useImportingWallet from '@/hooks/useImportingWallet';
@@ -18,7 +18,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 
 import { ActionButton } from '../components/ActionButton';
 import { Layout } from '../components/Layout';
-import { LedgerImportDeviceIdAtom } from '../navigation/PairHardwareWalletNavigator';
+import { ledgerImportDeviceIdAtom } from '../state/pairHardwareWalletState';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '../utils/ledger';
 import { TRANSLATIONS } from './constants';
 
@@ -85,7 +85,7 @@ export function PairHardwareWalletSigningSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
-  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const deviceId = useRecoilValue(ledgerImportDeviceIdAtom);
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     flowContext: params?.flowContext,
     showImportModal: true,

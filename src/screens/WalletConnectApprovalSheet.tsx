@@ -7,7 +7,7 @@ import { noop } from 'lodash';
 import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import RequestVendorLogoIcon from '@/components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -17,20 +17,20 @@ import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import Spinner from '@/components/Spinner';
 import { Box, Columns, Inline, Column as RDSColumn, Text, type TextProps } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { useDappMetadata } from '@/features/dapp/resources/dapp';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type WalletconnectMeta } from '@/features/wallet-connect/types';
+import { type RainbowWallet } from '@/features/wallet/types';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
-import { type RainbowWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -507,5 +507,3 @@ export function WalletConnectApprovalSheet() {
     </Sheet>
   );
 }
-
-export default WalletConnectApprovalSheet;

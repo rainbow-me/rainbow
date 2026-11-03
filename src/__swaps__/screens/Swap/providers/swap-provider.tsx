@@ -45,13 +45,13 @@ import { buildGasParams } from '@/features/gas/utils/parseGas';
 import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { type useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
@@ -67,8 +67,6 @@ import { SwapType, type CrosschainQuote, type Quote, type QuoteError } from '@ra
 
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
-import { SyncSwapRewardsEstimate } from './SyncSwapRewardsEstimate';
-import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -345,7 +343,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           errorMessage,
           isHardwareWallet,
           parameters,
-          quickBuyMetadata: initialValues.quickBuyMetadata,
           type,
         });
 
@@ -399,7 +396,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       trackSwapEvent(analytics.event.swapsSubmitted, {
         isHardwareWallet,
         parameters,
-        quickBuyMetadata: initialValues.quickBuyMetadata,
         type,
       });
     } catch (error) {
@@ -957,9 +953,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }}
     >
       {children}
-      <SyncQuoteSharedValuesToState />
-      <SyncSwapRewardsEstimate />
-      <SyncGasStateToSharedValues />
     </SwapContext.Provider>
   );
 };
@@ -1041,5 +1034,3 @@ export const useSwapContext = () => {
   }
   return context;
 };
-
-export { NavigationSteps };

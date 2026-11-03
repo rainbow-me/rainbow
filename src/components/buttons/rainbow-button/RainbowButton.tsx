@@ -12,11 +12,11 @@ import { ShadowView } from '@/vendor/react-native-shadow-stack';
 
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
-import RainbowButtonTypes from './RainbowButtonTypes';
+import { RainbowButtonTypes } from './RainbowButtonTypes';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -100,12 +100,10 @@ type RainbowButtonProps = {
   strokeWidth?: number;
   type?: RainbowButtonTypes;
   width?: number;
-  overflowMargin?: number;
-  skipTopMargin?: boolean;
   testID?: string;
 };
 
-const RainbowButton = ({
+export const RainbowButton = ({
   disabled = false,
   height = 56,
   label = 'Press me',
@@ -113,8 +111,6 @@ const RainbowButton = ({
   strokeWidth = 1,
   type,
   width,
-  overflowMargin = 35,
-  skipTopMargin = true,
   ...props
 }: RainbowButtonProps) => {
   const { isDarkMode } = useTheme();
@@ -131,14 +127,7 @@ const RainbowButton = ({
   );
 
   return (
-    <ButtonPressAnimation
-      {...props}
-      disabled={disabled}
-      onPress={onPress}
-      overflowMargin={overflowMargin}
-      scaleTo={0.9}
-      skipTopMargin={skipTopMargin}
-    >
+    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress} scaleTo={0.9}>
       <Shadow disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={strokeWidth} width={width} />
       <ButtonContainer elevation={5} height={height} maskElement={outerButtonMask} width={width}>
         <RainbowButtonBackground disabled={disabled} height={height} strokeWidth={strokeWidth} type={type} width={width} />
@@ -153,5 +142,3 @@ const RainbowButton = ({
     </ButtonPressAnimation>
   );
 };
-
-export default RainbowButton;

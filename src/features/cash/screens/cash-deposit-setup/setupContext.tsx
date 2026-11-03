@@ -6,12 +6,13 @@ import { createBaseStore, useListen } from '@storesjs/stores';
 import { BIVO_ENV, BIVO_VAULT_ID, IS_TESTING } from 'react-native-dotenv';
 
 import { useRoute } from '@/navigation/RouteContext';
-import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
-import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
+import { useKycReturnFlowStore } from '../../stores/kycReturnFlowStore';
 import { useCashDepositSetupNavigationStore } from './cashDepositSetupNavigator';
 import { createSetupActionStore } from './setupAction';
+import { selectIsSetupScreenActive } from './setupNavigation';
 
 export const CARD_FIELD = {
   number: 'card',
@@ -25,11 +26,6 @@ const CARD_FIELDS = Object.values(CARD_FIELD);
 type SetupContextValue = ReturnType<typeof createSetupContext>;
 
 const SetupContext = createContext<SetupContextValue | null>(null);
-
-function selectIsSetupScreenActive({ isRouteActive }: NavigationState): boolean {
-  // Native entry and sheet dismissal expose the screen route; virtual navigation exposes its active step.
-  return isRouteActive(Routes.CASH_DEPOSIT_SETUP_SCREEN) || isRouteActive(useCashDepositSetupNavigationStore.getState().activeRoute);
-}
 
 export function createSetupContext() {
   const inputs = new Map<CashDepositSetupRoute, TextInput>();
@@ -54,7 +50,7 @@ export function createSetupContext() {
   }
 
   function focusInput(route: CashDepositSetupRoute): void {
-    if (!selectIsSetupScreenActive(useNavigationStore.getState())) return;
+    if (!selectIsSetupScreenActive(useNavigationStore.getState()) || useKycReturnFlowStore.getState().state !== 'idle') return;
     const input = inputs.get(route);
     if (input) {
       if (!input.isFocused()) input.focus();
@@ -69,6 +65,9 @@ export function createSetupContext() {
     registerInput: (route: CashDepositSetupRoute, input: TextInput | null): void => {
       if (input) inputs.set(route, input);
       else inputs.delete(route);
+    },
+    handleStepChange: (): void => {
+      suspendedInput = null;
     },
     handleScreenActivity: (active: boolean): void => {
       if (active) {
@@ -95,6 +94,8 @@ export function createSetupContext() {
 
 export function SetupProvider({ children, value }: { children: ReactNode; value: SetupContextValue }) {
   useListen(useNavigationStore, selectIsSetupScreenActive, value.handleScreenActivity);
+  // A step change while the screen is covered must not restore focus to the step it left.
+  useListen(useCashDepositSetupNavigationStore, s => s.activeRoute, value.handleStepChange);
   return <SetupContext.Provider value={value}>{children}</SetupContext.Provider>;
 }
 

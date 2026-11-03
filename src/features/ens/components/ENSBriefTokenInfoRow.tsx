@@ -3,7 +3,7 @@ import { InteractionManager } from 'react-native';
 
 import { format, formatDistanceStrict } from 'date-fns';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
 import { Column, Columns, Inset } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
@@ -18,7 +18,7 @@ import useENSRegistration from '../hooks/useENSRegistration';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
-export default function ENSBriefTokenInfoRow({
+export function ENSBriefTokenInfoRow({
   color,
   expiryDate,
   registrationDate,

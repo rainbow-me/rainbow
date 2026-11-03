@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -21,7 +21,7 @@ const ProfileScreenPage = styled(Page)({
   flex: 1,
 });
 
-export default function ProfileScreen() {
+export function ProfileScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   return (
@@ -30,7 +30,7 @@ export default function ProfileScreen() {
         title={i18n.t(i18n.l.profile.title)}
         hasStatusBarInset
         leftComponent={
-          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
+          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
             {accountImage ? (
               <ImageAvatar image={accountImage} marginRight={10} size="header" />
             ) : (

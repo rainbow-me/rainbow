@@ -24,7 +24,6 @@ import {
   type UserAssetsParams,
   type UserAssetsState,
 } from './types';
-import { userAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 // ============ Fetch Utils ==================================================== //
@@ -437,10 +436,6 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export function getCurrentSearchCache(): Map<string, UniqueId[]> {
-  return userAssetsStore.getState().searchCache;
-}
-
 export function getDefaultCacheKeys(): Set<string> {
   const queryKeysToPreserve = new Set<string>();
   queryKeysToPreserve.add('all');
@@ -457,19 +452,19 @@ export function getSearchQueryKey({ filter, searchQuery }: { filter: UserAssetFi
 
 export function getFilteredUserAssetIds({
   filter,
+  searchCache,
   selectUserAssetIds,
   setSearchCache,
   rawSearchQuery,
 }: {
   rawSearchQuery: UserAssetsState['inputSearchQuery'];
-} & Pick<UserAssetsState, 'filter' | 'selectUserAssetIds' | 'setSearchCache'>) {
+} & Pick<UserAssetsState, 'filter' | 'searchCache' | 'selectUserAssetIds' | 'setSearchCache'>) {
   const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
 
   const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
   const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
-  // Use an external function to get the cache to prevent updates in response to changes in the cache
-  const cachedData = getCurrentSearchCache()?.get(queryKey);
+  const cachedData = searchCache.get(queryKey);
 
   // Check if the search results are already cached
   if (cachedData) {

@@ -18,7 +18,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
 import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, NavigationSteps } from '../../constants';

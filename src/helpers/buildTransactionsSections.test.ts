@@ -1,10 +1,12 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
 import * as i18n from '@/languages';
 
 import { buildTransactionsSections } from './buildTransactionsSections';
 import { thisMonthTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 
-jest.mock('./transactions', () => ({
+vi.mock('./transactions', () => ({
   thisMonthTimestamp: Date.UTC(2026, 4, 1),
   thisYearTimestamp: Date.UTC(2026, 0, 1),
   todayTimestamp: Date.UTC(2026, 4, 29),

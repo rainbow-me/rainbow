@@ -5,7 +5,7 @@ import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } fr
 import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { type RewardsAmount } from '@/graphql/__generated__/metadata';
@@ -77,7 +77,7 @@ export const RewardsEarnings: React.FC<Props> = ({
   return (
     <AccentColorProvider color={color}>
       <Box paddingBottom="36px">
-        <ButtonPressAnimation onPress={navigateToTimingExplainer} scaleTo={0.96} overflowMargin={50}>
+        <ButtonPressAnimation onPress={navigateToTimingExplainer} scaleTo={0.96}>
           <RewardsSectionCard>
             <Columns space="32px">
               <Stack space="32px" alignHorizontal="left">

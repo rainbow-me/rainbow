@@ -6,9 +6,9 @@ import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { AccentColorProvider, Box, type Space } from '@/design-system';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
 export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
@@ -54,7 +54,7 @@ export const GenericCard = ({
   <ConditionalWrap
     condition={!!onPress}
     wrap={(children: React.ReactNode) => (
-      <ButtonPressAnimation onPress={onPress} testID={testID} disabled={disabled} scaleTo={0.96} overflowMargin={50} skipTopMargin>
+      <ButtonPressAnimation onPress={onPress} testID={testID} disabled={disabled} scaleTo={0.96}>
         {children}
       </ButtonPressAnimation>
     )}

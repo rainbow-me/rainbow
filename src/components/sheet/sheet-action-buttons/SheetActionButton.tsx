@@ -3,14 +3,14 @@ import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { containsEmoji } from '@/helpers/strings';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
-import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
@@ -130,15 +130,10 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
   return (
     <Button
       as={ButtonPressAnimation}
-      contentContainerStyle={{
-        height: typeof size === 'number' ? size : size === 'big' ? 52 : 46,
-        width: isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
-      }}
       elevation={Platform.OS === 'android' ? elevation : null}
       isCharts={isCharts}
       isSquare={isSquare}
       onPress={disabled ? () => undefined : onPress}
-      overflowMargin={30}
       radiusAndroid={borderRadius}
       borderRadius={borderRadius}
       scaleTo={disabled ? 1 : scaleTo}

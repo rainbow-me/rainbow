@@ -4,13 +4,13 @@ import { Animated, Platform } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { ImgixImage } from '@/components/images';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { margin, position } from '@/styles';
 
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ContactRow from './ContactRow';

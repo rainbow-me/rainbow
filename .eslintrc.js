@@ -1,4 +1,5 @@
 const fs = require('fs');
+const rainbowConfig = require('eslint-config-rainbow');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
 const data = fs.readFileSync(path.resolve(__dirname, './globalVariables.js'), 'utf8');
@@ -21,7 +22,6 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
 // TODO(FEPLAT-5): Legacy barrel files that are allowed to exist (but should be gradually removed)
 const allowedBarrelFiles = [
   'src/__swaps__/screens/Swap/resources/search/index.ts',
-  'src/analytics/__mocks__/index.ts',
   'src/analytics/index.ts',
   'src/components/3d/index.ts',
   'src/components/activity-list/index.ts',
@@ -93,15 +93,25 @@ const allowedBarrelFiles = [
 ];
 
 module.exports = {
+  ...rainbowConfig,
   root: true,
-  extends: ['rainbow', 'plugin:yml/standard'],
+  extends: [...rainbowConfig.extends.filter(config => config !== 'plugin:jest/recommended'), 'plugin:yml/standard'],
   parserOptions: {
+    ...rainbowConfig.parserOptions,
     project: ['./tsconfig.json'],
   },
   plugins: ['yml', 'unused-imports'],
   globals: globalVars,
 
   overrides: [
+    {
+      files: ['**/*.{test,spec}.{ts,tsx}', '**/__mocks__/**/*.{ts,js}', 'config/test/**/*.ts'],
+      extends: ['plugin:@vitest/legacy-recommended'],
+      rules: {
+        '@vitest/expect-expect': 'off',
+        '@vitest/no-disabled-tests': 'off',
+      },
+    },
     {
       files: ['*.yml', '*.yaml'],
       parser: 'yaml-eslint-parser',
@@ -140,6 +150,7 @@ module.exports = {
     },
   ],
   rules: {
+    ...rainbowConfig.rules,
     'no-duplicate-imports': 'off',
     'import/no-duplicates': 'error',
     'unused-imports/no-unused-imports': 'error',
@@ -178,8 +189,6 @@ module.exports = {
         message: "Import `Platform` directly from 'react-native'. Re-importing from a wrapper breaks platform shaking optimization.",
       },
     ],
-    'jest/expect-expect': 'off',
-    'jest/no-disabled-tests': 'off',
     'no-await-in-loop': 'off',
     'no-nested-ternary': 'off',
     'react/react-in-jsx-scope': 'off',

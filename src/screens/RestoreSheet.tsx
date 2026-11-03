@@ -6,8 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
-import ChooseBackupStep from '@/features/backup/components/ChooseBackupStep';
-import RestoreCloudStep from '@/features/backup/components/RestoreCloudStep';
+import { ChooseBackupStep } from '@/features/backup/components/ChooseBackupStep';
+import { RestoreCloudStep } from '@/features/backup/components/RestoreCloudStep';
 import useDimensions from '@/hooks/useDimensions';
 import { settingsOptions } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';

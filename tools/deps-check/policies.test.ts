@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { policyFor, unknownPolicyRules } from './policies';
 
 describe('policyFor', () => {

@@ -9,11 +9,11 @@ import { type Hex } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { logger, RainbowError } from '@/logger';
-import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
@@ -96,7 +96,11 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
   };
 };
 
-const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
+export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({
+  step,
+  sendReverseRecord = false,
+  yearsDuration = 1,
+}) => {
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
@@ -406,5 +410,3 @@ async function uploadRecordImages(
     header,
   };
 }
-
-export default useENSRegistrationActionHandler;

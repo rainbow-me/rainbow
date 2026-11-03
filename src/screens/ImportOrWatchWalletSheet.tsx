@@ -4,12 +4,12 @@ import { Keyboard, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Input } from '@/components/inputs';
 import { LoadingOverlay } from '@/components/modal/LoadingOverlay';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
-import { opacity } from '@/framework/ui/utils/opacity';
+import { opacity } from '@/design-system/utils/opacity';
 import useImportingWallet from '@/hooks/useImportingWallet';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import * as i18n from '@/languages';
@@ -118,7 +118,6 @@ export const ImportOrWatchWalletSheet = () => {
                     ? () => handlePressImportButton({ type })
                     : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text.trim()))
                 }
-                overflowMargin={50}
                 testID="import-sheet-button"
               >
                 <Box

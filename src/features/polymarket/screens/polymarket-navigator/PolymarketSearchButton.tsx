@@ -4,12 +4,12 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'react-native-blur-view';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { PolymarketNavigation } from '@/features/polymarket/navigation/polymarketNavigation';
-import { opacity } from '@/framework/ui/utils/opacity';
 import Routes from '@/navigation/routesNames';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 

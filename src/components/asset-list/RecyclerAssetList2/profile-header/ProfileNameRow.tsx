@@ -4,18 +4,18 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useRecoilState } from 'recoil';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useShowKingOfTheHill } from '@/features/king-of-the-hill/hooks/useShowKingOfTheHill';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
+import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, getIsDamagedWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
 export const ProfileNameRowHeight = 16;
@@ -70,9 +70,9 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
     return (
       formatAccountLabel({
         address: accountAddress,
-        ens: abbreviateEnsForDisplay(accountENS, 20),
+        ens: abbreviateName(accountENS, 20),
         label: accountName,
-      }) || address(accountAddress, 4, 4)
+      }) || abbreviateAddress(accountAddress, 4, 4)
     );
   }, [accountAddress, accountENS, accountName]);
 
@@ -85,11 +85,11 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   // Spacings
 
   const { width: deviceWidth } = useDimensions();
-  const kingOfTheHillEnabled = useShowKingOfTheHill();
+  const showSportsTab = useShowSportsTab();
 
-  const EXTRA_KOTH_WIDTH = kingOfTheHillEnabled && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
+  const activityButtonWidth = showSportsTab && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
 
-  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP - EXTRA_KOTH_WIDTH;
+  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP - activityButtonWidth;
 
   return (
     <Box

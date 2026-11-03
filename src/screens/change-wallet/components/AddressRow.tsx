@@ -4,19 +4,20 @@ import ConditionalWrap from 'conditional-wrap';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Address } from 'viem';
 
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { DropdownMenu, type MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '@/components/icons';
 import { Box, globalColors, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { type TextWeight } from '@/design-system/components/Text/Text';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/design-system/utils/opacity';
 import { IS_STORE_INSTALL } from '@/env';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { useIsDelegationEnabled } from '@/features/delegation/utils/featureFlags';
 import {
   isRainbowDelegated as hasRainbowDelegation,
   isThirdPartyDelegated as hasThirdPartyDelegation,
 } from '@/features/delegation/utils/status';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
@@ -24,7 +25,6 @@ import { SelectedAddressBadge } from '@/screens/change-wallet/components/Selecte
 import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
 
 const ROW_HEIGHT_WITH_PADDING = 64;

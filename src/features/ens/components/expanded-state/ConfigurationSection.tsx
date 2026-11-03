@@ -1,17 +1,17 @@
 import React from 'react';
 
 import { Stack } from '@/design-system';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 
 import useENSRegistration from '../../hooks/useENSRegistration';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../../utils/helpers';
-import InfoRow, { InfoRowSkeleton } from './InfoRow';
+import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
-export default function ConfigurationSection({
+export function ConfigurationSection({
   isLoading,
   owner,
   registrant,

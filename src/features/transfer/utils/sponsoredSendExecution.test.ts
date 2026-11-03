@@ -1,22 +1,23 @@
 import { encodeFunctionData, erc20Abi, type Address } from 'viem';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type ParsedAddressAsset } from '@/entities/tokens';
+import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
-import { resolveNameOrAddress } from '@/handlers/web3';
 
 import { buildSendCallFromSendDetails } from './sponsoredSendExecution';
 
-jest.mock('@/handlers/assets', () => ({
-  isNativeAsset: jest.fn(),
+vi.mock('@/handlers/assets', () => ({
+  isNativeAsset: vi.fn(),
 }));
 
-jest.mock('@/handlers/web3', () => ({
-  resolveNameOrAddress: jest.fn(),
+vi.mock('@/features/address/data/resolveAddress', () => ({
+  resolveNameOrAddress: vi.fn(),
 }));
 
-jest.mock('./sponsoredSend', () => ({
-  buildPendingSendTransaction: jest.fn(),
+vi.mock('./sponsoredSend', () => ({
+  buildPendingSendTransaction: vi.fn(),
 }));
 
 const RECIPIENT = '0x4444444444444444444444444444444444444444' satisfies Address;
@@ -42,13 +43,13 @@ const tokenAsset = {
   uniqueId: 'base-token',
 } satisfies ParsedAddressAsset;
 
-const mockIsNativeAsset = jest.mocked(isNativeAsset);
-const mockResolveNameOrAddress = jest.mocked(resolveNameOrAddress);
+const mockIsNativeAsset = vi.mocked(isNativeAsset);
+const mockResolveNameOrAddress = vi.mocked(resolveNameOrAddress);
 
 describe('sponsoredSendExecution', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockResolveNameOrAddress.mockImplementation(async address => address);
+    vi.clearAllMocks();
+    mockResolveNameOrAddress.mockResolvedValue(RECIPIENT);
   });
 
   it('builds native calls from exact raw units', async () => {
@@ -66,6 +67,7 @@ describe('sponsoredSendExecution', () => {
       to: RECIPIENT,
       value: 999999999999999999n,
     });
+    expect(mockResolveNameOrAddress).toHaveBeenCalledWith(RECIPIENT, ChainId.base);
   });
 
   it('builds token calls from exact raw units', async () => {

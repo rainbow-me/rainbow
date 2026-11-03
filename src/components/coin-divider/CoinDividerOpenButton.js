@@ -3,15 +3,15 @@ import React from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
 import { ImgixImage } from '@/components/images';
+import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
-import { opacity } from '@/framework/ui/utils/opacity';
 import * as i18n from '@/languages';
 import { padding } from '@/styles';
 import magicMemo from '@/utils/magicMemo';
 
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../theme/ThemeContext';
-import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 

@@ -14,13 +14,13 @@ import useColorForAsset from '@/hooks/useColorForAsset';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation/Navigation';
 import { margin } from '@/styles';
-import deviceUtils from '@/utils/deviceUtils';
+import { deviceUtils } from '@/utils/deviceUtils';
 
 import useGas from '../hooks/useGas';
 import { getTrendKey } from '../utils/gasHelpers';
-import FeesPanel from './FeesPanel';
-import FeesPanelTabs from './FeesPanelTabs';
-import GasSpeedButton from './GasSpeedButton';
+import { FeesPanel } from './FeesPanel';
+import { FeesPanelTabs } from './FeesPanelTabs';
+import { GasSpeedButton } from './GasSpeedButton';
 
 const FOOTER_HEIGHT = 79;
 const CONTENT_HEIGHT = 342;

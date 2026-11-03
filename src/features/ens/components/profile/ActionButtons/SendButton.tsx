@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-import ActionButton from './ActionButton';
+import { ActionButton } from './ActionButton';
 
-export default function SendButton({ ensName }: { ensName?: string }) {
+export function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const handlePressSend = useCallback(async () => {
     if (Platform.OS === 'ios') {

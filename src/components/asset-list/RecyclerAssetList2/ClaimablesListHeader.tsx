@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, Image } from 'react-native';
 
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text } from '@/design-system';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 import * as i18n from '@/languages';

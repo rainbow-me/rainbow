@@ -1,24 +1,26 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { TransactionDirection, TransactionStatus } from '@/entities/transactions';
 import { logger } from '@/logger';
 
 import { resolveTrackedTransaction } from './pendingTransactionResolution';
 
-const mockFetchRawTransaction = jest.fn();
-const mockGetStatus = jest.fn();
+const mockFetchRawTransaction = vi.fn();
+const mockGetStatus = vi.fn();
 
-jest.mock('@/logger', () => ({
+vi.mock('@/logger', () => ({
   logger: {
-    error: jest.fn(),
-    warn: jest.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
   RainbowError: class RainbowError extends Error {},
 }));
 
-jest.mock('@/resources/transactions/transaction', () => ({
+vi.mock('@/resources/transactions/transaction', () => ({
   fetchRawTransaction: (...args: unknown[]) => mockFetchRawTransaction(...args),
 }));
 
-jest.mock('@/features/delegation/utils/relayService', () => ({
+vi.mock('@/features/delegation/utils/relayService', () => ({
   relayService: {
     getStatus: (...args: unknown[]) => mockGetStatus(...args),
   },
@@ -26,7 +28,7 @@ jest.mock('@/features/delegation/utils/relayService', () => ({
 
 describe('pendingTransactionResolution', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('tracks a managed transaction by relay status even after an onchain hash appears', async () => {

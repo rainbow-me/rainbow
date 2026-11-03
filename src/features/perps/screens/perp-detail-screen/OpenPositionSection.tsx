@@ -1,7 +1,8 @@
 import { Fragment, memo, useMemo } from 'react';
 
-import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { Box, Separator, Text, TextShadow, useColorMode } from '@/design-system';
+import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -10,7 +11,6 @@ import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { getPercentageDifferenceWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { opacity } from '@/framework/ui/utils/opacity';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -88,10 +88,12 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
   const liquidationPrice = position.liquidationPrice
     ? formatPerpAssetPrice(position.liquidationPrice)
     : i18n.t(i18n.l.perps.common.not_available);
+
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
   const liveMarkPrice = useLiveTokenValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: market.price,
-    selector: state => state.price,
+    tokenId,
+    fallback: market.price,
   });
   const targetPriceDifferential = useMemo(() => {
     if (!position.liquidationPrice) return null;

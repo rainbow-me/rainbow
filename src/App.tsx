@@ -24,11 +24,12 @@ import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 import { OfflineToast } from '@/components/toasts';
 import { reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
 import { IS_DEV, IS_PROD, IS_STORE_INSTALL, IS_TEST } from '@/env';
+import { CashAccessRefusalSheet } from '@/features/cash/components/CashAccessRefusalSheet';
 import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
 import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
-import RainbowContextWrapper from '@/helpers/RainbowContext';
+import { RainbowContextWrapper } from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
 import { migrate } from '@/migrations';
@@ -89,6 +90,7 @@ function AppComponent() {
       {(!IS_STORE_INSTALL || IS_TEST) && <SandboxDiagnosticsOverlay />}
       <BackupsSync />
       <AbsolutePortalRoot />
+      <CashAccessRefusalSheet />
     </>
   );
 }
