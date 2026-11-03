@@ -27,8 +27,7 @@ import { retryPolymarketBalance, useAvailablePolymarketBalance } from '@/feature
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
-import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { executePolymarketBuyPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { isPositive, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -37,11 +36,6 @@ import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent, white } from '@/worklets/colors';
-
-type BetSubmission = {
-  balance: string;
-  step: PolymarketBuyPositionStep;
-};
 
 const BUTTON_BORDER_COLOR = { custom: white(0.08) };
 
@@ -128,8 +122,8 @@ function NewPositionForm({
 }) {
   const { event, market, outcomeIndex } = details;
   const { isDarkMode } = useColorMode();
-  const [submission, setSubmission] = useState<BetSubmission | null>(null);
-  const availableBalance = submission?.balance ?? balance;
+  const [submissionBalance, setSubmissionBalance] = useState<string | null>(null);
+  const availableBalance = submissionBalance ?? balance;
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
@@ -173,33 +167,24 @@ function NewPositionForm({
   const handleMarketBuyPosition = useCallback(async () => {
     if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
 
-    const onStep = (step: PolymarketBuyPositionStep) => setSubmission({ balance: availableBalance, step });
+    setSubmissionBalance(availableBalance);
 
     try {
       await executePolymarketBuyPosition({
-        tokenId,
+        ...details,
         amount: orderSpendCap,
-        price: worstPrice,
-        negRisk: market.negRisk,
-        version: market.version,
-        matchedOrderMetadata: {
-          eventSlug: event.slug,
-          marketSlug: market.slug,
-          outcome,
-          estimatedFeeAmountUsd: fee,
-          quotedTradeFeeUsd: rainbowFee,
+        orderQuote: {
+          expectedAmounts: {
+            tokens: amountToWin,
+            usd: mulWorklet(amountToWin, averagePrice),
+          },
+          quotedTotalFeeUsd: fee,
+          quotedRainbowFeeUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
-        onStep,
       });
-
-      onStep('confirming_order');
-      await waitForPositionSizeUpdate(tokenId);
-
-      Navigation.goBack();
-      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) Navigation.goBack();
     } catch (e) {
       const error = ensureError(e);
 
@@ -217,21 +202,30 @@ function NewPositionForm({
       });
 
       presentErrorAlert(error);
-      setSubmission(null);
+      setSubmissionBalance(null);
+      return;
+    }
+
+    if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
+      Navigation.goBack();
+      Navigation.goBack();
+    } else {
+      Navigation.goBack();
     }
   }, [
     availableBalance,
     bestPrice,
     buyAmount,
     canSubmit,
-    event.slug,
+    amountToWin,
+    averagePrice,
+    event,
     fee,
     fromRoute,
-    market.negRisk,
-    market.version,
-    market.slug,
+    market,
     orderSpendCap,
     outcome,
+    details,
     rainbowFee,
     spread,
     tokenId,
@@ -273,8 +267,8 @@ function NewPositionForm({
         <HoldToActivateButton
           onLongPress={handleMarketBuyPosition}
           label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-          processingLabel={submission ? getBuyPositionProcessingLabel(submission.step) : ''}
-          isProcessing={submission !== null}
+          processingLabel={i18n.t(i18n.l.predictions.new_position.placing_bet)}
+          isProcessing={submissionBalance !== null}
           showBiometryIcon={false}
           backgroundColor={buttonColor}
           disabledBackgroundColor={buttonColor}
@@ -420,16 +414,6 @@ function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
 
 function getButtonColor(accentColor: string): string {
   return getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.4 });
-}
-
-function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
-  switch (step) {
-    case 'confirming_order':
-      return i18n.t(i18n.l.predictions.new_position.confirming_order);
-    case 'preparing':
-    case 'placing_order':
-      return i18n.t(i18n.l.predictions.new_position.placing_bet);
-  }
 }
 
 function presentErrorAlert(error: Error): void {
