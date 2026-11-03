@@ -121,6 +121,21 @@ test('removes a cached event after it closes', async () => {
   expect(requestedIds()).toEqual([['shared'], ['shared']]);
 });
 
+test('omits draft and resolved markets from Discover while a mixed event stays visible', async () => {
+  const draft = predictionEvent('draft');
+  const settled = predictionEvent('settled');
+  const mixed = predictionEvent('mixed');
+  Object.assign(draft.markets[0], { version: 'v2', resolutionStatus: 'inactive' });
+  Object.assign(settled.markets[0], { version: undefined, umaResolutionStatus: 'resolved' });
+  mixed.markets.push(draft.markets[0]);
+
+  await setPlacement('cards', [draft.id, settled.id, mixed.id]);
+  fetchMock.mockResolvedValueOnce(Response.json([draft, settled, mixed]));
+  await predictionEventsStore.getState().fetch(undefined, { force: true });
+
+  expect(Object.keys(predictionEventsStore.getState().events)).toEqual([mixed.id]);
+});
+
 test('distinguishes initial loading from an empty response', async () => {
   const response = Promise.withResolvers<Response>();
   fetchMock.mockReturnValueOnce(response.promise);

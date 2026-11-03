@@ -1,11 +1,12 @@
 import { createQueryStore, createStoreActions } from '@storesjs/stores';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
-import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { POLYMARKET_DATA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
+import { gammaMarketsUrl } from '@/features/polymarket/utils/marketProtocol';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/processRawPolymarketPosition';
 import { fetchTeamsForGameMarkets } from '@/features/polymarket/utils/sports';
 import { processRawPolymarketMarket } from '@/features/polymarket/utils/transforms';
@@ -56,6 +57,7 @@ export const usePolymarketPositionsStore = createQueryStore<
   }),
   {
     storageKey: 'polymarketPositions',
+    version: 2,
   }
 );
 
@@ -106,7 +108,7 @@ async function fetchPolymarketMarkets(
 
   const responses = await Promise.all(
     Object.entries(slugsByStatus).map(async ([status, slugs]) => {
-      const url = new URL(`${POLYMARKET_GAMMA_API_URL}/markets`);
+      const url = gammaMarketsUrl('markets');
       url.searchParams.set('closed', String(status === 'closed'));
       url.searchParams.set('limit', String(slugs.size));
       for (const slug of slugs) url.searchParams.append('slug', slug);

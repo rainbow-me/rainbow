@@ -1,7 +1,6 @@
 import { nullObject } from '@storesjs/stores';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
-import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
 import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { getGammaLeagueId } from '@/features/polymarket/leagues';
@@ -43,7 +42,7 @@ async function fetchTeamsByAbbreviations(
   abortController?: AbortController | null
 ): Promise<PolymarketTeamInfo[] | undefined> {
   try {
-    const url = new URL(buildGammaUrl('teams'));
+    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
     if (league) {
       url.searchParams.set('league', league);
     }
@@ -68,7 +67,7 @@ async function fetchTeamsByNames(
   abortController?: AbortController | null
 ): Promise<PolymarketTeamInfo[] | undefined> {
   try {
-    const url = new URL(buildGammaUrl('teams'));
+    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
     if (league) {
       url.searchParams.set('league', league);
     }

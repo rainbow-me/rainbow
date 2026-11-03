@@ -25,6 +25,7 @@ function eventResponse(selected: PolymarketOutcome = outcome): Response {
     id: selected.marketId,
     conditionId: `condition-${selected.marketId}`,
     outcomes: '["Other","Chosen"]',
+    positionIds: ['700', '701'],
     clobTokenIds: JSON.stringify([otherTokenId, selected.tokenId]),
   });
   event.markets.unshift({ ...event.markets[0], id: 'unrelated', conditionId: 'unrelated', clobTokenIds: '["300","301"]' });
@@ -160,6 +161,19 @@ it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrd
     expect(marketInfo).not.toHaveBeenCalled();
   }
 );
+
+it('uses the V2 position ID even when Gamma also supplies different CTF IDs', async () => {
+  const event = predictionEvent(outcome.eventId);
+  Object.assign(event.markets[0], { id: outcome.marketId, version: 'v2', positionIds: [otherTokenId, tokenId] });
+  fetchMock.mockImplementation(async url =>
+    String(url).includes('/events/')
+      ? new Response(JSON.stringify(event), { headers: { 'Content-Type': 'application/json' } })
+      : bookResponse(tokenId)
+  );
+  usePolymarketOrderStore.setState({ params: outcome });
+  await settle();
+  expect(usePolymarketOrderStore.getState().getData()?.market).toMatchObject({ version: 'v2', clobTokenIds: [otherTokenId, tokenId] });
+});
 
 it('rejects a token at a different outcome index', async () => {
   usePolymarketOrderStore.setState({ params: { ...outcome, outcomeIndex: 0 } });

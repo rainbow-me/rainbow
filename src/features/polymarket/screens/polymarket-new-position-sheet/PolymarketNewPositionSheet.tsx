@@ -25,8 +25,8 @@ import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
+import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
@@ -184,6 +184,7 @@ function NewPositionForm({
         amount: orderSpendCap,
         price: worstPrice,
         negRisk: market.negRisk,
+        version: market.version,
         matchedOrderMetadata: {
           eventSlug: event.slug,
           marketSlug: market.slug,
@@ -230,6 +231,7 @@ function NewPositionForm({
     fee,
     fromRoute,
     market.negRisk,
+    market.version,
     market.slug,
     orderSpendCap,
     outcome,

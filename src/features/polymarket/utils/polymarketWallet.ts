@@ -5,50 +5,64 @@ import {
   type RelayerTransactionResponse,
   type SafeTransaction,
 } from '@polymarket/builder-relayer-client';
-import { SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { type Address } from 'viem';
 
-import { getPolymarketWalletDescriptor, type PolymarketWalletDescriptor } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import { type PolymarketWalletDescriptor } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import { assertRelayerTransactionAccepted, waitForRelayerSettlement } from '@/features/polymarket/utils/relayResponse';
 
 // This is a magic number from the Polymarket team. <= 600 causes problems with the relayer.
 const DEPOSIT_WALLET_BATCH_DEADLINE_SECONDS = 900;
 
+/**
+ * An initialized Polymarket wallet bound to the relay client associated with it.
+ */
 export type PolymarketWallet = {
   address: Address;
-  signatureType: SignatureTypeV2;
-  isDeployed(client: RelayClient): Promise<boolean>;
-  deploy(client: RelayClient): Promise<RelayerTransactionResponse>;
-  executeBatch(args: { client: RelayClient; transactions: SafeTransaction[]; description: string }): Promise<RelayerTransactionResponse>;
+  execute(transactions: SafeTransaction[], description: string): Promise<RelayerTransactionResponse>;
 };
 
-export function createPolymarketWallet(descriptor: PolymarketWalletDescriptor): PolymarketWallet {
-  return descriptor.kind === 'depositWallet' ? createDepositWallet(descriptor) : createSafeWallet(descriptor);
-}
+type PolymarketWalletImplementation = PolymarketWallet & {
+  deploy(): Promise<RelayerTransactionResponse>;
+  isDeployed(): Promise<boolean>;
+};
 
-export async function getPolymarketWallet(owner: Address): Promise<PolymarketWallet> {
-  return createPolymarketWallet(await getPolymarketWalletDescriptor(owner));
-}
+type PolymarketWalletClient = Pick<RelayClient, 'deploy' | 'deployDepositWallet' | 'execute' | 'executeDepositWalletBatch' | 'getDeployed'>;
 
-function createSafeWallet({ address }: PolymarketWalletDescriptor): PolymarketWallet {
+export async function createPolymarketWallet(
+  descriptor: PolymarketWalletDescriptor,
+  client: PolymarketWalletClient
+): Promise<PolymarketWallet> {
+  const wallet = descriptor.kind === 'depositWallet' ? createDepositWallet(descriptor, client) : createSafeWallet(descriptor, client);
+
+  if (!(await wallet.isDeployed())) {
+    await waitForRelayerSettlement(await wallet.deploy(), 'wallet deployment');
+  }
+
   return {
-    address,
-    signatureType: SignatureTypeV2.POLY_GNOSIS_SAFE,
-    isDeployed: client => client.getDeployed(address),
-    deploy: client => client.deploy(),
-    executeBatch: ({ client, transactions, description }) => client.execute(transactions, description),
+    address: wallet.address,
+    execute: async (transactions, description) => {
+      const response = await wallet.execute(transactions, description);
+      assertRelayerTransactionAccepted(response, description);
+      return response;
+    },
   };
 }
 
-function createDepositWallet({ address }: PolymarketWalletDescriptor): PolymarketWallet {
+function createSafeWallet({ address }: PolymarketWalletDescriptor, client: PolymarketWalletClient): PolymarketWalletImplementation {
   return {
     address,
-    signatureType: SignatureTypeV2.POLY_1271,
-    isDeployed: client => client.getDeployed(address, TransactionType.WALLET),
-    deploy: client => {
-      return client.deployDepositWallet();
-    },
-    executeBatch: ({ client, transactions }) =>
-      client.executeDepositWalletBatch(toDepositWalletCalls(transactions), address, getDepositWalletBatchDeadline()),
+    isDeployed: () => client.getDeployed(address),
+    deploy: () => client.deploy(),
+    execute: (transactions, description) => client.execute(transactions, description),
+  };
+}
+
+function createDepositWallet({ address }: PolymarketWalletDescriptor, client: PolymarketWalletClient): PolymarketWalletImplementation {
+  return {
+    address,
+    isDeployed: () => client.getDeployed(address, TransactionType.WALLET),
+    deploy: () => client.deployDepositWallet(),
+    execute: transactions => client.executeDepositWalletBatch(toDepositWalletCalls(transactions), address, getDepositWalletBatchDeadline()),
   };
 }
 

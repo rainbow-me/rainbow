@@ -54,18 +54,13 @@ export type DepositSubmitContext = {
  */
 export type DepositGasParams = LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
 
-/**
- * Callback invoked immediately after transaction submission, before confirmation.
- * Runs fire-and-forget; errors are logged but do not block navigation.
- */
-export type OnDepositSubmit = (signer: Signer, context: DepositSubmitContext) => Promise<void>;
-
-/**
- * Optional async prerequisite that runs before transaction submission.
- * Use for setup that must complete before funds can safely move.
- * Errors thrown here abort the deposit with an error alert.
- */
-export type DepositPrerequisite = () => Promise<void>;
+/** Command-scoped work performed before and after a framework-managed deposit submission. */
+export type DepositSubmission = {
+  /** Completes required setup using the signer already authenticated by the funding flow. */
+  prepare(signer: Signer): Promise<void>;
+  /** Runs fire-and-forget immediately after transaction submission. */
+  onSubmitted(context: DepositSubmitContext): Promise<void>;
+};
 
 /**
  * Resolved sponsorship outcome for an executed deposit.
@@ -310,7 +305,6 @@ export type DepositSubmitButtonComponent = ComponentType<DepositSubmitButtonProp
  *   },
  *   quote: { slippage: 1 },
  *   directTransferEnabled: true,
- *   prerequisite: ensureProxyDeployed,
  *   refresh: {
  *     delays: [0, time.seconds(30)],
  *     handler: refetchBalanceStores,
@@ -387,9 +381,6 @@ type DepositConfigBaseInput = {
     minAmount?: { label: string; value: string };
   };
 
-  /** Async setup before execution (e.g., deploy proxy wallet) */
-  prerequisite?: DepositPrerequisite;
-
   /** Store refresh behavior after confirmation */
   refresh?: RefreshConfig;
 
@@ -409,10 +400,9 @@ type DepositExecutionCallbacks =
        */
       execute: DepositExecutor;
       /**
-       * Disallowed in custom execution mode.
-       * The framework will not invoke `onSubmit` when `execute` is present.
+       * Disallowed in custom execution mode, whose executor owns its complete submission lifecycle.
        */
-      onSubmit?: never;
+      createSubmission?: never;
     }
   | {
       /**
@@ -421,10 +411,9 @@ type DepositExecutionCallbacks =
        */
       execute?: never;
       /**
-       * Optional post-submit hook for framework execution mode.
-       * Invoked immediately after transaction submission with the active signer.
+       * Captures command-scoped preparation and post-submit work before asynchronous execution begins.
        */
-      onSubmit?: OnDepositSubmit;
+      createSubmission?: () => DepositSubmission;
     };
 
 export type DepositConfigInput = DepositConfigBaseInput & DepositExecutionCallbacks;

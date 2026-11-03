@@ -140,13 +140,12 @@ const MOCK_CONFIG = {
   },
 } as const;
 
+const depositRecipient = '0x9999999999999999999999999999999999999999';
+
 const DIRECT_TRANSFER_CONFIG = {
   directTransferEnabled: true,
   to: {
     chainId: 8453,
-    recipient: {
-      getState: () => '0x9999999999999999999999999999999999999999',
-    },
     token: {
       address: MOCK_ASSET.address,
       decimals: 6,
@@ -172,6 +171,7 @@ describe('executeDepositRap', () => {
     mockWalletExecuteRap.mockResolvedValue({ errorMessage: null, hash: '0xabc', nonce: 12 });
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,
@@ -208,6 +208,7 @@ describe('executeDepositRap', () => {
     mockWalletExecuteRap.mockResolvedValue({ errorMessage: null, hash: '0xdef', nonce: 15 });
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: {
@@ -253,6 +254,7 @@ describe('executeDepositRap', () => {
     };
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: DIRECT_TRANSFER_CONFIG as never,
@@ -275,7 +277,7 @@ describe('executeDepositRap', () => {
     expect(mockWalletExecuteRap).not.toHaveBeenCalled();
     expect(mockGetProvider).toHaveBeenCalledWith({ chainId: 8453 });
     expect(wallet.connect).toHaveBeenCalledWith(MOCK_PROVIDER);
-    expect(mockEncodeFunctionData).toHaveBeenCalledWith('transfer', [DIRECT_TRANSFER_CONFIG.to.recipient.getState(), '1']);
+    expect(mockEncodeFunctionData).toHaveBeenCalledWith('transfer', [depositRecipient, '1']);
     expect(mockEstimateGasWithPadding).toHaveBeenCalledWith(
       {
         data: '0xtransferdata',
@@ -287,7 +289,7 @@ describe('executeDepositRap', () => {
       MOCK_PROVIDER,
       1.2
     );
-    expect(mockContractTransfer).toHaveBeenCalledWith(DIRECT_TRANSFER_CONFIG.to.recipient.getState(), '1', {
+    expect(mockContractTransfer).toHaveBeenCalledWith(depositRecipient, '1', {
       gasLimit: 'hex:21000',
       gasPrice: '1',
       nonce: 7,
@@ -309,6 +311,7 @@ describe('executeDepositRap', () => {
     mockResolveManagedExecutionFailure.mockResolvedValue(null);
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: DIRECT_TRANSFER_CONFIG as never,
@@ -345,6 +348,7 @@ describe('executeDepositRap', () => {
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,
@@ -385,6 +389,7 @@ describe('executeDepositRap', () => {
     mockWalletExecuteRap.mockResolvedValue({ errorMessage: null, hash: null, nonce: undefined });
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,
@@ -407,6 +412,7 @@ describe('executeDepositRap', () => {
     mockWalletExecuteRap.mockResolvedValue({ errorMessage: 'Swap failed[details]', hash: null, nonce: undefined });
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,
@@ -434,6 +440,7 @@ describe('executeDepositRap', () => {
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,
@@ -466,6 +473,7 @@ describe('executeDepositRap', () => {
     const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945382d4a8a7e3f89f8f51236aa0f5f7f6e8b8');
 
     const result = await executeDepositRap({
+      recipient: depositRecipient,
       asset: MOCK_ASSET as never,
       assetChainId: 8453 as never,
       config: MOCK_CONFIG as never,

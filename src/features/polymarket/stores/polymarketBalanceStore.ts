@@ -19,7 +19,7 @@ import { RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
 
 type PolymarketBalanceStoreActions = {
-  getBalance: () => string;
+  getBalance: (address?: Address) => string;
   getPusdBalance: () => string;
   getUsdcBalance: () => string;
   isBalanceZero: () => boolean;
@@ -54,7 +54,7 @@ export const usePolymarketBalanceStore = createQueryStore<
   },
 
   (_, get) => ({
-    getBalance: () => get().getData()?.balance ?? EMPTY_BALANCES.balance,
+    getBalance: address => get().getData(address ? { address } : undefined)?.balance ?? EMPTY_BALANCES.balance,
     getPusdBalance: () => get().getData()?.pusdBalance ?? EMPTY_BALANCES.pusdBalance,
     getUsdcBalance: () => get().getData()?.usdcBalance ?? EMPTY_BALANCES.usdcBalance,
     isBalanceZero: () => Number(get().getData()?.balance ?? EMPTY_BALANCES.balance) === 0,

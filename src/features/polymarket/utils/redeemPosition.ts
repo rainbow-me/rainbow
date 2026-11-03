@@ -1,18 +1,30 @@
 import { Interface } from '@ethersproject/abi';
-import { OperationType, type RelayerTransaction, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { zeroHash, type Address } from 'viem';
+import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, parseAbi, toHex, zeroHash, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
+import { getPolymarketWallet } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { getProvider } from '@/handlers/web3';
 import { ensureError } from '@/logger';
+import { ChainId } from '@rainbow-me/swaps';
 
 import {
+  POLYMARKET_CTF_ADDRESS,
   POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS,
   POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS,
+  POLYMARKET_POSITION_MANAGER,
   POLYMARKET_PUSD_ADDRESS,
+  POLYMARKET_ROUTER,
 } from '../constants';
 import { type PolymarketPosition } from '../types';
-import { submitTradingWalletTransaction, waitForRelayerTransaction } from './relayExecution';
-import { getMissingCtfOperatorApprovalTransactions } from './tradingApprovals';
+import { getHeldTokenVersion, type HeldPolymarketToken } from './marketProtocol';
+import { waitForRelayerTransaction } from './relayExecution';
+import { getMissingOperatorApproval } from './tradingApprovals';
+
+type ConfirmedRedemption = Awaited<ReturnType<typeof waitForRelayerTransaction>>;
+
+type RedemptionPosition = HeldPolymarketToken &
+  Pick<PolymarketPosition, 'conditionId' | 'currentValue' | 'eventSlug' | 'negativeRisk' | 'outcome' | 'proxyWallet' | 'size' | 'slug'>;
 
 const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',
@@ -27,20 +39,13 @@ function buildCtfRedeemTransaction(conditionId: string, adapterAddress: Address)
   };
 }
 
-export async function redeemPosition(position: PolymarketPosition): Promise<RelayerTransaction | undefined> {
-  let tx: RelayerTransaction | undefined;
+export async function redeemPosition(position: RedemptionPosition): Promise<ConfirmedRedemption | undefined> {
+  let tx: ConfirmedRedemption | undefined;
   try {
-    const adapterAddress = position.negativeRisk
-      ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS
-      : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
-    const redeemTx = buildCtfRedeemTransaction(position.conditionId, adapterAddress);
-
-    const approvalTransactions = await getMissingCtfOperatorApprovalTransactions(adapterAddress);
     const description = 'Redeem position';
-    const response = await submitTradingWalletTransaction({
-      transactions: [...approvalTransactions, redeemTx],
-      description,
-    });
+    const wallet = await getPolymarketWallet(position.proxyWallet);
+    const transactions = await buildRedeemTransactions(position);
+    const response = await wallet.execute(transactions, description);
     tx = await waitForRelayerTransaction(response, description);
 
     trackRedeemPosition({ position, tx });
@@ -53,7 +58,44 @@ export async function redeemPosition(position: PolymarketPosition): Promise<Rela
   }
 }
 
-function trackRedeemPosition({ position, tx }: { position: PolymarketPosition; tx: RelayerTransaction }) {
+async function buildRedeemTransactions(position: RedemptionPosition): Promise<SafeTransaction[]> {
+  if ((await getHeldTokenVersion(position)) === 'v1') {
+    const adapter = position.negativeRisk ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
+    return [
+      ...(await getMissingOperatorApproval(position.proxyWallet, POLYMARKET_CTF_ADDRESS, adapter)),
+      buildCtfRedeemTransaction(position.conditionId, adapter),
+    ];
+  }
+
+  const positionId = BigInt(position.asset);
+  const outcomeIndex = positionId & 255n;
+  if (outcomeIndex > 1n) throw new Error('Unsupported redemption outcome');
+  const [balance, approvals] = await Promise.all([
+    getProvider({ chainId: ChainId.polygon }).call({
+      to: POLYMARKET_POSITION_MANAGER,
+      data: encodeFunctionData({ abi: erc1155Abi, functionName: 'balanceOf', args: [position.proxyWallet, positionId] }),
+    }),
+    getMissingOperatorApproval(position.proxyWallet, POLYMARKET_POSITION_MANAGER, POLYMARKET_ROUTER),
+  ]);
+  if (!isHex(balance)) throw new Error('Invalid PositionManager balance');
+  const amount = decodeFunctionResult({ abi: erc1155Abi, functionName: 'balanceOf', data: balance });
+  if (!amount) throw new Error('No position to redeem');
+  return [
+    ...approvals,
+    {
+      to: POLYMARKET_ROUTER,
+      operation: OperationType.Call,
+      data: encodeFunctionData({
+        abi: parseAbi(['function redeem(bytes31 conditionId, uint256 outcomeIndex, uint256 amount)']),
+        functionName: 'redeem',
+        args: [toHex(positionId >> 8n, { size: 31 }), outcomeIndex, amount],
+      }),
+      value: '0',
+    },
+  ];
+}
+
+function trackRedeemPosition({ position, tx }: { position: RedemptionPosition; tx: ConfirmedRedemption }) {
   const isWin = position.size === position.currentValue;
 
   analytics.track(analytics.event.predictionsRedeemPosition, {
@@ -73,8 +115,8 @@ function trackRedeemPositionFailed({
   tx,
   error,
 }: {
-  position: PolymarketPosition;
-  tx: RelayerTransaction | undefined;
+  position: RedemptionPosition;
+  tx: ConfirmedRedemption | undefined;
   error: Error;
 }) {
   const isWin = position.size === position.currentValue;

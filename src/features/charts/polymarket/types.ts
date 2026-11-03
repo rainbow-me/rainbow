@@ -1,3 +1,4 @@
+import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 // ============ Animation Types ================================================ //
 
 import { type ResponseByTheme } from '@/theme/types';
@@ -73,7 +74,8 @@ type GammaMarketBase = {
   volume: string;
 };
 
-export type GammaMarketRaw = GammaMarketBase & { clobTokenIds: string; outcomes: string; outcomePrices: string };
+export type GammaMarketRaw = GammaMarketBase &
+  Pick<RawPolymarketMarket, 'version' | 'clobTokenIds' | 'positionIds' | 'outcomes'> & { outcomePrices: string };
 export type GammaMarket = GammaMarketBase & { clobTokenIds: string[]; outcomes: string[]; outcomePrices: string[] };
 
 type GammaEventBase = {

@@ -4,6 +4,8 @@ import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 import { type ResponseByTheme } from '@/theme/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
+export type PolymarketVersion = 'v1' | 'v2';
+
 export type UmaResolutionStatus = 'pending' | 'proposed' | 'disputed' | 'resolved';
 
 type ImageOptimized = {
@@ -81,6 +83,9 @@ type Template = {
 };
 
 export type RawPolymarketMarket = {
+  version: PolymarketVersion;
+  positionIds?: string[];
+  resolutionStatus?: 'inactive' | 'active' | 'resolved';
   id: string;
   question: string;
   conditionId: string;
@@ -223,6 +228,7 @@ export type RawPolymarketMarket = {
 };
 
 export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
+  /** Trading IDs in outcome order: CTF token IDs for v1, PositionManager IDs for v2. */
   clobTokenIds: string[];
   outcomes: string[];
   outcomePrices: string[];

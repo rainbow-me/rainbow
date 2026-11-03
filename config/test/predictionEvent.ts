@@ -3,6 +3,7 @@ import { type RawPolymarketEvent, type RawPolymarketMarket } from '../../src/fea
 type MarketResponse = Pick<
   RawPolymarketMarket,
   | 'id'
+  | 'version'
   | 'conditionId'
   | 'slug'
   | 'question'
@@ -38,6 +39,7 @@ export function predictionEvent(id: string): EventResponse {
     ended: false,
     markets: [
       {
+        version: 'v1',
         id: `market-${id}`,
         conditionId: `condition-${id}`,
         slug: `market-${id}`,

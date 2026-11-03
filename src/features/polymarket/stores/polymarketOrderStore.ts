@@ -2,6 +2,7 @@ import { createQueryStore, queryParam } from '@storesjs/stores';
 
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { getMarketTokenIds } from '@/features/polymarket/utils/marketProtocol';
 import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
@@ -17,7 +18,7 @@ export type PolymarketOrderDetails = {
   event: Pick<PolymarketEvent, 'title' | 'slug'>;
   market: Pick<
     PolymarketMarket,
-    'conditionId' | 'negRisk' | 'slug' | 'icon' | 'groupItemTitle' | 'question' | 'line' | 'outcomes' | 'clobTokenIds'
+    'version' | 'conditionId' | 'negRisk' | 'slug' | 'icon' | 'groupItemTitle' | 'question' | 'line' | 'outcomes' | 'clobTokenIds'
   >;
   outcomeIndex: number;
 };
@@ -96,7 +97,8 @@ async function fetchOrderDetails(params: FetchParams, abortController: AbortCont
     return null;
   }
 
-  const clobTokenIds: string[] = JSON.parse(rawMarket.clobTokenIds);
+  const outcomes: string[] = JSON.parse(rawMarket.outcomes);
+  const clobTokenIds = getMarketTokenIds(rawMarket, outcomes);
   if (clobTokenIds[outcome.outcomeIndex] !== outcome.tokenId) {
     return null;
   }
@@ -111,7 +113,8 @@ async function fetchOrderDetails(params: FetchParams, abortController: AbortCont
       groupItemTitle: rawMarket.groupItemTitle,
       question: rawMarket.question,
       line: rawMarket.line,
-      outcomes: JSON.parse(rawMarket.outcomes),
+      version: rawMarket.version,
+      outcomes,
       clobTokenIds,
     },
     outcomeIndex: outcome.outcomeIndex,
