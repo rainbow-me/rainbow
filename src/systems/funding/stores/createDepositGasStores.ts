@@ -5,10 +5,10 @@ import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { formatGasFee } from '@/features/gas/core/formatGasFee';
 import { buildGasParams, gweiToWei } from '@/features/gas/core/gasParams';
+import { fetchMeteorology } from '@/features/gas/data/meteorology';
 import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
-import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -250,12 +250,8 @@ export function createDepositGasStores(
 
 // ============ Meteorology Fetching ========================================== //
 
-async function fetchMeteorologyData(
-  { chainId }: DepositMeteorologyParams,
-  abortController: AbortController | null
-): Promise<MeteorologyData> {
-  const parsedResponse = await rainbowMeteorologyGetData<MeteorologyData>(chainId, abortController);
-  return parsedResponse.data;
+function fetchMeteorologyData({ chainId }: DepositMeteorologyParams, abortController: AbortController | null): Promise<MeteorologyData> {
+  return fetchMeteorology(chainId, abortController?.signal);
 }
 
 // ============ Gas Limit Fetching ============================================ //

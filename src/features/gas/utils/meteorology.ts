@@ -2,19 +2,15 @@ import { useCallback } from 'react';
 
 import { useQuery, type NotifyOnChangeProps } from '@tanstack/react-query';
 
-import { IS_TEST } from '@/env';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { isZero } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { gweiToWei } from '../core/gasParams';
+import { fetchMeteorology as fetchGasMarket } from '../data/meteorology';
 import { type GasSettings } from '../hooks/useCustomGas';
-import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '../types/gas';
 import { GasSpeed } from '../types/gasSpeed';
-import { rainbowMeteorologyGetData } from './gasFees';
 import { isLegacyMeteorologyFeeData } from './meteorologyClassification';
-import { mockMeteorologyData } from './meteorologyMock';
 
 // Query Types
 
@@ -32,13 +28,8 @@ type MeteorologyQueryKey = ReturnType<typeof meteorologyQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
-async function meteorologyQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof meteorologyQueryKey>) {
-  if (IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
-    return mockMeteorologyData;
-  }
-  const parsedResponse = await rainbowMeteorologyGetData(chainId);
-  const meteorologyData = parsedResponse.data as MeteorologyResponse | MeteorologyLegacyResponse;
-  return meteorologyData;
+function meteorologyQueryFunction({ queryKey: [{ chainId }], signal }: QueryFunctionArgs<typeof meteorologyQueryKey>) {
+  return fetchGasMarket(chainId, signal);
 }
 
 export type MeteorologyResult = QueryFunctionResult<typeof meteorologyQueryFunction>;

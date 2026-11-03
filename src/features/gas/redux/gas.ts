@@ -14,6 +14,7 @@ import ethUnits from '@/references/ethereum-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { weiToGwei } from '../core/gasParams';
+import { fetchMeteorology } from '../data/meteorology';
 import type {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -31,7 +32,6 @@ import type {
   SelectedGasFee,
 } from '../types/gas';
 import gasUtils from '../utils/gas';
-import { rainbowMeteorologyGetData } from '../utils/gasFees';
 import {
   defaultGasParamsFormat,
   parseGasFeeParam,
@@ -267,9 +267,7 @@ interface LegacyMeterologyGasParams {
 }
 
 export const getMeteorologyGasParams = async (chainId: ChainId): Promise<MeterologyGasParams | LegacyMeterologyGasParams> => {
-  const { data } = (await rainbowMeteorologyGetData(chainId)) as {
-    data: MeteorologyResponse | MeteorologyLegacyResponse;
-  };
+  const data = await fetchMeteorology(chainId);
   if (data.meta.feeType === 'eip1559') {
     const { gasFeeParamsBySpeed, baseFeePerGas, baseFeeTrend, currentBaseFee, blocksToConfirmation, secondsPerNewBlock } =
       parseRainbowMeteorologyData(data as MeteorologyResponse);
