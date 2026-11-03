@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash';
 import { type Address } from 'viem';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { identifyEnsNfts } from '@/features/ens/data/nfts';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
@@ -74,17 +75,18 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
 
   const nftsByCollection = new Map();
 
-  response.getNftsMetadata.forEach(item => {
-    const { network, contractAddress } = parseUniqueId(item.uniqueId);
+  const assets = response.getNftsMetadata.map(item => parseUniqueAsset(item, chainIds));
+  await identifyEnsNfts(assets);
+  assets.forEach(uniqueAsset => {
+    const { network, contractAddress } = parseUniqueId(uniqueAsset.uniqueId);
     const collectionId = `${network}_${contractAddress}`.toLowerCase();
-    const uniqueAsset = parseUniqueAsset(item, chainIds);
 
     const existingCollection = nftsByCollection.get(collectionId);
     if (existingCollection) {
-      existingCollection.set(item.uniqueId.toLowerCase(), uniqueAsset);
+      existingCollection.set(uniqueAsset.uniqueId.toLowerCase(), uniqueAsset);
     } else {
       const newCollection = new Map();
-      newCollection.set(item.uniqueId.toLowerCase(), uniqueAsset);
+      newCollection.set(uniqueAsset.uniqueId.toLowerCase(), uniqueAsset);
       nftsByCollection.set(collectionId, newCollection);
     }
   });
@@ -116,10 +118,9 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
           nftsByCollection.set(collectionId.toLowerCase(), collectionMap);
         }
 
-        for (const nft of collectionData.nftsByCollection) {
-          const uniqueAsset = parseUniqueAsset(nft, chainIds);
-          nftsByCollection.get(collectionId.toLowerCase())?.set(nft.uniqueId.toLowerCase(), uniqueAsset);
-        }
+        const assets = collectionData.nftsByCollection.map(nft => parseUniqueAsset(nft, chainIds));
+        await identifyEnsNfts(assets);
+        for (const asset of assets) collectionMap.set(asset.uniqueId.toLowerCase(), asset);
       }
 
       return {

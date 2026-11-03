@@ -35,3 +35,9 @@ query getV2Registration($registry: String!, $labelhash: Bytes!) {
     }
   }
 }
+
+query getEnsRegistries($addresses: [Bytes!]!, $first: Int!) {
+  ensv2Registries(first: $first, where: { id_in: $addresses, namespaceCount_gt: 0 }) {
+    id
+  }
+}

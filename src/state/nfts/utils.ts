@@ -1,5 +1,5 @@
+import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import { queryClient } from '@/react-query';
 import { fetchNFTData, nftsQueryKey, type NFTData } from '@/resources/nfts';
 import { parseUniqueId } from '@/resources/nfts/utils';
@@ -17,7 +17,7 @@ export function isDataComplete(tokens: string[]) {
 
 export function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
-    if (!isLowerCaseMatch(nft.contractAddress, ENS_NFT_CONTRACT_ADDRESS) || !isLowerCaseMatch(nft.name, ensName)) continue;
+    if (nft.type !== AssetType.ens || !isLowerCaseMatch(nft.name, ensName)) continue;
     return nft.uniqueId;
   }
 

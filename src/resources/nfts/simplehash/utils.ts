@@ -2,7 +2,6 @@ import { type Address } from 'viem';
 
 import { AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/features/ens/references';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type Network } from '@/features/network/types/backendNetworks';
 import { NftTokenType, type SimpleHashNft } from '@/graphql/__generated__/arc';
@@ -33,12 +32,11 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     floorPrice => floorPrice?.marketplace_id === 'opensea' && floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
 
-  const isENS = lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS;
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
   const standard = nft.contract?.type;
 
   return {
-    type: isENS ? AssetType.ens : isPoap ? AssetType.poap : AssetType.nft,
+    type: isPoap ? AssetType.poap : AssetType.nft,
     standard: standard as NftTokenType,
     images: {
       highResUrl: imageUrl,

@@ -1,6 +1,7 @@
 import { useQuery, type QueryFunction } from '@tanstack/react-query';
 
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { identifyEnsNfts } from '@/features/ens/data/nfts';
 import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
 import { createQueryKey, queryClient, type QueryConfigWithSelect } from '@/react-query';
@@ -30,6 +31,8 @@ export const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryK
   const queryResponse = await arcClient.getNFTs({ walletAddress: address });
 
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
+
+  if (nfts) await identifyEnsNfts(nfts);
 
   const nftIndexMap = nfts?.reduce<Record<string, number>>((acc, nft, index) => {
     acc[nft.uniqueId.toLowerCase()] = index;
