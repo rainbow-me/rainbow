@@ -1,13 +1,13 @@
 import { ethers, type BigNumber } from 'ethers';
 
 import { POLYMARKET_PUSD_DECIMALS } from '@/features/polymarket/constants';
+import { type PolymarketOrderAmounts } from '@/features/polymarket/types';
 import {
   divWorklet,
   greaterThanWorklet,
   lessThanWorklet,
   mulWorklet,
   subWorklet,
-  toStringWorklet,
   trimTrailingZeros,
   truncateToDecimals,
 } from '@/framework/core/safeMath';
@@ -17,14 +17,9 @@ type FeeValue = {
   price: string | number;
 };
 
-type MatchedAmounts = {
-  tokens: string | number;
-  usd: string | number;
-};
-
 type FeeCollectionValue = {
-  matchedAmounts: MatchedAmounts;
-  quotedFeeUsd: string | number;
+  matchedAmounts: PolymarketOrderAmounts;
+  quotedFeeUsd: string;
 };
 
 const FEE_RATE_CAP = '0.03';
@@ -42,21 +37,19 @@ export function calculateTradeFeeUsd({ notionalUsd, price }: FeeValue): string {
  * reserved before order submission.
  */
 export function calculateFeeToCollectUsd({ matchedAmounts, quotedFeeUsd }: FeeCollectionValue): string {
-  const quotedFee = toStringWorklet(quotedFeeUsd);
-  if (!greaterThanWorklet(quotedFee, '0')) return '0';
+  if (!greaterThanWorklet(quotedFeeUsd, '0')) return '0';
 
   const fee = calculateMatchedTradeFeeUsd(matchedAmounts);
-  return lessThanWorklet(fee, quotedFee) ? fee : quotedFee;
+  return lessThanWorklet(fee, quotedFeeUsd) ? fee : quotedFeeUsd;
 }
 
 /**
  * Converts a USD fee into pUSDC units for Polymarket collateral transactions.
  */
-export function getTradeFeeAmount(feeUsd: string | number): BigNumber {
-  const fee = toStringWorklet(feeUsd);
-  if (!greaterThanWorklet(fee, '0')) return ethers.constants.Zero;
+export function getTradeFeeAmount(feeUsd: string): BigNumber {
+  if (!greaterThanWorklet(feeUsd, '0')) return ethers.constants.Zero;
 
-  return ethers.utils.parseUnits(truncateToDecimals(fee, POLYMARKET_PUSD_DECIMALS), POLYMARKET_PUSD_DECIMALS);
+  return ethers.utils.parseUnits(truncateToDecimals(feeUsd, POLYMARKET_PUSD_DECIMALS), POLYMARKET_PUSD_DECIMALS);
 }
 
 function calculateFeeRate(price: string | number): string {
@@ -67,7 +60,7 @@ function calculateFeeRate(price: string | number): string {
   return lessThanWorklet(taperRate, FEE_RATE_CAP) ? taperRate : FEE_RATE_CAP;
 }
 
-function calculateMatchedTradeFeeUsd({ tokens, usd }: MatchedAmounts): string {
+function calculateMatchedTradeFeeUsd({ tokens, usd }: PolymarketOrderAmounts): string {
   if (!greaterThanWorklet(tokens, '0') || !greaterThanWorklet(usd, '0')) return '0';
   return calculateTradeFeeUsd({ notionalUsd: usd, price: divWorklet(usd, tokens) });
 }

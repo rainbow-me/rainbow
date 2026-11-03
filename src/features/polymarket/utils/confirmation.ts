@@ -1,7 +1,7 @@
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { PolymarketTransactionFailedError } from '@/features/polymarket/errors';
 import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
-import { RainbowError } from '@/logger';
 
 const CONFIRMATION_TIMEOUT = time.minutes(1);
 
@@ -16,7 +16,7 @@ export async function awaitPolygonConfirmation(hash: string, confirmations = 1):
   const receipt = await provider.waitForTransaction(hash, confirmations, CONFIRMATION_TIMEOUT);
 
   if (receipt.status === 0) {
-    throw new RainbowError('[polymarket]: Transaction reverted', { hash });
+    throw new PolymarketTransactionFailedError('[polymarket]: Transaction reverted', { hash });
   }
 
   latestConfirmedPolygonBlockNumber = Math.max(latestConfirmedPolygonBlockNumber, receipt.blockNumber);
