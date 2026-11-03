@@ -1,49 +1,52 @@
-import { Interface } from '@ethersproject/abi';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { encodeAbiParameters, encodeFunctionData, erc721Abi, erc1155Abi } from 'viem';
+import { polygon } from 'viem/chains';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { ChainId } from '@/features/network/types/backendNetworks';
-import { getProvider } from '@/handlers/web3';
-
-import { readEnsRecords, readEnsText, resolveEnsAddress } from '../ens';
+import { readEnsRecords, readEnsText } from '../ens';
 import { useEnsImageStore } from './imageStore';
 import { useEnsRecordsStore } from './recordsStore';
 
-vi.mock('../ens', () => ({ readEnsRecords: vi.fn(), readEnsText: vi.fn(), resolveEnsAddress: vi.fn() }));
-vi.mock('@/graphql', () => ({ ensClient: {} }));
+vi.mock('../ens', () => ({ readEnsRecords: vi.fn(), readEnsText: vi.fn() }));
+vi.mock('@/features/network/stores/backendNetworksStore', () => ({
+  backendNetworksActions: { getDefaultChains: () => ({ [polygon.id]: polygon }), getChainDefaultRpc: () => 'https://polygon.test' },
+}));
 vi.mock('@/components/images', () => ({ ImgixImage: { preload: () => undefined } }));
-vi.mock('@/handlers/web3', async () => {
-  const { StaticJsonRpcProvider } = await import('@ethersproject/providers');
-  const provider = new StaticJsonRpcProvider(undefined, 1);
-  return { getProvider: () => provider };
-});
 vi.mock('@/handlers/svgs', () => ({ default: (uri: string) => uri.replace('.svg', '.png') }));
 
 const ADDRESS = '0x2222222222222222222222222222222222222222';
 const IMAGE = 'https://example.com/avatar.png';
 beforeEach(() => {
-  vi.restoreAllMocks();
-  vi.mocked(resolveEnsAddress).mockResolvedValue(ADDRESS);
   vi.mocked(readEnsText).mockReset().mockResolvedValue(IMAGE);
-  vi.spyOn(getProvider({ chainId: ChainId.mainnet }), 'call').mockRejectedValue(new Error('Unexpected contract read'));
 });
+afterEach(() => vi.unstubAllGlobals());
 
-it('converts an NFT avatar owned by another address and reads the header independently', async () => {
-  const nft = new Interface(['function tokenURI(uint256) view returns (string)', 'function ownerOf(uint256) view returns (address)']);
-  const metadata = `data:application/json;base64,${Buffer.from(JSON.stringify({ image: 'https://example.com/avatar.svg' })).toString('base64')}`;
-  vi.mocked(getProvider({ chainId: ChainId.mainnet }).call).mockImplementation(async transaction => {
-    const { name, args } = nft.parseTransaction({ data: String(await transaction.data) });
-    expect(args[0].toString()).toBe('42');
-    return nft.encodeFunctionResult(name, [name === 'tokenURI' ? metadata : '0x3333333333333333333333333333333333333333']);
-  });
-  vi.mocked(readEnsText).mockImplementation(async (_, key) =>
-    key === 'avatar' ? `eip155:1/erc721:${ADDRESS}/42` : 'https://example.com/header.png'
-  );
-
-  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).resolves.toBe(IMAGE);
-  await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'header' }, { force: true })).resolves.toBe(
-    'https://example.com/header.png'
-  );
-});
+it.each(['erc721', 'erc1155'] as const)(
+  'resolves %s artwork on the chain in the record without an ownership or image preflight',
+  async standard => {
+    const inline = JSON.stringify({ image: 'https://example.com/avatar.svg' });
+    const tokenUri =
+      standard === 'erc721' ? 'data:application/json;base64,' + Buffer.from(inline).toString('base64') : 'https://metadata.test/{id}';
+    const calldata =
+      standard === 'erc721'
+        ? encodeFunctionData({ abi: erc721Abi, functionName: 'tokenURI', args: [26n] })
+        : encodeFunctionData({ abi: erc1155Abi, functionName: 'uri', args: [26n] });
+    const fetch = vi.fn(async (url: string, init: RequestInit) => {
+      if (String(url) === 'https://polygon.test/') {
+        const rpc = JSON.parse(String(init.body));
+        return Response.json({ jsonrpc: '2.0', id: rpc.id, result: encodeAbiParameters([{ type: 'string' }], [tokenUri]) });
+      }
+      return Response.json(JSON.parse(inline));
+    });
+    vi.stubGlobal('fetch', fetch);
+    vi.mocked(readEnsText).mockImplementation(async (_, field) => (field === 'avatar' ? `eip155:137/${standard}:${ADDRESS}/26` : IMAGE));
+    await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true })).resolves.toBe(IMAGE);
+    await expect(useEnsImageStore.getState().load({ name: 'alice.eth', field: 'header' }, { force: true })).resolves.toBe(IMAGE);
+    expect(JSON.parse(String(fetch.mock.calls[0][1].body)).params[0]).toMatchObject({ to: ADDRESS, data: calldata });
+    expect(fetch.mock.calls.map(call => String(call[0]))).toEqual(
+      standard === 'erc721' ? ['https://polygon.test/'] : ['https://polygon.test/', 'https://metadata.test/' + '1a'.padStart(64, '0')]
+    );
+  }
+);
 
 it('retains an image on lookup failure but clears it when the record is removed', async () => {
   await useEnsImageStore.getState().load({ name: 'alice.eth', field: 'avatar' }, { force: true });

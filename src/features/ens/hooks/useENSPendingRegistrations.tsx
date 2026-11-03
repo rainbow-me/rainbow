@@ -6,9 +6,10 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
+import { findRecordNft, parseNftRecord } from '../core/nftRecord';
+import { isDirectImagePath } from '../core/records';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { REGISTRATION_MODES } from '../utils/helpers';
-import { getENSNFTAvatarUrl } from '../utils/records';
 import { useENSRegistration } from './useENSRegistration';
 
 export default function useENSPendingRegistrations() {
@@ -30,15 +31,14 @@ export default function useENSPendingRegistrations() {
     address: accountAddress,
   });
   const registrationImages = useMemo(() => {
-    const registrationImagesArray = pendingRegistrations?.map(({ name, records }) => {
-      const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
-      return {
-        avatarUrl,
-        name,
-      };
-    });
-    const registrationImages: { [name: string]: string | undefined } = {};
-    registrationImagesArray.forEach(({ name, avatarUrl }) => (registrationImages[name] = avatarUrl));
+    const registrationImages: Record<string, string | undefined> = {};
+    for (const registration of pendingRegistrations) {
+      const avatar = registration.records?.avatar;
+      if (!avatar) continue;
+      const nft = findRecordNft(uniqueTokens, parseNftRecord(avatar));
+      const preview = avatar.startsWith('http://') || avatar.startsWith('https://') || isDirectImagePath(avatar) ? avatar : undefined;
+      registrationImages[registration.name] = nft?.images.highResUrl || nft?.images.lowResUrl || preview;
+    }
     return registrationImages;
   }, [pendingRegistrations, uniqueTokens]);
 

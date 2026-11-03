@@ -16,10 +16,10 @@ import { type UploadImageReturnData } from '@/handlers/pinata';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
 
+import { nftImageRecord } from '../../core/nftRecord';
 import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
-import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,
@@ -62,30 +62,14 @@ const RegistrationAvatar = ({
 
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
+      const value = asset ? nftImageRecord(asset) : image?.uri;
+      if (!value) return;
       setAvatarMetadata(image);
-      setAvatarUrl(image?.uri || asset?.images.lowResUrl || '');
-      onChangeAvatarUrl(image?.uri || asset?.images.lowResUrl || '');
-      if (asset) {
-        const standard = asset.standard || '';
-        const contractAddress = asset.contractAddress || '';
-        const tokenId = asset.tokenId;
-        onChangeField({
-          key: 'avatar',
-          value: stringifyENSNFTRecord({
-            contractAddress,
-            standard,
-            tokenId,
-          }),
-        });
-      } else if (image?.uri) {
-        // We want to disallow future avatar state changes (i.e. when upload successful)
-        // to avoid avatar flashing (from temp URL to uploaded URL).
-        setAvatarUpdateAllowed(false);
-        onChangeField({
-          key: 'avatar',
-          value: image.uri,
-        });
-      }
+      const preview = image?.uri || asset?.images.lowResUrl || asset?.images.highResUrl || '';
+      setAvatarUrl(preview);
+      onChangeAvatarUrl(preview);
+      if (image) setAvatarUpdateAllowed(false);
+      onChangeField({ key: 'avatar', value });
     },
     [onChangeField, onChangeAvatarUrl, setAvatarMetadata]
   );

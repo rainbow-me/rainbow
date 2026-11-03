@@ -1,29 +1,22 @@
 import { shallowEqual } from '@storesjs/stores';
 
 import { ImgixImage } from '@/components/images';
-import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
-import svgToPngIfNeeded from '@/handlers/svgs';
-import { getProvider } from '@/handlers/web3';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
-import { AvatarResolver } from '@/vendor/ens-avatar';
 
-import { readEnsText, resolveEnsAddress } from '../ens';
+import { readEnsText } from '../ens';
+import { resolveImageRecord } from '../image';
 
 export type EnsImageField = 'avatar' | 'header';
 
 export const useEnsImageStore = createQueryCollectionStore(
   {
-    key: ({ name, field }: { name: string; field: EnsImageField }) => `${name}:${field}`,
-    fetcher: async ({ name, field }, signal): Promise<string | null> => {
-      const [record, address] = await Promise.all([readEnsText(name, field, signal), resolveEnsAddress(name, ChainId.mainnet, signal)]);
-      if (!record || !address) return null;
-      const image = await new AvatarResolver(getProvider({ chainId: ChainId.mainnet })).getImage(name, record, address, {
-        allowNonOwnerNFTs: true,
-        transformImageUri: uri => svgToPngIfNeeded(uri, false),
-      });
+    key: (input: { name: string; field: EnsImageField }) => `${input.name}:${input.field}`,
+    fetcher: async (input, signal): Promise<string | null> => {
+      const record = await readEnsText(input.name, input.field, signal);
+      const image = record ? await resolveImageRecord(record, signal) : null;
       if (image) ImgixImage.preload([{ uri: image }], 100);
-      return image ?? null;
+      return image;
     },
     disableAutoRefetching: true,
     staleTime: time.seconds(10),

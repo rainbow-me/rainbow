@@ -1,12 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useLegacyNFTs, type NFTData } from '@/resources/nfts';
 
+import { findRecordNft, parseNftRecord } from '../core/nftRecord';
 import { isDirectImagePath } from '../core/records';
 import { useEnsImageStore, type EnsImageField } from '../data/stores/imageStore';
 import { REGISTRATION_MODES } from '../utils/helpers';
-import { getENSNFTAvatarUrl, isENSNFTRecord } from '../utils/records';
 import { useENSRegistration } from './useENSRegistration';
 
 /**
@@ -15,7 +15,7 @@ import { useENSRegistration } from './useENSRegistration';
 export function useENSRegistrationImage(field: EnsImageField) {
   const { accountAddress, name, mode, records, changedRecords } = useENSRegistration();
   const change = changedRecords[field];
-  const nftRecord = isENSNFTRecord(change) ? change : undefined;
+  const nftRecord = useMemo(() => parseNftRecord(change), [change]);
   const preview = getDraftImagePreview(change ?? records[field]);
   const usesExistingName = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
   const shouldLoadImage = usesExistingName && !!name && !nftRecord && preview === undefined;
@@ -26,8 +26,14 @@ export function useENSRegistrationImage(field: EnsImageField) {
   return nftRecord ? nftImage : (preview ?? storedImage);
 }
 
-function useNftRecordImage(address: string, record: string | undefined) {
-  const select = useCallback((data: NFTData) => svgToPngIfNeeded(getENSNFTAvatarUrl(data.nfts, record)), [record]);
+function useNftRecordImage(address: string, record: ReturnType<typeof parseNftRecord>) {
+  const select = useCallback(
+    (data: NFTData) => {
+      const nft = findRecordNft(data.nfts, record);
+      return svgToPngIfNeeded(nft?.images.highResUrl || nft?.images.lowResUrl);
+    },
+    [record]
+  );
   return useLegacyNFTs({ address, config: { enabled: !!record, select } }).data;
 }
 

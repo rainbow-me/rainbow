@@ -17,10 +17,10 @@ import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
+import { nftImageRecord } from '../../core/nftRecord';
 import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
-import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,
@@ -56,30 +56,13 @@ const RegistrationCover = ({
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
+      const value = asset ? nftImageRecord(asset) : image?.uri;
+      if (!value) return;
       setCoverMetadata(image);
-      setCoverUrl(image?.uri || asset?.images.highResUrl || asset?.images.lowResUrl || '');
-
-      if (asset) {
-        const standard = asset.standard || '';
-        const contractAddress = asset.contractAddress || '';
-        const tokenId = asset.tokenId;
-        onChangeField({
-          key: 'header',
-          value: stringifyENSNFTRecord({
-            contractAddress,
-            standard,
-            tokenId,
-          }),
-        });
-      } else if (image?.uri) {
-        // We want to disallow future avatar state changes (i.e. when upload successful)
-        // to avoid avatar flashing (from temp URL to uploaded URL).
-        setCoverUpdateAllowed(false);
-        onChangeField({
-          key: 'header',
-          value: image.uri,
-        });
-      }
+      const preview = image?.uri || asset?.images.highResUrl || asset?.images.lowResUrl || '';
+      setCoverUrl(preview);
+      if (image) setCoverUpdateAllowed(false);
+      onChangeField({ key: 'header', value });
     },
     [onChangeField, setCoverMetadata]
   );

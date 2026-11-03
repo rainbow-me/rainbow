@@ -4,16 +4,13 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
-import useENSUniqueToken from './useENSUniqueToken';
+import { findRecordNft, parseNftRecord } from '../core/nftRecord';
 
 /** @description Returns a press handler to open an ENS NFT in an expanded state sheet. */
 export default function useOpenENSNFTHandler({ uniqueTokens, value }: { uniqueTokens?: UniqueAsset[]; value?: string }) {
   const { name } = useRoute();
   const { goBack, navigate } = useNavigation();
-  const uniqueToken = useENSUniqueToken({
-    uniqueTokens,
-    value,
-  });
+  const uniqueToken = findRecordNft(uniqueTokens, parseNftRecord(value));
   const onPress = uniqueToken
     ? () => {
         if (name === Routes.EXPANDED_ASSET_SHEET) goBack();

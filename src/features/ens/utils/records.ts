@@ -1,9 +1,6 @@
-import type { UniqueAsset } from '@/entities/uniqueAssets';
 import * as i18n from '@/languages';
-import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import { normalizeEnsName } from '../core/name';
-import { isDirectImagePath } from '../core/records';
 
 const supportedTLDs = ['eth'];
 
@@ -14,50 +11,6 @@ const ERROR_CODES = {
   INVALID_TLD: 'invalid-tld',
   SUBDOMAINS_NOT_SUPPORTED: 'subdomains-not-supported',
 } as const;
-
-/** Returns the image for a registration avatar from the wallet's NFTs or the record itself. */
-export function getENSNFTAvatarUrl(uniqueTokens: UniqueAsset[], avatar?: string) {
-  if (!avatar) return undefined;
-  if (!isENSNFTRecord(avatar)) {
-    return avatar.startsWith('http') || isDirectImagePath(avatar) ? avatar : undefined;
-  }
-
-  const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
-  const token = uniqueTokens.find(nft => isLowerCaseMatch(nft.contractAddress, contractAddress) && isLowerCaseMatch(nft.tokenId, tokenId));
-  return token?.images?.highResUrl || token?.images?.lowResUrl || undefined;
-}
-
-export function isENSNFTRecord(avatar?: string) {
-  return avatar?.includes('eip155:1');
-}
-
-/**
- * @description Converts the ENS NFT record string to a unique token metadata object
- */
-export function parseENSNFTRecord(record: string) {
-  const [standard, contractAddress, tokenId] = record.replace('eip155:1/', '').split(/[:/]+/);
-  return {
-    contractAddress,
-    standard,
-    tokenId,
-  };
-}
-
-/**
- * @description Converts an unique token/NFT to a format that is compatible with
- * ENS NFT images
- */
-export function stringifyENSNFTRecord({
-  contractAddress,
-  tokenId,
-  standard,
-}: {
-  contractAddress: string;
-  tokenId: string;
-  standard: string;
-}) {
-  return `eip155:1/${standard.toLowerCase()}:${contractAddress}/${tokenId}`;
-}
 
 /**
  * @description Checks if an ENS name is valid
