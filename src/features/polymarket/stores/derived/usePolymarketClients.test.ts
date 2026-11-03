@@ -3,17 +3,15 @@ import { Wallet } from 'ethers';
 import { getAddress } from 'viem';
 import { describe, expect, it, vi } from 'vitest';
 
-import { getPolymarketWalletDescriptor, type PolymarketWalletDescriptor } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import {
+  getPolymarketWalletDescriptor,
+  usePolymarketWalletStore,
+  type PolymarketWalletDescriptor,
+} from '@/features/polymarket/stores/polymarketWalletKindStore';
 import { createPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 
 import { getPolymarketWallet, usePolymarketClients } from './usePolymarketClients';
-
-type ReadWalletStore = (
-  store: unknown,
-  selector: (state: { getData: () => PolymarketWalletDescriptor }) => unknown,
-  equality?: unknown
-) => unknown;
 
 vi.mock('@polymarket/builder-relayer-client', () => ({ RelayClient: vi.fn() }));
 
@@ -26,32 +24,19 @@ vi.mock('@polymarket/clob-client-v2', () => ({
   }),
 }));
 
-vi.mock('@storesjs/stores', () => ({
-  createDerivedStore: (derive: (read: ReadWalletStore) => unknown) => {
-    const state = derive((_store, selector) =>
-      selector({
-        getData: () => ({
-          address: '0x0000000000000000000000000000000000000002',
-          kind: 'safe',
-          owner: '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf',
-          signatureType: 2,
-        }),
-      })
-    );
-    return { getState: () => state };
-  },
-}));
-
 vi.mock('@/features/polymarket/constants', () => ({
   BUILDER_CONFIG: {},
   POLYMARKET_CLOB_PROXY_URL: 'https://clob.test',
   POLYMARKET_RELAYER_PROXY_URL: 'https://relayer.test',
 }));
 
-vi.mock('@/features/polymarket/stores/polymarketWalletKindStore', () => ({
-  usePolymarketWalletStore: {},
-  getPolymarketWalletDescriptor: vi.fn(),
-}));
+vi.mock('@/features/polymarket/stores/polymarketWalletKindStore', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  return {
+    usePolymarketWalletStore: createBaseStore(() => ({ getData: (): PolymarketWalletDescriptor | null => null })),
+    getPolymarketWalletDescriptor: vi.fn(),
+  };
+});
 
 vi.mock('@/features/polymarket/utils/polymarketRelayChain', () => ({
   getPolymarketRelayChain: vi.fn(() => ({})),
@@ -73,12 +58,20 @@ const wallet: PolymarketWallet = {
   execute: vi.fn(),
 };
 
+const activeDescriptor: PolymarketWalletDescriptor = {
+  address: wallet.address,
+  kind: 'safe',
+  owner: getAddress(signer.address),
+  signatureType: 2,
+};
+
 const mockCreatePolymarketWallet = vi.mocked(createPolymarketWallet);
 const mockLoadWallet = vi.mocked(loadWallet);
 const mockRelayClient = vi.mocked(RelayClient);
 
 describe('usePolymarketClients', () => {
   it('reuses the authenticated signer while rejecting other accounts before and after initialization', async () => {
+    usePolymarketWalletStore.setState({ getData: () => activeDescriptor });
     mockCreatePolymarketWallet.mockResolvedValue(wallet);
     const otherSigner = new Wallet('0x0000000000000000000000000000000000000000000000000000000000000002');
     const { getWallet, getClobClient } = usePolymarketClients.getState();
@@ -107,17 +100,18 @@ describe('usePolymarketClients', () => {
     const address = '0x0000000000000000000000000000000000000003';
     const descriptor = { owner: getAddress(originalSigner.address), address, kind: 'safe', signatureType: 2 } as const;
     vi.mocked(getPolymarketWalletDescriptor).mockReturnValueOnce(lookup.promise);
-    vi.spyOn(usePolymarketClients, 'getState').mockReturnValueOnce({ proxyAddress: null, getWallet: null, getClobClient: null });
+    usePolymarketWalletStore.setState({ getData: () => null });
     mockLoadWallet.mockResolvedValueOnce(originalSigner);
     mockCreatePolymarketWallet.mockResolvedValueOnce({ address, execute: vi.fn() });
 
     const pending = getPolymarketWallet(address);
     expect(getPolymarketWalletDescriptor).toHaveBeenCalledWith(descriptor.owner);
     selectedOwner = signer.address;
-    expect(usePolymarketClients.getState().proxyAddress).toBe(wallet.address);
+    usePolymarketWalletStore.setState({ getData: () => activeDescriptor });
     lookup.resolve(descriptor);
 
     await expect(pending).resolves.toMatchObject({ address });
+    expect(usePolymarketClients.getState().proxyAddress).toBe(wallet.address);
     expect(mockLoadWallet).toHaveBeenLastCalledWith(expect.objectContaining({ address: descriptor.owner }));
     expect(mockCreatePolymarketWallet).toHaveBeenLastCalledWith(descriptor, expect.anything());
   });
