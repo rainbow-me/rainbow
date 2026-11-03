@@ -38,8 +38,6 @@
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
-		AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */; };
-		AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */; };
 		AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */; };
 		AA170DB02E4FA5AB00DB8A97 /* baggy@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */; };
 		AA170DB12E4FA5AB00DB8A97 /* baggy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */; };
@@ -287,8 +285,6 @@
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
-		AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Semibold.otf"; path = "../src/assets/fonts/SF-Mono-Semibold.otf"; sourceTree = "<group>"; };
-		AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Bold.otf"; path = "../src/assets/fonts/SF-Mono-Bold.otf"; sourceTree = "<group>"; };
 		AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
 		AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "baggy@2x.png"; sourceTree = "<group>"; };
 		AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "baggy@3x.png"; sourceTree = "<group>"; };
@@ -796,8 +792,6 @@
 		DCAC1D8CC45E468FBB7E1395 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */,
-				AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */,
 				AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */,
 				AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */,
 				AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */,
@@ -1014,7 +1008,6 @@ Upload Debug Symbols to Sentry */,
 				B597E7C22B8E9E18004782B6 /* farcaster@3x.png in Resources */,
 				152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
-				AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				B54C1D162935A54F007560D9 /* zora@3x.png in Resources */,
 				152A3A6B2D0BD28E00E70431 /* redacted@2x.png in Resources */,
@@ -1024,7 +1017,6 @@ Upload Debug Symbols to Sentry */,
 				B5CC6D382A78732A0037D5A3 /* poolboy@2x.png in Resources */,
 				15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
-				AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */,
 				B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */,
 				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
 				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,

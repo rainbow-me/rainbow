@@ -10,6 +10,7 @@
 #   or approximated corner geometry is added; earlier iOS retains the scalar path.
 #   Paper skips ending a refresh while the control is detached. End it when the
 #   control returns to the window so the indicator doesn't remain stuck.
+#   Paper needs ui-monospace to select the system SF Mono at the requested weight.
 # Upstream Issue (corners): none filed yet. Paper's unequal-radius raster paths use
 #   circular arcs; UIKit 26 native inner-border coverage differs with rendered subviews.
 # Linear Issue (corners): FEPLAT-97
@@ -17,7 +18,29 @@
 #   on migration to Fabric after verifying the equivalent rendering paths.
 # Remove refresh-control changes when: upstream applies refreshing=false after
 #   the control returns to the window.
+# Remove font changes when: the active iOS renderer supports ui-monospace natively.
 
+diff --git a/node_modules/react-native/React/Views/RCTFont.mm b/node_modules/react-native/React/Views/RCTFont.mm
+--- a/node_modules/react-native/React/Views/RCTFont.mm
++++ b/node_modules/react-native/React/Views/RCTFont.mm
+@@ -420,5 +420,6 @@
+   // Handle system font as special case. This ensures that we preserve
+   // the specific metrics of the standard system font as closely as possible.
+-  if ([familyName isEqual:defaultFontFamily] || [familyName isEqualToString:@"System"] ||
++  BOOL isSystemMonospace = [familyName isEqualToString:@"ui-monospace"];
++  if (isSystemMonospace || [familyName isEqual:defaultFontFamily] || [familyName isEqualToString:@"System"] ||
+       [familyName isEqualToString:@"SystemCondensed"]) {
+     font = cachedSystemFont(fontSize, fontWeight);
+@@ -437,4 +438,9 @@
+         fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+         font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
++      }
++
++      if (isSystemMonospace) {
++        UIFontDescriptor *descriptor = [font.fontDescriptor fontDescriptorWithDesign:UIFontDescriptorSystemDesignMonospaced];
++        font = [UIFont fontWithDescriptor:descriptor size:fontSize];
+       }
+     }
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m

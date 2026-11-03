@@ -51,11 +51,11 @@ export const fonts = {
 
   SFMono: {
     regular: {
-      fontFamily: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Regular',
+      fontFamily: Platform.OS === 'ios' ? 'ui-monospace' : 'SF-Mono-Regular',
       fontWeight: Platform.OS === 'ios' ? fontWeights.regular : 'normal',
     },
     medium: {
-      fontFamily: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Medium',
+      fontFamily: Platform.OS === 'ios' ? 'ui-monospace' : 'SF-Mono-Medium',
       fontWeight: Platform.OS === 'ios' ? fontWeights.medium : 'normal',
     },
   },
