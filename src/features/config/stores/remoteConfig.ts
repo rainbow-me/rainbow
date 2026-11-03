@@ -106,6 +106,7 @@ export interface RainbowConfig extends Record<string, unknown> {
   spot_pnl_enabled: boolean;
   top_holders_enabled: boolean;
   top_holders_wallet_filter: { categories: string[]; excludedLabels: string[] };
+  token_search_v2_enabled: boolean;
 }
 
 const Bips = {
@@ -251,6 +252,7 @@ export const DEFAULT_CONFIG = {
     categories: ['NORMIE'],
     excludedLabels: ['BOT', 'MEV_BOT', 'BRIDGE', 'DEX'],
   },
+  token_search_v2_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 export type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

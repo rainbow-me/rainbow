@@ -39,6 +39,7 @@ export const GO_RELAY_BACKEND = 'Go Relay Backend';
 export const SOLANA = 'Solana';
 export const SPOT_PNL = 'Spot P&L';
 export const TOP_HOLDERS = 'Top Holders';
+export const TOKEN_SEARCH_V2 = 'Token Search V2';
 
 export type ExperimentalValue = {
   settings: boolean;
@@ -82,6 +83,7 @@ const config = {
   [SOLANA]: { settings: true, value: false },
   [SPOT_PNL]: { settings: true, value: false },
   [TOP_HOLDERS]: { settings: true, value: false },
+  [TOKEN_SEARCH_V2]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
