@@ -2,12 +2,13 @@ import { memo } from 'react';
 
 import { Box, Separator, Text, TextIcon, useColorMode } from '@/design-system';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
-import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
 import * as i18n from '@/languages';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export const OpenPositionsSection = memo(function OpenPositionsSection({ eventId, eventColor }: { eventId: string; eventColor: string }) {
   const { isDarkMode } = useColorMode();
-  const positions = usePolymarketPositionsStore(state => state.getEventPositions(eventId));
+  const positions = usePolymarketPositions(state => state.positions.filter(position => position.eventId === eventId), shallowEqual);
 
   if (positions.length === 0) return null;
 

@@ -22,10 +22,10 @@ const DELAY = time.seconds(1);
 
 export async function waitForPositionSizeUpdate(tokenId: string): Promise<void> {
   try {
-    const initialSize = polymarketPositionsActions.getPosition(tokenId)?.size ?? 0;
+    const initialSize = polymarketPositionsActions.getData()?.[tokenId]?.size ?? 0;
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
       await polymarketPositionsActions.fetch(undefined, { force: true });
-      const position = polymarketPositionsActions.getPosition(tokenId);
+      const position = polymarketPositionsActions.getData()?.[tokenId];
       const currentSize = position?.size ?? 0;
       if (currentSize !== initialSize) {
         await usePolymarketBalanceStore.getState().fetch(undefined, { force: true });

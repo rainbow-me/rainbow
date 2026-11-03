@@ -50,6 +50,14 @@ export type PolymarketPosition = {
   teams?: PolymarketTeamInfo[];
 };
 
+export type PolymarketPositionsByAsset = Record<string, PolymarketPosition>;
+
+/** Token and USD amounts represented by one matched or expected order fill. */
+export type PolymarketOrderAmounts = {
+  tokens: string;
+  usd: string;
+};
+
 export type SuccessfulOrderResult = OrderResponse & {
   success: true;
 };
