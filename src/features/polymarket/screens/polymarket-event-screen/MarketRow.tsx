@@ -26,7 +26,8 @@ type MarketRowProps = {
   title: string;
   volume?: string;
   isResolutionInReview?: boolean;
-  tokenId: string;
+  tokenId: string | undefined;
+  disabled?: boolean;
   price: string;
   minTickSize: number;
   onPress: () => void;
@@ -44,6 +45,7 @@ export const MarketRow = memo(function MarketRow({
   volume,
   isResolutionInReview,
   tokenId,
+  disabled,
   price,
   minTickSize,
   onPress,
@@ -54,12 +56,10 @@ export const MarketRow = memo(function MarketRow({
   const shouldShowPriceChange = priceChange !== undefined && Math.abs(priceChange) >= 0.01;
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
 
-  const liveTokenId = getPolymarketTokenId(tokenId, 'sell');
-
   const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
 
   const livePrice = useLiveTokenValue({
-    tokenId: liveTokenId,
+    tokenId: tokenId ? getPolymarketTokenId(tokenId, 'sell') : undefined,
     fallback: price ? formatLivePrice(price) : '0',
     format: formatLivePrice,
   });
@@ -75,7 +75,7 @@ export const MarketRow = memo(function MarketRow({
   }, [accentColor]);
 
   return (
-    <ButtonPressAnimation scaleTo={0.95} onPress={onPress}>
+    <ButtonPressAnimation disabled={disabled} scaleTo={0.95} onPress={onPress}>
       <GradientBorderView
         borderGradientColors={
           isDarkMode ? [accentColors.opacity0, accentColors.opacity6] : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']

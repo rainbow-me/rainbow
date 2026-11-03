@@ -57,6 +57,8 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
           );
         }
 
+        const tokenId = market.clobTokenIds[index];
+
         return (
           <MarketRow
             key={outcome}
@@ -65,7 +67,8 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
             priceChange={0}
             title={outcomeTitles?.[index] ?? outcome}
             isResolutionInReview={getMarketResolution(market) === 'in_review'}
-            tokenId={market.clobTokenIds[index]}
+            disabled={!tokenId}
+            tokenId={tokenId}
             price={market.outcomePrices[index]}
             minTickSize={market.orderPriceMinTickSize}
             onPress={() => {
