@@ -1,5 +1,10 @@
 import { POLYMARKET_DATA_API_URL, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { type PolymarketMarket, type PolymarketVersion, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import {
+  type GammaMarket,
+  type PolymarketMarket,
+  type PolymarketVersion,
+  type RawPolymarketMarket,
+} from '@/features/polymarket/types/polymarket-event';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 
 /** Gamma event and market lists default to CTF markets. */
@@ -8,6 +13,19 @@ export function gammaMarketsUrl(path: 'events' | 'markets'): URL {
   url.searchParams.append('version', 'v1');
   url.searchParams.append('version', 'v2');
   return url;
+}
+
+export function parseGammaMarket(
+  { outcomes, outcomePrices, clobTokenIds, positionIds, ...market }: RawPolymarketMarket,
+  parseArray: (json: string) => string[] = JSON.parse
+): GammaMarket {
+  const labels = outcomes ? parseArray(outcomes) : [];
+
+  return Object.assign(market, {
+    outcomes: labels,
+    outcomePrices: outcomePrices ? parseArray(outcomePrices) : [],
+    clobTokenIds: getMarketTokenIds({ version: market.version, clobTokenIds, positionIds }, labels),
+  });
 }
 
 /** Returns CLOB asset IDs in outcome order. Never substitute one ledger's IDs for the other's. */

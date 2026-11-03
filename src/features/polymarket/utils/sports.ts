@@ -1,11 +1,10 @@
 import { nullObject } from '@storesjs/stores';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
-import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { getGammaLeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketGameMetadata, type PolymarketTeamInfo, type RawPolymarketTeamInfo } from '@/features/polymarket/types';
-import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
@@ -219,6 +218,6 @@ function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInf
   });
 }
 
-export function isDrawMarket(market: PolymarketMarket | GammaMarket): boolean {
+export function isDrawMarket(market: Pick<RawPolymarketMarket, 'slug' | 'question'>): boolean {
   return market.slug.includes('-draw') || market.question.toLowerCase().includes('draw');
 }

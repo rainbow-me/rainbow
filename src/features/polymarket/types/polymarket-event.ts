@@ -227,12 +227,14 @@ export type RawPolymarketMarket = {
   eventStartTime: string;
 };
 
-export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
+export type GammaMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionIds' | 'outcomes' | 'outcomePrices'> & {
   /** Trading IDs in outcome order: CTF token IDs for v1, PositionManager IDs for v2. */
   clobTokenIds: string[];
   outcomes: string[];
   outcomePrices: string[];
-  events: PolymarketMarketEvent[];
+};
+
+export type PolymarketMarket = GammaMarket & {
   color: ResponseByTheme<string>;
   secondaryColor: ResponseByTheme<string> | undefined;
 };
@@ -410,6 +412,8 @@ export type RawPolymarketEvent = {
   homeTeamName?: string;
   awayTeamName?: string;
 };
+
+export type GammaEvent = Omit<RawPolymarketEvent, 'markets'> & { markets: GammaMarket[] };
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];
