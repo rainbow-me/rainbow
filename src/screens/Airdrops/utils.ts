@@ -7,7 +7,6 @@ import { TransactionStatus, type NewTransaction } from '@/entities/transactions'
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { buildGasParams, weiToGwei } from '@/features/gas/core/gasParams';
-import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { type LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
@@ -15,6 +14,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { safeBigInt } from '@/framework/core/utils/safeBigInt';
 import { time } from '@/framework/core/utils/time';
 import { getProvider, toHex } from '@/handlers/web3';
 import { formatNumber, multiply } from '@/helpers/utilities';

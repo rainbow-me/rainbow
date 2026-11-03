@@ -9,14 +9,13 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { weiToGwei } from '@/features/gas/core/gasParams';
-import { useCustomGasSettings, type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { formatGasFeeRange } from '@/features/gas/core/formatGasFee';
+import { useCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/features/gas/utils/meteorology';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -99,21 +98,6 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
   );
 }
 
-function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
-  if (!gasSettings) return undefined;
-
-  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
-
-  const { maxBaseFee, maxPriorityFee } = gasSettings;
-  const maxFee = formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)));
-
-  if (!currentBaseFee) return `${maxFee} Gwei`;
-
-  const minFee = formatNumber(weiToGwei(add(currentBaseFee, maxPriorityFee)));
-
-  return `${minFee} - ${maxFee} Gwei`;
-}
-
 function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
   if (!obj) return [];
   return Object.keys(obj) as T[];
@@ -166,7 +150,7 @@ const GasMenu = ({
     const menuItems = menuOptions.map(gasOption => {
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
       const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions?.[gasOption];
-      const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
+      const subtitle = formatGasFeeRange(gasSettings, currentBaseFee);
 
       return {
         actionKey: gasOption,

@@ -2,12 +2,12 @@ import { memo, useEffect, useMemo } from 'react';
 
 import { formatUnits } from 'viem';
 
-import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { safeBigInt } from '@/framework/core/utils/safeBigInt';
 import { time } from '@/framework/core/utils/time';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

@@ -10,7 +10,6 @@ import { analytics } from '@/analytics';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { buildGasParams, weiToGwei } from '@/features/gas/core/gasParams';
-import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
@@ -18,6 +17,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
+import { safeBigInt } from '@/framework/core/utils/safeBigInt';
 import { getProvider } from '@/handlers/web3';
 import {
   convertAmountToBalanceDisplay,

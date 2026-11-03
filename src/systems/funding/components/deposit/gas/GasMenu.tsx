@@ -4,11 +4,9 @@ import { Platform } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box } from '@/design-system';
-import { weiToGwei } from '@/features/gas/core/gasParams';
-import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { formatGasFeeRange } from '@/features/gas/core/formatGasFee';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
-import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useDepositContext } from '@/systems/funding/contexts/DepositContext';
 
@@ -31,7 +29,7 @@ export function GasMenu({ children, onSelectGasSpeed }: { children: ReactNode; o
     const menuItems = menuOptions.map(gasOption => {
       const gasSettings = metereologySuggestions?.[gasOption];
       const currentBaseFee = gasSettings?.isEIP1559 ? gasSettings.maxBaseFee : undefined;
-      const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
+      const subtitle = formatGasFeeRange(gasSettings, currentBaseFee);
 
       return {
         actionKey: gasOption,
@@ -68,19 +66,4 @@ function keys<const T extends string>(obj: Record<T, unknown> | undefined): T[] 
     keys.push(key);
   }
   return keys;
-}
-
-function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
-  if (!gasSettings) return undefined;
-
-  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
-
-  const { maxBaseFee, maxPriorityFee } = gasSettings;
-  const maxFee = formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)));
-
-  if (!currentBaseFee) return `${maxFee} Gwei`;
-
-  const minFee = formatNumber(weiToGwei(add(currentBaseFee, maxPriorityFee)));
-
-  return `${minFee} - ${maxFee} Gwei`;
 }

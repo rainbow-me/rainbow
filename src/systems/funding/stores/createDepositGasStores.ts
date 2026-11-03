@@ -1,12 +1,10 @@
 import { createDerivedStore, createQueryStore, type InferStoreState } from '@storesjs/stores';
-import { formatUnits, type Address } from 'viem';
+import { type Address } from 'viem';
 
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { type NativeCurrencyKey } from '@/features/currency/types';
-import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
-import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/core/gasParams';
-import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
+import { formatGasFee } from '@/features/gas/core/formatGasFee';
+import { buildGasParams, gweiToWei } from '@/features/gas/core/gasParams';
 import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
@@ -15,7 +13,6 @@ import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
-import { formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
@@ -38,7 +35,7 @@ import {
 } from '../types';
 import { isValidQuote } from '../utils/quotes';
 import { computeMaxSwappableAmount } from './createDepositStore';
-import { createExternalTokenStore, type FormattedExternalAsset } from './createExternalTokenStore';
+import { createExternalTokenStore } from './createExternalTokenStore';
 
 // ============ Types ========================================================= //
 
@@ -194,8 +191,9 @@ export function createDepositGasStores(
       const currency = $(userAssetsStoreManager, s => s.currency);
       const nativeNetworkAsset = $(useNativeAssetStore, s => s.getData());
 
-      if (!gasLimit || !gasSettings) return;
-      return calculateGasFee(gasSettings, gasLimit, currency, nativeNetworkAsset);
+      if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
+      const fee = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
+      return formatGasFee(fee, nativeNetworkAsset.decimals, nativeNetworkAsset.price.value, currency);
     },
     { lockDependencies: true }
   );
@@ -431,26 +429,4 @@ function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositG
     [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
     [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
   };
-}
-
-// ============ Gas Fee Calculation =========================================== //
-
-function calculateGasFee(
-  gasSettings: GasSettings,
-  gasLimit: string,
-  currency: NativeCurrencyKey,
-  nativeNetworkAsset: FormattedExternalAsset | null | undefined
-): string | undefined {
-  if (!nativeNetworkAsset?.price) return;
-
-  const gasFee = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
-  if (isNaN(Number(gasFee))) return;
-
-  const nativeAssetPrice = nativeNetworkAsset.price.value?.toString();
-  if (!nativeAssetPrice) return `${formatNumber(weiToGwei(gasFee))} Gwei`;
-
-  const formattedFee = formatUnits(safeBigInt(gasFee), nativeNetworkAsset.decimals).toString();
-  const feeInNativeCurrency = multiply(nativeAssetPrice, formattedFee);
-
-  return convertAmountToNativeDisplayWorklet(feeInNativeCurrency, currency, true);
 }

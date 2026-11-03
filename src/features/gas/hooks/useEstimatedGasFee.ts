@@ -1,25 +1,13 @@
 import { useMemo } from 'react';
 
-import { formatUnits } from 'viem';
-
-import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { formatNumber, multiply } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 
-import { weiToGwei } from '../core/gasParams';
+import { formatGasFee } from '../core/formatGasFee';
 import { calculateEstimatedGasFeeWorklet } from '../utils/calculateGasFee';
 import { useBaseFee } from '../utils/meteorology';
 import { type GasSettings } from './useCustomGas';
-
-export function safeBigInt(value: string) {
-  try {
-    return BigInt(value);
-  } catch {
-    return 0n;
-  }
-}
 
 export function useEstimatedGasFee({
   chainId,
@@ -38,16 +26,6 @@ export function useEstimatedGasFee({
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
     const gasFee = calculateEstimatedGasFeeWorklet(gasSettings, gasLimit, currentBaseFee);
-    if (isNaN(Number(gasFee))) {
-      return;
-    }
-
-    const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
-    if (!networkAssetPrice) return `${formatNumber(weiToGwei(gasFee))} Gwei`;
-
-    const feeFormatted = formatUnits(safeBigInt(gasFee), nativeNetworkAsset.decimals).toString();
-    const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
-
-    return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
+    return formatGasFee(gasFee, nativeNetworkAsset.decimals, nativeNetworkAsset.price.value, nativeCurrency);
   }, [currentBaseFee, gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
 }
