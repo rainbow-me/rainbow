@@ -1,5 +1,6 @@
 import { RelayerTransactionState, type RelayerTransaction, type RelayerTransactionResponse } from '@polymarket/builder-relayer-client';
 
+import { PolymarketTransactionFailedError } from '@/features/polymarket/errors';
 import { RainbowError } from '@/logger';
 
 /**
@@ -22,10 +23,10 @@ export async function waitForRelayerSettlement(response: RelayerTransactionRespo
 
 export function assertRelayerTransactionAccepted({ state }: Pick<RelayerTransactionResponse, 'state'>, description: string): void {
   if (state === RelayerTransactionState.STATE_FAILED) {
-    throw new RainbowError(`[polymarket] ${description} failed`);
+    throw new PolymarketTransactionFailedError(`[polymarket] ${description} failed`);
   }
 
   if (state === RelayerTransactionState.STATE_INVALID) {
-    throw new RainbowError(`[polymarket] ${description} rejected as invalid`);
+    throw new PolymarketTransactionFailedError(`[polymarket] ${description} rejected as invalid`);
   }
 }

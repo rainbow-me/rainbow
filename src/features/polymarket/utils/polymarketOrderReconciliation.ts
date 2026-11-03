@@ -6,7 +6,7 @@ import { collectPolymarketTradeFee, type SettlementTransactionHashes } from '@/f
 import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { ensureError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
 // ============ Types ========================================================== //
@@ -16,7 +16,7 @@ export type MatchedOrderMetadata = {
   marketSlug: string;
   outcome: string;
   estimatedFeeAmountUsd?: number | string;
-  quotedTradeFeeUsd: number | string;
+  quotedTradeFeeUsd: string;
   bestPriceUsd: number | string;
   orderPriceUsd: number | string;
   spread?: number | string;
@@ -72,7 +72,11 @@ export async function reconcileAcceptedPolymarketOrder({
 
   trackMatchedOrderAnalytics(context, match.amounts);
 
-  await feeCollection;
+  try {
+    await feeCollection;
+  } catch (error) {
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error reconciling accepted order', ensureError(error)));
+  }
 }
 
 async function pollForMatchedOrder(

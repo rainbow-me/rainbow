@@ -15,6 +15,11 @@ describe('polymarketTradeFee', () => {
     expect(calculateTradeFeeUsd({ notionalUsd: '99', price: '0.99' })).toBe('0.1386');
   });
 
+  it('reserves fees at collectible collateral precision', () => {
+    expect(calculateTradeFeeUsd({ notionalUsd: '1.23456789', price: '0.5' })).toBe('0.037037');
+    expect(calculateTradeFeeUsd({ notionalUsd: '0.00003', price: '0.5' })).toBe('0');
+  });
+
   it('calculates the fee to collect from matched amounts and the quoted fee', () => {
     expect(calculateFeeToCollectUsd({ matchedAmounts: { tokens: '100', usd: '90' }, quotedFeeUsd: '2' })).toBe('1.26');
     expect(calculateFeeToCollectUsd({ matchedAmounts: { tokens: '100', usd: '90' }, quotedFeeUsd: '1' })).toBe('1');
