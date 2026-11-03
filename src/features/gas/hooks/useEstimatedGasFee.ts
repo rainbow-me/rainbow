@@ -8,9 +8,9 @@ import { formatNumber, multiply } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 
+import { weiToGwei } from '../core/gasParams';
 import { calculateEstimatedGasFeeWorklet } from '../utils/calculateGasFee';
 import { useBaseFee } from '../utils/meteorology';
-import { weiToGwei } from '../utils/parseGas';
 import { type GasSettings } from './useCustomGas';
 
 export function safeBigInt(value: string) {

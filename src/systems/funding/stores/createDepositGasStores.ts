@@ -5,6 +5,7 @@ import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/core/gasParams';
 import { safeBigInt } from '@/features/gas/hooks/useEstimatedGasFee';
 import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -12,7 +13,6 @@ import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee'
 import { rainbowMeteorologyGetData } from '@/features/gas/utils/gasFees';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
-import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { formatNumber, multiply } from '@/helpers/utilities';

@@ -8,13 +8,13 @@ import { isZero } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
+import { gweiToWei } from '../core/gasParams';
 import { type GasSettings } from '../hooks/useCustomGas';
 import { type MeteorologyLegacyResponse, type MeteorologyResponse } from '../types/gas';
 import { GasSpeed } from '../types/gasSpeed';
 import { rainbowMeteorologyGetData } from './gasFees';
 import { isLegacyMeteorologyFeeData } from './meteorologyClassification';
 import { mockMeteorologyData } from './meteorologyMock';
-import { gweiToWei } from './parseGas';
 
 // Query Types
 

@@ -11,6 +11,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { gweiToWei, weiToGwei } from '@/features/gas/core/gasParams';
 import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getSelectedGas, getSelectedSpeedSuggestion, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
@@ -24,7 +25,6 @@ import {
   useMeteorologySuggestion,
   useMeteorologySuggestions,
 } from '@/features/gas/utils/meteorology';
-import { gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { add, formatNumber, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import * as i18n from '@/languages';

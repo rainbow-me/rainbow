@@ -13,6 +13,7 @@ import { type AppDispatch, type AppGetState } from '@/redux/store';
 import ethUnits from '@/references/ethereum-units.json';
 import ethereumUtils from '@/utils/ethereumUtils';
 
+import { weiToGwei } from '../core/gasParams';
 import type {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -39,7 +40,6 @@ import {
   parseL2GasPrices,
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
-  weiToGwei,
 } from '../utils/parseGas';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;

@@ -19,12 +19,13 @@ import Routes from '@/navigation/routesNames';
 import { gasTrendToTrendType, type CurrentBaseFeeTypeKey, type ExplainSheetRouteParams, type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
 
+import { gweiToWei } from '../core/gasParams';
 import useFeesPanelInputRefs from '../hooks/useFeesPanelInputRefs';
 import useGas from '../hooks/useGas';
 import gasUtils from '../utils/gas';
 import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '../utils/gasHelpers';
 import { useChainSupportsPriorityFee } from '../utils/meteorology';
-import { gweiToWei, parseGasFeeParam } from '../utils/parseGas';
+import { parseGasFeeParam } from '../utils/parseGas';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
