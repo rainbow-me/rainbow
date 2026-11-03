@@ -163,6 +163,13 @@ describe('toSearchAsset', () => {
     expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE)], ...token }), NATIVE_ASSET_BY_CHAIN)).toBeNull();
   });
 
+  it.each([
+    { name: 'a caution-level token', risk: { level: 'RISK_LEVEL_CAUTION' as const } },
+    { name: 'a token with no risk', risk: undefined },
+  ])('keeps $name', ({ risk }) => {
+    expect(toSearchAsset(item({ risk, instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ASSET_BY_CHAIN)).not.toBeNull();
+  });
+
   it('drops an item that is not a token', () => {
     expect(toSearchAsset({ id: 'perp:hyperliquid:ETH' }, NATIVE_ASSET_BY_CHAIN)).toBeNull();
   });
@@ -248,6 +255,11 @@ describe('swap results', () => {
     { name: 'address of any deployment', query: '0x' + '4'.repeat(40), expected: ['USDC.E'] },
   ])('keeps verified results on other chains that exactly match by $name', ({ query, expected }) => {
     expect(toCrosschainSearchResults(result, query, ChainId.base, NATIVE_ASSET_BY_CHAIN).map(asset => asset.symbol)).toEqual(expected);
+  });
+
+  it('matches a pasted address against a deployment other than the one the result opens', () => {
+    const results = toCrosschainSearchResults(result, USDC_MAINNET, ChainId.polygon, NATIVE_ASSET_BY_CHAIN);
+    expect(results.map(asset => [asset.symbol, asset.chainId, asset.address])).toEqual([['USDC', ChainId.base, USDC_BASE]]);
   });
 
   it('excludes cross-chain results deployed on the output chain', () => {
