@@ -14,6 +14,13 @@ class Button: RCTView {
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
+      longPress?.isEnabled = !disabled
+      if disabled {
+        invalidated = true
+        isPressEligible = false
+        touchStartInWindow = nil
+        animate(to: .identity, duration: releaseDuration)
+      }
     }
   }
   @objc var duration: TimeInterval = 0.16
@@ -31,13 +38,13 @@ class Button: RCTView {
   @objc var shouldLongPressHoldPress: Bool = false
   @objc var minLongPressDuration: TimeInterval = 0.5
 
-  private var animator: UIViewPropertyAnimator?
   private var blockedUntil: CFTimeInterval = 0
   private var haptic: ButtonHaptic = .selection
   private var invalidated: Bool = false
   private var longPress: UILongPressGestureRecognizer?
-  private var tapLocation: CGPoint?
-  private let touchMoveTolerance: CGFloat = 80
+  private var isPressEligible = false
+  private var touchStartInWindow: CGPoint?
+  private static let pressRetentionOutset: CGFloat = 20
 
   private var releaseDuration: TimeInterval {
     pressOutDuration == -1 ? duration : pressOutDuration
@@ -64,6 +71,7 @@ class Button: RCTView {
       } else {
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
         recognizer.minimumPressDuration = minLongPressDuration
+        recognizer.isEnabled = !disabled
         addGestureRecognizer(recognizer)
         longPress = recognizer
       }
@@ -77,7 +85,7 @@ class Button: RCTView {
     switch sender.state {
     case .began:
       onLongPress?([:])
-    case .ended:
+    case .ended, .cancelled:
       if shouldLongPressHoldPress {
         onLongPressEnded?([:])
         animate(to: .identity, duration: releaseDuration)
@@ -88,14 +96,10 @@ class Button: RCTView {
   }
 
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    if let touch = touches.first {
-      tapLocation = touch.location(in: self)
-    }
-    if CACurrentMediaTime() < blockedUntil {
-      invalidated = true
-      return
-    }
-    invalidated = false
+    invalidated = CACurrentMediaTime() < blockedUntil
+    isPressEligible = !invalidated
+    touchStartInWindow = invalidated ? nil : touches.first?.location(in: nil)
+    if invalidated { return }
     if !useLateHaptic && enableHapticFeedback {
       haptic.generate()
     }
@@ -109,13 +113,13 @@ class Button: RCTView {
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard !invalidated, let touch = touches.first else { return }
-    let location = touch.location(in: self)
-    if animator?.isRunning ?? false { return }
-
-    if !touchInRange(location, tolerance: touchMoveTolerance) {
-      animate(to: .identity, duration: duration)
-    } else if touchInRange(location, tolerance: touchMoveTolerance * 0.8) {
+    let eligible = isTouchWithinPressRegion(touch)
+    guard eligible != isPressEligible else { return }
+    isPressEligible = eligible
+    if eligible {
       animatePress()
+    } else {
+      animate(to: .identity, duration: duration)
     }
   }
 
@@ -127,7 +131,9 @@ class Button: RCTView {
     }
     guard let touch = touches.first else { return }
 
-    if touchInRange(touch.location(in: self), tolerance: touchMoveTolerance * 0.8) {
+    if isTouchWithinPressRegion(touch) {
+      isPressEligible = false
+      touchStartInWindow = nil
       if useLateHaptic && enableHapticFeedback {
         haptic.generate()
       }
@@ -145,14 +151,19 @@ class Button: RCTView {
 
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     if invalidated { return }
-    if let onCancel = onCancel, let touch = touches.first, let tapLocation = tapLocation {
-      let location = touch.location(in: self)
+    isPressEligible = false
+    let start = touchStartInWindow
+    touchStartInWindow = nil
+    if let onCancel = onCancel, let touch = touches.first, let start = start {
+      let location = touch.location(in: nil)
       onCancel([
-        "close": abs(location.x - tapLocation.x) <= 5 && abs(location.y - tapLocation.y) <= 5,
+        "close": abs(location.x - start.x) <= 5 && abs(location.y - start.y) <= 5,
         "state": (longPress?.state ?? .cancelled).rawValue
       ])
     }
-    if !shouldLongPressHoldPress {
+    // The long-press recognizer cancels view touches when it takes ownership.
+    let longPressIsActive = longPress?.state == .began || longPress?.state == .changed
+    if !shouldLongPressHoldPress || !longPressIsActive {
       animate(to: .identity, duration: releaseDuration)
     }
     if throttle {
@@ -168,20 +179,28 @@ class Button: RCTView {
 
   private func animate(to target: CGAffineTransform, duration: TimeInterval) {
     guard transform != target else { return }
-    let nextAnimator = UIViewPropertyAnimator(
+    let animator = UIViewPropertyAnimator(
       duration: duration,
       controlPoint1: CGPoint(x: 0.25, y: 0.46),
       controlPoint2: CGPoint(x: 0.45, y: 0.94)
     ) {
       self.transform = target
     }
-    nextAnimator.startAnimation()
-    animator = nextAnimator
+    animator.startAnimation()
   }
 
-  private func touchInRange(_ location: CGPoint, tolerance: CGFloat) -> Bool {
-    guard let tapLocation = tapLocation else { return false }
-    return abs(location.x - tapLocation.x) <= tolerance && abs(location.y - tapLocation.y) <= tolerance
+  private func isTouchWithinPressRegion(_ touch: UITouch) -> Bool {
+    let location = touch.location(in: self)
+    let anchor = CGPoint(
+      x: bounds.minX + bounds.width * layer.anchorPoint.x,
+      y: bounds.minY + bounds.height * layer.anchorPoint.y
+    )
+    // Remove the button's feedback transform from touch coordinates
+    let offset = CGPoint(x: location.x - anchor.x, y: location.y - anchor.y).applying(transform)
+    let restingLocation = CGPoint(x: anchor.x + offset.x, y: anchor.y + offset.y)
+    let hitRect = bounds.inset(by: hitTestEdgeInsets)
+    let margin = isPressEligible ? Self.pressRetentionOutset : 0
+    return hitRect.insetBy(dx: -margin, dy: -margin).contains(restingLocation)
   }
 
   private func ancestorScrollViewRecognizedPan() -> Bool {
