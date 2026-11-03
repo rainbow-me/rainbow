@@ -1,5 +1,6 @@
 import { gammaMarketsUrl, getMarketTokenIds } from '@/features/polymarket/utils/marketProtocol';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { omitFlatten } from '@/helpers/utilities';
 
 import { type GammaEvent, type GammaEventRaw, type GammaMarket, type GammaMarketRaw } from '../types';
 
@@ -22,8 +23,9 @@ function parseJsonArray<T>(str: string | T[]): T[] {
 
 function parseMarket(raw: GammaMarketRaw): GammaMarket {
   const outcomes = parseJsonArray<string>(raw.outcomes);
+
   return {
-    ...raw,
+    ...omitFlatten(raw, 'positionIds'),
     clobTokenIds: getMarketTokenIds(raw, outcomes),
     outcomes,
     outcomePrices: parseJsonArray<string>(raw.outcomePrices),

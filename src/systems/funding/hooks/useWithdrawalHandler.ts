@@ -117,11 +117,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
     withdrawalActions.setIsSubmitting(true);
     const targetChainId = params.chainInfo?.chainId;
 
-    let prerequisiteCompleted = false;
     try {
-      if (config.prerequisite) await config.prerequisite();
-      prerequisiteCompleted = true;
-
       const result = await config.executor(params);
 
       if (!result.success) {
@@ -154,7 +150,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
       config.trackFailure?.({
         amount,
         error: message,
-        stage: prerequisiteCompleted ? 'execution' : 'prerequisite',
+        stage: 'execution',
         targetChainId,
       });
       Alert.alert('Error Withdrawing', message);

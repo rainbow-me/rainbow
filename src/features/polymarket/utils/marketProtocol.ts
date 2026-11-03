@@ -16,15 +16,24 @@ export function getMarketTokenIds(
   outcomes: string[]
 ): string[] {
   let ids: unknown;
-  if (market.version === 'v2') ids = market.positionIds;
-  else if (market.version === 'v1' && market.clobTokenIds) {
+  if (market.version === 'v2') {
+    ids = market.positionIds;
+  } else if (market.version === 'v1' && market.clobTokenIds) {
     try {
       ids = JSON.parse(market.clobTokenIds);
     } catch {
       return [];
     }
   }
-  return Array.isArray(ids) && ids.length === outcomes.length && ids.every(id => typeof id === 'string' && /^\d+$/.test(id)) ? ids : [];
+
+  if (!Array.isArray(ids) || ids.length !== outcomes.length) return [];
+  if (!ids.every(isPolymarketTokenId)) return [];
+
+  return ids;
+}
+
+export function isPolymarketTokenId(value: unknown): value is string {
+  return typeof value === 'string' && /^\d+$/.test(value);
 }
 
 export function getMarketResolution(market: Pick<RawPolymarketMarket, 'version' | 'umaResolutionStatus' | 'resolutionStatus'>) {
@@ -42,18 +51,14 @@ export type HeldPolymarketToken = {
 /** A market migration changes its tradable IDs, but does not convert tokens the wallet already owns. */
 export async function getHeldTokenVersion({ asset, market }: HeldPolymarketToken): Promise<PolymarketVersion> {
   if ((market.version === 'v1' || market.version === 'v2') && market.clobTokenIds.includes(asset)) return market.version;
-  const { data } = await rainbowFetch<{ data: { token_id: string; module: string }[] }>(`${POLYMARKET_DATA_API_URL}/tokens`, {
+
+  const { data: lookup } = await rainbowFetch<{ data: { token_id: string; module: string }[] }>(`${POLYMARKET_DATA_API_URL}/tokens`, {
     params: { token_id: asset },
   });
-  const token = data.data.find(token => token.token_id === asset);
-  switch (token?.module) {
-    case 'v1_ctf':
-      return 'v1';
-    case 'binary':
-    case 'neg_risk':
-    case 'directional':
-      return 'v2';
-    default:
-      throw new Error('Unknown Polymarket position ledger');
-  }
+  const module = lookup.data.find(token => token.token_id === asset)?.module;
+
+  if (module === 'v1_ctf') return 'v1';
+  if (module === 'binary' || module === 'neg_risk' || module === 'directional') return 'v2';
+
+  throw new Error('Unknown Polymarket position ledger');
 }

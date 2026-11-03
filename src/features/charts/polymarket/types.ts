@@ -1,7 +1,7 @@
 import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
-// ============ Animation Types ================================================ //
-
 import { type ResponseByTheme } from '@/theme/types';
+
+// ============ Animation Types ================================================ //
 
 export enum EntranceAnimation {
   /** Lines draw in from left to right, revealing with round cap at leading edge */

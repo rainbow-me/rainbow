@@ -91,6 +91,8 @@ it.each([Side.BUY, Side.SELL])('grants only the V2 approval needed to %s', async
   vi.spyOn(client, 'updateBalanceAllowance').mockResolvedValue();
   orderWallet.execute.mockImplementation(executeBatch);
   await ensureTradingApprovals(client, orderWallet, 'v2', side);
+
+  expect(client.updateBalanceAllowance).not.toHaveBeenCalled();
   const batch = executeBatch.mock.calls[0][0];
   expect(batch).toHaveLength(1);
   const [{ to, data }] = batch;

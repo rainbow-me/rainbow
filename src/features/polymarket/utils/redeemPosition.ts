@@ -61,25 +61,24 @@ export async function redeemPosition(position: RedemptionPosition): Promise<Conf
 async function buildRedeemTransactions(position: RedemptionPosition): Promise<SafeTransaction[]> {
   if ((await getHeldTokenVersion(position)) === 'v1') {
     const adapter = position.negativeRisk ? POLYMARKET_NEG_RISK_CTF_COLLATERAL_ADAPTER_ADDRESS : POLYMARKET_CTF_COLLATERAL_ADAPTER_ADDRESS;
-    return [
-      ...(await getMissingOperatorApproval(position.proxyWallet, POLYMARKET_CTF_ADDRESS, adapter)),
-      buildCtfRedeemTransaction(position.conditionId, adapter),
-    ];
+    const approvals = await getMissingOperatorApproval(position.proxyWallet, POLYMARKET_CTF_ADDRESS, adapter);
+
+    return [...approvals, buildCtfRedeemTransaction(position.conditionId, adapter)];
   }
 
   const positionId = BigInt(position.asset);
-  const outcomeIndex = positionId & 255n;
+  const conditionId = toHex(positionId >> 8n, { size: 31 });
+  const outcomeIndex = positionId & 0xffn;
+
   if (outcomeIndex > 1n) throw new Error('Unsupported redemption outcome');
-  const [balance, approvals] = await Promise.all([
-    getProvider({ chainId: ChainId.polygon }).call({
-      to: POLYMARKET_POSITION_MANAGER,
-      data: encodeFunctionData({ abi: erc1155Abi, functionName: 'balanceOf', args: [position.proxyWallet, positionId] }),
-    }),
+
+  const [amount, approvals] = await Promise.all([
+    getPositionBalance(position.proxyWallet, positionId),
     getMissingOperatorApproval(position.proxyWallet, POLYMARKET_POSITION_MANAGER, POLYMARKET_ROUTER),
   ]);
-  if (!isHex(balance)) throw new Error('Invalid PositionManager balance');
-  const amount = decodeFunctionResult({ abi: erc1155Abi, functionName: 'balanceOf', data: balance });
-  if (!amount) throw new Error('No position to redeem');
+
+  if (amount === 0n) throw new Error('No position to redeem');
+
   return [
     ...approvals,
     {
@@ -88,11 +87,21 @@ async function buildRedeemTransactions(position: RedemptionPosition): Promise<Sa
       data: encodeFunctionData({
         abi: parseAbi(['function redeem(bytes31 conditionId, uint256 outcomeIndex, uint256 amount)']),
         functionName: 'redeem',
-        args: [toHex(positionId >> 8n, { size: 31 }), outcomeIndex, amount],
+        args: [conditionId, outcomeIndex, amount],
       }),
       value: '0',
     },
   ];
+}
+
+async function getPositionBalance(owner: Address, positionId: bigint): Promise<bigint> {
+  const balance = await getProvider({ chainId: ChainId.polygon }).call({
+    to: POLYMARKET_POSITION_MANAGER,
+    data: encodeFunctionData({ abi: erc1155Abi, functionName: 'balanceOf', args: [owner, positionId] }),
+  });
+
+  if (!isHex(balance)) throw new Error('Invalid PositionManager balance');
+  return decodeFunctionResult({ abi: erc1155Abi, functionName: 'balanceOf', data: balance });
 }
 
 function trackRedeemPosition({ position, tx }: { position: RedemptionPosition; tx: ConfirmedRedemption }) {

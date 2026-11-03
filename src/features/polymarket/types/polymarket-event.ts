@@ -227,7 +227,7 @@ export type RawPolymarketMarket = {
   eventStartTime: string;
 };
 
-export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
+export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
   /** Trading IDs in outcome order: CTF token IDs for v1, PositionManager IDs for v2. */
   clobTokenIds: string[];
   outcomes: string[];

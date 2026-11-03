@@ -39,6 +39,11 @@ it('reads a v2 position using entry cost and unrealized P&L for the open holding
   const url = new URL(String(fetch.mock.calls[0][0]));
   expect(url.origin + url.pathname).toBe('https://data-api.polymarket.com/v2/positions');
   expect(Object.fromEntries(url.searchParams)).toMatchObject({ user: address, filter_amount: '1' });
+
+  for (const key of ['sort_by', 'sortBy']) {
+    expect(url.searchParams.get(key) ?? 'CURRENT_VALUE').toBe('CURRENT_VALUE');
+  }
+
   expect(result?.positions).toMatchObject([
     {
       proxyWallet: address,

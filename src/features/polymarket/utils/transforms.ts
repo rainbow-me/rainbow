@@ -13,12 +13,14 @@ import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
 import { getMarketTokenIds } from '@/features/polymarket/utils/marketProtocol';
+import { omitFlatten } from '@/helpers/utilities';
 import { type ResponseByTheme } from '@/theme/types';
 
 export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   const outcomes: string[] = market.outcomes ? JSON.parse(market.outcomes) : [];
+
   return {
-    ...market,
+    ...omitFlatten(market, 'positionIds'),
     clobTokenIds: getMarketTokenIds(market, outcomes),
     outcomes,
     outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],

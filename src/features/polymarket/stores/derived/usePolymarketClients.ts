@@ -3,7 +3,7 @@ import { RelayClient } from '@polymarket/builder-relayer-client';
 import { Chain, ClobClient } from '@polymarket/clob-client-v2';
 import { createDerivedStore } from '@storesjs/stores';
 import { Wallet } from 'ethers';
-import { getAddress, type Address } from 'viem';
+import { getAddress, isAddressEqual, type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
 import {
@@ -71,17 +71,21 @@ export async function getPolymarketWallet(holder?: Address): Promise<PolymarketW
 }
 
 async function getExecutionClients(holder?: Address) {
-  let clients = usePolymarketClients.getState();
-  if (!clients.proxyAddress) {
-    const owner = useWalletsStore.getState().accountAddress;
-    if (!owner) throw new RainbowError('[Polymarket] Wallet is unavailable');
-    const descriptor = await getPolymarketWalletDescriptor(owner);
-    const loaded = usePolymarketClients.getState();
-    clients = loaded.proxyAddress === descriptor.address ? loaded : createClients(descriptor);
-  }
-  if (holder && getAddress(holder) !== getAddress(clients.proxyAddress))
-    throw new RainbowError('[Polymarket] Trading wallet does not match the requested account');
-  return clients;
+  const active = usePolymarketClients.getState();
+  const clients = active.proxyAddress ? active : await loadClientsForSelectedAccount();
+
+  if (!holder || isAddressEqual(holder, clients.proxyAddress)) return clients;
+  throw new RainbowError('[Polymarket] Trading wallet does not match the requested account');
+}
+
+async function loadClientsForSelectedAccount() {
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[Polymarket] Wallet is unavailable');
+
+  const descriptor = await getPolymarketWalletDescriptor(owner);
+  const active = usePolymarketClients.getState();
+
+  return active.proxyAddress === descriptor.address ? active : createClients(descriptor);
 }
 
 // ============ Lazy Values ===================================================== //

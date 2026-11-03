@@ -7,7 +7,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { type PolymarketVersion } from '@/features/polymarket/types/polymarket-event';
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
-import { getHeldTokenVersion, type HeldPolymarketToken } from '@/features/polymarket/utils/marketProtocol';
+import { getHeldTokenVersion, isPolymarketTokenId, type HeldPolymarketToken } from '@/features/polymarket/utils/marketProtocol';
 import { reconcileAcceptedPolymarketOrder, type MatchedOrderMetadata } from '@/features/polymarket/utils/polymarketOrderReconciliation';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
@@ -56,6 +56,7 @@ export async function executePolymarketBuyPosition({
   onStep,
 }: ExecutePolymarketBuyPositionParams): Promise<SuccessfulOrderResult> {
   const routing = getOrderRouting(tokenId, version, negRisk);
+
   onStep?.('preparing');
 
   const { clobClient: client, wallet } = await getPolymarketOrderClients();
@@ -79,6 +80,7 @@ export async function executePolymarketBuyPosition({
   onStep?.('placing_order');
 
   await client.updateBalanceAllowance({ asset_type: AssetType.COLLATERAL });
+
   const spendCap = Number(amount);
   const userBalance = Number(usePolymarketBalanceStore.getState().getBalance(wallet.address));
 
@@ -93,6 +95,7 @@ export async function executePolymarketBuyPosition({
     routing.options,
     OrderType.FOK
   );
+
   const orderResult = resolveSuccessfulOrderResult(result);
 
   void reconcileAcceptedPolymarketOrder({
@@ -123,6 +126,7 @@ export async function executePolymarketSellPosition({
 
   const version = await getHeldTokenVersion(position);
   const routing = getOrderRouting(position.asset, version, position.negativeRisk);
+
   await ensureTradingApprovals(client, wallet, version, Side.SELL);
   await client.updateBalanceAllowance({
     asset_type: version === 'v2' ? 'CONDITIONAL-V2' : AssetType.CONDITIONAL,
@@ -139,6 +143,7 @@ export async function executePolymarketSellPosition({
     routing.options,
     OrderType.FOK
   );
+
   const orderResult = resolveSuccessfulOrderResult(result);
 
   void reconcileAcceptedPolymarketOrder({
@@ -158,9 +163,11 @@ export async function executePolymarketSellPosition({
 // ============ Execution Helpers ============================================= //
 
 function getOrderRouting(id: string, version: PolymarketVersion, negRisk: boolean) {
-  if (!/^\d+$/.test(id)) throw new RainbowError('[polymarket] Invalid trading asset ID');
+  if (!isPolymarketTokenId(id)) throw new RainbowError('[polymarket] Invalid trading asset ID');
+
   if (version === 'v1') return { asset: { tokenID: id }, options: { version: 2, negRisk } } as const;
   if (version === 'v2') return { asset: { positionID: id } } as const;
+
   throw new RainbowError('[polymarket] Unsupported market version');
 }
 

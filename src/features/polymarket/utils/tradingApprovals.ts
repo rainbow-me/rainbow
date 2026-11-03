@@ -64,10 +64,13 @@ async function getTradingApprovals(owner: Address, version: PolymarketVersion, s
       spender,
       tokenAddress: POLYMARKET_PUSD_ADDRESS,
     });
-  if (version === 'v2')
+
+  if (version === 'v2') {
     return side === Side.BUY
       ? approvePusd(POLYMARKET_EXCHANGE_V3)
       : getMissingOperatorApproval(owner, POLYMARKET_POSITION_MANAGER, POLYMARKET_EXCHANGE_V3);
+  }
+
   return (
     await Promise.all([
       ...CTF_OPERATORS.map(approvePusd),
@@ -94,5 +97,5 @@ export async function ensureTradingApprovals(
   await waitForRelayerTransaction(await wallet.execute(transactions, description), description);
   logger.debug('[polymarket] Approvals set successfully');
 
-  await syncClobCollateralBalance(clobClient);
+  if (version === 'v1' && side === Side.SELL) await syncClobCollateralBalance(clobClient);
 }

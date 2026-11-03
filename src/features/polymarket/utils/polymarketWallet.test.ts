@@ -1,3 +1,5 @@
+import { setImmediate } from 'node:timers/promises';
+
 import {
   OperationType,
   RelayerTransactionState,
@@ -15,13 +17,19 @@ describe('createPolymarketWallet', () => {
     const client = createClient({ isDeployed: false });
     const descriptor = createDescriptor('0x0000000000000000000000000000000000000001');
 
-    const wallet = await createPolymarketWallet(descriptor, client);
+    const settlement = Promise.withResolvers<RelayerTransaction>();
+    client.waitForSettlement.mockReturnValueOnce(settlement.promise);
 
-    expect(client.getDeployed).toHaveBeenCalledTimes(1);
+    const execution = createPolymarketWallet(descriptor, client).then(wallet => wallet.execute([], 'test execution'));
+    await setImmediate();
+
     expect(client.deploy).toHaveBeenCalledTimes(1);
     expect(client.waitForSettlement).toHaveBeenCalledTimes(1);
+    expect(client.execute).not.toHaveBeenCalled();
 
-    await wallet.execute([], 'test execution');
+    settlement.resolve(createTransaction());
+    await execution;
+
     expect(client.execute).toHaveBeenCalledWith([], 'test execution');
   });
 

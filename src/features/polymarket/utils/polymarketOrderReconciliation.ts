@@ -54,8 +54,10 @@ export async function reconcileAcceptedPolymarketOrder({
 }): Promise<void> {
   const amounts = getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
   const transactionHashes = toSettlementTransactionHashes(orderResult.transactionsHashes);
+
   const match =
     amounts && transactionHashes ? { amounts, transactionHashes } : await pollForMatchedOrder(client, orderResult, context, amounts);
+
   if (!match) return;
 
   const feeCollection = collectPolymarketTradeFee({
@@ -67,7 +69,9 @@ export async function reconcileAcceptedPolymarketOrder({
     tokenId: context.tokenId,
     wallet,
   });
+
   trackMatchedOrderAnalytics(context, match.amounts);
+
   await feeCollection;
 }
 

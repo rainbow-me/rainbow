@@ -806,13 +806,6 @@ export type WithdrawalExecutorParams = {
 export type WithdrawalExecutor = (params: WithdrawalExecutorParams) => Promise<WithdrawalExecutionResult>;
 
 /**
- * Optional async prerequisite that runs before transaction submission.
- * Use for setup like deploying proxy wallets or pre-approving tokens.
- * Errors thrown here abort the withdrawal with an error alert.
- */
-export type WithdrawalPrerequisite = () => Promise<void>;
-
-/**
  * Metadata passed to the withdrawal success callback.
  */
 export type WithdrawalSuccessMetadata = {
@@ -831,7 +824,7 @@ export type WithdrawalFailureMetadata = {
   /** Internal error message */
   error: string;
   /** Point in the flow where failure occurred */
-  stage: 'execution' | 'prerequisite' | 'validation';
+  stage: 'execution' | 'validation';
   /** Target chain, if available */
   targetChainId?: ChainId;
 };
@@ -868,7 +861,6 @@ export type WithdrawalFailureMetadata = {
  *   },
  *
  *   executor: executeWithdrawal,
- *   prerequisite: ensureProxyDeployed,
  *   refresh: { delays: [0, 30000], handler: refetchStores },
  * };
  * ```
@@ -897,9 +889,6 @@ export type WithdrawalConfig<TBalanceStore extends BalanceQueryStore> = {
 
   /** Info card displayed above the slider */
   infoCard?: WithdrawalInfoCardConfig;
-
-  /** Async setup before execution (e.g., deploy proxy wallet) */
-  prerequisite?: WithdrawalPrerequisite;
 
   /** Store refresh after confirmation */
   refresh?: RefreshConfig;

@@ -30,6 +30,3 @@ export class PolymarketBuyPositionError extends RainbowError {
     this.reason = reason;
   }
 }
-
-/** An explicit relay rejection or on-chain revert. */
-export class PolymarketTransactionFailedError extends RainbowError {}

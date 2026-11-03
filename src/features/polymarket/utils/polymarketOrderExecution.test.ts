@@ -176,8 +176,8 @@ describe('executePolymarketOrder', () => {
     });
   });
 
-  it('resolves settlement hashes before collecting when an immediate match omits them', async () => {
-    let resolveTrades!: (trades: { id: string; status: string; transaction_hash: string }[]) => void;
+  it('collects on the accepted fill after its settlement hash becomes available', async () => {
+    const trades = Promise.withResolvers<{ id: string; status: string; transaction_hash: string }[]>();
     mockCreateAndPostMarketOrder.mockResolvedValue(
       createOrderResult({
         makingAmount: '5',
@@ -188,15 +188,11 @@ describe('executePolymarketOrder', () => {
     );
     mockGetOrder.mockResolvedValue({
       associate_trades: ['trade-1'],
-      price: '0.5',
+      price: '0.55',
       size_matched: '10',
       status: 'matched',
     });
-    mockGetTrades.mockReturnValueOnce(
-      new Promise(resolve => {
-        resolveTrades = resolve;
-      })
-    );
+    mockGetTrades.mockReturnValueOnce(trades.promise);
 
     await executePolymarketBuyPosition(buyOrder);
     await flushPromises();
@@ -204,10 +200,12 @@ describe('executePolymarketOrder', () => {
     expect(mockGetTrades).toHaveBeenCalledWith({ id: 'trade-1' }, true);
     expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
 
-    resolveTrades([{ id: 'trade-1', status: 'confirmed', transaction_hash: '0xsettlement' }]);
+    trades.resolve([{ id: 'trade-1', status: 'confirmed', transaction_hash: '0xsettlement' }]);
     await flushPromises();
 
-    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith(expect.objectContaining({ settlementTransactionHashes: ['0xsettlement'] }));
+    expect(mockCollectPolymarketTradeFee).toHaveBeenCalledWith(
+      expect.objectContaining({ matchedAmounts: { tokens: '10', usd: '5' }, settlementTransactionHashes: ['0xsettlement'] })
+    );
   });
 
   it('wraps existing Polygon USDC before placing a buy order', async () => {

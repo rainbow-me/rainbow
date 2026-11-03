@@ -21,48 +21,30 @@ export type PolymarketWallet = {
   execute(transactions: SafeTransaction[], description: string): Promise<RelayerTransactionResponse>;
 };
 
-type PolymarketWalletImplementation = PolymarketWallet & {
-  deploy(): Promise<RelayerTransactionResponse>;
-  isDeployed(): Promise<boolean>;
-};
-
 type PolymarketWalletClient = Pick<RelayClient, 'deploy' | 'deployDepositWallet' | 'execute' | 'executeDepositWalletBatch' | 'getDeployed'>;
 
 export async function createPolymarketWallet(
-  descriptor: PolymarketWalletDescriptor,
+  { address, kind }: PolymarketWalletDescriptor,
   client: PolymarketWalletClient
 ): Promise<PolymarketWallet> {
-  const wallet = descriptor.kind === 'depositWallet' ? createDepositWallet(descriptor, client) : createSafeWallet(descriptor, client);
+  const isDepositWallet = kind === 'depositWallet';
+  const deployed = await client.getDeployed(address, isDepositWallet ? TransactionType.WALLET : undefined);
 
-  if (!(await wallet.isDeployed())) {
-    await waitForRelayerSettlement(await wallet.deploy(), 'wallet deployment');
+  if (!deployed) {
+    const deployment = isDepositWallet ? await client.deployDepositWallet() : await client.deploy();
+    await waitForRelayerSettlement(deployment, 'wallet deployment');
   }
 
   return {
-    address: wallet.address,
+    address,
     execute: async (transactions, description) => {
-      const response = await wallet.execute(transactions, description);
+      const response = isDepositWallet
+        ? await client.executeDepositWalletBatch(toDepositWalletCalls(transactions), address, getDepositWalletBatchDeadline())
+        : await client.execute(transactions, description);
+
       assertRelayerTransactionAccepted(response, description);
       return response;
     },
-  };
-}
-
-function createSafeWallet({ address }: PolymarketWalletDescriptor, client: PolymarketWalletClient): PolymarketWalletImplementation {
-  return {
-    address,
-    isDeployed: () => client.getDeployed(address),
-    deploy: () => client.deploy(),
-    execute: (transactions, description) => client.execute(transactions, description),
-  };
-}
-
-function createDepositWallet({ address }: PolymarketWalletDescriptor, client: PolymarketWalletClient): PolymarketWalletImplementation {
-  return {
-    address,
-    isDeployed: () => client.getDeployed(address, TransactionType.WALLET),
-    deploy: () => client.deployDepositWallet(),
-    execute: transactions => client.executeDepositWalletBatch(toDepositWalletCalls(transactions), address, getDepositWalletBatchDeadline()),
   };
 }
 

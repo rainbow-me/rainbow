@@ -99,6 +99,7 @@ async function fetchOrderDetails(params: FetchParams, abortController: AbortCont
 
   const outcomes: string[] = JSON.parse(rawMarket.outcomes);
   const clobTokenIds = getMarketTokenIds(rawMarket, outcomes);
+
   if (clobTokenIds[outcome.outcomeIndex] !== outcome.tokenId) {
     return null;
   }
