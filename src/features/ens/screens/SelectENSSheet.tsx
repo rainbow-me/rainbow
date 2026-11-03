@@ -8,13 +8,13 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { ImgixImage } from '@/components/images';
 import { Sheet } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useTheme } from '@/theme/ThemeContext';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import useAccountENSDomains from '../hooks/useAccountENSDomains';
@@ -85,7 +85,7 @@ export function SelectENSSheet() {
                 </Box>
                 <Box paddingLeft="10px">
                   <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                    {abbreviateEnsForDisplay(item.name ?? '', 25)}
+                    {abbreviateName(item.name ?? '', 25)}
                   </Text>
                 </Box>
               </AccentColorProvider>

@@ -5,6 +5,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
+import { abbreviateName } from '@/features/address/core/formatAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -13,7 +14,6 @@ import { type RootStackParamList } from '@/navigation/types';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
 import { useEnsAddressStore } from '../../data/useEnsAddressStore';
@@ -115,7 +115,7 @@ export function ProfileSheetHeader({
         <Inset horizontal="19px (Deprecated)">
           <Stack space="19px (Deprecated)">
             <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-              {abbreviateEnsForDisplay(ensName)}
+              {abbreviateName(ensName)}
             </Heading>
             <>
               {isLoading ? (

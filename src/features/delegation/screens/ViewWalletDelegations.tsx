@@ -10,6 +10,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
 import { fonts } from '@/design-system/typography/typography';
 import { IS_DEV } from '@/env';
+import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -20,7 +21,6 @@ import { Menu } from '@/screens/SettingsSheet/components/Menu';
 import { MenuContainer } from '@/screens/SettingsSheet/components/MenuContainer';
 import { MenuItem } from '@/screens/SettingsSheet/components/MenuItem';
 import { useTheme } from '@/theme/ThemeContext';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
 import * as ethereumUtils from '@/utils/ethereumUtils';
 import { delegation, useDelegationDisabled, useDelegations, type DelegationWithChainId } from '@rainbow-me/sdk';
 

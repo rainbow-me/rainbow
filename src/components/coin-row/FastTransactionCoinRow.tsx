@@ -7,6 +7,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Inline, Text, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { type RainbowTransaction } from '@/entities/transactions';
+import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -15,7 +16,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
-import { address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
@@ -41,7 +41,7 @@ const BottomRow = React.memo(function BottomRow({
   let description = transaction.description;
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
+    description = transaction.contract?.name || abbreviateAddress(to, 6, 4);
     tag = transaction.description;
   }
 
