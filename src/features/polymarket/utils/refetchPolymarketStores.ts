@@ -6,15 +6,25 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
-export async function refetchPolymarketBalance(address?: Address): Promise<void> {
-  await usePolymarketBalanceStore.getState().fetch(address ? { address } : undefined, { force: true });
+/** Refetches the active or explicitly addressed Polymarket collateral balance. */
+export async function refetchPolymarketBalance(proxyAddress?: Address): Promise<void> {
+  await usePolymarketBalanceStore.getState().fetch(proxyAddress ? { address: proxyAddress } : undefined, {
+    force: true,
+  });
 }
 
-export async function refetchPolymarketStores(): Promise<void> {
-  await Promise.allSettled([
-    polymarketPositionsActions.fetch(undefined, { force: true }),
-    usePolymarketBalanceStore.getState().fetch(undefined, { force: true }),
-  ]);
+function refetchPolymarketPositions(proxyAddress?: Address) {
+  return polymarketPositionsActions.fetch(proxyAddress ? { proxyAddress } : undefined, { force: true });
+}
+
+/** A settlement read supplies the final balance. Refresh positions after it succeeds. */
+export async function refetchPolymarketStores(proxyAddress?: Address, settlementRead?: Promise<boolean>): Promise<void> {
+  if (settlementRead && (await settlementRead)) {
+    await refetchPolymarketPositions(proxyAddress);
+    return;
+  }
+
+  await Promise.allSettled([refetchPolymarketPositions(proxyAddress), refetchPolymarketBalance(proxyAddress)]);
 }
 
 const MAX_ATTEMPTS = 30;
