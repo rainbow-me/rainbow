@@ -13,7 +13,7 @@ tags:
 - tapOn:
     id: watch-address-button
 - tapOn: 'Enter an Ethereum address or ENS name'
-- inputText: 'rainbowtestwallet.eth'
+- inputText: 'rainbowwallet.eth'
 - tapOn: 'Continue'
 - tapOn: 'Import Wallet'
 - runFlow: ../../utils/MaybeSetupPin.yaml
