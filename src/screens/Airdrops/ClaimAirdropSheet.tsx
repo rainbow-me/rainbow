@@ -622,14 +622,14 @@ export async function fetchAndSetEnsData({
           }
           resolved = true;
           ensOrAddress.value = name;
-          const avatar = await useEnsImageStore
-            .getState()
-            .load({ name, field: 'avatar' })
-            .catch(() => null);
-          const sizedImageUrl = avatar ? getSizedImageUrl(avatar, 16) : null;
-          avatarUrl.value = sizedImageUrl || null;
+
+          const images = useEnsImageStore.getState();
+          const input = { name, field: 'avatar' } as const;
+          let avatar = images.get(input);
+          if (avatar === undefined) avatar = await images.load(input).catch(() => null);
+
+          avatarUrl.value = getSizedImageUrl(avatar, 16) || null;
           if (timeoutId) clearTimeout(timeoutId);
-          return;
         }),
       timeoutPromise.then(() => {
         if (resolved) return;
