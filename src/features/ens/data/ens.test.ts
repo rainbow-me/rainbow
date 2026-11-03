@@ -17,7 +17,8 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
-import { ETHEREUM_COIN_TYPE, readEnsRecords, readEnsText, resolveEnsAddress, resolveEnsName } from './ens';
+import { ETHEREUM_COIN_TYPE } from '../core/records';
+import { readEnsRecords, readEnsText, resolveEnsAddress, resolveEnsName } from './ens';
 
 type RpcFailure = { code: number; message: string; data?: Hex | { data: Hex } };
 type RpcCall = { id: number; method: string; params: [{ to: Address; data: Hex }, string] };

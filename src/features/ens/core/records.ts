@@ -1,5 +1,10 @@
 import type { Records } from '../types/registration';
 
+/**
+ * ENS coin type for Ethereum address records.
+ */
+export const ETHEREUM_COIN_TYPE = 60;
+
 export enum ENS_RECORDS {
   ETH = 'ETH',
   BTC = 'BTC',

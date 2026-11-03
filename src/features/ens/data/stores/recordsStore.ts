@@ -1,12 +1,12 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import contentHash from '@ensdomains/content-hash';
 
-import { ETHEREUM_COIN_TYPE, readEnsRecords, type EnsRecordKeys } from '@/features/ens/data/ens';
+import { readEnsRecords, type EnsRecordKeys } from '@/features/ens/data/ens';
 import { time } from '@/framework/core/utils/time';
 import { ensClient } from '@/graphql';
 import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
-import { ENS_RECORDS } from '../../core/records';
+import { ENS_RECORDS, ETHEREUM_COIN_TYPE } from '../../core/records';
 import type { Records } from '../../types/registration';
 
 // ============ Types ========================================================== //

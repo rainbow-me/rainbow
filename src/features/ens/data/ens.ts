@@ -1,39 +1,15 @@
 import { nullObject } from '@storesjs/stores';
-import * as AbiError from 'ox/AbiError';
 import * as AbiFunction from 'ox/AbiFunction';
-import {
-  BaseError,
-  ccipReadTunnel,
-  ccipRequest,
-  concat,
-  ContractFunctionRevertedError,
-  createClient,
-  encodeAbiParameters,
-  getAddress,
-  http,
-  isAddressEqual,
-  isHex,
-  offchainLookupAbiItem,
-  offchainLookupSignature,
-  parseAbi,
-  RpcRequestError,
-  size,
-  toHex,
-  zeroAddress,
-  type Address,
-  type Client,
-  type Hex,
-  type Transport,
-} from 'viem';
-import { call, getEnsAddress, getEnsName, getEnsText, readContract, type CallParameters, type CallReturnType } from 'viem/actions';
+import { BaseError, ContractFunctionRevertedError, getAddress, parseAbi, size, toHex, zeroAddress, type Address, type Hex } from 'viem';
+import { getEnsAddress, getEnsName, getEnsText, readContract } from 'viem/actions';
 import { mainnet } from 'viem/chains';
 import { namehash, packetToBytes, toCoinType } from 'viem/ens';
 
-import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { time } from '@/framework/core/utils/time';
 
 import { normalizeEnsName } from '../core/name';
+import { ETHEREUM_COIN_TYPE } from '../core/records';
+import { withEnsClient, type EnsClient } from './client';
 
 // ============ Types ========================================================== //
 
@@ -55,22 +31,9 @@ type EnsRecords = {
   contentHash: Hex | null;
 };
 
-type EnsClient = Client<Transport, typeof mainnet>;
-
 // ============ Constants ====================================================== //
 
-/**
- * ENS coin type for Ethereum, read through the legacy addr(bytes32) record.
- */
-export const ETHEREUM_COIN_TYPE = 60;
-
-const BATCH_GATEWAYS = ['https://ccip-v3.ens.xyz'];
-const LOOKUP_TIMEOUT_MS = time.seconds(15);
-const MAX_CCIP_LOOKUPS = 8;
-
 const ABI_WORD_BYTES = 32;
-const ABI_ENCODE_PARAMS = [{ type: 'bytes' }, { type: 'bytes' }] as const;
-const OFFCHAIN_LOOKUP_ERROR = AbiError.from(offchainLookupAbiItem);
 
 const COIN_ADDRESS_RECORD = AbiFunction.from('function addr(bytes32 node, uint256 coinType) view returns (bytes)');
 const CONTENT_HASH_RECORD = AbiFunction.from('function contenthash(bytes32 node) view returns (bytes)');
@@ -98,7 +61,7 @@ const UNIVERSAL_RESOLVER_ABI = parseAbi([
 export async function resolveEnsAddress(name: string, chainId: ChainId, signal?: AbortSignal): Promise<Address | null> {
   const normalizedName = normalizeEnsName(name);
   const coinType = chainId === ChainId.mainnet ? undefined : toCoinType(chainId);
-  const address = await withEnsClient(client => getEnsAddress(client, { name: normalizedName, coinType, strict: true }), signal);
+  const address = await readEns(client => getEnsAddress(client, { name: normalizedName, coinType, strict: true }), signal);
   return address === null || coinType === undefined ? address : getAddress(address);
 }
 
@@ -110,7 +73,7 @@ export async function resolveEnsAddress(name: string, chainId: ChainId, signal?:
  */
 export async function resolveEnsName(address: Address, chainId: ChainId, signal?: AbortSignal): Promise<string | null> {
   try {
-    const name = await withEnsClient(client => getEnsName(client, { address, coinType: toCoinType(chainId), strict: true }), signal);
+    const name = await readEns(client => getEnsName(client, { address, coinType: toCoinType(chainId), strict: true }), signal);
     if (name === null) return null;
 
     try {
@@ -129,7 +92,7 @@ export async function resolveEnsName(address: Address, chainId: ChainId, signal?
  */
 export async function readEnsText(name: string, key: string, signal?: AbortSignal): Promise<string | null> {
   const normalizedName = normalizeEnsName(name);
-  return withEnsClient(client => getEnsText(client, { name: normalizedName, key, strict: true }), signal);
+  return readEns(client => getEnsText(client, { name: normalizedName, key, strict: true }), signal);
 }
 
 /**
@@ -156,7 +119,7 @@ export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?:
 
   calls.push(AbiFunction.encodeData(CONTENT_HASH_RECORD, [node]));
 
-  const values = await withEnsClient(client => readRecordBatch(client, dnsName, calls), signal);
+  const values = await readEns(client => readRecordBatch(client, dnsName, calls), signal);
   if (values === null) return null;
 
   const texts: EnsRecords['texts'] = nullObject();
@@ -176,90 +139,15 @@ export async function readEnsRecords(name: string, keys: EnsRecordKeys, signal?:
   return { texts, coins, contentHash: decodeRecord(values[index], decodeContentHash) };
 }
 
-// ============ RPC and CCIP =================================================== //
+// ============ Resolution Outcomes =========================================== //
 
-async function withEnsClient<T>(read: (client: EnsClient) => Promise<T>, signal?: AbortSignal): Promise<T | null> {
-  if (signal?.aborted) throw new Error('ENS lookup cancelled');
-
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  signal?.addEventListener('abort', abort, { once: true });
-  const timeout = setTimeout(abort, LOOKUP_TIMEOUT_MS);
-
+async function readEns<T>(read: (client: EnsClient) => Promise<T>, signal?: AbortSignal): Promise<T | null> {
   try {
-    const base = createClient({
-      chain: mainnet,
-      ccipRead: false,
-      transport: http(backendNetworksActions.getChainDefaultRpc(ChainId.mainnet), { retryCount: 0, timeout: 0 }),
-    });
-
-    const gateway = ccipReadTunnel({
-      batchGateways: BATCH_GATEWAYS,
-      ccipRequest: parameters => ccipRequest({ ...parameters, requestOptions: { signal: controller.signal } }),
-    });
-
-    const client = base.extend(() => ({
-      call: (parameters: CallParameters<typeof mainnet>) => callWithCcip(base, parameters, gateway.request, controller.signal),
-    }));
-
-    return await read(client);
+    return await withEnsClient(read, signal);
   } catch (error) {
     if (hasResolverError(error, 'ResolverNotFound')) return null;
     throw error;
-  } finally {
-    clearTimeout(timeout);
-    signal?.removeEventListener('abort', abort);
   }
-}
-
-/**
- * Completes a contract read through bounded CCIP callbacks.
- *
- * Each gateway reply must pass its contract callback, including the final
- * allowed lookup.
- */
-async function callWithCcip(
-  client: EnsClient,
-  parameters: CallParameters<typeof mainnet>,
-  requestGateway: typeof ccipRequest,
-  signal: AbortSignal
-): Promise<CallReturnType> {
-  let data = parameters.data;
-  const requestOptions = { ...parameters.requestOptions, signal };
-
-  for (let lookups = 0; ; lookups += 1) {
-    if (signal.aborted) throw new Error('ENS lookup cancelled');
-
-    try {
-      return await call(client, { ...parameters, data, requestOptions });
-    } catch (error) {
-      const revertData = getRevertData(error);
-      if (!parameters.to || !revertData?.startsWith(offchainLookupSignature)) throw error;
-
-      const { sender, urls, callData, callbackFunction, extraData } = AbiError.decode(OFFCHAIN_LOOKUP_ERROR, revertData, { as: 'Object' });
-
-      if (!isAddressEqual(sender, parameters.to)) throw new Error('CCIP lookup sender does not match the called contract');
-      if (lookups === MAX_CCIP_LOOKUPS) throw new Error('ENS lookup exceeded its CCIP request limit');
-
-      const response = await requestGateway({ sender, urls, data: callData });
-      data = concat([callbackFunction, encodeAbiParameters(ABI_ENCODE_PARAMS, [response, extraData])]);
-    }
-  }
-}
-
-/**
- * Extracts direct or nested revert bytes from this client's HTTP RPC error.
- */
-function getRevertData(error: unknown): Hex | undefined {
-  if (!(error instanceof BaseError)) return undefined;
-
-  const cause = error.walk(isRpcRequestError);
-  if (!isRpcRequestError(cause)) return undefined;
-
-  const payload = cause.data;
-  const data = payload && typeof payload === 'object' && 'data' in payload ? payload.data : payload;
-
-  return isHex(data, { strict: true }) ? data : undefined;
 }
 
 function hasResolverError(error: unknown, name: string): boolean {
@@ -324,8 +212,4 @@ function decodeContentHash(data: Hex): Hex | null {
 
 function isContractFunctionRevertedError(error: unknown): error is ContractFunctionRevertedError {
   return error instanceof ContractFunctionRevertedError;
-}
-
-function isRpcRequestError(error: unknown): error is RpcRequestError {
-  return error instanceof RpcRequestError;
 }
