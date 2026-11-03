@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -13,7 +13,8 @@ import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { polymarketBalanceActions } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { polymarketPositionsActions, usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
@@ -46,46 +47,71 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
     opacity: 0.4,
   });
 
-  const actionButtonType = useMemo(() => getPositionAction(position), [position]);
+  const isClaim = getPositionAction(position) === PositionAction.CLAIM;
+  const actionButtonLabel = i18n.t(
+    isClaim ? i18n.l.predictions.manage_position.hold_to_claim : i18n.l.predictions.manage_position.hold_to_clear
+  );
+  const actionButtonLoadingLabel = i18n.t(
+    isClaim ? i18n.l.predictions.manage_position.claiming : i18n.l.predictions.manage_position.clearing
+  );
 
-  const actionButtonLabel = useMemo(() => {
-    switch (actionButtonType) {
-      case PositionAction.CLAIM:
-        return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
-      case PositionAction.CLEAR:
-        return i18n.t(i18n.l.predictions.manage_position.hold_to_clear);
-      default:
-        return i18n.t(i18n.l.predictions.manage_position.hold_to_claim);
-    }
-  }, [actionButtonType]);
-
-  const actionButtonLoadingLabel = useMemo(() => {
-    switch (actionButtonType) {
-      case PositionAction.CLAIM:
-        return i18n.t(i18n.l.predictions.manage_position.claiming);
-      case PositionAction.CLEAR:
-        return i18n.t(i18n.l.predictions.manage_position.clearing);
-      default:
-        return i18n.t(i18n.l.predictions.manage_position.claiming);
-    }
-  }, [actionButtonType]);
-
-  const [processingLabel, setProcessingLabel] = useState(actionButtonLoadingLabel);
-
-  const handleClaimPosition = useCallback(async () => {
+  const handleRedeemPosition = useCallback(async () => {
     if (checkIfReadOnlyWallet(getAccountAddress())) return;
     setIsProcessing(true);
-    setProcessingLabel(actionButtonLoadingLabel);
+    const balanceBeforeRedemption = polymarketBalanceActions.getBalanceSnapshot(position.proxyWallet);
+    let redemption: Awaited<ReturnType<typeof redeemPosition>>;
+
     try {
-      await redeemPosition(position);
-      refetchPolymarketStores();
-      Navigation.goBack();
+      redemption = await redeemPosition(position);
     } catch (e) {
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error claiming position', e));
+      logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error redeeming position', e));
       setIsProcessing(false);
       Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_claim));
+      return;
     }
-  }, [position, actionButtonLoadingLabel]);
+
+    try {
+      polymarketPositionsActions.applyExpectedPositionRemoval({ operationId: redemption.transactionId, position });
+      if (isClaim && balanceBeforeRedemption) {
+        polymarketBalanceActions.applyExpectedBalanceDelta({
+          baseline: balanceBeforeRedemption,
+          deltaUsd: String(position.currentValue),
+          operationId: redemption.transactionId,
+          proxyWallet: position.proxyWallet,
+        });
+      }
+    } catch (e) {
+      logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error publishing redeemed position', e));
+    }
+    void redemption.outcome
+      .then(outcome => {
+        if (outcome === 'failed') {
+          polymarketPositionsActions.discardExpectedPosition({
+            asset: position.asset,
+            operationId: redemption.transactionId,
+            proxyAddress: position.proxyWallet,
+          });
+          if (isClaim) {
+            polymarketBalanceActions.discardExpectedBalanceDelta({
+              operationId: redemption.transactionId,
+              proxyWallet: position.proxyWallet,
+            });
+          }
+        }
+
+        const settlementRead =
+          outcome === 'confirmed' && isClaim
+            ? polymarketBalanceActions.finalizeExpectedBalanceDelta({
+                operationId: redemption.transactionId,
+                proxyWallet: position.proxyWallet,
+              })
+            : undefined;
+
+        return refetchPolymarketStores(position.proxyWallet, settlementRead);
+      })
+      .catch(error => logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error refreshing redeemed position', error)));
+    Navigation.goBack();
+  }, [isClaim, position]);
 
   const pnl = position.cashPnl;
   const pnlColor = pnl >= 0 ? green : red;
@@ -123,9 +149,9 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
             borderWidth={2}
             disabledBackgroundColor={'gray'}
             label={actionButtonLabel}
-            processingLabel={processingLabel}
+            processingLabel={actionButtonLoadingLabel}
             isProcessing={isProcessing}
-            onLongPress={handleClaimPosition}
+            onLongPress={handleRedeemPosition}
             showBiometryIcon={false}
             height={48}
             color={'white'}
