@@ -4,6 +4,7 @@ import { getAddress, type Address } from 'viem';
 
 import { Stack } from '@/design-system';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
+import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -12,13 +13,13 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useEnsRegistrationStore } from '../../data/stores/registrationStore';
 import { useEnsNameStore } from '../../data/useEnsNameStore';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
-import { REGISTRATION_MODES } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
 export function ConfigurationSection({
   isLoading,
   ownerAddress,
   registrantAddress,
+  isLegacy,
   isPrimary,
   isProfilesEnabled,
   isExternal,
@@ -31,6 +32,7 @@ export function ConfigurationSection({
   ownerAddress?: Address | null;
   registrantAddress?: string | null;
   isExternal?: boolean;
+  isLegacy?: boolean;
   isPrimary?: boolean;
   isProfilesEnabled?: boolean;
   isSetNameEnabled?: boolean;
@@ -83,8 +85,8 @@ export function ConfigurationSection({
 
           {ownerAddress ? (
             <InfoRow
-              explainSheetType="ens_manager"
-              label={i18n.t(i18n.l.expanded_state.unique_expanded.manager)}
+              explainSheetType={isLegacy ? 'ens_manager' : 'ens_owner'}
+              label={i18n.t(isLegacy ? i18n.l.expanded_state.unique_expanded.manager : i18n.l.expanded_state.unique_expanded.owner)}
               useAccentColor
               value={ownerName || formatAddressForDisplay(ownerAddress, 4, 4) || ''}
             />

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { Inline } from '@/design-system';
-import { useIsReadOnlyWallet, useWallets } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
-import { WatchButton as EditButton } from './EditButton';
+import { useEnsPermissionsStore } from '../../../data/stores/ownershipStores';
+import { EditButton } from './EditButton';
 import { MoreButton } from './MoreButton';
 import { SendButton } from './SendButton';
 import { WatchButton } from './WatchButton';
@@ -17,19 +18,17 @@ export function ActionButtons({
   ensName?: string;
   avatarUrl?: string | null;
 }) {
-  const wallets = useWallets();
+  const account = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
-  const isOwner = useMemo(() => {
-    return Object.values(wallets || {}).some(
-      (wallet: any) => wallet.type !== 'readOnly' && (wallet.addresses || []).some(({ address }: any) => address === primaryAddress)
-    );
-  }, [primaryAddress, wallets]);
+  const canEditRecords = useEnsPermissionsStore(s =>
+    ensName && account && !isReadOnlyWallet ? s.get({ name: ensName, account })?.canEditRecords : false
+  );
 
   return (
     <Inline alignHorizontal="right" space="8px">
       <MoreButton address={primaryAddress} ensName={ensName} />
-      {isOwner ? (
+      {canEditRecords ? (
         <EditButton ensName={ensName} />
       ) : (
         <>

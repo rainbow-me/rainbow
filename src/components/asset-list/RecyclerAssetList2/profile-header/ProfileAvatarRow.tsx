@@ -11,7 +11,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import useOnAvatarPress from '@/hooks/useOnAvatarPress';
+import { useOnAvatarPress } from '@/hooks/useOnAvatarPress';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';

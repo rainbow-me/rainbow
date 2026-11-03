@@ -1,15 +1,15 @@
 import React, { useCallback } from 'react';
 
+import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 import { useEnsRegistrationStore } from '../../../data/stores/registrationStore';
-import { REGISTRATION_MODES } from '../../../utils/helpers';
 import { ActionButton } from './ActionButton';
 
-export function WatchButton({ ensName }: { ensName?: string }) {
+export function EditButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
 

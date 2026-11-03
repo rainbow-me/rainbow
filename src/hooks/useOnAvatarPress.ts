@@ -9,7 +9,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
-import { useEnsOwnerStore } from '@/features/ens/data/stores/ownershipStores';
+import { useEnsPermissionsStore } from '@/features/ens/data/stores/ownershipStores';
 import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
@@ -32,14 +32,16 @@ type UseOnAvatarPressProps = {
   screenType?: 'wallet' | 'transaction';
 };
 
-export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
+export function useOnAvatarPress({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) {
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const accountAsset = useAccountAsset(ETH_ADDRESS);
 
   const profileName = profilesEnabled && accountENS ? accountENS : undefined;
-  const isENSProfile = useEnsOwnerStore(s => s.get(profileName)?.toLowerCase() === accountAddress.toLowerCase());
+  const isENSProfile = useEnsPermissionsStore(
+    s => s.get(profileName ? { name: profileName, account: accountAddress } : undefined)?.canEditRecords ?? false
+  );
   const hasENSAvatar = useEnsImageStore(s => !!s.get(profileName ? { name: profileName, field: 'avatar' } : undefined));
 
   const { openPicker } = useImagePicker();
@@ -286,4 +288,4 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     onAvatarWebProfile,
     onSelectionCallback: callback,
   };
-};
+}

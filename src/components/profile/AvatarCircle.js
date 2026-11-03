@@ -5,7 +5,7 @@ import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import useOnAvatarPress from '@/hooks/useOnAvatarPress';
+import { useOnAvatarPress } from '@/hooks/useOnAvatarPress';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';

@@ -36,8 +36,10 @@ import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInf
 import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
 import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
 import { ENS_RECORDS } from '@/features/ens/core/records';
-import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
+import { isNameToken } from '@/features/ens/data/ownership';
+import { useEnsPermissionsStore, useEnsRegistrationDateStore } from '@/features/ens/data/stores/ownershipStores';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
+import { useEnsTokenDetails } from '@/features/ens/hooks/useEnsTokenDetails';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
@@ -251,8 +253,15 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS ? asset.name.trim() : '';
-  const ensProfile = useENSProfile(cleanENSName);
-  const ensData = ensProfile.data;
+  const ensProfile = useEnsTokenDetails(cleanENSName);
+  const { records: ensData, ownership } = ensProfile;
+  const matchesName = isENS && isNameToken(ownership, asset);
+  const registry = ownership?.version === 2 ? ownership.token.contractAddress : undefined;
+  const registrationInput = ownership ? { name: cleanENSName, registry } : undefined;
+  const registrationDate = useEnsRegistrationDateStore(s => s.get(registrationInput));
+  const registrationSettled = useEnsRegistrationDateStore(s =>
+    registrationInput ? s.hasSettled(registrationInput) : ensProfile.hasOwnershipOutcome
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -371,8 +380,11 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const hasSendButton = asset.isSendable;
   const isParty = asset?.websiteUrl?.includes('party.app');
 
-  const hasEditButton = isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
-  const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
+  const canEditRecords = useEnsPermissionsStore(
+    s => isActionsEnabled && profilesEnabled && matchesName && s.get({ name: cleanENSName, account: accountAddress })?.canEditRecords
+  );
+  const hasEditButton = !!canEditRecords;
+  const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && matchesName && /^[^.]+\.eth$/.test(cleanENSName);
 
   const familyLinkDisplay = useMemo(
     () => (asset.websiteUrl ? new URL(asset.websiteUrl).hostname.replace(/^www\./, '') : null),
@@ -544,11 +556,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={asset.name}
-                              expiryDate={ensData?.registration?.expiryDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)}
+                              expiryDate={ownership?.expiryDate ?? (ensProfile.hasOwnershipOutcome ? null : undefined)}
                               externalAvatarUrl={asset.images.lowResUrl}
-                              registrationDate={
-                                ensData?.registration?.registrationDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)
-                              }
+                              registrationDate={registrationDate ?? (registrationSettled ? null : undefined)}
                               showExtendDuration={hasExtendDurationButton}
                             />
                           )}
@@ -606,13 +616,14 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               externalAvatarUrl={asset.images.lowResUrl}
                               isExternal={external}
                               isLoading={!ensProfile.hasOwnershipOutcome}
+                              isLegacy={ownership?.version === 1}
                               isPrimary={ensProfile?.isPrimaryName}
                               isProfilesEnabled={profilesEnabled}
                               isReadOnlyWallet={isReadOnlyWallet}
-                              isSetNameEnabled={ensProfile?.isSetNameEnabled}
+                              isSetNameEnabled={matchesName && ensProfile.isSetNameEnabled}
                               name={cleanENSName}
-                              ownerAddress={ensData?.owner?.address}
-                              registrantAddress={ensData?.registrant?.address}
+                              ownerAddress={ownership?.owner}
+                              registrantAddress={ownership?.version === 1 ? ownership.registrant : null}
                             />
                           </Section>
                         </>

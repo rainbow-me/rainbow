@@ -42,3 +42,12 @@ query getRegistration($id: ID!) {
     }
   }
 }
+
+query getV2Registration($registry: String!, $labelhash: Bytes!) {
+  ensv2NameSlots(first: 1, where: { registry: $registry, labelhash: $labelhash }) {
+    migratedFromV1
+    currentResource {
+      createdAt
+    }
+  }
+}
