@@ -7,6 +7,7 @@ import '../../../../config/test/storeEnvironment';
 import { analytics } from '@/analytics';
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { getPolymarketOrderClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
+import { createEvent, createMarket, createPosition } from '@/features/polymarket/test/fixtures';
 import { type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
 import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
@@ -41,14 +42,27 @@ vi.mock('@/features/polymarket/stores/derived/usePolymarketClients', () => ({
   getPolymarketOrderClients: vi.fn(async () => ({ clobClient: client, wallet: walletForOrder })),
 }));
 
-vi.mock('@/features/polymarket/utils/refetchPolymarketStores', () => ({ refetchPolymarketBalance: vi.fn() }));
+vi.mock('@/features/polymarket/utils/refetchPolymarketStores', () => ({
+  refetchPolymarketBalance: vi.fn(),
+  refetchPolymarketStores: vi.fn(),
+}));
 
 vi.mock('@/features/polymarket/stores/polymarketBalanceStore', () => ({
+  polymarketBalanceActions: { getBalanceSnapshot: vi.fn(), applyExpectedBalanceDelta: vi.fn(), discardExpectedBalanceDelta: vi.fn() },
   usePolymarketBalanceStore: {
     getState: vi.fn(() => ({ getBalance: () => '100' })),
   },
 }));
 
+vi.mock('@/features/polymarket/stores/polymarketPositionsStore', () => ({
+  polymarketPositionsActions: {
+    beginExpectedBuyPosition: vi.fn(),
+    applyExpectedBuyPosition: vi.fn(),
+    amendExpectedBuyPosition: vi.fn(),
+    applyExpectedPositionRemoval: vi.fn(),
+    discardExpectedPosition: vi.fn(),
+  },
+}));
 vi.mock('@/features/polymarket/utils/collateral', () => ({
   getPolygonUsdcBalance: vi.fn(async () => ({ isZero: () => true })),
   wrapUsdcToPusd: vi.fn(),
@@ -72,14 +86,22 @@ const mockEnsureTradingApprovals = vi.mocked(ensureTradingApprovals);
 const mockGetPolygonUsdcBalance = vi.mocked(getPolygonUsdcBalance);
 const mockWrapUsdcToPusd = vi.mocked(wrapUsdcToPusd);
 
-const buyOrder = {
-  version: 'v1' as const,
-  tokenId: '101',
-  amount: '5',
-  price: '0.5',
-  negRisk: false,
-  matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
-};
+function buyParams() {
+  return {
+    event: createEvent(),
+    market: createMarket(),
+    outcomeIndex: 0,
+    amount: '5',
+    orderQuote: {
+      expectedAmounts: { tokens: '10', usd: '5' },
+      quotedTotalFeeUsd: '0.12',
+      quotedRainbowFeeUsd: '0.1',
+      spread: '0.01',
+      bestPriceUsd: '0.49',
+      orderPriceUsd: '0.5',
+    },
+  };
+}
 
 describe('executePolymarketOrder', () => {
   beforeEach(() => {
@@ -112,7 +134,8 @@ describe('executePolymarketOrder', () => {
         await builder.buildMarketOrder(order, { ...options, tickSize: '0.01' }, options?.version);
         return createOrderResult({ orderID: 'offline-order', status: 'matched', transactionsHashes: ['0xsettlement'] });
       });
-      await executePolymarketBuyPosition({ ...buyOrder, version });
+      const params = buyParams();
+      await executePolymarketBuyPosition({ ...params, market: { ...params.market, version } });
       const [domain, , message] = sign.mock.calls[0];
       expect(domain.version).toBe(domainVersion);
       expect(domain.verifyingContract?.toLowerCase()).toBe(exchange);
@@ -137,7 +160,7 @@ describe('executePolymarketOrder', () => {
       })
     );
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
 
     expect(mockUpdateBalanceAllowance).toHaveBeenCalledWith({ asset_type: AssetType.COLLATERAL });
     expect(mockCreateAndPostMarketOrder).toHaveBeenCalledWith(
@@ -152,8 +175,8 @@ describe('executePolymarketOrder', () => {
       OrderType.FOK
     );
     expect(mockAnalyticsTrack).toHaveBeenCalledWith('predictions.place_order', {
-      eventSlug: 'event',
-      marketSlug: 'market',
+      eventSlug: 'event-slug',
+      marketSlug: 'market-slug',
       outcome: 'Yes',
       orderAmountUsd: 5,
       feeAmountUsd: 0.12,
@@ -194,7 +217,7 @@ describe('executePolymarketOrder', () => {
     });
     mockGetTrades.mockReturnValueOnce(trades.promise);
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
     await flushPromises();
 
     expect(mockGetTrades).toHaveBeenCalledWith({ id: 'trade-1' }, true);
@@ -225,7 +248,7 @@ describe('executePolymarketOrder', () => {
       })
     );
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
 
     expect(mockWrapUsdcToPusd).toHaveBeenCalledWith({
       wallet: walletForOrder,
@@ -237,7 +260,7 @@ describe('executePolymarketOrder', () => {
   it('wraps trading approval failures in buy position errors', async () => {
     mockEnsureTradingApprovals.mockRejectedValueOnce(new Error('approval failed'));
 
-    const promise = executePolymarketBuyPosition(buyOrder);
+    const promise = executePolymarketBuyPosition(buyParams());
 
     await expect(promise).rejects.toThrow(PolymarketBuyPositionError);
     await expect(promise).rejects.toMatchObject({ reason: 'trading_approval_failed' });
@@ -250,7 +273,7 @@ describe('executePolymarketOrder', () => {
     mockGetPolygonUsdcBalance.mockResolvedValueOnce(ethers.BigNumber.from(1));
     mockWrapUsdcToPusd.mockRejectedValueOnce(new Error('wrap failed'));
 
-    const promise = executePolymarketBuyPosition(buyOrder);
+    const promise = executePolymarketBuyPosition(buyParams());
 
     await expect(promise).rejects.toThrow(PolymarketBuyPositionError);
     await expect(promise).rejects.toMatchObject({ reason: 'collateral_conversion_failed' });
@@ -269,17 +292,13 @@ describe('executePolymarketOrder', () => {
       })
     );
 
-    await executePolymarketSellPosition({
-      position: {
-        proxyWallet: '0x0000000000000000000000000000000000000001',
-        market: { version, clobTokenIds: ['101', '102'] },
-        asset: '101',
-        negativeRisk: true,
-        size: 10,
-      },
-      price: '0.5',
-      matchedOrderMetadata: createMatchedOrderMetadata({ quotedTradeFeeUsd: '0.1' }),
+    const position = createPosition({
+      proxyWallet: walletForOrder.address,
+      size: 10,
+      negativeRisk: true,
+      market: { ...createMarket(), version },
     });
+    await executePolymarketSellPosition({ position, orderQuote: buyParams().orderQuote });
 
     expect(mockUpdateBalanceAllowance).toHaveBeenCalledWith({
       asset_type: version === 'v1' ? AssetType.CONDITIONAL : 'CONDITIONAL-V2',
@@ -296,8 +315,8 @@ describe('executePolymarketOrder', () => {
       OrderType.FOK
     );
     expect(mockAnalyticsTrack).toHaveBeenCalledWith('predictions.place_order', {
-      eventSlug: 'event',
-      marketSlug: 'market',
+      eventSlug: 'event-slug',
+      marketSlug: 'market-slug',
       outcome: 'Yes',
       orderAmountUsd: 5,
       feeAmountUsd: 0.12,
@@ -328,7 +347,7 @@ describe('executePolymarketOrder', () => {
     mockGetOrder.mockResolvedValue({ associate_trades: ['trade-1'], price: '0.5', size_matched: '10', status: 'matched' });
     mockGetTrades.mockResolvedValue([{ id: 'trade-1', status: 'confirmed', transaction_hash: '0xsettlement' }]);
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
     await flushPromises();
 
     expect(mockGetOrder).toHaveBeenCalledWith('polled-order');
@@ -353,7 +372,7 @@ describe('executePolymarketOrder', () => {
     });
     mockGetTrades.mockResolvedValue([{ id: 'trade-1', status: 'failed' }]);
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
     await flushPromises();
 
     expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
@@ -367,14 +386,14 @@ describe('executePolymarketOrder', () => {
     mockCreateAndPostMarketOrder.mockResolvedValue(createOrderResult({ orderID: 'failed-order', status: 'live' }));
     mockGetOrder.mockResolvedValue({ status: 'rejected' });
 
-    await executePolymarketBuyPosition(buyOrder);
+    await executePolymarketBuyPosition(buyParams());
     await flushPromises();
 
     expect(mockCollectPolymarketTradeFee).not.toHaveBeenCalled();
     expect(mockAnalyticsTrack).toHaveBeenCalledWith('predictions.order_match.failed', {
       orderId: 'failed-order',
-      eventSlug: 'event',
-      marketSlug: 'market',
+      eventSlug: 'event-slug',
+      marketSlug: 'market-slug',
       outcome: 'Yes',
       tokenId: '101',
       side: 'buy',
@@ -406,19 +425,6 @@ function createOrderResult({
     status,
     takingAmount,
     transactionsHashes,
-  };
-}
-
-function createMatchedOrderMetadata({ quotedTradeFeeUsd }: { quotedTradeFeeUsd: string }) {
-  return {
-    eventSlug: 'event',
-    marketSlug: 'market',
-    outcome: 'Yes',
-    estimatedFeeAmountUsd: '0.12',
-    quotedTradeFeeUsd,
-    bestPriceUsd: '0.49',
-    orderPriceUsd: '0.5',
-    spread: '0.01',
   };
 }
 

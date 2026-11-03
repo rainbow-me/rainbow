@@ -1,127 +1,127 @@
 import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
-import { type Address } from 'viem';
+import { v4 as uuidv4 } from 'uuid';
 
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { getPolymarketOrderClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { type PolymarketOrderResult, type SuccessfulOrderResult } from '@/features/polymarket/types';
+import { polymarketBalanceActions, usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import { polymarketPositionsActions } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { type PolymarketOrderResult, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { type PolymarketVersion } from '@/features/polymarket/types/polymarket-event';
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
-import { getHeldTokenVersion, isPolymarketTokenId, type HeldPolymarketToken } from '@/features/polymarket/utils/marketProtocol';
-import { reconcileAcceptedPolymarketOrder, type MatchedOrderMetadata } from '@/features/polymarket/utils/polymarketOrderReconciliation';
+import { getHeldTokenVersion, isPolymarketTokenId } from '@/features/polymarket/utils/marketProtocol';
+import {
+  getMatchedAmountsFromAcceptedOrder,
+  reconcileAcceptedPolymarketOrder,
+  type OrderContext,
+  type OrderQuote,
+} from '@/features/polymarket/utils/polymarketOrderReconciliation';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { RainbowError } from '@/logger';
 
 // ============ Types ========================================================== //
 
-/**
- * Buy-position processing states used while executing and confirming an order.
- */
-export type PolymarketBuyPositionStep = 'preparing' | 'placing_order' | 'confirming_order';
+type PolymarketOrderSubmissionResult = SuccessfulOrderResult & { followUp: Promise<void> };
 
-type ExecutePolymarketBuyPositionParams = {
-  version: PolymarketVersion;
-  amount: string | number;
-  negRisk: boolean;
-  price: string | number;
-  tokenId: string;
-  matchedOrderMetadata: MatchedOrderMetadata;
-  onStep?: (step: PolymarketBuyPositionStep) => void;
+type ExecutePolymarketBuyPositionParams = (PolymarketOrderDetails | SportsOrderDetails) & {
+  amount: string;
+  orderQuote: OrderQuote;
 };
 
 type ExecutePolymarketSellPositionParams = {
-  matchedOrderMetadata: MatchedOrderMetadata;
-  position: HeldPolymarketToken & {
-    proxyWallet: Address;
-    negativeRisk: boolean;
-    size: number;
-  };
-  price: string | number;
+  orderQuote: OrderQuote;
+  position: PolymarketPosition;
 };
 
 // ============ Execution ====================================================== //
 
 /**
- * Executes a Polymarket buy market order and starts matched-order analytics and
- * trade fee collection after the CLOB accepts the order.
+ * Submits a buy and publishes its accepted balance estimate.
+ * Position updates, settlement, fees, and reconciliation continue through the returned follow-up.
  */
-export async function executePolymarketBuyPosition({
-  tokenId,
-  amount,
-  price,
-  negRisk,
-  version,
-  matchedOrderMetadata,
-  onStep,
-}: ExecutePolymarketBuyPositionParams): Promise<SuccessfulOrderResult> {
-  const routing = getOrderRouting(tokenId, version, negRisk);
-
-  onStep?.('preparing');
-
+export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyPositionParams): Promise<PolymarketOrderSubmissionResult> {
+  const { amount, orderQuote, ...details } = params;
+  const { event, market, outcomeIndex } = details;
+  const tokenId = market.clobTokenIds[outcomeIndex];
+  const routing = getOrderRouting(tokenId, market.version, market.negRisk);
   const { clobClient: client, wallet } = await getPolymarketOrderClients();
+  const proxyAddress = wallet.address;
 
   try {
-    await ensureTradingApprovals(client, wallet, version, Side.BUY);
+    await ensureTradingApprovals(client, wallet, market.version, Side.BUY);
   } catch (error) {
     throw new PolymarketBuyPositionError(error, 'trading_approval_failed');
   }
 
   try {
-    const amount = await getPolygonUsdcBalance(wallet.address);
-    if (!amount.isZero()) {
-      await wrapUsdcToPusd({ amount, wallet });
-      await refetchPolymarketBalance(wallet.address);
+    const usdcBalance = await getPolygonUsdcBalance(proxyAddress);
+    if (!usdcBalance.isZero()) {
+      await wrapUsdcToPusd({ amount: usdcBalance, wallet });
+      await refetchPolymarketBalance(proxyAddress);
     }
   } catch (error) {
     throw new PolymarketBuyPositionError(error, 'collateral_conversion_failed');
   }
 
-  onStep?.('placing_order');
-
   await client.updateBalanceAllowance({ asset_type: AssetType.COLLATERAL });
+  const baselineBalance = polymarketBalanceActions.getBalanceSnapshot(proxyAddress);
+  const positionOperationId = uuidv4();
+  polymarketPositionsActions.beginExpectedBuyPosition({ asset: tokenId, operationId: positionOperationId, proxyAddress });
 
-  const spendCap = Number(amount);
-  const userBalance = Number(usePolymarketBalanceStore.getState().getBalance(wallet.address));
+  let orderResult: SuccessfulOrderResult;
+  try {
+    const spendCap = Number(amount);
+    const userBalance = Number(usePolymarketBalanceStore.getState().getBalance(proxyAddress));
+    const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
+      {
+        side: Side.BUY,
+        ...routing.asset,
+        amount: spendCap,
+        price: Number(orderQuote.orderPriceUsd),
+        userUSDCBalance: Math.min(userBalance, spendCap),
+      },
+      routing.options,
+      OrderType.FOK
+    );
+    orderResult = resolveSuccessfulOrderResult(result);
+  } catch (error) {
+    polymarketPositionsActions.discardExpectedPosition({ asset: tokenId, operationId: positionOperationId, proxyAddress });
+    throw error;
+  }
 
-  const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
-    {
-      side: Side.BUY,
-      ...routing.asset,
-      amount: spendCap,
-      price: Number(price),
-      userUSDCBalance: Math.min(userBalance, spendCap),
-    },
-    routing.options,
-    OrderType.FOK
-  );
+  const context: OrderContext = {
+    ...details,
+    ...orderQuote,
+    eventSlug: event.slug,
+    marketSlug: market.slug,
+    outcome: market.outcomes[outcomeIndex],
+    side: 'buy',
+    tokenId,
+    positionOperationId,
+  };
 
-  const orderResult = resolveSuccessfulOrderResult(result);
-
-  void reconcileAcceptedPolymarketOrder({
-    client,
-    wallet,
-    orderResult,
-    context: {
-      ...matchedOrderMetadata,
-      side: 'buy',
-      tokenId,
-    },
-  });
-
-  return orderResult;
+  return {
+    ...orderResult,
+    followUp: reconcileAcceptedPolymarketOrder({
+      acceptedAmounts: getMatchedAmountsFromAcceptedOrder(orderResult, context.side),
+      baselineBalance,
+      client,
+      context,
+      orderResult,
+      wallet,
+    }),
+  };
 }
 
 /**
- * Executes a Polymarket sell market order for the full position and starts
- * matched-order analytics and trade fee collection after the CLOB accepts the
- * order.
+ * Sells the full position and publishes its accepted removal and balance estimate.
+ * Settlement, fees, and reconciliation continue through the returned follow-up.
  */
 export async function executePolymarketSellPosition({
-  matchedOrderMetadata,
+  orderQuote,
   position,
-  price,
-}: ExecutePolymarketSellPositionParams): Promise<SuccessfulOrderResult> {
+}: ExecutePolymarketSellPositionParams): Promise<PolymarketOrderSubmissionResult> {
   const { clobClient: client, wallet } = await getPolymarketOrderClients(position.proxyWallet);
 
   const version = await getHeldTokenVersion(position);
@@ -133,31 +133,35 @@ export async function executePolymarketSellPosition({
     token_id: position.asset,
   });
 
+  const baselineBalance = polymarketBalanceActions.getBalanceSnapshot(wallet.address);
   const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
-    {
-      side: Side.SELL,
-      ...routing.asset,
-      amount: Number(position.size),
-      price: Number(price),
-    },
+    { side: Side.SELL, ...routing.asset, amount: Number(position.size), price: Number(orderQuote.orderPriceUsd) },
     routing.options,
     OrderType.FOK
   );
 
   const orderResult = resolveSuccessfulOrderResult(result);
+  const context: OrderContext = {
+    ...orderQuote,
+    eventSlug: position.eventSlug,
+    marketSlug: position.slug,
+    outcome: position.outcome,
+    side: 'sell',
+    tokenId: position.asset,
+    position,
+  };
 
-  void reconcileAcceptedPolymarketOrder({
-    client,
-    wallet,
-    orderResult,
-    context: {
-      ...matchedOrderMetadata,
-      side: 'sell',
-      tokenId: position.asset,
-    },
-  });
-
-  return orderResult;
+  return {
+    ...orderResult,
+    followUp: reconcileAcceptedPolymarketOrder({
+      acceptedAmounts: getMatchedAmountsFromAcceptedOrder(orderResult, context.side),
+      baselineBalance,
+      client,
+      context,
+      orderResult,
+      wallet,
+    }),
+  };
 }
 
 // ============ Execution Helpers ============================================= //
@@ -175,6 +179,5 @@ function resolveSuccessfulOrderResult(result: PolymarketOrderResult): Successful
   if ('error' in result || !result.success || result.errorMsg) {
     throw new RainbowError('error' in result ? result.error : result.errorMsg || 'Order was not successful');
   }
-
   return result;
 }

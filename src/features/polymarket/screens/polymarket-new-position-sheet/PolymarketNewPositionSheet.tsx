@@ -27,8 +27,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
-import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { executePolymarketBuyPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
@@ -124,7 +123,7 @@ function NewPositionForm({
   const { isDarkMode } = useColorMode();
 
   const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
-  const [processingStep, setProcessingStep] = useState<PolymarketBuyPositionStep | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
@@ -167,35 +166,25 @@ function NewPositionForm({
   });
 
   const handleMarketBuyPosition = useCallback(async () => {
-    if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
-
-    setProcessingStep('preparing');
-
+    if (!canSubmit) return;
+    if (checkIfReadOnlyWallet(getAccountAddress())) return;
+    setIsProcessing(true);
     try {
       await executePolymarketBuyPosition({
-        tokenId,
+        ...details,
         amount: orderSpendCap,
-        price: worstPrice,
-        negRisk: market.negRisk,
-        version: market.version,
-        matchedOrderMetadata: {
-          eventSlug: event.slug,
-          marketSlug: market.slug,
-          outcome,
-          estimatedFeeAmountUsd: fee,
-          quotedTradeFeeUsd: rainbowFee,
+        orderQuote: {
+          expectedAmounts: {
+            tokens: amountToWin,
+            usd: mulWorklet(amountToWin, averagePrice),
+          },
+          quotedTotalFeeUsd: fee,
+          quotedRainbowFeeUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
-        onStep: setProcessingStep,
       });
-
-      setProcessingStep('confirming_order');
-      await waitForPositionSizeUpdate(tokenId);
-
-      Navigation.goBack();
-      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) Navigation.goBack();
     } catch (e) {
       const error = ensureError(e);
 
@@ -213,21 +202,30 @@ function NewPositionForm({
       });
 
       presentErrorAlert(error);
-    } finally {
-      setProcessingStep(null);
+      setIsProcessing(false);
+      return;
     }
+
+    if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
+      Navigation.goBack();
+      Navigation.goBack();
+    } else {
+      Navigation.goBack();
+    }
+    setIsProcessing(false);
   }, [
     bestPrice,
     buyAmount,
     canSubmit,
-    event.slug,
+    amountToWin,
+    averagePrice,
+    event,
     fee,
     fromRoute,
-    market.negRisk,
-    market.version,
-    market.slug,
+    market,
     orderSpendCap,
     outcome,
+    details,
     rainbowFee,
     spread,
     tokenId,
@@ -269,8 +267,8 @@ function NewPositionForm({
         <HoldToActivateButton
           onLongPress={handleMarketBuyPosition}
           label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-          processingLabel={processingStep === null ? '' : getBuyPositionProcessingLabel(processingStep)}
-          isProcessing={processingStep !== null}
+          processingLabel={i18n.t(i18n.l.predictions.new_position.placing_bet)}
+          isProcessing={isProcessing}
           showBiometryIcon={false}
           backgroundColor={buttonColor}
           disabledBackgroundColor={buttonColor}
@@ -399,16 +397,6 @@ function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
 
 function getButtonColor(accentColor: string): string {
   return getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.4 });
-}
-
-function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
-  switch (step) {
-    case 'confirming_order':
-      return i18n.t(i18n.l.predictions.new_position.confirming_order);
-    case 'preparing':
-    case 'placing_order':
-      return i18n.t(i18n.l.predictions.new_position.placing_bet);
-  }
 }
 
 function presentErrorAlert(error: Error): void {
