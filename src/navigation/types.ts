@@ -21,7 +21,7 @@ import { type RequestData, type RequestSource } from '@/features/dapp-request/ty
 import { type RevokeReason } from '@/features/delegation/types/revokeReason';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import { type REGISTRATION_MODES } from '@/features/ens/utils/helpers';
-import { type GasTrend } from '@/features/gas/utils/meteorology';
+import { type GasTrend } from '@/features/gas/types/gas';
 import { type LEDGER_ERROR_CODES } from '@/features/hardware-wallet/utils/ledger';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type HlTrade, type PerpMarket, type PerpsPosition, type TriggerOrderSource, type TriggerOrderType } from '@/features/perps/types';

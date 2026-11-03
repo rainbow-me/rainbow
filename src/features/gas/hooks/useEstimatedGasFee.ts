@@ -5,8 +5,8 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 
 import { formatGasFee } from '../core/formatGasFee';
+import { useMeteorologyStore } from '../data/meteorologyStore';
 import { calculateEstimatedGasFeeWorklet } from '../utils/calculateGasFee';
-import { useBaseFee } from '../utils/meteorology';
 import { type GasSettings } from './useCustomGas';
 
 export function useEstimatedGasFee({
@@ -20,7 +20,7 @@ export function useEstimatedGasFee({
 }) {
   const nativeNetworkAsset = useNativeAsset({ chainId });
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { data: currentBaseFee } = useBaseFee({ chainId });
+  const currentBaseFee = useMeteorologyStore(s => s.get(chainId)?.currentBaseFee);
 
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;

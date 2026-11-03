@@ -7,7 +7,7 @@ import { type Address } from 'viem';
 
 import { type AddressOrEth, type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { type NumberPadField } from '@/components/number-pad/NumberPadKey';
-import type { GasSettings, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
+import type { GasSettings, GasSuggestions, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type PreparedCallsExecution } from '@rainbow-me/sdk';
@@ -525,28 +525,16 @@ export type DepositGasLimitParams = {
   quoteKey: number | null;
 };
 
-export type DepositMeteorologyParams = {
-  chainId: ChainId;
-};
-
-export type DepositGasSuggestions = {
-  [key in GasSpeed]: key extends GasSpeed.CUSTOM ? GasSettings | undefined : GasSettings;
-};
-
-export type DepositMeteorologyActions = {
-  /** Returns gas params for the selected deposit speed, fetching meteorology first when needed. */
-  getGasParams: () => Promise<DepositGasParams | null>;
-  getGasSuggestions: () => DepositGasSuggestions | undefined;
-};
-
 export type DepositGasStoresType = {
+  /** Returns transaction gas params for the selected chain and speed, fetching suggestions if needed. */
+  getGasParams: () => Promise<DepositGasParams | null>;
   reset: () => void;
   useEstimatedGasFee: DerivedStore<string | undefined>;
   useGasLimitStore: QueryStore<string, DepositGasLimitParams>;
   useIsGasSponsored: DerivedStore<boolean>;
   useGasSettings: DerivedStore<GasSettings | undefined>;
   useMaxSwappableAmount: DerivedStore<string | undefined>;
-  useMeteorologyStore: QueryStore<DepositGasSuggestions, DepositMeteorologyParams, DepositMeteorologyActions>;
+  useGasSuggestions: DerivedStore<GasSuggestions | undefined>;
 };
 
 // ============ Amount To Receive Store ======================================== //

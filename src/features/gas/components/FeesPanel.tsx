@@ -20,11 +20,11 @@ import { gasTrendToTrendType, type CurrentBaseFeeTypeKey, type ExplainSheetRoute
 import { useTheme } from '@/theme/ThemeContext';
 
 import { gweiToWei } from '../core/gasParams';
+import { useMeteorologyStore } from '../data/meteorologyStore';
 import useFeesPanelInputRefs from '../hooks/useFeesPanelInputRefs';
 import useGas from '../hooks/useGas';
 import gasUtils from '../utils/gas';
 import { calculateMinerTipAddDifference, calculateMinerTipSubstDifference } from '../utils/gasHelpers';
-import { useChainSupportsPriorityFee } from '../utils/meteorology';
 import { parseGasFeeParam } from '../utils/parseGas';
 
 const MAX_TEXT_WIDTH = 210;
@@ -64,7 +64,8 @@ export function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, valida
 
   const { colors } = useTheme();
 
-  const showPriorityFee = useChainSupportsPriorityFee(chainId);
+  const normalGas = useMeteorologyStore(s => s.get(chainId)?.suggestions.normal);
+  const showPriorityFee = !normalGas || (normalGas.isEIP1559 && !isZero(normalGas.maxPriorityFee));
 
   const {
     params: { type, focusTo },

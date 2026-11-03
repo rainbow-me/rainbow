@@ -278,7 +278,7 @@ export function useDepositHandler({
           run: async () => {
             let gasParams: DepositGasParams | null;
             try {
-              gasParams = await gasStores.useMeteorologyStore.getState().getGasParams();
+              gasParams = await gasStores.getGasParams();
             } catch (error) {
               logger.warn('[useDepositHandler]: custom deposit gas params unavailable', { error });
               gasParams = null;
@@ -338,16 +338,15 @@ export function useDepositHandler({
     }
     const validQuote = quote;
 
-    const gasState = gasStores.useMeteorologyStore.getState();
     let gasParams: DepositGasParams | null;
     try {
-      gasParams = await gasState.getGasParams();
+      gasParams = await gasStores.getGasParams();
     } catch (error) {
       logger.warn('[useDepositHandler]: deposit gas params unavailable', { error });
       return;
     }
 
-    const gasFeeParamsBySpeed = gasState.getGasSuggestions();
+    const gasFeeParamsBySpeed = gasStores.useGasSuggestions.getState();
     if (!gasFeeParamsBySpeed || !gasParams) {
       return;
     }

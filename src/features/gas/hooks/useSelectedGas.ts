@@ -1,27 +1,14 @@
-import { useMemo } from 'react';
-
 import { createBaseStore } from '@storesjs/stores';
-import { type NotifyOnChangeProps } from '@tanstack/react-query';
 
 import { type ChainId } from '@/features/network/types/backendNetworks';
 
+import { useMeteorologyStore } from '../data/meteorologyStore';
+import { type GasSettings, type GasSuggestions } from '../types/gas';
 import { GasSpeed } from '../types/gasSpeed';
-import { getCachedGasSuggestions, useMeteorologySuggestions, type MeteorologyGasSuggestions } from '../utils/meteorology';
-import {
-  getCustomGasSettings,
-  useCustomGasSettings,
-  type EIP1559GasSettings,
-  type GasSettings,
-  type LegacyGasSettings,
-} from './useCustomGas';
+import { getCustomGasSettings, useCustomGasSettings } from './useCustomGas';
 
 type CustomGasType = { custom: GasSettings | undefined };
-type GasSpeedsObject<T> = { fast: T; normal: T; urgent: T };
-
-export type SwapsGasFeeParamsBySpeed =
-  | CustomGasType
-  | (CustomGasType & GasSpeedsObject<LegacyGasSettings>)
-  | (CustomGasType & GasSpeedsObject<EIP1559GasSettings>);
+export type SwapsGasFeeParamsBySpeed = CustomGasType | (CustomGasType & GasSuggestions);
 
 const useSelectedGasSpeedStore = createBaseStore<{ [c in ChainId]?: GasSpeed }>(() => ({}), {
   version: 0,
@@ -38,30 +25,10 @@ export const useSelectedGasSpeed = (chainId: ChainId) => useSelectedGasSpeedStor
 export const setSelectedGasSpeed = (chainId: ChainId, speed: GasSpeed) => useSelectedGasSpeedStore.setState({ [chainId]: speed });
 export const getSelectedGasSpeed = (chainId: ChainId) => selectSelectedGasSpeed(chainId)(useSelectedGasSpeedStore.getState());
 
-export function useGasSettings(
-  chainId: ChainId,
-  speed: GasSpeed,
-  options?: {
-    keepPreviousData?: boolean;
-    notifyOnChangeProps?: NotifyOnChangeProps;
-    onSuccess?: (gasSettings: MeteorologyGasSuggestions) => void;
-    staleTime?: number;
-  }
-): GasSettings | undefined {
-  const userCustomGasSettings = useCustomGasSettings(chainId);
-  const { data: metereologySuggestions } = useMeteorologySuggestions({
-    chainId,
-    enabled: speed !== GasSpeed.CUSTOM,
-    keepPreviousData: options?.keepPreviousData,
-    notifyOnChangeProps: options?.notifyOnChangeProps,
-    onSuccess: options?.onSuccess,
-    staleTime: options?.staleTime,
-  });
-
-  return useMemo(() => {
-    if (speed === GasSpeed.CUSTOM) return userCustomGasSettings;
-    return metereologySuggestions?.[speed];
-  }, [speed, userCustomGasSettings, metereologySuggestions]);
+export function useGasSettings(chainId: ChainId, speed: GasSpeed): GasSettings | undefined {
+  const customSettings = useCustomGasSettings(chainId);
+  const suggestion = useMeteorologyStore(s => (speed === GasSpeed.CUSTOM ? undefined : s.get(chainId)?.suggestions[speed]));
+  return speed === GasSpeed.CUSTOM ? customSettings : suggestion;
 }
 
 export function useSelectedGas(chainId: ChainId): GasSettings | undefined {
@@ -70,7 +37,7 @@ export function useSelectedGas(chainId: ChainId): GasSettings | undefined {
 }
 
 export function getGasSettingsBySpeed(chainId: ChainId): SwapsGasFeeParamsBySpeed {
-  const suggestions = getCachedGasSuggestions(chainId);
+  const suggestions = useMeteorologyStore.getState().get(chainId)?.suggestions;
   return {
     ...suggestions,
     custom: getCustomGasSettings(chainId),
@@ -80,10 +47,10 @@ export function getGasSettingsBySpeed(chainId: ChainId): SwapsGasFeeParamsBySpee
 export function getGasSettings(speed: GasSpeed, chainId: ChainId): GasSettings | undefined {
   if (speed === GasSpeed.CUSTOM) {
     const customGasSettings = getCustomGasSettings(chainId);
-    if (!customGasSettings) return getCachedGasSuggestions(chainId)?.[GasSpeed.FAST];
+    if (!customGasSettings) return useMeteorologyStore.getState().get(chainId)?.suggestions[GasSpeed.FAST];
     return customGasSettings;
   }
-  return getCachedGasSuggestions(chainId)?.[speed];
+  return useMeteorologyStore.getState().get(chainId)?.suggestions[speed];
 }
 
 export function getSelectedGas(chainId: ChainId): GasSettings | undefined {
@@ -94,5 +61,5 @@ export function getSelectedGas(chainId: ChainId): GasSettings | undefined {
 export function getSelectedSpeedSuggestion(chainId: ChainId): GasSettings | undefined {
   const speed = getSelectedGasSpeed(chainId);
   if (speed === GasSpeed.CUSTOM) return undefined;
-  return getCachedGasSuggestions(chainId)?.[speed];
+  return useMeteorologyStore.getState().get(chainId)?.suggestions[speed];
 }

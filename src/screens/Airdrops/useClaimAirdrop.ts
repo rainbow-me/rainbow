@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useRef, type MutableRefObject } from 'react';
 
+import { useListen } from '@storesjs/stores';
 import { runOnJS, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
-import { type GasSettings } from '@/features/gas/types/gas';
+import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
+import { type GasSettings, type GasSuggestions } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
-import { type MeteorologyGasSuggestions } from '@/features/gas/utils/meteorology';
 import { logger, RainbowError } from '@/logger';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -47,12 +47,12 @@ const INITIAL_GAS_INFO: AirdropGasInfo = {
 export function useClaimAirdrop(claimable: RainbowClaimable) {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const gasSettingsRef = useRef<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
+  const gasSettingsRef = useRef<GasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
   const claimStatus = useSharedValue<ClaimStatus>(ClaimStatus.NOT_READY);
   const gasInfo = useSharedValue<AirdropGasInfo>(INITIAL_GAS_INFO);
 
   const updateGasInfo = useCallback(
-    async (gasSettings: MeteorologyGasSuggestions | undefined) => {
+    async (gasSettings: GasSuggestions | undefined) => {
       if (!accountAddress || !gasSettings) return;
       try {
         const gasLimit = await getAirdropClaimGasLimit(claimable, accountAddress);
@@ -88,22 +88,15 @@ export function useClaimAirdrop(claimable: RainbowClaimable) {
     [accountAddress, claimable, claimStatus, gasInfo, nativeCurrency]
   );
 
-  useGasSettings(
-    claimable.chainId,
-    GAS_SPEED,
-    useMemo(
-      () => ({
-        notifyOnChangeProps: [],
-        onSuccess: gasSettings => {
-          if (gasSettingsRef.current === 'disabled') return;
-          gasSettingsRef.current = gasSettings[GAS_SPEED];
-          updateGasInfo(gasSettings);
-        },
-        // Ensure onSuccess always runs on mount
-        staleTime: 0,
-      }),
-      [updateGasInfo]
-    )
+  useListen(
+    useMeteorologyStore,
+    s => s.get(claimable.chainId)?.suggestions,
+    suggestions => {
+      if (!suggestions || gasSettingsRef.current === 'disabled') return;
+      gasSettingsRef.current = suggestions[GAS_SPEED];
+      void updateGasInfo(suggestions);
+    },
+    { fireImmediately: true }
   );
 
   const executeClaim = useCallback(
@@ -159,7 +152,7 @@ async function handleAndExecuteClaim({
   claimable: RainbowClaimable;
   gasLimit: string;
   gasSettings: GasSettings;
-  gasSettingsRef: MutableRefObject<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>;
+  gasSettingsRef: MutableRefObject<GasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>;
 }): Promise<void> {
   try {
     logger.debug('[useClaimAirdrop]: Executing claim transaction', {

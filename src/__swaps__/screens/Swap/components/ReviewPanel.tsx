@@ -118,7 +118,7 @@ function EstimatedGasFee() {
 function EstimatedArrivalTime() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const speed = useSelectedGasSpeed(chainId);
-  const { data: estimatedTime } = useEstimatedGasTime({ chainId, speed });
+  const estimatedTime = useEstimatedGasTime({ chainId, speed });
   if (!estimatedTime) return null;
   return (
     <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">

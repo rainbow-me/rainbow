@@ -12,21 +12,13 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { gweiToWei, weiToGwei } from '@/features/gas/core/gasParams';
+import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
 import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
 import { getSelectedGas, getSelectedSpeedSuggestion, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
-import {
-  getCachedCurrentBaseFee,
-  useBaseFee,
-  useChainSupportsPriorityFee,
-  useGasTrend,
-  useIsChainEIP1559,
-  useMeteorologySuggestion,
-  useMeteorologySuggestions,
-} from '@/features/gas/utils/meteorology';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { add, formatNumber, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { add, formatNumber, greaterThan, isZero, lessThan, multiply, subtract } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -110,7 +102,7 @@ const getStep = () => {
   const chainId = useSwapsStore.getState().inputAsset?.chainId;
   if (!chainId) return minStep;
 
-  const baseFee = getCachedCurrentBaseFee(chainId);
+  const baseFee = useMeteorologyStore.getState().get(chainId)?.currentBaseFee;
   if (!baseFee) return minStep;
 
   const step = 10 ** (baseFee.length - 2);
@@ -215,8 +207,8 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
 
 function CurrentBaseFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectBaseFee });
-  const { data: gasTrend } = useGasTrend({ chainId });
+  const baseFee = useMeteorologyStore(s => selectBaseFee(s.get(chainId)?.currentBaseFee));
+  const gasTrend = useMeteorologyStore(s => s.get(chainId)?.trend);
   return <CurrentBaseFeeSlot baseFee={baseFee} gasTrend={gasTrend} />;
 }
 
@@ -232,12 +224,9 @@ function useGasPanelState<
 
   const editedSetting = useGasPanelStore(select);
   const customSetting = useCustomGasStore(s => select(s?.[chainId]));
-  const { data: suggestedSetting } = useMeteorologySuggestion({
-    chainId,
-    speed,
-    select,
-    enabled: !editedSetting,
-  });
+  const suggestedSetting = useMeteorologyStore(s =>
+    editedSetting || speed === GasSpeed.CUSTOM ? undefined : select(s.get(chainId)?.suggestions[speed])
+  );
 
   if (editedSetting) return editedSetting;
   if (speed === GasSpeed.CUSTOM) return customSetting;
@@ -260,8 +249,8 @@ const setGasPanelState = (update: Partial<GasPanelState>) => {
 
 const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: !!maxBaseFee });
-  const { data: currentBaseFee = '0' } = useBaseFee({ chainId });
+  const suggestions = useMeteorologyStore(s => (maxBaseFee ? s.get(chainId)?.suggestions : undefined));
+  const currentBaseFee = useMeteorologyStore(s => s.get(chainId)?.currentBaseFee ?? '0');
 
   if (!maxBaseFee) return null;
 
@@ -270,8 +259,8 @@ const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
 
   // suggestions
   const { urgent, normal } = suggestions || {};
-  const highThreshold = urgent?.maxBaseFee && multiply(urgent.maxBaseFee, 1.1);
-  const lowThreshold = normal?.maxBaseFee && multiply(normal.maxBaseFee, 0.9);
+  const highThreshold = urgent?.isEIP1559 ? multiply(urgent.maxBaseFee, 1.1) : undefined;
+  const lowThreshold = normal?.isEIP1559 ? multiply(normal.maxBaseFee, 0.9) : undefined;
   if (highThreshold && greaterThan(maxBaseFee, highThreshold)) return i18n.t(i18n.l.gas.higher_than_suggested);
   if (lowThreshold && lessThan(maxBaseFee, lowThreshold)) return i18n.t(i18n.l.gas.lower_than_suggested);
 
@@ -379,10 +368,10 @@ function MaxTransactionFee() {
 
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const isEIP1559 = useIsChainEIP1559(chainId);
-  const showPriorityFee = useChainSupportsPriorityFee(chainId);
+  const normalGas = useMeteorologyStore(s => s.get(chainId)?.suggestions.normal);
+  const showPriorityFee = !normalGas || (normalGas.isEIP1559 && !isZero(normalGas.maxPriorityFee));
 
-  if (!isEIP1559) return <EditGasPrice />;
+  if (normalGas && !normalGas.isEIP1559) return <EditGasPrice />;
 
   return (
     <>

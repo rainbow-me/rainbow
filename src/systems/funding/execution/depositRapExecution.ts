@@ -5,6 +5,7 @@ import { type ParsedAsset } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import { resolveManagedExecutionFailure } from '@/features/delegation/utils/managedExecutionFailure';
 import { isInsufficientSponsorBalanceError } from '@/features/delegation/utils/sponsoredCalls';
+import { type GasSuggestions } from '@/features/gas/types/gas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
@@ -19,7 +20,6 @@ import { type CrosschainQuote, type Quote } from '@rainbow-me/swaps';
 import {
   type DepositConfig,
   type DepositGasParams,
-  type DepositMeteorologyActions,
   type DepositSponsorshipFailureReason,
   type DepositSponsorshipOutcome,
   type DepositSuccessMetadata,
@@ -29,11 +29,9 @@ import { determineStrategy, type ExecutionStrategy } from './strategy';
 
 // ============ Types ========================================================= //
 
-type GasFeeParamsBySpeed = NonNullable<ReturnType<DepositMeteorologyActions['getGasSuggestions']>>;
-
 type ExecutionParams = {
   assetChainId: ChainId;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+  gasFeeParamsBySpeed: GasSuggestions;
   gasParams: DepositGasParams;
   nonce: number;
   parameters: Omit<
@@ -48,7 +46,7 @@ export type ExecuteDepositRapParams = {
   asset: RapSwapActionParameters<rapTypes.swap>['assetToSell'];
   assetChainId: ChainId;
   config: Pick<DepositConfig, 'directTransferEnabled' | 'to'>;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+  gasFeeParamsBySpeed: GasSuggestions;
   gasParams: DepositGasParams;
   nonce: number;
   preparedCalls: PreparedCallsExecution | null;
@@ -166,7 +164,7 @@ async function executeSwap(params: ExecutionParams, rapType: 'crosschainSwap' | 
       ...params.parameters,
       atomic: shouldTryAtomic,
       chainId: params.assetChainId,
-      gasFeeParamsBySpeed: params.gasFeeParamsBySpeed,
+      gasFeeParamsBySpeed: { ...params.gasFeeParamsBySpeed, custom: undefined },
       gasParams: params.gasParams,
       nonce: params.nonce,
     },

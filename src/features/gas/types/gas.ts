@@ -1,3 +1,5 @@
+import { type GasSpeed } from './gasSpeed';
+
 export type Numberish = number | string;
 
 export interface Fee {
@@ -65,6 +67,12 @@ export type LegacyGasSettings = {
  * Selected gas settings before conversion to transaction gas params.
  */
 export type GasSettings = EIP1559GasSettings | LegacyGasSettings;
+
+export type GasSuggestions =
+  | Record<Exclude<GasSpeed, GasSpeed.CUSTOM>, EIP1559GasSettings>
+  | Record<Exclude<GasSpeed, GasSpeed.CUSTOM>, LegacyGasSettings>;
+
+export type GasTrend = 'falling' | 'stable' | 'rising' | 'surging' | 'notrend';
 
 export interface GasFeeParams {
   maxBaseFee: GasFeeParam;

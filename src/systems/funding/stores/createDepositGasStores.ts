@@ -4,13 +4,11 @@ import { type Address } from 'viem';
 import { isCrosschainQuote } from '@/__swaps__/utils/quotes';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { formatGasFee } from '@/features/gas/core/formatGasFee';
-import { buildGasParams, gweiToWei } from '@/features/gas/core/gasParams';
-import { fetchMeteorology } from '@/features/gas/data/meteorology';
-import { type GasSettings, type MeteorologyLegacyResponse, type MeteorologyResponse } from '@/features/gas/types/gas';
+import { buildGasParams } from '@/features/gas/core/gasParams';
+import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { gasUnits } from '@/features/gas/utils/gasUnits';
-import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { logger } from '@/logger';
@@ -27,9 +25,6 @@ import {
   type DepositGasHookParams,
   type DepositGasLimitParams,
   type DepositGasStoresType,
-  type DepositGasSuggestions,
-  type DepositMeteorologyActions,
-  type DepositMeteorologyParams,
   type DepositQuoteStoreType,
   type DepositStoreType,
 } from '../types';
@@ -40,7 +35,6 @@ import { createExternalTokenStore } from './createExternalTokenStore';
 // ============ Types ========================================================= //
 
 type GasLimit = string;
-type MeteorologyData = MeteorologyLegacyResponse | MeteorologyResponse;
 
 type GasSponsorshipQueryParams = {
   accountAddress: Address | null;
@@ -77,32 +71,10 @@ export function createDepositGasStores(
     { lockDependencies: true }
   );
 
-  const useMeteorologyStore = createQueryStore<
-    MeteorologyData,
-    DepositMeteorologyParams,
-    DepositMeteorologyActions,
-    DepositGasSuggestions | null
-  >(
-    {
-      fetcher: fetchMeteorologyData,
-      transform: selectGasSuggestions,
-      params: {
-        chainId: $ => $(useDepositStore, s => s.getAssetChainId()),
-      },
-      cacheTime: time.seconds(36),
-      keepPreviousData: true,
-      staleTime: time.seconds(12),
-    },
-
-    (_, get) => ({
-      getGasParams: async () => {
-        const gasSuggestions = get().getData() ?? (await get().fetch(undefined, { throwOnError: true }));
-        const gasSettings = selectGasSettings(gasSuggestions ?? undefined, useDepositStore.getState().getGasSpeed());
-        return gasSettings ? buildGasParams(gasSettings) : null;
-      },
-      getGasSuggestions: () => get().getData() ?? undefined,
-    })
-  );
+  const useGasSuggestions = createDerivedStore($ => {
+    const chainId = $(useDepositStore, s => s.getAssetChainId());
+    return $(useMeteorologyStore, s => s.get(chainId)?.suggestions);
+  });
 
   const useHasGasHookParams = needsGasHookParams
     ? createDerivedStore(
@@ -176,10 +148,9 @@ export function createDepositGasStores(
 
   const useGasSettings = createDerivedStore(
     $ => {
-      const meteorologyData = $(useMeteorologyStore, s => s.getData());
+      const suggestions = $(useGasSuggestions);
       const selectedGasSpeed = $(useDepositStore, s => s.getGasSpeed());
-      if (!meteorologyData) return undefined;
-      return selectGasSettings(meteorologyData, selectedGasSpeed);
+      return selectedGasSpeed === GasSpeed.CUSTOM ? undefined : suggestions?.[selectedGasSpeed];
     },
     { equalityFn: shallowEqual, lockDependencies: true }
   );
@@ -234,24 +205,27 @@ export function createDepositGasStores(
   );
 
   return {
+    getGasParams: async () => {
+      const deposit = useDepositStore.getState();
+      const chainId = deposit.getAssetChainId();
+      const speed = deposit.getGasSpeed();
+      if (speed === GasSpeed.CUSTOM) return null;
+
+      const market = useMeteorologyStore.getState();
+      const data = market.get(chainId) ?? (await market.load(chainId));
+      return data ? buildGasParams(data.suggestions[speed]) : null;
+    },
     reset: () => {
-      useMeteorologyStore.getState().reset(true);
       useGasLimitStore.getState().reset(true);
       useGasSponsorshipStore?.getState().reset(true);
     },
     useEstimatedGasFee,
     useGasLimitStore,
     useGasSettings,
+    useGasSuggestions,
     useIsGasSponsored,
     useMaxSwappableAmount,
-    useMeteorologyStore,
   };
-}
-
-// ============ Meteorology Fetching ========================================== //
-
-function fetchMeteorologyData({ chainId }: DepositMeteorologyParams, abortController: AbortController | null): Promise<MeteorologyData> {
-  return fetchMeteorology(chainId, abortController?.signal);
 }
 
 // ============ Gas Limit Fetching ============================================ //
@@ -399,30 +373,4 @@ function selectNormalizedAmount(state: InferStoreState<AmountStoreType>): string
 
 function selectAssetUniqueId(state: InferStoreState<DepositStoreType>): string | null {
   return state.asset?.uniqueId ?? null;
-}
-
-function selectGasSettings(meteorologyData: DepositGasSuggestions | undefined, selectedGasSpeed: GasSpeed): GasSettings | undefined {
-  if (!meteorologyData) return undefined;
-  return meteorologyData[selectedGasSpeed];
-}
-
-function selectGasSuggestions(meteorologyData: MeteorologyData | null): DepositGasSuggestions | null {
-  if (!meteorologyData) return null;
-  if (isLegacyMeteorologyFeeData(meteorologyData)) {
-    const { fastGasPrice, proposeGasPrice, safeGasPrice } = meteorologyData.data.legacy;
-    return {
-      [GasSpeed.CUSTOM]: undefined,
-      [GasSpeed.FAST]: { gasPrice: gweiToWei(proposeGasPrice), isEIP1559: false },
-      [GasSpeed.NORMAL]: { gasPrice: gweiToWei(safeGasPrice), isEIP1559: false },
-      [GasSpeed.URGENT]: { gasPrice: gweiToWei(fastGasPrice), isEIP1559: false },
-    };
-  }
-
-  const { baseFeeSuggestion, maxPriorityFeeSuggestions } = meteorologyData.data;
-  return {
-    [GasSpeed.CUSTOM]: undefined,
-    [GasSpeed.FAST]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.fast },
-    [GasSpeed.NORMAL]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.normal },
-    [GasSpeed.URGENT]: { isEIP1559: true, maxBaseFee: baseFeeSuggestion, maxPriorityFee: maxPriorityFeeSuggestions.urgent },
-  };
 }

@@ -10,11 +10,11 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { formatGasFeeRange } from '@/features/gas/core/formatGasFee';
+import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
 import { useCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
-import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/features/gas/utils/meteorology';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
@@ -27,6 +27,7 @@ import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
+const GAS_SPEEDS = [GasSpeed.URGENT, GasSpeed.FAST, GasSpeed.NORMAL, GasSpeed.CUSTOM];
 
 function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
@@ -98,11 +99,6 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
   );
 }
 
-function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
-  if (!obj) return [];
-  return Object.keys(obj) as T[];
-}
-
 const GasMenu = ({
   backToReview = false,
   children,
@@ -118,10 +114,10 @@ const GasMenu = ({
 
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
   const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
-  const { data: metereologySuggestions, isLoading } = useMeteorologySuggestions({ chainId });
+  const meteorology = useMeteorologyStore(s => s.get(chainId));
+  const isLoading = useMeteorologyStore(s => !s.hasSettled(chainId));
+  const meteorologySuggestions = meteorology?.suggestions;
   const customGasSettings = useCustomGasSettings(chainId);
-
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
@@ -147,9 +143,10 @@ const GasMenu = ({
   );
 
   const menuConfig = useMemo(() => {
+    const menuOptions = meteorologySuggestions ? GAS_SPEEDS : [GasSpeed.CUSTOM];
     const menuItems = menuOptions.map(gasOption => {
-      const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions?.[gasOption];
+      const currentBaseFee = meteorology?.currentBaseFee;
+      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : meteorologySuggestions?.[gasOption];
       const subtitle = formatGasFeeRange(gasSettings, currentBaseFee);
 
       return {
@@ -160,7 +157,7 @@ const GasMenu = ({
       };
     });
     return { menuItems, menuTitle: '' };
-  }, [customGasSettings, menuOptions, metereologySuggestions, chainId]);
+  }, [customGasSettings, meteorologySuggestions, meteorology?.currentBaseFee]);
 
   if (isLoading) return children;
 
