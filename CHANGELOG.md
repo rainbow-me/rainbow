@@ -21,6 +21,60 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.47](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.47)
+
+### Added
+
+- Add Recover Lost Passkey to the sign-in gate (https://github.com/rainbow-me/rainbow/pull/7869)
+- Toggle the staging backend from Developer Settings (https://github.com/rainbow-me/rainbow/pull/7884)
+- Support betting from Sports cards on Polymarket (https://github.com/rainbow-me/rainbow/pull/7851)
+- Add unrealized P&L pill on the expanded sheet (https://github.com/rainbow-me/rainbow/pull/7877)
+- Add P&L sheet for ERC-20 spot trades (https://github.com/rainbow-me/rainbow/pull/7878)
+- Add Top Holders on the expanded sheet (https://github.com/rainbow-me/rainbow/pull/7885)
+- Add API client and shared game store for Sports (https://github.com/rainbow-me/rainbow/pull/7852)
+- Update scores and market selection in event sheets for Sports (https://github.com/rainbow-me/rainbow/pull/7853)
+- Add Sports components and page data stores (https://github.com/rainbow-me/rainbow/pull/7854)
+- Add Holding, Unrealized and Realized tabs to Top Holders (https://github.com/rainbow-me/rainbow/pull/7900)
+- Add analytics for P&L sheet, P&L pill and Top Holders (https://github.com/rainbow-me/rainbow/pull/7908)
+- Resolve names and records through the Universal Resolver for ENS (https://github.com/rainbow-me/rainbow/pull/7909)
+
+### Changed
+
+- Clean up and optimize color helpers and Border (https://github.com/rainbow-me/rainbow/pull/7866)
+- Bump iOS and Android to v2.0.47 (https://github.com/rainbow-me/rainbow/pull/7872)
+- Remove Quick Buy section from expanded sheet (https://github.com/rainbow-me/rainbow/pull/7882)
+- Add cubic review instructions (https://github.com/rainbow-me/rainbow/pull/7883)
+- Render charts through native Skia picture views (https://github.com/rainbow-me/rainbow/pull/7823)
+- Clean up and optimize CandlestickChart (https://github.com/rainbow-me/rainbow/pull/7828)
+- Add generated API types for sports (https://github.com/rainbow-me/rainbow/pull/7850)
+- Clean up and optimize live tokens (https://github.com/rainbow-me/rainbow/pull/7890)
+- Replace the Predictions sports list with Sports (https://github.com/rainbow-me/rainbow/pull/7855)
+- Replace King of the Hill with the Sports tab (https://github.com/rainbow-me/rainbow/pull/7856)
+- Update prediction cards and remove the Discover Sports tab (https://github.com/rainbow-me/rainbow/pull/7857)
+- Cover list visibility tracking and live prices with tests (https://github.com/rainbow-me/rainbow/pull/7875)
+- Cover Discover lists and bet loading with tests for Predictions (https://github.com/rainbow-me/rainbow/pull/7859)
+- Cover game caching, search, and price subscriptions with tests for Sports (https://github.com/rainbow-me/rainbow/pull/7860)
+- Configure Cubic auto-approval criteria and exclusions (https://github.com/rainbow-me/rainbow/pull/7904)
+- Consolidate address and name handling for ENS (https://github.com/rainbow-me/rainbow/pull/7910)
+
+### Fixed
+
+- Fix stuck refresh indicators on iOS (https://github.com/rainbow-me/rainbow/pull/7873)
+- Use default remote config in E2E (https://github.com/rainbow-me/rainbow/pull/7880)
+- Offer sign-in when recovery finds the account's passkey already on the device (https://github.com/rainbow-me/rainbow/pull/7870)
+- Clean up list visibility tracking and live price subscriptions (https://github.com/rainbow-me/rainbow/pull/7874)
+- Keep rainbowFetch's timeout off the caller's AbortController (https://github.com/rainbow-me/rainbow/pull/7893)
+- Match the excluded-tokens info sheet to design in spot-pnl (https://github.com/rainbow-me/rainbow/pull/7902)
+- Use one number format for Top Holders, the P&L sheet and the pill (https://github.com/rainbow-me/rainbow/pull/7899)
+- Hide Top Holders for stablecoins and native assets, show holder ENS on P&L sheet (https://github.com/rainbow-me/rainbow/pull/7898)
+- Open the P&L sheet at full height and match the no-P&L state to design (https://github.com/rainbow-me/rainbow/pull/7905)
+- Fix accent color handling in Sports (https://github.com/rainbow-me/rainbow/pull/7901)
+- Keep ENS enum value names so codegen output type-checks (https://github.com/rainbow-me/rainbow/pull/7907)
+- Open the P&L sheet from Top Holders with the row's trades (https://github.com/rainbow-me/rainbow/pull/7906)
+- Fix market caps for sub-$1 entries in Top Holders, abbreviated MCs on the P&L sheet (https://github.com/rainbow-me/rainbow/pull/7913)
+- Replace expired ENS name in E2E (https://github.com/rainbow-me/rainbow/pull/7915)
+- Migrate Polymarket to Data API v2 (https://github.com/rainbow-me/rainbow/pull/7916)
+
 ## [2.0.46](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.46)
 
 ### Added
