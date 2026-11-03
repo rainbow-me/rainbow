@@ -266,8 +266,6 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>SF-Mono-Bold.otf</string>
-		<string>SF-Mono-Semibold.otf</string>
 		<string>SF-Pro-Rounded-Black.otf</string>
 		<string>SF-Pro-Rounded-Bold.otf</string>
 		<string>SF-Pro-Rounded-Heavy.otf</string>

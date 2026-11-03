@@ -4,7 +4,7 @@ const font = {};
 
 font.family = {
   SFProRounded: Platform.OS === 'ios' ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
-  SFMono: Platform.OS === 'ios' ? 'SF Mono' : 'SF-Mono-Bold',
+  SFMono: Platform.OS === 'ios' ? 'ui-monospace' : 'SF-Mono-Bold',
 };
 
 font.letterSpacing = {
