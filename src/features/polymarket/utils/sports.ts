@@ -140,7 +140,7 @@ export async function fetchTeamsForGameMarkets(
   const teams: Partial<Record<string, PolymarketTeamInfo[]>> = nullObject();
 
   for (const market of markets) {
-    const event = market.events[0];
+    const event = market.events?.[0];
     if (event?.gameId && event.ticker) events[event.ticker] ??= event;
   }
 

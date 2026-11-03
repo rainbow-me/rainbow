@@ -19,9 +19,8 @@ import { type ResponseByTheme } from '@/theme/types';
 export function processRawPolymarketMarket(raw: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
   const market = parseGammaMarket(raw);
 
-  if (market.events) market.events = market.events.map(event => ({ ...event, color: eventColor }));
-
-  return Object.assign(market, getMarketColors(raw, eventColor));
+  const events = (market.events ?? []).map(event => ({ ...event, color: eventColor }));
+  return Object.assign(market, { events }, getMarketColors(raw, eventColor));
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
