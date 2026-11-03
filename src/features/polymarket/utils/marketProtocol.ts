@@ -61,6 +61,13 @@ export function getMarketResolution(market: Pick<RawPolymarketMarket, 'version' 
   return market.umaResolutionStatus === 'resolved' ? 'resolved' : 'in_review';
 }
 
+export function isActivePolymarketMarket(
+  market: Pick<RawPolymarketMarket, 'active' | 'closed' | 'version' | 'umaResolutionStatus' | 'resolutionStatus'>
+): boolean {
+  const resolution = getMarketResolution(market);
+  return market.active !== false && market.closed !== true && resolution !== 'resolved' && resolution !== 'inactive';
+}
+
 export type HeldPolymarketToken = {
   asset: string;
   market: Pick<PolymarketMarket, 'version' | 'clobTokenIds'>;

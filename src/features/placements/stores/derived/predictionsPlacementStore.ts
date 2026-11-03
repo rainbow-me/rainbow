@@ -6,7 +6,7 @@ import { type Placement, type PlacementId } from '@/features/placements/types';
 import { usePolymarketEnabled } from '@/features/polymarket/stores/derived/usePolymarketEnabled';
 import { fetchPolymarketEventsByIds } from '@/features/polymarket/stores/polymarketEventsStore';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
-import { getMarketResolution } from '@/features/polymarket/utils/marketProtocol';
+import { isActivePolymarketMarket } from '@/features/polymarket/utils/marketProtocol';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 
@@ -70,10 +70,5 @@ async function fetchPredictionEvents({ eventIds }: PredictionEventsParams, abort
 // ============ Helpers ======================================================== //
 
 function isActivePredictionEvent(event: RawPolymarketEvent): boolean {
-  if (event.closed === true || event.ended === true) return false;
-
-  return event.markets.some(market => {
-    const resolution = getMarketResolution(market);
-    return market.active !== false && market.closed !== true && resolution !== 'resolved' && resolution !== 'inactive';
-  });
+  return !event.closed && !event.ended && event.markets.some(isActivePolymarketMarket);
 }
