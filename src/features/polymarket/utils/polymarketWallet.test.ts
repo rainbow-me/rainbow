@@ -7,87 +7,62 @@ import {
   type RelayerTransaction,
   type RelayerTransactionResponse,
 } from '@polymarket/builder-relayer-client';
-import { SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { describe, expect, it, vi } from 'vitest';
 
 import { createPolymarketWallet } from './polymarketWallet';
 
+const address = '0x0000000000000000000000000000000000000001';
+const recipient = '0x0000000000000000000000000000000000000002';
+const transfer = { data: '0x', operation: OperationType.Call, to: recipient, value: '1' };
+
 describe('createPolymarketWallet', () => {
-  it('initializes an undeployed wallet before returning it', async () => {
-    const client = createClient({ isDeployed: false });
-    const descriptor = createDescriptor('0x0000000000000000000000000000000000000001');
-
+  it('waits for deposit-wallet deployment before submitting the first batch', async () => {
+    const client = createClient();
     const settlement = Promise.withResolvers<RelayerTransaction>();
-    client.waitForSettlement.mockReturnValueOnce(settlement.promise);
+    client.deployDepositWallet.mockResolvedValue(createResponse(RelayerTransactionState.STATE_NEW, () => settlement.promise));
 
-    const execution = createPolymarketWallet(descriptor, client).then(wallet => wallet.execute([], 'test execution'));
+    const execution = createPolymarketWallet({ address, kind: 'depositWallet' }, client).then(wallet => wallet.execute([transfer], 'test'));
     await setImmediate();
 
-    expect(client.deploy).toHaveBeenCalledTimes(1);
-    expect(client.waitForSettlement).toHaveBeenCalledTimes(1);
-    expect(client.execute).not.toHaveBeenCalled();
+    expect(client.getDeployed).toHaveBeenCalledWith(address, TransactionType.WALLET);
+    expect(client.deployDepositWallet).toHaveBeenCalledTimes(1);
+    expect(client.executeDepositWalletBatch).not.toHaveBeenCalled();
 
     settlement.resolve(createTransaction());
     await execution;
 
-    expect(client.execute).toHaveBeenCalledWith([], 'test execution');
-  });
-
-  it('uses deposit-wallet deployment and execution operations', async () => {
-    const client = createClient({ isDeployed: false });
-    const descriptor = {
-      ...createDescriptor('0x0000000000000000000000000000000000000003'),
-      kind: 'depositWallet' as const,
-      signatureType: SignatureTypeV2.POLY_1271,
-    };
-
-    const wallet = await createPolymarketWallet(descriptor, client);
-    await wallet.execute([{ data: '0x1234', operation: OperationType.Call, to: descriptor.address, value: '0' }], 'ignored');
-
-    expect(client.getDeployed).toHaveBeenCalledWith(descriptor.address, TransactionType.WALLET);
-    expect(client.deployDepositWallet).toHaveBeenCalledTimes(1);
     expect(client.executeDepositWalletBatch).toHaveBeenCalledWith(
-      [{ data: '0x1234', target: descriptor.address, value: '0' }],
-      descriptor.address,
+      [{ data: '0x', target: recipient, value: '1' }],
+      address,
       expect.any(String)
     );
   });
 
-  it('rejects failed relay submissions at the wallet boundary', async () => {
-    const client = createClient({ isDeployed: true });
-    const wallet = await createPolymarketWallet(createDescriptor('0x0000000000000000000000000000000000000004'), client);
-    client.execute.mockResolvedValueOnce(createResponse(RelayerTransactionState.STATE_FAILED));
+  it('executes directly on an existing Safe and reports relay rejection', async () => {
+    const client = createClient();
+    client.execute.mockResolvedValue(createResponse(RelayerTransactionState.STATE_FAILED));
 
-    await expect(wallet.execute([], 'test execution')).rejects.toThrow('[polymarket] test execution failed');
+    const wallet = await createPolymarketWallet({ address, kind: 'safe' }, client);
+
+    await expect(wallet.execute([transfer], 'test execution')).rejects.toThrow('[polymarket] test execution failed');
+    expect(client.execute).toHaveBeenCalledWith([transfer], 'test execution');
+    expect(client.getDeployed).not.toHaveBeenCalled();
   });
 });
 
-function createDescriptor(address: `0x${string}`) {
+function createClient() {
+  const response = createResponse(RelayerTransactionState.STATE_NEW);
   return {
-    address,
-    kind: 'safe' as const,
-    owner: '0x0000000000000000000000000000000000000010' as const,
-    signatureType: SignatureTypeV2.POLY_GNOSIS_SAFE,
-  };
-}
-
-function createClient({ isDeployed }: { isDeployed: boolean }) {
-  const waitForSettlement = vi.fn(async () => createTransaction());
-  const response = createResponse(RelayerTransactionState.STATE_NEW, waitForSettlement);
-
-  return {
-    deploy: vi.fn(async () => response),
     deployDepositWallet: vi.fn(async () => response),
     execute: vi.fn(async () => response),
     executeDepositWalletBatch: vi.fn(async () => response),
-    getDeployed: vi.fn(async () => isDeployed),
-    waitForSettlement,
+    getDeployed: vi.fn(async () => false),
   };
 }
 
 function createResponse(
   state: RelayerTransactionState,
-  wait: () => Promise<RelayerTransaction | undefined> = async () => createTransaction()
+  wait: () => Promise<RelayerTransaction | undefined> = async () => undefined
 ): RelayerTransactionResponse {
   return {
     getTransaction: async () => [],
@@ -111,7 +86,7 @@ function createTransaction(): RelayerTransaction {
     to: '0x0000000000000000000000000000000000000001',
     transactionHash: '0xhash',
     transactionID: 'relay-transaction',
-    type: 'SAFE',
+    type: 'WALLET',
     updatedAt: new Date(0),
     value: '0',
   };

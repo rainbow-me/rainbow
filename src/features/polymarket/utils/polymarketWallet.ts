@@ -21,17 +21,16 @@ export type PolymarketWallet = {
   execute(transactions: SafeTransaction[], description: string): Promise<RelayerTransactionResponse>;
 };
 
-type PolymarketWalletClient = Pick<RelayClient, 'deploy' | 'deployDepositWallet' | 'execute' | 'executeDepositWalletBatch' | 'getDeployed'>;
+type PolymarketWalletClient = Pick<RelayClient, 'deployDepositWallet' | 'execute' | 'executeDepositWalletBatch' | 'getDeployed'>;
 
 export async function createPolymarketWallet(
-  { address, kind }: PolymarketWalletDescriptor,
+  { address, kind }: Pick<PolymarketWalletDescriptor, 'address' | 'kind'>,
   client: PolymarketWalletClient
 ): Promise<PolymarketWallet> {
   const isDepositWallet = kind === 'depositWallet';
-  const deployed = await client.getDeployed(address, isDepositWallet ? TransactionType.WALLET : undefined);
 
-  if (!deployed) {
-    const deployment = isDepositWallet ? await client.deployDepositWallet() : await client.deploy();
+  if (isDepositWallet && !(await client.getDeployed(address, TransactionType.WALLET))) {
+    const deployment = await client.deployDepositWallet();
     await waitForRelayerSettlement(deployment, 'wallet deployment');
   }
 
