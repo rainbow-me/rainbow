@@ -41,8 +41,8 @@ export const POLYMARKET_SIGNING_PROXY_URL = `${RAINBOW_POLYMARKET_PROXY_URL}/sig
 // const POLYMARKET_CLOB_URL_PREPROD = 'https://clob-preprod-int-v2.polymarket.com';
 const POLYMARKET_CLOB_URL_PROD = 'https://clob.polymarket.com';
 
-//  const POLYMARKET_DATA_API_URL_PREPROD = 'https://data-api-preprod-int.polymarket.com';
-const POLYMARKET_DATA_API_URL_PROD = 'https://data-api.polymarket.com';
+//  const POLYMARKET_DATA_API_URL_PREPROD = 'https://data-api-preprod-int.polymarket.com/v2';
+const POLYMARKET_DATA_API_URL_PROD = 'https://data-api.polymarket.com/v2';
 
 //  const POLYMARKET_GAMMA_API_URL_PREPROD = 'https://gamma-api-preprod-int.polymarket.com';
 const POLYMARKET_GAMMA_API_URL_PROD = 'https://gamma-api.polymarket.com';

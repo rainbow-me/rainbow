@@ -69,16 +69,13 @@ async function fetchPolymarketPositions(
 ): Promise<FetchPolymarketPositionsResponse> {
   if (!address) throw new RainbowError('[PolymarketPositionsStore] Address is required');
 
-  const url = new URL(`${POLYMARKET_DATA_API_URL}/positions`);
-  url.searchParams.set('sortBy', 'CURRENT');
-  url.searchParams.set('sortDirection', 'DESC');
-  url.searchParams.set('user', address);
-
-  const { data: rawPositions } = await rainbowFetch<RawPolymarketPosition[]>(url.toString(), {
+  const { data: page } = await rainbowFetch<{ data: RawPolymarketPosition[] }>(`${POLYMARKET_DATA_API_URL}/positions`, {
+    params: { user: address, filter_amount: '1' },
     abortController,
     timeout: time.seconds(15),
   });
 
+  const rawPositions = page.data;
   if (!rawPositions.length) return { positions: [] };
 
   const rawMarkets = await fetchPolymarketMarkets(rawPositions, abortController);
