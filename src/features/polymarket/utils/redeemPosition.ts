@@ -1,11 +1,11 @@
 import { Interface } from '@ethersproject/abi';
-import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { OperationType, type RelayerTransactionResponse, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, parseAbi, toHex, zeroHash, type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { getPolymarketWallet } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { getProvider } from '@/handlers/web3';
-import { ensureError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
 
 import {
@@ -21,10 +21,13 @@ import { getHeldTokenVersion, type HeldPolymarketToken } from './marketProtocol'
 import { waitForRelayerTransaction } from './relayExecution';
 import { getMissingOperatorApproval } from './tradingApprovals';
 
-type ConfirmedRedemption = Awaited<ReturnType<typeof waitForRelayerTransaction>>;
-
 type RedemptionPosition = HeldPolymarketToken &
   Pick<PolymarketPosition, 'conditionId' | 'currentValue' | 'eventSlug' | 'negativeRisk' | 'outcome' | 'proxyWallet' | 'size' | 'slug'>;
+
+type SubmittedPolymarketRedemption = {
+  outcome: Promise<'confirmed' | 'failed'>;
+  transactionId: string;
+};
 
 const ctfInterface = new Interface([
   'function redeemPositions(address collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint256[] indexSets)',
@@ -39,21 +42,19 @@ function buildCtfRedeemTransaction(conditionId: string, adapterAddress: Address)
   };
 }
 
-export async function redeemPosition(position: RedemptionPosition): Promise<ConfirmedRedemption | undefined> {
-  let tx: ConfirmedRedemption | undefined;
+export async function redeemPosition(position: RedemptionPosition): Promise<SubmittedPolymarketRedemption> {
   try {
     const description = 'Redeem position';
     const wallet = await getPolymarketWallet(position.proxyWallet);
     const transactions = await buildRedeemTransactions(position);
     const response = await wallet.execute(transactions, description);
-    tx = await waitForRelayerTransaction(response, description);
-
-    trackRedeemPosition({ position, tx });
-
-    return tx;
+    return {
+      outcome: settleRedemption(position, response, description),
+      transactionId: response.transactionID,
+    };
   } catch (e) {
     const error = ensureError(e);
-    trackRedeemPositionFailed({ position, tx, error });
+    trackRedeemPositionFailed({ position, error });
     throw error;
   }
 }
@@ -104,42 +105,63 @@ async function getPositionBalance(owner: Address, positionId: bigint): Promise<b
   return decodeFunctionResult({ abi: erc1155Abi, functionName: 'balanceOf', data: balance });
 }
 
-function trackRedeemPosition({ position, tx }: { position: RedemptionPosition; tx: ConfirmedRedemption }) {
-  const isWin = position.size === position.currentValue;
-
-  analytics.track(analytics.event.predictionsRedeemPosition, {
-    eventSlug: position.eventSlug,
-    marketSlug: position.slug,
-    outcome: position.outcome,
-    tokenId: position.asset,
-    transactionHash: tx.transactionHash,
-    transactionId: tx.transactionID,
-    valueUsd: position.currentValue,
-    type: isWin ? 'claim' : 'burn',
-  });
+async function settleRedemption(
+  position: RedemptionPosition,
+  response: RelayerTransactionResponse,
+  description: string
+): Promise<'confirmed' | 'failed'> {
+  try {
+    const tx = await waitForRelayerTransaction(response, description);
+    trackRedeemPosition({ position, tx });
+    return 'confirmed';
+  } catch (e) {
+    trackRedeemPositionFailed({ position, error: ensureError(e) });
+    return 'failed';
+  }
 }
 
-function trackRedeemPositionFailed({
+function trackRedeemPosition({
   position,
   tx,
-  error,
 }: {
   position: RedemptionPosition;
-  tx: ConfirmedRedemption | undefined;
-  error: Error;
+  tx: Awaited<ReturnType<typeof waitForRelayerTransaction>>;
 }) {
   const isWin = position.size === position.currentValue;
 
-  analytics.track(analytics.event.predictionsRedeemPositionFailed, {
-    eventSlug: position.eventSlug,
-    marketSlug: position.slug,
-    outcome: position.outcome,
-    tokenId: position.asset,
-    valueUsd: position.currentValue,
-    type: isWin ? 'claim' : 'burn',
-    transactionHash: tx?.transactionHash,
-    transactionId: tx?.transactionID,
-    transactionState: tx?.state,
-    errorMessage: error.message,
-  });
+  try {
+    analytics.track(analytics.event.predictionsRedeemPosition, {
+      eventSlug: position.eventSlug,
+      marketSlug: position.slug,
+      outcome: position.outcome,
+      tokenId: position.asset,
+      transactionHash: tx.transactionHash,
+      transactionId: tx.transactionID,
+      valueUsd: position.currentValue,
+      type: isWin ? 'claim' : 'burn',
+    });
+  } catch (e) {
+    logger.error(new RainbowError('[redeemPosition] Error tracking redemption', ensureError(e)));
+  }
+}
+
+function trackRedeemPositionFailed({ position, error }: { position: RedemptionPosition; error: Error }) {
+  const isWin = position.size === position.currentValue;
+
+  try {
+    analytics.track(analytics.event.predictionsRedeemPositionFailed, {
+      eventSlug: position.eventSlug,
+      marketSlug: position.slug,
+      outcome: position.outcome,
+      tokenId: position.asset,
+      valueUsd: position.currentValue,
+      type: isWin ? 'claim' : 'burn',
+      transactionHash: undefined,
+      transactionId: undefined,
+      transactionState: undefined,
+      errorMessage: error.message,
+    });
+  } catch (e) {
+    logger.error(new RainbowError('[redeemPosition] Error tracking failed redemption', ensureError(e)));
+  }
 }
