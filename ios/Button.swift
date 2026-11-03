@@ -23,7 +23,7 @@ class Button: RCTView {
       }
     }
   }
-  @objc var duration: TimeInterval = 0.16
+  @objc var duration: TimeInterval = -1
   @objc var pressOutDuration: TimeInterval = -1
   @objc var scaleTo: CGFloat = 0.86
   @objc var transformOrigin = CGPoint(x: 0.5, y: 0.5)
@@ -48,8 +48,17 @@ class Button: RCTView {
   private var touchStartInWindow: CGPoint?
   private static let pressRetentionOutset: CGFloat = 20
 
+  @available(iOS 17.0, *)
+  private static let pressSpring = makeSpring(mass: 1.85, stiffness: 3200, damping: 550)
+  @available(iOS 17.0, *)
+  private static let releaseSpring = makeSpring(mass: 2, stiffness: 960, damping: 520)
+
+  private var pressDuration: TimeInterval {
+    duration < 0 ? 0.16 : duration
+  }
+
   private var releaseDuration: TimeInterval {
-    pressOutDuration == -1 ? duration : pressOutDuration
+    pressOutDuration < 0 ? pressDuration : pressOutDuration
   }
 
   override init(frame: CGRect) {
@@ -130,7 +139,7 @@ class Button: RCTView {
     if eligible {
       animatePress()
     } else {
-      animate(to: .identity, duration: duration)
+      animate(to: .identity, duration: pressDuration)
     }
   }
 
@@ -185,19 +194,31 @@ class Button: RCTView {
   private func animatePress() {
     let translationX = (1 - scaleTo) * (transformOrigin.x - 0.5) * bounds.width
     let translationY = (1 - scaleTo) * (transformOrigin.y - 0.5) * bounds.height
-    animate(to: CGAffineTransform(a: scaleTo, b: 0, c: 0, d: scaleTo, tx: translationX, ty: translationY), duration: duration)
+    animate(to: CGAffineTransform(a: scaleTo, b: 0, c: 0, d: scaleTo, tx: translationX, ty: translationY), duration: pressDuration)
   }
 
   private func animate(to target: CGAffineTransform, duration: TimeInterval) {
     guard transform != target else { return }
-    let animator = UIViewPropertyAnimator(
-      duration: duration,
-      controlPoint1: CGPoint(x: 0.25, y: 0.46),
-      controlPoint2: CGPoint(x: 0.45, y: 0.94)
-    ) {
+    let animator: UIViewPropertyAnimator
+    let isAnimated: Bool
+    if #available(iOS 17.0, *), self.duration < 0, pressOutDuration < 0 {
+      animator = UIViewPropertyAnimator(
+        duration: 0,
+        timingParameters: target == .identity ? Self.releaseSpring : Self.pressSpring
+      )
+      isAnimated = true
+    } else {
+      animator = UIViewPropertyAnimator(
+        duration: duration,
+        controlPoint1: CGPoint(x: 0.25, y: 0.46),
+        controlPoint2: CGPoint(x: 0.45, y: 0.94)
+      )
+      isAnimated = duration > 0
+    }
+    animator.addAnimations {
       self.transform = target
     }
-    if #available(iOS 18.0, *), duration > 0, UIView.areAnimationsEnabled {
+    if #available(iOS 18.0, *), isAnimated, UIView.areAnimationsEnabled {
       // Reversals overlap additive animations, which can finish out of order
       activeAnimationCount += 1
       updateFrameRateRequest()
@@ -208,6 +229,15 @@ class Button: RCTView {
       }
     }
     animator.startAnimation()
+  }
+
+  @available(iOS 17.0, *)
+  private static func makeSpring(mass: CGFloat, stiffness: CGFloat, damping: CGFloat) -> UISpringTimingParameters {
+    let frequency = sqrt(stiffness / mass)
+    let dampingRatio = damping / (2 * sqrt(mass * stiffness))
+    let bounce = dampingRatio < 1 ? 1 - dampingRatio : 1 / dampingRatio - 1
+    // This initializer preserves overdamping
+    return UISpringTimingParameters(duration: 2 * .pi / frequency, bounce: bounce)
   }
 
   private func updateFrameRateRequest() {

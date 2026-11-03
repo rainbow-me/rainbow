@@ -11,6 +11,11 @@ export interface ButtonPressAnimationProps
   onPress?: ((event?: GestureResponderEvent) => void) | null | undefined;
   onLongPress?: ((event?: GestureResponderEvent) => void) | null;
   activeOpacity?: number;
+  /**
+   * Timing duration in milliseconds, also used for release unless overridden.
+   * On iOS 17+, setting either duration opts out of the default springs.
+   * Defaults to 160 when using timing.
+   */
   duration?: number;
   minLongPressDuration?: number;
   onLongPressEnded?: () => void;
@@ -23,7 +28,11 @@ export interface ButtonPressAnimationProps
 
   /** @platform ios */
   onCancel?: (event: { nativeEvent: { state: number; close: boolean } }) => void;
-  /** @platform ios */
+  /**
+   * Release timing duration in milliseconds. Setting this opts out of the default springs.
+   * The press duration defaults to 160 if `duration` is omitted.
+   * @platform ios
+   */
   pressOutDuration?: number;
   /** @platform ios */
   throttle?: boolean;

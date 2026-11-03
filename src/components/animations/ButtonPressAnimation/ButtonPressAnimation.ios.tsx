@@ -21,7 +21,6 @@ const NativeButton = requireNativeComponent<NativeButtonProps>('Button');
 const ButtonPressAnimation = React.forwardRef<React.ComponentRef<typeof NativeButton>, ButtonPressAnimationProps>(
   (
     {
-      duration = 160,
       enableHapticFeedback = true,
       hapticType = 'selection',
       minLongPressDuration = 500,
@@ -40,7 +39,6 @@ const ButtonPressAnimation = React.forwardRef<React.ComponentRef<typeof NativeBu
   ) => (
     <NativeButton
       {...props}
-      duration={duration}
       enableHapticFeedback={enableHapticFeedback}
       hapticType={hapticType}
       minLongPressDuration={minLongPressDuration}
