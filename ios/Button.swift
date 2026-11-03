@@ -38,6 +38,8 @@ class Button: RCTView {
   @objc var shouldLongPressHoldPress: Bool = false
   @objc var minLongPressDuration: TimeInterval = 0.5
 
+  private var activeAnimationCount = 0
+  private var endFrameRateRequest: (() -> Void)?
   private var blockedUntil: CFTimeInterval = 0
   private var haptic: ButtonHaptic = .selection
   private var invalidated: Bool = false
@@ -58,6 +60,15 @@ class Button: RCTView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  deinit {
+    endFrameRateRequest?()
+  }
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    updateFrameRateRequest()
   }
 
   override func didSetProps(_ changedProps: [String]!) {
@@ -186,7 +197,37 @@ class Button: RCTView {
     ) {
       self.transform = target
     }
+    if #available(iOS 18.0, *), duration > 0, UIView.areAnimationsEnabled {
+      // Reversals overlap additive animations, which can finish out of order
+      activeAnimationCount += 1
+      updateFrameRateRequest()
+      animator.addCompletion { [weak self] _ in
+        guard let self = self else { return }
+        self.activeAnimationCount -= 1
+        self.updateFrameRateRequest()
+      }
+    }
     animator.startAnimation()
+  }
+
+  private func updateFrameRateRequest() {
+    guard activeAnimationCount > 0, let screen = window?.screen else {
+      endFrameRateRequest?()
+      endFrameRateRequest = nil
+      return
+    }
+    guard endFrameRateRequest == nil else { return }
+
+    if #available(iOS 18.0, *) {
+      let frameRate = min(120, Float(screen.maximumFramesPerSecond))
+      guard frameRate > 60 else { return }
+      let updateLink = UIUpdateLink(view: self)
+      updateLink.preferredFrameRateRange = CAFrameRateRange(
+        minimum: frameRate, maximum: frameRate, preferred: frameRate
+      )
+      endFrameRateRequest = { updateLink.isEnabled = false }
+      updateLink.isEnabled = true
+    }
   }
 
   private func isTouchWithinPressRegion(_ touch: UITouch) -> Bool {
