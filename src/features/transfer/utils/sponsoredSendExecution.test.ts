@@ -49,7 +49,7 @@ const mockResolveNameOrAddress = vi.mocked(resolveNameOrAddress);
 describe('sponsoredSendExecution', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockResolveNameOrAddress.mockImplementation(async address => address);
+    mockResolveNameOrAddress.mockResolvedValue(RECIPIENT);
   });
 
   it('builds native calls from exact raw units', async () => {
@@ -67,6 +67,7 @@ describe('sponsoredSendExecution', () => {
       to: RECIPIENT,
       value: 999999999999999999n,
     });
+    expect(mockResolveNameOrAddress).toHaveBeenCalledWith(RECIPIENT, ChainId.base);
   });
 
   it('builds token calls from exact raw units', async () => {

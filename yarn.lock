@@ -9500,6 +9500,7 @@ __metadata:
     moti: "npm:0.28"
     multiformats: "npm:9.6.2"
     nanoid: "npm:3.2.0"
+    ox: "npm:0.14.33"
     p-wait-for: "npm:4.1.0"
     pako: "npm:2.0.4"
     parse-ms: "npm:2.1.0"

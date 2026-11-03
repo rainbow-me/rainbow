@@ -686,9 +686,6 @@ const getENSExecutionDetails = async ({
   };
 };
 
-const getENSRecordKeys = () => Object.keys(ENS_RECORDS);
-const getENSRecordValues = () => Object.values(ENS_RECORDS);
-
 const formatEstimatedNetworkFee = (
   gasLimit: string,
   maxBaseFee: string,
@@ -775,8 +772,6 @@ const accentColorAtom = atom({
 
 export {
   generateSalt,
-  getENSRecordKeys,
-  getENSRecordValues,
   getENSRegistryContract,
   getENSRegistrarControllerContract,
   getENSBaseRegistrarImplementationContract,

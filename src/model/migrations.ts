@@ -29,6 +29,7 @@ import {
   signingWalletAddress,
 } from '@/features/local-auth/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from '@/features/local-auth/legacyKeychain';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { getAllWallets, loadAddress, saveAddress } from '@/features/wallet/data/walletKeychain';
 import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
@@ -395,7 +396,7 @@ export default async function runMigrations() {
         if (!returnStringFirstEmoji(nickname)) {
           let address = null;
           try {
-            address = await resolveNameOrAddress(contact.address);
+            address = await resolveNameOrAddress(contact.address, ChainId.mainnet);
             if (address) {
               const emoji = profileUtils.addressHashedEmoji(address);
               const color = profileUtils.addressHashedColorIndex(address);

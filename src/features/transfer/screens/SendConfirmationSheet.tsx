@@ -5,6 +5,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty } from 'lodash';
+import { isAddress } from 'viem';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
@@ -25,7 +26,7 @@ import TouchableBackdrop from '@/components/TouchableBackdrop';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { AssetType } from '@/entities/assetTypes';
-import { isENSAddressFormat, isValidDomainFormat } from '@/features/address/core/domainFormat';
+import { isENSAddressFormat } from '@/features/address/core/domainFormat';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
@@ -406,7 +407,7 @@ export const SendConfirmationSheet = () => {
   let avatarName = removeFirstEmojiFromString(contact?.nickname || existingAccount?.label);
 
   if (!avatarName) {
-    if (isValidDomainFormat(to)) {
+    if (!isAddress(to.trim())) {
       avatarName = to;
     } else if (walletNames?.[to]) {
       avatarName = walletNames[to];

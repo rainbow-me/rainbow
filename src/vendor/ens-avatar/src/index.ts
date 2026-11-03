@@ -22,7 +22,6 @@ export const specs: { [key: string]: new () => Spec } = Object.freeze({
 
 export interface AvatarRequestOpts {
   allowNonOwnerNFTs?: boolean;
-  type?: 'avatar' | 'header';
   transformImageUri?: (uri: string | null | undefined) => string | undefined;
 }
 
@@ -33,8 +32,8 @@ interface AvatarResolverOpts {
 export interface IAvatarResolver {
   provider: BaseProvider;
   options?: AvatarResolverOpts;
-  getImage(ens: string, data?: AvatarRequestOpts): Promise<string | null>;
-  getMetadata(ens: string, data?: AvatarRequestOpts): Promise<string | null>;
+  getImage(ens: string, record: string, address: string, data?: AvatarRequestOpts): Promise<string | null>;
+  getMetadata(ens: string, record: string, address: string, data?: AvatarRequestOpts): Promise<string | null>;
 }
 
 export class AvatarResolver implements IAvatarResolver {
@@ -46,15 +45,7 @@ export class AvatarResolver implements IAvatarResolver {
     this.options = options;
   }
 
-  async getMetadata(ens: string, opts?: AvatarRequestOpts) {
-    // retrieve registrar address and resolver object from ens name
-    const [resolvedAddress, resolver] = await Promise.all([this.provider.resolveName(ens), this.provider.getResolver(ens)]);
-    if (!resolvedAddress || !resolver) return null;
-
-    // retrieve 'avatar' text recored from resolver
-    const avatarURI = await resolver.getText(opts?.type || 'avatar');
-    if (!avatarURI) return null;
-
+  async getMetadata(ens: string, avatarURI: string, resolvedAddress: string, opts?: AvatarRequestOpts) {
     // test case-insensitive in case of uppercase records
     if (!/\/erc1155:|\/erc721:/i.test(avatarURI)) {
       const uriSpec = new URI();
@@ -82,8 +73,8 @@ export class AvatarResolver implements IAvatarResolver {
     return { host_meta, uri: ens, ...metadata };
   }
 
-  async getImage(ens: string, opts?: AvatarRequestOpts): Promise<string | null> {
-    const metadata = await this.getMetadata(ens, opts);
+  async getImage(ens: string, record: string, address: string, opts?: AvatarRequestOpts): Promise<string | null> {
+    const metadata = await this.getMetadata(ens, record, address, opts);
     if (!metadata) return null;
     return getImageURI({
       customGateway: this.options?.ipfs,

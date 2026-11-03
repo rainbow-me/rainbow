@@ -1,33 +1,28 @@
-import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { type Resolver } from '@ethersproject/providers';
-import { sub, type Duration } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { type Address } from 'viem';
+import { getAddress as getViemAddress } from 'viem';
 
-import { AssetType } from '@/entities/assetTypes';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { ChainId, Network } from '@/features/network/types/backendNetworks';
+import { resolveEnsName } from '@/features/ens/data/ens';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { ensClient } from '@/graphql';
-import { NftTokenType } from '@/graphql/__generated__/arc';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import store from '@/redux/store';
 import ethUnits from '@/references/ethereum-units.json';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
-import { handleNFTImages, MimeType } from '@/utils/handleNFTImages';
 import labelhash from '@/utils/labelhash';
 import profileUtils from '@/utils/profileUtils';
 
+import { useEnsAddressStore } from '../data/useEnsAddressStore';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
-import { prefetchENSAddress } from '../resources/addressQuery';
 import type { ENSRegistrationRecords, Records } from '../types/registration';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from './helpers';
 import { getNameFromLabelhash } from './localStorage';
@@ -37,54 +32,6 @@ const DUMMY_RECORDS = {
   header:
     'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   name: 'name',
-};
-
-const buildEnsToken = ({
-  contractAddress,
-  tokenId,
-  name,
-  imageUrl: imageUrl_,
-}: {
-  contractAddress: string;
-  tokenId: string;
-  name: string;
-  imageUrl: string;
-}): UniqueAsset => {
-  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
-    originalUrl: imageUrl_,
-    previewUrl: undefined,
-    mimeType: MimeType.SVG,
-  });
-
-  return {
-    name,
-    description: `\`${name}\`, an ENS name.`,
-    collectionDescription:
-      'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
-    type: AssetType.ens,
-    network: Network.mainnet,
-    chainId: ChainId.mainnet,
-    contractAddress: contractAddress as Address,
-    backgroundColor: undefined,
-    images: {
-      mimeType: MimeType.SVG,
-      highResUrl: imageUrl,
-      lowResUrl,
-    },
-    tokenId,
-    standard: NftTokenType.Erc721,
-    isSendable: true,
-    uniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}` as UniqueAsset['uniqueId'],
-    collectionUrl: 'https://ens.domains',
-    collectionImageUrl:
-      'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
-    collectionName: 'ENS: Ethereum Name Service',
-    marketplaceName: 'OpenSea',
-    marketplaceUrl: 'https://opensea.io/collection/ens?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW',
-    twitterUrl: 'https://x.com/ensdomains',
-    websiteUrl: 'https://ens.domains',
-    traits: [],
-  };
 };
 
 export const fetchMetadata = async ({
@@ -113,45 +60,6 @@ export const fetchMetadata = async ({
   }
 };
 
-export const fetchEnsTokens = async ({
-  address,
-  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
-  timeAgo,
-}: {
-  address: string;
-  contractAddress?: string;
-  timeAgo: Duration;
-}) => {
-  try {
-    const data = await ensClient.getRegistrationsByAddress({
-      address: address.toLowerCase(),
-      registrationDate_gt: Math.floor(sub(new Date(), timeAgo).getTime() / 1000).toString(),
-    });
-
-    return (
-      data?.account?.registrations
-        ?.map(registration => {
-          if (!registration.domain) return;
-
-          const tokenId = BigNumber.from(registration.domain.labelhash).toString();
-          const token = buildEnsToken({
-            contractAddress,
-            imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-            name: registration.domain.name || '',
-            tokenId,
-          });
-          return token;
-        })
-        .filter(<TToken>(token: TToken | null | undefined): token is TToken => !!token) || []
-    );
-  } catch (error) {
-    logger.error(new RainbowError(`[ENS]: fetchEnsTokens failed`), {
-      error,
-    });
-    return [];
-  }
-};
-
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
@@ -171,12 +79,10 @@ export const fetchSuggestions = async (
       avatar = await fetchENSAvatar(ens, {
         cacheFirst: true,
       });
-      prefetchENSAddress(
-        { name: ens },
-        {
-          staleTime: 1000 * 60 * 10, // 10 minutes
-        }
-      );
+      void useEnsAddressStore
+        .getState()
+        .fetch({ inputs: [{ addressOrName: ens, chainId: ChainId.mainnet }] }, { skipStoreUpdates: 'withCache' })
+        .catch(() => undefined);
       prefetchENSCover(ens, { cacheFirst: true });
       prefetchENSRecords(ens, { cacheFirst: true });
       prefetchFirstTransactionTimestamp({ addressOrName: ens });
@@ -224,12 +130,10 @@ export const fetchSuggestions = async (
                   cacheFirst: true,
                 });
                 if (i === 0) {
-                  prefetchENSAddress(
-                    { name: domain.name },
-                    {
-                      staleTime: 1000 * 60 * 10, // 10 minutes
-                    }
-                  );
+                  void useEnsAddressStore
+                    .getState()
+                    .fetch({ inputs: [{ addressOrName: domain.name, chainId: ChainId.mainnet }] }, { skipStoreUpdates: 'withCache' })
+                    .catch(() => undefined);
                   prefetchENSCover(domain.name, { cacheFirst: true });
                   prefetchENSRecords(domain.name, { cacheFirst: true });
                   prefetchFirstTransactionTimestamp({
@@ -291,74 +195,6 @@ export const fetchAccountDomains = async (address: string) => {
   return domains;
 };
 
-export const fetchRecords = async (ensName: string, { supportedOnly = true }: { supportedOnly?: boolean } = {}) => {
-  const response = await ensClient.getTextRecordKeysByName({
-    name: ensName,
-  });
-  const data = response.domains[0] || {};
-  const rawRecordKeys = data.resolver?.texts || [];
-
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const supportedRecords = Object.values(ENS_RECORDS);
-  const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key => (supportedOnly ? supportedRecords.includes(key) : true));
-  const recordValues = await Promise.all(recordKeys.map((key: string) => resolver?.getText(key)));
-  const records = recordKeys.reduce((records, key, i) => {
-    return {
-      ...records,
-      ...(recordValues[i] ? { [key]: recordValues[i] } : {}),
-    };
-  }, {}) as Partial<Records>;
-
-  return records;
-};
-
-export const fetchCoinAddresses = async (
-  ensName: string,
-  { supportedOnly = true }: { supportedOnly?: boolean } = {}
-): Promise<{ [key in ENS_RECORDS]: string }> => {
-  const response = await ensClient.getCoinTypesByName({ name: ensName });
-  const data = response.domains[0] || {};
-  const supportedRecords = Object.values(ENS_RECORDS);
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
-  const rawCoinTypesNames: string[] = rawCoinTypes.map(type => formatsByCoinType[type].name);
-  const coinTypes: number[] =
-    (rawCoinTypesNames as ENS_RECORDS[])
-      .filter(name => (supportedOnly ? supportedRecords.includes(name) : true))
-      .map(name => formatsByName[name].coinType) || [];
-
-  const coinAddressValues = await Promise.all(
-    coinTypes
-      .map(async (coinType: number) => {
-        try {
-          return await resolver?.getAddress(coinType);
-        } catch (err) {
-          return undefined;
-        }
-      })
-      .filter(Boolean)
-  );
-  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
-    (coinAddresses, coinType, i) => {
-      return {
-        ...coinAddresses,
-        ...(coinAddressValues[i] ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] } : {}),
-      };
-    },
-    {} as { [key in ENS_RECORDS]: string }
-  );
-  return coinAddresses;
-};
-
-export const fetchContenthash = async (ensName: string) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const resolver = await provider.getResolver(ensName);
-  const contenthash = await resolver?.getContentHash();
-  return contenthash;
-};
-
 export const fetchOwner = async (ensName: string) => {
   const ownerAddress = await getNameOwner(ensName);
 
@@ -396,21 +232,6 @@ export const fetchRegistration = async (ensName: string) => {
       expiryDate: data?.expiryDate,
       registrationDate: data?.registrationDate,
     },
-  };
-};
-
-export const fetchPrimary = async (ensName: string) => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const address = await provider.resolveName(ensName);
-  return {
-    address,
-  };
-};
-
-export const fetchAccountPrimary = async (accountAddress: string) => {
-  const ensName = await fetchReverseRecord(accountAddress);
-  return {
-    ensName,
   };
 };
 
@@ -838,9 +659,7 @@ export const getRapActionTypeForTxType = (txType: ENSRegistrationTransactionType
 
 export const fetchReverseRecord = async (address: string) => {
   try {
-    const checksumAddress = getAddress(address);
-    const provider = getProvider({ chainId: ChainId.mainnet });
-    const reverseRecord = await provider.lookupAddress(checksumAddress);
+    const reverseRecord = await resolveEnsName(getViemAddress(address), ChainId.mainnet);
     return reverseRecord ?? '';
   } catch (e) {
     return '';
