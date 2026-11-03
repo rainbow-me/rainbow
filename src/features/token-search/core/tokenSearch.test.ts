@@ -6,7 +6,7 @@ import {
   toChainSearchResults,
   toCrosschainSearchResults,
   toSearchAsset,
-  type NativeAddressByChain,
+  type NativeAssetByChain,
   type TokenSearchInstance,
   type TokenSearchItem,
   type TokenSearchResult,
@@ -17,12 +17,12 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const POL = '0x0000000000000000000000000000000000001010';
 const ARC = 5042 as ChainId;
 
-const NATIVE_ADDRESS_BY_CHAIN: NativeAddressByChain = {
-  [ChainId.mainnet]: 'eth',
-  [ChainId.base]: ZERO,
-  [ChainId.bsc]: ZERO,
-  [ChainId.polygon]: POL,
-  [ARC]: ZERO,
+const NATIVE_ASSET_BY_CHAIN: NativeAssetByChain = {
+  [ChainId.mainnet]: { address: 'eth' },
+  [ChainId.base]: { address: ZERO },
+  [ChainId.bsc]: { address: ZERO },
+  [ChainId.polygon]: { address: POL },
+  [ARC]: { address: ZERO },
 };
 
 const USDC_MAINNET = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
@@ -31,11 +31,11 @@ const USDC_BSC = '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d';
 const WETH_BASE = '0x4200000000000000000000000000000000000006';
 
 function erc20(chainId: number, address: string, decimals = 6): TokenSearchInstance {
-  return { assetId: `eip155:${chainId}/erc20:${address}`, decimals, kind: 'TOKEN_KIND_CRYPTO' };
+  return { assetId: `eip155:${chainId}/erc20:${address}`, decimals };
 }
 
 function native(chainId: number, address: string, decimals = 18): TokenSearchInstance {
-  return { assetId: `eip155:${chainId}/native:${address}`, decimals, kind: 'TOKEN_KIND_NATIVE' };
+  return { assetId: `eip155:${chainId}/native:${address}`, decimals };
 }
 
 function item(token: Partial<TokenSearchToken> & Pick<TokenSearchToken, 'instances'>): TokenSearchItem {
@@ -69,11 +69,11 @@ describe('toSearchAsset', () => {
       expected: { address: USDC_BASE, chainId: ChainId.base, decimals: 6 },
     },
   ])('$name', ({ input, chainId, expected }) => {
-    expect(toSearchAsset(input, NATIVE_ADDRESS_BY_CHAIN, chainId)).toMatchObject(expected);
+    expect(toSearchAsset(input, NATIVE_ASSET_BY_CHAIN, chainId)).toMatchObject(expected);
   });
 
   it('maps every instance to networks and the mainnet one to mainnetAddress', () => {
-    expect(toSearchAsset(USDC, NATIVE_ADDRESS_BY_CHAIN)).toMatchObject({
+    expect(toSearchAsset(USDC, NATIVE_ASSET_BY_CHAIN)).toMatchObject({
       mainnetAddress: USDC_MAINNET,
       networks: {
         [ChainId.base]: { address: USDC_BASE, decimals: 6 },
@@ -81,7 +81,7 @@ describe('toSearchAsset', () => {
         [ChainId.bsc]: { address: USDC_BSC, decimals: 18 },
       },
     });
-    expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ADDRESS_BY_CHAIN)?.mainnetAddress).toBe('');
+    expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ASSET_BY_CHAIN)?.mainnetAddress).toBe('');
   });
 
   it.each([
@@ -90,7 +90,7 @@ describe('toSearchAsset', () => {
     { name: 'POL on Polygon', instance: native(ChainId.polygon, POL), address: POL, chainId: ChainId.polygon, decimals: 18 },
     { name: 'USDC as the gas coin on Arc', instance: native(ARC, ZERO, 18), address: ZERO, chainId: ARC, decimals: 18 },
   ])('maps the native coin $name to the app native address', ({ instance, address, chainId, decimals }) => {
-    expect(toSearchAsset(item({ instances: [instance] }), NATIVE_ADDRESS_BY_CHAIN)).toMatchObject({
+    expect(toSearchAsset(item({ instances: [instance] }), NATIVE_ASSET_BY_CHAIN)).toMatchObject({
       address,
       chainId,
       decimals,
@@ -99,9 +99,14 @@ describe('toSearchAsset', () => {
     });
   });
 
-  it('does not treat a wrapped native contract as native', () => {
-    const weth = item({ symbol: 'WETH', instances: [{ ...erc20(ChainId.base, WETH_BASE, 18), kind: 'TOKEN_KIND_WRAPPED_NATIVE' }] });
-    expect(toSearchAsset(weth, NATIVE_ADDRESS_BY_CHAIN)).toMatchObject({ address: WETH_BASE, isNativeAsset: false });
+  it('keeps a contract as a lowercase, non-native ERC-20', () => {
+    const checksummed = item({ instances: [erc20(ChainId.base, `0x${USDC_BASE.slice(2).toUpperCase()}`)] });
+    expect(toSearchAsset(checksummed, NATIVE_ASSET_BY_CHAIN)).toMatchObject({
+      address: USDC_BASE,
+      isNativeAsset: false,
+      networks: { [ChainId.base]: { address: USDC_BASE } },
+      uniqueId: `${USDC_BASE}_${ChainId.base}`,
+    });
   });
 
   it.each([
@@ -113,20 +118,34 @@ describe('toSearchAsset', () => {
     { name: 'the zero address as a contract', assetId: `eip155:${ChainId.mainnet}/erc20:${ZERO}` },
     { name: 'the native address as a contract', assetId: `eip155:${ChainId.polygon}/erc20:${POL}` },
     { name: 'a native coin at another address than the app uses', assetId: `eip155:${ChainId.base}/native:eth` },
+    { name: 'a native coin at the zero address where the app uses eth', assetId: `eip155:${ChainId.mainnet}/native:${ZERO}` },
     { name: 'out-of-range decimals', assetId: `eip155:8453/erc20:${USDC_BASE}`, decimals: 256 },
     { name: 'negative decimals', assetId: `eip155:8453/erc20:${USDC_BASE}`, decimals: -1 },
     { name: 'fractional decimals', assetId: `eip155:8453/erc20:${USDC_BASE}`, decimals: 1.5 },
   ])('drops an instance with $name, and the token when no instance is left', ({ assetId, decimals = 6 }) => {
     const rejected = { assetId, decimals };
-    expect(toSearchAsset(item({ instances: [rejected] }), NATIVE_ADDRESS_BY_CHAIN)).toBeNull();
+    expect(toSearchAsset(item({ instances: [rejected] }), NATIVE_ASSET_BY_CHAIN)).toBeNull();
 
-    const asset = toSearchAsset(item({ instances: [rejected, erc20(ChainId.mainnet, USDC_MAINNET)] }), NATIVE_ADDRESS_BY_CHAIN);
+    const asset = toSearchAsset(item({ instances: [rejected, erc20(ChainId.mainnet, USDC_MAINNET)] }), NATIVE_ASSET_BY_CHAIN);
     expect(asset).toMatchObject({ chainId: ChainId.mainnet });
     expect(Object.keys(asset?.networks ?? {})).toEqual([String(ChainId.mainnet)]);
   });
 
+  it('accepts 255 decimals', () => {
+    expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE, 255)] }), NATIVE_ASSET_BY_CHAIN)?.decimals).toBe(255);
+  });
+
+  it('opens and lists the first instance when a chain repeats', () => {
+    const asset = toSearchAsset(
+      item({ instances: [erc20(ChainId.base, USDC_BASE), erc20(ChainId.base, WETH_BASE, 18)] }),
+      NATIVE_ASSET_BY_CHAIN,
+      ChainId.base
+    );
+    expect(asset).toMatchObject({ address: USDC_BASE, decimals: 6, networks: { [ChainId.base]: { address: USDC_BASE, decimals: 6 } } });
+  });
+
   it('reads absent decimals as 0', () => {
-    expect(toSearchAsset(item({ instances: [{ assetId: `eip155:8453/erc20:${USDC_BASE}` }] }), NATIVE_ADDRESS_BY_CHAIN)?.decimals).toBe(0);
+    expect(toSearchAsset(item({ instances: [{ assetId: `eip155:8453/erc20:${USDC_BASE}` }] }), NATIVE_ASSET_BY_CHAIN)?.decimals).toBe(0);
   });
 
   it.each([
@@ -141,11 +160,11 @@ describe('toSearchAsset', () => {
     { name: 'a token with no symbol', token: { name: undefined, symbol: undefined } },
     { name: 'a token with no instances', token: { instances: [] } },
   ])('drops $name', ({ token }) => {
-    expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE)], ...token }), NATIVE_ADDRESS_BY_CHAIN)).toBeNull();
+    expect(toSearchAsset(item({ instances: [erc20(ChainId.base, USDC_BASE)], ...token }), NATIVE_ASSET_BY_CHAIN)).toBeNull();
   });
 
   it('drops an item that is not a token', () => {
-    expect(toSearchAsset({ id: 'perp:hyperliquid:ETH' }, NATIVE_ADDRESS_BY_CHAIN)).toBeNull();
+    expect(toSearchAsset({ id: 'perp:hyperliquid:ETH' }, NATIVE_ASSET_BY_CHAIN)).toBeNull();
   });
 
   it.each([
@@ -154,13 +173,14 @@ describe('toSearchAsset', () => {
     { verification: 'VERIFICATION_STATUS_INCONCLUSIVE' as const, isVerified: false },
     { verification: undefined, isVerified: false },
   ])('maps $verification to isVerified $isVerified', ({ verification, isVerified }) => {
-    expect(toSearchAsset(item({ verification, instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ADDRESS_BY_CHAIN)?.isVerified).toBe(
+    expect(toSearchAsset(item({ verification, instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ASSET_BY_CHAIN)?.isVerified).toBe(
       isVerified
     );
   });
 });
 
 describe('swap results', () => {
+  const verifiedOnBase = item({ symbol: 'USDBC', instances: [erc20(ChainId.base, '0x' + '9'.repeat(40))] });
   const unverifiedOnBase = item({
     symbol: 'USDCX',
     verification: 'VERIFICATION_STATUS_UNVERIFIED',
@@ -195,6 +215,7 @@ describe('swap results', () => {
       {
         type: 'SECTION_TYPE_TOKENS',
         items: [
+          verifiedOnBase,
           unverifiedOnBase,
           verifiedOnMainnet,
           scamOnBase,
@@ -210,14 +231,14 @@ describe('swap results', () => {
   };
 
   it('splits results deployed on the output chain by verification, in display order, opened on that chain', () => {
-    const { verified, unverified } = toChainSearchResults(result, ChainId.bsc, NATIVE_ADDRESS_BY_CHAIN);
+    const { verified, unverified } = toChainSearchResults(result, ChainId.bsc, NATIVE_ASSET_BY_CHAIN);
     expect(verified.map(asset => [asset.symbol, asset.chainId, asset.address, asset.decimals])).toEqual([
       ['USDC', ChainId.bsc, USDC_BSC, 18],
     ]);
     expect(unverified).toEqual([]);
 
-    const onBase = toChainSearchResults(result, ChainId.base, NATIVE_ADDRESS_BY_CHAIN);
-    expect(onBase.verified.map(asset => asset.uniqueId)).toEqual([`${USDC_BASE}_${ChainId.base}`]);
+    const onBase = toChainSearchResults(result, ChainId.base, NATIVE_ASSET_BY_CHAIN);
+    expect(onBase.verified.map(asset => asset.symbol)).toEqual(['USDC', 'USDBC']);
     expect(onBase.unverified.map(asset => asset.symbol)).toEqual(['USDCX', 'USDC2']);
   });
 
@@ -226,12 +247,12 @@ describe('swap results', () => {
     { name: 'name', query: 'usd coin (bridged)', expected: ['USDC.E'] },
     { name: 'address of any deployment', query: '0x' + '4'.repeat(40), expected: ['USDC.E'] },
   ])('keeps verified results on other chains that exactly match by $name', ({ query, expected }) => {
-    expect(toCrosschainSearchResults(result, query, ChainId.base, NATIVE_ADDRESS_BY_CHAIN).map(asset => asset.symbol)).toEqual(expected);
+    expect(toCrosschainSearchResults(result, query, ChainId.base, NATIVE_ASSET_BY_CHAIN).map(asset => asset.symbol)).toEqual(expected);
   });
 
   it('excludes cross-chain results deployed on the output chain', () => {
-    expect(toCrosschainSearchResults(result, USDC_BSC, ChainId.bsc, NATIVE_ADDRESS_BY_CHAIN)).toEqual([]);
-    expect(toCrosschainSearchResults(result, 'usdc', ChainId.bsc, NATIVE_ADDRESS_BY_CHAIN).map(asset => asset.address)).toEqual([
+    expect(toCrosschainSearchResults(result, USDC_BSC, ChainId.bsc, NATIVE_ASSET_BY_CHAIN)).toEqual([]);
+    expect(toCrosschainSearchResults(result, 'usdc', ChainId.bsc, NATIVE_ASSET_BY_CHAIN).map(asset => asset.address)).toEqual([
       '0x' + '3'.repeat(40),
     ]);
   });

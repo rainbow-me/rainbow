@@ -21,18 +21,10 @@ type VerificationStatus =
 
 type RiskLevel = 'RISK_LEVEL_NONE' | 'RISK_LEVEL_CAUTION' | 'RISK_LEVEL_HIGH';
 
-type TokenKind =
-  | 'TOKEN_KIND_CRYPTO'
-  | 'TOKEN_KIND_NATIVE'
-  | 'TOKEN_KIND_WRAPPED_NATIVE'
-  | 'TOKEN_KIND_STABLECOIN'
-  | 'TOKEN_KIND_TOKENIZED_EQUITY';
-
 export type TokenSearchInstance = {
   /** CAIP-19 asset id, e.g. `eip155:1/erc20:0xa0b8…eb48` or `eip155:1/native:eth`. */
   assetId: string;
   decimals?: number;
-  kind?: TokenKind;
 };
 
 export type TokenSearchToken = {
@@ -41,7 +33,7 @@ export type TokenSearchToken = {
   iconUrl?: string;
   colors?: { primary?: string; fallback?: string };
   verification?: VerificationStatus;
-  risk?: { level?: RiskLevel; reasons?: string[] };
+  risk?: { level?: RiskLevel };
   instances?: TokenSearchInstance[];
 };
 
@@ -53,17 +45,17 @@ export type TokenSearchItem = {
 export type TokenSearchSection = {
   type: SectionType;
   items?: TokenSearchItem[];
-  hasMore?: boolean;
 };
 
 export type TokenSearchResult = {
-  query?: { text?: string; kind?: 'QUERY_KIND_TEXT' | 'QUERY_KIND_ADDRESS' };
   sections?: TokenSearchSection[];
-  lookup?: { status?: 'ADDRESS_LOOKUP_STATUS_QUEUED' | 'ADDRESS_LOOKUP_STATUS_NOT_FOUND' };
 };
 
-/** The native coin address of every chain the app supports, keyed by chain. A chain missing here is unsupported. */
-export type NativeAddressByChain = Partial<Record<ChainId, AddressOrEth>>;
+/**
+ * The native coin of every chain the app supports, keyed by chain, as `getChainsNativeAsset()` returns it. A chain
+ * missing here is unsupported.
+ */
+export type NativeAssetByChain = Partial<Record<ChainId, { address: AddressOrEth }>>;
 
 export type ChainSearchResults = {
   verified: SearchAsset[];
@@ -84,12 +76,12 @@ const SECTION_TYPES = new Set<string>(['SECTION_TYPE_TOP', 'SECTION_TYPE_TOKENS'
  * Parses an instance, keeping it only when it is a deployment the app can open: an ERC-20 contract, or the native coin
  * at the app's own native address for that chain.
  */
-function parseInstance(instance: TokenSearchInstance, nativeAddressByChain: NativeAddressByChain): ParsedInstance | null {
+function parseInstance(instance: TokenSearchInstance, nativeAssetByChain: NativeAssetByChain): ParsedInstance | null {
   const match = ASSET_ID_PATTERN.exec(instance.assetId);
   if (!match) return null;
 
   const chainId = Number(match[1]) as ChainId;
-  const nativeAddress = nativeAddressByChain[chainId];
+  const nativeAddress = nativeAssetByChain[chainId]?.address;
   if (nativeAddress === undefined) return null;
 
   const decimals = instance.decimals ?? 0;
@@ -102,7 +94,7 @@ function parseInstance(instance: TokenSearchInstance, nativeAddressByChain: Nati
 
   const isContract =
     CONTRACT_ADDRESS_PATTERN.test(address) && !isLowerCaseMatch(address, ZERO_ADDRESS) && !isLowerCaseMatch(address, nativeAddress);
-  return isContract ? { address: address as Address, chainId, decimals } : null;
+  return isContract ? { address: address.toLowerCase() as Address, chainId, decimals } : null;
 }
 
 /**
@@ -111,13 +103,13 @@ function parseInstance(instance: TokenSearchInstance, nativeAddressByChain: Nati
  * high-risk token (such as a spoof of a protected symbol), a token with no symbol, or a token with no deployment the app
  * can open.
  */
-export function toSearchAsset(item: TokenSearchItem, nativeAddressByChain: NativeAddressByChain, chainId?: ChainId): SearchAsset | null {
+export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset | null {
   const { token } = item;
   if (!token?.symbol || token.verification === 'VERIFICATION_STATUS_SCAM' || token.risk?.level === 'RISK_LEVEL_HIGH') return null;
 
   const instances: ParsedInstance[] = [];
   for (const instance of token.instances ?? []) {
-    const parsed = parseInstance(instance, nativeAddressByChain);
+    const parsed = parseInstance(instance, nativeAssetByChain);
     if (parsed) instances.push(parsed);
   }
 
@@ -126,7 +118,8 @@ export function toSearchAsset(item: TokenSearchItem, nativeAddressByChain: Nativ
 
   const networks: SearchAsset['networks'] = {};
   for (const instance of instances) {
-    networks[instance.chainId] = { address: instance.address as Address, decimals: instance.decimals };
+    // The first instance on a chain is the one `selected` opens
+    networks[instance.chainId] ??= { address: instance.address as Address, decimals: instance.decimals };
   }
 
   return {
@@ -136,7 +129,7 @@ export function toSearchAsset(item: TokenSearchItem, nativeAddressByChain: Nativ
     decimals: selected.decimals,
     highLiquidity: false,
     icon_url: token.iconUrl,
-    isNativeAsset: selected.address === nativeAddressByChain[selected.chainId],
+    isNativeAsset: selected.address === nativeAssetByChain[selected.chainId]?.address,
     isRainbowCurated: false,
     isVerified: token.verification === 'VERIFICATION_STATUS_VERIFIED',
     mainnetAddress: networks[ChainId.mainnet]?.address ?? ('' as Address),
@@ -148,12 +141,12 @@ export function toSearchAsset(item: TokenSearchItem, nativeAddressByChain: Nativ
 }
 
 /** Maps every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
-function toSearchAssets(result: TokenSearchResult, nativeAddressByChain: NativeAddressByChain, chainId?: ChainId): SearchAsset[] {
+function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
   const assets: SearchAsset[] = [];
   for (const section of result.sections ?? []) {
     if (!SECTION_TYPES.has(section.type)) continue;
     for (const item of section.items ?? []) {
-      const asset = toSearchAsset(item, nativeAddressByChain, chainId);
+      const asset = toSearchAsset(item, nativeAssetByChain, chainId);
       if (asset) assets.push(asset);
     }
   }
@@ -164,10 +157,10 @@ function toSearchAssets(result: TokenSearchResult, nativeAddressByChain: NativeA
 export function toChainSearchResults(
   result: TokenSearchResult,
   chainId: ChainId,
-  nativeAddressByChain: NativeAddressByChain
+  nativeAssetByChain: NativeAssetByChain
 ): ChainSearchResults {
   const results: ChainSearchResults = { verified: [], unverified: [] };
-  for (const asset of toSearchAssets(result, nativeAddressByChain, chainId)) {
+  for (const asset of toSearchAssets(result, nativeAssetByChain, chainId)) {
     if (asset.chainId !== chainId) continue;
     (asset.isVerified ? results.verified : results.unverified).push(asset);
   }
@@ -182,10 +175,10 @@ export function toCrosschainSearchResults(
   result: TokenSearchResult,
   query: string,
   chainId: ChainId,
-  nativeAddressByChain: NativeAddressByChain
+  nativeAssetByChain: NativeAssetByChain
 ): SearchAsset[] {
   const normalizedQuery = query.trim().toLowerCase();
-  return toSearchAssets(result, nativeAddressByChain).filter(
+  return toSearchAssets(result, nativeAssetByChain).filter(
     asset =>
       asset.isVerified &&
       asset.networks[chainId] === undefined &&
