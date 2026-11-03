@@ -31,7 +31,9 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
     params: { position: initialPosition },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MANAGE_POSITION_SHEET>>();
 
-  const position = usePolymarketPositionsStore(state => state.getPosition(initialPosition.asset) ?? initialPosition);
+  const position = usePolymarketPositionsStore(
+    state => state.getPosition(initialPosition.asset, initialPosition.proxyWallet) ?? initialPosition
+  );
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { isDarkMode } = useColorMode();

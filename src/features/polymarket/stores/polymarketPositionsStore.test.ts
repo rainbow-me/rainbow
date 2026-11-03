@@ -34,7 +34,7 @@ it('reads a v2 position using entry cost and unrealized P&L for the open holding
     .mockResolvedValueOnce(Response.json({ data: [holding] }))
     .mockResolvedValueOnce(Response.json([market]));
 
-  const result = await polymarketPositionsActions.fetch({ address }, { force: true, throwOnError: true });
+  const result = await polymarketPositionsActions.fetch({ proxyAddress: address }, { force: true, throwOnError: true });
 
   const url = new URL(String(fetch.mock.calls[0][0]));
   expect(url.origin + url.pathname).toBe('https://data-api.polymarket.com/v2/positions');
@@ -44,14 +44,12 @@ it('reads a v2 position using entry cost and unrealized P&L for the open holding
     expect(url.searchParams.get(key) ?? 'CURRENT_VALUE').toBe('CURRENT_VALUE');
   }
 
-  expect(result?.positions).toMatchObject([
-    {
-      proxyWallet: address,
-      asset: '101',
-      size: 11.7727,
-      currentValue: 4.7091,
-      initialValue: 5.1799,
-      cashPnl: -0.4708,
-    },
-  ]);
+  expect(result?.['101']).toMatchObject({
+    proxyWallet: address,
+    asset: '101',
+    size: 11.7727,
+    currentValue: 4.7091,
+    initialValue: 5.1799,
+    cashPnl: -0.4708,
+  });
 });
