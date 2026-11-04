@@ -10,6 +10,8 @@ import { getUniqueId } from '@/entities/assetId';
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { toSearchAssetDeployments } from '@/features/token-search/core/tokenSearch';
+import { fetchTokenSearch, useTokenSearchV2EnabledStore } from '@/features/token-search/data/tokenSearch';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
@@ -27,6 +29,8 @@ type SearchItemWithRelevance = SearchAsset & {
 
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
+// The backend's maximum page size
+const DISCOVER_SEARCH_LIMIT = 50;
 
 const NO_RESULTS: SearchAsset[] = [];
 const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
@@ -53,6 +57,7 @@ type DiscoverSearchParams = {
   list?: string;
   query: string;
   chainIds: string;
+  tokenSearchV2: boolean;
 };
 
 export type VerifiedResults = {
@@ -113,6 +118,7 @@ export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, Di
     params: {
       query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
       chainIds: $ => $(useBackendNetworksStore, state => state.getTokenSearchSupportedChainIds().join(',')),
+      tokenSearchV2: $ => $(useTokenSearchV2EnabledStore),
     },
     staleTime: time.minutes(2),
   },
@@ -431,10 +437,13 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
 };
 
 export async function discoverSearchQueryFunction(
-  { query, chainIds }: DiscoverSearchParams,
+  { query, chainIds, tokenSearchV2 }: DiscoverSearchParams,
   abortController: AbortController | null
 ): Promise<DiscoverSearchResults> {
-  const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
+  // The new search returns nothing for an empty query, so the default list stays on the legacy search
+  if (tokenSearchV2 && query !== '') return searchDiscoverTokens(query, chainIds, abortController);
+
+  const queryParams: Omit<DiscoverSearchParams, 'chainIds' | 'tokenSearchV2'> = {
     query,
   };
 
@@ -465,6 +474,33 @@ export async function discoverSearchQueryFunction(
     });
   } catch (e) {
     logger.error(new RainbowError('[discoverSearchQueryFunction]: Discover search failed'), { url });
+    return NO_DISCOVER_RESULTS;
+  }
+}
+
+/**
+ * Discover search on the backend token search, which ranks results and looks addresses up itself, so its results are only
+ * split by verification. Each deployment is its own row, as in the legacy search.
+ */
+async function searchDiscoverTokens(
+  query: string,
+  chainIds: string,
+  abortController: AbortController | null
+): Promise<DiscoverSearchResults> {
+  try {
+    const result = await fetchTokenSearch(
+      { query, category: 'CATEGORY_TOKENS', chainIds: chainIds.split(',').map(Number) as ChainId[], limit: DISCOVER_SEARCH_LIMIT },
+      abortController
+    );
+    const assets = toSearchAssetDeployments(result, useBackendNetworksStore.getState().getChainsNativeAsset());
+    return {
+      verifiedAssets: assets.filter(asset => asset.isVerified),
+      highLiquidityAssets: assets.filter(asset => !asset.isVerified),
+      lowLiquidityAssets: [],
+    };
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') return NO_DISCOVER_RESULTS;
+    logger.error(new RainbowError('[searchDiscoverTokens]: Discover search failed', e));
     return NO_DISCOVER_RESULTS;
   }
 }
