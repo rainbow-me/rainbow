@@ -55,7 +55,7 @@ export type TokenSearchResult = {
  * The native coin of every chain the app supports, keyed by chain, as `getChainsNativeAsset()` returns it. A chain
  * missing here is unsupported.
  */
-export type NativeAssetByChain = Partial<Record<ChainId, { address: AddressOrEth }>>;
+export type NativeAssetByChain = Partial<Record<ChainId, { address: AddressOrEth; decimals: number }>>;
 
 export type ChainSearchResults = {
   verified: SearchAsset[];
@@ -81,15 +81,17 @@ function parseInstance(instance: TokenSearchInstance, nativeAssetByChain: Native
   if (!match) return null;
 
   const chainId = Number(match[1]) as ChainId;
-  const nativeAddress = nativeAssetByChain[chainId]?.address;
-  if (nativeAddress === undefined) return null;
+  const nativeAsset = nativeAssetByChain[chainId];
+  if (nativeAsset === undefined) return null;
+  const nativeAddress = nativeAsset.address;
 
   const decimals = instance.decimals ?? 0;
   if (!Number.isInteger(decimals) || decimals < 0 || decimals > MAX_DECIMALS) return null;
 
   const [, , namespace, address] = match;
   if (namespace === 'native') {
-    return isLowerCaseMatch(address, nativeAddress) ? { address: nativeAddress, chainId, decimals } : null;
+    // The app's own decimals, as the backend reports unknown decimals as 0
+    return isLowerCaseMatch(address, nativeAddress) ? { address: nativeAddress, chainId, decimals: nativeAsset.decimals } : null;
   }
 
   const isContract =
@@ -192,6 +194,9 @@ export function toCrosschainSearchResults(
 const SWAP_MAX_VERIFIED_RESULTS = 24;
 const SWAP_MAX_UNVERIFIED_RESULTS = 6;
 
+// The backend reports unknown decimals as 0, and an amount can't be quoted in a token with no decimals
+const isQuotable = (asset: SearchAsset) => asset.isNativeAsset || asset.decimals > 0;
+
 export type SwapSearchResults = {
   verified: SearchAsset[];
   unverified: SearchAsset[];
@@ -199,17 +204,17 @@ export type SwapSearchResults = {
 };
 
 /**
- * Whether swap search also looks for the query on other chains: only when nothing verified is deployed on the output
- * chain, and the query is an address or longer than two characters.
+ * Whether swap search also looks for the query on other chains: only when nothing verified that can be quoted is
+ * deployed on the output chain, and the query is an address or longer than two characters.
  */
 export function needsCrosschainSwapSearch(onChain: ChainSearchResults, query: string, isAddressQuery: boolean): boolean {
-  return onChain.verified.length === 0 && (isAddressQuery || query.length > 2);
+  return !onChain.verified.some(isQuotable) && (isAddressQuery || query.length > 2);
 }
 
 /**
  * The swap search sections, with the legacy swap rules: a one-character query shows only verified results with an icon;
  * unverified results need a query longer than two characters, and for an address, a deployment at that address. Tokens
- * with no decimals are left out, as the backend reports unknown decimals as 0 and an amount can't be quoted in them.
+ * that can't be quoted are left out.
  */
 export function toSwapSearchResults({
   onChain,
@@ -222,8 +227,6 @@ export function toSwapSearchResults({
   query: string;
   isAddressQuery: boolean;
 }): SwapSearchResults {
-  const isQuotable = (asset: SearchAsset) => asset.isNativeAsset || asset.decimals > 0;
-
   const verified = onChain.verified.filter(asset => isQuotable(asset) && (query.length > 1 || !!asset.icon_url));
   const unverified =
     query.length > 2

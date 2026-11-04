@@ -22,11 +22,11 @@ const POL = '0x0000000000000000000000000000000000001010';
 const ARC = 5042 as ChainId;
 
 const NATIVE_ASSET_BY_CHAIN: NativeAssetByChain = {
-  [ChainId.mainnet]: { address: 'eth' },
-  [ChainId.base]: { address: ZERO },
-  [ChainId.bsc]: { address: ZERO },
-  [ChainId.polygon]: { address: POL },
-  [ARC]: { address: ZERO },
+  [ChainId.mainnet]: { address: 'eth', decimals: 18 },
+  [ChainId.base]: { address: ZERO, decimals: 18 },
+  [ChainId.bsc]: { address: ZERO, decimals: 18 },
+  [ChainId.polygon]: { address: POL, decimals: 18 },
+  [ARC]: { address: ZERO, decimals: 18 },
 };
 
 const USDC_MAINNET = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
@@ -101,6 +101,12 @@ describe('toSearchAsset', () => {
       isNativeAsset: true,
       uniqueId: `${address}_${chainId}`,
     });
+  });
+
+  it("takes a native coin's decimals from the app, not the response", () => {
+    expect(
+      toSearchAsset(item({ instances: [{ assetId: `eip155:${ChainId.base}/native:${ZERO}` }] }), NATIVE_ASSET_BY_CHAIN)?.decimals
+    ).toBe(18);
   });
 
   it('keeps a contract as a lowercase, non-native ERC-20', () => {
@@ -304,12 +310,20 @@ describe('swap search rules', () => {
 
   it.each([
     { name: 'verified results on the output chain', verified: 1, query: 'usdc', isAddressQuery: false, expected: false },
+    {
+      name: 'only unquotable verified results on the output chain',
+      verified: 1,
+      decimals: 0,
+      query: 'usdc',
+      isAddressQuery: false,
+      expected: true,
+    },
     { name: 'a one-character query', verified: 0, query: 'u', isAddressQuery: false, expected: false },
     { name: 'a two-character query', verified: 0, query: 'us', isAddressQuery: false, expected: false },
     { name: 'a three-character query', verified: 0, query: 'usd', isAddressQuery: false, expected: true },
     { name: 'an address', verified: 0, query: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', isAddressQuery: true, expected: true },
-  ])('looks on other chains for $name: $expected', ({ verified, query, isAddressQuery, expected }) => {
-    const onChain = { verified: many('v', verified), unverified: many('u', 3, { isVerified: false }) };
+  ])('looks on other chains for $name: $expected', ({ verified, decimals = 18, query, isAddressQuery, expected }) => {
+    const onChain = { verified: many('v', verified, { decimals }), unverified: many('u', 3, { isVerified: false }) };
     expect(needsCrosschainSwapSearch(onChain, query, isAddressQuery)).toBe(expected);
   });
 
