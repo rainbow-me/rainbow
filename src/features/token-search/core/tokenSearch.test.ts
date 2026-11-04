@@ -1,11 +1,15 @@
+import { type Address } from 'viem';
 import { describe, expect, it } from 'vitest';
 
+import { type SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/features/network/types/backendNetworks';
 
 import {
+  needsCrosschainSwapSearch,
   toChainSearchResults,
   toCrosschainSearchResults,
   toSearchAsset,
+  toSwapSearchResults,
   type NativeAssetByChain,
   type TokenSearchInstance,
   type TokenSearchItem,
@@ -267,5 +271,104 @@ describe('swap results', () => {
     expect(toCrosschainSearchResults(result, 'usdc', ChainId.bsc, NATIVE_ASSET_BY_CHAIN).map(asset => asset.address)).toEqual([
       '0x' + '3'.repeat(40),
     ]);
+  });
+});
+
+describe('swap search rules', () => {
+  const ICON = 'https://example.com/icon.png';
+
+  let assetCount = 0;
+  function asset(symbol: string, overrides: Partial<SearchAsset> = {}): SearchAsset {
+    assetCount += 1;
+    const address = `0x${assetCount.toString(16).padStart(40, 'a')}` as Address;
+    return {
+      address,
+      chainId: ChainId.base,
+      decimals: 18,
+      highLiquidity: false,
+      icon_url: ICON,
+      isNativeAsset: false,
+      isRainbowCurated: false,
+      isVerified: true,
+      mainnetAddress: '' as Address,
+      name: symbol,
+      networks: { [ChainId.base]: { address, decimals: 18 } },
+      symbol,
+      uniqueId: `${address}_${ChainId.base}`,
+      ...overrides,
+    };
+  }
+
+  const many = (prefix: string, count: number, overrides: Partial<SearchAsset> = {}) =>
+    Array.from({ length: count }, (_, i) => asset(`${prefix}${i}`, overrides));
+
+  it.each([
+    { name: 'verified results on the output chain', verified: 1, query: 'usdc', isAddressQuery: false, expected: false },
+    { name: 'a one-character query', verified: 0, query: 'u', isAddressQuery: false, expected: false },
+    { name: 'a two-character query', verified: 0, query: 'us', isAddressQuery: false, expected: false },
+    { name: 'a three-character query', verified: 0, query: 'usd', isAddressQuery: false, expected: true },
+    { name: 'an address', verified: 0, query: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', isAddressQuery: true, expected: true },
+  ])('looks on other chains for $name: $expected', ({ verified, query, isAddressQuery, expected }) => {
+    const onChain = { verified: many('v', verified), unverified: many('u', 3, { isVerified: false }) };
+    expect(needsCrosschainSwapSearch(onChain, query, isAddressQuery)).toBe(expected);
+  });
+
+  it('caps each section, keeping the display order', () => {
+    const verified = many('v', 30);
+    const unverified = many('u', 10, { isVerified: false });
+    const crosschain = many('c', 30);
+
+    const results = toSwapSearchResults({ onChain: { verified, unverified }, crosschain, query: 'usdc', isAddressQuery: false });
+
+    expect(results.verified).toEqual(verified.slice(0, 24));
+    expect(results.unverified).toEqual(unverified.slice(0, 6));
+    expect(results.crosschain).toEqual(crosschain.slice(0, 24));
+  });
+
+  it.each([
+    { query: 'u', verified: ['WITH_ICON'], unverified: [] },
+    { query: 'us', verified: ['WITH_ICON', 'NO_ICON'], unverified: [] },
+    { query: 'usd', verified: ['WITH_ICON', 'NO_ICON'], unverified: ['UNVERIFIED'] },
+  ])('for "$query" shows verified $verified and unverified $unverified', ({ query, verified, unverified }) => {
+    const onChain = {
+      verified: [asset('WITH_ICON'), asset('NO_ICON', { icon_url: undefined })],
+      unverified: [asset('UNVERIFIED', { isVerified: false })],
+    };
+
+    const results = toSwapSearchResults({ onChain, crosschain: [], query, isAddressQuery: false });
+
+    expect(results.verified.map(a => a.symbol)).toEqual(verified);
+    expect(results.unverified.map(a => a.symbol)).toEqual(unverified);
+  });
+
+  it('shows only the unverified result deployed at a pasted address', () => {
+    const pasted = asset('PASTED', { isVerified: false });
+    const onChain = { verified: [], unverified: [asset('OTHER', { isVerified: false }), pasted] };
+
+    const results = toSwapSearchResults({
+      onChain,
+      crosschain: [],
+      query: pasted.address.toUpperCase().replace('0X', '0x'),
+      isAddressQuery: true,
+    });
+
+    expect(results.unverified).toEqual([pasted]);
+  });
+
+  it('leaves out contracts with no decimals, but not the native coin', () => {
+    const native = asset('ETH', { decimals: 0, isNativeAsset: true });
+    const onChain = {
+      verified: [asset('NO_DECIMALS', { decimals: 0 }), native],
+      unverified: [asset('NO_DECIMALS_U', { decimals: 0, isVerified: false })],
+    };
+
+    const results = toSwapSearchResults({
+      onChain,
+      crosschain: [asset('NO_DECIMALS_C', { decimals: 0 })],
+      query: 'usdc',
+      isAddressQuery: false,
+    });
+
+    expect(results).toEqual({ verified: [native], unverified: [], crosschain: [] });
   });
 });

@@ -7,8 +7,10 @@ import { type Address } from 'viem';
 
 import {
   ADDRESS_SEARCH_KEY,
+  isSwapTokenSearchV2Active,
   NAME_SYMBOL_SEARCH_KEYS,
   useSwapsSearchStore,
+  useSwapTokenSearchStore,
   useTokenSearchStore,
   useUnverifiedTokenSearchStore,
 } from '@/__swaps__/screens/Swap/resources/search/searchV2';
@@ -18,6 +20,7 @@ import { type RecentSwap } from '@/__swaps__/types/swap';
 import { analytics } from '@/analytics';
 import { getUniqueId } from '@/entities/assetId';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useTokenSearchV2EnabledStore } from '@/features/token-search/data/tokenSearch';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';
@@ -33,8 +36,17 @@ const MAX_POPULAR_RESULTS = 3;
 
 export function useSearchCurrencyLists() {
   const lastTrackedTimeRef = useRef<number | null>(null);
-  const verifiedAssets = useTokenSearchStore(state => state.getData());
-  const unverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
+  const isTokenSearchV2 = isSwapTokenSearchV2Active(
+    useTokenSearchV2EnabledStore(),
+    useSwapsSearchStore(state => state.searchQuery)
+  );
+  const legacyVerifiedAssets = useTokenSearchStore(state => state.getData());
+  const legacyUnverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
+  const tokenSearchV2Results = useSwapTokenSearchStore(state => state.getData());
+  const verifiedAssets = isTokenSearchV2
+    ? { results: tokenSearchV2Results?.verified, crosschainResults: tokenSearchV2Results?.crosschain }
+    : legacyVerifiedAssets;
+  const unverifiedAssets = isTokenSearchV2 ? (tokenSearchV2Results?.unverified ?? null) : legacyUnverifiedAssets;
   const popularAssets = usePopularTokensStore(state => state.getData());
   const { favoritesMetadata: favorites } = useFavorites();
 
@@ -147,7 +159,8 @@ export function useSearchCurrencyLists() {
     if (
       query.length <= 2 ||
       (lastTrackedTimeRef.current && now - lastTrackedTimeRef.current < ANALYTICS_LOG_THROTTLE_MS) ||
-      useTokenSearchStore.getState().status !== 'success'
+      (isSwapTokenSearchV2Active(useTokenSearchV2EnabledStore.getState(), query) ? useSwapTokenSearchStore : useTokenSearchStore).getState()
+        .status !== 'success'
     ) {
       return;
     }

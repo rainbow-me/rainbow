@@ -187,3 +187,52 @@ export function toCrosschainSearchResults(
         Object.values(asset.networks).some(network => isLowerCaseMatch(normalizedQuery, network?.address)))
   );
 }
+
+// Swap search caps, as in the legacy swap search
+const SWAP_MAX_VERIFIED_RESULTS = 24;
+const SWAP_MAX_UNVERIFIED_RESULTS = 6;
+
+export type SwapSearchResults = {
+  verified: SearchAsset[];
+  unverified: SearchAsset[];
+  crosschain: SearchAsset[];
+};
+
+/**
+ * Whether swap search also looks for the query on other chains: only when nothing verified is deployed on the output
+ * chain, and the query is an address or longer than two characters.
+ */
+export function needsCrosschainSwapSearch(onChain: ChainSearchResults, query: string, isAddressQuery: boolean): boolean {
+  return onChain.verified.length === 0 && (isAddressQuery || query.length > 2);
+}
+
+/**
+ * The swap search sections, with the legacy swap rules: a one-character query shows only verified results with an icon;
+ * unverified results need a query longer than two characters, and for an address, a deployment at that address. Tokens
+ * with no decimals are left out, as the backend reports unknown decimals as 0 and an amount can't be quoted in them.
+ */
+export function toSwapSearchResults({
+  onChain,
+  crosschain,
+  query,
+  isAddressQuery,
+}: {
+  onChain: ChainSearchResults;
+  crosschain: SearchAsset[];
+  query: string;
+  isAddressQuery: boolean;
+}): SwapSearchResults {
+  const isQuotable = (asset: SearchAsset) => asset.isNativeAsset || asset.decimals > 0;
+
+  const verified = onChain.verified.filter(asset => isQuotable(asset) && (query.length > 1 || !!asset.icon_url));
+  const unverified =
+    query.length > 2
+      ? onChain.unverified.filter(asset => isQuotable(asset) && (!isAddressQuery || isLowerCaseMatch(asset.address, query)))
+      : [];
+
+  return {
+    verified: verified.slice(0, SWAP_MAX_VERIFIED_RESULTS),
+    unverified: unverified.slice(0, SWAP_MAX_UNVERIFIED_RESULTS),
+    crosschain: crosschain.filter(isQuotable).slice(0, SWAP_MAX_VERIFIED_RESULTS),
+  };
+}
