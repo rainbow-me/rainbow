@@ -40,6 +40,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useRouteCleanup } from '@/navigation/useRouteCleanup';
 import { USDC_ADDRESS } from '@/references/constants';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -435,15 +436,16 @@ export const AddCashSheet = memo(function AddCashSheet() {
 
   // Post-paint on purpose: parking the gate in a layout effect fires before this component's store
   // subscription attaches, and the store's snapshot cache swallows the missed update — the sheet
-  // then sits on the loading row forever. The unmount clear keeps a stale gate from flashing on reopen.
+  // then sits on the loading row forever.
   useEffect(() => {
     // A settled previous run starts fresh, except an id parked by an access-refusal notice; one still
     // in flight is picked up by the gate's entry intent.
     const { status } = useCashBuyOrderStore.getState();
     if (selectCashBuyPhase({ status }) !== 'pending' && status.step !== 'accessRefused') cashBuyOrderActions.reset();
     void openCashAuthGate();
-    return useCashAuthGateStore.getState().clear;
   }, []);
+
+  useRouteCleanup(useCashAuthGateStore.getState().clear);
 
   useWatcher({
     enabled: isPolling && openGate === null,
