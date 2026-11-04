@@ -84,7 +84,7 @@ target 'Rainbow' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
-  pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => 'aca453d075bf6476c7b18709daf84534038cbf26'
+  pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => '619f229935851926ccbd6d8c3f036142e327949d'
   pod 'Shimmer'
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
