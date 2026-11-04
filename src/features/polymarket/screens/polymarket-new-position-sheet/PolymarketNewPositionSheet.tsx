@@ -23,13 +23,12 @@ import { POLYMARKET_OUTCOME_CARD_MIN_HEIGHT, PolymarketOutcomeCard } from '@/fea
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { retryPolymarketBalance, useAvailablePolymarketBalance } from '@/features/polymarket/stores/derived/useAvailablePolymarketBalance';
 import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
-import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { isPositive, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -37,6 +36,11 @@ import Routes, { type Route } from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { checkIfReadOnlyWallet, getAccountAddress } from '@/state/wallets/walletsStore';
 import { getSolidColorEquivalent, white } from '@/worklets/colors';
+
+type BetSubmission = {
+  balance: string;
+  step: PolymarketBuyPositionStep;
+};
 
 const BUTTON_BORDER_COLOR = { custom: white(0.08) };
 
@@ -66,79 +70,71 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Text size="26pt" weight="heavy" color="label">
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
-          {'outcome' in params ? (
-            <OrderDetailsLoader outcome={params.outcome} accentColor={accentColor} fromRoute={params.fromRoute} />
-          ) : (
-            <NewPositionForm
-              event={params.event}
-              market={params.market}
-              outcomeIndex={params.outcomeIndex}
-              accentColor={accentColor}
-              fromRoute={params.fromRoute}
-            />
-          )}
+          <NewPositionContent params={params} accentColor={accentColor} />
         </Box>
       </Box>
     </PanelSheet>
   );
 });
 
-function OrderDetailsLoader({ outcome, accentColor, fromRoute }: { outcome: PolymarketOutcome; accentColor: string; fromRoute: Route }) {
-  const details = usePolymarketOrderStore(s => {
-    const data = s.getData({ outcome });
-    if (data) return data;
-    return s.getStatus('isInitialLoad') || s.getStatus('isLoading') ? undefined : null;
-  });
+function NewPositionContent({
+  params,
+  accentColor,
+}: {
+  params: RootStackParamList[typeof Routes.POLYMARKET_NEW_POSITION_SHEET];
+  accentColor: string;
+}) {
+  const outcome = 'outcome' in params ? params.outcome : null;
+  const routeDetails = 'market' in params ? params : null;
 
-  if (details === undefined) return <NewPositionSkeleton accentColor={accentColor} />;
+  const fetchedDetails = usePolymarketOrderStore(s => s.getData({ outcome }));
+  const loadingDetails = usePolymarketOrderStore(s => s.getStatus('isInitialLoad') || s.getStatus('isLoading'));
+  const { balance, isError } = useAvailablePolymarketBalance();
 
-  if (details === null) {
-    return (
-      <Box alignItems="center" gap={20} paddingVertical="28px">
-        <Text align="center" color="labelSecondary" size="17pt" weight="bold">
-          {i18n.t(i18n.l.sports.entry_error)}
-        </Text>
-        <ButtonPressAnimation onPress={() => usePolymarketOrderStore.getState().fetch({ outcome }, { force: true })}>
-          <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
-            <Text color="accent" size="17pt" weight="bold">
-              {i18n.t(i18n.l.sports.retry)}
-            </Text>
-          </Box>
-        </ButtonPressAnimation>
-      </Box>
-    );
+  const details = routeDetails ?? fetchedDetails;
+
+  if (!details) {
+    if (loadingDetails) return <NewPositionSkeleton accentColor={accentColor} />;
+
+    return <BetDetailsError onRetry={() => usePolymarketOrderStore.getState().fetch({ outcome }, { force: true })} />;
+  }
+
+  if (balance === null) {
+    return isError ? <BetDetailsError onRetry={retryPolymarketBalance} /> : <NewPositionSkeleton accentColor={accentColor} />;
   }
 
   return (
     <NewPositionForm
-      key={outcome.tokenId}
-      event={details.event}
-      market={details.market}
-      outcomeIndex={details.outcomeIndex}
+      key={details.market.clobTokenIds[details.outcomeIndex]}
       accentColor={accentColor}
-      fromRoute={fromRoute}
+      balance={balance}
+      details={details}
+      fromRoute={params.fromRoute}
     />
   );
 }
 
 function NewPositionForm({
-  market,
-  event,
-  outcomeIndex,
   accentColor,
+  balance,
+  details,
   fromRoute,
-}: PolymarketOrderDetails & { accentColor: string; fromRoute: Route }) {
+}: {
+  accentColor: string;
+  balance: string;
+  details: PolymarketOrderDetails;
+  fromRoute: Route;
+}) {
+  const { event, market, outcomeIndex } = details;
   const { isDarkMode } = useColorMode();
-
-  const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
-  const [processingStep, setProcessingStep] = useState<PolymarketBuyPositionStep | null>(null);
+  const [submission, setSubmission] = useState<BetSubmission | null>(null);
+  const availableBalance = submission?.balance ?? balance;
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
   const buttonColor = getButtonColor(accentColor);
 
   const {
-    availableBalance,
     bestPrice,
     worstPrice,
     validation,
@@ -154,7 +150,7 @@ function NewPositionForm({
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
     isQuoteReady,
-  } = useNewPositionForm();
+  } = useNewPositionForm(availableBalance);
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
@@ -176,7 +172,7 @@ function NewPositionForm({
   const handleMarketBuyPosition = useCallback(async () => {
     if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
 
-    setProcessingStep('preparing');
+    const onStep = (step: PolymarketBuyPositionStep) => setSubmission({ balance: availableBalance, step });
 
     try {
       await executePolymarketBuyPosition({
@@ -195,10 +191,10 @@ function NewPositionForm({
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
-        onStep: setProcessingStep,
+        onStep,
       });
 
-      setProcessingStep('confirming_order');
+      onStep('confirming_order');
       await waitForPositionSizeUpdate(tokenId);
 
       Navigation.goBack();
@@ -220,10 +216,10 @@ function NewPositionForm({
       });
 
       presentErrorAlert(error);
-    } finally {
-      setProcessingStep(null);
+      setSubmission(null);
     }
   }, [
+    availableBalance,
     bestPrice,
     buyAmount,
     canSubmit,
@@ -272,12 +268,12 @@ function NewPositionForm({
         amountToWin={isQuoteReady ? amountToWin : undefined}
       />
       {hasBlockedLiquidity ? <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} /> : null}
-      {hasBalance ? (
+      {isPositive(availableBalance) ? (
         <HoldToActivateButton
           onLongPress={handleMarketBuyPosition}
           label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-          processingLabel={processingStep === null ? '' : getBuyPositionProcessingLabel(processingStep)}
-          isProcessing={processingStep !== null}
+          processingLabel={submission ? getBuyPositionProcessingLabel(submission.step) : ''}
+          isProcessing={submission !== null}
           showBiometryIcon={false}
           backgroundColor={buttonColor}
           disabledBackgroundColor={buttonColor}
@@ -344,6 +340,23 @@ function OrderSummary({ averagePrice, spread, amountToWin }: { averagePrice?: st
           </Text>
         </TextShadow>
       </Box>
+    </Box>
+  );
+}
+
+function BetDetailsError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <Box alignItems="center" gap={20} paddingVertical="28px">
+      <Text align="center" color="labelSecondary" size="17pt" weight="bold">
+        {i18n.t(i18n.l.sports.entry_error)}
+      </Text>
+      <ButtonPressAnimation onPress={onRetry}>
+        <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
+          <Text color="accent" size="17pt" weight="bold">
+            {i18n.t(i18n.l.sports.retry)}
+          </Text>
+        </Box>
+      </ButtonPressAnimation>
     </Box>
   );
 }
