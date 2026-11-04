@@ -440,7 +440,7 @@ export async function discoverSearchQueryFunction(
   { query, chainIds, tokenSearchV2 }: DiscoverSearchParams,
   abortController: AbortController | null
 ): Promise<DiscoverSearchResults> {
-  // The default list shown before typing isn't served by the new search yet
+  // The new search returns nothing for an empty query, so the default list stays on the legacy search
   if (tokenSearchV2 && query !== '') return searchDiscoverTokens(query, chainIds, abortController);
 
   const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
@@ -479,8 +479,8 @@ export async function discoverSearchQueryFunction(
 }
 
 /**
- * Discover search on the backend token search. It ranks, groups and looks addresses up itself, so its results are only
- * split by verification. Results that aren't verified show in the unverified section.
+ * Discover search on the backend token search, which ranks, groups and looks addresses up itself, so its results are only
+ * split by verification. Each opens on mainnet when deployed there, as favorites and the legacy search do.
  */
 async function searchDiscoverTokens(
   query: string,
@@ -492,7 +492,7 @@ async function searchDiscoverTokens(
       { query, category: 'CATEGORY_TOKENS', chainIds: chainIds.split(',').map(Number) as ChainId[], limit: DISCOVER_SEARCH_LIMIT },
       abortController
     );
-    const assets = toSearchAssets(result, useBackendNetworksStore.getState().getChainsNativeAsset());
+    const assets = toSearchAssets(result, useBackendNetworksStore.getState().getChainsNativeAsset(), ChainId.mainnet);
     return {
       verifiedAssets: assets.filter(asset => asset.isVerified),
       highLiquidityAssets: assets.filter(asset => !asset.isVerified),

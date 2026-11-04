@@ -28,10 +28,29 @@ function token(symbol: string, verification: 'VERIFICATION_STATUS_VERIFIED' | 'V
   };
 }
 
-// An unverified result ranked between two verified ones, so splitting must keep each group's order
+const MAINNET_AAA = '0x' + 'a'.repeat(40);
+
+// An unverified result ranked between two verified ones, so splitting must keep each group's order. AAA is listed on
+// Base before mainnet, the chain favorites use.
 const RESULT: TokenSearchResult = {
   sections: [
-    { type: 'SECTION_TYPE_TOP', items: [token('AAA', 'VERIFICATION_STATUS_VERIFIED', '0x' + '1'.repeat(40))] },
+    {
+      type: 'SECTION_TYPE_TOP',
+      items: [
+        {
+          id: 'AAA',
+          token: {
+            symbol: 'AAA',
+            name: 'AAA',
+            verification: 'VERIFICATION_STATUS_VERIFIED',
+            instances: [
+              { assetId: `eip155:8453/erc20:${'0x' + '1'.repeat(40)}`, decimals: 18 },
+              { assetId: `eip155:1/erc20:${MAINNET_AAA}`, decimals: 18 },
+            ],
+          },
+        },
+      ],
+    },
     {
       type: 'SECTION_TYPE_TOKENS',
       items: [
@@ -59,6 +78,7 @@ describe('discoverSearchQueryFunction', () => {
       null
     );
     expect(results.verifiedAssets.map(asset => asset.symbol)).toEqual(['AAA', 'CCC']);
+    expect(results.verifiedAssets[0]).toMatchObject({ address: MAINNET_AAA, chainId: ChainId.mainnet });
     expect(results.highLiquidityAssets.map(asset => asset.symbol)).toEqual(['BBB', 'DDD']);
     expect(results.lowLiquidityAssets).toEqual([]);
   });
