@@ -500,7 +500,7 @@ async function searchDiscoverTokens(
     };
   } catch (e) {
     if (e instanceof Error && e.name === 'AbortError') return NO_DISCOVER_RESULTS;
-    logger.error(new RainbowError('[searchDiscoverTokens]: Discover search failed'), { message: (e as Error).message });
+    logger.error(new RainbowError('[searchDiscoverTokens]: Discover search failed', e));
     return NO_DISCOVER_RESULTS;
   }
 }

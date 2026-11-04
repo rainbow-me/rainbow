@@ -119,7 +119,8 @@ describe('discoverSearchQueryFunction', () => {
     const results = await discoverSearchQueryFunction({ query: 'usdc', chainIds: CHAIN_IDS, tokenSearchV2: true }, null);
 
     expect(results).toEqual({ verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] });
-    expect(logError).toHaveBeenCalledTimes(logged);
+    // The cause lets Sentry drop network failures and 5xx responses
+    expect(logError.mock.calls.map(([entry]) => (entry as Error).cause)).toEqual(logged ? [error] : []);
   });
 
   it.each([
