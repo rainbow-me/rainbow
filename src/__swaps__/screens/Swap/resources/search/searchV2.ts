@@ -57,7 +57,7 @@ type DiscoverSearchParams = {
   list?: string;
   query: string;
   chainIds: string;
-  tokenSearchV2?: boolean;
+  tokenSearchV2: boolean;
 };
 
 export type VerifiedResults = {
@@ -443,7 +443,7 @@ export async function discoverSearchQueryFunction(
   // The new search returns nothing for an empty query, so the default list stays on the legacy search
   if (tokenSearchV2 && query !== '') return searchDiscoverTokens(query, chainIds, abortController);
 
-  const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
+  const queryParams: Omit<DiscoverSearchParams, 'chainIds' | 'tokenSearchV2'> = {
     query,
   };
 

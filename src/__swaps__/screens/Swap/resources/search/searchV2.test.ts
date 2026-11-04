@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { type TokenSearchResult } from '@/features/token-search/core/tokenSearch';
 import { fetchTokenSearch } from '@/features/token-search/data/tokenSearch';
+import { getProvider } from '@/handlers/web3';
+import { logger } from '@/logger';
 
 import { discoverSearchQueryFunction } from './searchV2';
 
@@ -65,7 +67,9 @@ const RESULT: TokenSearchResult = {
 describe('discoverSearchQueryFunction', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
     searchTokens.mockReset();
+    vi.mocked(getProvider).mockClear();
   });
 
   it('searches the backend token search with the flag on and splits results by verification', async () => {
@@ -83,8 +87,12 @@ describe('discoverSearchQueryFunction', () => {
     expect(results.lowLiquidityAssets).toEqual([]);
   });
 
-  it('shows no results when the backend finds nothing for a pasted address', async () => {
-    searchTokens.mockResolvedValue({ sections: [] });
+  it('shows no results for a pasted address the backend finds nothing for, without the legacy search or an on-chain read', async () => {
+    // The gateway omits empty repeated fields, so no match has no sections at all
+    searchTokens.mockResolvedValue({});
+    const legacyFetch = vi.fn();
+    vi.stubGlobal('fetch', legacyFetch);
+    const logError = vi.spyOn(logger, 'error');
 
     const results = await discoverSearchQueryFunction(
       { query: '0x0000000000000000000000000000000000000bad', chainIds: CHAIN_IDS, tokenSearchV2: true },
@@ -92,6 +100,26 @@ describe('discoverSearchQueryFunction', () => {
     );
 
     expect(results).toEqual({ verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] });
+    expect(legacyFetch).not.toHaveBeenCalled();
+    expect(getProvider).not.toHaveBeenCalled();
+    expect(logError).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { name: 'a failed request, and logs it', error: new Error('boom'), logged: 1 },
+    {
+      name: 'a request superseded by the next keystroke, without logging',
+      error: Object.assign(new Error('aborted'), { name: 'AbortError' }),
+      logged: 0,
+    },
+  ])('shows no results for $name', async ({ error, logged }) => {
+    searchTokens.mockRejectedValue(error);
+    const logError = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
+
+    const results = await discoverSearchQueryFunction({ query: 'usdc', chainIds: CHAIN_IDS, tokenSearchV2: true }, null);
+
+    expect(results).toEqual({ verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] });
+    expect(logError).toHaveBeenCalledTimes(logged);
   });
 
   it.each([
