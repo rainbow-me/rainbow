@@ -1,11 +1,10 @@
 import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
+import { getInitialSliderAmount } from '@/components/amount-input-card/getInitialSliderAmount';
 import { PerpsNavigation } from '@/features/perps/navigation/perpsNavigation';
 import { infoClient } from '@/features/perps/services/hyperliquid-info-client';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PerpPositionSide, type PerpMarket, type TriggerOrderType } from '@/features/perps/types';
-import { greaterThanWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { divide } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -84,7 +83,7 @@ export const useHlNewPositionStore = createBaseStore<HlNewPositionStore>((set, g
 
   setMarket: async market => {
     const availableBalance = hyperliquidAccountActions.getBalance();
-    const amount = toFixedWorklet(greaterThanWorklet(availableBalance, 5) ? divide(availableBalance, 2) : availableBalance, 2);
+    const amount = getInitialSliderAmount(availableBalance);
 
     // Ensure old state is reset before the new position screen is shown
     set(state => ({ ...initialState, amount, leverage: market.maxLeverage, market, marketResetSignal: state.marketResetSignal + 1 }));
