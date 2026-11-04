@@ -179,7 +179,8 @@ export function toCrosschainSearchResults(
   chainId: ChainId,
   nativeAssetByChain: NativeAssetByChain
 ): SearchAsset[] {
-  const normalizedQuery = query.trim().toLowerCase();
+  // As the backend reads it: a `$TICKER` is the ticker
+  const normalizedQuery = query.trim().replace(/^\$/, '').toLowerCase();
   return toSearchAssets(result, nativeAssetByChain).filter(
     asset =>
       asset.isVerified &&
@@ -190,12 +191,12 @@ export function toCrosschainSearchResults(
   );
 }
 
-// Swap search caps, as in the legacy swap search
-const SWAP_MAX_VERIFIED_RESULTS = 24;
-const SWAP_MAX_UNVERIFIED_RESULTS = 6;
+export const SWAP_MAX_VERIFIED_RESULTS = 24;
+export const SWAP_MAX_UNVERIFIED_RESULTS = 6;
 
-// The backend reports unknown decimals as 0, and an amount can't be quoted in a token with no decimals
-const isQuotable = (asset: SearchAsset) => asset.isNativeAsset || asset.decimals > 0;
+// The backend reports unknown decimals as 0, and an amount can't be quoted in a token with no decimals. Native coins
+// take the app's decimals.
+const isQuotable = (asset: SearchAsset) => asset.decimals > 0;
 
 export type SwapSearchResults = {
   verified: SearchAsset[];
@@ -205,10 +206,10 @@ export type SwapSearchResults = {
 
 /**
  * Whether swap search also looks for the query on other chains: only when nothing verified that can be quoted is
- * deployed on the output chain, and the query is an address or longer than two characters.
+ * deployed on the output chain, and the query is longer than two characters (an address always is).
  */
-export function needsCrosschainSwapSearch(onChain: ChainSearchResults, query: string, isAddressQuery: boolean): boolean {
-  return !onChain.verified.some(isQuotable) && (isAddressQuery || query.length > 2);
+export function needsCrosschainSwapSearch(onChain: ChainSearchResults, query: string): boolean {
+  return !onChain.verified.some(isQuotable) && query.length > 2;
 }
 
 /**

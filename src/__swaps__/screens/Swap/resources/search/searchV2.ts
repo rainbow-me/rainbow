@@ -12,6 +12,8 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import {
   needsCrosschainSwapSearch,
+  SWAP_MAX_UNVERIFIED_RESULTS,
+  SWAP_MAX_VERIFIED_RESULTS,
   toChainSearchResults,
   toCrosschainSearchResults,
   toSwapSearchResults,
@@ -33,8 +35,6 @@ type SearchItemWithRelevance = SearchAsset & {
 
 // ============ Constants & Types ============================================== //
 
-const MAX_VERIFIED_RESULTS = 24;
-const MAX_UNVERIFIED_RESULTS = 6;
 // The backend's maximum page size
 const SWAP_SEARCH_LIMIT = 50;
 
@@ -114,7 +114,9 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.minutes(2)),
     fetcher: (params, abortController) => ((params.query?.length ?? 0) > 2 ? searchUnverifiedTokens(params, abortController) : NO_RESULTS),
     transform: (data, { query }) =>
-      query && isAddress(query) ? getExactMatches(data, query, true, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
+      query && isAddress(query)
+        ? getExactMatches(data, query, true, SWAP_MAX_UNVERIFIED_RESULTS)
+        : data.slice(0, SWAP_MAX_UNVERIFIED_RESULTS),
     disableAutoRefetching: true,
     enabled: $ =>
       !isSwapTokenSearchV2Active(
@@ -137,10 +139,11 @@ type SwapTokenSearchParams = {
   chainId: ChainId;
 };
 
-const NO_SWAP_RESULTS: SwapSearchResults = { verified: [], unverified: [], crosschain: [] };
-
-/** The swap token search on the backend token search, read while {@link isSwapTokenSearchV2Active}. */
-export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults, SwapTokenSearchParams>({
+/**
+ * The swap token search on the backend token search, read while {@link isSwapTokenSearchV2Active}. An empty query has
+ * no results (`null`), so the list keeps the legacy default list until the first query is answered.
+ */
+export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults | null, SwapTokenSearchParams>({
   cacheTime: time.seconds(15),
   fetcher: searchSwapTokens,
   disableAutoRefetching: true,
@@ -393,7 +396,7 @@ function selectTopSearchResults({
         }
       }
       sortSearchResults(matches, mode, normalizedQuery);
-      results = { crosschainResults: [], results: matches.slice(0, MAX_VERIFIED_RESULTS) };
+      results = { crosschainResults: [], results: matches.slice(0, SWAP_MAX_VERIFIED_RESULTS) };
       break;
     }
     case SearchMode.Crosschain: {
@@ -404,7 +407,7 @@ function selectTopSearchResults({
         }
       }
       sortSearchResults(matches, mode, normalizedQuery);
-      results = { crosschainResults: matches.slice(0, MAX_VERIFIED_RESULTS), results: [] };
+      results = { crosschainResults: matches.slice(0, SWAP_MAX_VERIFIED_RESULTS), results: [] };
       break;
     }
   }
@@ -525,8 +528,8 @@ export async function discoverSearchQueryFunction(
 async function searchSwapTokens(
   { query, chainId }: SwapTokenSearchParams,
   abortController: AbortController | null
-): Promise<SwapSearchResults> {
-  if (!query) return NO_SWAP_RESULTS;
+): Promise<SwapSearchResults | null> {
+  if (!query) return null;
 
   const nativeAssetByChain = useBackendNetworksStore.getState().getChainsNativeAsset();
   const isAddressQuery = isAddress(query);
@@ -537,7 +540,7 @@ async function searchSwapTokens(
     nativeAssetByChain
   );
 
-  const crosschain = needsCrosschainSwapSearch(onChain, query, isAddressQuery)
+  const crosschain = needsCrosschainSwapSearch(onChain, query)
     ? toCrosschainSearchResults(
         await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', limit: SWAP_SEARCH_LIMIT }, abortController),
         query,

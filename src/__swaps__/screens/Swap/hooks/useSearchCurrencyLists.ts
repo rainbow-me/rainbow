@@ -43,10 +43,12 @@ export function useSearchCurrencyLists() {
   const legacyVerifiedAssets = useTokenSearchStore(state => state.getData());
   const legacyUnverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
   const tokenSearchV2Results = useSwapTokenSearchStore(state => state.getData());
-  const verifiedAssets = isTokenSearchV2
-    ? { results: tokenSearchV2Results?.verified, crosschainResults: tokenSearchV2Results?.crosschain }
+  // Until the new search answers its first query, the legacy stores still hold the default list
+  const showTokenSearchV2 = isTokenSearchV2 && !!tokenSearchV2Results;
+  const verifiedAssets = showTokenSearchV2
+    ? { results: tokenSearchV2Results.verified, crosschainResults: tokenSearchV2Results.crosschain }
     : legacyVerifiedAssets;
-  const unverifiedAssets = isTokenSearchV2 ? (tokenSearchV2Results?.unverified ?? null) : legacyUnverifiedAssets;
+  const unverifiedAssets = showTokenSearchV2 ? tokenSearchV2Results.unverified : legacyUnverifiedAssets;
   const popularAssets = usePopularTokensStore(state => state.getData());
   const { favoritesMetadata: favorites } = useFavorites();
 

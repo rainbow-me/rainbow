@@ -6,7 +6,7 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 import { type TokenSearchItem } from '@/features/token-search/core/tokenSearch';
 import { fetchTokenSearch } from '@/features/token-search/data/tokenSearch';
 
-import { useSwapTokenSearchStore } from './searchV2';
+import { useSwapsSearchStore, useSwapTokenSearchStore, useTokenSearchStore, useUnverifiedTokenSearchStore } from './searchV2';
 
 vi.mock('@/features/token-search/data/tokenSearch', async importOriginal => ({
   ...(await importOriginal<typeof import('@/features/token-search/data/tokenSearch')>()),
@@ -118,7 +118,7 @@ describe('useSwapTokenSearchStore', () => {
     const results = await search('', ChainId.base);
 
     expect(searchTokens).not.toHaveBeenCalled();
-    expect(results).toEqual({ verified: [], unverified: [], crosschain: [] });
+    expect(results).toBeNull();
   });
 
   it('lets a failed request reach the store', async () => {
@@ -127,5 +127,21 @@ describe('useSwapTokenSearchStore', () => {
     await search('usdc', ChainId.base);
 
     expect(useSwapTokenSearchStore.getState().status).toBe('error');
+  });
+
+  it.each([
+    { name: 'the flag off', flag: false, searchQuery: 'usdc', legacy: true },
+    { name: 'the flag on and no query', flag: true, searchQuery: ' ', legacy: true },
+    { name: 'the flag on and a query', flag: true, searchQuery: 'usdc', legacy: false },
+  ])('with $name, fetches through the legacy stores: $legacy', ({ flag, searchQuery, legacy }) => {
+    useExperimentalConfigStore.getState().setFlag(TOKEN_SEARCH_V2, flag);
+    useSwapsSearchStore.setState({ searchQuery });
+
+    expect(useTokenSearchStore.getState().enabled).toBe(legacy);
+    expect(useUnverifiedTokenSearchStore.getState().enabled).toBe(legacy);
+    expect(useSwapTokenSearchStore.getState().enabled).toBe(flag);
+
+    useExperimentalConfigStore.getState().setFlag(TOKEN_SEARCH_V2, true);
+    useSwapsSearchStore.setState({ searchQuery: '' });
   });
 });

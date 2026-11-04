@@ -261,6 +261,7 @@ describe('swap results', () => {
 
   it.each([
     { name: 'symbol', query: ' USDC ', expected: ['USDC'] },
+    { name: 'a $TICKER', query: '$USDC', expected: ['USDC'] },
     { name: 'name', query: 'usd coin (bridged)', expected: ['USDC.E'] },
     { name: 'address of any deployment', query: '0x' + '4'.repeat(40), expected: ['USDC.E'] },
   ])('keeps verified results on other chains that exactly match by $name', ({ query, expected }) => {
@@ -309,22 +310,20 @@ describe('swap search rules', () => {
     Array.from({ length: count }, (_, i) => asset(`${prefix}${i}`, overrides));
 
   it.each([
-    { name: 'verified results on the output chain', verified: 1, query: 'usdc', isAddressQuery: false, expected: false },
+    { name: 'verified results on the output chain', verified: 1, query: 'usdc', expected: false },
     {
       name: 'only unquotable verified results on the output chain',
       verified: 1,
       decimals: 0,
       query: 'usdc',
-      isAddressQuery: false,
       expected: true,
     },
-    { name: 'a one-character query', verified: 0, query: 'u', isAddressQuery: false, expected: false },
-    { name: 'a two-character query', verified: 0, query: 'us', isAddressQuery: false, expected: false },
-    { name: 'a three-character query', verified: 0, query: 'usd', isAddressQuery: false, expected: true },
-    { name: 'an address', verified: 0, query: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', isAddressQuery: true, expected: true },
-  ])('looks on other chains for $name: $expected', ({ verified, decimals = 18, query, isAddressQuery, expected }) => {
+    { name: 'a one-character query', verified: 0, query: 'u', expected: false },
+    { name: 'a two-character query', verified: 0, query: 'us', expected: false },
+    { name: 'a three-character query', verified: 0, query: 'usd', expected: true },
+  ])('looks on other chains for $name: $expected', ({ verified, decimals = 18, query, expected }) => {
     const onChain = { verified: many('v', verified, { decimals }), unverified: many('u', 3, { isVerified: false }) };
-    expect(needsCrosschainSwapSearch(onChain, query, isAddressQuery)).toBe(expected);
+    expect(needsCrosschainSwapSearch(onChain, query)).toBe(expected);
   });
 
   it('caps each section, keeping the display order', () => {
@@ -369,20 +368,29 @@ describe('swap search rules', () => {
     expect(results.unverified).toEqual([pasted]);
   });
 
-  it('leaves out contracts with no decimals, but not the native coin', () => {
-    const native = asset('ETH', { decimals: 0, isNativeAsset: true });
-    const onChain = {
-      verified: [asset('NO_DECIMALS', { decimals: 0 }), native],
-      unverified: [asset('NO_DECIMALS_U', { decimals: 0, isVerified: false })],
+  it('leaves out contracts with no decimals, but keeps a native coin the response gives no decimals', () => {
+    const result: TokenSearchResult = {
+      sections: [
+        {
+          type: 'SECTION_TYPE_TOKENS',
+          items: [
+            item({ symbol: 'ETH', instances: [{ assetId: `eip155:${ChainId.base}/native:${ZERO}` }] }),
+            item({ symbol: 'NODEC', instances: [{ assetId: `eip155:${ChainId.base}/erc20:${'0x' + 'd'.repeat(40)}` }] }),
+            item({
+              symbol: 'NODEC_U',
+              verification: 'VERIFICATION_STATUS_UNVERIFIED',
+              instances: [{ assetId: `eip155:${ChainId.base}/erc20:${'0x' + 'e'.repeat(40)}` }],
+            }),
+          ],
+        },
+      ],
     };
+    const onChain = toChainSearchResults(result, ChainId.base, NATIVE_ASSET_BY_CHAIN);
 
-    const results = toSwapSearchResults({
-      onChain,
-      crosschain: [asset('NO_DECIMALS_C', { decimals: 0 })],
-      query: 'usdc',
-      isAddressQuery: false,
-    });
+    const results = toSwapSearchResults({ onChain, crosschain: [asset('NODEC_C', { decimals: 0 })], query: 'usdc', isAddressQuery: false });
 
-    expect(results).toEqual({ verified: [native], unverified: [], crosschain: [] });
+    expect(results.verified.map(a => [a.symbol, a.decimals])).toEqual([['ETH', 18]]);
+    expect(results.unverified).toEqual([]);
+    expect(results.crosschain).toEqual([]);
   });
 });
