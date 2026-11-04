@@ -10,7 +10,7 @@ import { getUniqueId } from '@/entities/assetId';
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { toSearchAssets } from '@/features/token-search/core/tokenSearch';
+import { toSearchAssetDeployments } from '@/features/token-search/core/tokenSearch';
 import { fetchTokenSearch, useTokenSearchV2EnabledStore } from '@/features/token-search/data/tokenSearch';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
@@ -479,8 +479,8 @@ export async function discoverSearchQueryFunction(
 }
 
 /**
- * Discover search on the backend token search, which ranks, groups and looks addresses up itself, so its results are only
- * split by verification. Each opens on mainnet when deployed there, as favorites and the legacy search do.
+ * Discover search on the backend token search, which ranks results and looks addresses up itself, so its results are only
+ * split by verification. Each deployment is its own row, as in the legacy search.
  */
 async function searchDiscoverTokens(
   query: string,
@@ -492,7 +492,7 @@ async function searchDiscoverTokens(
       { query, category: 'CATEGORY_TOKENS', chainIds: chainIds.split(',').map(Number) as ChainId[], limit: DISCOVER_SEARCH_LIMIT },
       abortController
     );
-    const assets = toSearchAssets(result, useBackendNetworksStore.getState().getChainsNativeAsset(), ChainId.mainnet);
+    const assets = toSearchAssetDeployments(result, useBackendNetworksStore.getState().getChainsNativeAsset());
     return {
       verifiedAssets: assets.filter(asset => asset.isVerified),
       highLiquidityAssets: assets.filter(asset => !asset.isVerified),

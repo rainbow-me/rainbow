@@ -140,17 +140,42 @@ export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeA
   };
 }
 
-/** Maps every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
+/** Every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
+function toSearchItems(result: TokenSearchResult): TokenSearchItem[] {
+  return (result.sections ?? []).flatMap(section => (SECTION_TYPES.has(section.type) ? (section.items ?? []) : []));
+}
+
+/** Maps every result in display order, each opened on `chainId` when deployed there. */
 export function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
   const assets: SearchAsset[] = [];
-  for (const section of result.sections ?? []) {
-    if (!SECTION_TYPES.has(section.type)) continue;
-    for (const item of section.items ?? []) {
-      const asset = toSearchAsset(item, nativeAssetByChain, chainId);
-      if (asset) assets.push(asset);
-    }
+  for (const item of toSearchItems(result)) {
+    const asset = toSearchAsset(item, nativeAssetByChain, chainId);
+    if (asset) assets.push(asset);
   }
   return assets;
+}
+
+/**
+ * Maps every deployment of every result to its own `SearchAsset`, opened on that deployment's chain: one row per chain,
+ * like the legacy search. Results keep their display order, and each one's deployments the order the backend lists them.
+ */
+export function toSearchAssetDeployments(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain): SearchAsset[] {
+  const deployments: SearchAsset[] = [];
+  for (const item of toSearchItems(result)) {
+    const asset = toSearchAsset(item, nativeAssetByChain);
+    if (!asset) continue;
+
+    const chainIds = new Set<ChainId>();
+    for (const instance of item.token?.instances ?? []) {
+      const chainId = Number(ASSET_ID_PATTERN.exec(instance.assetId)?.[1]) as ChainId;
+      if (asset.networks[chainId]) chainIds.add(chainId);
+    }
+    for (const chainId of chainIds) {
+      const deployment = toSearchAsset(item, nativeAssetByChain, chainId);
+      if (deployment) deployments.push(deployment);
+    }
+  }
+  return deployments;
 }
 
 /** Results deployed on `chainId`, opened there and split by verification. */

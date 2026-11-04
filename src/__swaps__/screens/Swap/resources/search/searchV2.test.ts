@@ -32,8 +32,8 @@ function token(symbol: string, verification: 'VERIFICATION_STATUS_VERIFIED' | 'V
 
 const MAINNET_AAA = '0x' + 'a'.repeat(40);
 
-// An unverified result ranked between two verified ones, so splitting must keep each group's order. AAA is listed on
-// Base before mainnet, the chain favorites use.
+// An unverified result ranked between two verified ones, so splitting must keep each group's order. AAA is deployed on
+// Base and mainnet, listed Base first.
 const RESULT: TokenSearchResult = {
   sections: [
     {
@@ -81,8 +81,11 @@ describe('discoverSearchQueryFunction', () => {
       { query: 'usdc', category: 'CATEGORY_TOKENS', chainIds: [ChainId.mainnet, ChainId.base], limit: 50 },
       null
     );
-    expect(results.verifiedAssets.map(asset => asset.symbol)).toEqual(['AAA', 'CCC']);
-    expect(results.verifiedAssets[0]).toMatchObject({ address: MAINNET_AAA, chainId: ChainId.mainnet });
+    expect(results.verifiedAssets.map(asset => [asset.symbol, asset.chainId, asset.address])).toEqual([
+      ['AAA', ChainId.base, '0x' + '1'.repeat(40)],
+      ['AAA', ChainId.mainnet, MAINNET_AAA],
+      ['CCC', ChainId.base, '0x' + '3'.repeat(40)],
+    ]);
     expect(results.highLiquidityAssets.map(asset => asset.symbol)).toEqual(['BBB', 'DDD']);
     expect(results.lowLiquidityAssets).toEqual([]);
   });
