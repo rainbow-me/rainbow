@@ -141,7 +141,7 @@ export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeA
 }
 
 /** Maps every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
-function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
+export function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
   const assets: SearchAsset[] = [];
   for (const section of result.sections ?? []) {
     if (!SECTION_TYPES.has(section.type)) continue;
