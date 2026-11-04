@@ -10,6 +10,16 @@ import { getUniqueId } from '@/entities/assetId';
 import { useDiscoverSearchQueryStore } from '@/features/discover/stores/discoverSearchQueryStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import {
+  needsCrosschainSwapSearch,
+  SWAP_MAX_UNVERIFIED_RESULTS,
+  SWAP_MAX_VERIFIED_RESULTS,
+  toChainSearchResults,
+  toCrosschainSearchResults,
+  toSwapSearchResults,
+  type SwapSearchResults,
+} from '@/features/token-search/core/tokenSearch';
+import { fetchTokenSearch, useTokenSearchV2EnabledStore } from '@/features/token-search/data/tokenSearch';
 import { time } from '@/framework/core/utils/time';
 import { RainbowFetchClient } from '@/framework/data/http/rainbowFetch';
 import { getProvider } from '@/handlers/web3';
@@ -25,8 +35,8 @@ type SearchItemWithRelevance = SearchAsset & {
 
 // ============ Constants & Types ============================================== //
 
-const MAX_VERIFIED_RESULTS = 24;
-const MAX_UNVERIFIED_RESULTS = 6;
+// The backend's maximum page size
+const SWAP_SEARCH_LIMIT = 50;
 
 const NO_RESULTS: SearchAsset[] = [];
 const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
@@ -70,11 +80,24 @@ type DiscoverSearchResults = {
 
 export const useSwapsSearchStore = createBaseStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
 
+/**
+ * Whether the swap token search reads the backend token search: with the flag on and a query typed. The list shown
+ * before typing stays on the legacy stores, as the token search returns nothing for an empty query.
+ */
+export function isSwapTokenSearchV2Active(tokenSearchV2Enabled: boolean, searchQuery: string): boolean {
+  return tokenSearchV2Enabled && searchQuery.trim() !== '';
+}
+
 export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>>(
   {
     cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
     fetcher: searchVerifiedTokens,
     disableAutoRefetching: true,
+    enabled: $ =>
+      !isSwapTokenSearchV2Active(
+        $(useTokenSearchV2EnabledStore),
+        $(useSwapsSearchStore, state => state.searchQuery)
+      ),
     keepPreviousData: true,
     params: {
       list: TokenLists.Verified,
@@ -91,8 +114,15 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.minutes(2)),
     fetcher: (params, abortController) => ((params.query?.length ?? 0) > 2 ? searchUnverifiedTokens(params, abortController) : NO_RESULTS),
     transform: (data, { query }) =>
-      query && isAddress(query) ? getExactMatches(data, query, true, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
+      query && isAddress(query)
+        ? getExactMatches(data, query, true, SWAP_MAX_UNVERIFIED_RESULTS)
+        : data.slice(0, SWAP_MAX_UNVERIFIED_RESULTS),
     disableAutoRefetching: true,
+    enabled: $ =>
+      !isSwapTokenSearchV2Active(
+        $(useTokenSearchV2EnabledStore),
+        $(useSwapsSearchStore, state => state.searchQuery)
+      ),
     keepPreviousData: true,
     params: {
       list: TokenLists.HighLiquidity,
@@ -103,6 +133,28 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
   },
   { persistThrottleMs: time.seconds(12), storageKey: 'unverifiedTokenSearch' }
 );
+
+type SwapTokenSearchParams = {
+  query: string;
+  chainId: ChainId;
+};
+
+/**
+ * The swap token search on the backend token search, read while {@link isSwapTokenSearchV2Active}. An empty query has
+ * no results (`null`), so the list keeps the legacy default list until the first query is answered.
+ */
+export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults | null, SwapTokenSearchParams>({
+  cacheTime: time.seconds(15),
+  fetcher: searchSwapTokens,
+  disableAutoRefetching: true,
+  enabled: $ => $(useTokenSearchV2EnabledStore),
+  keepPreviousData: true,
+  params: {
+    query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
+    chainId: $ => $(useSwapsStore, state => state.selectedOutputChainId ?? ChainId.mainnet),
+  },
+  staleTime: time.minutes(2),
+});
 
 export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, DiscoverSearchParams>(
   {
@@ -344,7 +396,7 @@ function selectTopSearchResults({
         }
       }
       sortSearchResults(matches, mode, normalizedQuery);
-      results = { crosschainResults: [], results: matches.slice(0, MAX_VERIFIED_RESULTS) };
+      results = { crosschainResults: [], results: matches.slice(0, SWAP_MAX_VERIFIED_RESULTS) };
       break;
     }
     case SearchMode.Crosschain: {
@@ -355,7 +407,7 @@ function selectTopSearchResults({
         }
       }
       sortSearchResults(matches, mode, normalizedQuery);
-      results = { crosschainResults: matches.slice(0, MAX_VERIFIED_RESULTS), results: [] };
+      results = { crosschainResults: matches.slice(0, SWAP_MAX_VERIFIED_RESULTS), results: [] };
       break;
     }
   }
@@ -467,6 +519,37 @@ export async function discoverSearchQueryFunction(
     logger.error(new RainbowError('[discoverSearchQueryFunction]: Discover search failed'), { url });
     return NO_DISCOVER_RESULTS;
   }
+}
+
+/**
+ * Swap search on the backend token search: results deployed on the output chain, and only when none of them is verified,
+ * verified exact matches on other chains.
+ */
+async function searchSwapTokens(
+  { query, chainId }: SwapTokenSearchParams,
+  abortController: AbortController | null
+): Promise<SwapSearchResults | null> {
+  if (!query) return null;
+
+  const nativeAssetByChain = useBackendNetworksStore.getState().getChainsNativeAsset();
+  const isAddressQuery = isAddress(query);
+
+  const onChain = toChainSearchResults(
+    await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', chainIds: [chainId], limit: SWAP_SEARCH_LIMIT }, abortController),
+    chainId,
+    nativeAssetByChain
+  );
+
+  const crosschain = needsCrosschainSwapSearch(onChain, query)
+    ? toCrosschainSearchResults(
+        await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', limit: SWAP_SEARCH_LIMIT }, abortController),
+        query,
+        chainId,
+        nativeAssetByChain
+      )
+    : [];
+
+  return toSwapSearchResults({ onChain, crosschain, query, isAddressQuery });
 }
 
 // ============ API Functions ================================================== //
