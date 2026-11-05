@@ -13,12 +13,10 @@ import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { PolymarketPositionCard } from '@/features/polymarket/components/PolymarketPositionCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { polymarketBalanceActions } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { polymarketPositionsActions, usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
+import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getPositionAction, PositionAction } from '@/features/polymarket/utils/getPositionAction';
 import { redeemPosition } from '@/features/polymarket/utils/redeemPosition';
-import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -58,11 +56,9 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
   const handleRedeemPosition = useCallback(async () => {
     if (checkIfReadOnlyWallet(getAccountAddress())) return;
     setIsProcessing(true);
-    const balanceBeforeRedemption = polymarketBalanceActions.getBalanceSnapshot(position.proxyWallet);
-    let redemption: Awaited<ReturnType<typeof redeemPosition>>;
 
     try {
-      redemption = await redeemPosition(position);
+      await redeemPosition(position);
     } catch (e) {
       logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error redeeming position', e));
       setIsProcessing(false);
@@ -70,48 +66,8 @@ export const PolymarketRedeemPositionSheet = memo(function PolymarketRedeemPosit
       return;
     }
 
-    try {
-      polymarketPositionsActions.applyExpectedPositionRemoval({ operationId: redemption.transactionId, position });
-      if (isClaim && balanceBeforeRedemption) {
-        polymarketBalanceActions.applyExpectedBalanceDelta({
-          baseline: balanceBeforeRedemption,
-          deltaUsd: String(position.currentValue),
-          operationId: redemption.transactionId,
-          proxyWallet: position.proxyWallet,
-        });
-      }
-    } catch (e) {
-      logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error publishing redeemed position', e));
-    }
-    void redemption.outcome
-      .then(outcome => {
-        if (outcome === 'failed') {
-          polymarketPositionsActions.discardExpectedPosition({
-            asset: position.asset,
-            operationId: redemption.transactionId,
-            proxyAddress: position.proxyWallet,
-          });
-          if (isClaim) {
-            polymarketBalanceActions.discardExpectedBalanceDelta({
-              operationId: redemption.transactionId,
-              proxyWallet: position.proxyWallet,
-            });
-          }
-        }
-
-        const settlementRead =
-          outcome === 'confirmed' && isClaim
-            ? polymarketBalanceActions.finalizeExpectedBalanceDelta({
-                operationId: redemption.transactionId,
-                proxyWallet: position.proxyWallet,
-              })
-            : undefined;
-
-        return refetchPolymarketStores(position.proxyWallet, settlementRead);
-      })
-      .catch(error => logger.error(new RainbowError('[PolymarketRedeemPositionSheet] Error refreshing redeemed position', error)));
     Navigation.goBack();
-  }, [isClaim, position]);
+  }, [position]);
 
   const pnl = position.cashPnl;
   const pnlColor = pnl >= 0 ? green : red;
