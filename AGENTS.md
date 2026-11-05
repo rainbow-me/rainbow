@@ -47,6 +47,13 @@ Key non-obvious directories:
 - **Type-only imports** -- use the `type` annotation for type-only imports (ESLint-enforced).
 - **TypeScript over JavaScript** -- write all new files in `.ts`/`.tsx`. Remaining JS files are checked against an error baseline (`yarn lint:js-types`) -- don't regress it.
 
+## Incremental Solana integration
+
+- Minimize disruption to existing production paths. Prefer additive modules and entry points; do not require deleting or refactoring existing implementations to enable Solana work.
+- Build new wallet and key-derivation abstractions that callers can opt into. Solana development can use them immediately while existing production callers retain their current paths.
+- Keep Solana development behind the existing Solana feature flag and independent of production callers adopting the new abstractions.
+- Upgrade production callers gradually in separate, narrowly scoped changes. Keep behavior-preserving adoption separate from new Solana behavior.
+
 ## PR scope
 
 PRs are deliberately narrow. Refactor and migration PRs are behavior-preserving: moves, extractions, and rewires only. Pre-existing flaws in code a PR touches or moves are fixed in separate PRs, never bundled, and behavior changes never ride in a migration PR.

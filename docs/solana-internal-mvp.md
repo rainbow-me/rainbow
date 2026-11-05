@@ -1,0 +1,65 @@
+# Internal Solana MVP
+
+Branch: `jin/solana-internal-mvp`. Worktree: `rainbow-worktrees/solana-internal-mvp`.
+
+This is an internal mainnet test harness for an existing mnemonic wallet: enable its selected subaccount, buy BONK with 1 Base USDC, then swap up to 100,000 BONK into Solana USDC. It requires the existing Solana flag and a non-store build. Each swap requires a fresh quote and explicit confirmation.
+
+The branch starts at `53bfded42`, before the broader keychain foundation. It carries forward the proposed wallet types but leaves `walletKeychain.ts`, `features/local-auth/keychain.ts`, `walletsStore.ts`, and `model/wallet.ts` unchanged. The prior foundation and local simulator work remain in their original branch/worktree.
+
+## Review order
+
+1. `src/features/wallet/data/enableSolanaAccount.ts` and `core/solanaAccount.ts`: authenticate the existing mnemonic, check that it owns the selected EVM address at the selected index, derive `m/44'/501'/<index>'/0'`, save the key, then publish metadata.
+2. `src/features/wallet/data/solanaKeychain.ts` and `loadSolanaSigner.ts`: protected storage, canonical key/address validation, cancellation, readback, and an operation-scoped SDK signer.
+3. `src/features/wallet/data/stores/accountMetadataStore.ts`: supplemental public mapping and an optional `getCombinedAccount` selector. Profiles, selection, ownership, and damaged status stay in the existing wallet store. `WalletDescriptor` remains available for later consumers; this harness only needs the account view.
+4. `src/features/solana/core/mvpRoutes.ts`, `data/mvpSdk.ts`, and `data/mvpTrades.ts`: fixed assets and caps, isolated SDK configuration, quote policy, execution IDs, status and balances.
+5. `src/features/solana/ui/SolanaMvpMenu.tsx` and its two-line `DevSection.tsx` integration: enable, buy, sell, refresh balances, and check execution.
+
+## Storage contract
+
+| Location                       | Key / index                                                  | Value                                                                                                                                    |
+| ------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing keychain              | `${walletId}_rainbowSeedPhrase`                              | Existing mnemonic record; unchanged                                                                                                      |
+| New protected keychain record  | `rainbow.account-key.v1/solana/${rawSolanaAddress}`          | `{ address, privateKey, format: 'ed25519-seed-base64', version: 1 }`; privateKey is canonical base64 of the 32-byte Ed25519 account seed |
+| New persisted public store     | `solanaAccountMetadata`, indexed by JSON `[walletId, index]` | `{ walletId, index, sourceEvmAddress, namespace: 'solana', address, version: 1 }`                                                        |
+| New persisted execution record | `solanaMvpExecution`                                         | Last execution ID, source account, route, status; no quote, signatures, or secrets                                                       |
+
+Keys are independent of network/cluster. Solana address case is preserved. The legacy `_rainbowPrivateKey` suffix is never used, so existing EVM key discovery/backup paths do not ingest Solana private keys. No extra mnemonic, binary seed, or private parent is persisted. Restore the mnemonic and enable the same index to reconstruct a missing key/mapping.
+
+The wrapper must return private access-control options; simulator paths that return empty options are rejected. It must successfully read and validate the written record before enablement is published. A valid existing key is reused; an unreadable existing record is never overwritten automatically. Typed byte buffers are cleared after use; JavaScript strings and library-internal copies cannot be reliably zeroized.
+
+Removed, hidden, damaged, or mismatched source accounts cannot use their mappings. Startup with an unready wallet store is also rejected. As with legacy secret records, this MVP retains protected keys on ordinary wallet removal; the existing full keychain wipe removes them. It does not add automatic per-wallet secret deletion or backup migration. Shared-address ownership must be handled before adding scoped deletion. A metadata-only reset is recoverable by enabling again; corrupted/unreadable protected records require separate recovery work rather than silent replacement.
+
+## SDK and sponsorship
+
+The checked-in SDK artifact comes from `@christian/solana-sdk` at `f37a88da5`, using that branch's `rainbow-me-sdk-0.5.0.tgz`. It is installed as **`@rainbow-me/solana-sdk`**, while production keeps **`@rainbow-me/sdk` 0.4**. Its SHA-256 is `111883fbb89a89588d2474ddb34da7ecaabbac9036116ff4b876eb5fb79ef823`.
+
+The preview SDK's fixed delegation cache key would collide with production. Its configuration therefore disables persistence and synchronization for that cache, while retaining normal in-memory query state. It does not reconfigure the production SDK. Once Christian's changes merge, consolidate the dependency and configuration in a separate change.
+
+The user approved **full sponsorship for internal testing**, including rent when included by the backend. Both requests specify `gasless: true` and `sponsorship: 'required'`; review validation also requires `full` sponsorship. No user-paid gas fallback is allowed. The longer-term gas-sponsored/user-paid-rent product policy remains future work: this SDK does not expose separate rent sponsorship control.
+
+The configured Rainbow relay must support the SDK's v2 prepare/execute/status contract and these cross-chain/same-chain routes. Sponsor authorization and transaction validation remain server responsibilities. The client flag is not a server security boundary. A failed sponsorship quote is a blocked test, not a reason to bypass this requirement.
+
+| Route       | Source                                                  | Destination                                                  | Maximum input                                             |
+| ----------- | ------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
+| Buy         | Base USDC, `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Mainnet BONK, `DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263` | 1 USDC, 6 decimals                                        |
+| Return swap | Mainnet BONK                                            | Mainnet USDC, `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | Available BONK balance capped at 100,000 BONK, 5 decimals |
+
+Mint references: [Circle USDC contract addresses](https://developers.circle.com/stablecoins/usdc-contract-addresses), [BONK mint and decimals](https://solscan.io/token/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263).
+
+Quote confirmation shows exact spend, quoted/minimum output, source, recipient and expiry. The Base route may authorize Rainbow EVM delegation; the confirmation discloses this. Execution checks the selected account and expiry again after unlocking. The exact opaque SDK prepared object is submitted, never reconstructed. An uncertain submission retains its execution ID across restart and blocks new swaps until status is terminal; use Check execution. A quote left indefinitely PREPARED after a failed submission needs backend investigation, not automatic resubmission or clearing the journal.
+
+## Try it on a physical test device
+
+1. Use Node 22.23.2 for this worktree. Run the normal Rainbow dependency/native setup (`yarn install`, repository patches, Pods/environment setup as needed). The Node 26 install hit an existing allow-scripts/yargs loader error; Node 22 succeeded. No shared Pods, Metro process, or simulator was changed for this branch.
+2. Open Developer Settings in a non-store build, enable the existing Solana flag, select a mnemonic EVM account with at least 1 USDC on Base, and tap **Enable Solana for this account**. Confirm the displayed index/address.
+3. Tap **Buy BONK with 1 Base USDC**, review and confirm. Use **Check execution** until confirmed, then **Refresh Solana balances**. An initially empty Solana account/absent ATA is part of the required device test.
+4. Restart the app. Select the same account, then **Swap BONK → Solana USDC**, review and confirm. Check execution and balances again. This exercises the persisted Solana key.
+5. Repeat cancellation and selection-change checks. Confirm existing EVM signing and backup behavior remains unchanged. Do not proceed with funds unless the configured backend supports full sponsorship for both routes.
+
+## Verification and limits
+
+Verified on November 5, 2026: 68 focused tests pass; TypeScript passes; existing JS type baseline has no regressions; dependency rules and cycle baselines pass; changed-file ESLint has no errors (warnings in test assertions and the pre-existing DevSection `any`).
+
+Focused tests cover indices 0/1/2, key formats and mismatches, protected storage/readback/cancellation, source ownership and selection changes, scoped signing and byte clearing, quote caps/sponsorship/expiry, both SDK adapter routes, and duplicate/uncertain submissions. Legacy wallet keychain tests are included.
+
+The iOS JavaScript bundle builds with Metro. Physical-device keychain behavior, native app launch, backend v2 availability, actual sponsorship/rent allocation and funded end-to-end swaps remain unverified. No live transaction was submitted. Public mainnet Solana RPC is used for this internal harness and may rate-limit. Production portfolio integration, arbitrary tokens, additional wallet source types, bulk enablement and gas-only sponsorship are intentionally outside this branch.

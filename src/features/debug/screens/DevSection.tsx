@@ -19,6 +19,7 @@ import { isAuthenticated } from '@/features/local-auth/isAuthenticated';
 import { wipeKeychain } from '@/features/local-auth/legacyKeychain';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
+import { SolanaMvpMenu } from '@/features/solana/ui/SolanaMvpMenu';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import * as i18n from '@/languages';
@@ -277,6 +278,7 @@ export const DevSection = () => {
           titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.keychain.menu_title)} />}
         />
       </Menu>
+      <SolanaMvpMenu />
       {!IS_STORE_INSTALL && (
         <>
           <Menu header={i18n.t(i18n.l.developer_settings.headers.rainbow_developer_settings)}>
