@@ -44,11 +44,15 @@ export function isDirectImagePath(value: string): boolean {
  */
 export function getChangedRecords(records: Records, initialRecords: Records): Records {
   const changed: Records = {};
-  for (const [key, value] of Object.entries(records)) {
+
+  for (const key in records) {
+    const value = records[key];
     if (value && value !== initialRecords[key]) changed[key] = value;
   }
-  for (const key of Object.keys(initialRecords)) {
+
+  for (const key in initialRecords) {
     if (initialRecords[key] && !records[key]) changed[key] = '';
   }
+
   return changed;
 }
