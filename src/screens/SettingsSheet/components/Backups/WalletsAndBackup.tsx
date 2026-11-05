@@ -59,7 +59,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
   const accountImage = account.emoji || addressHashedEmoji(account.address);
 
-  const ENSAvatar = useEnsImageStore(s => (label ? s.get({ name: label, field: 'avatar' }) : undefined));
+  const ENSAvatar = useEnsImageStore(s => s.get(label ? { name: label, field: 'avatar' } : undefined));
 
   return (
     <Box

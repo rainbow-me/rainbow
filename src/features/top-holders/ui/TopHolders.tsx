@@ -399,7 +399,7 @@ function HolderRow({
 }
 
 function HolderAvatar({ address, ensName }: { address: string; ensName: string | undefined }) {
-  const avatar = useEnsImageStore(s => (ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
+  const avatar = useEnsImageStore(s => s.get(ensName ? { name: ensName, field: 'avatar' } : undefined));
   return <AddressAvatar address={address} color={addressHashedColorIndex(address) ?? 0} label="" size={AVATAR_SIZE} url={avatar} />;
 }
 

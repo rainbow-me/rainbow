@@ -38,7 +38,7 @@ export function ENSBriefTokenInfoRow({
   const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const avatar = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
+  const avatar = useEnsImageStore(s => s.get(profilesEnabled && ensName ? { name: ensName, field: 'avatar' } : undefined));
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);

@@ -6,16 +6,22 @@ import { useEnsRecordsStore } from '../data/stores/recordsStore';
 /**
  * Combines independently cached profile fields with the active wallet's permissions.
  */
-export function useENSProfile(name: string, { enabled = true, supportedRecordsOnly = true } = {}) {
+export function useENSProfile(name: string, { supportedRecordsOnly = true } = {}) {
+  const profileName = name || undefined;
+  const recordsInput = profileName ? { name: profileName, supportedOnly: supportedRecordsOnly } : undefined;
+
   const accountAddress = useAccountAddress();
   const primaryName = useWalletsStore(s => s.walletNames[accountAddress]);
-  const active = enabled && !!name;
-  const records = useEnsRecordsStore(s => (active ? s.get({ name, supportedOnly: supportedRecordsOnly }) : undefined));
-  const hasRecordsOutcome = useEnsRecordsStore(s => active && s.hasSettled({ name, supportedOnly: supportedRecordsOnly }));
-  const hasOwnerOutcome = useEnsOwnerStore(s => active && s.hasSettled(name));
-  const hasRegistrationOutcome = useEnsRegistrationMetadataStore(s => active && s.hasSettled(name));
-  const ownerAddress = useEnsOwnerStore(s => (active ? s.get(name) : undefined));
-  const registration = useEnsRegistrationMetadataStore(s => (active ? s.get(name) : undefined));
+
+  const records = useEnsRecordsStore(s => s.get(recordsInput));
+  const hasRecordsOutcome = useEnsRecordsStore(s => s.hasSettled(recordsInput));
+
+  const ownerAddress = useEnsOwnerStore(s => s.get(profileName));
+  const hasOwnerOutcome = useEnsOwnerStore(s => s.hasSettled(profileName));
+
+  const registration = useEnsRegistrationMetadataStore(s => s.get(profileName));
+  const hasRegistrationOutcome = useEnsRegistrationMetadataStore(s => s.hasSettled(profileName));
+
   const registrantAddress = registration?.registrant?.id;
 
   return {

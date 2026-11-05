@@ -42,7 +42,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     goBack();
   }, [goBack]);
 
-  const avatar = useEnsImageStore(s => (ens ? s.get({ name: ens, field: 'avatar' }) : undefined));
+  const avatar = useEnsImageStore(s => s.get(ens ? { name: ens, field: 'avatar' } : undefined));
   const avatarUrl = profilesEnabled ? avatar : undefined;
 
   const dominantColor = usePersistentDominantColorFromImage(avatarUrl);

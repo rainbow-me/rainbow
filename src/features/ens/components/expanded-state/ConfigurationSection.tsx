@@ -42,8 +42,8 @@ export function ConfigurationSection({
   const { navigate } = useNavigation();
 
   const registrant = useMemo(() => (registrantAddress ? getAddress(registrantAddress) : null), [registrantAddress]);
-  const ownerName = useEnsNameStore(s => (ownerAddress ? s.get(ownerAddress) : undefined));
-  const registrantName = useEnsNameStore(s => (registrant ? s.get(registrant) : undefined));
+  const ownerName = useEnsNameStore(s => s.get(ownerAddress));
+  const registrantName = useEnsNameStore(s => s.get(registrant));
 
   return (
     <Stack space="15px (Deprecated)">

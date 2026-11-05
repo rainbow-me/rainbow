@@ -265,10 +265,7 @@ export function SendSheet() {
   }
 
   const ensName = isENS ? selected?.name : '';
-  const ensProfile = useENSProfile(ensName, {
-    enabled: isENS,
-    supportedRecordsOnly: false,
-  });
+  const ensProfile = useENSProfile(ensName, { supportedRecordsOnly: false });
 
   const sendUpdateAssetAmount = useCallback(
     (newAssetAmount: string) => {

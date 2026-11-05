@@ -251,9 +251,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS ? asset.name.trim() : '';
-  const ensProfile = useENSProfile(cleanENSName, {
-    enabled: isENS && !!cleanENSName,
-  });
+  const ensProfile = useENSProfile(cleanENSName);
   const ensData = ensProfile.data;
 
   useFocusEffect(

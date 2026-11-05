@@ -73,17 +73,16 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const { colors } = useTheme();
   const { accountType, balances, ens, image, label, onPress, showcaseItem, testID } = props;
 
+  const initialENSName = typeof ens === 'string' ? ens : '';
+  const contactAddress = useMemo(() => (accountType === 'contacts' ? normalizeAddress(address) : null), [accountType, address]);
+  const resolvedName = useEnsNameStore(s => s.get(contactAddress));
+  const ensName = resolvedName === undefined ? initialENSName : (resolvedName ?? '');
+  const ensAvatar = useEnsImageStore(s => s.get(ensName ? { name: ensName, field: 'avatar' } : undefined));
+
   const balanceText = balances ? balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
-
-  const initialENSName = typeof ens === 'string' ? ens : '';
-
-  const contactAddress = useMemo(() => (accountType === 'contacts' ? normalizeAddress(address) : null), [accountType, address]);
-  const resolvedName = useEnsNameStore(s => (contactAddress ? s.get(contactAddress) : undefined));
-  const ensName = resolvedName === undefined ? initialENSName : (resolvedName ?? '');
-  const ensAvatar = useEnsImageStore(s => (ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
 
   useEffect(() => {
     if (resolvedName === undefined || ensName === initialENSName) return;

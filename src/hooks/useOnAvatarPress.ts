@@ -38,13 +38,9 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const accountAsset = useAccountAsset(ETH_ADDRESS);
 
-  const profileEnabled = Boolean(accountENS);
-
-  const owner = useEnsOwnerStore(s => (accountENS && profilesEnabled ? s.get(accountENS) : undefined));
-  const isOwner = owner?.toLowerCase() === accountAddress.toLowerCase();
-
-  const avatar = useEnsImageStore(s => (accountENS && profilesEnabled ? s.get({ name: accountENS, field: 'avatar' }) : undefined));
-  const hasENSAvatar = Boolean(avatar);
+  const profileName = profilesEnabled && accountENS ? accountENS : undefined;
+  const isENSProfile = useEnsOwnerStore(s => s.get(profileName)?.toLowerCase() === accountAddress.toLowerCase());
+  const hasENSAvatar = useEnsImageStore(s => !!s.get(profileName ? { name: profileName, field: 'avatar' } : undefined));
 
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
@@ -125,7 +121,6 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const isReadOnly = getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet;
 
-  const isENSProfile = profilesEnabled && profileEnabled && isOwner;
   const isZeroETH = isZero(accountAsset?.balance?.amount || 0);
 
   const callback = useCallback(

@@ -54,6 +54,7 @@ export function ENSAssignRecordsSheet() {
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
+  const profile = useEnsRecordsStore(s => s.get(name ? { name } : undefined));
   const initialAvatarUrl = useENSRegistrationImage('avatar');
 
   const defaultFields = useMemo(
@@ -69,7 +70,6 @@ export function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const profile = useEnsRecordsStore(s => (name ? s.get({ name }) : undefined));
   const isEmptyProfile = isEmpty(profile?.records);
 
   useEffect(() => {
@@ -205,11 +205,13 @@ export function ENSAssignRecordsBottomActions({
   const { accountENS } = useAccountProfileInfo();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { mode, name } = useENSRegistration();
   const insets = useSafeAreaInsets();
-  const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
+  const { mode, name } = useENSRegistration();
+  const shouldLoadRecords = mode === REGISTRATION_MODES.EDIT && !!name;
+  const hasRecords = useEnsRecordsStore(s => s.get(shouldLoadRecords ? { name } : undefined) !== undefined);
   const { disabled, errors, isEmpty: isEmptyForm, selectedFields, toggleField, submit, values } = useENSRegistrationForm();
-  const hasRecords = useEnsRecordsStore(s => mode === REGISTRATION_MODES.EDIT && !!name && s.get({ name }) !== undefined);
+
+  const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const handlePressBack = useCallback(() => {
     delayNext();
     if (fromRoute) {

@@ -284,7 +284,8 @@ function WalletChip({
   displayEns: string | undefined;
   profile: ReturnType<typeof useAccountProfileInfo>;
 }) {
-  const ensAvatar = useEnsImageStore(s => (!accountImage && !!ensName && ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
+  const shouldLoadEnsAvatar = !accountImage && !!ensName;
+  const ensAvatar = useEnsImageStore(s => s.get(shouldLoadEnsAvatar ? { name: ensName, field: 'avatar' } : undefined));
 
   return (
     <Box

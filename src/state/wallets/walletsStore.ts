@@ -736,7 +736,7 @@ export const isImportedWallet = (address: string): boolean => {
 export const useAccountProfileInfo = (address?: Address): AccountProfileInfo & { accountColorHex: string } => {
   const { colors } = useTheme();
   const info = useWalletsStore(s => s.getAccountProfileInfo(address), dequal);
-  const name = useEnsNameStore(s => (info.accountAddress ? s.get(info.accountAddress) : undefined));
+  const name = useEnsNameStore(s => s.get(info.accountAddress));
   const accountENS = name === undefined ? info.accountENS : (name ?? undefined);
   const hasCustomLabel = info.accountName && info.accountName !== info.accountENS && info.accountName !== info.accountAddress;
   return {

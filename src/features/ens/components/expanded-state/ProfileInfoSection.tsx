@@ -27,7 +27,7 @@ export function ProfileInfoSection({
   isLoading?: boolean;
   records?: Records;
 }) {
-  const headerImage = useEnsImageStore(s => (ensName && records?.header ? s.get({ name: ensName, field: 'header' }) : undefined));
+  const headerImage = useEnsImageStore(s => s.get(ensName && records?.header ? { name: ensName, field: 'header' } : undefined));
   const recordsArray = useMemo(
     () =>
       Object.entries(records || {})

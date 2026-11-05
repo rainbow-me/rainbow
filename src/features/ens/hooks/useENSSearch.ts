@@ -15,13 +15,15 @@ import useENSLocalTransactions from './useENSLocalTransactions';
 export default function useENSSearch({ yearsDuration = 1, name: inputName }: { yearsDuration?: number; name: string }) {
   const name = inputName.replace(ENS_DOMAIN, '');
   const duration = yearsDuration * timeUnits.secs.year;
+  const input = name.length > 2 ? { name, duration } : undefined;
+
   const nativeCurrency = userAssetsStoreManager(s => s.currency);
   const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({
     name: name + ENS_DOMAIN,
   });
-  const enabled = name.length > 2;
-  const result = useEnsSearchStore(s => (enabled ? s.get({ name, duration }) : undefined));
-  const settled = useEnsSearchStore(s => (enabled ? s.hasSettled({ name, duration }) : false));
+  const result = useEnsSearchStore(s => s.get(input));
+  const settled = useEnsSearchStore(s => s.hasSettled(input));
+
   const pending = !!(commitTransactionHash || pendingRegistrationTransaction) && !confirmedRegistrationTransaction;
 
   const data = useMemo(() => {
@@ -41,7 +43,7 @@ export default function useENSSearch({ yearsDuration = 1, name: inputName }: { y
     isRegistered: result?.available === false || !!confirmedRegistrationTransaction,
     isPending: result?.available === true && pending,
     isInvalid: result?.valid === false,
-    isIdle: !enabled,
-    isLoading: enabled && !settled,
+    isIdle: !input,
+    isLoading: !!input && !settled,
   };
 }

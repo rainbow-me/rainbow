@@ -30,7 +30,7 @@ const maxListHeight = deviceHeight - 220;
 export function SelectENSSheet() {
   const accountAddress = useAccountAddress();
   const { data: names } = useAccountENSDomains(accountAddress);
-  const primaryName = useEnsNameStore(s => (accountAddress ? s.get(accountAddress) : undefined));
+  const primaryName = useEnsNameStore(s => s.get(accountAddress));
 
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
@@ -124,7 +124,7 @@ export function SelectENSSheet() {
 function ENSAvatar({ name }: { name: string }) {
   const { colors } = useTheme();
 
-  const avatar = useEnsImageStore(s => (name ? s.get({ name, field: 'avatar' }) : undefined));
+  const avatar = useEnsImageStore(s => s.get(name ? { name, field: 'avatar' } : undefined));
 
   if (avatar) {
     return (

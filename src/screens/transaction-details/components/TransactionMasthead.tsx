@@ -111,13 +111,11 @@ function CurrencyTile({
 
   const accountEmoji = useMemo(() => returnStringFirstEmoji(addressAccount?.label), [addressAccount]);
   const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), [addressAccount?.label]);
-  const fetchedEnsName = useEnsNameStore(s =>
-    address && !addressContact?.nickname && !accountName ? s.get(getAddress(address)) : undefined
-  );
+  const shouldResolveName = !!address && !addressContact?.nickname && !accountName;
+  const fetchedEnsName = useEnsNameStore(s => s.get(shouldResolveName ? getAddress(address) : undefined));
   const imageName = fetchedEnsName ?? addressContact?.ens;
-  const fetchedEnsImage = useEnsImageStore(s =>
-    !addressAccount?.image && imageName ? s.get({ name: imageName, field: 'avatar' }) : undefined
-  );
+  const shouldLoadImage = !addressAccount?.image && !!imageName;
+  const fetchedEnsImage = useEnsImageStore(s => s.get(shouldLoadImage ? { name: imageName, field: 'avatar' } : undefined));
   const avatarColor =
     addressAccount?.color ?? addressContact?.color ?? theme.colors.avatarBackgrounds[addressHashedColorIndex(address) || 1];
   const emoji = accountEmoji || addressHashedEmoji(address);

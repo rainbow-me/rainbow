@@ -97,14 +97,21 @@ export function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
+  const { navigate } = useNavigation();
 
   const accountAddress = useAccountAddress();
   const { data: names, isFetched: hasSettled } = useAccountENSDomains(accountAddress);
-  const primaryName = useEnsNameStore(s => (accountAddress ? s.get(accountAddress) : undefined));
+  const primaryName = useEnsNameStore(s => s.get(accountAddress));
   const ownsPrimaryName = !!primaryName && !!names?.includes(primaryName);
   const suggestedName = ownsPrimaryName ? primaryName : names?.length === 1 ? names[0] : undefined;
-  const ensRecords = useEnsRecordsStore(s => (suggestedName ? s.get({ name: suggestedName }) : undefined));
-  const ensAvatar = useEnsImageStore(s => (suggestedName ? s.get({ name: suggestedName, field: 'avatar' }) : undefined));
+  const ensRecords = useEnsRecordsStore(s => s.get(suggestedName ? { name: suggestedName } : undefined));
+  const ensAvatar = useEnsImageStore(s => s.get(suggestedName ? { name: suggestedName, field: 'avatar' } : undefined));
+
+  const profileExists = useMemo(() => {
+    if (ensAvatar) return true;
+    if (!ensRecords) return false;
+    return !!ensRecords.contenthash || Object.keys(ensRecords.coinAddresses).length > 1 || Object.keys(ensRecords.records).length > 0;
+  }, [ensAvatar, ensRecords]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -112,17 +119,6 @@ export function ENSIntroSheet() {
 
   const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
-
-  const profileExists = useMemo(
-    () =>
-      ensRecords?.contenthash ||
-      Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
-      ensAvatar ||
-      Object.keys(ensRecords?.records || {}).length > 0,
-    [ensAvatar, ensRecords?.coinAddresses, ensRecords?.contenthash, ensRecords?.records]
-  );
-
-  const { navigate } = useNavigation();
 
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();

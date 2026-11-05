@@ -69,7 +69,7 @@ type WalletAvatarProps = {
 const WalletAvatar = ({ account }: WalletAvatarProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
 
-  const ENSAvatar = useEnsImageStore(s => (label ? s.get({ name: label, field: 'avatar' }) : undefined));
+  const ENSAvatar = useEnsImageStore(s => s.get(label ? { name: label, field: 'avatar' } : undefined));
   const accountImage = account.emoji || addressHashedEmoji(account.address);
 
   return ENSAvatar ? (

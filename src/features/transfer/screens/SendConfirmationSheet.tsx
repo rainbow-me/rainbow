@@ -210,6 +210,9 @@ export const SendConfirmationSheet = () => {
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const walletNames = useWalletsStore(state => state.walletNames);
+  const shouldLoadAvatar = getNameService(to) === 'ens';
+  const avatar = useEnsImageStore(s => s.get(shouldLoadAvatar ? { name: to, field: 'avatar' } : undefined));
+
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
@@ -419,8 +422,6 @@ export const SendConfirmationSheet = () => {
   const avatarValue = returnStringFirstEmoji(existingAccount?.label) || addressHashedEmoji(toAddress);
 
   const avatarColor = existingAccount?.color || contact?.color || addressHashedColorIndex(toAddress);
-
-  const avatar = useEnsImageStore(s => (getNameService(to) === 'ens' && to ? s.get({ name: to, field: 'avatar' }) : undefined));
 
   const accountImage = profilesEnabled ? avatar || existingAccount?.image : existingAccount?.image;
 
