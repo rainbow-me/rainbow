@@ -14,6 +14,7 @@ module ZBagChainClient {
     pub fn connect_to_sovereign_chain(url: string) -> RPCNodeConnection {
         let conn = RPCNodeConnection {
             endpoint_url: url,
+            // zdos-dsn-code-align v1: $DSN vive su Polygon PoS chain 137 (contratto 0xfc90516a1f736FaC557e09D8853dB80dA192c296); 7777 è una chain ZDOS ipotetica, il saldo ZVT/DSN qui è simulato
             chain_id: 7777, // ZDOS Sovereign ID
             is_connected: true
         };
