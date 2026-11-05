@@ -1,6 +1,7 @@
 import { type HDNode } from '@ethersproject/hdnode';
 
 import { type EthereumAddress } from '@/entities/wallet';
+import { type SolanaAddress } from '@/features/solana/core/address';
 import { type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { type EthereumPrivateKey } from '@/features/wallet/core/walletDerivation';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
@@ -54,8 +55,8 @@ export interface RainbowSelectedWalletData {
   version: number;
 }
 
-/** Legacy raw addresses and CAIP-10 account IDs; legacy strings remain permissive. */
-export type WalletAddress = EthereumAddress | Caip10AccountId;
+/** Raw wallet addresses only. String aliases remain permissive; validate at runtime. */
+export type WalletAddress = EthereumAddress | SolanaAddress;
 
 /** Legacy stored account values; these aliases document meaning, not validation. */
 export type WalletAccountMaterial = EthereumPrivateKey | HardwareKey | WalletAddress | null;
@@ -64,6 +65,8 @@ export interface PrivateKeyData {
   address: WalletAddress;
   privateKey: WalletAccountMaterial;
   version: number;
+  /** Required on new software-key records; legacy records retain their existing shape. */
+  format?: PrivateKeyFormat;
 }
 
 /** Unclassified wallet import text; validate before treating it as source material. */
@@ -96,7 +99,7 @@ export type Caip19AssetId = string & { readonly __caip19AssetId: unique symbol }
 export type AccountRef = Pick<AccountProfile, 'walletId' | 'index'>;
 
 export type AccountAddressMetadata = {
-  address: string;
+  address: WalletAddress;
   ens?: string | null;
 };
 
@@ -107,7 +110,8 @@ export type AccountProfile = Omit<RainbowAccount, 'address' | 'ens'> & {
 };
 
 export type SingleAddressAccount = AccountProfile & {
-  address: Caip10AccountId;
+  address: WalletAddress;
+  namespace: SupportedCaipNamespace;
   ens?: string | null;
   addresses?: never;
 };
@@ -199,7 +203,8 @@ export interface MnemonicData extends SeedPhraseData<Bip39Mnemonic> {
 
 // Shared identity and metadata records
 export type AccountKeyRef = AccountRef & {
-  accountId: Caip10AccountId;
+  address: WalletAddress;
+  namespace: SupportedCaipNamespace;
 };
 
 export type KeyOrigin =
@@ -207,7 +212,8 @@ export type KeyOrigin =
       kind: 'derived';
       scheme: string;
       path: string;
-      sourceAccountId: Caip10AccountId;
+      sourceAddress: WalletAddress;
+      sourceNamespace: SupportedCaipNamespace;
     }
   | { kind: 'imported' };
 
@@ -217,15 +223,14 @@ export type AccountKeyBinding = AccountKeyRef & {
 
 export type PrivateKeyFormat = 'secp256k1-private-key-hex' | 'ed25519-seed-base64';
 
-export type AccountPrivateKeyData = Omit<PrivateKeyData, 'address'> &
-  AccountKeyBinding & {
-    privateKey: string;
-    version: 1;
-    format: PrivateKeyFormat;
-  };
+// Key material is shared by address; ownership/provenance stays in AccountKeyBinding.
+export type AccountPrivateKeyData = PrivateKeyData & {
+  privateKey: string;
+  version: 1;
+  format: PrivateKeyFormat;
+};
 
-export type AccountMetadataRecord = AccountRef & {
-  accountId: Caip10AccountId;
+export type AccountMetadataRecord = AccountKeyRef & {
   version: 1;
 };
 
@@ -237,7 +242,7 @@ export type LegacySeedMaterial = string & { readonly __legacySeedMaterial: uniqu
 
 export type WalletSourceMaterial =
   | Bip39Mnemonic
-  | Caip10AccountId
+  | WalletAddress
   | SoftwarePrivateKeyMaterial
   | HardwareWallet['device']
   | LegacySeedMaterial;

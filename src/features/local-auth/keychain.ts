@@ -499,3 +499,94 @@ export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
     storage: usePin ? STORAGE_TYPE.AES_GCM_NO_AUTH : STORAGE_TYPE.RSA,
   };
 }
+
+export type PrivateKeychainAuth = Pick<KeychainOptions<GetOptions>, 'androidEncryptionPin' | 'authenticationPrompt'>;
+
+export type PrivateKeychainResult<T> =
+  | { status: 'ok'; value: T }
+  | { status: 'cancelled' | 'not-authenticated' | 'missing-key' | 'unavailable' };
+
+function privateStorageError(error: unknown): PrivateKeychainResult<never> {
+  const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+  const message = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  if (code === '-128' || /user cancel|code: (10|13)\b/i.test(message)) return { status: 'cancelled' };
+  if (['-25293', '-25308'].includes(code) || /not authenticated|code: (7|11)\b|user ?name or passphrase/i.test(message)) {
+    return { status: 'not-authenticated' };
+  }
+  return { status: 'unavailable' };
+}
+
+async function privateStoragePIN(auth: PrivateKeychainAuth, create: boolean): Promise<PrivateKeychainResult<string>> {
+  const storedPIN = await getInternetCredentials(keychainConstants.pinKey);
+  const existingPIN = storedPIN ? await encryptor.decrypt(RAINBOW_MASTER_KEY, storedPIN.password) : undefined;
+  // Verify native persistence: a cached PIN can outlive a failed native write.
+  if (storedPIN && !existingPIN) return { status: 'unavailable' };
+  let pin = auth.androidEncryptionPin;
+  if (pin === undefined) {
+    try {
+      pin = await (create ? authenticateWithPINAndCreateIfNeeded() : authenticateWithPIN());
+    } catch (error) {
+      // The existing PIN screen rejects without a value on cancellation.
+      return error === undefined ? { status: 'cancelled' } : privateStorageError(error);
+    }
+  }
+  const persistedPIN = existingPIN ? undefined : await getInternetCredentials(keychainConstants.pinKey);
+  const savedPIN = existingPIN ?? (persistedPIN ? await encryptor.decrypt(RAINBOW_MASTER_KEY, persistedPIN.password) : undefined);
+  return pin && savedPIN === pin ? { status: 'ok', value: pin } : { status: 'not-authenticated' };
+}
+
+/** Private values bypass MMKV; callers cannot override native protection. */
+export async function getPrivateString(key: string, auth: PrivateKeychainAuth = {}): Promise<PrivateKeychainResult<string>> {
+  try {
+    const options = await getPrivateAccessControlOptions();
+    if (!options.accessControl || (Platform.OS !== 'ios' && Platform.OS !== 'android')) return { status: 'unavailable' };
+    const credentials = await getInternetCredentials(key, {
+      accessControl: options.accessControl,
+      authenticationPrompt: auth.authenticationPrompt,
+    });
+    if (!credentials) return { status: 'missing-key' };
+    const value = credentials.password;
+    if (typeof value !== 'string' || !value) return { status: 'unavailable' };
+    if (Platform.OS === 'android') {
+      let encrypted: unknown;
+      try {
+        encrypted = JSON.parse(value);
+      } catch {
+        encrypted = null;
+      }
+      if (encrypted && typeof encrypted === 'object' && 'cipher' in encrypted) {
+        const pin = await privateStoragePIN(auth, false);
+        if (pin.status !== 'ok') return pin;
+        const plaintext = await encryptor.decrypt(pin.value, value);
+        return typeof plaintext === 'string' ? { status: 'ok', value: plaintext } : { status: 'unavailable' };
+      }
+      if (await shouldAuthenticateWithPIN()) return { status: 'not-authenticated' };
+    }
+    return { status: 'ok', value };
+  } catch (error) {
+    return privateStorageError(error);
+  }
+}
+
+export async function setPrivateString(
+  key: string,
+  serializedValue: string,
+  auth: PrivateKeychainAuth = {}
+): Promise<PrivateKeychainResult<void>> {
+  try {
+    const options = await getPrivateAccessControlOptions();
+    if (!options.accessControl || (Platform.OS !== 'ios' && Platform.OS !== 'android')) return { status: 'unavailable' };
+    let value = serializedValue;
+    if (options.storage === STORAGE_TYPE.AES_GCM_NO_AUTH) {
+      const pin = await privateStoragePIN(auth, true);
+      if (pin.status !== 'ok') return pin;
+      const encrypted = await encryptor.encrypt(pin.value, serializedValue);
+      if (typeof encrypted !== 'string' || !encrypted) return { status: 'unavailable' };
+      value = encrypted;
+    }
+    const saved = await setInternetCredentials(key, key, value, { ...options, authenticationPrompt: auth.authenticationPrompt });
+    return saved ? { status: 'ok', value: undefined } : { status: 'unavailable' };
+  } catch (error) {
+    return privateStorageError(error);
+  }
+}

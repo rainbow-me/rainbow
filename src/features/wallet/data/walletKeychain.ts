@@ -1,4 +1,4 @@
-import { HDNode } from '@ethersproject/hdnode';
+import { HDNode, isValidMnemonic } from '@ethersproject/hdnode';
 import { Wallet } from '@ethersproject/wallet';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { type GetOptions, type SetOptions } from 'react-native-keychain';
@@ -15,19 +15,27 @@ import {
   selectedWalletKey,
 } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
+import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
+import { validateAccountKeyRecord, validateWalletAddress } from '@/features/wallet/core/accountKeyRecord';
 import { isHardwareWalletKey, type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { identifyWalletType, type EthereumPrivateKey, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { CHECKS_WALLET_KEY_EXISTENCE } from '@/features/wallet/data/walletKeychainIntegrity';
 import {
   EncryptionType,
+  type AccountPrivateKeyData,
   type AllRainbowWallets,
   type AllRainbowWalletsData,
+  type Bip39Mnemonic,
   type MigratedSecretsResult,
+  type MnemonicData,
   type PrivateKeyData,
   type RainbowSelectedWalletData,
   type RainbowWallet,
   type SeedPhraseData,
+  type WalletAccessResult,
+  type WalletAccountMaterial,
+  type WalletAddress,
 } from '@/features/wallet/types';
 import { addHexPrefix } from '@/handlers/web3';
 import { EthereumWalletType } from '@/helpers/walletTypes';
@@ -48,6 +56,125 @@ const authenticationPrompt = {
     return i18n.t(i18n.l.wallet.authenticate.please);
   },
 };
+
+export type WalletKeychainAuth = Pick<kc.PrivateKeychainAuth, 'androidEncryptionPin'>;
+
+async function readSourceWallet(walletId: string): Promise<WalletAccessResult<RainbowWallet>> {
+  const result = await kc.getObject<AllRainbowWalletsData>(allWalletsKey);
+  if (result.error !== undefined) return { status: 'unavailable' };
+  if (result.value?.version !== ALL_WALLETS_VERSION) return { status: 'invalid-record' };
+  const wallet = result.value?.wallets?.[walletId];
+  if (!wallet || wallet.id !== walletId) return { status: 'account-changed' };
+  return { status: 'ok', value: wallet };
+}
+
+export async function readWalletMnemonic(walletId: string, auth: WalletKeychainAuth = {}): Promise<WalletAccessResult<MnemonicData>> {
+  if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+  if (typeof walletId !== 'string' || !walletId || walletId.length > 256) return { status: 'invalid-record' };
+  try {
+    const source = await readSourceWallet(walletId);
+    if (source.status !== 'ok') return source;
+    if (source.value.type !== EthereumWalletType.mnemonic) return { status: 'unsupported-source' };
+    const result = await kc.getPrivateString(`${walletId}_${seedPhraseKey}`, { ...auth, authenticationPrompt });
+    if (result.status === 'missing-key' && (await kc.has(seedPhraseKey))) return { status: 'legacy-migration-required' };
+    if (result.status !== 'ok') return result;
+    let value: unknown;
+    try {
+      value = JSON.parse(result.value);
+    } catch {
+      return { status: 'invalid-record' };
+    }
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      !('id' in value) ||
+      value.id !== walletId ||
+      !('version' in value) ||
+      value.version !== 1 ||
+      !('seedphrase' in value) ||
+      typeof value.seedphrase !== 'string' ||
+      value.seedphrase.length > 1024 ||
+      !isValidMnemonic(value.seedphrase)
+    )
+      return { status: 'invalid-record' };
+    if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+    const current = await readSourceWallet(walletId);
+    if (current.status !== 'ok') return current;
+    if (current.value.type !== EthereumWalletType.mnemonic) return { status: 'account-changed' };
+    if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+    return { status: 'ok', value: { id: walletId, version: 1, seedphrase: value.seedphrase as Bip39Mnemonic } };
+  } catch {
+    return { status: 'unavailable' };
+  }
+}
+
+async function readStoredAccountKey(address: WalletAddress, auth: WalletKeychainAuth): Promise<WalletAccessResult<AccountPrivateKeyData>> {
+  const identity = validateWalletAddress(address);
+  if (identity.status !== 'ok') return identity;
+  const key = `rainbow.account-key.v1/${identity.value.namespace}/${identity.value.address}`;
+  const stored = await kc.getPrivateString(key, { ...auth, authenticationPrompt });
+  if (stored.status !== 'ok') return stored;
+  let value: unknown;
+  try {
+    value = JSON.parse(stored.value);
+  } catch {
+    return { status: 'invalid-record' };
+  }
+  const record = validateAccountKeyRecord(value);
+  if (record.status !== 'ok') return record;
+  if (record.value.address !== identity.value.address) return { status: 'address-mismatch' };
+  return record;
+}
+
+// Serialize check-then-write and removal for each identity; never retain secret results.
+const accountKeyMutations = new Map<string, Promise<void>>();
+
+async function mutateAccountKey(key: string, operation: () => Promise<WalletAccessResult<void>>): Promise<WalletAccessResult<void>> {
+  const previous = accountKeyMutations.get(key) ?? Promise.resolve();
+  const result = previous.then(operation).catch((): WalletAccessResult<void> => ({ status: 'unavailable' }));
+  const pending = result.then(() => undefined);
+  accountKeyMutations.set(key, pending);
+  try {
+    return await result;
+  } finally {
+    if (accountKeyMutations.get(key) === pending) accountKeyMutations.delete(key);
+  }
+}
+
+async function writeAccountKey(record: AccountPrivateKeyData, auth: WalletKeychainAuth): Promise<WalletAccessResult<void>> {
+  if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+  const validated = validateAccountKeyRecord(record);
+  if (validated.status !== 'ok') return validated;
+  const value = validated.value;
+  const identity = validateWalletAddress(value.address);
+  if (identity.status !== 'ok') return identity;
+  const key = `rainbow.account-key.v1/${identity.value.namespace}/${value.address}`;
+  return mutateAccountKey(key, async () => {
+    if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+    const existing = await readStoredAccountKey(value.address, auth);
+    if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+    if (existing.status === 'ok') {
+      return existing.value.privateKey === value.privateKey && existing.value.format === value.format
+        ? { status: 'ok', value: undefined }
+        : { status: 'invalid-record' };
+    }
+    if (existing.status !== 'missing-key') return existing;
+    return kc.setPrivateString(key, JSON.stringify(value), { ...auth, authenticationPrompt });
+  });
+}
+
+/** Removes only a new-format record; the caller must establish that no wallet still owns it. */
+export async function removeAccountKey(address: WalletAddress): Promise<WalletAccessResult<void>> {
+  if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+  const identity = validateWalletAddress(address);
+  if (identity.status !== 'ok') return identity;
+  const key = `rainbow.account-key.v1/${identity.value.namespace}/${identity.value.address}`;
+  return mutateAccountKey(key, async () => {
+    if (!useIsSolanaEnabled.getState()) return { status: 'disabled' };
+    await kc.remove(key);
+    return { status: 'ok', value: undefined };
+  });
+}
 
 async function loadLegacySeedPhrase(): Promise<EthereumWalletSeed | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated | null> {
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
@@ -90,10 +217,19 @@ export async function getKeyForWallet(
 }
 
 export async function savePrivateKey(
-  address: EthereumAddress,
-  privateKey: EthereumPrivateKey | HardwareKey | null,
+  address: WalletAddress,
+  privateKey: WalletAccountMaterial,
   { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ): Promise<void> {
+  const identity = validateWalletAddress(address);
+  if (identity.status !== 'ok') throw new Error('[wallet]: Expected a raw wallet address');
+  if (identity.value.namespace === 'solana') {
+    if (typeof privateKey !== 'string') throw new Error('[wallet]: Expected a software private key');
+    const result = await writeAccountKey({ address, privateKey, format: 'ed25519-seed-base64', version: 1 }, { androidEncryptionPin });
+    if (result.status !== 'ok') throw new Error(`[wallet]: Unable to save private key (${result.status})`);
+    return;
+  }
+
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${address}_${privateKeyKey}`;
   const value: PrivateKeyData = {
@@ -120,11 +256,24 @@ export async function saveHardwareKey(address: EthereumAddress, privateKey: Hard
 }
 
 export async function getPrivateKey(
-  address: EthereumAddress
+  address: WalletAddress,
+  auth: WalletKeychainAuth = {}
 ): Promise<PrivateKeyData | null | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> {
   try {
+    const identity = validateWalletAddress(address);
+    if (identity.status !== 'ok') return null;
+    if (identity.value.namespace === 'solana') {
+      if (!useIsSolanaEnabled.getState()) return null;
+      const result = await readStoredAccountKey(address, auth);
+      if (!useIsSolanaEnabled.getState()) return null;
+      if (result.status === 'ok') return result.value;
+      if (result.status === 'cancelled') return kc.ErrorType.UserCanceled;
+      if (result.status === 'not-authenticated') return kc.ErrorType.NotAuthenticated;
+      return null;
+    }
+
     const key = `${address}_${privateKeyKey}`;
-    const androidEncryptionPin = await kc.maybeAuthenticateWithPIN();
+    const androidEncryptionPin = auth.androidEncryptionPin ?? (await kc.maybeAuthenticateWithPIN());
     const { value: privateKeyData, error } = await kc.getObject<PrivateKeyData>(key, {
       authenticationPrompt,
       androidEncryptionPin,
@@ -136,7 +285,7 @@ export async function getPrivateKey(
         return error;
       case kc.ErrorType.Unavailable: {
         const checksumAddress = toChecksumAddress(address);
-        if (address !== checksumAddress) return getPrivateKey(checksumAddress);
+        if (address !== checksumAddress) return getPrivateKey(checksumAddress, auth);
         logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
         break;
       }
