@@ -10,8 +10,8 @@ const { navigation, state } = vi.hoisted(() => {
   return { navigation: { getState: () => state }, state };
 });
 
-vi.mock('@react-navigation/native', () => ({
-  useNavigation: () => navigation,
+vi.mock('@/navigation/Navigation', () => ({ useNavigation: () => navigation }));
+vi.mock('@/navigation/RouteContext', () => ({
   useRoute: () => ({ key: 'screen', name: 'AddCashSheet' }),
 }));
 
@@ -25,7 +25,7 @@ function Screen({ cleanup }: { cleanup: () => void }) {
 
 function render(children: React.ReactNode): void {
   act(() => {
-    renderer.render(children, ROOT_TAG, undefined, undefined);
+    renderer.render(<>{children}</>, ROOT_TAG, undefined, undefined);
   });
 }
 
