@@ -4,12 +4,13 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vites
 
 import '../../../../config/test/storeEnvironment';
 
-import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketOrderAmounts, type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
 
 import { predictionEvent } from '../../../../config/test/predictionEvent';
 import { createEvent, createMarket, createPosition } from '../test/fixtures';
 import { type PolymarketMarket } from '../types/polymarket-event';
 import { type usePolymarketPositions as PositionsView } from './derived/usePolymarketPositions';
+import { type PolymarketOrderDetails } from './polymarketOrderDetailsStore';
 import {
   type polymarketPositionsActions as PositionsActions,
   type usePolymarketPositionsStore as PositionsStore,
@@ -96,20 +97,12 @@ describe('polymarketPositionsStore', () => {
     const unsubscribe = usePolymarketPositions.subscribe(state => state.activePositions, onPositions);
 
     try {
-      polymarketPositionsActions.beginExpectedBuyPosition({ asset: '101', operationId: 'first', proxyAddress: mockProxyAddress });
-      polymarketPositionsActions.beginExpectedBuyPosition({ asset: '101', operationId: 'second', proxyAddress: mockProxyAddress });
+      const first = polymarketPositionsActions.beginBuy({ asset: '101', proxyAddress: mockProxyAddress });
+      const second = polymarketPositionsActions.beginBuy({ asset: '101', proxyAddress: mockProxyAddress });
       expect(usePolymarketPositions.getState().activePositions).toEqual([]);
 
-      polymarketPositionsActions.applyExpectedBuyPosition({
-        ...params,
-        operationId: 'first',
-        positionAmounts: { tokens: '2.5', usd: '1' },
-      });
-      polymarketPositionsActions.applyExpectedBuyPosition({
-        ...params,
-        operationId: 'second',
-        positionAmounts: { tokens: '5', usd: '3' },
-      });
+      first.publish(params, { tokens: '2.5', usd: '1' });
+      second.publish(params, { tokens: '5', usd: '3' });
       const position = polymarketPositionsActions.getPosition('101', mockProxyAddress);
       expect(position).toMatchObject({ size: 7.5, initialValue: 4, currentValue: 3, cashPnl: -1 });
       expect(usePolymarketPositionsStore.getState().isStale()).toBe(true);
@@ -126,13 +119,13 @@ describe('polymarketPositionsStore', () => {
 
   it('preserves an earlier correction while a later submission is pending', async () => {
     const params = { event: createEvent(), market: createMarket(), outcomeIndex: 0, proxyAddress: mockProxyAddress };
-    applyExpectedBuyPosition({ ...params, operationId: 'A', positionAmounts: { tokens: '10', usd: '4' } });
-    polymarketPositionsActions.beginExpectedBuyPosition({ asset: '101', operationId: 'B', proxyAddress: mockProxyAddress });
+    const first = applyBuy({ ...params, positionAmounts: { tokens: '10', usd: '4' } });
+    const second = polymarketPositionsActions.beginBuy({ asset: '101', proxyAddress: mockProxyAddress });
 
-    polymarketPositionsActions.amendExpectedBuyPosition({ ...params, operationId: 'A', positionAmounts: { tokens: '8', usd: '4' } });
+    first.amend({ tokens: '8', usd: '4' });
     await refreshPositions(createPosition({ size: 8, initialValue: 4 }));
 
-    polymarketPositionsActions.applyExpectedBuyPosition({ ...params, operationId: 'B', positionAmounts: { tokens: '5', usd: '2.5' } });
+    second.publish(params, { tokens: '5', usd: '2.5' });
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)?.size).toBe(13);
 
     await refreshPositions(createPosition({ size: 13, initialValue: 6.5 }));
@@ -140,17 +133,10 @@ describe('polymarketPositionsStore', () => {
   });
 
   it('does not count a buy twice when the indexer responds before local publication', async () => {
-    polymarketPositionsActions.beginExpectedBuyPosition({ asset: '101', operationId: 'buy-order', proxyAddress: mockProxyAddress });
+    const buy = polymarketPositionsActions.beginBuy({ asset: '101', proxyAddress: mockProxyAddress });
     const indexed = createPosition({ size: 8, initialValue: 4 });
     await refreshPositions(indexed);
-    polymarketPositionsActions.applyExpectedBuyPosition({
-      operationId: 'buy-order',
-      event: createEvent(),
-      market: createMarket(),
-      outcomeIndex: 0,
-      positionAmounts: { tokens: '8', usd: '4' },
-      proxyAddress: mockProxyAddress,
-    });
+    buy.publish({ event: createEvent(), market: createMarket(), outcomeIndex: 0 }, { tokens: '8', usd: '4' });
     expect(polymarketPositionsActions.getPosition(indexed.asset, mockProxyAddress)?.size).toBe(8);
   });
 
@@ -159,24 +145,23 @@ describe('polymarketPositionsStore', () => {
       event: createEvent(),
       market: createMarket(),
       outcomeIndex: 0,
-      operationId: 'buy-order',
       proxyAddress: mockProxyAddress,
     };
-    applyExpectedBuyPosition({ ...params, positionAmounts: { tokens: '10', usd: '5' } });
-    polymarketPositionsActions.amendExpectedBuyPosition({ ...params, positionAmounts: { tokens: '8', usd: '4' } });
+    const buy = applyBuy({ ...params, positionAmounts: { tokens: '10', usd: '5' } });
+    buy.amend({ tokens: '8', usd: '4' });
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)?.size).toBe(8);
     await refreshPositions(createPosition({ size: 8, initialValue: 3.9 }));
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)?.initialValue).toBe(3.9);
-    polymarketPositionsActions.amendExpectedBuyPosition({ ...params, positionAmounts: { tokens: '9', usd: '4.5' } });
+    buy.amend({ tokens: '9', usd: '4.5' });
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)?.size).toBe(8);
   });
 
   it('does not move an amended buy after a later sale and rebuy', () => {
     const params = { event: createEvent(), market: createMarket(), outcomeIndex: 0, proxyAddress: mockProxyAddress };
-    applyExpectedBuyPosition({ ...params, operationId: 'first', positionAmounts: { tokens: '10', usd: '5' } });
-    applyExpectedPositionRemoval(createPosition({ size: 10, initialValue: 5 }), 'sell');
-    applyExpectedBuyPosition({ ...params, operationId: 'second', positionAmounts: { tokens: '3', usd: '1.5' } });
-    polymarketPositionsActions.amendExpectedBuyPosition({ ...params, operationId: 'first', positionAmounts: { tokens: '8', usd: '4' } });
+    const first = applyBuy({ ...params, positionAmounts: { tokens: '10', usd: '5' } });
+    polymarketPositionsActions.remove(createPosition({ size: 10, initialValue: 5 }));
+    applyBuy({ ...params, positionAmounts: { tokens: '3', usd: '1.5' } });
+    first.amend({ tokens: '8', usd: '4' });
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)).toMatchObject({ size: 3, initialValue: 1.5 });
   });
 
@@ -188,20 +173,17 @@ describe('polymarketPositionsStore', () => {
       positionAmounts: { tokens: '10', usd: '4' },
       proxyAddress: mockProxyAddress,
     };
-    applyExpectedBuyPosition(params);
+    applyBuy(params);
     usePolymarketPositionsStore.setState({ queryKey: getQueryKey({ proxyAddress: '0x0000000000000000000000000000000000000002' }) });
-    let release!: () => void;
-    const held = new Promise<void>(resolve => {
-      release = resolve;
-    });
+    const held = Promise.withResolvers<void>();
     fetch.mockImplementationOnce(async () => {
-      await held;
+      await held.promise;
       return Response.json({ data: [] });
     });
     const first = usePolymarketPositionsStore.getState().fetch({ proxyAddress: mockProxyAddress }, { force: true, throwOnError: true });
     const second = usePolymarketPositionsStore.getState().fetch({ proxyAddress: mockProxyAddress }, { force: true, throwOnError: true });
     expect(fetch).toHaveBeenCalledTimes(1);
-    release();
+    held.resolve();
     await Promise.all([first, second]);
     expect(polymarketPositionsActions.getPosition('101', mockProxyAddress)?.size).toBe(10);
     await refreshPositions(createPosition());
@@ -220,7 +202,7 @@ describe('polymarketPositionsStore', () => {
     const otherProxyAddress = '0x0000000000000000000000000000000000000001';
     usePolymarketPositionsStore.setState({ queryKey: getQueryKey({ proxyAddress: otherProxyAddress }) });
 
-    applyExpectedBuyPosition({
+    applyBuy({
       event: createEvent(),
       market: createMarket(),
       outcomeIndex: 0,
@@ -248,7 +230,7 @@ describe('polymarketPositionsStore', () => {
   it('publishes an accepted buy when the route market does not include events', () => {
     const market = createMarketWithoutEvents();
 
-    applyExpectedBuyPosition({
+    applyBuy({
       event: createEvent(),
       market,
       outcomeIndex: 0,
@@ -269,7 +251,7 @@ describe('polymarketPositionsStore', () => {
   it('does not invent an absolute position when the proxy cache is not hydrated', async () => {
     usePolymarketPositionsStore.setState({ queryCache: {} });
 
-    applyExpectedBuyPosition({
+    applyBuy({
       event: createEvent(),
       market: createMarket(),
       outcomeIndex: 0,
@@ -308,11 +290,11 @@ describe('polymarketPositionsStore', () => {
     expect(usePolymarketPositions.getState().activePositions).toEqual([largerPosition, smallerPosition, winningPosition]);
     expect(usePolymarketPositions.getState().lostPositions).toEqual([lostPosition]);
 
-    applyExpectedPositionRemoval(winningPosition, 'winning-redemption');
+    polymarketPositionsActions.remove(winningPosition);
     expect(usePolymarketPositions.getState().activePositions).toEqual([largerPosition, smallerPosition]);
     expect(usePolymarketPositions.getState().lostPositions).toEqual([lostPosition]);
 
-    applyExpectedPositionRemoval(lostPosition, 'lost-redemption');
+    polymarketPositionsActions.remove(lostPosition);
     expect(usePolymarketPositions.getState().positions).toEqual([largerPosition, smallerPosition]);
     expect(usePolymarketPositions.getState().lostPositions).toHaveLength(0);
   });
@@ -326,7 +308,7 @@ describe('polymarketPositionsStore', () => {
     async ({ soldSize, buys, interleavedReads }) => {
       const sold = createPosition({ size: soldSize, initialValue: soldSize * 0.4 });
       await refreshPositions(sold);
-      applyExpectedPositionRemoval(sold);
+      polymarketPositionsActions.remove(sold);
 
       const snapshotsBeforeRebuy = interleavedReads ? [undefined, sold] : [];
       for (const snapshot of snapshotsBeforeRebuy) {
@@ -336,12 +318,11 @@ describe('polymarketPositionsStore', () => {
       }
 
       for (let i = 0; i < buys; i++) {
-        applyExpectedBuyPosition({
+        applyBuy({
           event: createEvent(),
           market: sold.market,
           outcomeIndex: 0,
           proxyAddress: mockProxyAddress,
-          operationId: `rebuy-${i}`,
           positionAmounts: { tokens: '5', usd: '2' },
         });
       }
@@ -363,21 +344,16 @@ describe('polymarketPositionsStore', () => {
     const position = createPosition({ initialValue: 8, size: 20 });
     await refreshPositions(position);
 
-    applyExpectedPositionRemoval(position, 'failed-sell');
-    applyExpectedBuyPosition({
+    const sale = polymarketPositionsActions.remove(position);
+    applyBuy({
       event: createEvent(),
       market: createMarket(),
-      operationId: 'accepted-buy',
       outcomeIndex: 0,
       positionAmounts: { tokens: '5', usd: '2' },
       proxyAddress: mockProxyAddress,
     });
 
-    polymarketPositionsActions.discardExpectedPosition({
-      asset: position.asset,
-      operationId: 'failed-sell',
-      proxyAddress: mockProxyAddress,
-    });
+    sale.discard();
 
     expect(usePolymarketPositionsStore.getState().getPosition(position.asset, mockProxyAddress)).toMatchObject({
       initialValue: 10,
@@ -392,20 +368,20 @@ describe('polymarketPositionsStore', () => {
   });
 });
 
-type ApplyExpectedBuyPositionParams = Parameters<typeof polymarketPositionsActions.applyExpectedBuyPosition>[0];
-
-function applyExpectedBuyPosition(params: Omit<ApplyExpectedBuyPositionParams, 'operationId'> & { operationId?: string }): void {
-  const operationId = params.operationId ?? 'buy-order';
-  polymarketPositionsActions.beginExpectedBuyPosition({
-    asset: params.market.clobTokenIds[params.outcomeIndex],
-    operationId,
-    proxyAddress: params.proxyAddress,
+function applyBuy({
+  proxyAddress,
+  positionAmounts,
+  ...details
+}: PolymarketOrderDetails & {
+  proxyAddress: Address;
+  positionAmounts: PolymarketOrderAmounts;
+}) {
+  const update = polymarketPositionsActions.beginBuy({
+    asset: details.market.clobTokenIds[details.outcomeIndex],
+    proxyAddress,
   });
-  polymarketPositionsActions.applyExpectedBuyPosition({ ...params, operationId });
-}
-
-function applyExpectedPositionRemoval(position: PolymarketPosition, operationId = 'remove-position'): void {
-  polymarketPositionsActions.applyExpectedPositionRemoval({ operationId, position });
+  update.publish(details, positionAmounts);
+  return update;
 }
 
 function createMarketWithoutEvents(): PolymarketMarket {

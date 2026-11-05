@@ -31,18 +31,18 @@ type PolymarketPositionsParams = {
   proxyAddress: Address | null;
 };
 
-type ApplyExpectedBuyPositionParams = PolymarketOrderDetails & {
-  operationId: string;
-  positionAmounts: PolymarketOrderAmounts;
-  proxyAddress: Address;
+export type PolymarketPositionUpdate = {
+  discard: () => void;
+};
+
+export type PolymarketBuyPositionUpdate = PolymarketPositionUpdate & {
+  publish: (details: PolymarketOrderDetails, amounts: PolymarketOrderAmounts) => void;
+  amend: (amounts: PolymarketOrderAmounts) => void;
 };
 
 type PolymarketPositionsStoreActions = {
-  beginExpectedBuyPosition: (params: { asset: string; operationId: string; proxyAddress: Address }) => void;
-  applyExpectedBuyPosition: (params: ApplyExpectedBuyPositionParams) => void;
-  amendExpectedBuyPosition: (params: ApplyExpectedBuyPositionParams) => void;
-  applyExpectedPositionRemoval: (params: { operationId: string; position: PolymarketPosition }) => void;
-  discardExpectedPosition: (params: { asset: string; operationId: string; proxyAddress: Address }) => void;
+  beginBuy: (params: { asset: string; proxyAddress: Address }) => PolymarketBuyPositionUpdate;
+  remove: (position: PolymarketPosition) => PolymarketPositionUpdate;
   getPosition: (asset: string, proxyAddress: Address) => PolymarketPosition | undefined;
 };
 
@@ -58,6 +58,7 @@ export const usePolymarketPositionsStore = createPolymarketPositionsStore();
 export const polymarketPositionsActions = createStoreActions(usePolymarketPositionsStore);
 
 function createPolymarketPositionsStore() {
+  let nextOperationId = 0;
   const optimisticPositions = createPolymarketPositionOptimisticUpdater(OPTIMISTIC_POSITION_CONFLICT_WINDOW);
 
   const store = createQueryStore<PolymarketPositionsByAsset, PolymarketPositionsParams, PolymarketPositionsStoreActions>(
@@ -69,77 +70,95 @@ function createPolymarketPositionsStore() {
       staleTime: STALE_TIME,
     },
 
-    (set, get) => ({
-      beginExpectedBuyPosition: ({ asset, operationId, proxyAddress }) => {
-        const positions = get().getData({ proxyAddress });
-        if (!positions) return;
-
-        optimisticPositions.track({
-          apply: position => position,
-          asset,
-          canConfirmFromBackend: false,
-          operationId,
-          positions,
-          proxyAddress,
-        });
-      },
-
-      applyExpectedBuyPosition: params => updateBuyPosition('accept', params),
-      amendExpectedBuyPosition: params => updateBuyPosition('amend', params),
-
-      applyExpectedPositionRemoval: ({ operationId, position }) => {
-        set(state => {
-          const queryKey = getQueryKey({ proxyAddress: position.proxyWallet });
-          const currentPositions = state.getCacheEntry(queryKey)?.data;
-          const positions = optimisticPositions.track({
-            apply: () => undefined,
-            asset: position.asset,
-            canConfirmFromBackend: false,
-            operationId,
-            positions: currentPositions ?? { [position.asset]: position },
-            proxyAddress: position.proxyWallet,
-          });
-
-          return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME);
-        });
-      },
-
-      discardExpectedPosition: ({ asset, operationId, proxyAddress }) => {
-        set(state => {
-          const queryKey = getQueryKey({ proxyAddress });
-          const positions = optimisticPositions.discard({
-            asset,
-            operationId,
-            positions: state.getCacheEntry(queryKey)?.data ?? {},
-            proxyAddress,
-          });
-
-          if (!positions) return state;
-
-          return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME);
-        });
-      },
-
+    (_, get) => ({
+      beginBuy,
+      remove: removePosition,
       getPosition: (asset, proxyAddress) => get().getData({ proxyAddress })?.[asset],
     }),
 
     { storageKey: 'polymarketPositions', version: 3 }
   );
 
-  function updateBuyPosition(phase: 'accept' | 'amend', { operationId, proxyAddress, ...buy }: ApplyExpectedBuyPositionParams): void {
-    const asset = buy.market.clobTokenIds[buy.outcomeIndex];
+  // ============ Pending Position Changes ======================================= //
+
+  /** Retains the holding's history while a buy is submitted and its presentation loads. */
+  function beginBuy({ asset, proxyAddress }: { asset: string; proxyAddress: Address }): PolymarketBuyPositionUpdate {
+    const operationId = nextOperationId++;
+    const queryKey = getQueryKey({ proxyAddress });
+    const positions = store.getState().getData(queryKey);
+    let details: PolymarketOrderDetails | undefined;
+
+    if (positions) {
+      optimisticPositions.track({
+        apply: position => position,
+        asset,
+        canConfirmFromBackend: false,
+        operationId,
+        positions,
+        proxyAddress,
+      });
+    }
+
+    function update(phase: 'accept' | 'amend', buy: PolymarketOrderDetails, positionAmounts: PolymarketOrderAmounts): void {
+      store.setState(state => {
+        const cached = state.getCacheEntry(queryKey)?.data;
+
+        if (phase === 'accept' && (!cached || !asset || !buy.market.outcomes[buy.outcomeIndex])) return state;
+
+        const positions = optimisticPositions[phase]({
+          apply: currentPosition =>
+            buildAcceptedBuyPosition({ ...buy, positionAmounts, proxyWallet: proxyAddress, currentPosition }) ?? currentPosition,
+          asset,
+          operationId,
+          positions: cached ?? {},
+          proxyAddress,
+        });
+
+        return positions ? buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME) : state;
+      });
+    }
+
+    return {
+      publish: (buy, amounts) => {
+        details = buy;
+        update('accept', buy, amounts);
+      },
+      amend: amounts => {
+        if (details) update('amend', details, amounts);
+      },
+      discard: () => discardPosition({ asset, operationId, proxyAddress }),
+    };
+  }
+
+  /** Removes an accepted sale or redemption while the indexed positions catch up. */
+  function removePosition(position: PolymarketPosition): PolymarketPositionUpdate {
+    const operationId = nextOperationId++;
+    const proxyAddress = position.proxyWallet;
 
     store.setState(state => {
       const queryKey = getQueryKey({ proxyAddress });
-      const cached = state.getCacheEntry(queryKey)?.data;
-      if (phase === 'accept' && (!cached || !asset || !buy.market.outcomes[buy.outcomeIndex])) return state;
-
-      const positions = optimisticPositions[phase]({
-        apply: currentPosition => buildAcceptedBuyPosition({ ...buy, proxyWallet: proxyAddress, currentPosition }) ?? currentPosition,
-        asset,
+      const currentPositions = state.getCacheEntry(queryKey)?.data;
+      const positions = optimisticPositions.track({
+        apply: () => undefined,
+        asset: position.asset,
+        canConfirmFromBackend: false,
         operationId,
-        positions: cached ?? {},
+        positions: currentPositions ?? { [position.asset]: position },
         proxyAddress,
+      });
+
+      return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME);
+    });
+
+    return { discard: () => discardPosition({ asset: position.asset, operationId, proxyAddress }) };
+  }
+
+  function discardPosition(params: { asset: string; operationId: number; proxyAddress: Address }): void {
+    store.setState(state => {
+      const queryKey = getQueryKey({ proxyAddress: params.proxyAddress });
+      const positions = optimisticPositions.discard({
+        ...params,
+        positions: state.getCacheEntry(queryKey)?.data ?? {},
       });
 
       return positions ? buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME) : state;

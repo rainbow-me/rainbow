@@ -9,12 +9,12 @@ import { createOptimisticUpdater, type OptimisticUpdate } from '@/state/internal
 type PositionChange = {
   apply: (position: PolymarketPosition | undefined) => PolymarketPosition | undefined;
   canConfirmFromBackend: boolean;
-  operationId: string;
+  operationId: number;
 };
 
 type DiscardPositionChangeParams = {
   asset: string;
-  operationId: string;
+  operationId: number;
   positions: PolymarketPositionsByAsset;
   proxyAddress: Address;
 };
@@ -42,10 +42,9 @@ export function createPolymarketPositionOptimisticUpdater(conflictWindow: number
   }: ApplyPositionChangeParams & { canConfirmFromBackend?: boolean }): PolymarketPositionsByAsset {
     const previousUpdate = updates.getUpdate(proxyAddress, asset);
     const baselinePosition = previousUpdate ? previousUpdate.baselinePosition : positions[asset];
-    const changes = [
-      ...(previousUpdate?.changes.filter(change => change.operationId !== operationId) ?? []),
-      { apply, canConfirmFromBackend, operationId },
-    ];
+    const changes = previousUpdate?.changes.filter(change => change.operationId !== operationId) ?? [];
+    changes.push({ apply, canConfirmFromBackend, operationId });
+
     const expectedPosition = applyChanges(baselinePosition, changes);
 
     updates.track(proxyAddress, buildPositionUpdate({ asset, baselinePosition, changes, expectedPosition }));
