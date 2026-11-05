@@ -19,6 +19,39 @@ afterEach(() => vi.useRealTimers());
 
 // ============ Collection Behavior ============================================ //
 
+it.each([null, undefined])('returns empty read results for %s without resolving or fetching a resource', async input => {
+  const key = vi.fn((input: string) => input);
+  const fetcher = vi.fn(async (input: string) => input);
+  const store = createQueryCollectionStore({ key, fetcher, staleTime: Infinity, cacheTime: Infinity });
+  await store.getState().load('cached');
+  key.mockClear();
+  fetcher.mockClear();
+
+  expect(store.getState().get(input)).toBeUndefined();
+  expect(store.getState().getError(input)).toBeNull();
+  expect(store.getState().hasSettled(input)).toBe(false);
+  const stop = store.subscribe(s => [s.get(input), s.getError(input), s.hasSettled(input)], vi.fn());
+  await flush();
+  expect(key).not.toHaveBeenCalled();
+  expect(fetcher).not.toHaveBeenCalled();
+  stop();
+  store.getState().reset();
+});
+
+it.each([0, ''])('reads data and outcomes for the concrete input %j', async input => {
+  const fetcher = vi.fn(async (input: string | number) => input);
+  const store = createQueryCollectionStore({ key: (input: string | number) => input, fetcher, staleTime: Infinity, cacheTime: Infinity });
+  await store.getState().load(input);
+  expect(store.getState().get(input)).toBe(input);
+  expect(store.getState().hasSettled(input)).toBe(true);
+
+  const error = new Error('Refresh failed');
+  fetcher.mockRejectedValue(error);
+  await expect(store.getState().load(input, { force: true })).rejects.toBe(error);
+  expect(store.getState().getError(input)).toBe(error);
+  store.getState().reset();
+});
+
 it('shares requests across consumers while selecting independent values', async () => {
   const { store, requests } = createFixture();
   expect(store.getState().get(ALICE)).toBeUndefined();
@@ -222,12 +255,12 @@ it('discards a cancelled batch when the requested resource changes', async () =>
   store.getState().reset();
 });
 
-it('tracks derived consumers without adding another request lifecycle', async () => {
+it('tracks the current derived input and stops refreshing when it becomes absent', async () => {
   const { store, requests } = createFixture();
-  const input = createBaseStore(() => ({ chainId: 1 }));
+  const input = createBaseStore<{ chainId: number | undefined }>(() => ({ chainId: 1 }));
   const derived = createDerivedStore($ => {
     const chainId = $(input, s => s.chainId);
-    return $(store, s => s.get({ ...ALICE, chainId }));
+    return $(store, s => s.get(chainId === undefined ? undefined : { ...ALICE, chainId }));
   });
   const stop = derived.subscribe(vi.fn());
   await flush();
@@ -242,6 +275,14 @@ it('tracks derived consumers without adding another request lifecycle', async ()
   requests[1].resolve('second chain');
   await flush();
   expect(derived.getState()).toBe('second chain');
+
+  input.setState({ chainId: undefined });
+  await flush();
+  expect(derived.getState()).toBeUndefined();
+  vi.advanceTimersByTime(time.seconds(1));
+  await flush();
+  expect(requests).toHaveLength(2);
+
   stop();
   derived.destroy();
   await flush();

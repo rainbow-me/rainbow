@@ -14,17 +14,21 @@ import { createSelectorReadTracker } from '@/state/internal/utils/createSelector
 
 // ============ Types ========================================================== //
 
-/** Custom state connecting subscribed resource reads to the query store. */
+/**
+ * Custom state connecting subscribed resource reads to the query store.
+ * Nullish inputs select no resource: `get` returns undefined, `hasSettled` returns false,
+ * and `getError` returns null, without creating demand.
+ */
 export type QueryCollectionState<Input, Data> = {
   inputs: KeyedInput<Input>[];
   /** Whether this input has completed a lookup, including absence or failure. Remains true during refresh. */
-  hasSettled: (input: Input) => boolean;
+  hasSettled: (input: Input | null | undefined) => boolean;
   /** The latest lookup error, without discarding any previous data. */
-  getError: (input: Input) => Error | null;
+  getError: (input: Input | null | undefined) => Error | null;
   /** Fetches a resource if stale or forced, sharing any request already in progress. */
   load: (input: Input, options?: { force?: boolean }) => Promise<Data | undefined>;
   /** Reads cached data. Subscribed reads also keep this input in the collection's refresh set. */
-  get: (input: Input) => Data | undefined;
+  get: (input: Input | null | undefined) => Data | undefined;
 };
 
 /** Defines a shared collection's resource identity, loader, and cache policy. */
@@ -115,13 +119,18 @@ export function createQueryCollectionStore<Input, Data>(
       inputs: [],
 
       get: input => {
+        if (input == null) return undefined;
         const key = trackInput(input);
         return get().queryCache[`:${key}`]?.data?.[key];
       },
 
-      getError: input => get().queryCache[`:${trackInput(input)}`]?.errorInfo?.error ?? null,
+      getError: input => {
+        if (input == null) return null;
+        return get().queryCache[`:${trackInput(input)}`]?.errorInfo?.error ?? null;
+      },
 
       hasSettled: input => {
+        if (input == null) return false;
         const cached = get().queryCache[`:${trackInput(input)}`];
         return cached?.lastFetchedAt != null || cached?.errorInfo != null;
       },
