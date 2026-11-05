@@ -10,6 +10,7 @@ import { getOutcomeColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getSportsTeamImage } from '@/features/polymarket/utils/getSportsTeamImage';
 import { isTeamBasedOutcome } from '@/features/polymarket/utils/marketClassification';
+import { getMarketResolution } from '@/features/polymarket/utils/marketProtocol';
 import { type Participant } from '@/features/sports/core/generated/external/sports/payload';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -56,6 +57,8 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
           );
         }
 
+        const tokenId = market.clobTokenIds[index];
+
         return (
           <MarketRow
             key={outcome}
@@ -63,8 +66,9 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
             icon={icon}
             priceChange={0}
             title={outcomeTitles?.[index] ?? outcome}
-            umaResolutionStatus={market.umaResolutionStatus}
-            tokenId={market.clobTokenIds[index]}
+            isResolutionInReview={getMarketResolution(market) === 'in_review'}
+            disabled={!tokenId}
+            tokenId={tokenId}
             price={market.outcomePrices[index]}
             minTickSize={market.orderPriceMinTickSize}
             onPress={() => {
@@ -84,7 +88,7 @@ export const SingleMarketEventOutcomes = memo(function SingleMarketEventOutcomes
 });
 
 function getWinningOutcomeIndex(market: PolymarketMarket): number | null {
-  if (market.umaResolutionStatus !== 'resolved') return null;
+  if (getMarketResolution(market) !== 'resolved') return null;
 
   const winningOutcomeIndex = market.outcomePrices.findIndex(p => p === '1');
 

@@ -40,7 +40,6 @@ export type PolymarketPosition = {
   outcome: string;
   outcomeIndex: number;
   negativeRisk: boolean;
-  outcomes: string[];
   market: PolymarketMarket;
   /**
    * Some events have a unique image for each market, such as "Who will win the 2028 presidential election?"

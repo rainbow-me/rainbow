@@ -87,14 +87,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     [position]
   );
 
-  const outcomeTokenId = useMemo(() => {
-    const outcomeIndex = position.outcomes.indexOf(position.outcome);
-    const tokenId = position.market.clobTokenIds[outcomeIndex];
-    return tokenId;
-  }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
-
-  const priceTokenId = getPolymarketTokenId(outcomeTokenId, 'buy');
-  const oddsTokenId = getPolymarketTokenId(outcomeTokenId, 'sell');
+  const priceTokenId = getPolymarketTokenId(position.asset, 'buy');
+  const oddsTokenId = getPolymarketTokenId(position.asset, 'sell');
 
   const outcomeTitle = useMemo(() => {
     const { subtitle } = getOutcomeDescriptions({

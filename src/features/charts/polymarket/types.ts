@@ -1,6 +1,6 @@
-// ============ Animation Types ================================================ //
-
 import { type ResponseByTheme } from '@/theme/types';
+
+// ============ Animation Types ================================================ //
 
 export enum EntranceAnimation {
   /** Lines draw in from left to right, revealing with round cap at leading edge */
@@ -57,39 +57,6 @@ export type PricePoint = {
 export type ClobPriceHistoryResponse = {
   history: PricePoint[];
 };
-
-type GammaMarketBase = {
-  active: boolean;
-  closed: boolean;
-  conditionId: string;
-  groupItemTitle?: string;
-  id: string;
-  liquidity: string;
-  question: string;
-  seriesColor?: string;
-  slug: string;
-  sportsMarketType?: string;
-  startDate?: string;
-  volume: string;
-};
-
-export type GammaMarketRaw = GammaMarketBase & { clobTokenIds: string; outcomes: string; outcomePrices: string };
-export type GammaMarket = GammaMarketBase & { clobTokenIds: string[]; outcomes: string[]; outcomePrices: string[] };
-
-type GammaEventBase = {
-  awayTeamName?: string;
-  closed: boolean;
-  description: string;
-  gameId?: number;
-  homeTeamName?: string;
-  id: string;
-  negRisk: boolean;
-  slug: string;
-  title: string;
-};
-
-export type GammaEventRaw = GammaEventBase & { markets: GammaMarketRaw[] };
-export type GammaEvent = GammaEventBase & { markets: GammaMarket[] };
 
 // ============ Chart Data Types =============================================== //
 

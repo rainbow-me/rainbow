@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 
@@ -8,12 +7,9 @@ import { createOrderExecutionStore } from '../stores/createOrderExecutionStore';
 import { createOrderFormStore } from '../stores/createOrderFormStore';
 import { useOrderValidation } from './useOrderValidation';
 
-export function useNewPositionForm() {
-  const liveAvailableBalance = usePolymarketBalanceStore(s => s.getBalance());
-  const availableBalance = useStableValue(() => liveAvailableBalance);
-
+export function useNewPositionForm(availableBalance: string) {
   const { orderFormStore, executionStore } = useStableValue(() => {
-    const orderFormStore = createOrderFormStore();
+    const orderFormStore = createOrderFormStore(availableBalance);
     const executionStore = createOrderExecutionStore(orderFormStore);
     return { orderFormStore, executionStore };
   });
@@ -49,7 +45,6 @@ export function useNewPositionForm() {
   }, [bestPrice]);
 
   return {
-    availableBalance,
     averagePrice,
     worstPrice,
     spread,

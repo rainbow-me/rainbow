@@ -19,7 +19,8 @@ import { RainbowError } from '@/logger';
 import { ChainId } from '@rainbow-me/swaps';
 
 type PolymarketBalanceStoreActions = {
-  getBalance: () => string;
+  getBalance(address?: Address, useFallback?: true): string;
+  getBalance(address: Address | undefined, useFallback: boolean): string | null;
   getPusdBalance: () => string;
   getUsdcBalance: () => string;
   isBalanceZero: () => boolean;
@@ -53,12 +54,23 @@ export const usePolymarketBalanceStore = createQueryStore<
     staleTime: time.seconds(10),
   },
 
-  (_, get) => ({
-    getBalance: () => get().getData()?.balance ?? EMPTY_BALANCES.balance,
-    getPusdBalance: () => get().getData()?.pusdBalance ?? EMPTY_BALANCES.pusdBalance,
-    getUsdcBalance: () => get().getData()?.usdcBalance ?? EMPTY_BALANCES.usdcBalance,
-    isBalanceZero: () => Number(get().getData()?.balance ?? EMPTY_BALANCES.balance) === 0,
-  }),
+  (_, get) => {
+    function getBalance(address?: Address, useFallback?: true): string;
+    function getBalance(address: Address | undefined, useFallback: boolean): string | null;
+    function getBalance(address?: Address, useFallback = true): string | null {
+      const balances = get().getData(address ? { address } : undefined);
+      if (!balances && !useFallback) return null;
+
+      return balances?.balance ?? EMPTY_BALANCES.balance;
+    }
+
+    return {
+      getBalance,
+      getPusdBalance: () => get().getData()?.pusdBalance ?? EMPTY_BALANCES.pusdBalance,
+      getUsdcBalance: () => get().getData()?.usdcBalance ?? EMPTY_BALANCES.usdcBalance,
+      isBalanceZero: () => Number(get().getData()?.balance ?? EMPTY_BALANCES.balance) === 0,
+    };
+  },
 
   { storageKey: 'polymarketBalanceStore' }
 );

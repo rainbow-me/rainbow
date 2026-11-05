@@ -30,14 +30,7 @@ import {
 } from '@/features/perps/components/Slider/Slider';
 import { INPUT_CARD_HEIGHT, SLIDER_EXPANDED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { type OrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import {
-  divWorklet,
-  equalWorklet,
-  greaterThanOrEqualToWorklet,
-  greaterThanWorklet,
-  mulWorklet,
-  toFixedWorklet,
-} from '@/framework/core/safeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { useLazyRef } from '@/hooks/useLazyRef';
@@ -49,6 +42,7 @@ import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { sanitizeAmount } from '@/worklets/strings';
 
 import { AmountInputCardSubtitle } from './AmountInputCardSubtitle';
+import { getInitialSliderAmount } from './getInitialSliderAmount';
 
 type InteractionMode = 'slider' | 'keyboard';
 
@@ -150,13 +144,10 @@ function formatAmountForDisplay(value: string): string {
 
 function getAmountFromProgress(progress: number, balance: string): string {
   'worklet';
-  if (progress >= SLIDER_MAX) return balance;
-  if (equalWorklet(balance, '0')) return '0';
-
   const percentage = clampSliderProgress(progress) / SLIDER_MAX;
-  const product = mulWorklet(balance, percentage);
+  const amount = toFixedWorklet(mulWorklet(balance, percentage), USD_DECIMALS);
 
-  return toFixedWorklet(product, USD_DECIMALS);
+  return equalWorklet(amount, '0') ? '' : amount;
 }
 
 function getProgressFromAmount(amount: string, balance: string): number {
@@ -167,13 +158,6 @@ function getProgressFromAmount(amount: string, balance: string): number {
   return clampSliderProgress(Number(ratio) * SLIDER_MAX);
 }
 
-function getInitialProgress(availableBalanceString: string): number {
-  'worklet';
-  const availableBalance = Number(availableBalanceString);
-  if (!availableBalance) return 0;
-  return availableBalance <= 5 ? SLIDER_MAX : SLIDER_MAX / 2;
-}
-
 function normalizeAmountForStore(value: string): string {
   'worklet';
   const numeric = sanitizeAmount(value);
@@ -182,32 +166,6 @@ function normalizeAmountForStore(value: string): string {
     return trimmed === '' ? '0' : trimmed;
   }
   return trimCurrencyZeros(numeric, USD_CURRENCY);
-}
-
-function toNiceIncrement(sanitizedAmount: string): string {
-  'worklet';
-  const amountAsNumber = Number(sanitizedAmount);
-  if (amountAsNumber < 100) return toFixedWorklet(sanitizedAmount, USD_DECIMALS);
-  if (amountAsNumber < 1000) trimCurrencyZeros(toFixedWorklet(sanitizedAmount, 0), USD_CURRENCY);
-  return trimCurrencyZeros(toFixedWorklet(Math.round(amountAsNumber / 10) * 10, 0), USD_CURRENCY);
-}
-
-function toAdaptivePrecision(amount: string, availableBalance: string): string {
-  'worklet';
-  if (equalWorklet(amount, '0')) return '';
-
-  const balance = sanitizeAmount(availableBalance);
-  const isMax = greaterThanOrEqualToWorklet(amount, balance);
-  if (isMax) return toFixedWorklet(balance, USD_DECIMALS);
-
-  if (amount === balance) return amount;
-
-  return toNiceIncrement(amount);
-}
-
-function roundToNearestTenth(value: number): number {
-  'worklet';
-  return Math.round(value * 10) / 10;
 }
 
 type AmountInputCardProps = {
@@ -246,20 +204,22 @@ export const AmountInputCard = memo(function AmountInputCard({
   const sliderGestureState = useSharedValue<SliderGestureState>('idle');
 
   const isBalanceZero = useDerivedValue(() => equalWorklet(balanceValue.value, '0'));
-  const snapPoints = useDerivedValue(() => (isBalanceZero.value ? [0] : SLIDER_DEFAULT_SNAP_POINTS)); // ? [0] : undefined);
-  const setAmount = useCallback(
-    (amount: string) => {
-      onAmountChange?.(amount);
-    },
-    [onAmountChange]
-  );
+  const snapPoints = useDerivedValue(() => (isBalanceZero.value ? [0] : SLIDER_DEFAULT_SNAP_POINTS));
 
   const debouncedSetAmount = useDebouncedCallback(
     (amount: string) => {
-      setAmount(amount);
+      onAmountChange?.(amount);
     },
     time.ms(200),
     { leading: false, trailing: true }
+  );
+
+  const setAmount = useCallback(
+    (amount: string) => {
+      debouncedSetAmount.cancel();
+      onAmountChange?.(amount);
+    },
+    [debouncedSetAmount, onAmountChange]
   );
 
   const setTextInput = useCallback(
@@ -276,7 +236,7 @@ export const AmountInputCard = memo(function AmountInputCard({
 
   useAnimatedReaction(
     () => ({
-      progress: clampSliderProgress(roundToNearestTenth(sliderProgress.value)),
+      progress: clampSliderProgress(sliderProgress.value),
       source: inputSource.value,
     }),
     (current, previous) => {
@@ -292,7 +252,7 @@ export const AmountInputCard = memo(function AmountInputCard({
       if (!isSliderControlled) return;
 
       const balance = balanceValue.value;
-      const amount = toAdaptivePrecision(getAmountFromProgress(current.progress, balance), balance);
+      const amount = getAmountFromProgress(current.progress, balance);
 
       if (displayedAmount.value === amount) return;
 
@@ -363,16 +323,13 @@ export const AmountInputCard = memo(function AmountInputCard({
       'worklet';
       const resetFunction = () => {
         const currentBalance = newAvailableBalance || availableBalanceString.value;
-        const balance = sanitizeAmount(currentBalance) || '0';
-        const targetProgress = getInitialProgress(currentBalance);
-        const resetAmount = toAdaptivePrecision(getAmountFromProgress(targetProgress, balance), balance);
-        const normalized = normalizeAmountForStore(resetAmount);
+        const values = buildInitialValues(currentBalance);
 
-        balanceValue.value = balance;
-        displayedAmount.value = equalWorklet(normalized, '0') ? '' : normalized;
+        balanceValue.value = values.availableBalance;
+        displayedAmount.value = values.amount;
         inputSource.value = 'slider';
-        sliderProgress.value = targetProgress;
-        runOnJS(setAmount)(normalized);
+        sliderProgress.value = values.sliderProgress;
+        runOnJS(setAmount)(normalizeAmountForStore(values.amount));
       };
       if (_WORKLET) resetFunction();
       else runOnUI(resetFunction)();
@@ -399,7 +356,11 @@ export const AmountInputCard = memo(function AmountInputCard({
         const exceedsBalance = greaterThanWorklet(normalizedCurrent, nextBalance);
 
         if (exceedsBalance) {
+          const amount = getAmountFromProgress(SLIDER_MAX, nextBalance);
           inputSource.value = 'slider';
+          displayedAmount.value = amount;
+          runOnJS(setAmount)(normalizeAmountForStore(amount));
+
           const hasBalance = !equalWorklet(nextBalance, '0');
           sliderProgress.value = withSpring(hasBalance ? SLIDER_MAX : 0, SPRING_CONFIGS.snappySpringConfig);
           return;
@@ -411,7 +372,7 @@ export const AmountInputCard = memo(function AmountInputCard({
         }
       })();
     },
-    [balanceValue, displayedAmount, inputSource, lastAccountAddress, resetToInitial, sliderProgress]
+    [balanceValue, displayedAmount, inputSource, lastAccountAddress, resetToInitial, setAmount, sliderProgress]
   );
 
   useOnChange(() => {
@@ -488,12 +449,13 @@ function buildInitialValues(availableBalanceString: string): {
   availableBalance: string;
   sliderProgress: number;
 } {
+  'worklet';
   const availableBalance = sanitizeAmount(availableBalanceString);
-  const sliderProgress = getInitialProgress(availableBalanceString);
-  const amount = toAdaptivePrecision(getAmountFromProgress(sliderProgress, availableBalance), availableBalance);
+  const amount = getInitialSliderAmount(availableBalance);
+
   return {
-    amount,
+    amount: equalWorklet(amount, '0') ? '' : amount,
     availableBalance,
-    sliderProgress,
+    sliderProgress: getProgressFromAmount(amount, availableBalance),
   };
 }

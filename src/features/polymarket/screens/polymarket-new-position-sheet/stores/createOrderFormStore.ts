@@ -1,7 +1,6 @@
 import { createBaseStore, type Store } from '@storesjs/stores';
 
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { divWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
+import { getInitialSliderAmount } from '@/components/amount-input-card/getInitialSliderAmount';
 
 type OrderFormState = {
   buyAmount: string;
@@ -15,13 +14,9 @@ type OrderFormStoreState = OrderFormState & OrderFormActions;
 
 export type OrderFormStore = Store<OrderFormStoreState>;
 
-export function createOrderFormStore(): OrderFormStore {
-  const availableBalance = usePolymarketBalanceStore.getState().getBalance();
-  const halfBalance = divWorklet(availableBalance, 2);
-  const initialBuyAmount = greaterThanWorklet(availableBalance, '5') ? halfBalance : availableBalance;
-
+export function createOrderFormStore(initialBalance: string): OrderFormStore {
   return createBaseStore<OrderFormStoreState>(set => ({
-    buyAmount: initialBuyAmount,
+    buyAmount: getInitialSliderAmount(initialBalance),
     setBuyAmount: amount =>
       set(state => {
         if (state.buyAmount === amount) return state;

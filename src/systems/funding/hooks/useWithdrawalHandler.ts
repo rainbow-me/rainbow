@@ -117,11 +117,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
     withdrawalActions.setIsSubmitting(true);
     const targetChainId = params.chainInfo?.chainId;
 
-    let prerequisiteCompleted = false;
     try {
-      if (config.prerequisite) await config.prerequisite();
-      prerequisiteCompleted = true;
-
       const result = await config.executor(params);
 
       if (!result.success) {
@@ -136,17 +132,17 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
       config.trackSuccess?.({ amount, targetChainId });
 
       const refreshConfig = config.refresh;
-      if (refreshConfig) {
-        if (result.waitForConfirmation) {
-          result
-            .waitForConfirmation()
-            .then(() => executeRefreshSchedule(refreshConfig, config.id))
-            .catch(error => {
-              logger.warn(`[useWithdrawalHandler]: confirmation failed for ${config.id}`, { error });
-            });
-        } else {
-          executeRefreshSchedule(refreshConfig, config.id);
-        }
+      if (result.waitForConfirmation) {
+        result
+          .waitForConfirmation()
+          .then(() => {
+            if (refreshConfig) executeRefreshSchedule(refreshConfig, config.id);
+          })
+          .catch(error => {
+            logger.warn(`[useWithdrawalHandler]: confirmation failed for ${config.id}`, { error });
+          });
+      } else if (refreshConfig) {
+        executeRefreshSchedule(refreshConfig, config.id);
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error during withdrawal';
@@ -154,7 +150,7 @@ export function useWithdrawalHandler<T extends BalanceQueryStore>({
       config.trackFailure?.({
         amount,
         error: message,
-        stage: prerequisiteCompleted ? 'execution' : 'prerequisite',
+        stage: 'execution',
         targetChainId,
       });
       Alert.alert('Error Withdrawing', message);

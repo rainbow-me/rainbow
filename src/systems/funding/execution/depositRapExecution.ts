@@ -48,6 +48,7 @@ export type ExecuteDepositRapParams = {
   asset: RapSwapActionParameters<rapTypes.swap>['assetToSell'];
   assetChainId: ChainId;
   config: Pick<DepositConfig, 'directTransferEnabled' | 'to'>;
+  recipient: string;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   gasParams: DepositGasParams;
   nonce: number;
@@ -82,9 +83,10 @@ export async function executeDepositRap({
   nonce,
   preparedCalls,
   quote,
+  recipient,
   wallet,
 }: ExecuteDepositRapParams): Promise<ExecuteDepositRapResult> {
-  const strategy = determineStrategy(config, quote, quote.from);
+  const strategy = determineStrategy(config, quote, recipient);
 
   const parameters: Omit<
     RapSwapActionParameters<rapTypes.crosschainSwap | rapTypes.swap>,

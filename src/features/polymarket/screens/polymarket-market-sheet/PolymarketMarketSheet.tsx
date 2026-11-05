@@ -29,11 +29,10 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
     params: { market, event },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POLYMARKET_MARKET_SHEET>>();
 
+  const liveTokenIds = useMemo(() => market.clobTokenIds.map(id => getPolymarketTokenId(id, 'sell')), [market.clobTokenIds]);
   const setSubscribedTokens = useLiveTokenListSubscription();
 
-  useEffect(() => {
-    setSubscribedTokens(market.outcomes.map((_, index) => getPolymarketTokenId(market.clobTokenIds[index], 'sell')));
-  }, [market.clobTokenIds, market.outcomes, setSubscribedTokens]);
+  useEffect(() => setSubscribedTokens(liveTokenIds), [liveTokenIds, setSubscribedTokens]);
 
   const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
@@ -72,10 +71,13 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
         </Box>
         <Box paddingTop={'24px'} gap={12}>
           {market.outcomes.map((outcome, index) => {
+            const tokenId = liveTokenIds[index];
             const buttonColor = index === 0 ? green : red;
+
             return (
               <ButtonPressAnimation
                 key={outcome}
+                disabled={!tokenId}
                 onPress={() =>
                   Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
                     market,
@@ -99,7 +101,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                 >
                   <TextShadow blur={40} shadowOpacity={0.6}>
                     <Text size="22pt" weight="heavy" color={{ custom: buttonColor }}>
-                      {i18n.t(i18n.l.predictions.market.buy_outcome, { outcome })}
+                      {tokenId ? i18n.t(i18n.l.predictions.market.buy_outcome, { outcome }) : outcome}
                     </Text>
                   </TextShadow>
 
@@ -110,7 +112,7 @@ export const PolymarketMarketSheet = memo(function PolymarketMarketSheet() {
                     size="22pt"
                     weight="heavy"
                     color={{ custom: buttonColor }}
-                    tokenId={getPolymarketTokenId(market.clobTokenIds[index], 'sell')}
+                    tokenId={tokenId}
                     format={formatOutcomePercentage}
                     fallback={formatOutcomePercentage(market.outcomePrices[index] ?? 0)}
                   />

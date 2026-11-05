@@ -17,6 +17,7 @@ import { getOutcomeColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeTeam } from '@/features/polymarket/utils/getOutcomeTeam';
 import { getSportsTeamImage } from '@/features/polymarket/utils/getSportsTeamImage';
 import { BET_TYPE, type BetType } from '@/features/polymarket/utils/marketClassification';
+import { getMarketResolution } from '@/features/polymarket/utils/marketProtocol';
 import { type Participant } from '@/features/sports/core/generated/external/sports/payload';
 import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
 import useDimensions from '@/hooks/useDimensions';
@@ -184,7 +185,7 @@ const MoneylineMarkets = memo(function MoneylineMarkets({
                 icon={image}
                 priceChange={0}
                 title={market.groupItemTitle}
-                umaResolutionStatus={market.umaResolutionStatus}
+                isResolutionInReview={getMarketResolution(market) === 'in_review'}
                 tokenId={market.clobTokenIds[0]}
                 price={market.outcomePrices[0]}
                 minTickSize={market.orderPriceMinTickSize}

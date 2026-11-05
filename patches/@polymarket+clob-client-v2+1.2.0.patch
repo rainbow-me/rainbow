@@ -1,12 +1,12 @@
 # PATCH CONTEXT
 # Why: @polymarket/clob-client-v2 assumes a browser or Node runtime. In React
 #   Native it adds Node-only request headers and uses unavailable WebCrypto
-#   APIs for HMAC signing. This patch makes the package React Native compatible
-#   and bypasses cached tick sizes so orders use the market's current value.
+#   APIs for HMAC signing. The patch also bypasses stale tick sizes and adds
+#   the missing CONDITIONAL-V2 balance allowance type.
 # Upstream Issue: none filed yet.
 # Linear Issue: none.
 # Remove when: @polymarket/clob-client-v2 supports React Native requests and
-#   signing, and no longer serves cached tick sizes.
+#   signing, serves fresh tick sizes, and types V2 allowances.
 
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs b/node_modules/@polymarket/clob-client-v2/dist/http-helpers/index.cjs
 index 946edd3..10a85dc 100644
@@ -63,10 +63,10 @@ index d7e38a4..40a2358 100644
  		method,
  		url: endpoint,
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/client.cjs b/node_modules/@polymarket/clob-client-v2/dist/client.cjs
-index fd6d479..9a3b60b 100644
+index 8b91715..16a4e8a 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/client.cjs
 +++ b/node_modules/@polymarket/clob-client-v2/dist/client.cjs
-@@ -107,7 +107,6 @@ var ClobClient = class {
+@@ -144,7 +144,6 @@ var ClobClient = class {
  			if (!token) continue;
  			const tokenId = token.t;
  			this.tokenConditionMap[tokenId] = conditionID;
@@ -74,7 +74,7 @@ index fd6d479..9a3b60b 100644
  			this.negRisk[tokenId] = result.nr ?? false;
  			this.feeInfos[tokenId] = {
  				rate: result.fd?.r ?? 0,
-@@ -123,14 +122,12 @@ var ClobClient = class {
+@@ -160,14 +159,12 @@ var ClobClient = class {
  		return this.post(`${this.host}${require_endpoints.GET_ORDER_BOOKS}`, { data: params });
  	}
  	async getTickSize(tokenID) {
@@ -93,10 +93,10 @@ index fd6d479..9a3b60b 100644
  	async getNegRisk(tokenID) {
  		if (tokenID in this.negRisk) return this.negRisk[tokenID];
 diff --git a/node_modules/@polymarket/clob-client-v2/dist/client.js b/node_modules/@polymarket/clob-client-v2/dist/client.js
-index 06eb6ee..d8a800e 100644
+index 669a394..7c2da84 100644
 --- a/node_modules/@polymarket/clob-client-v2/dist/client.js
 +++ b/node_modules/@polymarket/clob-client-v2/dist/client.js
-@@ -107,7 +107,6 @@ var ClobClient = class {
+@@ -144,7 +144,6 @@ var ClobClient = class {
  			if (!token) continue;
  			const tokenId = token.t;
  			this.tokenConditionMap[tokenId] = conditionID;
@@ -104,7 +104,7 @@ index 06eb6ee..d8a800e 100644
  			this.negRisk[tokenId] = result.nr ?? false;
  			this.feeInfos[tokenId] = {
  				rate: result.fd?.r ?? 0,
-@@ -123,14 +122,12 @@ var ClobClient = class {
+@@ -160,14 +159,12 @@ var ClobClient = class {
  		return this.post(`${this.host}${GET_ORDER_BOOKS}`, { data: params });
  	}
  	async getTickSize(tokenID) {
@@ -218,3 +218,29 @@ index fa4021a..53a084f 100644
 -
 +
  //#endregion
+diff --git a/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.cts b/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.cts
+index 1d7de2a..5281292 100644
+--- a/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.cts
++++ b/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.cts
+@@ -189,7 +189,7 @@ declare enum AssetType {
+   CONDITIONAL = "CONDITIONAL",
+ }
+ interface BalanceAllowanceParams {
+-  asset_type: AssetType;
++  asset_type: AssetType | "CONDITIONAL-V2";
+   token_id?: string;
+ }
+ interface BalanceAllowanceResponse {
+diff --git a/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.ts b/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.ts
+index 1b8ff29..d9b0e33 100644
+--- a/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.ts
++++ b/node_modules/@polymarket/clob-client-v2/dist/types/clob.d.ts
+@@ -189,7 +189,7 @@ declare enum AssetType {
+   CONDITIONAL = "CONDITIONAL",
+ }
+ interface BalanceAllowanceParams {
+-  asset_type: AssetType;
++  asset_type: AssetType | "CONDITIONAL-V2";
+   token_id?: string;
+ }
+ interface BalanceAllowanceResponse {

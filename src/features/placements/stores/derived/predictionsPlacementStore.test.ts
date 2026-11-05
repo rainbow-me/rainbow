@@ -1,9 +1,10 @@
-import { afterAll, afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, assert, beforeEach, expect, test, vi } from 'vitest';
 
 import '../../../../../config/test/storeEnvironment';
 
 import { POLYMARKET } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
+import { getPredictionWidgetOutcomes } from '@/features/discover/utils/getPredictionWidgetOutcomes';
 import { usePlacementsStore } from '@/features/placements/stores/placementsStore';
 import { getSurfaceStore } from '@/features/placements/surfaces/stores/surfaceStore';
 import { type SurfaceDocument } from '@/features/placements/surfaces/types';
@@ -119,6 +120,26 @@ test('removes a cached event after it closes', async () => {
   await predictionEventsStore.getState().fetch(undefined, { force: true });
   expect(predictionEventsStore.getState().events.shared).toBeUndefined();
   expect(requestedIds()).toEqual([['shared'], ['shared']]);
+});
+
+test('omits draft and resolved markets from Discover while a mixed event stays visible', async () => {
+  const draft = predictionEvent('draft');
+  const settled = predictionEvent('settled');
+  const mixed = predictionEvent('mixed');
+  Object.assign(draft.markets[0], { version: 'v2', resolutionStatus: 'inactive', positionIds: ['200', '201'] });
+  Object.assign(settled.markets[0], { version: undefined, umaResolutionStatus: 'resolved' });
+  mixed.markets.push(draft.markets[0]);
+
+  await setPlacement('cards', [draft.id, settled.id, mixed.id]);
+  fetchMock.mockResolvedValueOnce(Response.json([draft, settled, mixed]));
+  await predictionEventsStore.getState().fetch(undefined, { force: true });
+
+  const { events } = predictionEventsStore.getState();
+  expect(Object.keys(events)).toEqual([mixed.id]);
+  const event = events[mixed.id];
+  assert.isDefined(event);
+  expect(event.markets.map(market => market.id)).toEqual([mixed.markets[0].id, draft.markets[0].id]);
+  expect(getPredictionWidgetOutcomes(event).map(row => row.tokenId)).toEqual(['100:polymarket:sell', '101:polymarket:sell']);
 });
 
 test('distinguishes initial loading from an empty response', async () => {

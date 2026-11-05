@@ -1,11 +1,13 @@
+import { type Address } from 'viem';
+
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { polymarketPositionsActions } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
 
-export async function refetchPolymarketBalance(): Promise<void> {
-  await usePolymarketBalanceStore.getState().fetch(undefined, { force: true });
+export async function refetchPolymarketBalance(address?: Address): Promise<void> {
+  await usePolymarketBalanceStore.getState().fetch(address ? { address } : undefined, { force: true });
 }
 
 export async function refetchPolymarketStores(): Promise<void> {

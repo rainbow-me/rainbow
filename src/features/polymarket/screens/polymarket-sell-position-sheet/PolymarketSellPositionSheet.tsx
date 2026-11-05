@@ -17,9 +17,9 @@ import { PolymarketOutcomeCard } from '@/features/polymarket/components/Polymark
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
+import { executePolymarketSellPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';

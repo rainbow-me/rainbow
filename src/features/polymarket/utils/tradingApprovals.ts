@@ -1,20 +1,23 @@
 import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
-import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, maxUint256, type Address } from 'viem';
+import { Side, type ClobClient } from '@polymarket/clob-client-v2';
+import { decodeFunctionResult, encodeFunctionData, erc1155Abi, isHex, type Address } from 'viem';
 
 import {
   POLYMARKET_CTF_ADDRESS,
   POLYMARKET_CTF_EXCHANGE_ADDRESS,
+  POLYMARKET_EXCHANGE_V3,
   POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
   POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
+  POLYMARKET_POSITION_MANAGER,
   POLYMARKET_PUSD_ADDRESS,
 } from '@/features/polymarket/constants';
+import { type PolymarketVersion } from '@/features/polymarket/types/polymarket-event';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
-import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
-import { ensureTradingWalletDeployed, executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
+import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { waitForRelayerTransaction } from '@/features/polymarket/utils/relayExecution';
 import { syncClobCollateralBalance } from '@/features/polymarket/utils/syncClobCollateralBalance';
 import { getProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ChainId } from '@rainbow-me/swaps';
 
 const polygonProvider = getProvider({ chainId: ChainId.polygon });
@@ -22,106 +25,77 @@ const polygonProvider = getProvider({ chainId: ChainId.polygon });
 /**
  * Polymarket contracts that require broad trading approvals.
  */
-const APPROVAL_TARGETS = {
-  exchange: { label: 'Exchange', address: POLYMARKET_CTF_EXCHANGE_ADDRESS },
-  negRiskExchange: { label: 'NegRiskExchange', address: POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS },
-  negRiskAdapter: { label: 'NegRiskAdapter', address: POLYMARKET_NEG_RISK_ADAPTER_ADDRESS },
-};
+const CTF_OPERATORS = [
+  POLYMARKET_CTF_EXCHANGE_ADDRESS,
+  POLYMARKET_NEG_RISK_CTF_EXCHANGE_ADDRESS,
+  POLYMARKET_NEG_RISK_ADAPTER_ADDRESS,
+] as const;
 
-async function hasCtfApproval(owner: Address, operator: Address): Promise<boolean> {
+export async function getMissingOperatorApproval(owner: Address, token: Address, operator: Address): Promise<SafeTransaction[]> {
   const data = encodeFunctionData({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
     args: [owner, operator],
   });
-  const result = await polygonProvider.call({ to: POLYMARKET_CTF_ADDRESS, data });
+  const result = await polygonProvider.call({ to: token, data });
   if (!isHex(result)) throw new RainbowError('[polymarket] Provider returned non-hex call data');
 
-  return decodeFunctionResult({
+  const approved = decodeFunctionResult({
     abi: erc1155Abi,
     functionName: 'isApprovedForAll',
     data: result,
   });
+  if (approved) return [];
+  return [
+    {
+      to: token,
+      data: encodeFunctionData({ abi: erc1155Abi, functionName: 'setApprovalForAll', args: [operator, true] }),
+      value: '0',
+      operation: OperationType.Call,
+    },
+  ];
 }
 
-function buildCtfApproval(operator: Address): SafeTransaction {
-  return {
-    to: POLYMARKET_CTF_ADDRESS,
-    data: encodeFunctionData({
-      abi: erc1155Abi,
-      functionName: 'setApprovalForAll',
-      args: [operator, true],
-    }),
-    value: '0',
-    operation: OperationType.Call,
-  };
+async function getTradingApprovals(owner: Address, version: PolymarketVersion, side: Side): Promise<SafeTransaction[]> {
+  const approvePusd = (spender: Address) =>
+    getMissingErc20ApprovalTransaction({
+      owner,
+      provider: polygonProvider,
+      spender,
+      tokenAddress: POLYMARKET_PUSD_ADDRESS,
+    });
+
+  if (version === 'v2') {
+    return side === Side.BUY
+      ? approvePusd(POLYMARKET_EXCHANGE_V3)
+      : getMissingOperatorApproval(owner, POLYMARKET_POSITION_MANAGER, POLYMARKET_EXCHANGE_V3);
+  }
+
+  return (
+    await Promise.all([
+      ...CTF_OPERATORS.map(approvePusd),
+      ...CTF_OPERATORS.map(operator => getMissingOperatorApproval(owner, POLYMARKET_CTF_ADDRESS, operator)),
+    ])
+  ).flat();
 }
 
 /**
- * Checks all required approvals and returns transactions for any that are missing.
+ * Ensures the captured wallet has the approvals needed for this order.
  */
-async function getMissingApprovalTransactions(polymarketWalletAddress: Address): Promise<SafeTransaction[]> {
-  const ctfApprovalChecks = await Promise.all(
-    Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
-      hasCtfApproval(polymarketWalletAddress, address).then(approved => ({ address, approved, label }))
-    )
-  );
-
-  const erc20ApprovalTransactions = await Promise.all(
-    Object.values(APPROVAL_TARGETS).map(({ address, label }) =>
-      getMissingErc20ApprovalTransaction({
-        amount: maxUint256,
-        owner: polymarketWalletAddress,
-        provider: polygonProvider,
-        spender: address,
-        tokenAddress: POLYMARKET_PUSD_ADDRESS,
-      }).then(transactions => ({ label, transactions }))
-    )
-  );
-
-  const transactions: SafeTransaction[] = [];
-
-  for (const { transactions: approvalTransactions } of erc20ApprovalTransactions) {
-    if (approvalTransactions.length > 0) {
-      transactions.push(...approvalTransactions);
-    }
-  }
-
-  for (const { address, approved } of ctfApprovalChecks) {
-    if (!approved) {
-      transactions.push(buildCtfApproval(address));
-    }
-  }
-
-  return transactions;
-}
-
-export async function getMissingCtfOperatorApprovalTransactions(operator: Address): Promise<SafeTransaction[]> {
-  const owner = useWalletsStore.getState().accountAddress;
-  if (!owner) throw new RainbowError('[polymarket] No active account address');
-
-  const wallet = await getPolymarketWallet(owner);
-  if (await hasCtfApproval(wallet.address, operator)) {
-    return [];
-  }
-
-  logger.debug(`[polymarket] Adding CTF operator approval for ${operator}`);
-  return [buildCtfApproval(operator)];
-}
-
-/**
- * Ensures the active Polymarket trading wallet is deployed and has the
- * approvals it needs to trade.
- */
-export async function ensureTradingApprovals(): Promise<void> {
-  const polymarketWalletAddress = await ensureTradingWalletDeployed();
-  const transactions = await getMissingApprovalTransactions(polymarketWalletAddress);
+export async function ensureTradingApprovals(
+  clobClient: ClobClient,
+  wallet: PolymarketWallet,
+  version: PolymarketVersion,
+  side: Side
+): Promise<void> {
+  const transactions = await getTradingApprovals(wallet.address, version, side);
 
   if (transactions.length === 0) return;
 
   logger.debug(`[polymarket] Setting ${transactions.length} approval(s)`);
-  await executeRelayTransaction(transactions, 'trading approvals');
+  const description = 'trading approvals';
+  await waitForRelayerTransaction(await wallet.execute(transactions, description), description);
   logger.debug('[polymarket] Approvals set successfully');
 
-  await syncClobCollateralBalance();
+  if (version === 'v1' && side === Side.SELL) await syncClobCollateralBalance(clobClient);
 }

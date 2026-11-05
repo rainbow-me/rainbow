@@ -1,157 +1,144 @@
+import { type Signer } from '@ethersproject/abstract-signer';
 import { RelayClient } from '@polymarket/builder-relayer-client';
 import { Chain, ClobClient } from '@polymarket/clob-client-v2';
 import { createDerivedStore } from '@storesjs/stores';
-import { type Wallet } from 'ethers';
-import { type Address } from 'viem';
+import { Wallet } from 'ethers';
+import { getAddress, isAddressEqual, type Address } from 'viem';
 
 import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
-import { usePolymarketWalletStore } from '@/features/polymarket/stores/polymarketWalletKindStore';
+import {
+  getPolymarketWalletDescriptor,
+  usePolymarketWalletStore,
+  type PolymarketWalletDescriptor,
+} from '@/features/polymarket/stores/polymarketWalletKindStore';
 import { getPolymarketRelayChain } from '@/features/polymarket/utils/polymarketRelayChain';
-import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { createPolymarketWallet, type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
-import { logger, RainbowError } from '@/logger';
+import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { shallowEqual } from '@/worklets/comparisons';
 import { ChainId } from '@rainbow-me/swaps';
 
 // ============ Types =========================================================== //
 
-type PolymarketClientsState = {
-  getClobClient: () => Promise<ClobClient | null>;
-  getRelayClient: () => Promise<RelayClient | null>;
-  proxyAddress: Address | null;
-};
+type PolymarketClientsState = ReturnType<typeof createClients> | typeof EMPTY_STATE;
+
+const EMPTY_STATE = { getClobClient: null, getWallet: null, proxyAddress: null } as const;
 
 // ============ Derived Store =================================================== //
 
 export const usePolymarketClients = createDerivedStore<PolymarketClientsState>(
   $ => {
-    const address = $(useWalletsStore, s => s.accountAddress);
-    const polymarketWallet = $(usePolymarketWalletStore, s => (address ? s.getData({ owner: address }) : null));
-    const getWallet = createLazyWallet(address);
-
-    return {
-      getClobClient: createLazyClobClient(getWallet, address),
-      getRelayClient: createLazyRelayClient(getWallet),
-      proxyAddress: polymarketWallet?.address ?? null,
-    };
+    const descriptor = $(usePolymarketWalletStore, s => s.getData(), shallowEqual);
+    return descriptor ? createClients(descriptor) : EMPTY_STATE;
   },
-  { lockDependencies: true, keepAlive: true }
+  { keepAlive: true, lockDependencies: true }
 );
 
-// ============ Public Accessors ================================================ //
+function createClients(walletDescriptor: PolymarketWalletDescriptor) {
+  const getSigningWallet = createLazyAsyncValue((authenticatedSigner?: Signer) =>
+    resolveSigningWallet(walletDescriptor.owner, authenticatedSigner)
+  );
 
-export async function getPolymarketRelayClient(): Promise<RelayClient> {
-  const client = await usePolymarketClients.getState().getRelayClient();
-  if (!client) throw new RainbowError('[Polymarket] Failed to get relay client');
-  return client;
-}
+  const getWallet = createLazyAsyncValue(async (authenticatedSigner?: Signer) =>
+    createPolymarketWallet(walletDescriptor, createRelayClient(await getSigningWallet(authenticatedSigner)))
+  );
 
-export async function getPolymarketClobClient(): Promise<ClobClient> {
-  const client = await usePolymarketClients.getState().getClobClient();
-  if (!client) throw new RainbowError('[Polymarket] Failed to get CLOB client');
-  return client;
-}
-
-// ============ Lazy Wallet ===================================================== //
-
-function createLazyWallet(address: Address): () => Promise<Wallet | null> {
-  let walletPromise: Promise<Wallet | null> | null = null;
-
-  return async () => {
-    if (!walletPromise) {
-      walletPromise = loadWalletForAddress(address).catch(error => {
-        walletPromise = null;
-        throw error;
-      });
-    }
-    return walletPromise;
+  return {
+    getClobClient: createLazyAsyncValue(async () => createClobClient(await getSigningWallet(), walletDescriptor)),
+    getWallet: async (authenticatedSigner?: Signer) => {
+      if (!authenticatedSigner || getAddress(await authenticatedSigner.getAddress()) === getAddress(walletDescriptor.owner)) {
+        return getWallet(authenticatedSigner);
+      }
+      throw new RainbowError('[PolymarketClients] Signer does not belong to the captured account');
+    },
+    proxyAddress: walletDescriptor.address,
   };
 }
 
-async function loadWalletForAddress(address: Address): Promise<Wallet | null> {
-  if (!address) return null;
+// ============ Public Accessors ================================================ //
 
-  const wallet = await loadWallet({
-    address,
-    provider: getProvider({ chainId: ChainId.polygon }),
-  });
+export async function getPolymarketOrderClients(holder?: Address): Promise<{ clobClient: ClobClient; wallet: PolymarketWallet }> {
+  const clients = await getExecutionClients(holder);
+  const [clobClient, wallet] = await Promise.all([clients.getClobClient(), clients.getWallet()]);
+  return { clobClient, wallet };
+}
 
-  if (!wallet) {
-    logger.error(new RainbowError('[PolymarketClients] Failed to load wallet'));
-    return null;
-  }
+export async function getPolymarketWallet(holder?: Address): Promise<PolymarketWallet> {
+  const clients = await getExecutionClients(holder);
+  return clients.getWallet();
+}
 
-  if (!('_signingKey' in wallet)) {
-    logger.error(new RainbowError('[PolymarketClients] Hardware wallets are not supported'));
-    return null;
-  }
+async function getExecutionClients(holder?: Address) {
+  const active = usePolymarketClients.getState();
+  const clients = active.proxyAddress ? active : await loadClientsForSelectedAccount();
+
+  if (!holder || isAddressEqual(holder, clients.proxyAddress)) return clients;
+  throw new RainbowError('[Polymarket] Trading wallet does not match the requested account');
+}
+
+async function loadClientsForSelectedAccount() {
+  const owner = useWalletsStore.getState().accountAddress;
+  if (!owner) throw new RainbowError('[Polymarket] Wallet is unavailable');
+
+  const descriptor = await getPolymarketWalletDescriptor(owner);
+  const active = usePolymarketClients.getState();
+
+  return active.proxyAddress === descriptor.address ? active : createClients(descriptor);
+}
+
+// ============ Lazy Values ===================================================== //
+
+function createLazyAsyncValue<Value, Args extends unknown[]>(
+  createValue: (...args: Args) => Promise<Value>
+): (...args: Args) => Promise<Value> {
+  let valuePromise: Promise<Value> | null = null;
+
+  return (...args) => {
+    if (!valuePromise) {
+      valuePromise = createValue(...args).catch(error => {
+        valuePromise = null;
+        throw error;
+      });
+    }
+    return valuePromise;
+  };
+}
+
+async function resolveSigningWallet(address: Address, authenticatedSigner?: Signer): Promise<Wallet> {
+  const wallet = authenticatedSigner ?? (await loadWallet({ address, provider: getProvider({ chainId: ChainId.polygon }) }));
+  if (!wallet) throw new RainbowError('[PolymarketClients] Failed to load wallet');
+
+  if (!(wallet instanceof Wallet)) throw new RainbowError('[PolymarketClients] Hardware wallets are not supported');
 
   return wallet;
 }
 
-// ============ Lazy Relay Client =============================================== //
-
-function createLazyRelayClient(getWallet: () => Promise<Wallet | null>): () => Promise<RelayClient | null> {
-  let clientPromise: Promise<RelayClient | null> | null = null;
-
-  return async () => {
-    if (!clientPromise) {
-      clientPromise = createRelayClientFromWallet(getWallet).catch(error => {
-        clientPromise = null;
-        throw error;
-      });
-    }
-    return clientPromise;
-  };
-}
-
-async function createRelayClientFromWallet(getWallet: () => Promise<Wallet | null>): Promise<RelayClient | null> {
-  const wallet = await getWallet();
-  if (!wallet) return null;
-
-  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, wallet, BUILDER_CONFIG, undefined, {
+function createRelayClient(signingWallet: Wallet): RelayClient {
+  return new RelayClient(POLYMARKET_RELAYER_PROXY_URL, ChainId.polygon, signingWallet, BUILDER_CONFIG, undefined, {
     chain: getPolymarketRelayChain(),
   });
 }
 
-// ============ Lazy CLOB Client ================================================ //
+// ============ CLOB Client ===================================================== //
 
-function createLazyClobClient(getWallet: () => Promise<Wallet | null>, owner: Address): () => Promise<ClobClient | null> {
-  let clientPromise: Promise<ClobClient | null> | null = null;
-
-  return async () => {
-    if (!clientPromise) {
-      clientPromise = createClobClientFromWallet(getWallet, owner).catch(error => {
-        clientPromise = null;
-        throw error;
-      });
-    }
-    return clientPromise;
-  };
-}
-
-async function createClobClientFromWallet(getWallet: () => Promise<Wallet | null>, owner: Address): Promise<ClobClient | null> {
-  const wallet = await getWallet();
-  if (!owner || !wallet) return null;
-
-  const polymarketWallet = await getPolymarketWallet(owner);
-
+async function createClobClient(signingWallet: Wallet, descriptor: PolymarketWalletDescriptor): Promise<ClobClient> {
   const credentials = await getOrCreateApiCredentials(
     new ClobClient({
       host: POLYMARKET_CLOB_PROXY_URL,
       chain: Chain.POLYGON,
-      signer: wallet,
+      signer: signingWallet,
     })
   );
 
   return new ClobClient({
     host: POLYMARKET_CLOB_PROXY_URL,
     chain: Chain.POLYGON,
-    signer: wallet,
+    signer: signingWallet,
     creds: credentials,
-    signatureType: polymarketWallet.signatureType,
-    funderAddress: polymarketWallet.address,
+    signatureType: descriptor.signatureType,
+    funderAddress: descriptor.address,
     useServerTime: false,
   });
 }
@@ -161,9 +148,11 @@ async function getOrCreateApiCredentials(client: ClobClient) {
   if (derived.key && derived.secret && derived.passphrase) {
     return derived;
   }
+
   const created = await client.createApiKey();
   if (!created.key || !created.secret || !created.passphrase) {
     throw new RainbowError('[Polymarket] Failed to obtain valid API credentials');
   }
+
   return created;
 }

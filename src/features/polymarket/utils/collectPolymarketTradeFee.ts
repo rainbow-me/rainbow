@@ -1,18 +1,16 @@
-import { type Address } from 'viem';
-
 import { POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS } from '@/features/polymarket/constants';
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
 import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { calculateFeeToCollectUsd, getTradeFeeAmount } from '@/features/polymarket/utils/polymarketTradeFee';
-import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
-import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
+import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { waitForRelayerTransaction } from '@/features/polymarket/utils/relayExecution';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 /** Polygon transactions that settle a matched Polymarket order. */
 export type SettlementTransactionHashes = readonly [string, ...string[]];
 
 type CollectTradeFeeParams = {
+  wallet: PolymarketWallet;
   matchedAmounts: {
     tokens: string | number;
     usd: string | number;
@@ -29,6 +27,7 @@ type CollectTradeFeeParams = {
  */
 export async function collectPolymarketTradeFee({
   matchedAmounts,
+  wallet,
   orderId,
   quotedFeeUsd,
   side,
@@ -36,19 +35,13 @@ export async function collectPolymarketTradeFee({
   tokenId,
 }: CollectTradeFeeParams): Promise<void> {
   let feeAmountUsd = '0';
-  let proxyAddress: Address | undefined;
+  const proxyAddress = wallet.address;
 
   try {
     feeAmountUsd = calculateFeeToCollectUsd({ matchedAmounts, quotedFeeUsd });
 
     const amount = getTradeFeeAmount(feeAmountUsd);
     if (amount.isZero()) return;
-
-    const owner = useWalletsStore.getState().accountAddress;
-    if (!owner) throw new RainbowError('[polymarket] No active account address');
-
-    const wallet = await getPolymarketWallet(owner);
-    proxyAddress = wallet.address;
 
     await waitForSettlementTransactions(settlementTransactionHashes);
 
@@ -59,7 +52,8 @@ export async function collectPolymarketTradeFee({
     });
     if (!transactions.length) return;
 
-    await executeRelayTransaction(transactions, 'collect Rainbow Polymarket fee');
+    const description = 'collect Rainbow Polymarket fee';
+    await waitForRelayerTransaction(await wallet.execute(transactions, description), description);
   } catch (e) {
     const error = ensureError(e);
     logger.error(new RainbowError('[collectPolymarketTradeFee] Error collecting fee', error), {
