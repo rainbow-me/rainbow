@@ -3,7 +3,8 @@ import { useCallback } from 'react';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useLegacyNFTs, type NFTData } from '@/resources/nfts';
 
-import { useEnsImageStore } from '../data/stores/imageStore';
+import { isDirectImagePath } from '../core/records';
+import { useEnsImageStore, type EnsImageField } from '../data/stores/imageStore';
 import { REGISTRATION_MODES } from '../utils/helpers';
 import { getENSNFTAvatarUrl, isENSNFTRecord } from '../utils/records';
 import { useENSRegistration } from './useENSRegistration';
@@ -11,37 +12,29 @@ import { useENSRegistration } from './useENSRegistration';
 /**
  * Resolves one registration image, including pending replacements and removals.
  */
-export function useENSRegistrationImage(field: 'avatar' | 'header') {
+export function useENSRegistrationImage(field: EnsImageField) {
   const { accountAddress, name, mode, records, changedRecords } = useENSRegistration();
   const change = changedRecords[field];
-  const value = change ?? records[field];
   const nftRecord = isENSNFTRecord(change) ? change : undefined;
+  const preview = getDraftImagePreview(change ?? records[field]);
+  const usesExistingName = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
+  const shouldLoadImage = usesExistingName && !!name && !nftRecord && preview === undefined;
 
-  const selectImage = useCallback(
-    (data: NFTData) => {
-      const image = getENSNFTAvatarUrl(data.nfts, nftRecord);
-      return image ? svgToPngIfNeeded(image, false) : undefined;
-    },
-    [nftRecord]
-  );
-  const { data: nftImage } = useLegacyNFTs({ address: accountAddress, config: { enabled: !!nftRecord, select: selectImage } });
+  const nftImage = useNftRecordImage(accountAddress, nftRecord);
+  const storedImage = useEnsImageStore(s => s.get(shouldLoadImage ? { name, field } : undefined));
 
-  return useEnsImageStore(s => {
-    if (value === '') return '';
-    if (nftRecord) return nftImage;
+  return nftRecord ? nftImage : (preview ?? storedImage);
+}
 
-    if (
-      value &&
-      (value.startsWith('http') ||
-        value.startsWith('file') ||
-        ((value.startsWith('/') || value.startsWith('~')) && !/^\/(ipfs|ipns)/.test(value)))
-    ) {
-      return value;
-    }
+function useNftRecordImage(address: string, record: string | undefined) {
+  const select = useCallback((data: NFTData) => svgToPngIfNeeded(getENSNFTAvatarUrl(data.nfts, record)), [record]);
+  return useLegacyNFTs({ address, config: { enabled: !!record, select } }).data;
+}
 
-    if (name && (mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME)) {
-      return s.get({ name, field });
-    }
-    return undefined;
-  });
+function getDraftImagePreview(value: string | undefined): string | undefined {
+  if (value === '') return '';
+  if (value && (value.startsWith('http') || value.startsWith('file') || value.startsWith('~') || isDirectImagePath(value))) {
+    return value;
+  }
+  return undefined;
 }

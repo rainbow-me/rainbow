@@ -33,6 +33,13 @@ export const deprecatedTextRecordFields: Partial<Record<string, string>> = {
 };
 
 /**
+ * ENS previews use slash paths verbatim except for values starting with `/ipfs` or `/ipns`.
+ */
+export function isDirectImagePath(value: string): boolean {
+  return value.startsWith('/') && !value.startsWith('/ipfs') && !value.startsWith('/ipns');
+}
+
+/**
  * Returns the record writes needed to apply an edit, including empty values for deletions.
  */
 export function getChangedRecords(records: Records, initialRecords: Records): Records {

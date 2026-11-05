@@ -3,6 +3,7 @@ import * as i18n from '@/languages';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 import { normalizeEnsName } from '../core/name';
+import { isDirectImagePath } from '../core/records';
 
 const supportedTLDs = ['eth'];
 
@@ -14,28 +15,16 @@ const ERROR_CODES = {
   SUBDOMAINS_NOT_SUPPORTED: 'subdomains-not-supported',
 } as const;
 
-/**
- * @description Gets the ENS NFT `avatarUrl` from the record `avatar`
- */
+/** Returns the image for a registration avatar from the wallet's NFTs or the record itself. */
 export function getENSNFTAvatarUrl(uniqueTokens: UniqueAsset[], avatar?: string) {
-  let avatarUrl;
-  if (avatar) {
-    const isNFTAvatar = isENSNFTRecord(avatar);
-    if (isNFTAvatar) {
-      const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
-      const uniqueToken = uniqueTokens.find(
-        token => isLowerCaseMatch(token.contractAddress, contractAddress) && isLowerCaseMatch(token.tokenId, tokenId)
-      );
-      if (uniqueToken?.images?.highResUrl) {
-        avatarUrl = uniqueToken?.images?.highResUrl;
-      } else if (uniqueToken?.images?.lowResUrl) {
-        avatarUrl = uniqueToken?.images?.lowResUrl;
-      }
-    } else if (avatar.startsWith('http') || (avatar.startsWith('/') && !avatar.match(/^\/(ipfs|ipns)/))) {
-      avatarUrl = avatar;
-    }
+  if (!avatar) return undefined;
+  if (!isENSNFTRecord(avatar)) {
+    return avatar.startsWith('http') || isDirectImagePath(avatar) ? avatar : undefined;
   }
-  return avatarUrl;
+
+  const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
+  const token = uniqueTokens.find(nft => isLowerCaseMatch(nft.contractAddress, contractAddress) && isLowerCaseMatch(nft.tokenId, tokenId));
+  return token?.images?.highResUrl || token?.images?.lowResUrl || undefined;
 }
 
 export function isENSNFTRecord(avatar?: string) {
