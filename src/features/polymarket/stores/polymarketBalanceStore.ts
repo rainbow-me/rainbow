@@ -27,7 +27,7 @@ type PolymarketBalances = { pusdBalance: string; usdcBalance: string };
 
 type PolymarketBalanceParams = { address: Address | null };
 
-type ExpectedBalanceDelta = { deltaUsd: string; pending: boolean; operationId: string };
+type ExpectedBalanceDelta = { deltaUsd: string; pending: boolean; operationId: number };
 
 type OptimisticBalanceUpdate = OptimisticUpdate<PolymarketBalances, typeof BALANCE_UPDATE_ID> & {
   baselineBalance: PolymarketBalances;
@@ -35,22 +35,17 @@ type OptimisticBalanceUpdate = OptimisticUpdate<PolymarketBalances, typeof BALAN
   expectedBalance: PolymarketBalances;
 };
 
+export type PolymarketBalanceUpdate = {
+  apply: (deltaUsd: string) => void;
+  finalize: (adjustmentUsd?: string) => void;
+  discard: () => void;
+};
+
 type PolymarketBalanceStoreActions = {
-  applyExpectedBalanceDelta: (params: {
-    baseline: PolymarketBalances;
-    deltaUsd: string;
-    operationId: string;
-    proxyWallet: Address;
-  }) => void;
-  discardExpectedBalanceDelta: (params: { operationId: string; proxyWallet: Address }) => void;
-  finalizeExpectedBalanceDelta: (params: {
-    adjustmentUsd?: string;
-    operationId: string;
-    proxyWallet: Address;
-  }) => Promise<boolean> | undefined;
+  beginUpdate: (proxyAddress: Address) => PolymarketBalanceUpdate;
+  refresh: (proxyAddress?: Address) => Promise<void>;
   getBalance(proxyWallet?: Address, useFallback?: true): string;
   getBalance(proxyWallet: Address | undefined, useFallback: boolean): string | null;
-  getBalanceSnapshot: (proxyWallet?: Address) => PolymarketBalances | undefined;
   isBalanceZero: () => boolean;
 };
 
@@ -70,6 +65,7 @@ export const usePolymarketBalanceStore = createPolymarketBalanceStore();
 export const polymarketBalanceActions = createStoreActions(usePolymarketBalanceStore);
 
 function createPolymarketBalanceStore() {
+  let nextOperationId = 0;
   const settledAtReadStart = new WeakMap<PolymarketBalances, OptimisticBalanceUpdate>();
 
   const optimisticBalance = createOptimisticUpdater<Address, typeof BALANCE_UPDATE_ID, PolymarketBalances, OptimisticBalanceUpdate>(
@@ -85,7 +81,7 @@ function createPolymarketBalanceStore() {
       staleTime: STALE_TIME,
     },
 
-    (set, get) => {
+    (_, get) => {
       function getBalance(proxyWallet?: Address, useFallback?: true): string;
       function getBalance(proxyWallet: Address | undefined, useFallback: boolean): string | null;
       function getBalance(proxyWallet?: Address, useFallback = true): string | null {
@@ -96,76 +92,9 @@ function createPolymarketBalanceStore() {
       }
 
       return {
-        applyExpectedBalanceDelta: ({ baseline, deltaUsd, operationId, proxyWallet }) => {
-          if (isEqual(deltaUsd, '0')) return;
-
-          set(state => {
-            const queryKey = getQueryKey({ address: proxyWallet });
-            const currentBalance = state.getCacheEntry(queryKey)?.data;
-            if (!currentBalance) return state;
-
-            const previousUpdate = optimisticBalance.getUpdate(proxyWallet, BALANCE_UPDATE_ID);
-            if (previousUpdate?.deltas.some(delta => delta.operationId === operationId)) return state;
-
-            const baselineBalance = previousUpdate?.baselineBalance ?? baseline;
-            const update = buildExpectedBalanceUpdate({
-              baselineBalance,
-              deltas: [...(previousUpdate?.deltas ?? []), { deltaUsd, pending: true, operationId }],
-            });
-
-            optimisticBalance.track(proxyWallet, update);
-
-            return buildPolymarketCacheUpdate(state.queryCache, queryKey, update.expectedBalance, STALE_TIME);
-          });
-        },
-
-        discardExpectedBalanceDelta: ({ operationId, proxyWallet }) => {
-          set(state => {
-            const queryKey = getQueryKey({ address: proxyWallet });
-            const currentBalance = state.getCacheEntry(queryKey)?.data;
-            const previousUpdate = optimisticBalance.getUpdate(proxyWallet, BALANCE_UPDATE_ID);
-
-            if (!currentBalance || !previousUpdate?.deltas.some(delta => delta.operationId === operationId)) return state;
-
-            const deltas = previousUpdate.deltas.filter(delta => delta.operationId !== operationId);
-            const update = deltas.length ? buildExpectedBalanceUpdate({ baselineBalance: previousUpdate.baselineBalance, deltas }) : null;
-            const expectedBalance = update?.expectedBalance ?? previousUpdate.baselineBalance;
-
-            if (update) optimisticBalance.track(proxyWallet, update);
-            else optimisticBalance.clear(proxyWallet);
-
-            if (isSameBalance(currentBalance, expectedBalance)) return state;
-
-            return buildPolymarketCacheUpdate(state.queryCache, queryKey, expectedBalance, STALE_TIME);
-          });
-        },
-
-        finalizeExpectedBalanceDelta: ({ adjustmentUsd = '0', operationId, proxyWallet }) => {
-          set(state => {
-            const queryKey = getQueryKey({ address: proxyWallet });
-            const currentBalance = state.getCacheEntry(queryKey)?.data;
-            const previousUpdate = optimisticBalance.getUpdate(proxyWallet, BALANCE_UPDATE_ID);
-            if (!currentBalance || !previousUpdate?.deltas.some(delta => delta.operationId === operationId && delta.pending)) return state;
-
-            const deltas = previousUpdate.deltas.map(delta =>
-              delta.operationId === operationId ? { ...delta, deltaUsd: add(delta.deltaUsd, adjustmentUsd), pending: false } : delta
-            );
-
-            const update = buildExpectedBalanceUpdate({ baselineBalance: previousUpdate.baselineBalance, deltas });
-            optimisticBalance.track(proxyWallet, update);
-
-            if (isSameBalance(currentBalance, update.expectedBalance)) return state;
-
-            return buildPolymarketCacheUpdate(state.queryCache, queryKey, update.expectedBalance, STALE_TIME);
-          });
-
-          const settled = optimisticBalance.getUpdate(proxyWallet, BALANCE_UPDATE_ID);
-          if (settled && settled.deltas.every(delta => !delta.pending)) return refreshSettledBalance(proxyWallet, settled);
-        },
-
+        beginUpdate: beginBalanceUpdate,
+        refresh: refreshBalance,
         getBalance,
-
-        getBalanceSnapshot: proxyWallet => get().getCacheEntry(proxyWallet ? { address: proxyWallet } : undefined)?.data ?? undefined,
 
         isBalanceZero: () => Number(get().getBalance()) === 0,
       };
@@ -174,18 +103,86 @@ function createPolymarketBalanceStore() {
     { storageKey: 'polymarketBalanceStore' }
   );
 
+  // ============ Pending Balance Changes ======================================== //
+
+  /** Registers a submission without changing its displayed balance until acceptance. */
+  function beginBalanceUpdate(proxyAddress: Address): PolymarketBalanceUpdate {
+    const operationId = nextOperationId++;
+    const queryKey = getQueryKey({ address: proxyAddress });
+    const currentBalance = store.getState().getCacheEntry(queryKey)?.data;
+
+    if (currentBalance) {
+      const previousUpdate = optimisticBalance.getUpdate(proxyAddress, BALANCE_UPDATE_ID);
+      const deltas = previousUpdate?.deltas.slice() ?? [];
+      deltas.push({ deltaUsd: '0', pending: true, operationId });
+
+      optimisticBalance.track(
+        proxyAddress,
+        buildExpectedBalanceUpdate({
+          baselineBalance: previousUpdate?.baselineBalance ?? currentBalance,
+          deltas,
+        })
+      );
+    }
+
+    function changeDelta(transform: ((delta: ExpectedBalanceDelta) => ExpectedBalanceDelta) | null): void {
+      store.setState(state => {
+        const currentBalance = state.getCacheEntry(queryKey)?.data;
+        const previousUpdate = optimisticBalance.getUpdate(proxyAddress, BALANCE_UPDATE_ID);
+        const currentDelta = previousUpdate?.deltas.find(delta => delta.operationId === operationId);
+
+        if (!currentBalance || !previousUpdate || !currentDelta) return state;
+
+        const nextDelta = transform ? transform(currentDelta) : null;
+        if (nextDelta === currentDelta) return state;
+
+        const deltas = nextDelta
+          ? previousUpdate.deltas.map(delta => (delta.operationId === operationId ? nextDelta : delta))
+          : previousUpdate.deltas.filter(delta => delta.operationId !== operationId);
+
+        const update = deltas.length ? buildExpectedBalanceUpdate({ baselineBalance: previousUpdate.baselineBalance, deltas }) : null;
+        const expectedBalance = update?.expectedBalance ?? previousUpdate.baselineBalance;
+
+        if (update) optimisticBalance.track(proxyAddress, update);
+        else optimisticBalance.clear(proxyAddress);
+
+        if (isSameBalance(currentBalance, expectedBalance)) return state;
+
+        return buildPolymarketCacheUpdate(state.queryCache, queryKey, expectedBalance, STALE_TIME);
+      });
+    }
+
+    return {
+      apply: deltaUsd => changeDelta(delta => (delta.pending ? { ...delta, deltaUsd } : delta)),
+      finalize: (adjustmentUsd = '0') =>
+        changeDelta(delta => {
+          if (!delta.pending) return delta;
+
+          return { ...delta, deltaUsd: add(delta.deltaUsd, adjustmentUsd), pending: false };
+        }),
+      discard: () => changeDelta(null),
+    };
+  }
+
   // ============ Balance Fetching =============================================== //
 
-  /** A caller can join a read started before settlement. Retry if that read left the same estimate in place. */
-  async function refreshSettledBalance(proxyWallet: Address, update: OptimisticBalanceUpdate): Promise<boolean> {
-    const params = { address: proxyWallet };
+  /** Refreshes the captured wallet, retaining settled estimates until a subsequent read publishes. */
+  async function refreshBalance(proxyAddress = usePolymarketClients.getState().proxyAddress ?? undefined): Promise<void> {
+    const params = proxyAddress ? { address: proxyAddress } : undefined;
+    const update = proxyAddress ? optimisticBalance.getUpdate(proxyAddress, BALANCE_UPDATE_ID) : undefined;
+
+    if (!proxyAddress || !update || update.deltas.some(delta => delta.pending)) {
+      await store.getState().fetch(params, { force: true });
+      return;
+    }
+
     let balance = await store.getState().fetch(params, FORCE_AND_THROW_FETCH_OPTIONS);
 
-    if (optimisticBalance.getUpdate(proxyWallet, BALANCE_UPDATE_ID) === update) {
+    if (optimisticBalance.getUpdate(proxyAddress, BALANCE_UPDATE_ID) === update) {
       balance = await store.getState().fetch(params, FORCE_AND_THROW_FETCH_OPTIONS);
     }
 
-    return balance !== null;
+    if (balance === null) await store.getState().fetch(params, { force: true });
   }
 
   async function fetchPolymarketBalance({ address }: PolymarketBalanceParams): Promise<PolymarketBalances> {
