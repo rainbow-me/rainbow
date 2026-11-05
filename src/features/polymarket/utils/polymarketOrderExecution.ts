@@ -1,5 +1,4 @@
 import { AssetType, OrderType, Side } from '@polymarket/clob-client-v2';
-import { v4 as uuidv4 } from 'uuid';
 
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { getPolymarketOrderClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
@@ -65,9 +64,8 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
   }
 
   await client.updateBalanceAllowance({ asset_type: AssetType.COLLATERAL });
-  const baselineBalance = polymarketBalanceActions.getBalanceSnapshot(proxyAddress);
-  const positionOperationId = uuidv4();
-  polymarketPositionsActions.beginExpectedBuyPosition({ asset: tokenId, operationId: positionOperationId, proxyAddress });
+  const balanceUpdate = polymarketBalanceActions.beginUpdate(proxyAddress);
+  const positionUpdate = polymarketPositionsActions.beginBuy({ asset: tokenId, proxyAddress });
 
   let orderResult: SuccessfulOrderResult;
   try {
@@ -86,7 +84,8 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
     );
     orderResult = resolveSuccessfulOrderResult(result);
   } catch (error) {
-    polymarketPositionsActions.discardExpectedPosition({ asset: tokenId, operationId: positionOperationId, proxyAddress });
+    positionUpdate.discard();
+    balanceUpdate.discard();
     throw error;
   }
 
@@ -98,14 +97,14 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
     outcome: market.outcomes[outcomeIndex],
     side: 'buy',
     tokenId,
-    positionOperationId,
+    positionUpdate,
   };
 
   return {
     ...orderResult,
     followUp: reconcileAcceptedPolymarketOrder({
       acceptedAmounts: getMatchedAmountsFromAcceptedOrder(orderResult, context.side),
-      baselineBalance,
+      balanceUpdate,
       client,
       context,
       orderResult,
@@ -133,14 +132,21 @@ export async function executePolymarketSellPosition({
     token_id: position.asset,
   });
 
-  const baselineBalance = polymarketBalanceActions.getBalanceSnapshot(wallet.address);
-  const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
-    { side: Side.SELL, ...routing.asset, amount: Number(position.size), price: Number(orderQuote.orderPriceUsd) },
-    routing.options,
-    OrderType.FOK
-  );
+  const balanceUpdate = polymarketBalanceActions.beginUpdate(wallet.address);
 
-  const orderResult = resolveSuccessfulOrderResult(result);
+  let orderResult: SuccessfulOrderResult;
+  try {
+    const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
+      { side: Side.SELL, ...routing.asset, amount: Number(position.size), price: Number(orderQuote.orderPriceUsd) },
+      routing.options,
+      OrderType.FOK
+    );
+    orderResult = resolveSuccessfulOrderResult(result);
+  } catch (error) {
+    balanceUpdate.discard();
+    throw error;
+  }
+
   const context: OrderContext = {
     ...orderQuote,
     eventSlug: position.eventSlug,
@@ -155,7 +161,7 @@ export async function executePolymarketSellPosition({
     ...orderResult,
     followUp: reconcileAcceptedPolymarketOrder({
       acceptedAmounts: getMatchedAmountsFromAcceptedOrder(orderResult, context.side),
-      baselineBalance,
+      balanceUpdate,
       client,
       context,
       orderResult,

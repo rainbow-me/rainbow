@@ -1,9 +1,13 @@
 import { type ClobClient, type OpenOrder } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
-import { polymarketBalanceActions } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { type PolymarketBalanceUpdate } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
-import { polymarketPositionsActions } from '@/features/polymarket/stores/polymarketPositionsStore';
+import {
+  polymarketPositionsActions,
+  type PolymarketBuyPositionUpdate,
+  type PolymarketPositionUpdate,
+} from '@/features/polymarket/stores/polymarketPositionsStore';
 import { type PolymarketOrderAmounts, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
 import { collectPolymarketTradeFee, type SettlementTransactionHashes } from '@/features/polymarket/utils/collectPolymarketTradeFee';
 import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
@@ -28,13 +32,14 @@ export type OrderQuote = {
 };
 
 export type OrderContext = OrderQuote & { eventSlug: string; marketSlug: string; outcome: string; tokenId: string } & (
-    | ({ side: 'buy'; positionOperationId: string } & (PolymarketOrderDetails | SportsOrderDetails))
+    | ({ side: 'buy'; positionUpdate: PolymarketBuyPositionUpdate } & (PolymarketOrderDetails | SportsOrderDetails))
     | { side: 'sell'; position: PolymarketPosition }
   );
 
 type PolymarketOrderMatch =
   | { amounts: PolymarketOrderAmounts; status: 'matched'; transactionHashes: SettlementTransactionHashes }
-  | { status: 'notMatched' | 'unresolved' };
+  | { status: 'failed' }
+  | { status: 'unresolved' };
 
 type MatchedOrderSettlement =
   | { status: 'pending' }
@@ -56,64 +61,26 @@ const TERMINAL_FAILURE_STATUSES = new Set(['canceled', 'expired', 'failed', 'rej
  */
 export async function reconcileAcceptedPolymarketOrder({
   acceptedAmounts,
-  baselineBalance,
+  balanceUpdate,
   client,
   context,
   orderResult,
   wallet,
 }: {
   acceptedAmounts: PolymarketOrderAmounts | undefined;
-  baselineBalance: ReturnType<typeof polymarketBalanceActions.getBalanceSnapshot>;
+  balanceUpdate: PolymarketBalanceUpdate;
   client: ClobClient;
   context: OrderContext;
   orderResult: SuccessfulOrderResult;
   wallet: PolymarketWallet;
 }): Promise<void> {
   const expectedAmounts = acceptedAmounts ?? context.expectedAmounts;
-  const orderId = orderResult.orderID;
-  const positionOperationId = context.side === 'buy' ? context.positionOperationId : orderId;
   const proxyAddress = wallet.address;
 
-  try {
-    if (baselineBalance) {
-      polymarketBalanceActions.applyExpectedBalanceDelta({
-        baseline: baselineBalance,
-        deltaUsd:
-          context.side === 'buy'
-            ? subtract('0', add(expectedAmounts.usd, context.quotedTotalFeeUsd))
-            : subtract(expectedAmounts.usd, context.quotedTotalFeeUsd),
-        operationId: orderId,
-        proxyWallet: proxyAddress,
-      });
-    }
-  } catch (error) {
-    logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted balance', ensureError(error)));
-  }
+  publishAcceptedBalance(balanceUpdate, context, expectedAmounts);
 
   try {
-    let positionDetails: PolymarketOrderDetails | undefined;
-
-    try {
-      if (context.side === 'buy') {
-        positionDetails = isSportsOrderDetails(context) ? await loadSportsPositionDetails(context) : context;
-        polymarketPositionsActions.applyExpectedBuyPosition({
-          ...positionDetails,
-          operationId: positionOperationId,
-          positionAmounts: expectedAmounts,
-          proxyAddress,
-        });
-      } else {
-        polymarketPositionsActions.applyExpectedPositionRemoval({ operationId: orderId, position: context.position });
-      }
-    } catch (error) {
-      polymarketPositionsActions.discardExpectedPosition({
-        asset: context.tokenId,
-        operationId: positionOperationId,
-        proxyAddress,
-      });
-
-      logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted position', ensureError(error)));
-    }
+    const positionUpdate = await publishAcceptedPosition(context, expectedAmounts);
 
     void refetchPolymarketStores(proxyAddress);
 
@@ -123,48 +90,48 @@ export async function reconcileAcceptedPolymarketOrder({
       ? await pollForMatchedOrder(client, orderResult, context, acceptedAmounts)
       : { amounts: acceptedAmounts, status: 'matched', transactionHashes };
 
-    if (match.status !== 'matched') {
-      if (match.status === 'notMatched') {
-        polymarketPositionsActions.discardExpectedPosition({ asset: context.tokenId, operationId: positionOperationId, proxyAddress });
-        polymarketBalanceActions.discardExpectedBalanceDelta({ operationId: orderId, proxyWallet: proxyAddress });
-      }
+    if (match.status === 'failed') {
+      positionUpdate?.discard();
+      balanceUpdate.discard();
       await refetchPolymarketStores(proxyAddress);
       return;
     }
 
-    if (positionDetails && needsMatchPolling) {
-      polymarketPositionsActions.amendExpectedBuyPosition({
-        ...positionDetails,
-        operationId: positionOperationId,
-        positionAmounts: match.amounts,
-        proxyAddress,
-      });
+    if (match.status === 'unresolved') {
+      await refetchPolymarketStores(proxyAddress);
+      return;
+    }
+
+    let principalAdjustmentUsd: string;
+    if (context.side === 'buy') {
+      if (needsMatchPolling) {
+        context.positionUpdate.amend(match.amounts);
+      }
+
+      principalAdjustmentUsd = subtract(expectedAmounts.usd, match.amounts.usd);
+    } else {
+      principalAdjustmentUsd = subtract(match.amounts.usd, expectedAmounts.usd);
     }
 
     const feeCollection = collectPolymarketTradeFee({
       matchedAmounts: match.amounts,
-      orderId,
+      orderId: orderResult.orderID,
       quotedFeeUsd: context.quotedRainbowFeeUsd,
       side: context.side,
       settlementTransactionHashes: match.transactionHashes,
       tokenId: context.tokenId,
       wallet,
     });
+
     trackMatchedOrderAnalytics(context, match.amounts);
 
     const collectedFeeUsd = await feeCollection;
     if (collectedFeeUsd === undefined) return;
 
-    const principalAdjustmentUsd =
-      context.side === 'buy' ? subtract(expectedAmounts.usd, match.amounts.usd) : subtract(match.amounts.usd, expectedAmounts.usd);
+    const feeAdjustmentUsd = subtract(context.quotedRainbowFeeUsd, collectedFeeUsd);
 
-    const adjustmentUsd = add(principalAdjustmentUsd, subtract(context.quotedRainbowFeeUsd, collectedFeeUsd));
-    const settlementRead = polymarketBalanceActions.finalizeExpectedBalanceDelta({
-      adjustmentUsd,
-      operationId: orderId,
-      proxyWallet: proxyAddress,
-    });
-    await refetchPolymarketStores(proxyAddress, settlementRead);
+    balanceUpdate.finalize(add(principalAdjustmentUsd, feeAdjustmentUsd));
+    await refetchPolymarketStores(proxyAddress);
   } catch (error) {
     logger.error(new RainbowError('[polymarketOrderReconciliation] Error reconciling accepted order', ensureError(error)));
   }
@@ -187,7 +154,44 @@ export function getMatchedAmountsFromAcceptedOrder(
   return areOrderAmountsUsable(amounts) ? amounts : undefined;
 }
 
-// ============ Position Presentation ========================================== //
+// ============ Optimistic Updates ============================================= //
+
+function publishAcceptedBalance(balanceUpdate: PolymarketBalanceUpdate, context: OrderContext, amounts: PolymarketOrderAmounts): void {
+  try {
+    const deltaUsd =
+      context.side === 'buy'
+        ? subtract('0', add(amounts.usd, context.quotedTotalFeeUsd))
+        : subtract(amounts.usd, context.quotedTotalFeeUsd);
+
+    balanceUpdate.apply(deltaUsd);
+  } catch (error) {
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted balance', ensureError(error)));
+  }
+}
+
+async function publishAcceptedPosition(
+  context: OrderContext,
+  amounts: PolymarketOrderAmounts
+): Promise<PolymarketPositionUpdate | undefined> {
+  let positionUpdate: PolymarketPositionUpdate | undefined;
+
+  try {
+    if (context.side === 'buy') {
+      positionUpdate = context.positionUpdate;
+
+      const details = isSportsOrderDetails(context) ? await loadSportsPositionDetails(context) : context;
+      context.positionUpdate.publish(details, amounts);
+    } else {
+      positionUpdate = polymarketPositionsActions.remove(context.position);
+    }
+  } catch (error) {
+    positionUpdate?.discard();
+
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted position', ensureError(error)));
+  }
+
+  return positionUpdate;
+}
 
 async function loadSportsPositionDetails({ event: rawEvent, outcomeIndex }: SportsOrderDetails): Promise<PolymarketOrderDetails> {
   const [event, teams] = await Promise.all([processRawPolymarketEvent(rawEvent), fetchTeamsForEvent(rawEvent)]);
@@ -222,7 +226,7 @@ async function pollForMatchedOrder(
 
         if (settlement.status === 'failed') {
           trackOrderMatchFailedAnalytics(context, { orderId, reason: settlement.status, status: settlement.status });
-          return { status: 'notMatched' };
+          return { status: 'failed' };
         }
 
         if (amounts && settlement.status === 'resolved') {
@@ -232,7 +236,7 @@ async function pollForMatchedOrder(
 
       if (TERMINAL_FAILURE_STATUSES.has(status)) {
         trackOrderMatchFailedAnalytics(context, { orderId, reason: status, status });
-        return { status: 'notMatched' };
+        return { status: 'failed' };
       }
 
       await delay(POLL_INTERVAL);
