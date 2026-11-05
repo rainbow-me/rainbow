@@ -8,8 +8,6 @@ import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { ENS_RECORDS } from '@/features/ens/core/records';
-import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
@@ -18,6 +16,7 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 
+import { useEnsProfileImage } from '../../data/stores/imageStore';
 import { useEnsRecordsStore } from '../../data/stores/recordsStore';
 import { useEnsAddressStore } from '../../data/useEnsAddressStore';
 import useOpenENSNFTHandler from '../../hooks/useOpenENSNFTHandler';
@@ -38,65 +37,48 @@ export function ProfileSheetHeader({
   isPreview?: boolean;
 }) {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET>>();
+  const modal = useContext(ModalContext);
   const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
-  const { layout } = useContext(ModalContext) || {};
   const profilesEnabled = useExperimentalFlag(PROFILES);
+
   const ensName = defaultEnsName || params?.address;
+  const profileName = profilesEnabled ? ensName : undefined;
+  const profileAddress = useEnsAddressStore(s => s.get(profilesEnabled ? { addressOrName: ensName, chainId: ChainId.mainnet } : undefined));
+  const profile = useEnsRecordsStore(s => s.get(profileName ? { name: profileName } : undefined));
+  const avatar = useEnsProfileImage(profileName, 'avatar');
+  const cover = useEnsProfileImage(profileName, 'header');
 
-  const profileAddress = useEnsAddressStore(s =>
-    profilesEnabled ? s.get({ addressOrName: ensName, chainId: ChainId.mainnet }) : undefined
-  );
-  const { coinAddresses, contenthash, records } =
-    useEnsRecordsStore(s => (profilesEnabled && ensName ? s.get({ name: ensName }) : undefined)) ?? {};
-  const avatar = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'avatar' }) : undefined));
-  const isAvatarFetched = useEnsImageStore(s => (profilesEnabled && ensName ? s.hasSettled({ name: ensName, field: 'avatar' }) : false));
-  const cover = useEnsImageStore(s => (profilesEnabled && ensName ? s.get({ name: ensName, field: 'header' }) : undefined));
-  const isCoverFetched = useEnsImageStore(s => (profilesEnabled && ensName ? s.hasSettled({ name: ensName, field: 'header' }) : false));
+  const { data: walletNfts } = useLegacyNFTs({ address: profileAddress ?? '' });
+  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({ addressOrName: profileAddress ?? '' });
 
-  const {
-    data: { nfts: uniqueTokens },
-  } = useLegacyNFTs({
-    address: profileAddress ?? '',
-  });
-
-  const avatarUrl = avatar;
-  const { onPress: onPressAvatar } = useOpenENSNFTHandler({
-    uniqueTokens,
-    value: records?.avatar,
-  });
-  const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
-
-  const { onPress: onPressCover } = useOpenENSNFTHandler({
-    uniqueTokens,
-    value: records?.header,
-  });
-  const enableZoomOnPressCover = enableZoomableImages && !onPressCover;
-
-  const { data: firstTransactionTimestamp } = useFirstTransactionTimestamp({
-    addressOrName: profileAddress ?? '',
-  });
-
+  const { onPress: onPressAvatar } = useOpenENSNFTHandler({ uniqueTokens: walletNfts.nfts, value: profile?.records.avatar });
+  const { onPress: onPressCover } = useOpenENSNFTHandler({ uniqueTokens: walletNfts.nfts, value: profile?.records.header });
   const emoji = useMemo(() => (profileAddress ? addressHashedEmoji(profileAddress) : ''), [profileAddress]);
 
   return (
-    <Box background="body (Deprecated)" {...(Platform.OS === 'ios' && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
+    <Box background="body (Deprecated)" onLayout={Platform.OS === 'ios' && modal ? () => setTimeout(modal.layout, 500) : undefined}>
       <Stack space={{ custom: 18 }}>
-        <ProfileCover coverUrl={cover} enableZoomOnPress={enableZoomOnPressCover} handleOnPress={onPressCover} isFetched={isCoverFetched} />
+        <ProfileCover
+          coverUrl={cover.url}
+          enableZoomOnPress={enableZoomableImages && !onPressCover}
+          handleOnPress={onPressCover}
+          isFetched={cover.isSettled}
+        />
         <Bleed top={{ custom: 38 }}>
           <Inset left="19px (Deprecated)" right="15px (Deprecated)" top={{ custom: 1 }}>
             <Columns>
               <Column width="content">
                 <ProfileAvatar
-                  accountSymbol={emoji as string}
-                  avatarUrl={avatarUrl}
-                  enableZoomOnPress={enableZoomOnPressAvatar}
+                  accountSymbol={emoji}
+                  avatarUrl={avatar.url}
+                  enableZoomOnPress={enableZoomableImages && !onPressAvatar}
                   handleOnPress={onPressAvatar}
-                  isFetched={isAvatarFetched}
+                  isFetched={avatar.isSettled}
                 />
               </Column>
               {!isLoading && (
                 <Inset top="34px (Deprecated)">
-                  <ActionButtons address={profileAddress ?? ''} avatarUrl={avatarUrl} ensName={ensName} />
+                  <ActionButtons address={profileAddress ?? ''} avatarUrl={avatar.url} ensName={ensName} />
                 </Inset>
               )}
             </Columns>
@@ -107,48 +89,17 @@ export function ProfileSheetHeader({
             <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
               {abbreviateName(ensName)}
             </Heading>
-            <>
-              {isLoading ? (
-                <DescriptionPlaceholder />
-              ) : records?.description ? (
-                <ProfileDescription description={records?.description} />
-              ) : null}
-            </>
+            {isLoading ? (
+              <DescriptionPlaceholder />
+            ) : profile?.records.description ? (
+              <ProfileDescription description={profile.records.description} />
+            ) : null}
             <Bleed horizontal="19px (Deprecated)">
               {isLoading ? (
                 <RecordTagsPlaceholder />
-              ) : (
-                <>
-                  {records && (
-                    <RecordTags
-                      firstTransactionTimestamp={firstTransactionTimestamp}
-                      records={{
-                        contenthash,
-                        ...records,
-                        ...coinAddresses,
-                      }}
-                      show={[
-                        ENS_RECORDS.name,
-                        ENS_RECORDS.displayName,
-                        ENS_RECORDS.url,
-                        ENS_RECORDS.twitter,
-                        ENS_RECORDS.email,
-                        ENS_RECORDS.instagram,
-                        ENS_RECORDS.discord,
-                        ENS_RECORDS.github,
-                        ENS_RECORDS.BTC,
-                        ENS_RECORDS.snapchat,
-                        ENS_RECORDS.telegram,
-                        ENS_RECORDS.reddit,
-                        ENS_RECORDS.notice,
-                        ENS_RECORDS.keywords,
-                        ENS_RECORDS.LTC,
-                        ENS_RECORDS.DOGE,
-                      ]}
-                    />
-                  )}
-                </>
-              )}
+              ) : profile ? (
+                <RecordTags firstTransactionTimestamp={firstTransactionTimestamp} profile={profile} />
+              ) : null}
             </Bleed>
             {!isPreview && (
               <Inset bottom="6px">

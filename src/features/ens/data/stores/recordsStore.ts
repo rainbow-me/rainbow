@@ -11,7 +11,7 @@ import type { Records } from '../../types/registration';
 
 // ============ Types ========================================================== //
 
-type ProfileRecords = {
+export type ProfileRecords = {
   coinAddresses: Partial<Record<string, string>>;
   contenthash?: string;
   records: Records;
