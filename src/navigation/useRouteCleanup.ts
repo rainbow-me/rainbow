@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-
 import useLatestCallback from '@/hooks/useLatestCallback';
+import { useNavigation } from '@/navigation/Navigation';
+import { useRoute } from '@/navigation/RouteContext';
 
 /**
  * Runs on unmount only when no route with the same name remains in its navigator.
@@ -10,14 +10,14 @@ import useLatestCallback from '@/hooks/useLatestCallback';
  */
 export function useRouteCleanup(cleanup: () => void): void {
   const navigation = useNavigation();
-  const { name } = useRoute();
+  const route = useRoute().name;
   const onCleanup = useLatestCallback(cleanup);
 
   useEffect(
     () => () => {
-      const hasRemainingRoute = navigation.getState().routes.some(route => route.name === name);
+      const hasRemainingRoute = navigation.getState().routes.some(entry => entry.name === route);
       if (!hasRemainingRoute) onCleanup();
     },
-    [name, navigation, onCleanup]
+    [navigation, onCleanup, route]
   );
 }
