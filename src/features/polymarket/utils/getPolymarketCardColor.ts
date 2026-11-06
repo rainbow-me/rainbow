@@ -36,7 +36,8 @@ export async function resolvePolymarketCardColor({
       '[resolvePolymarketCardColor]: getImagePrimaryColor timed out'
     ).catch(() => undefined);
     if (eventImageColor && isCardAccentColor(eventImageColor)) {
-      return getHighContrastColor(eventImageColor);
+      const color = getHighContrastColor(eventImageColor);
+      if (color) return color;
     }
   }
   return getColorBySeed(event.id);

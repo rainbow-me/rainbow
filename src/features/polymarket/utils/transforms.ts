@@ -9,6 +9,7 @@ import {
   type RawPolymarketMarket,
   type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
@@ -39,7 +40,7 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams
 
 export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
   const rawColor = await getImagePrimaryColor(event.image);
-  const color = getHighContrastColor(rawColor);
+  const color = getHighContrastColor(rawColor) ?? getColorBySeed(event.id);
   return {
     ...event,
     color,

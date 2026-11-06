@@ -208,7 +208,7 @@ export type RawPolymarketMarket = {
   automaticallyActive: boolean;
   clearBookOnStart: boolean;
   chartColor: string;
-  seriesColor: string;
+  seriesColor?: string | null;
   showGmpSeries: boolean;
   showGmpOutcome: boolean;
   manualActivation: boolean;

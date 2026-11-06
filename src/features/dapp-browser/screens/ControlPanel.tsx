@@ -315,8 +315,12 @@ const AccentColorSetter = ({
 }) => {
   const { isDarkMode } = useColorMode();
 
-  const accountColor = usePersistentDominantColorFromImage(selectedWallet?.imageUrl) || selectedWallet?.color || globalColors.blue60;
-  const highContrastAccentColor = useMemo(() => getHighContrastColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
+  const imageColor = usePersistentDominantColorFromImage(selectedWallet?.imageUrl);
+  const walletColor = selectedWallet?.color;
+  const highContrastAccentColor = useMemo(
+    () => getHighContrastColor(imageColor, isDarkMode) ?? getHighContrastColor(walletColor, isDarkMode) ?? globalColors.blue60,
+    [imageColor, isDarkMode, walletColor]
+  );
 
   useSyncSharedValue({
     sharedValue: animatedAccentColor,

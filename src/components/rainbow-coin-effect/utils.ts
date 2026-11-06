@@ -7,6 +7,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors } from '@/design-system';
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { opacity } from '@/design-system/utils/opacity';
+import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
 import { generateRainbowGradient } from '@/worklets/gradients';
 import { getCirclePath } from '@/worklets/skia';
 
@@ -41,7 +42,7 @@ export function getRainbowCoinEffectConfig({
   size: number;
   strokeWidth: number;
 }): RainbowCoinEffectConfig {
-  const color = getHighContrastColor(providedColor, isDarkMode);
+  const color = getHighContrastColor(providedColor, isDarkMode) ?? (isDarkMode ? darkModeThemeColors : lightModeThemeColors).blueGreyDark;
   const innerRadius = size / 2;
   const outerRadius = innerRadius + strokeWidth;
   const canvasSize = size * CANVAS_VIEW_BUFFER_FACTOR;

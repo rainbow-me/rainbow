@@ -12,16 +12,16 @@ const DARK_LIGHTNESS_TARGET = 116 * Math.cbrt(DARK_LUMINANCE_TARGET) - 16;
 
 /**
  * Returns contrast-adjusted accents for both themes, or a color
- * directly when `isDarkMode` is provided as a second argument.
+ * directly when `isDarkMode` is provided. Returns undefined for invalid colors.
  */
-export function getHighContrastColor(color: string): ResponseByTheme<string>;
-export function getHighContrastColor(color: string, isDarkMode: boolean): string;
-export function getHighContrastColor(color: string, isDarkMode?: boolean): ResponseByTheme<string> | string {
-  const isValidInput = typeof color === 'string' && !!color;
-  const returnThemeColors = isDarkMode === undefined;
-  if (!isValidInput) return returnThemeColors ? { light: color, dark: color } : color;
+export function getHighContrastColor(color: string | undefined): ResponseByTheme<string> | undefined;
+export function getHighContrastColor(color: string | undefined, isDarkMode: boolean): string | undefined;
+export function getHighContrastColor(input: string | undefined, isDarkMode?: boolean): ResponseByTheme<string> | string | undefined {
+  const color = input ?? '';
+  const parsed = parseColor(color);
+  if (!parsed) return undefined;
 
-  const parsed = chroma(color);
+  const returnThemeColors = isDarkMode === undefined;
   const luminance = parsed.luminance();
   const lightContrast = 1.05 / (luminance + 0.05);
 
@@ -66,4 +66,14 @@ export function getHighContrastColor(color: string, isDarkMode?: boolean): Respo
   }
 
   return returnThemeColors ? { light, dark } : isDarkMode ? dark : light;
+}
+
+function parseColor(color: unknown): chroma.Color | undefined {
+  if (typeof color !== 'string' || !color) return undefined;
+
+  try {
+    return chroma(color);
+  } catch {
+    return undefined;
+  }
 }
