@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
@@ -39,7 +39,7 @@ import { ENS_MIN_COMMITMENT_AGE, ensContracts } from '../core/contracts';
 import { ENS_PAYMENT_TOKEN } from '../data/registration';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { useENSRegistration } from '../hooks/useENSRegistration';
-import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
+import { useENSRegistrationActionHandler } from '../hooks/useENSRegistrationActionHandler';
 import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import { useENSRegistrationForm } from '../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
@@ -61,12 +61,12 @@ function TransactionActionRow({
   isSufficientPayment,
   testID,
 }: {
-  action: any;
+  action: () => void;
   accentColor?: string;
   label: string;
   isValidGas: boolean;
   isSufficientGas: boolean;
-  isSufficientPayment?: boolean;
+  isSufficientPayment: boolean | undefined;
   testID: string;
 }) {
   const insufficientPayment = isSufficientPayment === false;
@@ -77,7 +77,7 @@ function TransactionActionRow({
         <SheetActionButtonRow paddingBottom={5}>
           <HoldToAuthorizeButton
             backgroundColor={accentColor ?? ''}
-            disabled={!isSufficientGas || !isValidGas}
+            disabled={!isSufficientGas || !isValidGas || isSufficientPayment !== true}
             hideInnerBorder
             label={
               insufficientPayment
@@ -107,52 +107,37 @@ function TransactionActionRow({
 
 export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
+  const { navigate, goBack } = useNavigation();
   const { name: ensName, mode, registrationParameters, changedRecords } = useENSRegistration();
-  const initialAvatarUrl = useENSRegistrationImage('avatar');
+  const accountProfile = useAccountProfileInfo();
   const { isSmallPhone } = useDimensions();
-
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-
-  const avatarImage = initialAvatarUrl || params?.externalAvatarUrl || '';
-  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
-
-  useEffect(() => {
-    if (dominantColor || (!dominantColor && !avatarImage)) {
-      setAccentColor(dominantColor || colors.purple);
-    }
-  }, [avatarImage, dominantColor, setAccentColor]);
-
+  const { values } = useENSRegistrationForm();
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(false);
-
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const [requestedDuration, setDuration] = useState(1);
+  const [onMountSecondsSinceCommitConfirmed] = useState(secondsSinceCommitConfirmed);
+  const [sendReverseRecord, setSendReverseRecord] = useState(
+    accountProfile.accountENS !== ensName && (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
+  );
+
   const duration =
     step !== REGISTRATION_STEPS.COMMIT && registrationParameters?.commitment
       ? registrationParameters.commitment.duration / timeUnits.secs.year
       : requestedDuration;
-
-  const { navigate, goBack } = useNavigation();
-
-  const { values } = useENSRegistrationForm();
-  const accountProfile = useAccountProfileInfo();
-
-  const avatarUrl = initialAvatarUrl || values.avatar;
-
-  const name = ensName?.replace(ENS_DOMAIN, '');
+  const avatarImage = initialAvatarUrl || params?.externalAvatarUrl || '';
+  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
+  const name = ensName.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name: mode === REGISTRATION_MODES.CREATE || mode === REGISTRATION_MODES.RENEW ? name : '',
     yearsDuration: duration,
     renew: mode === REGISTRATION_MODES.RENEW,
   });
-
-  const [sendReverseRecord, setSendReverseRecord] = useState(
-    accountProfile.accountENS !== ensName && (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
-  );
-  const { action } = useENSRegistrationActionHandler({
+  const { submit, speedUpCommit } = useENSRegistrationActionHandler({
     sendReverseRecord,
     step,
     yearsDuration: duration,
   });
-
   const registrationCostsData = useENSRegistrationCosts({
     name: ensName,
     rentPrice: registrationData?.rentPrice,
@@ -160,6 +145,10 @@ export function ENSConfirmRegisterSheet() {
     step,
     yearsDuration: duration,
   });
+
+  const avatarUrl = initialAvatarUrl || values.avatar;
+  const canAffordStep = registrationCostsData.isSufficientGasForStep && registrationCostsData.isSufficientPayment;
+  const requiresRegistrationGas = step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.RENEW;
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -191,135 +180,11 @@ export function ENSConfirmRegisterSheet() {
     if (step === REGISTRATION_STEPS.SET_NAME) return i18n.t(i18n.l.profiles.confirm.set_name_registration);
   }, [mode, step]);
 
-  const onMountSecondsSinceCommitConfirmed = useMemo(
-    () => secondsSinceCommitConfirmed,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
-  const stepContent = useMemo(
-    () => ({
-      [REGISTRATION_STEPS.COMMIT]: (
-        <CommitContent duration={duration} registrationCostsData={registrationCostsData} setDuration={setDuration} />
-      ),
-      [REGISTRATION_STEPS.REGISTER]: (
-        <RegisterContent
-          accentColor={accentColor}
-          sendReverseRecord={sendReverseRecord}
-          setSendReverseRecord={registrationCostsData?.isSufficientGasForStep ? setSendReverseRecord : null}
-        />
-      ),
-      [REGISTRATION_STEPS.EDIT]: (
-        <EditContent
-          accentColor={accentColor}
-          sendReverseRecord={sendReverseRecord}
-          setSendReverseRecord={registrationCostsData?.isSufficientGasForStep ? setSendReverseRecord : null}
-          showReverseRecordSwitch={accountProfile.accountENS !== ensName}
-        />
-      ),
-      [REGISTRATION_STEPS.SET_NAME]: null,
-      [REGISTRATION_STEPS.RENEW]: (
-        <RenewContent name={name} registrationCostsData={registrationCostsData} setDuration={setDuration} yearsDuration={duration} />
-      ),
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (
-        <WaitCommitmentConfirmationContent
-          accentColor={accentColor}
-          action={() => (action as ActionTypes[REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION])(accentColor)}
-          secondsSinceCommitConfirmed={secondsSinceCommitConfirmed}
-        />
-      ),
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: (
-        <WaitENSConfirmationContent
-          seconds={ENS_MIN_COMMITMENT_AGE - (onMountSecondsSinceCommitConfirmed > 0 ? onMountSecondsSinceCommitConfirmed : 0)}
-        />
-      ),
-    }),
-    [
-      duration,
-      registrationCostsData,
-      accentColor,
-      sendReverseRecord,
-      accountProfile.accountENS,
-      ensName,
-      name,
-      secondsSinceCommitConfirmed,
-      onMountSecondsSinceCommitConfirmed,
-      action,
-    ]
-  );
-
-  const stepActions = useMemo(
-    () => ({
-      [REGISTRATION_STEPS.COMMIT]: (
-        <TransactionActionRow
-          accentColor={accentColor}
-          action={action}
-          isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
-          isSufficientPayment={registrationCostsData.isSufficientPayment}
-          isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={i18n.t(i18n.l.profiles.confirm.hold_to_begin)}
-          testID={step}
-        />
-      ),
-      [REGISTRATION_STEPS.REGISTER]: (
-        <TransactionActionRow
-          accentColor={accentColor}
-          action={() => (action as ActionTypes[REGISTRATION_STEPS.REGISTER])(goToProfileScreen)}
-          isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
-          isSufficientPayment={registrationCostsData.isSufficientPayment}
-          isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={i18n.t(i18n.l.profiles.confirm.hold_to_register)}
-          testID={step}
-        />
-      ),
-      [REGISTRATION_STEPS.RENEW]: (
-        <TransactionActionRow
-          accentColor={accentColor}
-          action={() => (action as ActionTypes[REGISTRATION_STEPS.RENEW])(goToProfileScreen)}
-          isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
-          isSufficientPayment={registrationCostsData.isSufficientPayment}
-          isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={i18n.t(i18n.l.profiles.confirm.hold_to_extend)}
-          testID={step}
-        />
-      ),
-      [REGISTRATION_STEPS.EDIT]: (
-        <TransactionActionRow
-          accentColor={accentColor}
-          action={() => (action as ActionTypes[REGISTRATION_STEPS.EDIT])(goToProfileScreen)}
-          isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
-          isSufficientPayment={registrationCostsData.isSufficientPayment}
-          isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
-          testID={step}
-        />
-      ),
-      [REGISTRATION_STEPS.SET_NAME]: (
-        <TransactionActionRow
-          accentColor={accentColor}
-          action={() => (action as ActionTypes[REGISTRATION_STEPS.SET_NAME])(goToProfileScreen)}
-          isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
-          isSufficientPayment={registrationCostsData.isSufficientPayment}
-          isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
-          testID={step}
-        />
-      ),
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: null,
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: null,
-    }),
-    [
-      accentColor,
-      action,
-      registrationCostsData?.isSufficientGasForRegistration,
-      registrationCostsData?.isSufficientGasForStep,
-      registrationCostsData.isSufficientPayment,
-      registrationCostsData?.isValidGas,
-      registrationCostsData?.stepGasLimit,
-      step,
-      goToProfileScreen,
-    ]
-  );
+  useEffect(() => {
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  }, [avatarImage, dominantColor, setAccentColor]);
 
   useFocusEffect(
     useCallback(() => {
@@ -334,6 +199,68 @@ export function ENSConfirmRegisterSheet() {
     },
     [step]
   );
+
+  let stepContent: ReactNode = null;
+  let actionLabel: string | undefined;
+
+  switch (step) {
+    case REGISTRATION_STEPS.COMMIT:
+      stepContent = <CommitContent duration={duration} registrationCostsData={registrationCostsData} setDuration={setDuration} />;
+      actionLabel = i18n.t(i18n.l.profiles.confirm.hold_to_begin);
+      break;
+
+    case REGISTRATION_STEPS.REGISTER:
+      stepContent = (
+        <RegisterContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={canAffordStep ? setSendReverseRecord : null}
+        />
+      );
+      actionLabel = i18n.t(i18n.l.profiles.confirm.hold_to_register);
+      break;
+
+    case REGISTRATION_STEPS.EDIT:
+      stepContent = (
+        <EditContent
+          accentColor={accentColor}
+          sendReverseRecord={sendReverseRecord}
+          setSendReverseRecord={canAffordStep ? setSendReverseRecord : null}
+          showReverseRecordSwitch={accountProfile.accountENS !== ensName}
+        />
+      );
+      actionLabel = i18n.t(i18n.l.profiles.confirm.hold_to_confirm);
+      break;
+
+    case REGISTRATION_STEPS.RENEW:
+      stepContent = (
+        <RenewContent name={name} registrationCostsData={registrationCostsData} setDuration={setDuration} yearsDuration={duration} />
+      );
+      actionLabel = i18n.t(i18n.l.profiles.confirm.hold_to_extend);
+      break;
+
+    case REGISTRATION_STEPS.SET_NAME:
+      actionLabel = i18n.t(i18n.l.profiles.confirm.hold_to_confirm);
+      break;
+
+    case REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION:
+      stepContent = (
+        <WaitCommitmentConfirmationContent
+          accentColor={accentColor}
+          action={() => speedUpCommit(accentColor)}
+          secondsSinceCommitConfirmed={secondsSinceCommitConfirmed}
+        />
+      );
+      break;
+
+    case REGISTRATION_STEPS.WAIT_ENS_COMMITMENT:
+      stepContent = (
+        <WaitENSConfirmationContent
+          seconds={ENS_MIN_COMMITMENT_AGE - (onMountSecondsSinceCommitConfirmed > 0 ? onMountSecondsSinceCommitConfirmed : 0)}
+        />
+      );
+      break;
+  }
 
   return (
     <SlackSheet
@@ -388,11 +315,26 @@ export function ENSConfirmRegisterSheet() {
             </Row>
             <Row>
               <Box flexGrow={1} paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}>
-                {stepContent[step]}
+                {stepContent}
               </Box>
             </Row>
           </Rows>
-          <Box>{stepActions[step]}</Box>
+          <Box>
+            {actionLabel !== undefined && (
+              <TransactionActionRow
+                accentColor={accentColor}
+                action={step === REGISTRATION_STEPS.COMMIT ? submit : () => submit(goToProfileScreen)}
+                isSufficientGas={Boolean(
+                  registrationCostsData.isSufficientGasForStep &&
+                  (!requiresRegistrationGas || registrationCostsData.isSufficientGasForRegistration)
+                )}
+                isSufficientPayment={registrationCostsData.isSufficientPayment}
+                isValidGas={Boolean(registrationCostsData.isValidGas && registrationCostsData.stepGasLimit)}
+                label={actionLabel}
+                testID={step}
+              />
+            )}
+          </Box>
         </Box>
       </AccentColorProvider>
     </SlackSheet>

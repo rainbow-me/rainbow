@@ -3,6 +3,7 @@ import { expect, it, vi } from 'vitest';
 
 import Routes from '@/navigation/routesNames';
 
+import { REGISTRATION_STEPS } from '../../types/registration';
 import { createEnsCommitment } from '../registration';
 import { estimateEnsRegistration, estimateEnsTransactions } from '../transactions';
 import { createEnsGasEstimateStore } from './createEnsGasEstimateStore';
@@ -27,17 +28,17 @@ it('previews registration before commit and estimates the saved terms for reveal
     referrer: zeroHash,
   };
   vi.mocked(createEnsCommitment).mockResolvedValue(commitment);
-  vi.mocked(estimateEnsRegistration).mockResolvedValue({ step: '50000', total: '110000' });
+  vi.mocked(estimateEnsRegistration).mockResolvedValue({ stepGasLimit: '50000', totalGasLimit: '110000' });
   vi.mocked(estimateEnsTransactions).mockResolvedValue('60000');
 
   const store = createEnsGasEstimateStore(Routes.ENS_CONFIRM_REGISTER_SHEET);
   try {
-    store.setState({ input: { ...input, step: 'COMMIT' } });
-    expect(await store.getState().fetch()).toEqual({ step: '50000', total: '110000' });
+    store.setState({ input: { ...input, step: REGISTRATION_STEPS.COMMIT } });
+    expect(await store.getState().fetch()).toEqual({ stepGasLimit: '50000', totalGasLimit: '110000' });
 
     const saved = { ...commitment, secret: toHex(1, { size: 32 }) };
-    store.setState({ input: { ...input, step: 'REGISTER', commitment: saved } });
-    expect(await store.getState().fetch()).toEqual({ step: '60000', total: '60000' });
+    store.setState({ input: { ...input, step: REGISTRATION_STEPS.REGISTER, commitment: saved } });
+    expect(await store.getState().fetch()).toEqual({ stepGasLimit: '60000', totalGasLimit: '60000' });
     expect(estimateEnsTransactions).toHaveBeenCalledWith(
       { type: 'register', name: input.name, commitment: saved, records: input.records, setReverseRecord: true },
       account

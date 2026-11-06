@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { noop } from 'lodash';
-
-import { type PendingTransaction } from '@/entities/transactions';
 import { REGISTRATION_STEPS } from '@/features/ens/types/registration';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
@@ -18,29 +14,21 @@ import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/sta
 
 import { executeEnsTransactions } from '../data/executeTransactions';
 import { createEnsCommitment } from '../data/registration';
+import type { EnsAction } from '../types/transactions';
 import { useENSRegistration } from './useENSRegistration';
 
-type RegistrationAction = (onSubmitted?: () => void) => Promise<void>;
-
-export type ActionTypes = {
-  [REGISTRATION_STEPS.COMMIT]: RegistrationAction;
-  [REGISTRATION_STEPS.REGISTER]: RegistrationAction;
-  [REGISTRATION_STEPS.RENEW]: RegistrationAction;
-  [REGISTRATION_STEPS.EDIT]: RegistrationAction;
-  [REGISTRATION_STEPS.SET_NAME]: RegistrationAction;
-  [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: (accentColor: string) => Promise<void>;
-  [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => Promise<void>;
-};
-
-export function useENSRegistrationActionHandler<Step extends keyof ActionTypes>({
+/**
+ * Submits the current registration step or opens speed-up for its pending commitment.
+ */
+export function useENSRegistrationActionHandler({
   step,
   sendReverseRecord = false,
   yearsDuration = 1,
 }: {
-  step: Step;
+  step: REGISTRATION_STEPS;
   sendReverseRecord?: boolean;
   yearsDuration?: number;
-}): { action: ActionTypes[Step] } {
+}) {
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
@@ -51,7 +39,7 @@ export function useENSRegistrationActionHandler<Step extends keyof ActionTypes>(
 
   const updateAvatarsOnNextBlock = useRef(false);
   useEffect(() => {
-    let provider: StaticJsonRpcProvider;
+    const provider = getProvider({ chainId: ChainId.mainnet });
 
     const updateAvatars = () => {
       if (updateAvatarsOnNextBlock.current) {
@@ -60,169 +48,69 @@ export function useENSRegistrationActionHandler<Step extends keyof ActionTypes>(
       }
     };
 
-    (() => {
-      provider = getProvider({ chainId: ChainId.mainnet });
-      provider.on('block', updateAvatars);
-    })();
+    provider.on('block', updateAvatars);
     return () => {
-      provider?.off('block', updateAvatars);
+      provider.off('block', updateAvatars);
     };
   }, []);
 
-  // actions
-  const commitAction: ActionTypes[typeof REGISTRATION_STEPS.COMMIT] = useCallback(
-    async (callback = noop) => {
+  const submit = useCallback(
+    async (onSubmitted?: () => void) => {
+      if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION || step === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) return;
       if (!registrationParameters) throw new Error('No active ENS registration');
-      updateAvatarsOnNextBlock.current = true;
+
+      const name = registrationParameters.name;
+      const commitment = registrationParameters.commitment;
 
       const provider = getProvider({ chainId: ChainId.mainnet });
-      const wallet = await loadWallet({
-        provider,
-      });
-      if (!wallet) {
-        return;
-      }
-      const [nonce, commitment] = await Promise.all([
-        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        createEnsCommitment(accountAddress, duration),
-      ]);
-      await executeEnsTransactions(wallet, { type: 'commit', name: registrationParameters.name, commitment }, nonce, () => {
-        if (isHardwareWallet) {
-          goBack();
+      const wallet = await loadWallet({ provider });
+      if (!wallet) return;
+
+      const prepareAction = async (): Promise<EnsAction> => {
+        switch (step) {
+          case REGISTRATION_STEPS.COMMIT:
+            return { type: 'commit', name, commitment: await createEnsCommitment(accountAddress, duration) };
+
+          case REGISTRATION_STEPS.REGISTER:
+            if (!commitment) throw new Error('Registration requires a saved commitment');
+            return { type: 'register', name, commitment, records: changedRecords, setReverseRecord: sendReverseRecord };
+
+          case REGISTRATION_STEPS.EDIT:
+            return { type: 'records', name, records: changedRecords, setReverseRecord: sendReverseRecord };
+
+          case REGISTRATION_STEPS.RENEW:
+            return { type: 'renew', name, duration };
+
+          case REGISTRATION_STEPS.SET_NAME:
+            return { type: 'primary', name };
         }
-        callback();
+      };
+
+      const [nonce, action] = await Promise.all([getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }), prepareAction()]);
+
+      await executeEnsTransactions(wallet, action, nonce, () => {
+        if (step === REGISTRATION_STEPS.COMMIT && isHardwareWallet) goBack();
+        onSubmitted?.();
       });
+
+      if (step === REGISTRATION_STEPS.COMMIT || step === REGISTRATION_STEPS.REGISTER || step === REGISTRATION_STEPS.EDIT) {
+        updateAvatarsOnNextBlock.current = true;
+      }
     },
-    [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
+    [accountAddress, registrationParameters, changedRecords, sendReverseRecord, step, duration, isHardwareWallet, goBack]
   );
 
-  const speedUpCommitAction: ActionTypes[typeof REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION] = useCallback(
-    async (accentColor: string) => {
-      const commitTransactionHash = registrationParameters?.commitTransactionHash;
+  const speedUpCommit = useCallback(
+    (accentColor: string) => {
+      const hash = registrationParameters?.commitTransactionHash;
+      const transaction = hash ? getPendingTransactionByHash(hash) : undefined;
+      if (!transaction) return;
 
-      const tx = getPendingTransactionByHash(commitTransactionHash || '');
-      if (commitTransactionHash && tx) {
-        if (Platform.OS === 'ios') {
-          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-            accentColor,
-            tx: tx as PendingTransaction,
-            type: 'speed_up',
-          });
-        } else {
-          navigate(Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
-            accentColor,
-            tx: tx as PendingTransaction,
-            type: 'speed_up',
-          });
-        }
-      }
+      const route = Platform.OS === 'ios' ? Routes.SPEED_UP_AND_CANCEL_SHEET : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET;
+      navigate(route, { accentColor, tx: transaction, type: 'speed_up' });
     },
     [getPendingTransactionByHash, navigate, registrationParameters?.commitTransactionHash]
   );
 
-  const registerAction: ActionTypes[typeof REGISTRATION_STEPS.REGISTER] = useCallback(
-    async (callback = noop) => {
-      if (!registrationParameters) throw new Error('No active ENS registration');
-      const { name, commitment } = registrationParameters;
-      if (!commitment) throw new Error('Registration requires a saved commitment');
-
-      const provider = getProvider({ chainId: ChainId.mainnet });
-      const wallet = await loadWallet({
-        provider,
-      });
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-
-      await executeEnsTransactions(
-        wallet,
-        { type: 'register', name, commitment, records: changedRecords, setReverseRecord: sendReverseRecord },
-        nonce,
-        callback
-      );
-
-      updateAvatarsOnNextBlock.current = true;
-    },
-    [accountAddress, registrationParameters, changedRecords, sendReverseRecord]
-  );
-
-  const renewAction: ActionTypes[typeof REGISTRATION_STEPS.RENEW] = useCallback(
-    async (callback = noop) => {
-      if (!registrationParameters) throw new Error('No active ENS registration');
-      const { name } = registrationParameters;
-
-      const provider = getProvider({ chainId: ChainId.mainnet });
-      const wallet = await loadWallet({
-        provider,
-      });
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-      await executeEnsTransactions(wallet, { type: 'renew', name, duration }, nonce, callback);
-    },
-    [accountAddress, duration, registrationParameters]
-  );
-
-  const setNameAction: ActionTypes[typeof REGISTRATION_STEPS.SET_NAME] = useCallback(
-    async (callback = noop) => {
-      if (!registrationParameters) throw new Error('No active ENS registration');
-      const { name } = registrationParameters;
-
-      const provider = getProvider({ chainId: ChainId.mainnet });
-      const wallet = await loadWallet({
-        provider,
-      });
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-
-      await executeEnsTransactions(wallet, { type: 'primary', name }, nonce, callback);
-    },
-    [accountAddress, registrationParameters]
-  );
-
-  const setRecordsAction: ActionTypes[typeof REGISTRATION_STEPS.EDIT] = useCallback(
-    async (callback = noop) => {
-      if (!registrationParameters) throw new Error('No active ENS registration');
-      const provider = getProvider({ chainId: ChainId.mainnet });
-      const wallet = await loadWallet({
-        provider,
-      });
-      if (!wallet) {
-        return;
-      }
-
-      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
-
-      await executeEnsTransactions(
-        wallet,
-        { type: 'records', name: registrationParameters.name, records: changedRecords, setReverseRecord: sendReverseRecord },
-        nonce,
-        callback
-      );
-
-      updateAvatarsOnNextBlock.current = true;
-    },
-    [accountAddress, registrationParameters, changedRecords, sendReverseRecord]
-  );
-
-  const actions: ActionTypes = {
-    [REGISTRATION_STEPS.COMMIT]: commitAction,
-    [REGISTRATION_STEPS.EDIT]: setRecordsAction,
-    [REGISTRATION_STEPS.REGISTER]: registerAction,
-    [REGISTRATION_STEPS.RENEW]: renewAction,
-    [REGISTRATION_STEPS.SET_NAME]: setNameAction,
-    [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
-    [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => Promise.resolve(),
-  };
-
-  return {
-    action: actions[step],
-  };
+  return { submit, speedUpCommit };
 }

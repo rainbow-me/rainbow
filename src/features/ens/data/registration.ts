@@ -79,7 +79,7 @@ export async function getEnsRenewal(client: EnsClient, label: string, duration: 
 }
 
 /**
- * Fixes the resolver and registration terms before submitting the commitment.
+ * Captures the resolver and registration terms before submitting the commitment.
  */
 export function createEnsCommitment(owner: string, duration: number): Promise<EnsCommitment> {
   const bytes = crypto.getRandomValues(new Uint8Array(32));

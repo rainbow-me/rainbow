@@ -93,7 +93,7 @@ describe.skipIf(!process.env.ENS_FORK_RPC_URL)('ENSv2 deployed contracts', () =>
         setReverseRecord: true,
       };
       const estimate = await estimateEnsRegistration(action, account);
-      expect(BigInt(estimate.total)).toBeGreaterThan(BigInt(estimate.step));
+      expect(BigInt(estimate.totalGasLimit)).toBeGreaterThan(BigInt(estimate.stepGasLimit));
       await execute({ type: 'commit', name, commitment });
       await node.increaseTime({ seconds: 61 });
       await node.mine({ blocks: 1 });
