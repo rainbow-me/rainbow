@@ -51,27 +51,31 @@ export const useEnsRecordsStore = createQueryCollectionStore(
  * Lookup and contenthash errors reject before the new result is saved.
  */
 async function fetchProfileRecords(name: string, signal?: AbortSignal): Promise<ProfileRecords> {
-  const keys = PROFILE_RECORD_KEYS;
-  const result = await readEnsRecords(name, keys, signal);
+  const result = await readEnsRecords(name, PROFILE_RECORD_KEYS, signal);
 
   const records: Record<string, string> = Object.create(null);
   const coinAddresses: Record<string, string> = Object.create(null);
   let contenthash: string | undefined;
+
   if (result) {
-    for (const key of keys.texts) {
+    for (const key of PROFILE_RECORD_KEYS.texts) {
       const value = result.texts[key];
-      if (value !== null) records[key] = value;
+      if (value === null) continue;
+      records[key] = value;
     }
 
-    for (const coin of keys.coins) {
+    for (const coin of PROFILE_RECORD_KEYS.coins) {
       const value = result.coins[coin];
       if (value === null) continue;
+
       if (coin === ETHEREUM_COIN_TYPE) {
         coinAddresses.ETH = value;
         continue;
       }
+
       const format = formatsByCoinType[coin];
       if (!format) continue;
+
       try {
         coinAddresses[format.name] = format.encoder(Buffer.from(value.slice(2), 'hex'));
       } catch {

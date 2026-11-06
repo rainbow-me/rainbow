@@ -201,7 +201,6 @@ export const SendConfirmationSheet = () => {
       matchesToken &&
       ownership?.version === 1 &&
       ownership.token?.contractAddress === ensContracts.legacyRegistrar &&
-      ownership.registrant?.toLowerCase() === accountAddress.toLowerCase() &&
       ownership.owner?.toLowerCase() !== toAddress.toLowerCase()
     ) {
       checkboxes.push({ id: 'transfer-control', label: i18n.t(labels.transfer_control) });

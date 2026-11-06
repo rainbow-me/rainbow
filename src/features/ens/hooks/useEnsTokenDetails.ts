@@ -4,7 +4,7 @@ import { useEnsOwnershipStore } from '../data/stores/ownershipStores';
 import { useEnsRecordsStore } from '../data/stores/recordsStore';
 
 /**
- * Combines independently cached profile fields with the active wallet's permissions.
+ * Reads a name's records and ownership and checks its primary-name status for the active wallet.
  */
 export function useEnsTokenDetails(name: string) {
   const accountAddress = useAccountAddress();

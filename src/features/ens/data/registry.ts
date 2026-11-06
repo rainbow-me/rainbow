@@ -15,8 +15,13 @@ export const REGISTERED = 2;
  * Other registry implementations can still resolve names.
  */
 export async function getRegistryState(client: EnsClient, registry: Address, id: bigint) {
-  if (!isAddressEqual(registry, ensContracts.ethRegistry) && !(await supportsInterface(client, registry, PERMISSIONED_REGISTRY_INTERFACE)))
+  if (
+    !isAddressEqual(registry, ensContracts.ethRegistry) &&
+    !(await supportsInterface(client, registry, PERMISSIONED_REGISTRY_INTERFACE))
+  ) {
     return null;
+  }
+
   return readContract(client, { address: registry, abi: registryAbi, functionName: 'getState', args: [id] });
 }
 
@@ -28,8 +33,10 @@ export function currentEnsTokenId(token: EnsToken, sender: string): Promise<stri
   return withEnsClient(async client => {
     const state = await getRegistryState(client, token.contractAddress, BigInt(token.tokenId));
     if (!state) return token.tokenId;
-    if (state.status !== REGISTERED || state.latestOwner.toLowerCase() !== sender.toLowerCase())
+    if (state.status !== REGISTERED || state.latestOwner.toLowerCase() !== sender.toLowerCase()) {
       throw new Error('Sender no longer owns this ENS token');
+    }
+
     return String(state.tokenId);
   });
 }

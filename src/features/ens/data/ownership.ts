@@ -22,6 +22,7 @@ import { getRegistryState, REGISTERED, type EnsToken } from './registry';
  * Current control and NFT identity. Only v1 has a separate registrant/controller.
  */
 export type EnsOwnership = {
+  /** Registry controller in v1, token owner in v2. */
   owner: Address | null;
   expiryDate: number | null;
 } & ({ version: 1; registrant: Address | null; token: EnsToken | null } | { version: 2; token: EnsToken });
@@ -35,6 +36,8 @@ export function readEnsOwnership(name: string, signal?: AbortSignal): Promise<En
  * is used only while the v2 hierarchy explicitly delegates to the v1 mirror.
  */
 export async function getEnsOwnership(client: EnsClient, name: string): Promise<EnsOwnership | null> {
+  const parts = name.split('.');
+  const labelId = BigInt(labelhash(parts[0]));
   const dnsName = toHex(packetToBytes(name));
   const registry = await readContract(client, {
     address: ensContracts.helper,
@@ -42,8 +45,9 @@ export async function getEnsOwnership(client: EnsClient, name: string): Promise<
     functionName: 'findParentRegistry',
     args: [dnsName],
   });
+
   if (registry !== zeroAddress) {
-    const state = await getRegistryState(client, registry, BigInt(labelhash(name.split('.')[0])));
+    const state = await getRegistryState(client, registry, labelId);
     // Once registered in v2, expired names must not recover their retired v1 owner.
     if (state && state.latestOwner !== zeroAddress) {
       const currentOwner = state.status === REGISTERED ? getAddress(state.latestOwner) : null;
@@ -55,6 +59,7 @@ export async function getEnsOwnership(client: EnsClient, name: string): Promise<
       };
     }
   }
+
   const resolver = await getEnsResolver(client, { name });
   if (!resolver || !isAddressEqual(resolver, ensContracts.legacyMirror)) return null;
 
@@ -65,43 +70,51 @@ export async function getEnsOwnership(client: EnsClient, name: string): Promise<
     functionName: 'owner',
     args: [node],
   });
+
   const wrapped = isAddressEqual(legacyOwner, ensContracts.nameWrapper);
-  const labels = name.split('.');
-  const isEthRegistration = labels.length === 2 && labels[1] === 'eth';
-  const tokenId = wrapped ? BigInt(node) : BigInt(labelhash(labels[0]));
-  const wrapperData = wrapped
-    ? await readContract(client, { address: ensContracts.nameWrapper, abi: legacyAbi, functionName: 'getData', args: [tokenId] })
-    : null;
-  const expiryDate = isEthRegistration
-    ? Number(
-        await readContract(client, {
-          address: ensContracts.legacyRegistrar,
-          abi: legacyAbi,
-          functionName: 'nameExpires',
-          args: [BigInt(labelhash(labels[0]))],
-        })
-      )
-    : wrapperData
-      ? Number(wrapperData[2])
-      : null;
-  const registrant =
-    isEthRegistration && !wrapped
-      ? await readContract(client, {
+  const isEthRegistration = parts.length === 2 && parts[1] === 'eth';
+  const tokenId = wrapped ? BigInt(node) : labelId;
+  let controller = legacyOwner;
+  let registrant: Address | null = null;
+  let expiryDate: number | null = null;
+
+  if (wrapped) {
+    const [owner, , expiry] = await readContract(client, {
+      address: ensContracts.nameWrapper,
+      abi: legacyAbi,
+      functionName: 'getData',
+      args: [tokenId],
+    });
+    controller = owner;
+    registrant = owner;
+    expiryDate = Number(expiry);
+  }
+
+  if (isEthRegistration) {
+    const expiry = await readContract(client, {
+      address: ensContracts.legacyRegistrar,
+      abi: legacyAbi,
+      functionName: 'nameExpires',
+      args: [labelId],
+    });
+    expiryDate = Number(expiry);
+
+    if (!wrapped) {
+      try {
+        registrant = await readContract(client, {
           address: ensContracts.legacyRegistrar,
           abi: legacyAbi,
           functionName: 'ownerOf',
           args: [tokenId],
-        }).catch(error => {
-          // The v1 registrar reverts for an expired registration, even during its renewal grace period.
-          if (
-            error instanceof BaseError &&
-            error.walk(cause => cause instanceof ContractFunctionRevertedError) instanceof ContractFunctionRevertedError
-          )
-            return null;
-          throw error;
-        })
-      : wrapperData?.[0];
-  const controller = wrapperData?.[0] ?? legacyOwner;
+        });
+      } catch (error) {
+        // Expired registrations have no token owner, including during the renewal grace period.
+        const revert = error instanceof BaseError && error.walk(cause => cause instanceof ContractFunctionRevertedError);
+        if (!(revert instanceof ContractFunctionRevertedError)) throw error;
+      }
+    }
+  }
+
   return {
     version: 1,
     owner: controller === zeroAddress ? null : getAddress(controller),
@@ -121,6 +134,7 @@ export async function getEnsOwnership(client: EnsClient, name: string): Promise<
 export function isNameToken(ownership: EnsOwnership | null | undefined, selected: EnsToken): boolean {
   const token = ownership?.token;
   if (!token || !isAddressEqual(token.contractAddress, selected.contractAddress)) return false;
+
   const difference = BigInt(token.tokenId) ^ BigInt(selected.tokenId);
   return ownership.version === 2 ? difference >> 32n === 0n : difference === 0n;
 }

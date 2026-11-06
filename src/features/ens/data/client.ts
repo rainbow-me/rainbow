@@ -93,13 +93,13 @@ async function callWithCcip(
       const revertData = getRevertData(error);
       if (!parameters.to || !revertData?.startsWith(offchainLookupSignature)) throw error;
 
-      const { sender, urls, callData, callbackFunction, extraData } = AbiError.decode(OFFCHAIN_LOOKUP_ERROR, revertData, { as: 'Object' });
+      const lookup = AbiError.decode(OFFCHAIN_LOOKUP_ERROR, revertData, { as: 'Object' });
 
-      if (!isAddressEqual(sender, parameters.to)) throw new Error('CCIP lookup sender does not match the called contract');
+      if (!isAddressEqual(lookup.sender, parameters.to)) throw new Error('CCIP lookup sender does not match the called contract');
       if (lookups === MAX_CCIP_LOOKUPS) throw new Error('ENS lookup exceeded its CCIP request limit');
 
-      const response = await requestGateway({ sender, urls, data: callData });
-      data = concat([callbackFunction, encodeAbiParameters(ABI_ENCODE_PARAMS, [response, extraData])]);
+      const response = await requestGateway({ sender: lookup.sender, urls: lookup.urls, data: lookup.callData });
+      data = concat([lookup.callbackFunction, encodeAbiParameters(ABI_ENCODE_PARAMS, [response, lookup.extraData])]);
     }
   }
 }

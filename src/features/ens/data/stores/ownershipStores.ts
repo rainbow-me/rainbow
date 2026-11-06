@@ -30,12 +30,13 @@ export const useEnsPermissionsStore = createQueryCollectionStore({
 export const useEnsRegistrationDateStore = createQueryCollectionStore({
   key: (input: { name: string; registry?: Address }) => `${input.name}:${input.registry ?? ''}`,
   fetcher: async input => {
-    const name = normalizeEnsName(input.name);
+    const parts = normalizeEnsName(input.name).split('.');
+    const labelHash = labelhash(parts[0]);
 
     if (input.registry) {
       const result = await ensClient.getV2Registration({
         registry: input.registry.toLowerCase(),
-        labelhash: labelhash(name.split('.')[0]),
+        labelhash: labelHash,
       });
       const slot = result.ensv2NameSlots[0];
       if (!slot?.migratedFromV1) {
@@ -43,10 +44,9 @@ export const useEnsRegistrationDateStore = createQueryCollectionStore({
       }
     }
 
-    const labels = name.split('.');
-    if (labels.length !== 2 || labels[1] !== 'eth') return null;
+    if (parts.length !== 2 || parts[1] !== 'eth') return null;
 
-    const result = await ensClient.getRegistration({ id: labelhash(labels[0]) });
+    const result = await ensClient.getRegistration({ id: labelHash });
     return result.registration?.registrationDate ?? null;
   },
   disableAutoRefetching: true,

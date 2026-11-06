@@ -14,13 +14,16 @@ import { compositeResolverAbi, legacyAbi, resolverAbi, supportsInterface } from 
 import { readEnsRecords } from './ens';
 import { PROFILE_RECORD_KEYS } from './recordKeys';
 
-export type EnsResolver = { address: Address; permissioned: boolean };
+export type EnsResolver = {
+  address: Address;
+  permissioned: boolean;
+};
 
 const PERMISSIONED_RESOLVER_INTERFACE_ID = '0x8c2427cc';
 
 /**
- * Returns the onchain resolver and its setter API, following the v1 mirror when present.
- * Missing or offchain resolvers return null.
+ * Returns the onchain resolver and its setter API, following the v1
+ * mirror when present. Missing or offchain resolvers return null.
  */
 export async function getEnsWriteResolver(client: EnsClient, name: string): Promise<EnsResolver | null> {
   let address = await getEnsResolver(client, { name });
@@ -102,15 +105,18 @@ export async function getLegacyRecordClears(name: string, resolver: Address): Pr
     ensClient.getResolverKeys({ resolver: resolver.toLowerCase(), node }),
     readEnsRecords(name, PROFILE_RECORD_KEYS),
   ]);
+
   const indexed = index.resolvers[0];
   const texts = new Set(indexed?.texts);
   const coins = new Set<bigint>(indexed?.coinTypes?.map(coin => BigInt(coin)));
+
   for (const key in known?.texts) if (known.texts[key] !== null) texts.add(key);
   for (const coin in known?.coins) if (known.coins[Number(coin)] !== null) coins.add(BigInt(coin));
 
   const calls: Hex[] = [];
+
   for (const key of texts) calls.push(encodeFunctionData({ abi: legacyAbi, functionName: 'setText', args: [node, key, ''] }));
-  for (const coin of coins)
+  for (const coin of coins) {
     calls.push(
       encodeFunctionData({
         abi: legacyAbi,
@@ -118,6 +124,9 @@ export async function getLegacyRecordClears(name: string, resolver: Address): Pr
         args: [node, coin, coin === BigInt(ETHEREUM_COIN_TYPE) ? zeroAddress : '0x'],
       })
     );
+  }
+
   if (known?.contentHash) calls.push(encodeFunctionData({ abi: legacyAbi, functionName: 'setContenthash', args: [node, '0x'] }));
+
   return calls;
 }
