@@ -272,7 +272,7 @@ type Collection = {
   headerImageOptimized: ImageOptimized;
 };
 
-type Series = {
+type EventSeries = {
   id: string;
   ticker: string;
   slug: string;
@@ -306,7 +306,6 @@ type Series = {
   pythTokenID: string;
   cgAssetName: string;
   score: number;
-  events: Array<Record<string, any>>; // Circular reference to Event
   collections: Collection[];
   categories: Category[];
   tags: Tag[];
@@ -368,7 +367,7 @@ export type RawPolymarketEvent = {
   featuredImageOptimized: ImageOptimized;
   subEvents: string[];
   markets: RawPolymarketMarket[];
-  series: Series[];
+  series?: EventSeries[];
   categories: Category[];
   collections: Collection[];
   tags: Tag[];
