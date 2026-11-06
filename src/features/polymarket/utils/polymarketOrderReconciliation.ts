@@ -1,6 +1,7 @@
 import { type ClobClient, type OpenOrder } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
+import { PolymarketTransactionFailedError } from '@/features/polymarket/errors';
 import { type PolymarketBalanceUpdate } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import {
@@ -9,7 +10,8 @@ import {
   type PolymarketPositionUpdate,
 } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { type PolymarketOrderAmounts, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
-import { collectPolymarketTradeFee, type SettlementTransactionHashes } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
 import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
@@ -36,10 +38,9 @@ export type OrderContext = OrderQuote & { eventSlug: string; marketSlug: string;
     | { side: 'sell'; position: PolymarketPosition }
   );
 
-type PolymarketOrderMatch =
-  | { amounts: PolymarketOrderAmounts; status: 'matched'; transactionHashes: SettlementTransactionHashes }
-  | { status: 'failed' }
-  | { status: 'unresolved' };
+type PolymarketOrderMatch = { amounts: PolymarketOrderAmounts; status: 'matched' } | { status: 'failed' } | { status: 'unresolved' };
+
+type SettlementTransactionHashes = readonly [string, ...string[]];
 
 type MatchedOrderSettlement =
   | { status: 'pending' }
@@ -84,11 +85,7 @@ export async function reconcileAcceptedPolymarketOrder({
 
     void refetchPolymarketStores(proxyAddress);
 
-    const transactionHashes = toSettlementTransactionHashes(orderResult.transactionsHashes);
-    const needsMatchPolling = !acceptedAmounts || !transactionHashes;
-    const match: PolymarketOrderMatch = needsMatchPolling
-      ? await pollForMatchedOrder(client, orderResult, context, acceptedAmounts)
-      : { amounts: acceptedAmounts, status: 'matched', transactionHashes };
+    const match = await resolveOrderMatch(client, orderResult, context, acceptedAmounts);
 
     if (match.status === 'failed') {
       positionUpdate?.discard();
@@ -104,7 +101,7 @@ export async function reconcileAcceptedPolymarketOrder({
 
     let principalAdjustmentUsd: string;
     if (context.side === 'buy') {
-      if (needsMatchPolling) {
+      if (!acceptedAmounts) {
         context.positionUpdate.amend(match.amounts);
       }
 
@@ -118,7 +115,6 @@ export async function reconcileAcceptedPolymarketOrder({
       orderId: orderResult.orderID,
       quotedFeeUsd: context.quotedRainbowFeeUsd,
       side: context.side,
-      settlementTransactionHashes: match.transactionHashes,
       tokenId: context.tokenId,
       wallet,
     });
@@ -204,7 +200,7 @@ function isSportsOrderDetails(details: PolymarketOrderDetails | SportsOrderDetai
 
 // ============ Order Matching ================================================= //
 
-async function pollForMatchedOrder(
+async function resolveOrderMatch(
   client: ClobClient,
   orderResult: SuccessfulOrderResult,
   context: OrderContext,
@@ -215,6 +211,11 @@ async function pollForMatchedOrder(
 
   try {
     const startedAt = Date.now();
+
+    const acceptedHashes = toSettlementTransactionHashes(orderResult.transactionsHashes);
+    if (acceptedAmounts && acceptedHashes && (await confirmOrderSettlement(acceptedHashes))) {
+      return { amounts: acceptedAmounts, status: 'matched' };
+    }
 
     while (Date.now() - startedAt < POLL_TIMEOUT) {
       const order = await client.getOrder(orderId);
@@ -229,8 +230,8 @@ async function pollForMatchedOrder(
           return { status: 'failed' };
         }
 
-        if (amounts && settlement.status === 'resolved') {
-          return { amounts, status: 'matched', transactionHashes: settlement.transactionHashes };
+        if (amounts && settlement.status === 'resolved' && (await confirmOrderSettlement(settlement.transactionHashes))) {
+          return { amounts, status: 'matched' };
         }
       }
 
@@ -262,7 +263,10 @@ async function getMatchedOrderSettlement(client: ClobClient, associatedTradeIds:
 
   for (const trade of trades) {
     if (trade === undefined) return { status: 'pending' };
-    if (trade.status.toLowerCase() === 'failed') return { status: 'failed' };
+
+    const status = trade.status.toLowerCase();
+    if (status === 'failed') return { status: 'failed' };
+    if (status === 'retrying') return { status: 'pending' };
 
     const transactionHash = trade.transaction_hash;
     if (transactionHash === undefined || transactionHash.length === 0) return { status: 'pending' };
@@ -272,6 +276,16 @@ async function getMatchedOrderSettlement(client: ClobClient, associatedTradeIds:
   }
 
   return transactionHashes === undefined ? { status: 'pending' } : { status: 'resolved', transactionHashes };
+}
+
+async function confirmOrderSettlement(transactionHashes: SettlementTransactionHashes): Promise<boolean> {
+  try {
+    await Promise.all(transactionHashes.map(hash => awaitPolygonConfirmation(hash)));
+    return true;
+  } catch (error) {
+    if (error instanceof PolymarketTransactionFailedError) return false;
+    throw error;
+  }
 }
 
 function toSettlementTransactionHashes(transactionHashes: readonly string[] | undefined): SettlementTransactionHashes | undefined {

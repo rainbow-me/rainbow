@@ -3,7 +3,6 @@ import { type Address } from 'viem';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
-import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { waitForRelayerTransaction } from '@/features/polymarket/utils/relayExecution';
 import { logger } from '@/logger';
 
@@ -26,10 +25,6 @@ vi.mock('@/features/polymarket/constants', () => ({
   POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS: '0x757758506d6a4F8a433F8BECaFd52545f9Cb050a',
 }));
 
-vi.mock('@/features/polymarket/utils/confirmation', () => ({
-  awaitPolygonConfirmation: vi.fn(),
-}));
-
 vi.mock('@/features/polymarket/utils/collateral', () => ({
   buildUnwrapPusdToUsdcTransactions: vi.fn(),
 }));
@@ -45,48 +40,34 @@ vi.mock('@/logger', () => ({
 }));
 
 const mockBuildUnwrapPusdToUsdcTransactions = vi.mocked(buildUnwrapPusdToUsdcTransactions);
-const mockAwaitPolygonConfirmation = vi.mocked(awaitPolygonConfirmation);
 const mockWaitForRelayerTransaction = vi.mocked(waitForRelayerTransaction);
 const mockLoggerError = vi.mocked(logger.error);
 
 describe('collectPolymarketTradeFee', () => {
   beforeEach(() => {
-    mockAwaitPolygonConfirmation.mockReset();
     mockBuildUnwrapPusdToUsdcTransactions.mockReset();
     mockWaitForRelayerTransaction.mockReset();
     mockWallet.execute.mockClear();
     mockLoggerError.mockReset();
-
-    mockAwaitPolygonConfirmation.mockResolvedValue(undefined);
   });
 
-  it('collects the capped fee through the bound wallet after settlement', async () => {
+  it('collects the capped fee through the bound wallet', async () => {
     const transaction = {
       to: '0xRecipient',
       data: '0x',
       value: '0',
       operation: OperationType.Call,
     };
-    const confirmed = Promise.withResolvers<void>();
-    mockAwaitPolygonConfirmation.mockResolvedValueOnce(undefined).mockReturnValueOnce(confirmed.promise);
     mockBuildUnwrapPusdToUsdcTransactions.mockResolvedValue([transaction]);
 
     const collection = collectPolymarketTradeFee({
       matchedAmounts: { tokens: '25', usd: '12.5' },
       orderId: 'order-1',
       quotedFeeUsd: '0.1000009',
-      settlementTransactionHashes: ['0xsettlement-1', '0xsettlement-2'],
       side: 'buy',
       tokenId: 'token-1',
       wallet: mockWallet,
     });
-    await Promise.resolve();
-    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(1, '0xsettlement-1');
-    expect(mockAwaitPolygonConfirmation).toHaveBeenNthCalledWith(2, '0xsettlement-2');
-    expect(mockBuildUnwrapPusdToUsdcTransactions).not.toHaveBeenCalled();
-    expect(mockWallet.execute).not.toHaveBeenCalled();
-
-    confirmed.resolve();
     await expect(collection).resolves.toBe('0.1');
     const buildCall = mockBuildUnwrapPusdToUsdcTransactions.mock.calls[0];
     expect(buildCall?.[0].amount.toString()).toBe('100000');
@@ -104,7 +85,6 @@ describe('collectPolymarketTradeFee', () => {
         matchedAmounts: { tokens: '5', usd: '2.5' },
         orderId: 'order-2',
         quotedFeeUsd: '0.1',
-        settlementTransactionHashes: ['0xsettlement'],
         side: 'sell',
         tokenId: 'token-2',
         wallet: mockWallet,
@@ -129,7 +109,6 @@ describe('collectPolymarketTradeFee', () => {
       matchedAmounts: { tokens: '0', usd: '0' },
       orderId: 'order-3',
       quotedFeeUsd: '0.1',
-      settlementTransactionHashes: ['0xsettlement'],
       side: 'buy',
       tokenId: 'token-3',
     });
