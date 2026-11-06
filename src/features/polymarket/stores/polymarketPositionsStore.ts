@@ -5,6 +5,7 @@ import { POLYMARKET_DATA_API_URL } from '@/features/polymarket/constants';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { gammaMarketsUrl } from '@/features/polymarket/utils/marketProtocol';
 import { processRawPolymarketPosition } from '@/features/polymarket/utils/processRawPolymarketPosition';
@@ -131,7 +132,7 @@ async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Prom
   await Promise.all(
     rawMarkets.map(async market => {
       const rawColor = await getImagePrimaryColor(market.events[0].icon);
-      const color = getHighContrastColor(rawColor);
+      const color = getHighContrastColor(rawColor) ?? getColorBySeed(market.events[0].id);
       markets[market.slug] = processRawPolymarketMarket(market, color);
     })
   );

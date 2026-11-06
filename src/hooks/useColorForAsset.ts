@@ -40,52 +40,31 @@ export default function useColorForAsset(
   }, [colors, forceETHColor, isDarkMode, resolvedAddress]);
 
   return useMemo(() => {
-    let color2Return;
+    const candidates = isETH(resolvedAddress)
+      ? [colorDerivedFromAddress, fallbackColor ?? colors.blueGreyDark]
+      : [
+          asset?.colors?.primary,
+          accountAsset?.colors?.primary,
+          derivedColor,
+          accountAsset?.colors?.fallback,
+          fallbackColor,
+          colorDerivedFromAddress ?? colors.blueGreyDark,
+        ];
 
-    // we have special handling for eth color
-    if (isETH(resolvedAddress)) {
-      color2Return = colorDerivedFromAddress;
-
-      // image derived color from BE for tokens passed via params (usually assets not in wallet)
-    } else if (asset?.colors?.primary) {
-      color2Return = asset?.colors?.primary;
-
-      // token image derived color from BE
-    } else if (accountAsset?.colors?.primary) {
-      color2Return = accountAsset?.colors?.primary;
-
-      // token image derived color on client
-    } else if (derivedColor) {
-      color2Return = derivedColor;
-
-      // fallback color from BE
-    } else if (accountAsset?.colors?.fallback) {
-      color2Return = accountAsset?.colors?.fallback;
-
-      // custom fallback color from args
-    } else if (fallbackColor) {
-      color2Return = fallbackColor;
-
-      // fallback color derived from address
-    } else {
-      color2Return = colorDerivedFromAddress;
-    }
-
-    if (!color2Return) {
-      color2Return = fallbackColor || colors.blueGreyDark;
-    }
-
-    try {
-      // brighten up dark colors in dark mode
-      if (isDarkMode && colors.isColorDark(color2Return)) {
-        return colors.brighten(color2Return);
-      } else if (!isDarkMode) {
-        return getHighContrastColor(color2Return, isDarkMode);
+    for (const color of candidates) {
+      if (!color) continue;
+      if (isDarkMode) {
+        try {
+          return colors.isColorDark(color) ? colors.brighten(color) : color;
+        } catch {
+          continue;
+        }
       }
-      return color2Return;
-    } catch (e) {
-      return color2Return;
+
+      const adjusted = getHighContrastColor(color, false);
+      if (adjusted) return adjusted;
     }
+    return colors.blueGreyDark;
   }, [
     accountAsset?.colors?.fallback,
     accountAsset?.colors?.primary,

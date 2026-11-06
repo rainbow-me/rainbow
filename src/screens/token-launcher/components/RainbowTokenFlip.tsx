@@ -40,6 +40,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { opacity } from '@/design-system/utils/opacity';
+import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '@/screens/token-launcher/constants';
 
 interface RainbowCoinEffectProps {
   color: string;
@@ -115,7 +116,10 @@ export const RainbowTokenFlip = memo(function RainbowCoinEffect({ color, image, 
     outerRadius,
     rotateDuration,
     tiltAmplitudeX,
-  } = useMemo(() => getConfig({ color: getHighContrastColor(color, isDarkMode), size, partyMode }), [color, isDarkMode, size, partyMode]);
+  } = useMemo(
+    () => getConfig({ color: getHighContrastColor(color, isDarkMode) ?? DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, size, partyMode }),
+    [color, isDarkMode, size, partyMode]
+  );
 
   const flipDelay = 1000;
   const circlePath = useMemo(() => getCirclePath(point(canvasCenter, canvasCenter), innerRadius), [canvasCenter, innerRadius]);

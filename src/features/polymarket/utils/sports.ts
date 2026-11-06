@@ -210,7 +210,7 @@ function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): P
 
 function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInfo[] {
   return teams.map(team => {
-    const color = team.color ? getHighContrastColor(team.color) : getColorBySeed(String(team.id));
+    const color = getHighContrastColor(team.color) ?? getColorBySeed(String(team.id));
     return {
       ...team,
       color,
