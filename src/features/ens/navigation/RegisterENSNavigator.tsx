@@ -15,7 +15,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
-import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENSAssignRecordsBottomActions, ENSAssignRecordsSheet } from '../screens/ENSAssignRecordsSheet';
 import { ENSIntroSheet } from '../screens/ENSIntroSheet';
@@ -56,7 +55,6 @@ export function RegisterENSNavigator() {
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
   const setAccentColor = useSetRecoilState(accentColorAtom);
-  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
   const { colors } = useTheme();
 
@@ -96,10 +94,9 @@ export function RegisterENSNavigator() {
 
   useEffect(
     () => () => {
-      setAvatarMetadata(undefined);
       setAccentColor(colors.purple);
     },
-    [colors.purple, setAccentColor, setAvatarMetadata]
+    [colors.purple, setAccentColor]
   );
 
   const enableAssignRecordsBottomActions = currentRouteName !== Routes.ENS_INTRO_SHEET;

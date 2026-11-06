@@ -2,9 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 
 import ConditionalWrap from 'conditional-wrap';
-import { type ImagePickerAsset } from 'expo-image-picker';
 import RadialGradient from 'react-native-radial-gradient';
-import { atom, useSetRecoilState } from 'recoil';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -18,14 +16,8 @@ import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
 import { nftImageRecord } from '../../core/nftRecord';
-import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
-
-export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
-  default: undefined,
-  key: 'ens.coverMetadata',
-});
 
 const RegistrationCover = ({
   hasSeenExplainSheet,
@@ -38,36 +30,28 @@ const RegistrationCover = ({
 }) => {
   const initialCoverUrl = useENSRegistrationImage('header');
   const { isLoading, onChangeField, onRemoveField, setUploading, uploading, values } = useENSRegistrationForm();
-  const { name } = useENSRegistration();
-  const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
-  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
-
-  useEffect(() => {
-    if (coverUpdateAllowed) {
-      setCoverUrl(typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.header);
-    }
-  }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // We want to allow cover state update when the screen is first focussed.
-  useEffect(() => setCoverUpdateAllowed(true), [setCoverUpdateAllowed, name]);
-
   const accentColor = useForegroundColor('accent');
 
-  const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
-  const onChangeImage = useCallback(
-    ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
-      const value = asset ? nftImageRecord(asset) : image?.uri;
+  const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values.header);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const isUploading = uploading.header;
+
+  useEffect(() => {
+    setCoverUrl(initialCoverUrl ?? values.header);
+  }, [initialCoverUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onSelectNft = useCallback(
+    ({ asset }: { asset?: UniqueAsset }) => {
+      if (!asset) return;
+      const value = nftImageRecord(asset);
       if (!value) return;
-      setCoverMetadata(image);
-      const preview = image?.uri || asset?.images.highResUrl || asset?.images.lowResUrl || '';
+
+      const preview = asset.images.highResUrl || asset.images.lowResUrl || '';
       setCoverUrl(preview);
-      if (image) setCoverUpdateAllowed(false);
       onChangeField({ key: 'header', value });
     },
-    [onChangeField, setCoverMetadata]
+    [onChangeField]
   );
-  const isUploading = uploading.header;
-  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
@@ -78,10 +62,9 @@ const RegistrationCover = ({
       width: 1500,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
-    onChangeImage: onChangeImage,
+    onChangeImage: onSelectNft,
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
-      setCoverMetadata(undefined);
       setTimeout(() => {
         setCoverUrl('');
       }, 100);

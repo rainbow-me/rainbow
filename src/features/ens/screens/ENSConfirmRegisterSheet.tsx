@@ -4,7 +4,7 @@ import { InteractionManager, Keyboard } from 'react-native';
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { ImgixImage } from '@/components/images';
@@ -30,7 +30,6 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { CommitContent } from '../components/registration/CommitContent';
 import { EditContent } from '../components/registration/EditContent';
 import { RegisterContent } from '../components/registration/RegisterContent';
-import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import { RenewContent } from '../components/registration/RenewContent';
 import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
 import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
@@ -101,9 +100,8 @@ export function ENSConfirmRegisterSheet() {
   const { isSmallPhone } = useDimensions();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
-  const avatarImage = avatarMetadata?.uri || initialAvatarUrl || params?.externalAvatarUrl || '';
+  const avatarImage = initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   useEffect(() => {

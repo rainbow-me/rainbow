@@ -2,18 +2,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type ImagePickerAsset } from 'expo-image-picker';
 import { noop } from 'lodash';
-import { useRecoilValue } from 'recoil';
 import { getAddress } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
-import { uploadImage } from '@/handlers/pinata';
 import { getProvider } from '@/handlers/web3';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
@@ -22,11 +18,9 @@ import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 
-import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
-import { coverMetadataAtom } from '../components/registration/RegistrationCover';
 import { executeENSRap } from '../raps/actions';
 import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
-import { type Records, type RegistrationParameters } from '../types/registration';
+import { type RegistrationParameters } from '../types/registration';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
 import { useENSRegistration } from './useENSRegistration';
 
@@ -103,9 +97,6 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
   const isHardwareWallet = useIsHardwareWallet();
   const accountAddress = useAccountAddress();
   const { registrationParameters, changedRecords } = useENSRegistration();
-
-  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
-  const coverMetadata = useRecoilValue(coverMetadataAtom);
 
   const duration = yearsDuration * timeUnits.secs.year;
 
@@ -207,13 +198,9 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, rentPrice, uploadedRecords] = await Promise.all([
+      const [nonce, rentPrice] = await Promise.all([
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
-        uploadRecordImages(changedRecords, {
-          avatar: avatarMetadata,
-          header: coverMetadata,
-        }),
       ]);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
@@ -221,7 +208,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         duration,
         nonce,
         ownerAddress: accountAddress,
-        records: uploadedRecords,
+        records: changedRecords,
         rentPrice: rentPrice.toString(),
         setReverseRecord: sendReverseRecord,
       };
@@ -230,7 +217,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, changedRecords, sendReverseRecord]
+    [accountAddress, registrationParameters, changedRecords, sendReverseRecord]
   );
 
   const renewAction: ActionTypes[typeof REGISTRATION_STEPS.RENEW] = useCallback(
@@ -299,12 +286,8 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, uploadedRecords, resolver] = await Promise.all([
+      const [nonce, resolver] = await Promise.all([
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        uploadRecordImages(changedRecords, {
-          avatar: avatarMetadata,
-          header: coverMetadata,
-        }),
         getProvider({ chainId: ChainId.mainnet }).getResolver(registrationParameters.name),
       ]);
 
@@ -314,7 +297,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
-        records: uploadedRecords,
+        records: changedRecords,
         resolverAddress: getAddress(resolver.address),
         setReverseRecord: sendReverseRecord,
       };
@@ -323,7 +306,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, changedRecords, sendReverseRecord]
+    [accountAddress, registrationParameters, changedRecords, sendReverseRecord]
   );
 
   const transferAction: ActionTypes[typeof REGISTRATION_STEPS.TRANSFER] = useCallback(
@@ -381,35 +364,3 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
     action: actions[step] as ActionTypes[typeof step],
   };
 };
-
-async function uploadRecordImages(
-  records: Partial<Records> | undefined,
-  imageMetadata: { avatar?: ImagePickerAsset; header?: ImagePickerAsset }
-) {
-  const uploadRecordImage = async (key: 'avatar' | 'header') => {
-    if ((records?.[key]?.startsWith('~') || records?.[key]?.startsWith('file')) && imageMetadata[key]) {
-      try {
-        const { url } = await uploadImage({
-          filename: imageMetadata[key]?.fileName || '',
-          mime: imageMetadata[key]?.mimeType || '',
-          path: imageMetadata[key]?.uri || '',
-        });
-        return url;
-      } catch (error) {
-        logger.error(new RainbowError('[useENSRegistrationActionHandler]: Failed to upload image.'), {
-          error,
-        });
-        return undefined;
-      }
-    }
-    return records?.[key];
-  };
-
-  const [avatar, header] = await Promise.all([uploadRecordImage('avatar'), uploadRecordImage('header')]);
-
-  return {
-    ...records,
-    avatar,
-    header,
-  };
-}

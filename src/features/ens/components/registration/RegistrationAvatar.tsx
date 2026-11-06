@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import ConditionalWrap from 'conditional-wrap';
-import { type ImagePickerAsset } from 'expo-image-picker';
-import { atom, useSetRecoilState } from 'recoil';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -17,14 +15,8 @@ import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
 
 import { nftImageRecord } from '../../core/nftRecord';
-import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
 import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
-
-export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
-  default: undefined,
-  key: 'ens.avatarMetadata',
-});
 
 const size = 70;
 
@@ -41,37 +33,28 @@ const RegistrationAvatar = ({
 }) => {
   const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { isLoading, values, onChangeField, onRemoveField, setUploading } = useENSRegistrationForm();
-  const { name } = useENSRegistration();
-
-  const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || values?.avatar);
-  useEffect(() => {
-    if (avatarUpdateAllowed) {
-      const avatarUrl = typeof initialAvatarUrl === 'string' ? initialAvatarUrl : values?.avatar;
-      setAvatarUrl(avatarUrl);
-      onChangeAvatarUrl(avatarUrl ?? '');
-    }
-  }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // We want to allow avatar state update when the screen is first focussed.
-  useEffect(() => setAvatarUpdateAllowed(true), [setAvatarUpdateAllowed, name]);
-
-  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
-
   const accentColor = useForegroundColor('accent');
 
-  const onChangeImage = useCallback(
-    ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
-      const value = asset ? nftImageRecord(asset) : image?.uri;
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || values.avatar);
+
+  useEffect(() => {
+    const avatarUrl = initialAvatarUrl ?? values.avatar;
+    setAvatarUrl(avatarUrl);
+    onChangeAvatarUrl(avatarUrl ?? '');
+  }, [initialAvatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onSelectNft = useCallback(
+    ({ asset }: { asset?: UniqueAsset }) => {
+      if (!asset) return;
+      const value = nftImageRecord(asset);
       if (!value) return;
-      setAvatarMetadata(image);
-      const preview = image?.uri || asset?.images.lowResUrl || asset?.images.highResUrl || '';
+
+      const preview = asset.images.lowResUrl || asset.images.highResUrl || '';
       setAvatarUrl(preview);
       onChangeAvatarUrl(preview);
-      if (image) setAvatarUpdateAllowed(false);
       onChangeField({ key: 'avatar', value });
     },
-    [onChangeField, onChangeAvatarUrl, setAvatarMetadata]
+    [onChangeField, onChangeAvatarUrl]
   );
 
   const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({
@@ -83,11 +66,10 @@ const RegistrationAvatar = ({
       height: 400,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
-    onChangeImage,
+    onChangeImage: onSelectNft,
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.avatar });
       onChangeAvatarUrl('');
-      setAvatarMetadata(undefined);
       setTimeout(() => {
         setAvatarUrl('');
       }, 100);
