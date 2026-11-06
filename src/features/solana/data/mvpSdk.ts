@@ -1,16 +1,6 @@
-import {
-  PLATFORM_API_KEY,
-  PLATFORM_BASE_URL,
-  RAINBOW_RELAY_API_KEY,
-  RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER,
-  RAINBOW_RELAY_QUOTE_SIGNER,
-  RAINBOW_RELAY_URL,
-} from 'react-native-dotenv';
+import { RAINBOW_RELAY_API_KEY, RAINBOW_RELAY_QUOTE_SIGNER, RAINBOW_RELAY_URL } from 'react-native-dotenv';
 import { getAddress } from 'viem';
 
-import { GO_RELAY_BACKEND } from '@/features/config/constants/experimental';
-import { getExperimentalFlag } from '@/features/config/stores/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { getSolanaSource } from '@/features/wallet/data/enableSolanaAccount';
 import { logger } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -22,7 +12,6 @@ let configured = false;
 export function configureSolanaMvpSdk(): void {
   getSolanaSource();
   if (configured) return;
-  const go = getExperimentalFlag(GO_RELAY_BACKEND) && useRemoteConfigStore.getState().getRemoteConfigKey('go_relay_backend_enabled');
   configure({
     platformClient: getPlatformClient(),
     logger: logger.createServiceLogger(logger.DebugContext.sdk),
@@ -42,13 +31,14 @@ export function configureSolanaMvpSdk(): void {
       shouldEnable: () => true,
     },
     relayService: createRelayService({
-      apiKey: go ? PLATFORM_API_KEY : RAINBOW_RELAY_API_KEY,
-      baseUrl: go ? PLATFORM_BASE_URL : RAINBOW_RELAY_URL,
+      // Christian's Solana testing uses the Cloudflare reference relay; keep the production relay setting independent.
+      apiKey: RAINBOW_RELAY_API_KEY,
+      baseUrl: RAINBOW_RELAY_URL,
       relayDomain: {
         environment: 'production',
         relayId: 'rainbow-relay',
         relayVersion: 2n,
-        prepareSigner: getAddress(go ? RAINBOW_RELAY_GO_BACKEND_QUOTE_SIGNER : RAINBOW_RELAY_QUOTE_SIGNER),
+        prepareSigner: getAddress(RAINBOW_RELAY_QUOTE_SIGNER),
       },
     }),
   });

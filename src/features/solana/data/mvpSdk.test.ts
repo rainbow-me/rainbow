@@ -8,17 +8,19 @@ import { configureSolanaMvpSdk } from './mvpSdk';
 vi.mock('@rainbow-me/solana-sdk', () => ({ configure: vi.fn(), createRelayService: vi.fn() }));
 vi.mock('react-native-dotenv', () => ({
   RAINBOW_RELAY_API_KEY: 'test',
-  RAINBOW_RELAY_URL: 'https://example.invalid',
+  RAINBOW_RELAY_URL: 'https://reference-relay.example.invalid',
   RAINBOW_RELAY_QUOTE_SIGNER: '0x0000000000000000000000000000000000000001',
 }));
-vi.mock('@/features/config/stores/experimentalConfigStore', () => ({ getExperimentalFlag: () => false }));
-vi.mock('@/features/config/stores/remoteConfig', () => ({ useRemoteConfigStore: { getState: vi.fn() } }));
+vi.mock('@/features/config/stores/experimentalConfigStore', () => ({ getExperimentalFlag: () => true }));
+vi.mock('@/features/config/stores/remoteConfig', () => ({
+  useRemoteConfigStore: { getState: () => ({ getRemoteConfigKey: () => true }) },
+}));
 vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ getSolanaSource: vi.fn() }));
 vi.mock('@/resources/platform/client', () => ({ getPlatformClient: () => ({}) }));
 vi.mock('@/state/wallets/walletsStore', () => ({ useWalletsStore: {} }));
 vi.mock('@/logger', () => ({ logger: { DebugContext: { sdk: 'sdk' }, createServiceLogger: () => ({}) } }));
 
-it('gates configuration and isolates the preview SDK cache from production persistence and sync', async () => {
+it('uses the reference relay even with Go enabled, gates configuration and isolates the preview cache', async () => {
   vi.mocked(getSolanaSource).mockImplementationOnce(() => {
     throw new Error('disabled');
   });
@@ -27,7 +29,16 @@ it('gates configuration and isolates the preview SDK cache from production persi
   configureSolanaMvpSdk();
   configureSolanaMvpSdk();
   expect(configure).toHaveBeenCalledTimes(1);
-  expect(createRelayService).toHaveBeenCalledWith(expect.objectContaining({ relayDomain: expect.objectContaining({ relayVersion: 2n }) }));
+  expect(createRelayService).toHaveBeenCalledWith({
+    apiKey: 'test',
+    baseUrl: 'https://reference-relay.example.invalid',
+    relayDomain: {
+      environment: 'production',
+      relayId: 'rainbow-relay',
+      relayVersion: 2n,
+      prepareSigner: '0x0000000000000000000000000000000000000001',
+    },
+  });
   const options = vi.mocked(configure).mock.calls[0][0].storeOptions;
   expect(options).toBeDefined();
   if (!options) throw new Error('Missing SDK cache isolation');

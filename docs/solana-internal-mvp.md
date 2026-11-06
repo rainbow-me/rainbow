@@ -37,7 +37,9 @@ The preview SDK's fixed delegation cache key would collide with production. Its 
 
 The user approved **full sponsorship for internal testing**, including rent when included by the backend. Both requests specify `gasless: true` and `sponsorship: 'required'`; review validation also requires `full` sponsorship. No user-paid gas fallback is allowed. The longer-term gas-sponsored/user-paid-rent product policy remains future work: this SDK does not expose separate rent sponsorship control.
 
-The configured Rainbow relay must support the SDK's v2 prepare/execute/status contract and these cross-chain/same-chain routes. Sponsor authorization and transaction validation remain server responsibilities. The client flag is not a server security boundary. A failed sponsorship quote is a blocked test, not a reason to bypass this requirement.
+The MVP uses **Christian's Cloudflare reference relay** through `RAINBOW_RELAY_URL`, `RAINBOW_RELAY_API_KEY` and `RAINBOW_RELAY_QUOTE_SIGNER`. Christian's [commit 3d12f2ea2](https://github.com/rainbow-me/rainbow/commit/3d12f2ea2edbd1792e460f2de667f3a135c3e567) disabled `GO_RELAY_BACKEND` for Solana testing. This adapter selects the reference relay directly, leaving the global Go flag and production relay behavior unchanged. Restart after changing relay environment values; SDK configuration is initialized once.
+
+The Cloudflare service supplies the SDK's v2 prepare/execute/status endpoints, so the MVP does **not** require the new Go-backend Solana implementation. The existing platform client is still configured for platform/delegation data. Sponsor authorization and transaction validation remain relay responsibilities. Full sponsorship and the currently deployed Worker's support for both routes still need live verification; a failed quote must not trigger a user-paid fallback.
 
 | Route       | Source                                                  | Destination                                                  | Maximum input                                             |
 | ----------- | ------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
@@ -54,7 +56,7 @@ Quote confirmation shows exact spend, quoted/minimum output, source, recipient a
 2. Open Developer Settings in a non-store build, enable the existing Solana flag, select a mnemonic EVM account with at least 1 USDC on Base, and tap **Enable Solana for this account**. Confirm the displayed index/address.
 3. Tap **Buy BONK with 1 Base USDC**, review and confirm. Use **Check execution** until confirmed, then **Refresh Solana balances**. An initially empty Solana account/absent ATA is part of the required device test.
 4. Restart the app. Select the same account, then **Swap BONK → Solana USDC**, review and confirm. Check execution and balances again. This exercises the persisted Solana key.
-5. Repeat cancellation and selection-change checks. Confirm existing EVM signing and backup behavior remains unchanged. Do not proceed with funds unless the configured backend supports full sponsorship for both routes.
+5. Repeat cancellation and selection-change checks. Confirm existing EVM signing and backup behavior remains unchanged. Verify the configured Cloudflare relay supports full sponsorship for both routes before funded testing.
 
 ## Verification and limits
 
@@ -62,4 +64,4 @@ Verified on November 5, 2026: 68 focused tests pass; TypeScript passes; existing
 
 Focused tests cover indices 0/1/2, key formats and mismatches, protected storage/readback/cancellation, source ownership and selection changes, scoped signing and byte clearing, quote caps/sponsorship/expiry, both SDK adapter routes, and duplicate/uncertain submissions. Legacy wallet keychain tests are included.
 
-The iOS JavaScript bundle builds with Metro. Physical-device keychain behavior, native app launch, backend v2 availability, actual sponsorship/rent allocation and funded end-to-end swaps remain unverified. No live transaction was submitted. Public mainnet Solana RPC is used for this internal harness and may rate-limit. Production portfolio integration, arbitrary tokens, additional wallet source types, bulk enablement and gas-only sponsorship are intentionally outside this branch.
+The iOS JavaScript bundle builds with Metro. Physical-device keychain behavior, native app launch, live Cloudflare relay compatibility, actual sponsorship/rent allocation and funded end-to-end swaps remain unverified. No live transaction was submitted. Public mainnet Solana RPC is used for this internal harness and may rate-limit. Production portfolio integration, arbitrary tokens, additional wallet source types, bulk enablement and gas-only sponsorship are intentionally outside this branch.
