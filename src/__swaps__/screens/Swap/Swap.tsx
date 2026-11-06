@@ -19,7 +19,7 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
+import { clearCustomGasSettings } from '@/features/gas/data/gasSettingsStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';

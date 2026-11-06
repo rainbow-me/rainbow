@@ -10,9 +10,10 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { formatGasFeeRange } from '@/features/gas/core/formatGasFee';
+import { setSelectedGasSpeed } from '@/features/gas/data/gasSettingsStore';
 import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
 import { useCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
-import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';

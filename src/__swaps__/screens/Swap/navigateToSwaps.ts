@@ -5,7 +5,7 @@ import { getDefaultSlippage, parseAssetAndExtend, slippageInBipsToString, trimTr
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
-import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
+import { setSelectedGasSpeed } from '@/features/gas/data/gasSettingsStore';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';

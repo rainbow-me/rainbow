@@ -6,8 +6,8 @@ import { useNativeAsset } from '@/utils/ethereumUtils';
 
 import { formatGasFee } from '../core/formatGasFee';
 import { useMeteorologyStore } from '../data/meteorologyStore';
+import { type GasSettings } from '../types/gas';
 import { calculateEstimatedGasFeeWorklet } from '../utils/calculateGasFee';
-import { type GasSettings } from './useCustomGas';
 
 export function useEstimatedGasFee({
   chainId,

@@ -5,7 +5,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { erc20Abi, type Chain } from 'viem';
 import { mainnet } from 'viem/chains';
 
-import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/hooks/useSelectedGas';
+import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/data/gasSettingsStore';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,

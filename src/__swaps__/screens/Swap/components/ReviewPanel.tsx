@@ -33,14 +33,13 @@ import {
 } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { useWillExecuteDelegation, willExecuteDelegation } from '@/features/delegation/utils/willDelegate';
-import { useEstimatedGasTime } from '@/features/gas/hooks/useEstimatedGasTime';
-import { useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useEstimatedSwapGasTime } from '@/state/swaps/gasStore';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
@@ -116,9 +115,7 @@ function EstimatedGasFee() {
 }
 
 function EstimatedArrivalTime() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const speed = useSelectedGasSpeed(chainId);
-  const estimatedTime = useEstimatedGasTime({ chainId, speed });
+  const estimatedTime = useEstimatedSwapGasTime();
   if (!estimatedTime) return null;
   return (
     <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">

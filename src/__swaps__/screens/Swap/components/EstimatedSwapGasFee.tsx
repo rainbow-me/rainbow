@@ -17,7 +17,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, useForegroundColor, type TextProps } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
-import { type GasSettings } from '@/features/gas/hooks/useCustomGas';
+import { type GasSettings } from '@/features/gas/types/gas';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';

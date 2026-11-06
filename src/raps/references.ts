@@ -2,7 +2,7 @@ import { type Signer } from '@ethersproject/abstract-signer';
 import { type Address } from 'viem';
 
 import { type ParsedAsset } from '@/__swaps__/types/assets';
-import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/hooks/useSelectedGas';
+import { type SwapsGasFeeParamsBySpeed } from '@/features/gas/data/gasSettingsStore';
 import type {
   GasFeeParamsBySpeed,
   LegacyGasFeeParamsBySpeed,

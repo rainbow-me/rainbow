@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo, type PropsWithChildren, type ReactNode } from 'react';
+import React, { useCallback, type PropsWithChildren, type ReactNode } from 'react';
 import { Platform, type LayoutChangeEvent } from 'react-native';
 
-import { createBaseStore } from '@storesjs/stores';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT } from '@/__swaps__/screens/Swap/constants';
@@ -12,18 +11,27 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Bleed, Box, globalColors, Inline, Separator, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { gweiToWei, weiToGwei } from '@/features/gas/core/gasParams';
+import { setCustomGasSettings, setSelectedGasSpeed } from '@/features/gas/data/gasSettingsStore';
 import { useMeteorologyStore } from '@/features/gas/data/meteorologyStore';
-import { getCustomGasSettings, setCustomGasSettings, useCustomGasStore, type GasSettings } from '@/features/gas/hooks/useCustomGas';
-import { getSelectedGas, getSelectedSpeedSuggestion, setSelectedGasSpeed, useSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { add, formatNumber, greaterThan, isZero, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { add, formatNumber, isZero, lessThan, subtract } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { gasTrendToTrendType, type ExplainSheetParams } from '@/navigation/types';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import {
+  setGasPanelState,
+  useGasPanelStore,
+  useSwapBaseFeeDisplay,
+  useSwapGasPanelSettings,
+  useSwapGasPrice,
+  useSwapMaxBaseFee,
+  useSwapMaxBaseFeeWarning,
+  useSwapMaxPriorityFee,
+} from '@/state/swaps/gasStore';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
@@ -153,8 +161,6 @@ function GasSettingInput({
   );
 }
 
-const selectBaseFee = (s: string | undefined = '0') => formatNumber(weiToGwei(s));
-
 function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: string; gasTrend?: keyof typeof GAS_TRENDS }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
@@ -206,66 +212,9 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
 }
 
 function CurrentBaseFee() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const baseFee = useMeteorologyStore(s => selectBaseFee(s.get(chainId)?.currentBaseFee));
-  const gasTrend = useMeteorologyStore(s => s.get(chainId)?.trend);
+  const { baseFee, gasTrend } = useSwapBaseFeeDisplay();
   return <CurrentBaseFeeSlot baseFee={baseFee} gasTrend={gasTrend} />;
 }
-
-type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: string };
-const useGasPanelStore = createBaseStore<GasPanelState | undefined>(() => undefined);
-
-function useGasPanelState<
-  Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,
-  Selected = Option extends string ? string : GasPanelState,
->(option?: Option, select: (s: GasPanelState | undefined) => Selected = s => (option ? s?.[option] : s) as Selected) {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const speed = useSelectedGasSpeed(chainId);
-
-  const editedSetting = useGasPanelStore(select);
-  const customSetting = useCustomGasStore(s => select(s?.[chainId]));
-  const suggestedSetting = useMeteorologyStore(s =>
-    editedSetting || speed === GasSpeed.CUSTOM ? undefined : select(s.get(chainId)?.suggestions[speed])
-  );
-
-  if (editedSetting) return editedSetting;
-  if (speed === GasSpeed.CUSTOM) return customSetting;
-  return suggestedSetting;
-}
-
-const setGasPanelState = (update: Partial<GasPanelState>) => {
-  const chainId = useSwapsStore.getState().inputAsset?.chainId || ChainId.mainnet;
-
-  useGasPanelStore.setState(state => {
-    if (state) return { ...state, ...update };
-
-    const currentGasSettings = getCustomGasSettings(chainId);
-    if (currentGasSettings) return { ...currentGasSettings, ...update };
-
-    const suggestion = getSelectedSpeedSuggestion(chainId);
-    return { ...suggestion, ...update };
-  });
-};
-
-const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const suggestions = useMeteorologyStore(s => (maxBaseFee ? s.get(chainId)?.suggestions : undefined));
-  const currentBaseFee = useMeteorologyStore(s => s.get(chainId)?.currentBaseFee ?? '0');
-
-  if (!maxBaseFee) return null;
-
-  // likely to get stuck if less than 20% of current base fee
-  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.2))) return i18n.t(i18n.l.gas.likely_to_fail);
-
-  // suggestions
-  const { urgent, normal } = suggestions || {};
-  const highThreshold = urgent?.isEIP1559 ? multiply(urgent.maxBaseFee, 1.1) : undefined;
-  const lowThreshold = normal?.isEIP1559 ? multiply(normal.maxBaseFee, 0.9) : undefined;
-  if (highThreshold && greaterThan(maxBaseFee, highThreshold)) return i18n.t(i18n.l.gas.higher_than_suggested);
-  if (lowThreshold && lessThan(maxBaseFee, lowThreshold)) return i18n.t(i18n.l.gas.lower_than_suggested);
-
-  return null;
-};
 
 function Warning({ children }: { children: string }) {
   const [prefix, description] = children.split('·');
@@ -283,10 +232,8 @@ function Warning({ children }: { children: string }) {
 
 function EditMaxBaseFee() {
   const { navigate } = useNavigation();
-
-  const maxBaseFee = useGasPanelState('maxBaseFee');
-
-  const warning = useMaxBaseFeeWarning(maxBaseFee);
+  const maxBaseFee = useSwapMaxBaseFee();
+  const warning = useSwapMaxBaseFeeWarning();
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">
@@ -303,7 +250,7 @@ function EditMaxBaseFee() {
 
 function EditPriorityFee() {
   const { navigate } = useNavigation();
-  const maxPriorityFee = useGasPanelState('maxPriorityFee');
+  const maxPriorityFee = useSwapMaxPriorityFee();
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -317,8 +264,7 @@ function EditPriorityFee() {
 
 function EditGasPrice() {
   const { navigate } = useNavigation();
-
-  const gasPrice = useGasPanelState('gasPrice');
+  const gasPrice = useSwapGasPrice();
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -330,16 +276,9 @@ function EditGasPrice() {
   );
 }
 
-const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefined => {
-  if (!s) return getSelectedGas(swapsStore.getState().inputAsset?.chainId || ChainId.mainnet);
-  return { isEIP1559: !('gasPrice' in s && !!s.gasPrice), ...s } as GasSettings;
-};
-
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
-
-  const gasPanelState = useGasPanelState();
-  const gasSettings = useMemo(() => stateToGasSettings(gasPanelState), [gasPanelState]);
+  const gasSettings = useSwapGasPanelSettings();
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -391,7 +330,10 @@ function saveCustomGasSettings() {
   const { inputAsset } = useSwapsStore.getState();
   const chainId = inputAsset?.chainId || ChainId.mainnet;
 
-  setCustomGasSettings(chainId, unsaved);
+  const settings = useSwapGasPanelSettings.getState();
+  if (!settings) return;
+
+  setCustomGasSettings(chainId, settings);
   setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
   useGasPanelStore.setState(undefined);
 }
