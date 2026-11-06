@@ -49,7 +49,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const executionStore = useMemo(() => createSellExecutionStore(sellAmountTokens), [sellAmountTokens]);
 
   const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
-    eventTitle: position.market.events[0]?.title ?? '',
+    eventTitle: position.market.events?.[0].title ?? '',
     market: position.market,
     outcome: position.outcome,
     outcomeIndex: position.outcomeIndex,

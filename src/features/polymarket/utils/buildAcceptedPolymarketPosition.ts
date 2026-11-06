@@ -37,7 +37,7 @@ export function buildAcceptedBuyPosition({
   const curPrice = market.outcomePrices[outcomeIndex] ?? (size === '0' ? '0' : divide(initialValue, size));
   const currentValue = multiply(size, curPrice);
   const cashPnl = subtract(currentValue, initialValue);
-  const marketEvents = market.events?.length ? market.events : [buildPositionMarketEvent(event)];
+  const marketEvents = market.events ?? [buildPositionMarketEvent(event)];
   const marketEvent = marketEvents[0];
 
   return {

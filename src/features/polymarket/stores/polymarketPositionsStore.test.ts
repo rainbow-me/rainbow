@@ -52,10 +52,17 @@ describe('polymarketPositionsStore', () => {
 
   afterEach(() => usePolymarketPositionsStore.getState().reset(true));
 
-  it('reads a v2 position using entry cost and unrealized P&L for the open holding', async () => {
+  const event = predictionEvent('1');
+  const expectedEvents = [expect.objectContaining({ id: event.id })];
+
+  it.each([
+    { label: 'present', events: [event], hasEvents: true },
+    { label: 'empty', events: [], hasEvents: false },
+    { label: 'null', events: null, hasEvents: false },
+    { label: 'omitted', events: undefined, hasEvents: false },
+  ])('reads v2 position accounting with $label market events', async ({ events, hasEvents }) => {
     const address = '0x0000000000000000000000000000000000000001';
-    const event = predictionEvent('1');
-    const market = { ...event.markets[0], events: [event] };
+    const market = { ...event.markets[0], icon: 'https://example.com/market.png', events };
     const holding = {
       proxy_wallet: address,
       token_id: '101',
@@ -88,7 +95,9 @@ describe('polymarketPositionsStore', () => {
       currentValue: 4.7091,
       initialValue: 5.1799,
       cashPnl: -0.4708,
+      marketHasUniqueImage: hasEvents,
     });
+    expect(result?.['101'].market.events).toEqual(hasEvents ? expectedEvents : null);
   });
 
   it('publishes overlapping buys with their combined cost and preserves them across a stale read', async () => {
@@ -386,7 +395,7 @@ function applyBuy({
 
 function createMarketWithoutEvents(): PolymarketMarket {
   const market = createMarket();
-  market.events = [];
+  market.events = null;
   return market;
 }
 

@@ -114,7 +114,11 @@ const ActivePositionsList = memo(function ActivePositionsList() {
           key={position.asset}
           position={position}
           onPress={() => {
-            Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: position.eventId, event: position.market.events[0] });
+            Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, {
+              eventId: position.eventId,
+              eventSlug: position.eventSlug,
+              event: position.market.events?.[0],
+            });
           }}
         />
       ))}
@@ -162,7 +166,11 @@ const LostPositionsList = memo(function LostPositionsList() {
                 key={position.asset}
                 position={position}
                 onPress={() => {
-                  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: position.eventId, event: position.market.events[0] });
+                  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, {
+                    eventId: position.eventId,
+                    eventSlug: position.eventSlug,
+                    event: position.market.events?.[0],
+                  });
                 }}
               />
             ))}

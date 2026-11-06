@@ -93,7 +93,7 @@ export const PredictionMarketTileCard = memo(function PredictionMarketTileCard({
 
   const handlePress = useCallback(() => {
     onPress({ marketId: event.id, marketName: event.title, marketSlug: event.slug, marketSymbol: event.ticker });
-    Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
+    Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, eventSlug: event.slug, event });
   }, [event, onPress]);
 
   return (

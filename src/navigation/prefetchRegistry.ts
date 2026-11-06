@@ -26,7 +26,7 @@ const prefetchRegistry: PrefetchRegistry = {
       return;
     }
     prefetchPolymarketEvent(params.eventId);
-    polymarketChartsActions.setSelectedEventSlug(params.event.slug);
+    polymarketChartsActions.setSelectedEventSlug(params.eventSlug);
   },
 
   [Routes.POLYMARKET_MARKET_SHEET]: ({ market }) => {

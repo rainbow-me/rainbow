@@ -182,7 +182,7 @@ export type RawPolymarketMarket = {
   score: number;
   imageOptimized: ImageOptimized;
   iconOptimized: ImageOptimized;
-  events?: PolymarketMarketEvent[];
+  events?: PolymarketMarketEvent[] | null;
   categories: Category[];
   tags: Tag[];
   creator: string;
@@ -235,7 +235,7 @@ export type GammaMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionId
 };
 
 export type PolymarketMarket = GammaMarket & {
-  events: PolymarketMarketEvent[];
+  events: PolymarketMarketEvent[] | null;
   color: ResponseByTheme<string>;
   secondaryColor: ResponseByTheme<string> | undefined;
 };

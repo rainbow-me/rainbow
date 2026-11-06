@@ -209,7 +209,7 @@ async function fetchPolymarketPositions(
   for (const rawPosition of rawPositions) {
     const market = markets[rawPosition.slug];
     if (!market) continue;
-    const ticker = market.events[0]?.ticker;
+    const ticker = market.events?.[0].ticker;
     const position = processRawPolymarketPosition(rawPosition, market, ticker ? teams[ticker] : undefined);
     positions[position.asset] = position;
   }

@@ -50,12 +50,13 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
   const isPositivePnl = displayPnl > 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
 
+  const event = position.market.events?.[0];
   const outcomeTitle = position.market.groupItemTitle || position.outcome;
 
   return (
     <ButtonPressAnimation
       onPress={() => {
-        navigateToPolymarketEvent({ eventId: position.eventId, event: position.market.events[0] });
+        navigateToPolymarketEvent({ eventId: position.eventId, eventSlug: position.eventSlug, event });
       }}
       scaleTo={0.96}
     >
@@ -117,7 +118,7 @@ export const PolymarketPositionRow = memo(function PolymarketPositionRow({ posit
                   </Box>
                   <Box flexDirection="row" alignItems="center" gap={4}>
                     <Text color="labelSecondary" size="13pt" weight="semibold" numberOfLines={1} style={styles.flex}>
-                      {position.market.events[0].title}
+                      {event?.title ?? position.market.question}
                     </Text>
                   </Box>
                 </Box>

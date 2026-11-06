@@ -137,7 +137,7 @@ const PredictionEventCard = memo(function PredictionEventCard({
       event={event}
       onPress={() => {
         onPress(event.id, event.title, event.slug);
-        navigateToPolymarketEvent({ eventId: event.id, event });
+        navigateToPolymarketEvent({ eventId: event.id, eventSlug: event.slug, event });
       }}
       shouldActivateOnStart={false}
       style={styles.card}
