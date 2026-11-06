@@ -103,11 +103,13 @@ function createPolymarketBalanceStore() {
     { storageKey: 'polymarketBalanceStore' }
   );
 
-  // ============ Pending Balance Changes ======================================== //
+  // ========== Pending Balance Changes ==========
 
   /** Registers a submission without changing its displayed balance until acceptance. */
   function beginBalanceUpdate(proxyAddress: Address): PolymarketBalanceUpdate {
-    const operationId = nextOperationId++;
+    const operationId = nextOperationId;
+    nextOperationId += 1;
+
     const queryKey = getQueryKey({ address: proxyAddress });
     const currentBalance = store.getState().getCacheEntry(queryKey)?.data;
 
@@ -164,7 +166,7 @@ function createPolymarketBalanceStore() {
     };
   }
 
-  // ============ Balance Fetching =============================================== //
+  // ========== Balance Fetching ==========
 
   /** Refreshes the captured wallet, retaining settled estimates until a subsequent read publishes. */
   async function refreshBalance(proxyAddress = usePolymarketClients.getState().proxyAddress ?? undefined): Promise<void> {
@@ -208,7 +210,7 @@ function createPolymarketBalanceStore() {
     return balance;
   }
 
-  // ============ Cache Reconciliation =========================================== //
+  // ========== Cache Reconciliation ==========
 
   function setPolymarketBalanceData({
     data,

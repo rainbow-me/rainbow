@@ -50,6 +50,7 @@ type PolymarketPositionsStoreActions = {
 
 const STALE_TIME = time.seconds(30);
 const OPTIMISTIC_POSITION_CONFLICT_WINDOW = time.minutes(2);
+const EMPTY_POSITIONS: PolymarketPositionsByAsset = Object.freeze({});
 
 // ============ Positions Store ================================================ //
 
@@ -79,11 +80,12 @@ function createPolymarketPositionsStore() {
     { storageKey: 'polymarketPositions', version: 3 }
   );
 
-  // ============ Pending Position Changes ======================================= //
+  // ========== Pending Position Changes ==========
 
-  /** Retains the holding's history while a buy is submitted and its presentation loads. */
   function beginBuy({ asset, proxyAddress }: { asset: string; proxyAddress: Address }): PolymarketBuyPositionUpdate {
-    const operationId = nextOperationId++;
+    const operationId = nextOperationId;
+    nextOperationId += 1;
+
     const queryKey = getQueryKey({ proxyAddress });
     const positions = store.getState().getData(queryKey);
     let details: PolymarketOrderDetails | undefined;
@@ -110,7 +112,7 @@ function createPolymarketPositionsStore() {
             buildAcceptedBuyPosition({ ...buy, positionAmounts, proxyWallet: proxyAddress, currentPosition }) ?? currentPosition,
           asset,
           operationId,
-          positions: cached ?? {},
+          positions: cached ?? EMPTY_POSITIONS,
           proxyAddress,
         });
 
@@ -130,9 +132,10 @@ function createPolymarketPositionsStore() {
     };
   }
 
-  /** Removes an accepted sale or redemption while the indexed positions catch up. */
   function removePosition(position: PolymarketPosition): PolymarketPositionUpdate {
-    const operationId = nextOperationId++;
+    const operationId = nextOperationId;
+    nextOperationId += 1;
+
     const proxyAddress = position.proxyWallet;
 
     store.setState(state => {
@@ -158,14 +161,14 @@ function createPolymarketPositionsStore() {
       const queryKey = getQueryKey({ proxyAddress: params.proxyAddress });
       const positions = optimisticPositions.discard({
         ...params,
-        positions: state.getCacheEntry(queryKey)?.data ?? {},
+        positions: state.getCacheEntry(queryKey)?.data ?? EMPTY_POSITIONS,
       });
 
       return positions ? buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME) : state;
     });
   }
 
-  // ============ Cache Reconciliation =========================================== //
+  // ========== Cache Reconciliation ==========
 
   function setPolymarketPositionsData({
     data,
@@ -174,10 +177,8 @@ function createPolymarketPositionsStore() {
     set,
   }: SetDataParams<PolymarketPositionsByAsset, PolymarketPositionsParams, PolymarketPositionsStoreActions>) {
     set(state => {
-      const { proxyAddress } = params;
-
+      const proxyAddress = params.proxyAddress;
       const positions = proxyAddress ? optimisticPositions.mergeBackendPositions(proxyAddress, data) : data;
-
       return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions);
     });
   }
@@ -200,12 +201,14 @@ async function fetchPolymarketPositions(
   });
 
   const rawPositions = page.data;
-  if (!rawPositions.length) return {};
+  if (!rawPositions.length) return EMPTY_POSITIONS;
 
   const rawMarkets = await fetchPolymarketMarkets(rawPositions, abortController);
-  const [markets, teams] = await Promise.all([preparePolymarketMarkets(rawMarkets), fetchTeamsForGameMarkets(rawMarkets, abortController)]);
+  if (!rawMarkets.length) return EMPTY_POSITIONS;
 
+  const [markets, teams] = await Promise.all([preparePolymarketMarkets(rawMarkets), fetchTeamsForGameMarkets(rawMarkets, abortController)]);
   const positions: PolymarketPositionsByAsset = {};
+
   for (const rawPosition of rawPositions) {
     const market = markets[rawPosition.slug];
     if (!market) continue;
@@ -223,29 +226,20 @@ async function fetchPolymarketMarkets(
   positions: RawPolymarketPosition[],
   abortController: AbortController | null
 ): Promise<RawPolymarketMarket[]> {
-  const slugsByStatus: Partial<Record<'open' | 'closed', Set<string>>> = {};
-  for (const { slug, redeemable } of positions) {
-    const status = redeemable ? 'closed' : 'open';
-    (slugsByStatus[status] ??= new Set()).add(slug);
-  }
+  const slugs = new Set<string>();
+  for (const position of positions) slugs.add(position.slug);
 
-  const responses = await Promise.all(
-    Object.entries(slugsByStatus).map(async ([status, slugs]) => {
-      const url = gammaMarketsUrl('markets');
-      url.searchParams.set('closed', String(status === 'closed'));
-      url.searchParams.set('limit', String(slugs.size));
-      for (const slug of slugs) url.searchParams.append('slug', slug);
+  const url = gammaMarketsUrl('markets');
+  url.searchParams.set('closed', 'any');
+  url.searchParams.set('limit', String(slugs.size));
+  for (const slug of slugs) url.searchParams.append('slug', slug);
 
-      const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
-        abortController,
-        timeout: time.seconds(15),
-      });
+  const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
+    abortController,
+    timeout: time.seconds(15),
+  });
 
-      return data;
-    })
-  );
-
-  return responses.flat();
+  return data;
 }
 
 async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Promise<Partial<Record<string, PolymarketMarket>>> {
