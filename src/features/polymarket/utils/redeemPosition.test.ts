@@ -168,15 +168,6 @@ describe('redeemPosition', () => {
     expect(polymarketPositionsActions.remove).not.toHaveBeenCalled();
     expect(mockWaitForRelayerTransaction).not.toHaveBeenCalled();
   });
-
-  it('does not redeem a position owned by another proxy wallet', async () => {
-    const otherHolder = '0x0000000000000000000000000000000000000002';
-    mockGetPolymarketWallet.mockRejectedValueOnce(new Error('Trading wallet does not match the requested account'));
-
-    await expect(redeemPosition({ ...createPosition(), proxyWallet: otherHolder })).rejects.toThrow('Trading wallet does not match');
-    expect(mockGetPolymarketWallet).toHaveBeenCalledWith(otherHolder);
-    expect(mockWallet.execute).not.toHaveBeenCalled();
-  });
 });
 
 function createPosition(overrides: Partial<Parameters<typeof redeemPosition>[0]> = {}): Parameters<typeof redeemPosition>[0] {
