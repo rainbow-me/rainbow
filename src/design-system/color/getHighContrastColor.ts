@@ -16,15 +16,10 @@ const DARK_LIGHTNESS_TARGET = 116 * Math.cbrt(DARK_LUMINANCE_TARGET) - 16;
  */
 export function getHighContrastColor(color: string | undefined): ResponseByTheme<string> | undefined;
 export function getHighContrastColor(color: string | undefined, isDarkMode: boolean): string | undefined;
-export function getHighContrastColor(color: string | undefined, isDarkMode?: boolean): ResponseByTheme<string> | string | undefined {
-  if (typeof color !== 'string' || !color) return undefined;
-
-  let parsed: chroma.Color;
-  try {
-    parsed = chroma(color);
-  } catch {
-    return undefined;
-  }
+export function getHighContrastColor(input: string | undefined, isDarkMode?: boolean): ResponseByTheme<string> | string | undefined {
+  const color = input ?? '';
+  const parsed = parseColor(color);
+  if (!parsed) return undefined;
 
   const returnThemeColors = isDarkMode === undefined;
   const luminance = parsed.luminance();
@@ -71,4 +66,14 @@ export function getHighContrastColor(color: string | undefined, isDarkMode?: boo
   }
 
   return returnThemeColors ? { light, dark } : isDarkMode ? dark : light;
+}
+
+function parseColor(color: unknown): chroma.Color | undefined {
+  if (typeof color !== 'string' || !color) return undefined;
+
+  try {
+    return chroma(color);
+  } catch {
+    return undefined;
+  }
 }
