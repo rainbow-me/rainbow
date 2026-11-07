@@ -13,6 +13,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { watchAssetUpdates } from './useWatchAssetUpdates';
 
@@ -55,16 +56,11 @@ vi.mock('@/redux/store', () => ({
   },
 }));
 
-vi.mock('@/state/wallets/walletsStore', () => ({
-  getAccountAddress: () => '0x123',
-  useAccountAddress: () => '0x123',
-  useWalletsStore: {
-    getState: () => ({
-      accountAddress: '0x123',
-    }),
-    subscribe: vi.fn(),
-  },
-}));
+vi.mock('@/state/wallets/walletsStore', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  const useWalletsStore = createBaseStore(() => ({ accountAddress: '0x123' }));
+  return { getAccountAddress: () => useWalletsStore.getState().accountAddress, useWalletsStore };
+});
 
 vi.mock('@/state/swaps/swapsStore', () => ({
   useSwapsStore: {
@@ -600,9 +596,8 @@ describe('watchAssetUpdates', () => {
 function resetStores() {
   useAssetUpdatesStore.setState({ watchedTransactions: {} });
   staleBalancesStore.setState({ staleBalances: {} });
+  useWalletsStore.setState({ accountAddress: TEST_ADDRESS });
   userAssetsStoreManager.setState({
-    address: TEST_ADDRESS,
-    cachedStore: null,
     currency: 'ETH',
     hiddenAssetBalances: {},
   });

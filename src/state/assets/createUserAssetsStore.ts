@@ -13,7 +13,7 @@ import { type LiveTokensData } from '@/state/liveTokens/types';
 import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';
-import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState } from './types';
+import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
   calculateHiddenAssetsBalance,
@@ -28,7 +28,7 @@ import {
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
 
-export const createUserAssetsStore = (address: Address | string) =>
+export const createUserAssetsStore = (address: Address | string): UserAssetsStoreType =>
   createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,

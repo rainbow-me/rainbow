@@ -6,6 +6,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { time } from '@/framework/core/utils/time';
 import { greaterThan, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import type { RainbowDeposit, RainbowPool, RainbowPosition, RainbowPositions } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
@@ -45,14 +46,14 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     fetcher: fetchPositions,
     transform: transformPositions,
     params: {
-      address: $ => $(userAssetsStoreManager).address,
+      address: $ => $(useWalletsStore).accountAddress,
       currency: $ => $(userAssetsStoreManager).currency,
       chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
     keepPreviousData: true,
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
-    enabled: $ => $(userAssetsStoreManager, state => !!state.address),
+    enabled: $ => $(useWalletsStore, state => !!state.accountAddress),
     onFetched: ({ data, fetch, params }) => {
       const address = params.address?.toLowerCase();
       if (!address) return;

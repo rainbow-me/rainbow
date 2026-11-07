@@ -5,7 +5,7 @@ import { type UserAssetsStoreType } from './types';
 let unsubscribe: (() => void) | null = null;
 
 /** Reprocesses user assets when the set of position token addresses changes. */
-export function setupPositionsAssetsSync(userAssetsStore: UserAssetsStoreType): void {
+export function setupPositionsAssetsSync(userAssetsStore: Pick<UserAssetsStoreType, 'getState'>): void {
   cleanupPositionsAssetsSync();
 
   unsubscribe = usePositionsStore.subscribe(
