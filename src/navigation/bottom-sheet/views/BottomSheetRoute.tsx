@@ -27,7 +27,7 @@ export const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navi
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
     backdropPressBehavior = 'close',
-    height = DEFAULT_HEIGHT,
+    screenContainerHeight: height = DEFAULT_HEIGHT,
     offsetY = Platform.OS === 'android' ? 20 : 3,
   } = options || {};
 

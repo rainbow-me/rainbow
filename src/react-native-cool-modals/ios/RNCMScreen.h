@@ -2,7 +2,7 @@
 #import <React/RCTView.h>
 #import <React/RCTComponent.h>
 
-@class RNSScreenContainerView;
+@class RNCMScreenStackView;
 
 typedef NS_ENUM(NSInteger, RNSScreenStackPresentation) {
   RNSScreenStackPresentationPush,
@@ -32,7 +32,6 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 
 @property (nonatomic, strong) id<UIViewControllerTransitioningDelegate> transDelegate;
 - (instancetype)initWithView:(UIView *)view;
-- (void)notifyFinishTransitioning;
 - (UIViewController*) parentVC;
 
 @end
@@ -43,23 +42,25 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @interface RNCMScreenView : RCTView
 
 @property (nonatomic, copy) RCTDirectEventBlock onAppear;
+@property (nonatomic, copy) RCTDirectEventBlock onPresentationApplied;
 @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
 @property (nonatomic, copy) RCTDirectEventBlock onWillDismiss;
 @property (nonatomic, copy) RCTDirectEventBlock onTouchTop;
 @property (weak, nonatomic) UIView *reactSuperview;
 @property (nonatomic, retain) UIViewController *controller;
 @property (nonatomic, readonly) BOOL dismissed;
-@property (nonatomic) BOOL active;
+@property (nonatomic) NSInteger presentationRequest;
+@property (nonatomic) BOOL inStack;
+@property (nonatomic) BOOL limitActiveModals;
+@property (nonatomic) BOOL skipsOnReturn;
 @property (nonatomic) BOOL customStack;
 @property (nonatomic) BOOL gestureEnabled;
 @property (nonatomic) BOOL dismissable;
-@property (nonatomic) BOOL showDragIndicator;
 @property (nonatomic) BOOL ignoreBottomOffset;
 @property (nonatomic) BOOL interactWithScrollView;
 @property (nonatomic) BOOL disableShortFormAfterTransitionToLongForm;
 @property (nonatomic) NSNumber* topOffset;
 @property (nonatomic) NSNumber* cornerRadius;
-@property (nonatomic) NSNumber* relevantScrollViewDepth;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 @property (nonatomic) RNSScreenStackPresentation stackPresentation;
 
@@ -73,16 +74,15 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 @property (nonatomic) BOOL anchorModalToLongForm;
 @property (nonatomic) BOOL allowsDragToDismiss;
 @property (nonatomic) BOOL allowsTapToDismiss;
-@property (nonatomic) BOOL blocksBackgroundTouches;
 @property (nonatomic, nonnull) NSNumber *headerHeight;
 @property (nonatomic, nonnull) NSNumber *shortFormHeight;
 @property (nonatomic) BOOL startFromShortForm;
-@property (nonatomic) BOOL hidden;
 
-- (void)notifyFinishTransitioning;
 - (void)willDismiss;
+- (void)notifyDismissed;
 - (void)notifyAppear;
-- (void)removeController;
+- (void)applyConfiguration;
+- (void)cancelTouchesWithCompletion:(void (^)(void))completion;
 @end
 
 @interface UIView (RNSScreen)

@@ -26,6 +26,7 @@ import { RegisterENSNavigator } from '@/features/ens/navigation/RegisterENSNavig
 import { ENSAdditionalRecordsSheet } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
+import CustomGasState from '@/features/gas/components/CustomGasState';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { NetworkSelector } from '@/features/network/screens/NetworkSelector';
@@ -111,6 +112,7 @@ import {
   claimAirdropSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
+  depositSheetConfig,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -154,10 +156,10 @@ import { SwipeNavigator } from './SwipeNavigator';
 import { type RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackCoolModalNavigator();
+const NativeStack = createNativeStackCoolModalNavigator<RootStackParamList>();
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext) as unknown as string;
+  const initialRoute = useContext(InitialRouteContext);
 
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
@@ -238,7 +240,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
       <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen component={CustomGasState} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
       <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
       <NativeStack.Screen
         component={PairHardwareWalletNavigator}
@@ -293,8 +295,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={RevokeDelegationPanel} name={Routes.REVOKE_DELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
-      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...perpsDepositWithdrawalConfig} />
+      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...depositSheetConfig} />
+      <NativeStack.Screen component={PolymarketDepositScreen} name={Routes.POLYMARKET_DEPOSIT_SCREEN} {...depositSheetConfig} />
       <NativeStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...perpsDepositWithdrawalConfig} />
       <NativeStack.Screen

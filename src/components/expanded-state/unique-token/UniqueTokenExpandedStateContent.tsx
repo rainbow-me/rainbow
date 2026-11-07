@@ -8,7 +8,6 @@ import styled from '@/framework/ui/styled-thing';
 import useAnimationType from '@/hooks/useAnimationType';
 import usePersistentAspectRatio from '@/hooks/usePersistentAspectRatio';
 import { position } from '@/styles';
-import magicMemo from '@/utils/magicMemo';
 
 import { SimpleModelView } from '../../3d';
 import { UniqueTokenImage } from '../../unique-token';
@@ -40,7 +39,7 @@ type UniqueTokenExpandedStateContentProps = {
   onContentBlur: () => void;
 };
 
-const UniqueTokenExpandedStateContent = ({
+const UniqueTokenExpandedStateContent = React.memo(function UniqueTokenExpandedStateContent({
   animationProgress,
   asset,
   borderRadius,
@@ -51,16 +50,11 @@ const UniqueTokenExpandedStateContent = ({
   yPosition,
   onContentFocus,
   onContentBlur,
-}: UniqueTokenExpandedStateContentProps) => {
+}: UniqueTokenExpandedStateContentProps) {
   const animationType = useAnimationType(asset);
 
   const aspectRatio = usePersistentAspectRatio(asset.images.lowResUrl);
   const aspectRatioWithFallback = animationType === '3d' ? 0.88 : aspectRatio.result || 1;
-
-  // default to showing a loading spinner for 3D/video assets
-  const [loading, setLoading] = React.useState(animationType === '3d' || animationType === 'video');
-
-  const fallbackUrl = asset.images.highResUrl || asset.images.lowResUrl || '';
 
   return (
     <ZoomableWrapper
@@ -75,16 +69,13 @@ const UniqueTokenExpandedStateContent = ({
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
-        {animationType === 'video' ? (
-          <SimpleVideo
-            loading={loading}
-            posterUri={fallbackUrl}
-            setLoading={setLoading}
-            style={StyleSheet.absoluteFill}
+        {animationType ? (
+          <AnimatedTokenMedia
+            key={`${animationType}:${asset.images.animatedUrl}`}
+            animationType={animationType}
+            fallbackUrl={asset.images.highResUrl || asset.images.lowResUrl || ''}
             uri={asset.images.animatedUrl || ''}
           />
-        ) : animationType === '3d' ? (
-          <ModelView fallbackUri={fallbackUrl} loading={loading} setLoading={setLoading} uri={asset.images.animatedUrl || ''} />
         ) : (
           <UniqueTokenImage
             collectionName={asset.collectionName ?? ''}
@@ -97,14 +88,28 @@ const UniqueTokenExpandedStateContent = ({
             optimisticImageLoading
           />
         )}
-        {!!loading && (
-          <LoadingWrapper>
-            <ActivityIndicator />
-          </LoadingWrapper>
-        )}
       </View>
     </ZoomableWrapper>
   );
-};
+});
 
-export default magicMemo(UniqueTokenExpandedStateContent, 'uniqueId');
+function AnimatedTokenMedia({ animationType, fallbackUrl, uri }: { animationType: '3d' | 'video'; fallbackUrl: string; uri: string }) {
+  const [loading, setLoading] = React.useState(true);
+
+  return (
+    <>
+      {animationType === 'video' ? (
+        <SimpleVideo loading={loading} posterUri={fallbackUrl} setLoading={setLoading} style={StyleSheet.absoluteFill} uri={uri} />
+      ) : (
+        <ModelView fallbackUri={fallbackUrl} loading={loading} setLoading={setLoading} uri={uri} />
+      )}
+      {loading && (
+        <LoadingWrapper>
+          <ActivityIndicator />
+        </LoadingWrapper>
+      )}
+    </>
+  );
+}
+
+export default UniqueTokenExpandedStateContent;

@@ -108,7 +108,8 @@ export type BottomSheetNavigationOptions = Partial<
   backdropOpacity?: number;
   backdropColor?: string;
   backdropPressBehavior?: BackdropPressBehavior;
-  height?: number | string;
+  /** Android screen container height, independent of snap points. */
+  screenContainerHeight?: number | string;
   offsetY?: number;
 };
 
