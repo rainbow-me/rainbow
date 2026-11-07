@@ -1,4 +1,4 @@
-import { createQueryStore } from '@storesjs/stores';
+import { createQueryStore, parseQueryKey } from '@storesjs/stores';
 import { throttle } from 'lodash';
 
 import { analytics } from '@/analytics';
@@ -8,7 +8,7 @@ import { greaterThan, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
-import type { RainbowDeposit, RainbowPool, RainbowPosition, RainbowPositions } from '../types';
+import type { RainbowPositions } from '../types';
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
 import { fetchPositions, type PositionsParams } from './fetcher';
 import { transformPositions } from './transform';
@@ -16,7 +16,7 @@ import { transformPositions } from './transform';
 // ============ Core Types ===================================================== //
 
 type PositionsState = {
-  getTokenAddresses: () => Set<string>;
+  getTokenAddresses: (address: PositionsParams['address']) => Set<string>;
   getBalance: () => string;
 };
 
@@ -78,50 +78,30 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     },
   },
   (_, get) => ({
-    /**
-     * Collects all pool/LP token addresses from positions
-     *
-     * Used to filter out LP tokens from the wallet assets display to prevent double-counting.
-     * When a user has a position in a pool, we show the position in the positions section
-     * but exclude the underlying LP token from the wallet assets list.
-     *
-     * Also triggers asset reprocessing when position token addresses change (via positionsSync).
-     */
-    getTokenAddresses: () => {
-      const positionTokenAddresses = new Set<string>();
-      const data = get().getData();
+    /** Returns pool tokens represented by positions for the requested account. */
+    getTokenAddresses: address => {
+      const addresses = new Set<string>();
+      const state = get();
+      const currentAddress = state.queryKey ? parseQueryKey<PositionsParams>(state.queryKey).address : undefined;
+      const data =
+        currentAddress === address
+          ? state.getData()
+          : state.getData({
+              address,
+              currency: userAssetsStoreManager.getState().currency,
+              chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
+            });
+      const positions = data?.positions;
+      if (!positions) return addresses;
 
-      if (data?.positions) {
-        Object.values(data.positions).forEach((position: RainbowPosition) => {
-          position.deposits?.forEach((deposit: RainbowDeposit) => {
-            if (deposit.poolAddress) {
-              positionTokenAddresses.add(deposit.poolAddress.toLowerCase());
-            }
-          });
-          position.pools?.forEach((pool: RainbowPool) => {
-            if (pool.poolAddress) {
-              positionTokenAddresses.add(pool.poolAddress.toLowerCase());
-            }
-          });
-          position.stakes?.forEach(stake => {
-            if (stake.poolAddress) {
-              positionTokenAddresses.add(stake.poolAddress.toLowerCase());
-            }
-          });
-          position.borrows?.forEach(borrow => {
-            if (borrow.poolAddress) {
-              positionTokenAddresses.add(borrow.poolAddress.toLowerCase());
-            }
-          });
-          position.rewards?.forEach(reward => {
-            if (reward.poolAddress) {
-              positionTokenAddresses.add(reward.poolAddress.toLowerCase());
-            }
-          });
-        });
+      for (const position of Object.values(positions)) {
+        for (const category of [position.deposits, position.pools, position.stakes, position.borrows, position.rewards]) {
+          for (const { poolAddress } of category) {
+            if (poolAddress) addresses.add(poolAddress.toLowerCase());
+          }
+        }
       }
-
-      return positionTokenAddresses;
+      return addresses;
     },
     /**
      * Used to calculate the live wallet balance

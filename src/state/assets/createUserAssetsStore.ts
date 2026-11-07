@@ -1,7 +1,7 @@
 import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -18,25 +18,22 @@ import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
   calculateHiddenAssetsBalance,
   fetchUserAssets,
-  getDefaultCacheKeys,
-  getFilteredUserAssetIds,
+  indexUserAssets,
   parsedSearchAssetToParsedAddressAsset,
   selectHighestValueAsset,
   setUserAssets,
 } from './utils';
 
-const SEARCH_CACHE_MAX_ENTRIES = 50;
-const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
-
-export const createUserAssetsStore = (address: Address | string): UserAssetsStoreType =>
-  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
+/** Creates the account-bound holdings store and its list/balance indexes. */
+export const createUserAssetsStore = (address: Address | string): UserAssetsStoreType => {
+  return createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
-        if (data?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
-          set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
-        }
+        const userAssets = data?.userAssets;
+        if (!userAssets) return;
+        const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses(address);
+        set(state => setUserAssets({ address, state, userAssets, positionTokenAddresses }));
       },
       enabled: address.length > 0,
       keepPreviousData: true,
@@ -51,34 +48,24 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
     (set, get) => ({
       address,
       chainBalances: new Map(),
-      currentAbortController: new AbortController(),
       filter: 'all',
       hiddenAssets: new Set<UniqueId>(),
       hiddenAssetsBalance: null,
-      idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
       inputSearchQuery: '',
-      legacyUserAssets: [],
-      searchCache: new Map(),
+      listAssets: new Map(),
       userAssets: new Map(),
 
-      getBalanceSortedChainList: () => {
-        const chainBalances = [...get().chainBalances.entries()];
-        chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
-        return chainBalances.map(([chainId]) => chainId);
-      },
+      getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
 
       getChainsWithBalance: () => {
-        const chainBalances = [...get().chainBalances.entries()];
-        const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
-        return chainsWithBalances.map(([chainId]) => chainId);
+        const chains: ChainId[] = [];
+        for (const [chain, balance] of get().chainBalances) {
+          if (balance) chains.push(chain);
+        }
+        return chains;
       },
 
-      getFilteredUserAssetIds: () => {
-        const { filter, inputSearchQuery: rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache } = get();
-        return getFilteredUserAssetIds({ filter, rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache });
-      },
-
-      getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), options),
+      getHighestValueAsset: options => selectHighestValueAsset(get().listAssets.values(), get().hiddenAssets, options),
 
       getNativeAssetForChain: (chainId: ChainId) => {
         const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
@@ -95,54 +82,17 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
         return parsedSearchAssetToParsedAddressAsset(asset);
       },
 
-      getUserAssets: () => Array.from(get().userAssets.values()) || [],
-
-      selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
-        const { currentAbortController, idsByChain, userAssets } = get();
-        const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
-
-        for (const id of assetIds) {
-          if (currentAbortController?.signal?.aborted) return;
-          const asset = userAssets.get(id);
-          if (asset && selector(asset)) yield id;
-        }
+      getUserAssets: () => {
+        const { listAssets, hiddenAssets } = get();
+        return Array.from(listAssets.values()).filter(asset => !hiddenAssets.has(asset.uniqueId));
       },
 
-      selectUserAssets: function* (selector: (asset: ParsedSearchAsset) => boolean) {
-        const { currentAbortController, userAssets } = get();
+      isHidden: uniqueId => get().hiddenAssets.has(uniqueId),
+      isInitialLoad: () => !get().userAssets.size && get().getStatus('isInitialLoad'),
 
-        for (const [id, asset] of userAssets) {
-          if (currentAbortController?.signal?.aborted) return;
-          if (selector(asset)) yield [id, asset];
-        }
-      },
-
-      setSearchQuery: query =>
-        set(state => {
-          // Abort any ongoing search work
-          state.currentAbortController?.abort?.();
-          // Create a new AbortController for the new query
-          const abortController = new AbortController();
-
-          return { currentAbortController: abortController, inputSearchQuery: query.trim().toLowerCase() };
-        }),
-
-      setSearchCache: (queryKey, filteredIds: UniqueId[]) => {
-        set(state => {
-          const newCache = new Map(state.searchCache).set(queryKey, filteredIds);
-
-          // Prune the cache if it exceeds the maximum size
-          if (newCache.size > SEARCH_CACHE_MAX_ENTRIES) {
-            // Get the oldest key that isn't a key to preserve
-            for (const key of newCache.keys()) {
-              if (!CACHE_ITEMS_TO_PRESERVE.has(key)) {
-                newCache.delete(key);
-                break;
-              }
-            }
-          }
-          return { searchCache: newCache };
-        });
+      setSearchQuery: query => {
+        const inputSearchQuery = query.trim().toLowerCase();
+        set(state => (state.inputSearchQuery === inputSearchQuery ? state : { inputSearchQuery }));
       },
 
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
@@ -154,7 +104,7 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
         for (const balance of chainBalances.values()) {
           total += balance;
         }
-        return total;
+        return total - Number(get().hiddenAssetsBalance ?? 0);
       },
 
       setHiddenAssets: (uniqueIds: UniqueId[]) => {
@@ -171,7 +121,7 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
           const hiddenAssetsBalance = calculateHiddenAssetsBalance({
             address,
             hiddenAssets,
-            userAssets: state.userAssets,
+            listAssets: state.listAssets,
           });
 
           return { hiddenAssets, hiddenAssetsBalance };
@@ -207,25 +157,25 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
         });
       },
 
-      reprocessAssetsData: () => {
-        const lastData = get().getData();
-        if (lastData?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
-          set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
-        }
+      reprocessAssetsData: positions => {
+        set(state => {
+          const indexes = indexUserAssets(address, state.userAssets, state.hiddenAssets, positions);
+          if (state.listAssets.size !== indexes.listAssets.size) return indexes;
+          for (const [id, asset] of indexes.listAssets) {
+            if (state.listAssets.get(id) !== asset) return indexes;
+          }
+          return state;
+        });
       },
     }),
 
     address.length
       ? {
-          deserializer: deserializeUserAssetsState,
+          deserializer: value => deserializeUserAssetsState(value, address),
           partialize: state =>
             ({
-              chainBalances: state.chainBalances,
               filter: state.filter,
               hiddenAssets: state.hiddenAssets,
-              idsByChain: state.idsByChain,
-              legacyUserAssets: state.legacyUserAssets,
               userAssets: state.userAssets,
             }) satisfies Required<UserAssetsStateToPersist>,
           serializer: serializeUserAssetsState,
@@ -234,3 +184,4 @@ export const createUserAssetsStore = (address: Address | string): UserAssetsStor
         }
       : undefined
   );
+};

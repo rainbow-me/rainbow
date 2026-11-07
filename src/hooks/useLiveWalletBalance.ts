@@ -9,14 +9,14 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { deepEqual } from '@/worklets/comparisons';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
     const liveTokens = $(useLiveTokensStore, state => state.tokens);
     const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
-    const userAssets = $(useUserAssetsStore, state => state.userAssets);
-    const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
+    const userAssets = $(useUserAssetsStore, state => state.listAssets);
+    const isInitialLoad = $(useUserAssetsStore, state => state.isInitialLoad());
+    const hiddenAssets = $(useUserAssetsStore, state => state.hiddenAssets);
     const nativeCurrency = $(userAssetsStoreManager, state => state.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
@@ -24,10 +24,12 @@ export const useLiveWalletBalance = createDerivedStore(
     const positionsBalance = $(usePositionsStore, state => state.getBalance());
     const polymarketAccountValue = $(usePolymarketAccountValueSummary, state => state.totalValueNative);
 
+    if (!initialBalance && isInitialLoad) return null;
+
     let valueDifference = '0';
     if (liveTokens) {
       for (const [tokenId, token] of Object.entries(liveTokens)) {
-        if (!token) continue;
+        if (!token || hiddenAssets.has(tokenId)) continue;
         const userAsset = userAssets.get(tokenId);
         const canUseLivePrice = token.reliability.status === 'PRICE_RELIABILITY_STATUS_TRUSTED';
 
@@ -48,10 +50,8 @@ export const useLiveWalletBalance = createDerivedStore(
     const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
     const otherBalances = add(add(add(positionsBalance, claimablesBalance), perpsBalanceNative), polymarketAccountValue);
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
-    const isLoading = initialBalance === 0 && isFetching;
-
-    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
+    return convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
   },
 
-  { debounce: 250, equalityFn: deepEqual, lockDependencies: true }
+  { debounce: 250, lockDependencies: true }
 );

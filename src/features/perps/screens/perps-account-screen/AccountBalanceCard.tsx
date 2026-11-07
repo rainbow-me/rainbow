@@ -13,7 +13,7 @@ import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidA
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssets';
 import { checkIfReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
@@ -21,7 +21,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
-  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const { navigateToAddCash } = useAddCashRoute();
 

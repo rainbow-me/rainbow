@@ -14,7 +14,7 @@ import { type PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssets';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
@@ -32,7 +32,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
   const hasPosition = !!position;
   const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
-  const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
+  const hasUserAssets = useUserAssetSearchResults(ids => ids.length > 0);
   const { navigateToAddCash } = useAddCashRoute();
 
   const noPositionButton = useMemo(() => {
