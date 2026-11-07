@@ -180,7 +180,7 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEventsPage, P
       },
     };
   },
-  { storageKey: 'polymarketEventsStore', version: 2 }
+  { storageKey: 'polymarketEventsStore', version: 3 }
 );
 
 export const polymarketEventsActions = createStoreActions(usePolymarketEventsStore);

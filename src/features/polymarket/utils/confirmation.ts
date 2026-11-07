@@ -5,6 +5,12 @@ import { RainbowError } from '@/logger';
 
 const CONFIRMATION_TIMEOUT = time.minutes(1);
 
+let latestConfirmedPolygonBlockNumber = 0;
+
+export function getLatestConfirmedPolygonBlockNumber(): number {
+  return latestConfirmedPolygonBlockNumber;
+}
+
 export async function awaitPolygonConfirmation(hash: string, confirmations = 1): Promise<void> {
   const provider = getProvider({ chainId: ChainId.polygon });
   const receipt = await provider.waitForTransaction(hash, confirmations, CONFIRMATION_TIMEOUT);
@@ -12,4 +18,6 @@ export async function awaitPolygonConfirmation(hash: string, confirmations = 1):
   if (receipt.status === 0) {
     throw new RainbowError('[polymarket]: Transaction reverted', { hash });
   }
+
+  latestConfirmedPolygonBlockNumber = Math.max(latestConfirmedPolygonBlockNumber, receipt.blockNumber);
 }

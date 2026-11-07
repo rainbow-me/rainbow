@@ -265,7 +265,7 @@ export function getPolymarketEventsListOutcomes(event: PolymarketEvent): Polymar
 }
 
 function navigateToEvent(event: PolymarketEvent): void {
-  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
+  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, eventSlug: event.slug, event });
 }
 
 function calculateOddsPrice(market: PolymarketMarket): number {

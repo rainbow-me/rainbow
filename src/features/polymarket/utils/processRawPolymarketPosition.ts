@@ -26,7 +26,7 @@ export function processRawPolymarketPosition(
     outcomeIndex: position.outcome_index,
     negativeRisk: position.negative_risk,
     market,
-    marketHasUniqueImage: market.icon !== market.events[0].icon,
+    marketHasUniqueImage: market.icon !== (market.events?.[0].icon ?? market.icon),
     teams,
   };
 }

@@ -182,7 +182,7 @@ export type RawPolymarketMarket = {
   score: number;
   imageOptimized: ImageOptimized;
   iconOptimized: ImageOptimized;
-  events: PolymarketMarketEvent[];
+  events?: PolymarketMarketEvent[] | null;
   categories: Category[];
   tags: Tag[];
   creator: string;
@@ -235,6 +235,7 @@ export type GammaMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionId
 };
 
 export type PolymarketMarket = GammaMarket & {
+  events: PolymarketMarketEvent[] | null;
   color: ResponseByTheme<string>;
   secondaryColor: ResponseByTheme<string> | undefined;
 };
@@ -271,7 +272,7 @@ type Collection = {
   headerImageOptimized: ImageOptimized;
 };
 
-type Series = {
+type EventSeries = {
   id: string;
   ticker: string;
   slug: string;
@@ -305,7 +306,6 @@ type Series = {
   pythTokenID: string;
   cgAssetName: string;
   score: number;
-  events: Array<Record<string, any>>; // Circular reference to Event
   collections: Collection[];
   categories: Category[];
   tags: Tag[];
@@ -367,7 +367,7 @@ export type RawPolymarketEvent = {
   featuredImageOptimized: ImageOptimized;
   subEvents: string[];
   markets: RawPolymarketMarket[];
-  series: Series[];
+  series?: EventSeries[];
   categories: Category[];
   collections: Collection[];
   tags: Tag[];

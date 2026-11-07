@@ -24,7 +24,8 @@ import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { retryPolymarketBalance, useAvailablePolymarketBalance } from '@/features/polymarket/stores/derived/useAvailablePolymarketBalance';
-import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
+import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/polymarketOrderExecution';
 import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
@@ -122,7 +123,7 @@ function NewPositionForm({
 }: {
   accentColor: string;
   balance: string;
-  details: PolymarketOrderDetails;
+  details: PolymarketOrderDetails | SportsOrderDetails;
   fromRoute: Route;
 }) {
   const { event, market, outcomeIndex } = details;

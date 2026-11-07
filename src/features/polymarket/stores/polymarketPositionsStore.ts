@@ -1,10 +1,20 @@
-import { createQueryStore, createStoreActions } from '@storesjs/stores';
+import { createQueryStore, createStoreActions, getQueryKey, type SetDataParams } from '@storesjs/stores';
+import { type Address } from 'viem';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
 import { POLYMARKET_DATA_API_URL } from '@/features/polymarket/constants';
+import { buildPolymarketCacheUpdate } from '@/features/polymarket/stores/buildPolymarketCacheUpdate';
 import { usePolymarketClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
-import { type PolymarketPosition, type RawPolymarketPosition } from '@/features/polymarket/types';
+import { type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import { createPolymarketPositionOptimisticUpdater } from '@/features/polymarket/stores/polymarketPositionOptimisticUpdater';
+import {
+  type PolymarketOrderAmounts,
+  type PolymarketPosition,
+  type PolymarketPositionsByAsset,
+  type RawPolymarketPosition,
+} from '@/features/polymarket/types';
 import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { buildAcceptedBuyPosition } from '@/features/polymarket/utils/buildAcceptedPolymarketPosition';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { gammaMarketsUrl } from '@/features/polymarket/utils/marketProtocol';
@@ -15,115 +25,221 @@ import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { RainbowError } from '@/logger';
 
-// ============ Types ========================================================== //
-
-type PolymarketPositionsStoreActions = {
-  getPositions: () => PolymarketPosition[] | undefined;
-  getEventPositions: (eventId: string) => PolymarketPosition[];
-  getPosition: (asset: string) => PolymarketPosition | undefined;
-};
+// ============ Core Types ===================================================== //
 
 type PolymarketPositionsParams = {
-  address: string | null;
+  proxyAddress: Address | null;
 };
 
-type FetchPolymarketPositionsResponse = {
-  positions: PolymarketPosition[];
+export type PolymarketPositionUpdate = {
+  discard: () => void;
 };
 
-// ============ Store ========================================================== //
+export type PolymarketBuyPositionUpdate = PolymarketPositionUpdate & {
+  publish: (details: PolymarketOrderDetails, amounts: PolymarketOrderAmounts) => void;
+  amend: (amounts: PolymarketOrderAmounts) => void;
+};
 
-export const usePolymarketPositionsStore = createQueryStore<
-  FetchPolymarketPositionsResponse,
-  PolymarketPositionsParams,
-  PolymarketPositionsStoreActions
->(
-  {
-    enabled: $ => $(usePolymarketClients, s => s.proxyAddress !== null),
-    fetcher: fetchPolymarketPositions,
-    params: { address: $ => $(usePolymarketClients, s => s.proxyAddress) },
-    staleTime: time.seconds(30),
-  },
+type PolymarketPositionsStoreActions = {
+  beginBuy: (params: { asset: string; proxyAddress: Address }) => PolymarketBuyPositionUpdate;
+  remove: (position: PolymarketPosition) => PolymarketPositionUpdate;
+  getPosition: (asset: string, proxyAddress: Address) => PolymarketPosition | undefined;
+};
 
-  (_, get) => ({
-    getPositions: () => get().getData()?.positions,
-    getEventPositions: (eventId: string) => {
-      const positions = get().getData()?.positions;
-      return positions?.filter(position => position.eventId === eventId) ?? [];
-    },
-    getPosition: (asset: string) => {
-      const positions = get().getData()?.positions;
-      return positions?.find(position => position.asset === asset);
-    },
-  }),
-  {
-    storageKey: 'polymarketPositions',
-    version: 2,
-  }
-);
+// ============ Constants ====================================================== //
+
+const STALE_TIME = time.seconds(30);
+const OPTIMISTIC_POSITION_CONFLICT_WINDOW = time.minutes(2);
+const EMPTY_POSITIONS: PolymarketPositionsByAsset = Object.freeze({});
+
+// ============ Positions Store ================================================ //
+
+export const usePolymarketPositionsStore = createPolymarketPositionsStore();
 
 export const polymarketPositionsActions = createStoreActions(usePolymarketPositionsStore);
 
-// ============ Fetching ======================================================= //
+function createPolymarketPositionsStore() {
+  let nextOperationId = 0;
+  const optimisticPositions = createPolymarketPositionOptimisticUpdater(OPTIMISTIC_POSITION_CONFLICT_WINDOW);
+
+  const store = createQueryStore<PolymarketPositionsByAsset, PolymarketPositionsParams, PolymarketPositionsStoreActions>(
+    {
+      enabled: $ => $(usePolymarketClients, state => state.proxyAddress !== null),
+      fetcher: fetchPolymarketPositions,
+      params: { proxyAddress: $ => $(usePolymarketClients, state => state.proxyAddress) },
+      setData: setPolymarketPositionsData,
+      staleTime: STALE_TIME,
+    },
+
+    (_, get) => ({
+      beginBuy,
+      remove: removePosition,
+      getPosition: (asset, proxyAddress) => get().getData({ proxyAddress })?.[asset],
+    }),
+
+    { storageKey: 'polymarketPositions', version: 3 }
+  );
+
+  // ========== Pending Position Changes ==========
+
+  function beginBuy({ asset, proxyAddress }: { asset: string; proxyAddress: Address }): PolymarketBuyPositionUpdate {
+    const operationId = nextOperationId;
+    nextOperationId += 1;
+
+    const queryKey = getQueryKey({ proxyAddress });
+    const positions = store.getState().getData(queryKey);
+    let details: PolymarketOrderDetails | undefined;
+
+    if (positions) {
+      optimisticPositions.track({
+        apply: position => position,
+        asset,
+        canConfirmFromBackend: false,
+        operationId,
+        positions,
+        proxyAddress,
+      });
+    }
+
+    function update(phase: 'accept' | 'amend', buy: PolymarketOrderDetails, positionAmounts: PolymarketOrderAmounts): void {
+      store.setState(state => {
+        const cached = state.getCacheEntry(queryKey)?.data;
+
+        if (phase === 'accept' && (!cached || !asset || !buy.market.outcomes[buy.outcomeIndex])) return state;
+
+        const positions = optimisticPositions[phase]({
+          apply: currentPosition =>
+            buildAcceptedBuyPosition({ ...buy, positionAmounts, proxyWallet: proxyAddress, currentPosition }) ?? currentPosition,
+          asset,
+          operationId,
+          positions: cached ?? EMPTY_POSITIONS,
+          proxyAddress,
+        });
+
+        return positions ? buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME) : state;
+      });
+    }
+
+    return {
+      publish: (buy, amounts) => {
+        details = buy;
+        update('accept', buy, amounts);
+      },
+      amend: amounts => {
+        if (details) update('amend', details, amounts);
+      },
+      discard: () => discardPosition({ asset, operationId, proxyAddress }),
+    };
+  }
+
+  function removePosition(position: PolymarketPosition): PolymarketPositionUpdate {
+    const operationId = nextOperationId;
+    nextOperationId += 1;
+
+    const proxyAddress = position.proxyWallet;
+
+    store.setState(state => {
+      const queryKey = getQueryKey({ proxyAddress });
+      const currentPositions = state.getCacheEntry(queryKey)?.data;
+      const positions = optimisticPositions.track({
+        apply: () => undefined,
+        asset: position.asset,
+        canConfirmFromBackend: false,
+        operationId,
+        positions: currentPositions ?? { [position.asset]: position },
+        proxyAddress,
+      });
+
+      return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME);
+    });
+
+    return { discard: () => discardPosition({ asset: position.asset, operationId, proxyAddress }) };
+  }
+
+  function discardPosition(params: { asset: string; operationId: number; proxyAddress: Address }): void {
+    store.setState(state => {
+      const queryKey = getQueryKey({ proxyAddress: params.proxyAddress });
+      const positions = optimisticPositions.discard({
+        ...params,
+        positions: state.getCacheEntry(queryKey)?.data ?? EMPTY_POSITIONS,
+      });
+
+      return positions ? buildPolymarketCacheUpdate(state.queryCache, queryKey, positions, STALE_TIME) : state;
+    });
+  }
+
+  // ========== Cache Reconciliation ==========
+
+  function setPolymarketPositionsData({
+    data,
+    params,
+    queryKey,
+    set,
+  }: SetDataParams<PolymarketPositionsByAsset, PolymarketPositionsParams, PolymarketPositionsStoreActions>) {
+    set(state => {
+      const proxyAddress = params.proxyAddress;
+      const positions = proxyAddress ? optimisticPositions.mergeBackendPositions(proxyAddress, data) : data;
+      return buildPolymarketCacheUpdate(state.queryCache, queryKey, positions);
+    });
+  }
+
+  return store;
+}
+
+// ============ Position Fetching ============================================== //
 
 async function fetchPolymarketPositions(
-  { address }: PolymarketPositionsParams,
+  { proxyAddress }: PolymarketPositionsParams,
   abortController: AbortController | null
-): Promise<FetchPolymarketPositionsResponse> {
-  if (!address) throw new RainbowError('[PolymarketPositionsStore] Address is required');
+): Promise<PolymarketPositionsByAsset> {
+  if (!proxyAddress) throw new RainbowError('[PolymarketPositionsStore] Proxy address is required');
 
   const { data: page } = await rainbowFetch<{ data: RawPolymarketPosition[] }>(`${POLYMARKET_DATA_API_URL}/positions`, {
-    params: { user: address, filter_amount: '1' },
+    params: { user: proxyAddress, filter_amount: '1' },
     abortController,
     timeout: time.seconds(15),
   });
 
   const rawPositions = page.data;
-  if (!rawPositions.length) return { positions: [] };
+  if (!rawPositions.length) return EMPTY_POSITIONS;
 
   const rawMarkets = await fetchPolymarketMarkets(rawPositions, abortController);
-  const [markets, teams] = await Promise.all([preparePolymarketMarkets(rawMarkets), fetchTeamsForGameMarkets(rawMarkets, abortController)]);
+  if (!rawMarkets.length) return EMPTY_POSITIONS;
 
-  const positions: PolymarketPosition[] = [];
-  for (const position of rawPositions) {
-    const market = markets[position.slug];
+  const [markets, teams] = await Promise.all([preparePolymarketMarkets(rawMarkets), fetchTeamsForGameMarkets(rawMarkets, abortController)]);
+  const positions: PolymarketPositionsByAsset = {};
+
+  for (const rawPosition of rawPositions) {
+    const market = markets[rawPosition.slug];
     if (!market) continue;
-    const ticker = market.events[0]?.ticker;
-    positions.push(processRawPolymarketPosition(position, market, ticker ? teams[ticker] : undefined));
+    const ticker = market.events?.[0].ticker;
+    const position = processRawPolymarketPosition(rawPosition, market, ticker ? teams[ticker] : undefined);
+    positions[position.asset] = position;
   }
 
-  return {
-    positions: sortPositions(positions),
-  };
+  return positions;
 }
+
+// ============ Market Enrichment ============================================== //
 
 async function fetchPolymarketMarkets(
   positions: RawPolymarketPosition[],
   abortController: AbortController | null
 ): Promise<RawPolymarketMarket[]> {
-  const slugsByStatus: Partial<Record<'open' | 'closed', Set<string>>> = {};
-  for (const { slug, redeemable } of positions) {
-    const status = redeemable ? 'closed' : 'open';
-    (slugsByStatus[status] ??= new Set()).add(slug);
-  }
+  const slugs = new Set<string>();
+  for (const position of positions) slugs.add(position.slug);
 
-  const responses = await Promise.all(
-    Object.entries(slugsByStatus).map(async ([status, slugs]) => {
-      const url = gammaMarketsUrl('markets');
-      url.searchParams.set('closed', String(status === 'closed'));
-      url.searchParams.set('limit', String(slugs.size));
-      for (const slug of slugs) url.searchParams.append('slug', slug);
+  const url = gammaMarketsUrl('markets');
+  url.searchParams.set('closed', 'any');
+  url.searchParams.set('limit', String(slugs.size));
+  for (const slug of slugs) url.searchParams.append('slug', slug);
 
-      const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
-        abortController,
-        timeout: time.seconds(15),
-      });
+  const { data } = await rainbowFetch<RawPolymarketMarket[]>(url.toString(), {
+    abortController,
+    timeout: time.seconds(15),
+  });
 
-      return data;
-    })
-  );
-
-  return responses.flat();
+  return data;
 }
 
 async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Promise<Partial<Record<string, PolymarketMarket>>> {
@@ -131,25 +247,12 @@ async function preparePolymarketMarkets(rawMarkets: RawPolymarketMarket[]): Prom
 
   await Promise.all(
     rawMarkets.map(async market => {
-      const rawColor = await getImagePrimaryColor(market.events[0].icon);
-      const color = getHighContrastColor(rawColor) ?? getColorBySeed(market.events[0].id);
+      const event = market.events?.[0];
+      const rawColor = await getImagePrimaryColor(event?.icon ?? market.icon);
+      const color = getHighContrastColor(rawColor) ?? getColorBySeed(event?.id ?? market.conditionId);
       markets[market.slug] = processRawPolymarketMarket(market, color);
     })
   );
 
   return markets;
-}
-
-function getPositionSortPriority(position: PolymarketPosition): number {
-  if (!position.redeemable) return 0;
-  if (position.size === position.currentValue) return 1;
-  return 2;
-}
-
-function sortPositions(positions: PolymarketPosition[]): PolymarketPosition[] {
-  return positions.sort((a, b) => {
-    const priorityDiff = getPositionSortPriority(a) - getPositionSortPriority(b);
-    if (priorityDiff !== 0) return priorityDiff;
-    return b.currentValue - a.currentValue;
-  });
 }

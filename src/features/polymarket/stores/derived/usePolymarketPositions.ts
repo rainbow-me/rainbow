@@ -7,39 +7,50 @@ import { shallowEqual } from '@/worklets/comparisons';
 export type PolymarketPositions = {
   positions: PolymarketPosition[];
   activePositions: PolymarketPosition[];
-  redeemablePositions: PolymarketPosition[];
   lostPositions: PolymarketPosition[];
-  hasPositions: boolean;
 };
-
-const EMPTY_POSITIONS: PolymarketPosition[] = [];
 
 const EMPTY_RESULT: PolymarketPositions = {
   positions: [],
   activePositions: [],
-  redeemablePositions: [],
   lostPositions: [],
-  hasPositions: false,
 };
 
 export const usePolymarketPositions = createDerivedStore<PolymarketPositions>(
   $ => {
-    const positions = $(usePolymarketPositionsStore, state => state.getPositions() ?? EMPTY_POSITIONS);
+    const positionsByAsset = $(usePolymarketPositionsStore, state => state.getData());
+    if (!positionsByAsset) return EMPTY_RESULT;
 
+    const positions = Object.values(positionsByAsset).sort(comparePositions);
     if (!positions.length) return EMPTY_RESULT;
 
-    const activePositions = positions.filter(position => !(position.redeemable && position.currentValue === 0));
-    const redeemablePositions = positions.filter(position => position.redeemable);
-    const lostPositions = positions.filter(position => position.redeemable && position.currentValue === 0);
+    const activePositions: PolymarketPosition[] = [];
+    const lostPositions: PolymarketPosition[] = [];
 
-    return {
-      positions,
-      activePositions,
-      redeemablePositions,
-      lostPositions,
-      hasPositions: true,
-    };
+    for (const position of positions) {
+      if (position.redeemable && position.currentValue === 0) {
+        lostPositions.push(position);
+      } else {
+        activePositions.push(position);
+      }
+    }
+
+    return { positions, activePositions, lostPositions };
   },
 
   { equalityFn: shallowEqual, lockDependencies: true }
 );
+
+// ============ Position Ordering ============================================== //
+
+function comparePositions(a: PolymarketPosition, b: PolymarketPosition): number {
+  const priorityDiff = getPositionSortPriority(a) - getPositionSortPriority(b);
+  if (priorityDiff !== 0) return priorityDiff;
+  return b.currentValue - a.currentValue;
+}
+
+function getPositionSortPriority(position: PolymarketPosition): number {
+  if (!position.redeemable) return 0;
+  if (position.size === position.currentValue) return 1;
+  return 2;
+}

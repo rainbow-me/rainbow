@@ -173,7 +173,7 @@ function PredictionListItem({
   const handlePress = useCallback(() => {
     const { event } = item;
     onPress({ marketId: event.id, marketName: event.title, marketSlug: event.slug, marketSymbol: event.ticker });
-    navigateToPolymarketEvent({ event, eventId: event.id });
+    navigateToPolymarketEvent({ eventId: event.id, eventSlug: event.slug, event });
   }, [item, onPress]);
 
   return (

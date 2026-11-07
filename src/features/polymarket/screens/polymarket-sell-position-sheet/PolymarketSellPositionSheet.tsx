@@ -41,13 +41,15 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.manage_position.cashing_out));
-  const position = usePolymarketPositionsStore(s => s.getPosition(initialPosition.asset) ?? initialPosition);
+  const position = usePolymarketPositionsStore(
+    state => state.getPosition(initialPosition.asset, initialPosition.proxyWallet) ?? initialPosition
+  );
 
   const sellAmountTokens = String(position.size);
   const executionStore = useMemo(() => createSellExecutionStore(sellAmountTokens), [sellAmountTokens]);
 
   const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
-    eventTitle: position.market.events[0]?.title ?? '',
+    eventTitle: position.market.events?.[0].title ?? '',
     market: position.market,
     outcome: position.outcome,
     outcomeIndex: position.outcomeIndex,
