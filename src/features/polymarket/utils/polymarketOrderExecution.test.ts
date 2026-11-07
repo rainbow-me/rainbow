@@ -455,6 +455,66 @@ describe('polymarketOrderExecution', () => {
   });
 
   it.each([
+    { side: 'buy', order: { status: 'MATCHED', associate_trades: ['trade'] } },
+    { side: 'sell', order: null },
+  ])('keeps a delayed $side pending until its own fill is available', async ({ side, order }) => {
+    client.createAndPostMarketOrder.mockResolvedValue(
+      orderResult({ status: 'delayed', takingAmount: '', makingAmount: '', transactionsHashes: [] })
+    );
+    client.getOrder.mockResolvedValue(order);
+    const fill = {
+      id: 'trade',
+      taker_order_id: 'order',
+      asset_id: '101',
+      size: '6.72',
+      price: '0.6',
+      maker_orders: [{ asset_id: '102', matched_amount: '6.72', price: '0.4' }],
+      status: 'MATCHED',
+      transaction_hash: side === 'sell' ? '0xsettlement' : undefined,
+    };
+    const poll = deferred<(typeof fill)[]>();
+    client.getTrades
+      .mockResolvedValueOnce([{ ...fill, id: 'another-trade', taker_order_id: 'another-order' }])
+      .mockReturnValueOnce(poll.promise);
+    const receipt = deferred<void>();
+    vi.mocked(awaitPolygonConfirmation).mockReturnValue(receipt.promise);
+
+    const submission =
+      side === 'buy'
+        ? executePolymarketBuyPosition(buyParams())
+        : executePolymarketSellPosition({ position: createPosition(), orderQuote: buyParams().orderQuote });
+    const completed = vi.fn();
+    void submission.then(completed);
+    await vi.waitFor(() => expect(client.getTrades).toHaveBeenCalledTimes(2));
+    expect(completed).not.toHaveBeenCalled();
+    expect(balanceUpdate.apply).not.toHaveBeenCalled();
+    expect(positionUpdate.publish).not.toHaveBeenCalled();
+    expect(polymarketPositionsActions.remove).not.toHaveBeenCalled();
+
+    poll.resolve([fill]);
+    const { followUp } = await submission;
+    expect(balanceUpdate.apply).toHaveBeenCalledWith(side === 'buy' ? '-4.152' : '3.912');
+    expect(collectPolymarketTradeFee).not.toHaveBeenCalled();
+    receipt.resolve();
+    await followUp;
+    expect(client.getTrades).toHaveBeenCalledTimes(side === 'sell' ? 2 : 3);
+    expect(awaitPolygonConfirmation).toHaveBeenCalledExactlyOnceWith('0xsettlement');
+    expect(collectPolymarketTradeFee).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ matchedAmounts: { tokens: '6.72', usd: '4.032' } })
+    );
+  });
+
+  it('discards a delayed buy when Polymarket cancels it', async () => {
+    client.createAndPostMarketOrder.mockResolvedValue(orderResult({ status: 'delayed' }));
+    client.getOrder.mockResolvedValue({ status: 'CANCELED' });
+    await expect(executePolymarketBuyPosition(buyParams())).rejects.toThrow('canceled');
+    expect(positionUpdate.discard).toHaveBeenCalledOnce();
+    expect(balanceUpdate.discard).toHaveBeenCalledOnce();
+    expect(balanceUpdate.apply).not.toHaveBeenCalled();
+    expect(collectPolymarketTradeFee).not.toHaveBeenCalled();
+  });
+
+  it.each([
     { side: 'buy', adjustment: '1', amendments: [[{ tokens: '8', usd: '4' }]] },
     { side: 'sell', adjustment: '-1', amendments: [] },
   ])('reconciles a delayed lower $side fill on the original account after an account switch', async ({ side, adjustment, amendments }) => {

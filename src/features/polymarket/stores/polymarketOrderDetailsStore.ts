@@ -26,7 +26,17 @@ export type SportsOrderDetails = {
   event: RawPolymarketEvent;
   market: Pick<
     PolymarketMarket,
-    'version' | 'conditionId' | 'negRisk' | 'slug' | 'icon' | 'groupItemTitle' | 'question' | 'line' | 'outcomes' | 'clobTokenIds'
+    | 'version'
+    | 'conditionId'
+    | 'secondsDelay'
+    | 'negRisk'
+    | 'slug'
+    | 'icon'
+    | 'groupItemTitle'
+    | 'question'
+    | 'line'
+    | 'outcomes'
+    | 'clobTokenIds'
   >;
   outcomeIndex: number;
 };
@@ -56,6 +66,7 @@ export async function fetchOrderDetails(
     event: { ...event, markets: [rawMarket] },
     market: {
       conditionId: rawMarket.conditionId,
+      secondsDelay: rawMarket.secondsDelay,
       negRisk: rawMarket.negRisk,
       slug: rawMarket.slug,
       icon: rawMarket.icon,
