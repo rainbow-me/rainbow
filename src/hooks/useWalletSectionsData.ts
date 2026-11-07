@@ -7,6 +7,7 @@ import { IS_TEST } from '@/env';
 import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { isDataComplete } from '@/features/nfts/core/uniqueId';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { usePerpsPositionsInfo, type PerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { type PerpsWalletListData } from '@/features/perps/types';
@@ -27,7 +28,6 @@ import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { isDataComplete } from '@/state/nfts/utils';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 

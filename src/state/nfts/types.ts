@@ -20,33 +20,34 @@ export type PaginationInfo = {
   total_elements?: number;
 };
 
-export type NftsQueryData = {
-  collections: Map<CollectionId, Collection>;
-  nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
-  pagination: PaginationInfo | null;
-};
-
+/** A collection summary and, when fetched, its complete ordered ownership result. */
 export type Collection = {
   id: CollectionId;
   name: string;
   imageUrl: string | null | undefined;
   totalCount: string;
+  nfts?: { ids: UniqueId[]; fetchedAt: number };
 };
 
-export type NftsByCollection = Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+/** Parsed summary pages or token metadata. The collection action establishes owned IDs. */
+export type NftsQueryData =
+  | {
+      kind: 'page';
+      collections: Map<CollectionId, Collection>;
+      pagination: PaginationInfo | null;
+    }
+  | { kind: 'tokens'; nfts: Map<UniqueId, UniqueAsset> };
 
 export interface NftsState {
   collections: Map<CollectionId, Collection>;
-  nftsByCollection: NftsByCollection;
+  nfts: Map<UniqueId, UniqueAsset>;
   fetchedPages: { [pageKey: string]: number };
-  fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;
   fetchNextNftCollectionPage: () => Promise<void>;
   fetchNftCollection: (collectionId: CollectionId, force?: boolean) => Promise<void>;
   getNftCollections: () => Map<CollectionId, Collection> | null;
   getNftCollection: (collectionId: CollectionId) => Collection | null;
-  getNftsByCollection: (collectionId: CollectionId) => Map<UniqueId, UniqueAsset> | null;
-  getNftByUniqueId: (collectionId: CollectionId, uniqueId: UniqueId) => UniqueAsset | null;
+  getNftByUniqueId: (uniqueId: UniqueId) => UniqueAsset | null;
   getNft: (collectionId: CollectionId, index: number) => UniqueAsset | null;
   getNftPaginationInfo: () => PaginationInfo | null;
   hasNextNftCollectionPage: () => boolean;
@@ -54,16 +55,19 @@ export interface NftsState {
   getNextNftCollectionPageKey: () => string | null;
 }
 
-export type NftsStoreType = OptionallyPersistedStore<QueryStoreState<NftsQueryData, NftParams, NftsState>, Partial<NftsState>>;
-
-export type QueryEnabledNftsState = ReturnType<NftsStoreType['getState']>;
+export type NftsStoreType = OptionallyPersistedStore<QueryStoreState<NftsQueryData, NftParams, NftsState>, PersistedNftsState>;
 
 export interface OpenCollectionsState {
   openCollections: Record<CollectionId, boolean>;
   insertionOrder: CollectionId[]; // Tracks the order in which collections were opened
-  toggleCollection: (collectionIdOrLegacyName: CollectionId | CollectionName) => void;
+  toggleCollection: (collectionIdOrLegacyName: CollectionId | CollectionName) => boolean;
   isCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName) => boolean;
   setCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName, isOpen: boolean) => void;
 }
 
 export type OpenCollectionsStoreType = OptionallyPersistedStore<OpenCollectionsState, Partial<OpenCollectionsState>>;
+
+/** Stored parsed data. The legacy nested map is accepted only by the version migration. */
+export type PersistedNftsState = Partial<Pick<NftsState, 'collections' | 'nfts' | 'fetchedPages' | 'pagination'>> & {
+  nftsByCollection?: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+};

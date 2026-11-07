@@ -1,24 +1,14 @@
-import { time } from '@/framework/core/utils/time';
+import { isDataComplete } from '@/features/nfts/core/uniqueId';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { logger, RainbowError } from '@/logger';
 import { getPreference } from '@/model/preferences';
-import { queryClient } from '@/react-query';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { useOpenCollectionsStore } from './openCollectionsStore';
-import { isDataComplete, migrateTokens } from './utils';
+import { migrateTokens } from './utils';
 
 const EMPTY_TOKEN_IDS: string[] = [];
-const TOKEN_PREFERENCES_STALE_TIME = time.minutes(10);
-
-export function hiddenTokensQueryKey({ address }: { address: string }): ['hidden-tokens', string] {
-  return ['hidden-tokens', address];
-}
-
-export function showcaseTokensQueryKey({ address }: { address: string }): ['showcase-tokens', string] {
-  return ['showcase-tokens', address];
-}
 
 async function migratePreferenceTokenIds(address: string, category: 'hidden' | 'showcase', tokenIds: string[]): Promise<string[]> {
   const isReadOnlyWallet = getWalletWithAccount(address)?.type === EthereumWalletType.readOnly;
@@ -61,24 +51,3 @@ export async function getShowcaseTokenIds(address: string): Promise<string[]> {
   if (!isDataComplete(tokenIds)) return migratePreferenceTokenIds(address, 'showcase', tokenIds);
   return tokenIds.map(tokenId => tokenId.toLowerCase());
 }
-
-export function fetchHiddenTokens({ address }: { address: string }): Promise<string[]> {
-  return queryClient.fetchQuery({
-    queryKey: hiddenTokensQueryKey({ address }),
-    queryFn: () => getHiddenTokenIds(address),
-    cacheTime: time.infinity,
-    staleTime: TOKEN_PREFERENCES_STALE_TIME,
-  });
-}
-
-export function fetchShowcaseTokens({ address }: { address: string }): Promise<string[]> {
-  return queryClient.fetchQuery({
-    queryKey: showcaseTokensQueryKey({ address }),
-    queryFn: () => getShowcaseTokenIds(address),
-  });
-}
-
-export const tokenPreferencesQueryOptions = {
-  cacheTime: time.infinity,
-  staleTime: TOKEN_PREFERENCES_STALE_TIME,
-};

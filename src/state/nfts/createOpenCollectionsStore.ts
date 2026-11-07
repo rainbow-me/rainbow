@@ -1,7 +1,7 @@
 import { createBaseStore } from '@storesjs/stores';
 import { isAddress, type Address } from 'viem';
 
-import { parseUniqueId } from '@/resources/nfts/utils';
+import { parseUniqueId } from '@/features/nfts/core/uniqueId';
 
 import { type OpenCollectionsState, type OpenCollectionsStoreType } from './types';
 
@@ -22,7 +22,6 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
           // Skip all insertion order logic for legacy collections
           if (!isNewFormat) {
             return {
-              ...state,
               openCollections: {
                 ...state.openCollections,
                 [normalizedKey]: !state.openCollections[normalizedKey],
@@ -39,7 +38,6 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
             const newInsertionOrder = state.insertionOrder.filter(id => id !== normalizedKey);
 
             return {
-              ...state,
               openCollections: newOpenCollections,
               insertionOrder: newInsertionOrder,
             };
@@ -59,12 +57,12 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
             newInsertionOrder.push(normalizedKey);
 
             return {
-              ...state,
               openCollections: newOpenCollections,
               insertionOrder: newInsertionOrder,
             };
           }
         });
+        return get().openCollections[collectionIdOrLegacyName.toLowerCase()] ?? false;
       },
 
       setCollectionOpen: (collectionIdOrLegacyName, isOpen) => {
@@ -76,7 +74,6 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
           // Skip all insertion order logic for legacy collections
           if (!isNewFormat) {
             return {
-              ...state,
               openCollections: {
                 ...state.openCollections,
                 [normalizedKey]: isOpen,
@@ -125,12 +122,15 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
         return get().openCollections[collectionIdOrLegacyName.toLowerCase()] ?? false;
       },
     }),
-    {
-      storageKey: `open-collections_${address.toLowerCase()}`,
-      version: 1,
-      partialize: state => ({
-        openCollections: state.openCollections,
-        insertionOrder: state.insertionOrder,
-      }),
-    }
-  ) as OpenCollectionsStoreType;
+
+    address
+      ? {
+          storageKey: `open-collections_${address.toLowerCase()}`,
+          version: 1,
+          partialize: state => ({
+            openCollections: state.openCollections,
+            insertionOrder: state.insertionOrder,
+          }),
+        }
+      : undefined
+  );
