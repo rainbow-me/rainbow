@@ -4,8 +4,8 @@ import { NFTS_ENABLED } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { nftsStoreActions } from '@/state/nfts/nfts';
+import { openCollectionsActions, useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 import { TokenFamilyHeader } from '../../token-family';
@@ -26,12 +26,11 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(uid));
 
   const handleToggle = useLatestCallback(() => {
-    useOpenCollectionsStore.getState().toggleCollection(uid);
+    const newIsOpen = openCollectionsActions.toggleCollection(uid);
 
     // from closed -> open, let's fetch the inner nft metadata
-    if (!isOpen) {
-      const force = (useNftsStore.getState().getNftsByCollection(uid.toLowerCase())?.size || 0) !== (total || 0);
-      useNftsStore.getState().fetchNftCollection(uid.toLowerCase(), force);
+    if (newIsOpen) {
+      nftsStoreActions.fetchNftCollection(uid.toLowerCase());
     }
   });
 

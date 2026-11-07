@@ -1,31 +1,11 @@
-import { isAddress, type Address } from 'viem';
+import { type Address } from 'viem';
 
 import { type AssetType } from '@/entities/assetTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { Network, type ChainId } from '@/features/network/types/backendNetworks';
+import { parseUniqueId } from '@/features/nfts/core/uniqueId';
 import { type GetNftsByCollectionQuery } from '@/graphql/__generated__/arc';
 import { handleNFTImages } from '@/utils/handleNFTImages';
-
-export function parseUniqueId(uniqueId: string): {
-  network?: Network;
-  contractAddress: Address;
-  tokenId: string;
-} {
-  const parts = uniqueId.split('_');
-  if (parts.length === 2 && isAddress(parts[0])) {
-    const [contractAddress, tokenId] = parts;
-    return {
-      contractAddress: contractAddress as Address,
-      tokenId,
-    };
-  }
-  const [network, contractAddress, tokenId] = parts;
-  return {
-    network: network as Network,
-    contractAddress: contractAddress as Address,
-    tokenId,
-  };
-}
 
 function buildMarketplaceData(nft: GetNftsByCollectionQuery['nftsByCollection'][number]):
   | {
