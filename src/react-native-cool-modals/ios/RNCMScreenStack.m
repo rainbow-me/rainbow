@@ -213,7 +213,7 @@
 {
   UIViewController *controller = screen.controller;
   if ([_dismissingModals containsObject:controller]) return;
-  PanModalViewController *presenter = (PanModalViewController *)[(RNCMScreen *)controller parentVC];
+  PanModalViewController *presenter = screen.controller.panModalController;
   if (presenter == nil || presenter.presentingViewController == nil) return;
 
   [_dismissingModals addObject:controller];
@@ -268,7 +268,7 @@
   for (NSInteger i = presented.count - 1; i >= 0; i--) {
     RNCMScreen *controller = (RNCMScreen *)presented[i];
     RNCMScreenView *screen = (RNCMScreenView *)controller.view;
-    PanModalViewController *presenter = (PanModalViewController *)[controller parentVC];
+    PanModalViewController *presenter = controller.panModalController;
     BOOL rebuild = rebuildFrom != NSNotFound && (NSUInteger)i >= rebuildFrom;
     BOOL wanted = [desired containsObject:controller] && !rebuild;
     screen.userInteractionEnabled = wanted && !screen.skipsOnReturn;
@@ -294,7 +294,7 @@
   }
 
   for (RNCMScreen *controller in _presentedModals) {
-    PanModalViewController *modal = (PanModalViewController *)[controller parentVC];
+    PanModalViewController *modal = controller.panModalController;
     if (modal.dismissing || modal.isBeingDismissed || modal.isBeingPresented) return;
     presenter = modal;
   }
@@ -302,7 +302,7 @@
   if (desiredIndex >= desired.count || presenter == nil ||
       (presenter.parentViewController == nil && presenter.presentingViewController == nil)) return;
 
-  UIViewController *next = desired[desiredIndex];
+  RNCMScreen *next = (RNCMScreen *)desired[desiredIndex];
   _presentingModal = next;
   [_presentedModals addObject:next];
   __weak RNCMScreenStackView *weakSelf = self;
@@ -438,7 +438,7 @@
   [_dismissingModals removeAllObjects];
   _presentingModal = nil;
   for (RNCMScreen *controller in presented) {
-    [[controller parentVC] dismissViewControllerAnimated:NO completion:nil];
+    [controller.panModalController dismissViewControllerAnimated:NO completion:nil];
   }
   [_controller.view removeFromSuperview];
   [_controller willMoveToParentViewController:nil];
