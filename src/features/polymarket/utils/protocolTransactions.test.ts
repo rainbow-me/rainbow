@@ -14,34 +14,49 @@ import {
   POLYMARKET_ROUTER,
 } from '../constants';
 import { getPolymarketWallet } from '../stores/derived/usePolymarketClients';
+import { createMarket, createPosition } from '../test/fixtures';
 import { redeemPosition } from './redeemPosition';
 import { ensureTradingApprovals } from './tradingApprovals';
 
 const call = vi.hoisted(() => vi.fn());
 const wallet = '0x0000000000000000000000000000000000000001';
+const relayResponse = {
+  transactionID: 'redemption-1',
+  state: 'STATE_NEW',
+  wait: async () => ({ transactionID: 'redemption-1', state: 'STATE_CONFIRMED' }),
+};
 const executeBatch = vi
-  .fn<(transactions: SafeTransaction[], description: string) => Promise<{ wait: () => Promise<{ state: string }> }>>()
-  .mockResolvedValue({ wait: async () => ({ state: 'STATE_CONFIRMED' }) });
+  .fn<(transactions: SafeTransaction[], description: string) => Promise<typeof relayResponse>>()
+  .mockResolvedValue(relayResponse);
 const orderWallet = { address: wallet, execute: vi.fn() } as const;
 const asset = '257'; // bytes31 condition 1, outcome 1
-const position = {
+const position = createPosition({
   asset,
   proxyWallet: wallet,
   conditionId: toHex(42, { size: 32 }),
   size: 11.7727,
-  market: { version: 'v2', clobTokenIds: ['256', asset] },
+  market: { ...createMarket(), version: 'v2', clobTokenIds: ['256', asset] },
   negativeRisk: false,
+  redeemable: true,
   currentValue: 11.7727,
   slug: 'market',
   eventSlug: 'event',
   outcome: 'No',
-} satisfies Parameters<typeof redeemPosition>[0];
+});
 
 vi.mock('@/analytics', () => ({ analytics: { track: vi.fn(), event: {} } }));
 vi.mock('@/handlers/web3', () => ({ getProvider: () => ({ call }) }));
 vi.mock('../stores/derived/usePolymarketClients', () => ({
   getPolymarketWallet: vi.fn(async () => ({ address: wallet, execute: executeBatch })),
 }));
+vi.mock('../stores/polymarketBalanceStore', () => ({
+  polymarketBalanceActions: { beginUpdate: () => ({ apply: vi.fn(), finalize: vi.fn(), discard: vi.fn() }) },
+}));
+vi.mock('../stores/polymarketPositionsStore', () => ({
+  polymarketPositionsActions: { remove: () => ({ discard: vi.fn() }) },
+}));
+vi.mock('./refetchPolymarketStores', () => ({ refetchPolymarketStores: vi.fn() }));
+
 afterEach(() => {
   vi.restoreAllMocks();
   vi.clearAllMocks();
@@ -55,7 +70,8 @@ it('redeems exact on-chain units through Router, including shares rounded out of
     if (functionName === 'isApprovedForAll' && args[1] === POLYMARKET_ROUTER) return toHex(0, { size: 32 });
     throw new Error('Wrong position read');
   });
-  await redeemPosition(position);
+  const submission = await redeemPosition(position);
+  await expect(submission.followUp).resolves.toBeUndefined();
   expect(getPolymarketWallet).toHaveBeenCalledWith(position.proxyWallet);
   const [approval, redeem] = executeBatch.mock.calls[0][0];
   expect(approval.to).toBe(POLYMARKET_POSITION_MANAGER);
@@ -72,7 +88,8 @@ it('redeems exact on-chain units through Router, including shares rounded out of
 it('redeems a retained CTF token using its original condition after its market changes IDs', async () => {
   const fetch = vi.spyOn(global, 'fetch').mockResolvedValue(Response.json({ data: [{ token_id: '123', module: 'v1_ctf' }] }));
   call.mockResolvedValue(toHex(1, { size: 32 }));
-  await redeemPosition({ ...position, asset: '123' });
+  const submission = await redeemPosition({ ...position, asset: '123' });
+  await expect(submission.followUp).resolves.toBeUndefined();
   expect(String(fetch.mock.calls[0][0])).toContain('/v2/tokens?token_id=123');
   expect(call.mock.calls[0][0].to).toBe(POLYMARKET_CTF_ADDRESS);
   const [redeem] = executeBatch.mock.calls[0][0];
