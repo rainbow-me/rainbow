@@ -560,9 +560,8 @@ export const createWallet = async ({
       logger.debug('[wallet]: initializing account auto discovery', {}, DebugContext.wallet);
       let index = 1;
       let lookup = 0;
-      // Starting on index 1, we check the tx history
-      // for each account. If there's history we add it to the wallet.
-      // We stop once we 2 accounts with no history
+      // Starting at index 1, import accounts with activity.
+      // Stop after two consecutive accounts without activity.
       while (lookup < 2) {
         let nextWallet: { address: EthereumAddress; privateKey: string | null } | null = null;
         if (isHardwareWallet) {
@@ -645,10 +644,11 @@ export const createWallet = async ({
             initializeWalletProfilePreference(nextWallet.address, colorIndexForWallet);
           }
 
-          index += 1;
+          lookup = 0;
         } else {
           lookup += 1;
         }
+        index += 1;
       }
     }
 
