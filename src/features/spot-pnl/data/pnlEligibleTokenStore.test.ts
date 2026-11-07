@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import type { Token } from '@/features/charts/types';
 import { queryClient } from '@/react-query/queryClient';
@@ -11,11 +12,9 @@ import { usePnlEligibleToken } from './pnlEligibleTokenStore';
 vi.mock('@/features/config/stores/remoteConfig');
 vi.mock('@/react-query/queryClient');
 vi.mock('@/resources/assets/externalAssetsQuery');
-vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => '0xwallet', useAccountAddress: () => '0xwallet' }));
-vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
-vi.mock('@/state/assets/createUserAssetsStore', async () => {
+vi.mock('@/state/assets/userAssets', async () => {
   const { createBaseStore } = await import('@storesjs/stores');
-  return { createUserAssetsStore: () => createBaseStore(() => ({ userAssets: new Map() })) };
+  return { useUserAssetsStore: createBaseStore(() => ({ userAssets: new Map<string, ParsedSearchAsset>() })) };
 });
 
 const subscriptions: (() => void)[] = [];

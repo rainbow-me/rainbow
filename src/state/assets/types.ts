@@ -9,22 +9,8 @@ import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type LiveTokensData } from '../liveTokens/types';
 import { type UserAssetsStateToPersist } from './persistence';
 
-export type UserAssetsStoreType = OptionallyPersistedStore<
-  QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
-  UserAssetsStateToPersist
->;
-
-export type UserAssetsRouter = UserAssetsStoreType & {
-  getState(address?: Address | string): QueryEnabledUserAssetsState;
-  setState(
-    partial:
-      | QueryEnabledUserAssetsState
-      | Partial<QueryEnabledUserAssetsState>
-      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
-    replace?: boolean,
-    address?: Address | string
-  ): void;
-};
+export type QueryEnabledUserAssetsState = QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>;
+export type UserAssetsStoreType = OptionallyPersistedStore<QueryEnabledUserAssetsState, UserAssetsStateToPersist>;
 
 export type FetchedUserAssetsData = {
   chainIdsWithErrors: ChainId[] | null;
@@ -43,8 +29,6 @@ export type UserAssetsParams = {
   currency: SupportedCurrencyKey;
   testnetMode: boolean;
 };
-
-export type QueryEnabledUserAssetsState = ReturnType<UserAssetsStoreType['getState']>;
 
 export interface UserAssetsState {
   address: Address | string;

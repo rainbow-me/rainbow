@@ -14,6 +14,7 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 import { type AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type PaginationInfo = {
   current_page: number;
@@ -86,7 +87,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     onFetched: ({ data, params, set }) => setOrPruneAirdropsData(data, params, set),
     cacheTime: time.days(1),
     params: {
-      address: $ => $(userAssetsStoreManager).address,
+      address: $ => $(useWalletsStore).accountAddress,
       currency: $ => $(userAssetsStoreManager).currency,
       page: 1,
       pageSize: INITIAL_PAGE_SIZE,
@@ -99,7 +100,8 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     recentlyClaimed: null,
 
     async fetchNextPage() {
-      const { address, currency } = userAssetsStoreManager.getState();
+      const { currency } = userAssetsStoreManager.getState();
+      const address = useWalletsStore.getState().accountAddress;
       if (paginationPromise && paginationPromise.address === address && paginationPromise.currency === currency) {
         return paginationPromise.promise;
       }
@@ -166,7 +168,8 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getAirdrops: () => {
       const { airdrops, getData } = get();
-      const { address, currency } = userAssetsStoreManager.getState();
+      const { currency } = userAssetsStoreManager.getState();
+      const address = useWalletsStore.getState().accountAddress;
       if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.claimables || null;
       }
@@ -198,7 +201,8 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getPaginationInfo: () => {
       const { airdrops, getData } = get();
-      const { address, currency } = userAssetsStoreManager.getState();
+      const { currency } = userAssetsStoreManager.getState();
+      const address = useWalletsStore.getState().accountAddress;
       if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.pagination ?? null;
       }

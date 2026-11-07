@@ -6,6 +6,7 @@ import { time } from '@/framework/core/utils/time';
 import { getClaimables, type ClaimablesArgs } from '@/resources/addys/claimables/query';
 import { type Claimable } from '@/resources/addys/claimables/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type ClaimablesStore = {
   claimables: Claimable[];
@@ -24,11 +25,11 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
       return await getClaimables({ address, currency, abortController });
     },
     params: {
-      address: $ => $(userAssetsStoreManager).address,
+      address: $ => $(useWalletsStore).accountAddress,
       currency: $ => $(userAssetsStoreManager).currency,
     },
     keepPreviousData: true,
-    enabled: $ => $(userAssetsStoreManager, state => !!state.address),
+    enabled: $ => $(useWalletsStore, state => !!state.accountAddress),
     staleTime: time.minutes(10),
   },
   (set, get) => ({

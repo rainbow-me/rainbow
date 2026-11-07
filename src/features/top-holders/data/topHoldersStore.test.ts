@@ -1,6 +1,7 @@
 import { getAddress } from 'viem';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { TOP_HOLDERS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
@@ -15,11 +16,13 @@ import { useTopHoldersStore } from './topHoldersStore';
 vi.mock('@/features/ens/data/ens', () => ({ resolveEnsName: vi.fn() }));
 vi.mock('@/react-query/queryClient');
 vi.mock('@/resources/assets/externalAssetsQuery');
-vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => '0xwallet', useAccountAddress: () => '0xwallet' }));
-vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
-vi.mock('@/state/assets/createUserAssetsStore', async () => {
+vi.mock('@/state/wallets/walletsStore', async () => {
   const { createBaseStore } = await import('@storesjs/stores');
-  return { createUserAssetsStore: () => createBaseStore(() => ({ userAssets: new Map() })) };
+  return { useWalletsStore: createBaseStore(() => ({ accountAddress: '0xwallet' })) };
+});
+vi.mock('@/state/assets/userAssets', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  return { useUserAssetsStore: createBaseStore(() => ({ userAssets: new Map<string, ParsedSearchAsset>() })) };
 });
 vi.mock('@/features/config/stores/remoteConfig', async () => {
   const { setRemoteConfig } = await import('@/features/config/testing/mockRemoteConfig');

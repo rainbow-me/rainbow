@@ -4,11 +4,7 @@ import { type Address } from 'viem';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { NativeCurrencyKeys } from '@/features/currency/types';
 
-import { type UserAssetsStoreType } from './types';
-
 export type StoreManagerState = {
-  address: Address | string | null;
-  cachedStore: UserAssetsStoreType | null;
   currency: SupportedCurrencyKey;
   hiddenAssetBalances: Record<Address | string, string | undefined>;
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
@@ -16,8 +12,6 @@ export type StoreManagerState = {
 
 export const userAssetsStoreManager = createBaseStore<StoreManagerState>(
   set => ({
-    address: null,
-    cachedStore: null,
     currency: NativeCurrencyKeys.USD,
     hiddenAssetBalances: {},
 
@@ -31,7 +25,6 @@ export const userAssetsStoreManager = createBaseStore<StoreManagerState>(
   }),
   {
     partialize: state => ({
-      address: state.address,
       currency: state.currency,
       hiddenAssetBalances: state.hiddenAssetBalances,
     }),

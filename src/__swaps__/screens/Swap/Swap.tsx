@@ -22,9 +22,9 @@ import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ReviewButton } from './components/ReviewButton';
@@ -129,7 +129,7 @@ const useCleanupOnUnmount = () => {
 
 const WalletAddressObserver = () => {
   const { hasEnoughFundsForGas, setAsset } = useSwapContext();
-  const accountAddress = userAssetsStoreManager(state => state.address);
+  const accountAddress = useWalletsStore(state => state.accountAddress);
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
