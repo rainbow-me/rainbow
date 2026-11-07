@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { keys } from 'lodash';
 
+import { useEnsRegistrationStore } from '@/features/ens/data/stores/registrationStore';
 import { Network } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
@@ -22,5 +23,6 @@ export const removeWalletData = async (accountAddress: any) => {
       error,
     });
   }
+  useEnsRegistrationStore.getState().removeAccount(accountAddress);
   removeNotificationSettingsForWallet(accountAddress);
 };

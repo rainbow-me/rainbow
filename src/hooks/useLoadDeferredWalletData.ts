@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 
-import useLoadAccountLateData from '@/hooks/useLoadAccountLateData';
+import { prefetchRnbwStakingPosition } from '@/features/rnbw-staking/utils/prefetchRnbwStakingPosition';
 import useLoadGlobalLateData from '@/hooks/useLoadGlobalLateData';
 
-import { useWalletsStore } from '../state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress, useWalletsStore } from '../state/wallets/walletsStore';
 
 export const useLoadDeferredWalletData = () => {
-  const loadAccountLateData = useLoadAccountLateData();
+  const accountAddress = useAccountAddress();
   const loadGlobalLateData = useLoadGlobalLateData();
   const walletReady = useWalletsStore(state => state.walletReady);
 
@@ -15,10 +15,10 @@ export const useLoadDeferredWalletData = () => {
     if (walletReady) {
       requestIdleCallback(() => {
         InteractionManager.runAfterInteractions(() => {
-          loadAccountLateData();
+          if (!getIsReadOnlyWallet()) void prefetchRnbwStakingPosition();
           loadGlobalLateData();
         });
       });
     }
-  }, [loadAccountLateData, loadGlobalLateData, walletReady]);
+  }, [accountAddress, loadGlobalLateData, walletReady]);
 };

@@ -49,7 +49,7 @@ export type EnsRecordKeys = {
  * Public records keyed by the requested fields.
  * Coin addresses and contenthash are encoded bytes, not display strings or URLs.
  */
-export type EnsRecords = {
+type EnsRecords = {
   texts: Record<string, string | null>;
   coins: Record<number, Hex | null>;
   contentHash: Hex | null;

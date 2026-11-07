@@ -1,21 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+
+import { getAddress, type Address } from 'viem';
 
 import { Stack } from '@/design-system';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import useENSRegistration from '../../hooks/useENSRegistration';
+import { useEnsRegistrationStore } from '../../data/stores/registrationStore';
+import { useEnsNameStore } from '../../data/useEnsNameStore';
 import { ENSConfirmUpdateSheetHeight } from '../../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../../utils/helpers';
 import { InfoRow, InfoRowSkeleton } from './InfoRow';
 
 export function ConfigurationSection({
   isLoading,
-  owner,
-  registrant,
-  isOwner,
+  ownerAddress,
+  registrantAddress,
   isPrimary,
   isProfilesEnabled,
   isExternal,
@@ -25,10 +28,9 @@ export function ConfigurationSection({
   externalAvatarUrl,
 }: {
   isLoading?: boolean;
-  owner?: { name?: string; address?: string };
-  registrant?: { name?: string; address?: string };
+  ownerAddress?: Address | null;
+  registrantAddress?: string | null;
   isExternal?: boolean;
-  isOwner?: boolean;
   isPrimary?: boolean;
   isProfilesEnabled?: boolean;
   isSetNameEnabled?: boolean;
@@ -36,8 +38,12 @@ export function ConfigurationSection({
   name: string;
   externalAvatarUrl?: string | null;
 }) {
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
+
+  const registrant = useMemo(() => (registrantAddress ? getAddress(registrantAddress) : null), [registrantAddress]);
+  const ownerName = useEnsNameStore(s => s.get(ownerAddress));
+  const registrantName = useEnsNameStore(s => s.get(registrant));
 
   return (
     <Stack space="15px (Deprecated)">
@@ -48,12 +54,12 @@ export function ConfigurationSection({
         </>
       ) : (
         <>
-          {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled && (
+          {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled ? (
             <InfoRow
               explainSheetType="ens_primary_name"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.set_primary_name)}
               onSwitchChange={() => {
-                startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                useEnsRegistrationStore.getState().start(accountAddress, name, REGISTRATION_MODES.SET_NAME);
                 navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
                   externalAvatarUrl,
                   longFormHeight: ENSConfirmUpdateSheetHeight + (externalAvatarUrl ? 70 : 0),
@@ -61,27 +67,28 @@ export function ConfigurationSection({
                   name,
                 });
               }}
-              switchDisabled={!isOwner}
               switchValue={isPrimary}
               useAccentColor
             />
-          )}
-          {registrant && (
+          ) : null}
+
+          {registrant ? (
             <InfoRow
               explainSheetType="ens_owner"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.owner)}
               useAccentColor
-              value={registrant.name || formatAddressForDisplay(registrant.address || '', 4, 4) || ''}
+              value={registrantName || formatAddressForDisplay(registrant, 4, 4) || ''}
             />
-          )}
-          {owner && (
+          ) : null}
+
+          {ownerAddress ? (
             <InfoRow
               explainSheetType="ens_manager"
               label={i18n.t(i18n.l.expanded_state.unique_expanded.manager)}
               useAccentColor
-              value={owner.name || formatAddressForDisplay(owner.address || '', 4, 4) || ''}
+              value={ownerName || formatAddressForDisplay(ownerAddress, 4, 4) || ''}
             />
-          )}
+          ) : null}
         </>
       )}
     </Stack>

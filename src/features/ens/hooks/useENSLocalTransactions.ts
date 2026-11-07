@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
 
-import { useSelector } from 'react-redux';
-
 import { type RainbowTransaction } from '@/entities/transactions';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import { type AppState } from '@/redux/store';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-import { type ENSRegistrationState } from '../types/registration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 
 /**
  * @description Returns the local ENS transactions for a given name.
@@ -27,12 +24,7 @@ export default function useENSLocalTransactions({ name }: { name: string }) {
   const pages = data?.pages;
 
   const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
-  const registration = useSelector(({ ensRegistration }: AppState) => {
-    const { registrations } = ensRegistration as ENSRegistrationState;
-    const accountRegistrations = registrations?.[accountAddress.toLowerCase()] || {};
-    const registration = accountRegistrations[name];
-    return registration;
-  });
+  const registration = useEnsRegistrationStore(s => s.registrations[accountAddress.toLowerCase()]?.[name]);
 
   const commitTransactionHash = registration?.commitTransactionHash?.toString();
   const pendingRegistrationTransaction = getPendingTransactionByHash(registration?.registerTransactionHash?.toString() || '');

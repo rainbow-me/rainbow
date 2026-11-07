@@ -1,20 +1,18 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import contentHash from '@ensdomains/content-hash';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { ETHEREUM_COIN_TYPE, readEnsRecords, type EnsRecordKeys } from '@/features/ens/data/ens';
 import { time } from '@/framework/core/utils/time';
 import { ensClient } from '@/graphql';
-import { queryClient, type QueryConfigDeprecated } from '@/react-query';
+import { createQueryCollectionStore } from '@/state/internal/createQueryCollectionStore';
 
-import type { Records } from '../types/registration';
-import { ENS_RECORDS } from '../utils/helpers';
-import { getENSData, saveENSData } from '../utils/localStorage';
+import { ENS_RECORDS } from '../../core/records';
+import type { Records } from '../../types/registration';
 
 // ============ Types ========================================================== //
 
-type ProfileRecords = {
-  coinAddresses: Partial<Record<ENS_RECORDS, string>>;
+export type ProfileRecords = {
+  coinAddresses: Partial<Record<string, string>>;
   contenthash?: string;
   records: Records;
 };
@@ -35,14 +33,16 @@ const CONTENT_PROTOCOLS: Record<string, string | undefined> = {
 
 // ============ Profile Records ================================================ //
 
-/** Identifies the supported or expanded records for one profile. */
-export const ensRecordsQueryKey = ({
-  name,
-  supportedOnly = true,
-}: {
-  name: string;
-  supportedOnly?: boolean;
-}): readonly ['ens-records', string, boolean] => ['ens-records', name, supportedOnly];
+export const useEnsRecordsStore = createQueryCollectionStore(
+  {
+    key: ({ name, supportedOnly = true }: { name: string; supportedOnly?: boolean }) => `${name}:${supportedOnly}`,
+    fetcher: fetchProfileRecords,
+    disableAutoRefetching: true,
+    staleTime: STALE_TIME,
+    cacheTime: Infinity,
+  },
+  { storageKey: 'ensProfileRecords' }
+);
 
 /**
  * Loads profile records and formats coin addresses and contenthash for display.
@@ -51,17 +51,10 @@ export const ensRecordsQueryKey = ({
  * and coin addresses without a usable display format are omitted. Lookup and
  * contenthash errors reject before the new result is saved.
  */
-export async function fetchENSRecords(
-  name: string,
-  { cacheFirst, supportedOnly = true }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
+async function fetchProfileRecords(
+  { name, supportedOnly = true }: { name: string; supportedOnly?: boolean },
+  signal?: AbortSignal
 ): Promise<ProfileRecords> {
-  const cachedRecords: ProfileRecords | null = await getENSData('records', name);
-
-  if (cachedRecords) {
-    queryClient.setQueryData(ensRecordsQueryKey({ name, supportedOnly }), cachedRecords);
-    if (cacheFirst) return cachedRecords;
-  }
-
   let keys: EnsRecordKeys = PROFILE_RECORDS;
   if (!supportedOnly) {
     const [textIndex, coinIndex] = await Promise.all([ensClient.getTextRecordKeysByName({ name }), ensClient.getCoinTypesByName({ name })]);
@@ -70,7 +63,7 @@ export async function fetchENSRecords(
       coins: [...new Set([...PROFILE_RECORDS.coins, ...(coinIndex.domains[0]?.resolver?.coinTypes ?? [])])],
     };
   }
-  const result = await readEnsRecords(name, keys);
+  const result = await readEnsRecords(name, keys, signal);
 
   const records: Record<string, string> = Object.create(null);
   const coinAddresses: Record<string, string> = Object.create(null);
@@ -105,40 +98,7 @@ export async function fetchENSRecords(
     }
   }
 
-  const data = { coinAddresses, contenthash, records };
-  saveENSData('records', name, data);
-  return data;
-}
-
-/** Warms the existing profile-record cache. */
-export function prefetchENSRecords(
-  name: string,
-  { cacheFirst, supportedOnly = true }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
-): Promise<void> {
-  return queryClient.prefetchQuery(
-    ensRecordsQueryKey({ name, supportedOnly }),
-    async () => fetchENSRecords(name, { cacheFirst, supportedOnly }),
-    {
-      staleTime: STALE_TIME,
-    }
-  );
-}
-
-/** Subscribes to decoded records for the requested profile. */
-export default function useENSRecords(
-  name: string,
-  {
-    supportedOnly = true,
-    ...config
-  }: QueryConfigDeprecated<typeof fetchENSRecords> & {
-    supportedOnly?: boolean;
-  } = {}
-): UseQueryResult<ProfileRecords> {
-  return useQuery<ProfileRecords>(ensRecordsQueryKey({ name, supportedOnly }), async () => fetchENSRecords(name, { supportedOnly }), {
-    ...config,
-    // Data will be stale for 10s to avoid dupe queries
-    staleTime: STALE_TIME,
-  });
+  return { coinAddresses, contenthash, records };
 }
 
 function getProfileRecordKeys(): EnsRecordKeys {

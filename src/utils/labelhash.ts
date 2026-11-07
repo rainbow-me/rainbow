@@ -1,7 +1,7 @@
 import { keccak256 } from '@ethersproject/keccak256';
 import { toUtf8Bytes } from '@ethersproject/strings';
 
-import { normalizeENS } from '@/features/ens/utils/records';
+import { normalizeEnsName } from '@/features/ens/core/name';
 
 export function encodeLabelhash(hash: string) {
   if (!hash.startsWith('0x')) {
@@ -47,5 +47,5 @@ export default function labelhash(unnormalisedLabelOrLabelhash: string) {
   }
   return isEncodedLabelhash(unnormalisedLabelOrLabelhash)
     ? '0x' + decodeLabelhash(unnormalisedLabelOrLabelhash)
-    : keccak256(toUtf8Bytes(normalizeENS(unnormalisedLabelOrLabelhash)));
+    : keccak256(toUtf8Bytes(normalizeEnsName(unnormalisedLabelOrLabelhash)));
 }

@@ -50,7 +50,7 @@ it('retains a missing name as null and prunes expired data on a later fetch', as
   vi.advanceTimersByTime(time.minutes(30));
   expect(useEnsNameStore.getState().get(SECOND_ADDRESS)).toBeNull();
   vi.advanceTimersByTime(time.minutes(30));
-  await useEnsNameStore.getState().refresh(ADDRESS);
+  await useEnsNameStore.getState().load(ADDRESS, { force: true });
   expect(useEnsNameStore.getState().get(SECOND_ADDRESS)).toBeUndefined();
   expect(resolveName).toHaveBeenCalledTimes(2);
 });

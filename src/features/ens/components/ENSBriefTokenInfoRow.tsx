@@ -8,13 +8,14 @@ import { TokenInfoItem, TokenInfoValue } from '@/components/token-info';
 import { Column, Columns, Inset } from '@/design-system';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
-import useENSAvatar from '../hooks/useENSAvatar';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { ENSConfirmRenewSheetHeight } from '../screens/ENSConfirmRegisterSheet';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
@@ -27,17 +28,17 @@ export function ENSBriefTokenInfoRow({
   externalAvatarUrl,
 }: {
   color?: string;
-  expiryDate?: number;
-  registrationDate?: number;
+  expiryDate?: number | null;
+  registrationDate?: number | null;
   ensName: string;
   showExtendDuration?: boolean;
   externalAvatarUrl?: string | null;
 }) {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
+  const accountAddress = useAccountAddress();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { data: avatar } = useENSAvatar(ensName, { enabled: profilesEnabled });
+  const avatar = useEnsImageStore(s => s.get(profilesEnabled && ensName ? { name: ensName, field: 'avatar' } : undefined));
   const [showExpiryDistance, setShowExpiryDistance] = useState(true);
   const handlePressExpiryDate = useCallback(() => {
     setShowExpiryDistance(x => !x);
@@ -46,15 +47,15 @@ export function ENSBriefTokenInfoRow({
   const handlePressEditExpiryDate = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
-      startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
+      useEnsRegistrationStore.getState().start(accountAddress, cleanENSName, REGISTRATION_MODES.RENEW);
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
         externalAvatarUrl,
-        longFormHeight: ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
+        longFormHeight: ENSConfirmRenewSheetHeight + (avatar ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [ensName, startRegistration, navigate, externalAvatarUrl, avatar?.imageUrl]);
+  }, [ensName, accountAddress, navigate, externalAvatarUrl, avatar]);
 
   return (
     <Columns space="10px">
@@ -63,12 +64,12 @@ export function ENSBriefTokenInfoRow({
         color={colors.whiteLabel}
         isENS
         isNft
-        loading={!registrationDate}
+        loading={registrationDate === undefined}
         size="larger"
         title={i18n.t(i18n.l.ens.registered_on)}
         weight="heavy"
       >
-        {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : ''}
+        {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : '—'}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
@@ -103,7 +104,7 @@ export function ENSBriefTokenInfoRow({
         enableHapticFeedback
         isENS
         isNft
-        loading={!expiryDate}
+        loading={expiryDate === undefined}
         onPress={handlePressExpiryDate}
         size="larger"
         title={i18n.t(
@@ -115,7 +116,7 @@ export function ENSBriefTokenInfoRow({
           ? showExpiryDistance
             ? formatDistanceStrict(new Date(), new Date(expiryDate * 1000))
             : format(new Date(expiryDate * 1000), 'MMM d, yyyy')
-          : ''}
+          : '—'}
       </TokenInfoItem>
     </Columns>
   );

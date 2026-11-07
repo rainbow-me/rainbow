@@ -34,11 +34,12 @@ import { avatarMetadataAtom } from '../components/registration/RegistrationAvata
 import { RenewContent } from '../components/registration/RenewContent';
 import { WaitCommitmentConfirmationContent } from '../components/registration/WaitCommitmentConfirmationContent';
 import { WaitENSConfirmationContent } from '../components/registration/WaitENSConfirmationContent';
-import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
+import { useENSRegistration } from '../hooks/useENSRegistration';
 import { useENSRegistrationActionHandler, type ActionTypes } from '../hooks/useENSRegistrationActionHandler';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
+import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
@@ -95,11 +96,8 @@ function TransactionActionRow({
 
 export function ENSConfirmRegisterSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
-  const { name: ensName, mode } = useENSRegistration();
-  const {
-    changedRecords,
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration();
+  const { name: ensName, mode, changedRecords } = useENSRegistration();
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
   const { isSmallPhone } = useDimensions();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
@@ -118,14 +116,15 @@ export function ENSConfirmRegisterSheet() {
 
   const { navigate, goBack } = useNavigation();
 
-  const { blurFields, values } = useENSRegistrationForm();
+  const { values } = useENSRegistrationForm();
   const accountProfile = useAccountProfileInfo();
 
   const avatarUrl = initialAvatarUrl || values.avatar;
 
   const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
-    name,
+    name: mode === REGISTRATION_MODES.CREATE || mode === REGISTRATION_MODES.RENEW ? name : '',
+    yearsDuration: duration,
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
@@ -138,14 +137,13 @@ export function ENSConfirmRegisterSheet() {
     yearsDuration: duration,
   });
 
-  const { data: registrationCostsData } = useENSRegistrationCosts({
+  const registrationCostsData = useENSRegistrationCosts({
     name: ensName,
     rentPrice: registrationData?.rentPrice,
     sendReverseRecord,
     step,
     yearsDuration: duration,
   });
-  const { clearCurrentRegistrationName } = useENSRegistration();
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -306,16 +304,15 @@ export function ENSConfirmRegisterSheet() {
   useFocusEffect(
     useCallback(() => {
       Keyboard.dismiss();
-      blurFields();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 
   useEffect(
     () => () => {
-      if (step === REGISTRATION_STEPS.RENEW || step === REGISTRATION_STEPS.SET_NAME) clearCurrentRegistrationName();
+      if (step === REGISTRATION_STEPS.RENEW || step === REGISTRATION_STEPS.SET_NAME) useEnsRegistrationStore.getState().clear();
     },
-    [clearCurrentRegistrationName, step]
+    [step]
   );
 
   return (

@@ -6,8 +6,8 @@ import { getAddress, type Address } from 'viem';
 
 import { normalizeAddress } from '@/features/address/core/address';
 import { parseTimestampFromBackupFile } from '@/features/backup/backupFile';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
-import { fetchENSAvatarWithRetry } from '@/features/ens/hooks/useENSAvatar';
 import * as kc from '@/features/local-auth/keychain';
 import { didShowWalletErrorSheetKey } from '@/features/local-auth/keychainConstants';
 import {
@@ -651,7 +651,7 @@ async function refreshAccountInfo(
     }
 
     const address = getAddress(account.address);
-    const ens = await useEnsNameStore.getState().refresh(address);
+    const ens = await useEnsNameStore.getState().load(address, { force: true });
 
     if (ens) {
       // Only fetch avatar if ENS changed or we don't have an image
@@ -659,8 +659,10 @@ async function refreshAccountInfo(
       let newImage = account.image;
 
       if (shouldFetchAvatar) {
-        const avatar = await fetchENSAvatarWithRetry(ens);
-        newImage = avatar?.imageUrl || null;
+        newImage = await useEnsImageStore
+          .getState()
+          .load({ name: ens, field: 'avatar' }, { force: true })
+          .catch(() => account.image ?? null);
       }
 
       return {
@@ -734,7 +736,7 @@ export const isImportedWallet = (address: string): boolean => {
 export const useAccountProfileInfo = (address?: Address): AccountProfileInfo & { accountColorHex: string } => {
   const { colors } = useTheme();
   const info = useWalletsStore(s => s.getAccountProfileInfo(address), dequal);
-  const name = useEnsNameStore(s => (info.accountAddress ? s.get(info.accountAddress) : undefined));
+  const name = useEnsNameStore(s => s.get(info.accountAddress));
   const accountENS = name === undefined ? info.accountENS : (name ?? undefined);
   const hasCustomLabel = info.accountName && info.accountName !== info.accountENS && info.accountName !== info.accountAddress;
   return {

@@ -35,9 +35,10 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { ENSBriefTokenInfoRow } from '@/features/ens/components/ENSBriefTokenInfoRow';
 import { ConfigurationSection } from '@/features/ens/components/expanded-state/ConfigurationSection';
 import { ProfileInfoSection } from '@/features/ens/components/expanded-state/ProfileInfoSection';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
-import useENSRegistration from '@/features/ens/hooks/useENSRegistration';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { ENS_RECORDS } from '@/features/ens/core/records';
+import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
+import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
+import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
 import styled from '@/framework/ui/styled-thing';
@@ -250,9 +251,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS ? asset.name.trim() : '';
-  const ensProfile = useENSProfile(cleanENSName, {
-    enabled: isENS && !!cleanENSName,
-  });
+  const ensProfile = useENSProfile(cleanENSName);
   const ensData = ensProfile.data;
 
   useFocusEffect(
@@ -545,9 +544,11 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <ENSBriefTokenInfoRow
                               color={imageColor}
                               ensName={asset.name}
-                              expiryDate={ensData?.registration?.expiryDate}
+                              expiryDate={ensData?.registration?.expiryDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)}
                               externalAvatarUrl={asset.images.lowResUrl}
-                              registrationDate={ensData?.registration?.registrationDate}
+                              registrationDate={
+                                ensData?.registration?.registrationDate ?? (ensProfile.hasRegistrationOutcome ? null : undefined)
+                              }
                               showExtendDuration={hasExtendDurationButton}
                             />
                           )}
@@ -591,8 +592,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                                 allowEdit={hasEditButton}
                                 coinAddresses={ensData?.coinAddresses}
                                 ensName={asset.name}
-                                images={ensData?.images}
-                                isLoading={ensProfile.isLoading}
+                                isLoading={!ensProfile.hasRecordsOutcome}
                                 records={ensData?.records}
                               />
                             </Section>
@@ -605,15 +605,14 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                             <ConfigurationSection
                               externalAvatarUrl={asset.images.lowResUrl}
                               isExternal={external}
-                              isLoading={ensProfile.isLoading}
-                              isOwner={ensProfile?.isOwner}
+                              isLoading={!ensProfile.hasOwnershipOutcome}
                               isPrimary={ensProfile?.isPrimaryName}
                               isProfilesEnabled={profilesEnabled}
                               isReadOnlyWallet={isReadOnlyWallet}
                               isSetNameEnabled={ensProfile?.isSetNameEnabled}
                               name={cleanENSName}
-                              owner={ensData?.owner}
-                              registrant={ensData?.registrant}
+                              ownerAddress={ensData?.owner?.address}
+                              registrantAddress={ensData?.registrant?.address}
                             />
                           </Section>
                         </>

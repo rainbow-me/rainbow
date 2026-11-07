@@ -1,7 +1,7 @@
 import { type useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { parseUri } from '@walletconnect/utils';
 import URL from 'url-parse';
-import { isAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
 
 import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
@@ -13,7 +13,7 @@ import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { getUniqueId } from '@/entities/assetId';
 import { FiatProviderName } from '@/entities/f2c';
 import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
@@ -235,7 +235,12 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           const isValid = await isValidAddressOrDomain(addressOrENS);
 
           if (isValid) {
-            const ensName = isAddress(addressOrENS) ? await fetchReverseRecord(addressOrENS) : addressOrENS;
+            const ensName = isAddress(addressOrENS)
+              ? await useEnsNameStore
+                  .getState()
+                  .load(getAddress(addressOrENS))
+                  .catch(() => null)
+              : addressOrENS;
             return Navigation.handleAction(Routes.PROFILE_SHEET, {
               address: ensName || addressOrENS,
               fromRoute: 'Deeplink',
