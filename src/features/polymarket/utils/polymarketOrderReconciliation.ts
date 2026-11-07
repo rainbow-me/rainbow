@@ -1,214 +1,419 @@
-import { type ClobClient, type OpenOrder } from '@polymarket/clob-client-v2';
+import { type ClobClient, type OpenOrder, type Trade } from '@polymarket/clob-client-v2';
 
 import { analytics } from '@/analytics';
-import { type SuccessfulOrderResult } from '@/features/polymarket/types';
-import { collectPolymarketTradeFee, type SettlementTransactionHashes } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { PolymarketTransactionFailedError } from '@/features/polymarket/errors';
+import { type PolymarketBalanceUpdate } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import {
+  polymarketPositionsActions,
+  type PolymarketBuyPositionUpdate,
+  type PolymarketPositionUpdate,
+} from '@/features/polymarket/stores/polymarketPositionsStore';
+import { type PolymarketOrderAmounts, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
+import { collectPolymarketTradeFee } from '@/features/polymarket/utils/collectPolymarketTradeFee';
+import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
-import { divWorklet, mulWorklet } from '@/framework/core/safeMath';
+import { refetchPolymarketStores } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
+import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
+import { divWorklet, greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
-import { ensureError } from '@/logger';
+import { add, subtract } from '@/helpers/utilities';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
+import { withTimeout } from '@/utils/promise';
 
 // ============ Types ========================================================== //
 
-export type MatchedOrderMetadata = {
-  eventSlug: string;
-  marketSlug: string;
-  outcome: string;
-  estimatedFeeAmountUsd?: number | string;
-  quotedTradeFeeUsd: number | string;
-  bestPriceUsd: number | string;
-  orderPriceUsd: number | string;
-  spread?: number | string;
+export type OrderQuote = {
+  expectedAmounts: PolymarketOrderAmounts;
+  quotedTotalFeeUsd: string;
+  quotedRainbowFeeUsd: string;
+  bestPriceUsd: string;
+  orderPriceUsd: string;
+  spread: string;
 };
 
-type MatchedOrderContext = MatchedOrderMetadata & {
-  side: 'buy' | 'sell';
-  tokenId: string;
+export type OrderContext = OrderQuote & { eventSlug: string; marketSlug: string; outcome: string; tokenId: string } & (
+    | ({ side: 'buy'; positionUpdate: PolymarketBuyPositionUpdate } & (PolymarketOrderDetails | SportsOrderDetails))
+    | { side: 'sell'; position: PolymarketPosition }
+  );
+
+type OrderFill = {
+  amounts: PolymarketOrderAmounts;
+  tradeIds: string[];
+  transactionHashes?: string[];
 };
 
-type MatchedOrderAmounts = { tokens: string; usd: string };
+/** An accepted submission and any delayed fill still being observed. */
+export type AcceptedOrder = { response: SuccessfulOrderResult; pendingFill?: Promise<OrderFill> };
 
-type MatchedOrderSettlement =
-  | { status: 'pending' }
-  | { status: 'failed' }
-  | { status: 'resolved'; transactionHashes: SettlementTransactionHashes };
+type PolymarketOrderMatch = { amounts: PolymarketOrderAmounts; status: 'matched' } | { status: 'failed' } | { status: 'unresolved' };
+
+type MatchedOrderSettlement = { status: 'pending' } | { status: 'failed' } | { status: 'resolved'; transactionHashes: readonly string[] };
+
+// ============ Constants ====================================================== //
 
 const POLL_INTERVAL = time.seconds(1);
 const POLL_TIMEOUT = time.minutes(2);
-const MATCHED_STATUS = 'matched';
-const TERMINAL_FAILURE_STATUSES = new Set(['canceled', 'expired', 'failed', 'rejected']);
+
+const TERMINAL_FAILURE_STATUSES = new Set(['canceled', 'canceled_market_resolved', 'expired', 'failed', 'invalid', 'rejected']);
 
 // ============ Accepted Orders ================================================ //
 
+/**
+ * Publishes position and balance estimates, then reconciles settlement and fees.
+ * Delayed orders await their fill before publication; Sports positions also await presentation data.
+ */
 export async function reconcileAcceptedPolymarketOrder({
+  order,
+  balanceUpdate,
   client,
   context,
-  orderResult,
   wallet,
 }: {
+  order: AcceptedOrder;
+  balanceUpdate: PolymarketBalanceUpdate;
   client: ClobClient;
-  context: MatchedOrderContext;
-  orderResult: SuccessfulOrderResult;
+  context: OrderContext;
   wallet: PolymarketWallet;
 }): Promise<void> {
-  const amounts = getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
-  const transactionHashes = toSettlementTransactionHashes(orderResult.transactionsHashes);
+  const orderResult = order.response;
+  let fill: OrderFill | undefined;
 
-  const match =
-    amounts && transactionHashes ? { amounts, transactionHashes } : await pollForMatchedOrder(client, orderResult, context, amounts);
+  try {
+    if (order.pendingFill) fill = await order.pendingFill;
+  } catch (error) {
+    if (context.side === 'buy') context.positionUpdate.discard();
+    balanceUpdate.discard();
 
-  if (!match) return;
+    await refetchPolymarketStores(wallet.address);
+    logger.error(new RainbowError('[polymarket] Could not confirm delayed order', ensureError(error)));
+    return;
+  }
 
-  const feeCollection = collectPolymarketTradeFee({
-    matchedAmounts: match.amounts,
-    orderId: orderResult.orderID,
-    quotedFeeUsd: context.quotedTradeFeeUsd,
-    side: context.side,
-    settlementTransactionHashes: match.transactionHashes,
-    tokenId: context.tokenId,
-    wallet,
-  });
+  const acceptedAmounts = fill?.amounts ?? getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
+  const expectedAmounts = acceptedAmounts ?? context.expectedAmounts;
+  const proxyAddress = wallet.address;
 
-  trackMatchedOrderAnalytics(context, match.amounts);
+  publishAcceptedBalance(balanceUpdate, context, expectedAmounts);
 
-  await feeCollection;
+  try {
+    const positionUpdate = await publishAcceptedPosition(context, expectedAmounts);
+
+    void refetchPolymarketStores(proxyAddress);
+
+    const match = await resolveOrderMatch(client, orderResult, context, acceptedAmounts, fill);
+
+    if (match.status === 'failed') {
+      positionUpdate?.discard();
+      balanceUpdate.discard();
+      await refetchPolymarketStores(proxyAddress);
+      return;
+    }
+
+    if (match.status === 'unresolved') {
+      await refetchPolymarketStores(proxyAddress);
+      return;
+    }
+
+    let principalAdjustmentUsd: string;
+
+    if (context.side === 'buy') {
+      if (!acceptedAmounts) context.positionUpdate.amend(match.amounts);
+      principalAdjustmentUsd = subtract(expectedAmounts.usd, match.amounts.usd);
+    } else {
+      principalAdjustmentUsd = subtract(match.amounts.usd, expectedAmounts.usd);
+    }
+
+    const feeCollection = collectPolymarketTradeFee({
+      matchedAmounts: match.amounts,
+      orderId: orderResult.orderID,
+      quotedFeeUsd: context.quotedRainbowFeeUsd,
+      side: context.side,
+      tokenId: context.tokenId,
+      wallet,
+    });
+
+    trackMatchedOrderAnalytics(context, match.amounts);
+
+    const collectedFeeUsd = await feeCollection;
+    if (collectedFeeUsd === undefined) return;
+
+    const feeAdjustmentUsd = subtract(context.quotedRainbowFeeUsd, collectedFeeUsd);
+    balanceUpdate.finalize(add(principalAdjustmentUsd, feeAdjustmentUsd));
+
+    await refetchPolymarketStores(proxyAddress);
+  } catch (error) {
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error reconciling accepted order', ensureError(error)));
+  }
 }
 
-async function pollForMatchedOrder(
+/**
+ * Reads a usable fill from the accepted order response, preserving buy/sell amount units.
+ */
+function getMatchedAmountsFromAcceptedOrder(orderResult: SuccessfulOrderResult, side: 'buy' | 'sell'): PolymarketOrderAmounts | undefined {
+  if (orderResult.status?.toLowerCase() !== 'matched') return undefined;
+
+  const amounts =
+    side === 'buy'
+      ? { tokens: orderResult.takingAmount, usd: orderResult.makingAmount }
+      : { tokens: orderResult.makingAmount, usd: orderResult.takingAmount };
+
+  return areOrderAmountsUsable(amounts) ? amounts : undefined;
+}
+
+// ============ Optimistic Updates ============================================= //
+
+function publishAcceptedBalance(balanceUpdate: PolymarketBalanceUpdate, context: OrderContext, amounts: PolymarketOrderAmounts): void {
+  try {
+    const deltaUsd =
+      context.side === 'buy'
+        ? subtract('0', add(amounts.usd, context.quotedTotalFeeUsd))
+        : subtract(amounts.usd, context.quotedTotalFeeUsd);
+
+    balanceUpdate.apply(deltaUsd);
+  } catch (error) {
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted balance', ensureError(error)));
+  }
+}
+
+async function publishAcceptedPosition(
+  context: OrderContext,
+  amounts: PolymarketOrderAmounts
+): Promise<PolymarketPositionUpdate | undefined> {
+  let positionUpdate: PolymarketPositionUpdate | undefined;
+
+  try {
+    if (context.side === 'buy') {
+      positionUpdate = context.positionUpdate;
+
+      const details = isSportsOrderDetails(context) ? await loadSportsPositionDetails(context) : context;
+      context.positionUpdate.publish(details, amounts);
+    } else {
+      positionUpdate = polymarketPositionsActions.remove(context.position);
+    }
+  } catch (error) {
+    positionUpdate?.discard();
+
+    logger.error(new RainbowError('[polymarketOrderReconciliation] Error publishing accepted position', ensureError(error)));
+  }
+
+  return positionUpdate;
+}
+
+async function loadSportsPositionDetails({ event: rawEvent, outcomeIndex }: SportsOrderDetails): Promise<PolymarketOrderDetails> {
+  const [event, teams] = await Promise.all([processRawPolymarketEvent(rawEvent), fetchTeamsForEvent(rawEvent)]);
+  return { event: { ...event, teams }, market: event.markets[0], outcomeIndex };
+}
+
+function isSportsOrderDetails(details: PolymarketOrderDetails | SportsOrderDetails): details is SportsOrderDetails {
+  return !('color' in details.market);
+}
+
+// ============ Order Matching ================================================= //
+
+export async function waitForDelayedOrder(client: ClobClient, orderId: string, market: string, secondsDelay: number): Promise<OrderFill> {
+  if (secondsDelay > 0) await delay(time.seconds(secondsDelay));
+
+  const deadline = Date.now() + POLL_TIMEOUT;
+  const timeoutMessage = `Polymarket order ${orderId} was not confirmed`;
+  let interval = 250;
+
+  while (Date.now() < deadline) {
+    const order = await withTimeout(
+      client.getOrder(orderId).catch(() => null),
+      deadline - Date.now(),
+      timeoutMessage
+    );
+
+    const status = typeof order?.status === 'string' ? order.status.toLowerCase() : undefined;
+    if (status && TERMINAL_FAILURE_STATUSES.has(status)) {
+      throw new RainbowError(`Polymarket order ${orderId} was ${status}`);
+    }
+
+    if (Date.now() >= deadline) break;
+
+    if (!status || status === 'matched') {
+      const trades = await withTimeout(
+        client.getTrades({ market }).catch(() => undefined),
+        deadline - Date.now(),
+        timeoutMessage
+      );
+      const fill = trades && getOrderFill(orderId, trades);
+      if (fill && fill.tradeIds.length >= (order?.associate_trades?.length ?? 0)) return fill;
+    }
+
+    await delay(Math.min(interval, deadline - Date.now()));
+    interval = Math.min(interval * 2, time.seconds(4));
+  }
+
+  throw new RainbowError(timeoutMessage);
+}
+
+function getOrderFill(orderId: string, trades: Trade[]): OrderFill | undefined {
+  let fill: OrderFill | undefined;
+  for (const trade of trades) {
+    if (trade.taker_order_id !== orderId) continue;
+    if (trade.status === 'FAILED') throw new RainbowError(`Polymarket trade ${trade.id} failed`);
+
+    fill ??= { amounts: { tokens: '0', usd: '0' }, tradeIds: [], transactionHashes: [] };
+    fill.tradeIds.push(trade.id);
+    if (trade.transaction_hash && trade.status !== 'RETRYING') {
+      fill.transactionHashes?.push(trade.transaction_hash);
+    } else {
+      fill.transactionHashes = undefined;
+    }
+
+    fill.amounts.tokens = add(fill.amounts.tokens, trade.size);
+    if (!trade.maker_orders?.length) {
+      fill.amounts.usd = add(fill.amounts.usd, mulWorklet(trade.size, trade.price));
+      continue;
+    }
+
+    for (const maker of trade.maker_orders) {
+      const price = maker.asset_id === trade.asset_id ? maker.price : subtract('1', maker.price);
+      fill.amounts.usd = add(fill.amounts.usd, mulWorklet(maker.matched_amount, price));
+    }
+  }
+  return fill;
+}
+
+async function resolveOrderMatch(
   client: ClobClient,
   orderResult: SuccessfulOrderResult,
-  context: MatchedOrderContext,
-  acceptedAmounts: MatchedOrderAmounts | undefined
-): Promise<{ amounts: MatchedOrderAmounts; transactionHashes: SettlementTransactionHashes } | undefined> {
+  context: OrderContext,
+  acceptedAmounts: PolymarketOrderAmounts | undefined,
+  fill: OrderFill | undefined
+): Promise<PolymarketOrderMatch> {
   const orderId = orderResult.orderID;
-  let status = orderResult.status?.toLowerCase() ?? '';
+  let status = fill ? 'matched' : (orderResult.status?.toLowerCase() ?? '');
 
   try {
     const startedAt = Date.now();
+    const tradeIds = fill?.tradeIds ?? orderResult.tradeIDs;
+    const acceptedHashes = fill ? fill.transactionHashes : orderResult.transactionsHashes;
+
+    if (acceptedAmounts && acceptedHashes?.length && (await confirmOrderSettlement(acceptedHashes))) {
+      return { amounts: acceptedAmounts, status: 'matched' };
+    }
 
     while (Date.now() - startedAt < POLL_TIMEOUT) {
-      const order = await client.getOrder(orderId);
-      status = order.status.toLowerCase();
+      const order = acceptedAmounts && tradeIds?.length ? undefined : await client.getOrder(orderId);
+      const ids = tradeIds?.length ? tradeIds : order?.associate_trades;
 
-      if (status === 'matched') {
-        const amounts = acceptedAmounts ?? getMatchedAmountsFromPolledOrder(order);
-        const settlement = await getMatchedOrderSettlement(client, order.associate_trades);
+      if (typeof order?.status === 'string') status = order.status.toLowerCase();
+
+      if (status === 'matched' && ids?.length) {
+        const amounts = acceptedAmounts ?? (order && getMatchedAmountsFromPolledOrder(order));
+        const settlement = await getMatchedOrderSettlement(client, ids);
 
         if (settlement.status === 'failed') {
-          trackOrderMatchFailedAnalytics({ context, orderId, reason: settlement.status, status: settlement.status });
-          return undefined;
+          trackOrderMatchFailedAnalytics(context, { orderId, reason: settlement.status, status: settlement.status });
+          return { status: 'failed' };
         }
 
-        if (amounts && settlement.status === 'resolved') {
-          return { amounts, transactionHashes: settlement.transactionHashes };
+        if (amounts && settlement.status === 'resolved' && (await confirmOrderSettlement(settlement.transactionHashes))) {
+          return { amounts, status: 'matched' };
         }
       }
 
       if (TERMINAL_FAILURE_STATUSES.has(status)) {
-        trackOrderMatchFailedAnalytics({ context, orderId, reason: status, status });
-        return undefined;
+        trackOrderMatchFailedAnalytics(context, { orderId, reason: status, status });
+        return { status: 'failed' };
       }
 
       await delay(POLL_INTERVAL);
     }
 
-    trackOrderMatchFailedAnalytics({ context, orderId, reason: 'timeout', status });
-    return undefined;
+    trackOrderMatchFailedAnalytics(context, { orderId, reason: 'timeout', status });
+    return { status: 'unresolved' };
   } catch (e) {
-    trackOrderMatchFailedAnalytics({ context, orderId, reason: 'error', status, errorMessage: ensureError(e).message });
-    return undefined;
+    trackOrderMatchFailedAnalytics(context, { orderId, reason: 'error', status, errorMessage: ensureError(e).message });
+    return { status: 'unresolved' };
   }
 }
 
 async function getMatchedOrderSettlement(client: ClobClient, associatedTradeIds: readonly string[]): Promise<MatchedOrderSettlement> {
   const tradeIds = associatedTradeIds.filter(id => id.length > 0);
   const trades = await Promise.all(tradeIds.map(async id => (await client.getTrades({ id }, true)).find(trade => trade.id === id)));
-  let transactionHashes: [string, ...string[]] | undefined;
+  const transactionHashes: string[] = [];
 
   for (const trade of trades) {
     if (trade === undefined) return { status: 'pending' };
-    if (trade.status.toLowerCase() === 'failed') return { status: 'failed' };
+
+    const status = trade.status.toLowerCase();
+    if (status === 'failed') return { status: 'failed' };
+    if (status === 'retrying') return { status: 'pending' };
 
     const transactionHash = trade.transaction_hash;
-    if (transactionHash === undefined || transactionHash.length === 0) return { status: 'pending' };
+    if (!transactionHash?.length) return { status: 'pending' };
 
-    if (transactionHashes) transactionHashes.push(transactionHash);
-    else transactionHashes = [transactionHash];
+    transactionHashes.push(transactionHash);
   }
 
-  return transactionHashes === undefined ? { status: 'pending' } : { status: 'resolved', transactionHashes };
+  return transactionHashes.length ? { status: 'resolved', transactionHashes } : { status: 'pending' };
 }
 
-function toSettlementTransactionHashes(transactionHashes: readonly string[] | undefined): SettlementTransactionHashes | undefined {
-  if (!transactionHashes) return undefined;
+async function confirmOrderSettlement(transactionHashes: readonly string[]): Promise<boolean> {
+  try {
+    const confirmations: Promise<void>[] = [];
+    for (const hash of transactionHashes) if (hash) confirmations.push(awaitPolygonConfirmation(hash));
+    if (!confirmations.length) return false;
 
-  const [firstHash, ...remainingHashes] = transactionHashes.filter(hash => hash.length > 0);
-  if (firstHash === undefined) return undefined;
-  return [firstHash, ...remainingHashes];
+    await Promise.all(confirmations);
+
+    return true;
+  } catch (error) {
+    if (error instanceof PolymarketTransactionFailedError) return false;
+    throw error;
+  }
+}
+
+function getMatchedAmountsFromPolledOrder(order: OpenOrder): PolymarketOrderAmounts | undefined {
+  if (!order.size_matched || !order.price) return undefined;
+
+  const amounts = {
+    tokens: order.size_matched,
+    usd: mulWorklet(order.size_matched, order.price),
+  };
+
+  return areOrderAmountsUsable(amounts) ? amounts : undefined;
+}
+
+function areOrderAmountsUsable({ tokens, usd }: PolymarketOrderAmounts): boolean {
+  return greaterThanWorklet(tokens, '0') && greaterThanWorklet(usd, '0');
 }
 
 // ============ Analytics ====================================================== //
 
-function trackMatchedOrderAnalytics(context: MatchedOrderContext, amounts: MatchedOrderAmounts) {
-  const feeAmountUsd = context.estimatedFeeAmountUsd !== undefined ? String(context.estimatedFeeAmountUsd) : '0';
-
+function trackMatchedOrderAnalytics(context: OrderContext, amounts: PolymarketOrderAmounts): void {
   analytics.track(analytics.event.predictionsPlaceOrder, {
     eventSlug: context.eventSlug,
     marketSlug: context.marketSlug,
     outcome: context.outcome,
     orderAmountUsd: Number(amounts.usd),
-    feeAmountUsd: Number(feeAmountUsd),
+    feeAmountUsd: Number(context.quotedTotalFeeUsd),
     tokenAmount: Number(amounts.tokens),
     tokenId: context.tokenId,
     side: context.side,
-    spread: context.spread !== undefined ? Number(context.spread) : undefined,
+    spread: Number(context.spread),
     bestPriceUsd: Number(context.bestPriceUsd),
     orderPriceUsd: Number(context.orderPriceUsd),
-    averagePriceUsd: Number(amounts.tokens) > 0 ? Number(divWorklet(amounts.usd, amounts.tokens)) : 0,
+    averagePriceUsd: Number(divWorklet(amounts.usd, amounts.tokens)),
   });
 }
 
-function trackOrderMatchFailedAnalytics({
-  orderId,
-  context,
-  reason,
-  status,
-  errorMessage,
-}: {
-  orderId: string;
-  context: MatchedOrderContext;
-  reason: string;
-  status: string;
-  errorMessage?: string;
-}) {
+function trackOrderMatchFailedAnalytics(
+  context: OrderContext,
+  failure: { orderId: string; reason: string; status: string; errorMessage?: string }
+): void {
   analytics.track(analytics.event.predictionsOrderMatchFailed, {
-    orderId,
+    ...failure,
     eventSlug: context.eventSlug,
     marketSlug: context.marketSlug,
     outcome: context.outcome,
     tokenId: context.tokenId,
     side: context.side,
-    reason,
-    status,
-    errorMessage,
   });
-}
-
-// ============ Match Amounts ================================================== //
-
-function getMatchedAmountsFromAcceptedOrder(orderResult: SuccessfulOrderResult, side: 'buy' | 'sell'): MatchedOrderAmounts | undefined {
-  if (orderResult.status?.toLowerCase() !== MATCHED_STATUS) return undefined;
-
-  return side === 'buy'
-    ? { tokens: orderResult.takingAmount, usd: orderResult.makingAmount }
-    : { tokens: orderResult.makingAmount, usd: orderResult.takingAmount };
-}
-
-function getMatchedAmountsFromPolledOrder(order: OpenOrder): MatchedOrderAmounts | undefined {
-  if (!order.size_matched || !order.price) return undefined;
-  return {
-    tokens: order.size_matched,
-    usd: mulWorklet(order.size_matched, order.price),
-  };
 }
