@@ -41,8 +41,11 @@ vi.mock('./openCollectionsStore', () => ({
   },
 }));
 
-vi.mock('./utils', () => ({
+vi.mock('@/features/nfts/core/uniqueId', () => ({
   isDataComplete: (...args: unknown[]) => mockIsDataComplete(...args),
+}));
+
+vi.mock('./utils', () => ({
   migrateTokens: (...args: unknown[]) => mockMigrateTokens(...args),
 }));
 

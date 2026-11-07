@@ -4,6 +4,8 @@ import delay from 'delay';
 
 import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { fetchHiddenTokens } from '@/features/nfts/data/hiddenNftsStore';
+import { fetchShowcaseTokens } from '@/features/nfts/data/showcaseStore';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
@@ -15,7 +17,6 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { hiddenTokensQueryKey, showcaseTokensQueryKey } from '@/state/nfts/tokenPreferences';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 
@@ -28,8 +29,8 @@ export const refreshAccountData = async () => {
   // These queries can take too long to fetch, so we do not wait for them
   refetchWalletSummary();
   queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
-  queryClient.invalidateQueries(showcaseTokensQueryKey({ address: accountAddress }));
-  queryClient.invalidateQueries(hiddenTokensQueryKey({ address: accountAddress }));
+  void fetchShowcaseTokens({ address: accountAddress }, { force: true });
+  void fetchHiddenTokens({ address: accountAddress }, { force: true });
 
   await Promise.allSettled([
     delay(MIN_REFRESH_DURATION),

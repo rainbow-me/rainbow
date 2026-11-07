@@ -6,11 +6,11 @@ import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetL
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { parseUniqueId } from '@/features/nfts/core/uniqueId';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { assetIsUniqueAsset } from '@/handlers/web3';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
-import { parseUniqueId } from '@/resources/nfts/utils';
 import { parsedSearchAssetToParsedAddressAsset } from '@/state/assets/utils';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 
@@ -320,40 +320,38 @@ export const buildBriefUniqueTokenList = (
       result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
     }
 
-    // Create a Map for O(1) lookups instead of filtering arrays
-    const specialTokensByCollection = new Map<string, number>();
-
+    const excluded = new Map<string, Set<string>>();
     if (isShowcaseDataMigrated && isHiddenDataMigrated && listType === 'wallet') {
-      [...showcaseTokens, ...hiddenTokens].forEach(token => {
-        const { network, contractAddress } = parseUniqueId(token);
+      for (const uniqueId of [...showcaseTokens, ...hiddenTokens]) {
+        const { network, contractAddress } = parseUniqueId(uniqueId);
         const collectionId = `${network}_${contractAddress}`.toLowerCase();
-        specialTokensByCollection.set(collectionId, (specialTokensByCollection.get(collectionId) || 0) + 1);
-      });
+        let tokens = excluded.get(collectionId);
+        if (!tokens) excluded.set(collectionId, (tokens = new Set()));
+        tokens.add(uniqueId.toLowerCase());
+      }
     }
 
-    for (const { id, imageUrl, name, totalCount } of collections.values()) {
-      let adjustedTotalCount = totalCount;
-
-      if (isShowcaseDataMigrated && isHiddenDataMigrated) {
-        const specialCount = specialTokensByCollection.get(id.toLowerCase()) || 0;
-        adjustedTotalCount = String(Math.max(0, Number(totalCount) - specialCount));
-      }
-
-      if (Number(adjustedTotalCount) === 0) {
-        continue;
-      }
+    for (const collection of collections.values()) {
+      const id = collection.id;
+      const exclusions = excluded.get(id.toLowerCase());
+      const ownedIds = collection.nfts?.ids;
+      const visibleIds = exclusions ? ownedIds?.filter(uniqueId => !exclusions.has(uniqueId)) : undefined;
+      const total = visibleIds?.length ?? ownedIds?.length ?? Number(collection.totalCount);
+      if (!total) continue;
 
       result.push({
-        image: imageUrl || undefined,
-        name,
-        total: adjustedTotalCount,
+        image: collection.imageUrl || undefined,
+        name: collection.name,
+        total,
         type: CellType.FAMILY_HEADER,
         uid: id,
       });
 
-      for (let index = 0; index < Number(adjustedTotalCount); index++) {
-        const uniqueId = `${id}_${index}`;
-        result.push({ index, type: CellType.NFT, uid: uniqueId, collectionId: id });
+      if (!exclusions || ownedIds) {
+        for (let index = 0; index < total; index++) {
+          const uniqueId = visibleIds?.[index];
+          result.push({ index, type: CellType.NFT, uid: uniqueId ?? `${id}_${index}`, collectionId: id, uniqueId });
+        }
       }
 
       result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${id}-space-after` });

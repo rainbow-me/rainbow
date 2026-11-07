@@ -1,78 +1,50 @@
+import { type Store } from '@storesjs/stores';
 import { type Address } from 'viem';
 
-import { parseUniqueId } from '@/resources/nfts/utils';
+import { parseUniqueId } from '@/features/nfts/core/uniqueId';
+import { fetchHiddenTokens } from '@/features/nfts/data/hiddenNftsStore';
+import { fetchShowcaseTokens } from '@/features/nfts/data/showcaseStore';
 
 import { NFTS_STALE_TIME } from './constants';
 import { useOpenCollectionsStore } from './openCollectionsStore';
-import { fetchHiddenTokens, fetchShowcaseTokens } from './tokenPreferences';
 import { type NftsState } from './types';
 
-export async function getHiddenAndShowcaseCollectionIds(
-  address: Address | string,
-  category: 'showcase' | 'hidden'
-): Promise<{ collectionIds: Set<string> }>;
-export async function getHiddenAndShowcaseCollectionIds(address: Address | string): Promise<{
-  showcaseCollectionIds: Set<string>;
-  hiddenCollectionIds: Set<string>;
-}>;
-export async function getHiddenAndShowcaseCollectionIds(
-  address: Address | string,
-  category?: 'showcase' | 'hidden'
-): Promise<{ collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> }> {
-  if (category) {
-    const tokenIds = category === 'showcase' ? await fetchShowcaseTokens({ address }) : await fetchHiddenTokens({ address });
-    return { collectionIds: getCollectionIds(tokenIds) };
-  }
-
-  const [showcaseTokenIds, hiddenTokenIds] = await Promise.all([fetchShowcaseTokens({ address }), fetchHiddenTokens({ address })]);
-
-  return {
-    showcaseCollectionIds: getCollectionIds(showcaseTokenIds),
-    hiddenCollectionIds: getCollectionIds(hiddenTokenIds),
-  };
-}
-
+/** Evicts stale closed collection contents while retaining open and preference collections. */
 export async function pruneStaleAndClosedCollections({
   address,
-  state,
   set,
 }: {
   address: Address | string;
-  state: Pick<NftsState, 'fetchedCollections' | 'nftsByCollection'>;
-  set: (state: Partial<NftsState>) => void;
+  set: Store<NftsState>['setState'];
 }): Promise<void> {
-  const { nftsByCollection, fetchedCollections } = state;
+  const [showcase, hidden] = await Promise.all([fetchShowcaseTokens({ address }), fetchHiddenTokens({ address })]);
   const { openCollections } = useOpenCollectionsStore.getState(address);
-  const { showcaseCollectionIds, hiddenCollectionIds } = await getHiddenAndShowcaseCollectionIds(address);
-  const isHiddenOpen = openCollections.hidden ?? false;
-  const newNftsByCollection = new Map(nftsByCollection);
-
-  for (const [collectionId, isOpen] of Object.entries(openCollections)) {
-    const normalizedCollectionId = collectionId.toLowerCase();
-    if (
-      isOpen ||
-      normalizedCollectionId === 'showcase' ||
-      showcaseCollectionIds.has(normalizedCollectionId) ||
-      (isHiddenOpen && hiddenCollectionIds.has(normalizedCollectionId))
-    ) {
-      continue;
-    }
-
-    if (!nftsByCollection.has(normalizedCollectionId)) continue;
-
-    const lastFetched = fetchedCollections[normalizedCollectionId];
-    if (lastFetched && Date.now() - lastFetched < NFTS_STALE_TIME) continue;
-    newNftsByCollection.delete(normalizedCollectionId);
+  const protectedCollections = new Set<string>();
+  for (const uniqueId of [...(showcase ?? []), ...(openCollections.hidden ? (hidden ?? []) : [])]) {
+    const { network, contractAddress } = parseUniqueId(uniqueId);
+    protectedCollections.add(`${network}_${contractAddress}`.toLowerCase());
   }
+  const now = Date.now();
 
-  set({ nftsByCollection: newNftsByCollection });
-}
+  set(state => {
+    let collections = state.collections;
+    let nfts = state.nfts;
+    const retain = (id: string): boolean => {
+      const fetchedAt = state.collections.get(id)?.nfts?.fetchedAt;
+      return !!openCollections[id] || protectedCollections.has(id) || (fetchedAt !== undefined && now - fetchedAt < NFTS_STALE_TIME);
+    };
 
-function getCollectionIds(tokenIds: string[]): Set<string> {
-  return new Set(
-    tokenIds.map(uniqueId => {
-      const { network, contractAddress } = parseUniqueId(uniqueId);
-      return `${network}_${contractAddress}`.toLowerCase();
-    })
-  );
+    for (const [id, collection] of state.collections) {
+      if (!collection.nfts || retain(id)) continue;
+      if (collections === state.collections) collections = new Map(collections);
+      collections.set(id, { ...collection, nfts: undefined });
+    }
+    for (const [id] of state.nfts) {
+      const { network, contractAddress } = parseUniqueId(id);
+      if (retain(`${network}_${contractAddress}`.toLowerCase())) continue;
+      if (nfts === state.nfts) nfts = new Map(nfts);
+      nfts.delete(id);
+    }
+    return collections === state.collections && nfts === state.nfts ? state : { collections, nfts };
+  });
 }

@@ -27,11 +27,7 @@ export const WrappedNFT = React.memo(function WrappedNFT({
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const asset = uniqueId
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useNftsStore(state => state.getNftByUniqueId(collectionId, uniqueId))
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      useNftsStore(state => state.getNft(collectionId, index));
+  const asset = useNftsStore(state => (uniqueId ? state.getNftByUniqueId(uniqueId) : state.getNft(collectionId, index)));
 
   const handleItemPress = useCallback(
     (asset: UniqueAsset) =>
