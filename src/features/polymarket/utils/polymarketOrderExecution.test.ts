@@ -2,7 +2,7 @@ import { setImmediate } from 'node:timers/promises';
 
 import { AssetType, Chain, OrderBuilder, OrderType, Side, SignatureTypeV2 } from '@polymarket/clob-client-v2';
 import { ethers } from 'ethers';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { analytics } from '@/analytics';
 import { PolymarketBuyPositionError, PolymarketTransactionFailedError } from '@/features/polymarket/errors';
@@ -21,6 +21,7 @@ import { fetchTeamsForEvent } from '@/features/polymarket/utils/sports';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
+import { delay } from '@/utils/delay';
 
 import { executePolymarketBuyPosition, executePolymarketSellPosition } from './polymarketOrderExecution';
 
@@ -56,7 +57,6 @@ vi.mock('@/features/polymarket/utils/refetchPolymarketStores', () => ({
   refetchPolymarketStores: vi.fn(),
 }));
 vi.mock('@/features/polymarket/utils/tradingApprovals', () => ({ ensureTradingApprovals: vi.fn() }));
-vi.mock('@/utils/delay', () => ({ delay: vi.fn(async () => undefined) }));
 
 const wallet = { address: '0x0000000000000000000000000000000000000001' as const, execute: vi.fn() };
 const client = { createAndPostMarketOrder: vi.fn(), getOrder: vi.fn(), getTrades: vi.fn(), updateBalanceAllowance: vi.fn() };
@@ -82,7 +82,7 @@ function buyParams() {
     event: createEvent(),
     market: createMarket(),
     outcomeIndex: 0,
-    amount: '5',
+    orderSpendCap: '5',
     orderQuote: {
       expectedAmounts: { tokens: '10', usd: '5' },
       quotedTotalFeeUsd: '0.12',
@@ -105,14 +105,6 @@ function orderResult(overrides: Partial<SuccessfulOrderResult> = {}): Successful
     transactionsHashes: ['0xsettlement'],
     ...overrides,
   };
-}
-
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>(done => {
-    resolve = done;
-  });
-  return { promise, resolve };
 }
 
 describe('polymarketOrderExecution', () => {
@@ -169,8 +161,8 @@ describe('polymarketOrderExecution', () => {
   );
 
   it('loads Sports position presentation only after acceptance without delaying the accepted result', async () => {
-    const post = deferred<SuccessfulOrderResult>();
-    const teams = deferred<Awaited<ReturnType<typeof fetchTeamsForEvent>>>();
+    const post = Promise.withResolvers<SuccessfulOrderResult>();
+    const teams = Promise.withResolvers<Awaited<ReturnType<typeof fetchTeamsForEvent>>>();
     client.createAndPostMarketOrder.mockReturnValue(post.promise);
     vi.mocked(fetchTeamsForEvent).mockReturnValue(teams.promise);
     const params = await sportsParams();
@@ -223,7 +215,7 @@ describe('polymarketOrderExecution', () => {
     { outcome: 'collected', collectedFee: '0.08', expectedFinalization: [['0.02']] },
     { outcome: 'unresolved', collectedFee: undefined, expectedFinalization: [] },
   ])('publishes an accepted buy before its fee is $outcome', async ({ collectedFee, expectedFinalization }) => {
-    const fee = deferred<string | undefined>();
+    const fee = Promise.withResolvers<string | undefined>();
     vi.mocked(collectPolymarketTradeFee).mockReturnValue(fee.promise);
     const result = await executePolymarketBuyPosition(buyParams());
     expect(result.success).toBe(true);
@@ -298,7 +290,7 @@ describe('polymarketOrderExecution', () => {
     vi.mocked(awaitPolygonConfirmation).mockReturnValueOnce(confirmation.promise);
 
     const result = await executePolymarketBuyPosition(buyParams());
-    await vi.waitFor(() => expect(awaitPolygonConfirmation).toHaveBeenCalledWith('0xreplacement'));
+    await vi.waitFor(() => expect(awaitPolygonConfirmation).toHaveBeenCalledWith('0xreplacement'), { timeout: 3000 });
 
     expect(collectPolymarketTradeFee).not.toHaveBeenCalled();
     expect(positionUpdate.discard).not.toHaveBeenCalled();
@@ -412,7 +404,7 @@ describe('polymarketOrderExecution', () => {
   });
 
   it.each(['v1', 'v2'] as const)('removes an accepted %s sale and credits its estimated proceeds', async version => {
-    const fee = deferred<string | undefined>();
+    const fee = Promise.withResolvers<string | undefined>();
     vi.mocked(collectPolymarketTradeFee).mockReturnValue(fee.promise);
     const position = createPosition({ proxyWallet: wallet.address, size: 10, negativeRisk: true, market: { ...createMarket(), version } });
     client.createAndPostMarketOrder.mockResolvedValue(orderResult({ makingAmount: '10', takingAmount: '5' }));
@@ -472,11 +464,11 @@ describe('polymarketOrderExecution', () => {
       status: 'MATCHED',
       transaction_hash: side === 'sell' ? '0xsettlement' : undefined,
     };
-    const poll = deferred<(typeof fill)[]>();
+    const poll = Promise.withResolvers<(typeof fill)[]>();
     client.getTrades
       .mockResolvedValueOnce([{ ...fill, id: 'another-trade', taker_order_id: 'another-order' }])
       .mockReturnValueOnce(poll.promise);
-    const receipt = deferred<void>();
+    const receipt = Promise.withResolvers<void>();
     vi.mocked(awaitPolygonConfirmation).mockReturnValue(receipt.promise);
 
     const submission =
@@ -485,7 +477,7 @@ describe('polymarketOrderExecution', () => {
         : executePolymarketSellPosition({ position: createPosition(), orderQuote: buyParams().orderQuote });
     const completed = vi.fn();
     void submission.then(completed);
-    await vi.waitFor(() => expect(client.getTrades).toHaveBeenCalledTimes(2));
+    await vi.waitFor(() => expect(client.getTrades).toHaveBeenCalledTimes(2), { timeout: 3000 });
     expect(completed).not.toHaveBeenCalled();
     expect(balanceUpdate.apply).not.toHaveBeenCalled();
     expect(positionUpdate.publish).not.toHaveBeenCalled();
@@ -504,6 +496,101 @@ describe('polymarketOrderExecution', () => {
     );
   });
 
+  it.each([
+    { price: '0.73', tick: 0.01, buyLimit: 0.74, sellLimit: 0.72 },
+    { price: '0.30', tick: 0.1, buyLimit: 0.31, sellLimit: 0.29 },
+    { price: '0.99', tick: 0.01, buyLimit: 0.99, sellLimit: 0.98 },
+    { price: '0.01', tick: 0.01, buyLimit: 0.02, sellLimit: 0.01 },
+  ])('applies the cent allowance before SDK rounding at $price with tick $tick', async ({ price, tick, buyLimit, sellLimit }) => {
+    const params = buyParams();
+    const market = { ...params.market, secondsDelay: 1, orderPriceMinTickSize: tick };
+    const orderQuote = { ...params.orderQuote, orderPriceUsd: price };
+    const buy = await executePolymarketBuyPosition({ ...params, market, orderSpendCap: '5.07', orderQuote });
+    await buy.followUp;
+    expect(client.createAndPostMarketOrder).toHaveBeenLastCalledWith(
+      expect.objectContaining({ amount: 5, price: buyLimit, userUSDCBalance: 5.07 }),
+      expect.anything(),
+      OrderType.FOK
+    );
+
+    const sell = await executePolymarketSellPosition({ position: createPosition({ market }), orderQuote });
+    await sell.followUp;
+    expect(client.createAndPostMarketOrder).toHaveBeenLastCalledWith(
+      expect.objectContaining({ price: sellLimit }),
+      expect.anything(),
+      OrderType.FOK
+    );
+  });
+
+  describe('delayed order observation', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      client.createAndPostMarketOrder.mockResolvedValue(orderResult({ status: 'delayed' }));
+      client.getOrder.mockResolvedValue(null);
+      client.getTrades.mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+      vi.clearAllTimers();
+      vi.useRealTimers();
+    });
+
+    it('returns unconfirmed, then reconciles a late sale exactly once', async () => {
+      const position = createPosition({ market: { ...createMarket(), secondsDelay: 1 } });
+      const submission = executePolymarketSellPosition({ position, orderQuote: buyParams().orderQuote });
+      await vi.advanceTimersByTimeAsync(999);
+      expect(client.getOrder).not.toHaveBeenCalled();
+      expect(client.getTrades).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(2001);
+      const accepted = await submission;
+      expect(accepted.status).toBe('delayed');
+      expect(polymarketPositionsActions.remove).not.toHaveBeenCalled();
+
+      client.getTrades.mockResolvedValue([
+        { id: 'trade', taker_order_id: 'order', size: '6.49', price: '0.72', status: 'MATCHED', transaction_hash: '0xsettlement' },
+      ]);
+      await vi.advanceTimersByTimeAsync(4000);
+      await accepted.followUp;
+      expect(client.createAndPostMarketOrder).toHaveBeenCalledOnce();
+      expect(polymarketPositionsActions.remove).toHaveBeenCalledOnce();
+      expect(collectPolymarketTradeFee).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ matchedAmounts: { tokens: '6.49', usd: '4.6728' } })
+      );
+    });
+
+    it.each(['unfilled', 'getOrder', 'getTrades'] as const)('ends observation and releases pending updates: %s', async outcome => {
+      const read = Promise.withResolvers<null>();
+      if (outcome !== 'unfilled') client[outcome].mockReturnValue(read.promise);
+      if (outcome === 'getTrades') {
+        client.getOrder.mockImplementation(async () => {
+          await delay(100000);
+          return null;
+        });
+      }
+      const params = buyParams();
+      const submission = executePolymarketBuyPosition({ ...params, market: { ...params.market, secondsDelay: 1 } });
+
+      await vi.advanceTimersByTimeAsync(3000);
+      const accepted = await submission;
+      expect(accepted.status).toBe('delayed');
+      const completed = vi.fn();
+      void accepted.followUp.then(completed);
+      await vi.advanceTimersByTimeAsync(118000);
+      expect(completed).toHaveBeenCalledOnce();
+      expect(positionUpdate.discard).toHaveBeenCalledOnce();
+      expect(balanceUpdate.discard).toHaveBeenCalledOnce();
+
+      const orderReads = client.getOrder.mock.calls.length;
+      const tradeReads = client.getTrades.mock.calls.length;
+      read.resolve(null);
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(client.getOrder).toHaveBeenCalledTimes(orderReads);
+      expect(client.getTrades).toHaveBeenCalledTimes(tradeReads);
+      expect(positionUpdate.publish).not.toHaveBeenCalled();
+      expect(collectPolymarketTradeFee).not.toHaveBeenCalled();
+    });
+  });
+
   it('discards a delayed buy when Polymarket cancels it', async () => {
     client.createAndPostMarketOrder.mockResolvedValue(orderResult({ status: 'delayed' }));
     client.getOrder.mockResolvedValue({ status: 'CANCELED' });
@@ -519,7 +606,7 @@ describe('polymarketOrderExecution', () => {
     { side: 'sell', adjustment: '-1', amendments: [] },
   ])('reconciles a delayed lower $side fill on the original account after an account switch', async ({ side, adjustment, amendments }) => {
     client.createAndPostMarketOrder.mockResolvedValue(orderResult({ status: 'live', transactionsHashes: [] }));
-    const matched = deferred<{ status: string; size_matched: string; price: string; associate_trades: string[] }>();
+    const matched = Promise.withResolvers<{ status: string; size_matched: string; price: string; associate_trades: string[] }>();
     client.getOrder.mockReturnValue(matched.promise);
     const result =
       side === 'buy'
@@ -563,10 +650,10 @@ describe('polymarketOrderExecution', () => {
   it('waits for missing trade settlement hashes before collecting a fee', async () => {
     client.createAndPostMarketOrder.mockResolvedValue(orderResult({ transactionsHashes: [] }));
     client.getOrder.mockResolvedValue({ status: 'matched', size_matched: '10', price: '0.55', associate_trades: ['trade'] });
-    const trades = deferred<{ id: string; status: string; transaction_hash: string }[]>();
+    const trades = Promise.withResolvers<{ id: string; status: string; transaction_hash: string }[]>();
     client.getTrades.mockResolvedValueOnce([{ id: 'trade', status: 'MATCHED', transaction_hash: '' }]).mockReturnValueOnce(trades.promise);
     const result = await executePolymarketBuyPosition(buyParams());
-    await vi.waitFor(() => expect(client.getTrades).toHaveBeenCalledTimes(2));
+    await vi.waitFor(() => expect(client.getTrades).toHaveBeenCalledTimes(2), { timeout: 3000 });
     expect(client.getTrades).toHaveBeenCalledWith({ id: 'trade' }, true);
     expect(collectPolymarketTradeFee).not.toHaveBeenCalled();
     trades.resolve([{ id: 'trade', status: 'CONFIRMED', transaction_hash: '0xsettlement' }]);

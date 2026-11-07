@@ -29,6 +29,7 @@ export type SportsOrderDetails = {
     | 'version'
     | 'conditionId'
     | 'secondsDelay'
+    | 'orderPriceMinTickSize'
     | 'negRisk'
     | 'slug'
     | 'icon'
@@ -67,6 +68,7 @@ export async function fetchOrderDetails(
     market: {
       conditionId: rawMarket.conditionId,
       secondsDelay: rawMarket.secondsDelay,
+      orderPriceMinTickSize: rawMarket.orderPriceMinTickSize,
       negRisk: rawMarket.negRisk,
       slug: rawMarket.slug,
       icon: rawMarket.icon,

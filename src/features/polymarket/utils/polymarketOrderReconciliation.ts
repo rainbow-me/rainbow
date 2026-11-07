@@ -21,6 +21,7 @@ import { time } from '@/framework/core/utils/time';
 import { add, subtract } from '@/helpers/utilities';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { delay } from '@/utils/delay';
+import { withTimeout } from '@/utils/promise';
 
 // ============ Types ========================================================== //
 
@@ -44,7 +45,8 @@ type OrderFill = {
   transactionHashes?: string[];
 };
 
-export type AcceptedOrder = { response: SuccessfulOrderResult; fill?: OrderFill };
+/** An accepted submission and any delayed fill still being observed. */
+export type AcceptedOrder = { response: SuccessfulOrderResult; pendingFill?: Promise<OrderFill> };
 
 type PolymarketOrderMatch = { amounts: PolymarketOrderAmounts; status: 'matched' } | { status: 'failed' } | { status: 'unresolved' };
 
@@ -60,8 +62,8 @@ const TERMINAL_FAILURE_STATUSES = new Set(['canceled', 'canceled_market_resolved
 // ============ Accepted Orders ================================================ //
 
 /**
- * Publishes accepted estimates, then reconciles positions, settlement, and fees.
- * Prepared positions publish synchronously; Sports presentation loads before publication.
+ * Publishes position and balance estimates, then reconciles settlement and fees.
+ * Delayed orders await their fill before publication; Sports positions also await presentation data.
  */
 export async function reconcileAcceptedPolymarketOrder({
   order,
@@ -76,7 +78,20 @@ export async function reconcileAcceptedPolymarketOrder({
   context: OrderContext;
   wallet: PolymarketWallet;
 }): Promise<void> {
-  const { response: orderResult, fill } = order;
+  const orderResult = order.response;
+  let fill: OrderFill | undefined;
+
+  try {
+    if (order.pendingFill) fill = await order.pendingFill;
+  } catch (error) {
+    if (context.side === 'buy') context.positionUpdate.discard();
+    balanceUpdate.discard();
+
+    await refetchPolymarketStores(wallet.address);
+    logger.error(new RainbowError('[polymarket] Could not confirm delayed order', ensureError(error)));
+    return;
+  }
+
   const acceptedAmounts = fill?.amounts ?? getMatchedAmountsFromAcceptedOrder(orderResult, context.side);
   const expectedAmounts = acceptedAmounts ?? context.expectedAmounts;
   const proxyAddress = wallet.address;
@@ -88,7 +103,7 @@ export async function reconcileAcceptedPolymarketOrder({
 
     void refetchPolymarketStores(proxyAddress);
 
-    const match = await resolveOrderMatch(client, order, context, acceptedAmounts);
+    const match = await resolveOrderMatch(client, orderResult, context, acceptedAmounts, fill);
 
     if (match.status === 'failed') {
       positionUpdate?.discard();
@@ -103,11 +118,9 @@ export async function reconcileAcceptedPolymarketOrder({
     }
 
     let principalAdjustmentUsd: string;
-    if (context.side === 'buy') {
-      if (!acceptedAmounts) {
-        context.positionUpdate.amend(match.amounts);
-      }
 
+    if (context.side === 'buy') {
+      if (!acceptedAmounts) context.positionUpdate.amend(match.amounts);
       principalAdjustmentUsd = subtract(expectedAmounts.usd, match.amounts.usd);
     } else {
       principalAdjustmentUsd = subtract(match.amounts.usd, expectedAmounts.usd);
@@ -128,8 +141,8 @@ export async function reconcileAcceptedPolymarketOrder({
     if (collectedFeeUsd === undefined) return;
 
     const feeAdjustmentUsd = subtract(context.quotedRainbowFeeUsd, collectedFeeUsd);
-
     balanceUpdate.finalize(add(principalAdjustmentUsd, feeAdjustmentUsd));
+
     await refetchPolymarketStores(proxyAddress);
   } catch (error) {
     logger.error(new RainbowError('[polymarketOrderReconciliation] Error reconciling accepted order', ensureError(error)));
@@ -203,24 +216,39 @@ function isSportsOrderDetails(details: PolymarketOrderDetails | SportsOrderDetai
 export async function waitForDelayedOrder(client: ClobClient, orderId: string, market: string, secondsDelay: number): Promise<OrderFill> {
   if (secondsDelay > 0) await delay(time.seconds(secondsDelay));
 
+  const deadline = Date.now() + POLL_TIMEOUT;
+  const timeoutMessage = `Polymarket order ${orderId} was not confirmed`;
   let interval = 250;
 
-  for (;;) {
-    const order = await client.getOrder(orderId).catch(() => null);
+  while (Date.now() < deadline) {
+    const order = await withTimeout(
+      client.getOrder(orderId).catch(() => null),
+      deadline - Date.now(),
+      timeoutMessage
+    );
+
     const status = typeof order?.status === 'string' ? order.status.toLowerCase() : undefined;
     if (status && TERMINAL_FAILURE_STATUSES.has(status)) {
       throw new RainbowError(`Polymarket order ${orderId} was ${status}`);
     }
 
+    if (Date.now() >= deadline) break;
+
     if (!status || status === 'matched') {
-      const trades = await client.getTrades({ market }).catch(() => undefined);
+      const trades = await withTimeout(
+        client.getTrades({ market }).catch(() => undefined),
+        deadline - Date.now(),
+        timeoutMessage
+      );
       const fill = trades && getOrderFill(orderId, trades);
       if (fill && fill.tradeIds.length >= (order?.associate_trades?.length ?? 0)) return fill;
     }
 
-    await delay(interval);
+    await delay(Math.min(interval, deadline - Date.now()));
     interval = Math.min(interval * 2, time.seconds(4));
   }
+
+  throw new RainbowError(timeoutMessage);
 }
 
 function getOrderFill(orderId: string, trades: Trade[]): OrderFill | undefined {
@@ -253,9 +281,10 @@ function getOrderFill(orderId: string, trades: Trade[]): OrderFill | undefined {
 
 async function resolveOrderMatch(
   client: ClobClient,
-  { response: orderResult, fill }: AcceptedOrder,
+  orderResult: SuccessfulOrderResult,
   context: OrderContext,
-  acceptedAmounts: PolymarketOrderAmounts | undefined
+  acceptedAmounts: PolymarketOrderAmounts | undefined,
+  fill: OrderFill | undefined
 ): Promise<PolymarketOrderMatch> {
   const orderId = orderResult.orderID;
   let status = fill ? 'matched' : (orderResult.status?.toLowerCase() ?? '');

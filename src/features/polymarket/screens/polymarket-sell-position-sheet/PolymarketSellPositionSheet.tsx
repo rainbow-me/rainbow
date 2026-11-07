@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,6 +20,7 @@ import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polyma
 import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { executePolymarketSellPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
+import { presentPolymarketOrderAlert } from '@/features/polymarket/utils/presentPolymarketOrderAlert';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -104,7 +105,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     setIsProcessing(true);
 
     try {
-      await executePolymarketSellPosition({
+      const result = await executePolymarketSellPosition({
         position,
         orderQuote: {
           expectedAmounts: {
@@ -118,10 +119,16 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
           bestPriceUsd: bestPrice,
         },
       });
+
+      if (result.status === 'delayed') {
+        presentPolymarketOrderAlert('unconfirmed', 'sell');
+        return;
+      }
     } catch (e) {
       const error = ensureError(e);
       logger.error(new RainbowError('[PolymarketSellPositionSheet] Error selling position', error));
-      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_cash_out));
+
+      presentPolymarketOrderAlert(error, 'sell');
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: position.eventSlug,
@@ -133,12 +140,12 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
         feeAmountUsd: Number(fee),
         orderPriceUsd: Number(worstPrice),
       });
-      setIsProcessing(false);
       return;
+    } finally {
+      setIsProcessing(false);
     }
 
     Navigation.goBack();
-    setIsProcessing(false);
   }, [bestPrice, canSubmit, fee, grossProceedsUsd, position, rainbowFee, spread, tokensSold, worstPrice]);
 
   return (

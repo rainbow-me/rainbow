@@ -3410,9 +3410,6 @@
         "insufficient_liquidity_title": "Not Enough Liquidity",
         "insufficient_liquidity_description": "Try a smaller amount for this order.",
         "errors": {
-          "not_enough_liquidity": "Not enough liquidity to place full order.",
-          "please_lower_amount": "Please lower the amount and try again.",
-          "no_liquidity_at_price": "No liquidity at this price.",
           "trading_approval_failed_title": "Unable to Approve Trading",
           "trading_approval_failed_message": "Please try again.",
           "collateral_conversion_failed_title": "Unable to Convert Collateral",
@@ -3506,6 +3503,16 @@
         "title": "Error",
         "failed_to_load": "Unable to load predictions",
         "failed_to_place_bet": "Failed to place bet. Please try again.",
+        "order": {
+          "unfilled": {
+            "title": "Order not filled",
+            "message": "The quoted price was no longer available when your order was processed. You can try again at the current price."
+          },
+          "unconfirmed": {
+            "title": "Unable to confirm order",
+            "message": "Check your position before trying again."
+          }
+        },
         "failed_to_cash_out": "Failed to cash out position. Please try again.",
         "failed_to_claim": "Failed to claim position. Please try again."
       },

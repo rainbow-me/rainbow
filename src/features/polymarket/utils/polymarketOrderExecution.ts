@@ -3,10 +3,11 @@ import { AssetType, OrderType, Side, type ClobClient } from '@polymarket/clob-cl
 import { PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { getPolymarketOrderClients } from '@/features/polymarket/stores/derived/usePolymarketClients';
 import { polymarketBalanceActions, usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
+import { usePolymarketOrderBookStore } from '@/features/polymarket/stores/polymarketOrderBookStore';
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import { polymarketPositionsActions } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { type PolymarketOrderResult, type PolymarketPosition, type SuccessfulOrderResult } from '@/features/polymarket/types';
-import { type PolymarketVersion } from '@/features/polymarket/types/polymarket-event';
+import { type PolymarketMarket, type PolymarketVersion } from '@/features/polymarket/types/polymarket-event';
 import { getPolygonUsdcBalance, wrapUsdcToPusd } from '@/features/polymarket/utils/collateral';
 import { getHeldTokenVersion, isPolymarketTokenId } from '@/features/polymarket/utils/marketProtocol';
 import {
@@ -18,14 +19,17 @@ import {
 } from '@/features/polymarket/utils/polymarketOrderReconciliation';
 import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
 import { ensureTradingApprovals } from '@/features/polymarket/utils/tradingApprovals';
+import { subWorklet, sumWorklet } from '@/framework/core/safeMath';
+import { time } from '@/framework/core/utils/time';
 import { RainbowError } from '@/logger';
+import { delay } from '@/utils/delay';
 
 // ============ Types ========================================================== //
 
 type PolymarketOrderSubmissionResult = SuccessfulOrderResult & { followUp: Promise<void> };
 
 type ExecutePolymarketBuyPositionParams = (PolymarketOrderDetails | SportsOrderDetails) & {
-  amount: string;
+  orderSpendCap: string;
   orderQuote: OrderQuote;
 };
 
@@ -34,16 +38,23 @@ type ExecutePolymarketSellPositionParams = {
   position: PolymarketPosition;
 };
 
+// ============ Constants ====================================================== //
+
+const DELAYED_ORDER_SLIPPAGE_USD = '0.01';
+const FILL_VISIBILITY_GRACE = time.seconds(2);
+
 // ============ Execution ====================================================== //
 
 /**
- * Submits a buy and publishes its accepted balance estimate.
- * Position updates, settlement, fees, and reconciliation continue through the returned follow-up.
+ * Submits a buy and waits briefly for an exchange fill.
+ * A `delayed` result remains unconfirmed; `followUp` continues observation,
+ * position and balance updates, settlement, and fee collection.
  */
 export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyPositionParams): Promise<PolymarketOrderSubmissionResult> {
-  const { amount, orderQuote, ...details } = params;
+  const { orderSpendCap, orderQuote, ...details } = params;
   const { event, market, outcomeIndex } = details;
   const tokenId = market.clobTokenIds[outcomeIndex];
+  const price = getOrderPriceLimit(orderQuote.orderPriceUsd, Side.BUY, market, tokenId);
   const routing = getOrderRouting(tokenId, market.version, market.negRisk);
   const { clobClient: client, wallet } = await getPolymarketOrderClients();
   const proxyAddress = wallet.address;
@@ -71,15 +82,16 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
   let order: AcceptedOrder;
 
   try {
-    const spendCap = Number(amount);
-    const userBalance = Number(usePolymarketBalanceStore.getState().getBalance(proxyAddress));
+    const orderSpendCapUsd = Number(orderSpendCap);
+    const quotedNotionalUsd = Number(orderQuote.expectedAmounts.usd);
+    const userBalanceUsd = Number(usePolymarketBalanceStore.getState().getBalance(proxyAddress));
     const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
       {
         side: Side.BUY,
         ...routing.asset,
-        amount: spendCap,
-        price: Number(orderQuote.orderPriceUsd),
-        userUSDCBalance: Math.min(userBalance, spendCap),
+        amount: market.secondsDelay > 0 ? Math.min(orderSpendCapUsd, quotedNotionalUsd) : orderSpendCapUsd,
+        price,
+        userUSDCBalance: Math.min(userBalanceUsd, orderSpendCapUsd),
       },
       routing.options,
       OrderType.FOK
@@ -94,6 +106,7 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
   const context: OrderContext = {
     ...details,
     ...orderQuote,
+    orderPriceUsd: String(price),
     eventSlug: event.slug,
     marketSlug: market.slug,
     outcome: market.outcomes[outcomeIndex],
@@ -109,8 +122,9 @@ export async function executePolymarketBuyPosition(params: ExecutePolymarketBuyP
 }
 
 /**
- * Sells the full position and publishes its accepted removal and balance estimate.
- * Settlement, fees, and reconciliation continue through the returned follow-up.
+ * Submits a sale of the full position and waits briefly for an exchange fill.
+ * A `delayed` result remains unconfirmed; `followUp` continues observation,
+ * position and balance updates, settlement, and fee collection.
  */
 export async function executePolymarketSellPosition({
   orderQuote,
@@ -118,6 +132,7 @@ export async function executePolymarketSellPosition({
 }: ExecutePolymarketSellPositionParams): Promise<PolymarketOrderSubmissionResult> {
   const { clobClient: client, wallet } = await getPolymarketOrderClients(position.proxyWallet);
 
+  const price = getOrderPriceLimit(orderQuote.orderPriceUsd, Side.SELL, position.market, position.asset);
   const version = await getHeldTokenVersion(position);
   const routing = getOrderRouting(position.asset, version, position.negativeRisk);
 
@@ -132,7 +147,7 @@ export async function executePolymarketSellPosition({
 
   try {
     const result: PolymarketOrderResult = await client.createAndPostMarketOrder(
-      { side: Side.SELL, ...routing.asset, amount: Number(position.size), price: Number(orderQuote.orderPriceUsd) },
+      { side: Side.SELL, ...routing.asset, amount: Number(position.size), price },
       routing.options,
       OrderType.FOK
     );
@@ -144,6 +159,7 @@ export async function executePolymarketSellPosition({
 
   const context: OrderContext = {
     ...orderQuote,
+    orderPriceUsd: String(price),
     eventSlug: position.eventSlug,
     marketSlug: position.slug,
     outcome: position.outcome,
@@ -159,6 +175,22 @@ export async function executePolymarketSellPosition({
 }
 
 // ============ Execution Helpers ============================================= //
+
+function getOrderPriceLimit(
+  price: string,
+  side: Side,
+  market: Pick<PolymarketMarket, 'secondsDelay' | 'orderPriceMinTickSize'>,
+  tokenId: string
+): number {
+  if (market.secondsDelay <= 0) return Number(price);
+
+  const book = usePolymarketOrderBookStore.getState().getData({ tokenId });
+  const tick = Number(book?.tick_size ?? market.orderPriceMinTickSize);
+
+  return side === Side.BUY
+    ? Math.min(1 - tick, Number(sumWorklet(price, DELAYED_ORDER_SLIPPAGE_USD)))
+    : Math.max(tick, Number(subWorklet(price, DELAYED_ORDER_SLIPPAGE_USD)));
+}
 
 function getOrderRouting(id: string, version: PolymarketVersion, negRisk: boolean) {
   if (!isPolymarketTokenId(id)) throw new RainbowError('[polymarket] Invalid trading asset ID');
@@ -181,10 +213,10 @@ async function resolveSuccessfulOrderResult(
     throw new RainbowError(containsError ? response.error : response.errorMsg || 'Order was not successful');
   }
 
-  if (response.status?.toLowerCase() === 'delayed') {
-    const fill = await waitForDelayedOrder(client, response.orderID, market, secondsDelay);
-    return { response, fill };
-  }
+  if (response.status?.toLowerCase() !== 'delayed') return { response };
 
-  return { response };
+  const pendingFill = waitForDelayedOrder(client, response.orderID, market, secondsDelay);
+  const fill = await Promise.race([pendingFill, delay(time.seconds(secondsDelay) + FILL_VISIBILITY_GRACE)]);
+
+  return { response: { ...response, status: fill ? 'matched' : 'delayed' }, pendingFill };
 }

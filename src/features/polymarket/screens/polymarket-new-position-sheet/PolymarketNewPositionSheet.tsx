@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,13 +21,13 @@ import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { POLYMARKET_OUTCOME_CARD_MIN_HEIGHT, PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
 import { retryPolymarketBalance, useAvailablePolymarketBalance } from '@/features/polymarket/stores/derived/useAvailablePolymarketBalance';
 import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
 import { executePolymarketBuyPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
+import { presentPolymarketOrderAlert } from '@/features/polymarket/utils/presentPolymarketOrderAlert';
 import { isPositive, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -170,9 +170,9 @@ function NewPositionForm({
     setSubmissionBalance(availableBalance);
 
     try {
-      await executePolymarketBuyPosition({
+      const result = await executePolymarketBuyPosition({
         ...details,
-        amount: orderSpendCap,
+        orderSpendCap,
         orderQuote: {
           expectedAmounts: {
             tokens: amountToWin,
@@ -185,6 +185,12 @@ function NewPositionForm({
           orderPriceUsd: worstPrice,
         },
       });
+
+      if (result.status === 'delayed') {
+        presentPolymarketOrderAlert('unconfirmed', 'buy');
+        setSubmissionBalance(null);
+        return;
+      }
     } catch (e) {
       const error = ensureError(e);
 
@@ -201,7 +207,7 @@ function NewPositionForm({
         errorMessage: error.message,
       });
 
-      presentErrorAlert(error);
+      presentPolymarketOrderAlert(error, 'buy');
       setSubmissionBalance(null);
       return;
     }
@@ -414,42 +420,6 @@ function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
 
 function getButtonColor(accentColor: string): string {
   return getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.4 });
-}
-
-function presentErrorAlert(error: Error): void {
-  const clobOrderErrorReason = getPolymarketClobOrderErrorReason(error);
-
-  if (clobOrderErrorReason) {
-    if (clobOrderErrorReason === 'not_enough_liquidity') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.not_enough_liquidity),
-        i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
-      );
-    } else if (clobOrderErrorReason === 'no_liquidity_at_price') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.no_liquidity_at_price),
-        i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
-      );
-    }
-    return;
-  }
-
-  if (error instanceof PolymarketBuyPositionError) {
-    if (error.reason === 'trading_approval_failed') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.trading_approval_failed_title),
-        i18n.t(i18n.l.predictions.new_position.errors.trading_approval_failed_message)
-      );
-    } else if (error.reason === 'collateral_conversion_failed') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.collateral_conversion_failed_title),
-        i18n.t(i18n.l.predictions.new_position.errors.collateral_conversion_failed_message)
-      );
-    }
-    return;
-  }
-
-  Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
 }
 
 const styles = StyleSheet.create({
