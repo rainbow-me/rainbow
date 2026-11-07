@@ -5820,9 +5820,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/sdk@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@rainbow-me/sdk@npm:0.4.1"
+"@rainbow-me/sdk@npm:0.4.2":
+  version: 0.4.2
+  resolution: "@rainbow-me/sdk@npm:0.4.2"
   peerDependencies:
     "@storesjs/stores": ^0.8.6
     ethers: ^5.7.0
@@ -5833,7 +5833,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/5679084c3cb55e46bb00c678146aaff689213d707bec326a1a7f759b02b9fbf827587f2c68bcdc0abea7985bdeee73c42126e70372d3c8363143fa1af2ee9a84
+  checksum: 10c0/d7851dbccedf4a580f2dbfed9cdae5f279cb6e1220ae32f90a7becd2c0cc39993baa43b6d9a4d64375bce1a77dc92469b2ad64d36d8475fb823bb9354d6bd347
   languageName: node
   linkType: hard
 
@@ -9373,7 +9373,7 @@ __metadata:
     "@polymarket/clob-client-v2": "npm:1.2.0"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/sdk": "npm:0.4.1"
+    "@rainbow-me/sdk": "npm:0.4.2"
     "@rainbow-me/swaps": "npm:0.41.0"
     "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
