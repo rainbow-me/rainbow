@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { CashBalanceHeader } from '@/components/asset-list/RecyclerAssetList2/cash/CashBalanceHeader';
 import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
 import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
@@ -229,6 +230,9 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       const { claimable } = data as ClaimableExtraData;
 
       return <Claimable claimable={claimable} />;
+    }
+    case CellType.CASH_BALANCE_HEADER: {
+      return <CashBalanceHeader />;
     }
     case CellType.PERPS_HEADER: {
       return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
