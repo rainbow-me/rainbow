@@ -5,69 +5,65 @@
 //  Created by Alexey Kureev on 16/01/2020.
 //
 
-class Button : RCTView {
-  @objc lazy var onPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onCancel: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onPressStart: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onLongPress: RCTBubblingEventBlock = { _ in };
-  @objc lazy var onLongPressEnded: RCTBubblingEventBlock = { _ in };
+class Button: RCTView {
+  @objc var onPress: RCTDirectEventBlock?
+  @objc var onCancel: RCTDirectEventBlock?
+  @objc var onPressStart: RCTDirectEventBlock?
+  @objc var onLongPress: RCTDirectEventBlock?
+  @objc var onLongPressEnded: RCTDirectEventBlock?
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
+      longPress?.isEnabled = !disabled
+      if disabled {
+        invalidated = true
+        isPressEligible = false
+        touchStartInWindow = nil
+        animate(to: .identity, duration: releaseDuration)
+      }
     }
   }
-  @objc var duration: TimeInterval = 0.16
+  @objc var duration: TimeInterval = -1
   @objc var pressOutDuration: TimeInterval = -1
-  @objc var scaleTo: CGFloat = 0.97
-  @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5) {
+  @objc var scaleTo: CGFloat = 0.86
+  @objc var transformOrigin = CGPoint(x: 0.5, y: 0.5)
+  @objc var enableHapticFeedback: Bool = true
+  @objc var hapticType: String = "selection" {
     didSet {
-      self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
+      haptic = ButtonHaptic(hapticType)
     }
   }
-  @objc var enableHapticFeedback: Bool = true
-  @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
   @objc var throttle: Bool = false
   @objc var shouldLongPressHoldPress: Bool = false
+  @objc var minLongPressDuration: TimeInterval = 0.5
 
-  var blocked: Bool = false
-  var invalidated: Bool = false;
+  private var activeAnimationCount = 0
+  private var endFrameRateRequest: (() -> Void)?
+  private var blockedUntil: CFTimeInterval = 0
+  private var haptic: ButtonHaptic = .selection
+  private var invalidated: Bool = false
+  private var longPress: UILongPressGestureRecognizer?
+  private var isPressEligible = false
+  private var touchStartInWindow: CGPoint?
+  private static let pressRetentionOutset: CGFloat = 20
 
-  @objc var minLongPressDuration: TimeInterval = 0.5 {
-    didSet {
-      if longPress != nil {
-        longPress!.minimumPressDuration = minLongPressDuration
-      }
-    }
+  @available(iOS 17.0, *)
+  private static let pressSpring = makeSpring(mass: 1.85, stiffness: 3200, damping: 550)
+  @available(iOS 17.0, *)
+  private static let releaseSpring = makeSpring(mass: 2, stiffness: 960, damping: 520)
+
+  private var pressDuration: TimeInterval {
+    duration < 0 ? 0.16 : duration
   }
 
-  @objc func onLongPressHandler(_ sender: UIGestureRecognizer? = nil) {
-    if sender != nil {
-      switch sender!.state {
-      case .began:
-        onLongPress([:])
-      case .ended:
-        if shouldLongPressHoldPress {
-            onLongPressEnded([:])
-            animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
-        }
-      default: break
-      }
-    }
+  private var releaseDuration: TimeInterval {
+    pressOutDuration < 0 ? pressDuration : pressOutDuration
   }
-
-  var longPress: UILongPressGestureRecognizer? = nil
-  var tapLocation: CGPoint? = nil
-  var animator: UIViewPropertyAnimator? = nil
-  let touchMoveTolerance: CGFloat = 80.0
 
   override init(frame: CGRect) {
     super.init(frame: frame)
-
-    self.isAccessibilityElement = true
-
-    longPress = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
-    addGestureRecognizer(longPress!)
+    isAccessibilityElement = true
     isUserInteractionEnabled = true
   }
 
@@ -75,113 +71,207 @@ class Button : RCTView {
     fatalError("init(coder:) has not been implemented")
   }
 
+  deinit {
+    endFrameRateRequest?()
+  }
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    updateFrameRateRequest()
+  }
+
+  override func didSetProps(_ changedProps: [String]!) {
+    super.didSetProps(changedProps)
+
+    if onLongPress != nil || onLongPressEnded != nil || onCancel != nil || shouldLongPressHoldPress {
+      if let longPress = longPress {
+        if longPress.minimumPressDuration != minLongPressDuration {
+          longPress.minimumPressDuration = minLongPressDuration
+        }
+      } else {
+        let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
+        recognizer.minimumPressDuration = minLongPressDuration
+        recognizer.isEnabled = !disabled
+        addGestureRecognizer(recognizer)
+        longPress = recognizer
+      }
+    } else if let recognizer = longPress {
+      removeGestureRecognizer(recognizer)
+      longPress = nil
+    }
+  }
+
+  @objc private func onLongPressHandler(_ sender: UIGestureRecognizer) {
+    switch sender.state {
+    case .began:
+      onLongPress?([:])
+    case .ended, .cancelled:
+      if shouldLongPressHoldPress {
+        onLongPressEnded?([:])
+        animate(to: .identity, duration: releaseDuration)
+      }
+    default:
+      break
+    }
+  }
+
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    if let touch = touches.first {
-      self.tapLocation = touch.location(in: self)
+    invalidated = CACurrentMediaTime() < blockedUntil
+    isPressEligible = !invalidated
+    touchStartInWindow = invalidated ? nil : touches.first?.location(in: nil)
+    if invalidated { return }
+    if !useLateHaptic && enableHapticFeedback {
+      haptic.generate()
     }
-    if blocked {
-      invalidated = true
-      return;
-    }
-    invalidated = false
-    animator = animateTapStart(
-      duration: duration,
-      scale: scaleTo,
-      useHaptic: useLateHaptic ? nil : hapticType
-    )
+    animatePress()
     if shouldLongPressHoldPress {
-      onPress([:])
+      onPress?([:])
     } else {
-      onPressStart([:])
+      onPressStart?([:])
     }
   }
 
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    if invalidated {
-      return
-    }
-    if let touch = touches.first {
-      let location = touch.location(in: self)
-      if animator?.isRunning ?? false {
-        return
-      }
-      if !touchInRange(location: location, tolerance: self.touchMoveTolerance) {
-        animator = animateTapEnd(duration: duration)
-      } else if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
-        animator = animateTapStart(
-          duration: duration,
-          scale: scaleTo
-        )
-      }
+    guard !invalidated, let touch = touches.first else { return }
+    let eligible = isTouchWithinPressRegion(touch)
+    guard eligible != isPressEligible else { return }
+    isPressEligible = eligible
+    if eligible {
+      animatePress()
+    } else {
+      animate(to: .identity, duration: pressDuration)
     }
   }
 
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    if invalidated {
-      return
-    }
-
+    if invalidated { return }
     if ancestorScrollViewRecognizedPan() {
       touchesCancelled(touches, with: event)
       return
     }
+    guard let touch = touches.first else { return }
 
-    if let touch = touches.first {
-      let location = touch.location(in: self)
-      if touchInRange(location: location, tolerance: self.touchMoveTolerance * 0.8) {
-          let useHaptic = useLateHaptic && enableHapticFeedback ? hapticType : nil
-          animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration, useHaptic: useHaptic)
-          if shouldLongPressHoldPress == false {
-            onPress([:])
-          }
-          if throttle {
-            blocked = true;
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-              self.blocked = false;
-            }
-          }
-      } else {
-        self.touchesCancelled(touches, with: event)
+    if isTouchWithinPressRegion(touch) {
+      isPressEligible = false
+      touchStartInWindow = nil
+      if useLateHaptic && enableHapticFeedback {
+        haptic.generate()
       }
+      animate(to: .identity, duration: releaseDuration)
+      if !shouldLongPressHoldPress {
+        onPress?([:])
+      }
+      if throttle {
+        blockedUntil = CACurrentMediaTime() + 0.5
+      }
+    } else {
+      touchesCancelled(touches, with: event)
     }
-  }
-
-  static func isClose(locationA:CGPoint, locationB: CGPoint) -> Bool {
-    if (abs(locationA.x - locationB.x) > 5) {
-      return false
-    }
-
-    if (abs(locationA.y - locationB.y) > 5) {
-      return false
-    }
-
-    return true
   }
 
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    if invalidated {
-      return
+    if invalidated { return }
+    isPressEligible = false
+    let start = touchStartInWindow
+    touchStartInWindow = nil
+    if let onCancel = onCancel, let touch = touches.first, let start = start {
+      let location = touch.location(in: nil)
+      onCancel([
+        "close": abs(location.x - start.x) <= 5 && abs(location.y - start.y) <= 5,
+        "state": (longPress?.state ?? .cancelled).rawValue
+      ])
     }
-    if let touch = touches.first {
-      let location = touch.location(in: self)
-      onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.state ?? UIGestureRecognizer.State.cancelled])
-    }
-    if shouldLongPressHoldPress == false {
-      animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    // The long-press recognizer cancels view touches when it takes ownership.
+    let longPressIsActive = longPress?.state == .began || longPress?.state == .changed
+    if !shouldLongPressHoldPress || !longPressIsActive {
+      animate(to: .identity, duration: releaseDuration)
     }
     if throttle {
-      blocked = true;
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-        self.blocked = false;
-      }
+      blockedUntil = CACurrentMediaTime() + 0.5
     }
   }
 
-  private func touchInRange(location: CGPoint, tolerance: CGFloat) -> Bool {
-    return (
-      (self.tapLocation!.x - tolerance)...(self.tapLocation!.x + tolerance) ~= location.x &&
-      (self.tapLocation!.y - tolerance)...(self.tapLocation!.y + tolerance) ~= location.y
+  private func animatePress() {
+    let translationX = (1 - scaleTo) * (transformOrigin.x - 0.5) * bounds.width
+    let translationY = (1 - scaleTo) * (transformOrigin.y - 0.5) * bounds.height
+    animate(to: CGAffineTransform(a: scaleTo, b: 0, c: 0, d: scaleTo, tx: translationX, ty: translationY), duration: pressDuration)
+  }
+
+  private func animate(to target: CGAffineTransform, duration: TimeInterval) {
+    guard transform != target else { return }
+    let animator: UIViewPropertyAnimator
+    let isAnimated: Bool
+    if #available(iOS 17.0, *), self.duration < 0, pressOutDuration < 0 {
+      animator = UIViewPropertyAnimator(
+        duration: 0,
+        timingParameters: target == .identity ? Self.releaseSpring : Self.pressSpring
+      )
+      isAnimated = true
+    } else {
+      animator = UIViewPropertyAnimator(
+        duration: duration,
+        controlPoint1: CGPoint(x: 0.25, y: 0.46),
+        controlPoint2: CGPoint(x: 0.45, y: 0.94)
+      )
+      isAnimated = duration > 0
+    }
+    animator.addAnimations {
+      self.transform = target
+    }
+    if #available(iOS 18.0, *), isAnimated, UIView.areAnimationsEnabled {
+      // Reversals overlap additive animations, which can finish out of order
+      activeAnimationCount += 1
+      updateFrameRateRequest()
+      animator.addCompletion { [weak self] _ in
+        guard let self = self else { return }
+        self.activeAnimationCount -= 1
+        self.updateFrameRateRequest()
+      }
+    }
+    animator.startAnimation()
+  }
+
+  @available(iOS 17.0, *)
+  private static func makeSpring(mass: CGFloat, stiffness: CGFloat, damping: CGFloat) -> UISpringTimingParameters {
+    let frequency = sqrt(stiffness / mass)
+    let dampingRatio = damping / (2 * sqrt(mass * stiffness))
+    let bounce = dampingRatio < 1 ? 1 - dampingRatio : 1 / dampingRatio - 1
+    // This initializer preserves overdamping
+    return UISpringTimingParameters(duration: 2 * .pi / frequency, bounce: bounce)
+  }
+
+  private func updateFrameRateRequest() {
+    guard activeAnimationCount > 0, let screen = window?.screen else {
+      endFrameRateRequest?()
+      endFrameRateRequest = nil
+      return
+    }
+    guard endFrameRateRequest == nil else { return }
+
+    if #available(iOS 18.0, *) {
+      let frameRate = min(120, Float(screen.maximumFramesPerSecond))
+      guard frameRate > 60 else { return }
+      let updateLink = UIUpdateLink(view: self)
+      updateLink.preferredFrameRateRange = CAFrameRateRange(
+        minimum: frameRate, maximum: frameRate, preferred: frameRate
+      )
+      endFrameRateRequest = { updateLink.isEnabled = false }
+      updateLink.isEnabled = true
+    }
+  }
+
+  private func isTouchWithinPressRegion(_ touch: UITouch) -> Bool {
+    let location = touch.location(in: self)
+    let anchor = CGPoint(
+      x: bounds.minX + bounds.width * layer.anchorPoint.x,
+      y: bounds.minY + bounds.height * layer.anchorPoint.y
     )
+    // Remove the button's feedback transform from touch coordinates
+    let offset = CGPoint(x: location.x - anchor.x, y: location.y - anchor.y).applying(transform)
+    let restingLocation = CGPoint(x: anchor.x + offset.x, y: anchor.y + offset.y)
+    let hitRect = bounds.inset(by: hitTestEdgeInsets)
+    let margin = isPressEligible ? Self.pressRetentionOutset : 0
+    return hitRect.insetBy(dx: -margin, dy: -margin).contains(restingLocation)
   }
 
   private func ancestorScrollViewRecognizedPan() -> Bool {
@@ -198,5 +288,39 @@ class Button : RCTView {
       view = ancestor.superview
     }
     return false
+  }
+}
+
+private enum ButtonHaptic {
+  case selection, error, success, warning, light, medium, heavy
+
+  private static let selectionGenerator = UISelectionFeedbackGenerator()
+  private static let notificationGenerator = UINotificationFeedbackGenerator()
+  private static let lightGenerator = UIImpactFeedbackGenerator(style: .light)
+  private static let mediumGenerator = UIImpactFeedbackGenerator(style: .medium)
+  private static let heavyGenerator = UIImpactFeedbackGenerator(style: .heavy)
+
+  init(_ type: String) {
+    switch type {
+    case "error", "notificationError": self = .error
+    case "success", "notificationSuccess": self = .success
+    case "warning", "notificationWarning": self = .warning
+    case "light", "impactLight": self = .light
+    case "medium", "impactMedium": self = .medium
+    case "heavy", "impactHeavy": self = .heavy
+    default: self = .selection
+    }
+  }
+
+  func generate() {
+    switch self {
+    case .selection: Self.selectionGenerator.selectionChanged()
+    case .error: Self.notificationGenerator.notificationOccurred(.error)
+    case .success: Self.notificationGenerator.notificationOccurred(.success)
+    case .warning: Self.notificationGenerator.notificationOccurred(.warning)
+    case .light: Self.lightGenerator.impactOccurred()
+    case .medium: Self.mediumGenerator.impactOccurred()
+    case .heavy: Self.heavyGenerator.impactOccurred()
+    }
   }
 }
