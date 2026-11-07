@@ -58,18 +58,6 @@ export type NftsStoreType = OptionallyPersistedStore<QueryStoreState<NftsQueryDa
 
 export type QueryEnabledNftsState = ReturnType<NftsStoreType['getState']>;
 
-export type NftsRouter = NftsStoreType & {
-  getState(address?: Address | string): QueryEnabledNftsState;
-  setState(
-    partial:
-      | QueryEnabledNftsState
-      | Partial<QueryEnabledNftsState>
-      | ((state: QueryEnabledNftsState) => QueryEnabledNftsState | Partial<QueryEnabledNftsState>),
-    replace?: boolean,
-    address?: Address | string
-  ): void;
-};
-
 export interface OpenCollectionsState {
   openCollections: Record<CollectionId, boolean>;
   insertionOrder: CollectionId[]; // Tracks the order in which collections were opened
@@ -79,15 +67,3 @@ export interface OpenCollectionsState {
 }
 
 export type OpenCollectionsStoreType = OptionallyPersistedStore<OpenCollectionsState, Partial<OpenCollectionsState>>;
-
-export type OpenCollectionsRouter = OpenCollectionsStoreType & {
-  getState(address?: Address | string): OpenCollectionsState;
-  setState(
-    partial:
-      | OpenCollectionsState
-      | Partial<OpenCollectionsState>
-      | ((state: OpenCollectionsState) => OpenCollectionsState | Partial<OpenCollectionsState>),
-    replace?: boolean,
-    address?: Address | string
-  ): void;
-};
