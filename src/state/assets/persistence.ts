@@ -1,95 +1,80 @@
 import { type StorageValue } from '@storesjs/stores';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
-import { type ChainId } from '@/features/network/types/backendNetworks';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { logger, RainbowError } from '@/logger';
 
-import { type UserAssetsState } from './types';
+import { type QueryEnabledUserAssetsState, type UserAssetsState } from './types';
+import { indexUserAssets } from './utils';
 
-export type UserAssetsStateToPersist = Pick<
-  Partial<UserAssetsState>,
-  'chainBalances' | 'filter' | 'hiddenAssets' | 'idsByChain' | 'legacyUserAssets' | 'userAssets'
->;
+/** Persisted holdings and preferences; list and balance indexes are rebuilt on hydration. */
+export type UserAssetsStateToPersist = Pick<Partial<UserAssetsState>, 'filter' | 'hiddenAssets' | 'userAssets'>;
 
-type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legacyUserAssets'> & {
-  chainBalances: Array<[ChainId, number]>; // Map
-  hiddenAssets: UniqueId[]; // Set
-  idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
-  userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
+type PersistedUserAssetsState = Pick<
+  Partial<QueryEnabledUserAssetsState>,
+  'filter' | 'error' | 'lastFetchedAt' | 'queryCache' | 'queryKey' | 'status'
+> & {
+  hiddenAssets?: UniqueId[];
+  userAssets?: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
+/** Serializes canonical holdings while preserving the query store's fetch metadata. */
 export function serializeUserAssetsState({ state, version }: StorageValue<UserAssetsStateToPersist>): string {
   try {
-    const transformedStateToPersist: PersistedUserAssetsState = {
-      ...state,
-      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
-      idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
-      userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
-    };
-    return JSON.stringify({ state: transformedStateToPersist, version });
+    return JSON.stringify({
+      state: {
+        ...state,
+        hiddenAssets: Array.from(state.hiddenAssets ?? []),
+        userAssets: Array.from(state.userAssets ?? []),
+      },
+      version,
+    });
   } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to serialize state for user assets storage`), { error });
+    logger.error(new RainbowError('[userAssetsStore]: Failed to serialize user assets'), { error });
     throw error;
   }
 }
 
-export function deserializeUserAssetsState<SerializedState>(serializedState: SerializedState): StorageValue<UserAssetsStateToPersist> {
-  let parsedState: { state: PersistedUserAssetsState; version: number };
+/** Restores holdings and derives indexes from this account's current positions. */
+export function deserializeUserAssetsState(
+  serializedState: unknown,
+  address: UserAssetsState['address']
+): StorageValue<Partial<QueryEnabledUserAssetsState>> {
+  let parsed: StorageValue<PersistedUserAssetsState>;
   try {
-    if (typeof serializedState !== 'string') throw new Error(`Expected string serialized state`);
-    parsedState = JSON.parse(serializedState);
+    if (typeof serializedState !== 'string') throw new Error('Expected string serialized state');
+    parsed = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });
+    logger.error(new RainbowError('[userAssetsStore]: Failed to parse serialized user assets'), { error });
     throw error;
   }
 
-  const { state, version } = parsedState;
-
-  let chainBalances = new Map<ChainId, number>();
-  try {
-    if (state.chainBalances) {
-      chainBalances = new Map(state.chainBalances);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert chainBalances from user assets storage`), { error });
-  }
-
-  let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
-  try {
-    if (state.idsByChain) {
-      idsByChain = new Map(state.idsByChain);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert idsByChain from user assets storage`), { error });
-  }
-
-  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
-  try {
-    if (state.userAssets.length) {
-      userAssetsData = new Map(state.userAssets);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
-  }
-
+  const { state, version } = parsed;
+  let userAssets = new Map<UniqueId, ParsedSearchAsset>();
   let hiddenAssets = new Set<UniqueId>();
   try {
-    if (state.hiddenAssets) {
-      hiddenAssets = new Set(state.hiddenAssets);
-    }
+    userAssets = new Map(state.userAssets);
   } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });
+    logger.error(new RainbowError('[userAssetsStore]: Failed to restore user assets'), { error });
+  }
+  try {
+    hiddenAssets = new Set(state.hiddenAssets);
+  } catch (error) {
+    logger.error(new RainbowError('[userAssetsStore]: Failed to restore hidden assets'), { error });
   }
 
   return {
     state: {
-      ...state,
-      chainBalances,
+      filter: state.filter ?? 'all',
       hiddenAssets,
-      idsByChain,
-      userAssets: userAssetsData,
-    } satisfies UserAssetsStateToPersist,
+      userAssets,
+      error: state.error ?? null,
+      lastFetchedAt: state.lastFetchedAt ?? null,
+      queryCache: state.queryCache ?? {},
+      queryKey: state.queryKey ?? '',
+      status: state.status ?? 'idle',
+      ...indexUserAssets(address, userAssets, hiddenAssets, usePositionsStore.getState().getTokenAddresses(address)),
+    },
     version,
   };
 }

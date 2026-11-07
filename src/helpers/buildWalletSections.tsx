@@ -1,9 +1,8 @@
 import { createSelector } from 'reselect';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { type useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import type { NativeCurrencyKey } from '@/features/currency/types';
@@ -53,7 +52,7 @@ const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-car
 const EMPTY_ARRAY: CellTypes[] = [];
 
 export type WalletSectionsState = {
-  sortedAssets: ParsedAddressAsset[];
+  sortedAssets: Map<UniqueId, ParsedSearchAsset>;
   accountBalanceDisplay: string | undefined;
   hiddenAssets: Set<UniqueId>;
   isCoinListEdited: boolean;
@@ -410,7 +409,7 @@ const withTokensHeaderSection = ({
 };
 
 const withBriefBalanceSection = (
-  sortedAssets: ParsedAddressAsset[],
+  sortedAssets: Map<UniqueId, ParsedSearchAsset>,
   isLoadingUserAssets: boolean,
   isLoadingBalance: boolean,
   accountBalanceDisplay: string | undefined,

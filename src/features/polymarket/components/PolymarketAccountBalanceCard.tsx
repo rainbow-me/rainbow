@@ -13,7 +13,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssets';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
@@ -21,7 +21,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const { isDarkMode } = useColorMode();
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
-  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
   const { navigateToAddCash } = useAddCashRoute();
 
   return (

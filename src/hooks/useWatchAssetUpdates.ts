@@ -203,8 +203,8 @@ function updateUserAssets({
   newAssets: Record<string, UserAsset>;
   chainIds: number[];
 }) {
-  const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-  const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
+  const userAssets = filterZeroBalanceAssets(Object.values(newAssets));
+  const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses(address);
 
   userAssetsStore.setState(state =>
     setUserAssets({

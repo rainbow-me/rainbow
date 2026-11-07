@@ -65,7 +65,7 @@ export default function useWalletSectionsData({
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
-  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.listAssets);
 
   const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {
@@ -117,8 +117,8 @@ export default function useWalletSectionsData({
   useEffect(() => {
     if (isLoadingUserAssets || type !== 'wallet') return;
 
-    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
-    for (const asset of sortedAssets) {
+    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.size };
+    for (const asset of sortedAssets.values()) {
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }

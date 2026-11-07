@@ -15,7 +15,7 @@ export enum NoResultsType {
 
 export const NoResults = ({ onL2, type }: { onL2?: boolean; type: NoResultsType }) => {
   const { colors } = useTheme();
-  const assetCount = useUserAssetsStore(state => state.userAssets.size);
+  const assetCount = useUserAssetsStore(state => state.listAssets.size);
 
   let title;
   let description;

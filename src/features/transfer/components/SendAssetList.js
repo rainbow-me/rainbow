@@ -161,9 +161,9 @@ export class SendAssetList extends React.Component {
         }
       }
       const smallBalancesheight =
-        sortedAssets.length === visibleAssetsLength
+        sortedAssets.size === visibleAssetsLength
           ? 0
-          : smallBalancesHeader + (openShitcoins ? (sortedAssets.length - visibleAssetsLength) * rowHeight : 0);
+          : smallBalancesHeader + (openShitcoins ? (sortedAssets.size - visibleAssetsLength) * rowHeight : 0);
 
       const heightBelow = visibleAssetsLength * rowHeight + smallBalancesheight + familiesHeight + dividerHeight;
       const renderSize = familyHeaderHeight + uniqueTokens[index].data.length * familyRowHeight;

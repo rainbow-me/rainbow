@@ -33,18 +33,16 @@ export type UserAssetsParams = {
 export interface UserAssetsState {
   address: Address | string;
   chainBalances: Map<ChainId, number>;
-  currentAbortController: AbortController;
   filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
   hiddenAssetsBalance: string | null;
-  idsByChain: Map<UserAssetFilter, UniqueId[]>;
   inputSearchQuery: string;
-  legacyUserAssets: ParsedAddressAsset[];
-  searchCache: Map<string, UniqueId[]>;
+  /** Balance-ordered references to assets not represented by positions, including hidden assets. */
+  listAssets: Map<UniqueId, ParsedSearchAsset>;
+  /** Complete parsed holdings, including tokens represented by positions. */
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
-  getFilteredUserAssetIds: () => UniqueId[];
   getHiddenAssetsIds: () => UniqueId[];
   getHighestValueAsset: (options?: Prettify<HighestValueAssetOptions>) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
@@ -52,13 +50,12 @@ export interface UserAssetsState {
   getTotalBalance: () => number;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
-  selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
-  selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
+  isHidden: (uniqueId: UniqueId) => boolean;
+  isInitialLoad: () => boolean;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
-  setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   updateTokens: (tokens: LiveTokensData) => void;
-  reprocessAssetsData: () => void;
+  reprocessAssetsData: (positionTokenAddresses: ReadonlySet<string>) => void;
 }
 
 export type Asset = {
@@ -101,35 +98,12 @@ export type Asset = {
   };
 };
 
-// same structre as ParsedAsset & ParsedUserAsset
-export type EnrichedAsset = Asset & {
-  balance: {
-    amount: string;
-    display: string;
-  };
-  native: {
-    balance: {
-      amount: string;
-      display: string;
-    };
-    price?: {
-      change: string;
-      amount: number;
-      display: string;
-    };
-  };
-};
-
 export type UserAsset = {
   asset: Asset;
   quantity: string;
   updatedAt: string;
   value: string;
   smallBalance?: boolean;
-};
-
-export type EnrichedUserAsset = UserAsset & {
-  asset: EnrichedAsset;
 };
 
 export type GetAssetsResponse = {

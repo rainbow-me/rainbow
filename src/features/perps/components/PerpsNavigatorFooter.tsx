@@ -29,7 +29,7 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute } from '@/navigation/types';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssets';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';
@@ -127,7 +127,7 @@ const PerpsAccountScreenFooter = () => {
   const safeAreaInsets = useSafeAreaInsets();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
-  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
+  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
   const { navigateToAddCash } = useAddCashRoute();
 
   return (

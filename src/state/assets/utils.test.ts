@@ -2,14 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
 
-import { type UserAsset, type UserAssetsState } from './types';
+import { createUserAssetsStore } from './createUserAssetsStore';
+import { type UserAsset } from './types';
 import { setUserAssets } from './utils';
 
 const ADDRESS = '0x0000000000000000000000000000000000000001';
 
 describe('setUserAssets', () => {
   it('accepts an asset whose networks map the API omitted', () => {
-    const userAsset = {
+    const userAsset: UserAsset = {
       asset: {
         address: '0x00000000000000000000000000000000000000aa',
         chainId: ChainId.base,
@@ -28,10 +29,10 @@ describe('setUserAssets', () => {
       value: '1',
       smallBalance: false,
       updatedAt: '0',
-    } as UserAsset;
-    const state = { address: ADDRESS, userAssets: new Map(), hiddenAssets: new Set() } as unknown as UserAssetsState;
+    };
+    const state = createUserAssetsStore(ADDRESS).getState();
 
-    const next = setUserAssets({ address: ADDRESS, state, userAssets: [userAsset], positionTokenAddresses: new Set() });
+    const next = setUserAssets({ state, userAssets: [userAsset] });
 
     const parsed = [...next.userAssets.values()][0];
     expect(parsed.networks).toEqual({});

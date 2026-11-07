@@ -131,7 +131,7 @@ const hasSufficientAssetBalance = (assetAmount: string, maxSendableBalance: stri
 
 export function SendSheet() {
   const { navigate } = useNavigation();
-  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.listAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const {
     gasFeeParamsBySpeed,
@@ -649,15 +649,15 @@ export function SendSheet() {
 
   useEffect(() => {
     if (isLoadingUserAssets || !sortedAssets) return;
-    const params = { screen: 'send' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
-    for (const asset of sortedAssets) {
+    const params = { screen: 'send' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.size };
+    for (const asset of sortedAssets.values()) {
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
     analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
-  const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
+  const isEmptyWallet = !sortedAssets?.size && !sendableUniqueTokens?.length;
 
   const filteredUserAccountsFromContacts = useMemo(() => {
     return userAccounts.filter(
