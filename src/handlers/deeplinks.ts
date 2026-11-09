@@ -14,7 +14,6 @@ import { getUniqueId } from '@/entities/assetId';
 import { FiatProviderName } from '@/entities/f2c';
 import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
-import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
@@ -356,11 +355,6 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   return parseSearchAsset({ searchAsset, userAsset });
 };
 
-function isValidGasSpeed(s: string | undefined): s is GasSpeed {
-  if (!s) return false;
-  return Object.values(GasSpeed).includes(s as GasSpeed);
-}
-
 async function setFromWallet(address: string | undefined) {
   if (!address || !isAddress(address)) return;
 
@@ -402,11 +396,6 @@ async function handleSwapsDeeplink(url: string) {
   // else if (isNumericString(query.outputAmount)) {
   //   params.outputAmount = query.outputAmount;
   // }
-
-  const gasSpeed = query.gasSpeed?.toLowerCase();
-  if (isValidGasSpeed(gasSpeed)) {
-    params.gasSpeed = gasSpeed;
-  }
 
   const inputAssetToSet = await inputAsset;
   const outputAssetToSet = await outputAsset;

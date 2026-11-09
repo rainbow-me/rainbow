@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "نسخ عنوان توقيع المحفظة",
       "disconnect_to_anvil": "انفصال عن Anvil",
       "crash_app_render_error": "تعطل التطبيق (خطأ في العرض)",
-      "enable_testnets": "تمكين شبكات الاختبار",
       "installing_update": "جارٍ تثبيت التحديث",
       "navigation_entry_point": "نقطة دخول التنقل",
       "no_update": "لا يوجد تحديث",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "أنت لا تتابع أي محافظ.",
         "no_owned_wallets": "ليس لديك أي محافظ في Rainbow. أنشئ محفظة أو قم باستيراد واحدة بواسطة عبارتك السرية.",
         "open_system_settings": "افتح الإعدادات",
-        "unsupported_network": "الإشعارات متاحة فقط لمعاملات Ethereum Mainnet في الوقت الحالي.",
-        "change_network": "غير شبكتك",
         "no_first_time_permissions": "الرجاء السماح لـ Rainbow بإرسال إشعارات لك.",
         "first_time_allow_notifications": "السماح بالتنبيهات",
         "error_alert_title": "فشل الاشتراك",
@@ -3270,8 +3267,7 @@
         "disconnect": "قطع الاتصال",
         "connect": "اتصل",
         "switch_wallet": "تبديل المحفظة",
-        "switch_network": "تبديل الشبكة",
-        "available_networks": "الشبكات المتاحة"
+        "switch_network": "تبديل الشبكة"
       },
       "errors": {
         "go_back": "العودة",

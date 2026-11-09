@@ -40,16 +40,6 @@ vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
   getExperimentalFlag: vi.fn(() => false),
 }));
 
-vi.mock('@/redux/store', () => ({
-  default: {
-    getState: () => ({
-      settings: {
-        nativeCurrency: 'ETH',
-      },
-    }),
-  },
-}));
-
 vi.mock('@/state/swaps/swapsStore', () => ({
   useSwapsStore: {
     getState: () => ({

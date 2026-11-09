@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "Copiar Dirección de Firma de Billetera",
       "disconnect_to_anvil": "Desconectar de Anvil",
       "crash_app_render_error": "Fallar App (Error de Renderizado)",
-      "enable_testnets": "Habilitar Testnets",
       "installing_update": "Instalando Actualización",
       "navigation_entry_point": "Punto de Entrada de Navegación",
       "no_update": "No hay Actualizaciones",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "No estás observando ninguna billetera.",
         "no_owned_wallets": "No tienes ninguna billetera en Rainbow. Crea una billetera o importa una con tu frase secreta.",
         "open_system_settings": "Abrir Configuración",
-        "unsupported_network": "Las notificaciones solo están disponibles para transacciones en la red principal de Ethereum en este momento.",
-        "change_network": "Cambia tu Red",
         "no_first_time_permissions": "Por favor, permite que Rainbow te envíe notificaciones.",
         "first_time_allow_notifications": "Permitir Notificaciones",
         "error_alert_title": "Suscripción Fallida",
@@ -3270,8 +3267,7 @@
         "disconnect": "Desconectar",
         "connect": "Conectar",
         "switch_wallet": "Cambiar Billetera",
-        "switch_network": "Cambiar Red",
-        "available_networks": "Redes Disponibles"
+        "switch_network": "Cambiar Red"
       },
       "errors": {
         "go_back": "Volver",

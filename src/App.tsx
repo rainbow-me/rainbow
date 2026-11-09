@@ -39,7 +39,6 @@ import { setNavigationRef } from '@/navigation/Navigation';
 import Routes from '@/navigation/Routes';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { persistOptions, PersistQueryClientProvider, queryClient } from '@/react-query';
-import { settingsLoadState } from '@/redux/settings';
 import store from '@/redux/store';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import * as ls from '@/storage';
@@ -177,8 +176,12 @@ async function initializeApplication() {
   // user-property delivery in Amplitude. Remove after FEPLAT-67 wraps up.
   analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: installSource });
 
-  await Promise.all([initializeRemoteConfig(), migrate(), store.dispatch(settingsLoadState())]);
-  analytics.identify({ language: appSettingsActions.getLanguage() });
+  await Promise.all([initializeRemoteConfig(), migrate()]);
+  const currency = appSettingsActions.getCurrency();
+  analytics.identify({ currency, language: appSettingsActions.getLanguage() });
+  // Paired probe. Companion to the installSource probe above; see
+  // event.debugIdentifyProbe for rationale. Remove after FEPLAT-67 wraps up.
+  analytics.track(analytics.event.debugIdentifyProbe, { probe: 'currency', value: currency });
 
   /**
    * We previously relied on the existence of a deviceId on keychain to

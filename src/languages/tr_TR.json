@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "İmza Cüzdanı Adresini Kopyala",
       "disconnect_to_anvil": "Anvil'den Bağlantıyı Kes",
       "crash_app_render_error": "Uygulamayı Çöker (Render Hatası)",
-      "enable_testnets": "Testnetleri Etkinleştir",
       "installing_update": "Güncelleme Yükleniyor",
       "navigation_entry_point": "Navigasyon Giriş Noktası",
       "no_update": "Güncelleme Yok",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "Herhangi bir cüzdanı izlemiyorsunuz.",
         "no_owned_wallets": "Rainbow'da herhangi bir cüzdanınız yok. Bir cüzdan oluşturun veya gizli ifadenizle bir tane içe aktarın.",
         "open_system_settings": "Ayarları Aç",
-        "unsupported_network": "Bildirimler şu anda yalnızca Ethereum Mainnet işlemleri için geçerlidir.",
-        "change_network": "Ağınızı Değiştirin",
         "no_first_time_permissions": "Lütfen Rainbow'un size bildirimler göndermesine izin verin.",
         "first_time_allow_notifications": "Bildirimlere İzin Ver",
         "error_alert_title": "Abonelik Başarısız",
@@ -3270,8 +3267,7 @@
         "disconnect": "Bağlantıyı Kes",
         "connect": "Bağlan",
         "switch_wallet": "Cüzdanı Değiştir",
-        "switch_network": "Ağı Değiştir",
-        "available_networks": "Kullanılabilir Ağlar"
+        "switch_network": "Ağı Değiştir"
       },
       "errors": {
         "go_back": "geri dön",

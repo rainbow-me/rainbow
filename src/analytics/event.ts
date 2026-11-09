@@ -53,7 +53,6 @@ export const event = {
   applicationBecameInteractive: 'Application became interactive',
   changedLanguage: 'Changed language',
   changedNativeCurrency: 'Changed native currency',
-  changedNetwork: 'Changed network',
   changedNativeCurrencyInputSend: 'Changed native currency input in Send flow',
   changedTokenInputSend: 'Changed token input in Send flow',
   sentTransaction: 'Sent transaction',
@@ -1054,7 +1053,6 @@ export type EventProperties = {
   [event.applicationBecameInteractive]: undefined;
   [event.changedLanguage]: { language: string };
   [event.changedNativeCurrency]: { currency: string };
-  [event.changedNetwork]: { chainId: number };
   [event.manuallyDisconnectedFromWalletConnectConnection]: { dappName: string; dappUrl: string };
   [event.receivedWcConnection]: { dappName: string; dappUrl: string; waitingTime?: string | number };
   [event.resetAssetSelectionSend]: undefined;

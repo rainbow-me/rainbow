@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "署名ウォレットアドレスをコピー",
       "disconnect_to_anvil": "Anvilから切断",
       "crash_app_render_error": "アプリクラッシュ（レンダーエラー）",
-      "enable_testnets": "テストネットを有効にする",
       "installing_update": "アップデートのインストール",
       "navigation_entry_point": "ナビゲーションエントリーポイント",
       "no_update": "アップデートなし",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "ウォッチリストに財布がありません。",
         "no_owned_wallets": "Rainbowには財布がありません。秘密のフレーズで財布を作成するか、インポートしてください。",
         "open_system_settings": "設定を開く",
-        "unsupported_network": "現時点では、通知はEthereum Mainnetのトランザクションのみ利用可能です。",
-        "change_network": "ネットワークを変更してください",
         "no_first_time_permissions": "Rainbowからの通知を許可してください。",
         "first_time_allow_notifications": "通知の許可",
         "error_alert_title": "購読に失敗しました",
@@ -3270,8 +3267,7 @@
         "disconnect": "切断する",
         "connect": "接続",
         "switch_wallet": "ウォレットを切り替える",
-        "switch_network": "ネットワークを切り替える",
-        "available_networks": "利用可能なネットワーク"
+        "switch_network": "ネットワークを切り替える"
       },
       "errors": {
         "go_back": "戻る",

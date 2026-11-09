@@ -99,7 +99,6 @@ function isLibWallet(wallet: EthereumWallet): wallet is LibWallet {
 }
 
 export type InitializeWalletParams = CreateWalletParams & {
-  network?: string;
   seedPhrase?: string;
   shouldCreateFirstWallet?: boolean;
   shouldRunMigrations?: boolean;
@@ -113,7 +112,6 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
     name = null,
     overwrite = false,
     checkedWallet = null,
-    network,
     image = null,
     // Import the wallet "silently" in the background (i.e. no "loading" prompts).
     silent = false,
