@@ -8,7 +8,6 @@ import { queryClient } from '@/react-query';
 import { contactsLoadState } from '@/redux/contacts';
 import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
-import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import promiseUtils from '@/utils/promise';
 
 import { useWalletsStore } from '../state/wallets/walletsStore';
@@ -38,10 +37,7 @@ export default function useLoadGlobalLateData() {
     // keyboard heights
     const p6 = dispatch(keyboardHeightsLoadState());
 
-    // tx method names
-    const p7 = dispatch(transactionSignaturesLoadState());
-
-    promises.push(p2, p4, p5, p6, p7);
+    promises.push(p2, p4, p5, p6);
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);
