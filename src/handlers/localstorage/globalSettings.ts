@@ -5,7 +5,6 @@ import { getGlobal, saveGlobal } from './common';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
-const APP_ICON = 'appIcon';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const CHAIN_ID = 'chainId';
 const AUTH_TIMELOCK = 'authTimelock';
@@ -30,8 +29,6 @@ export const setKeyboardHeight = (height: any) => saveGlobal(KEYBOARD_HEIGHT, he
 
 export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
 
-export const getAppIcon = () => getGlobal(APP_ICON, 'og');
-
 export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 
 export const saveImageMetadata = (imageMetadata: any) => saveGlobal(IMAGE_METADATA, imageMetadata);
@@ -47,12 +44,4 @@ export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
  */
 export const saveTestnetsEnabled = (preference: boolean) => {
   saveGlobal(TESTNETS_ENABLED, preference);
-};
-
-/**
- * @desc save app icon  preference
- * @param  {string}  [value]
- */
-export const saveAppIcon = (appIcon: string) => {
-  saveGlobal(APP_ICON, appIcon);
 };

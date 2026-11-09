@@ -1,3 +1,4 @@
+import { type AppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -39,7 +40,7 @@ export interface UserProperties {
   enabledTestnets?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
-  appIcon?: string;
+  appIcon?: AppIconKey;
 
   // charts
   chartType?: ChartType;

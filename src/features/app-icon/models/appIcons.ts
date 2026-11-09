@@ -1,4 +1,4 @@
-import { type ImageSourcePropType } from 'react-native';
+import { type ImageRequireSource } from 'react-native';
 
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconBaggy from '@/assets/appIconBaggy.png';
@@ -60,32 +60,37 @@ const RNBW_NFT_ADDRESS: EthereumAddress = '0x94515a42bA976435d2D4fD9CF3BF0B36e9E
 export interface AppIcon {
   accentColor: string;
   displayName: string;
-  image: ImageSourcePropType;
+  image: ImageRequireSource;
 }
 
 export interface UnlockableAppIcon extends AppIcon {
   unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[] | TokenInfo[]>>;
 }
 
-export type FreeAppIconKey = 'og' | 'pixel';
+export const freeAppIconKeys = ['og', 'pixel'] as const;
 
-export type UnlockableAppIconKey =
-  | 'optimism'
-  | 'smol'
-  | 'zora'
-  | 'golddoge'
-  | 'raindoge'
-  | 'pooly'
-  | 'finiliar'
-  | 'zorb'
-  | 'poolboy'
-  | 'adworld'
-  | 'farcaster'
-  | 'redacted'
-  | 'baggy'
-  | 'chonks'
-  | 'mog'
-  | 'rnbw';
+export const unlockableAppIconKeys = [
+  'optimism',
+  'smol',
+  'zora',
+  'golddoge',
+  'raindoge',
+  'pooly',
+  'finiliar',
+  'zorb',
+  'poolboy',
+  'adworld',
+  'farcaster',
+  'redacted',
+  'baggy',
+  'chonks',
+  'mog',
+  'rnbw',
+] as const;
+
+export type FreeAppIconKey = (typeof freeAppIconKeys)[number];
+
+export type UnlockableAppIconKey = (typeof unlockableAppIconKeys)[number];
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 

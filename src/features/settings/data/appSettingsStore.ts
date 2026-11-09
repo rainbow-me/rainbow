@@ -46,6 +46,7 @@ export const useAppSettingsStore = createBaseStore<AppSettingsState>(
 // ============ Store Actions ================================================== //
 
 export const appSettingsActions = createStoreActions(useAppSettingsStore, {
+  getAppIcon: () => useAppSettingsStore.getState().appIcon,
   getCurrency: () => useAppSettingsStore.getState().currency,
   getLanguage: () => useAppSettingsStore.getState().language,
 });
