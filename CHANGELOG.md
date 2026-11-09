@@ -21,6 +21,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.48](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.48)
+
+### Added
+
+- Add v2 search data layer for token search behind a flag (https://github.com/rainbow-me/rainbow/pull/7929)
+- Enable searching tokens through token search v2 behind its flag in discover (https://github.com/rainbow-me/rainbow/pull/7930)
+- Support Protocol V2 for Polymarket and rework order execution and account state (https://github.com/rainbow-me/rainbow/pull/7917)
+- Support optimistic position and balance updates for Polymarket (https://github.com/rainbow-me/rainbow/pull/7924)
+- Update Polymarket positions on order acceptance (https://github.com/rainbow-me/rainbow/pull/7925)
+- Apply position redemptions on relay acceptance for Polymarket (https://github.com/rainbow-me/rainbow/pull/7926)
+
+### Changed
+
+- Bump Android version code to 327 (https://github.com/rainbow-me/rainbow/pull/7919)
+- Bump iOS and Android to v2.0.48 (https://github.com/rainbow-me/rainbow/pull/7928)
+- Bump SDK to 0.4.2 for Elysium (https://github.com/rainbow-me/rainbow/pull/7934)
+
+### Fixed
+
+- Prevent `getHighContrastColor` from throwing due to invalid colors (https://github.com/rainbow-me/rainbow/pull/7933)
+- Fix stale currency conversion for perps and Polymarket balances (https://github.com/rainbow-me/rainbow/pull/7935)
+
 ## [2.0.47](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.47)
 
 ### Added
