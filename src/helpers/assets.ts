@@ -1,12 +1,10 @@
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 
 import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
-import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { parseUniqueId } from '@/features/nfts/core/uniqueId';
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { parsedSearchAssetToParsedAddressAsset } from '@/state/assets/utils';
 
@@ -119,51 +117,6 @@ export const buildCoinsList = (
     smallBalancesValue,
     totalBalancesValue,
   };
-};
-
-export const buildBriefCoinsList = (
-  sortedAssets: Map<UniqueId, ParsedSearchAsset>,
-  nativeCurrency: NativeCurrencyKey,
-  isCoinListEdited: boolean,
-  pinnedCoins: BooleanMap,
-  hiddenAssets: Set<UniqueId>
-) => {
-  const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
-    sortedAssets,
-    nativeCurrency,
-    isCoinListEdited,
-    pinnedCoins,
-    hiddenAssets
-  );
-  const briefAssets: CellTypes[] = [];
-  if (assets) {
-    for (const asset of assets) {
-      if (asset.coinDivider) {
-        briefAssets.push({
-          defaultToEditButton: asset.defaultToEditButton,
-          type: CellType.COIN_DIVIDER,
-          uid: 'coin-divider',
-          value: smallBalancesValue,
-        });
-      } else if (asset.smallBalancesContainer) {
-        for (const smallAsset of asset.assets) {
-          briefAssets.push({
-            type: CellType.COIN,
-            uid: 'coin-' + smallAsset.uniqueId,
-            uniqueId: smallAsset.uniqueId,
-          });
-        }
-      } else {
-        briefAssets.push({
-          type: CellType.COIN,
-          uid: 'coin-' + asset.uniqueId,
-          uniqueId: asset.uniqueId,
-        });
-      }
-    }
-  }
-
-  return { briefAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = (uniqueTokens: UniqueAsset[], selectedShowcaseTokens: string[] = []) => {

@@ -11,7 +11,7 @@ import { logger } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { useLedgerConnect } from '../hooks/useLedgerConnect';
 import { PairHardwareWalletAgainSheet } from '../screens/PairHardwareWalletAgainSheet';
@@ -24,7 +24,7 @@ const Swipe = createMaterialTopTabNavigator();
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const {
     params: { submit },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET>>();

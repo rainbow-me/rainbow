@@ -1,3 +1,5 @@
+import { type ThemesType } from '@/theme/themes';
+
 /**
  * Device data that's specific to the device and does not vary based on network or active wallet
  */
@@ -41,6 +43,7 @@ export type Device = {
  * properties here.
  */
 export type Legacy = {
+  theme: { data: ThemesType };
   // example of more specific typing
   // foo: boolean;
   [key: string]: any;

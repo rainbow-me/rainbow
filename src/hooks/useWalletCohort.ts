@@ -1,79 +1,89 @@
-import { useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
-
-import { isEmpty } from 'lodash';
+import { createBaseStore, useListen } from '@storesjs/stores';
+import isEmpty from 'lodash/isEmpty';
 
 import { analytics } from '@/analytics';
+import { time } from '@/framework/core/utils/time';
 import walletTypes from '@/helpers/walletTypes';
-import { useWallets } from '@/state/wallets/walletsStore';
+import { useWalletsStore, type WalletsState } from '@/state/wallets/walletsStore';
 
-export const useWalletCohort = () => {
-  const wallets = useWallets();
-  const alreadyIdentified = useRef(false);
+const useLastTrackedAtStore = createBaseStore(() => 0, {
+  storageKey: 'walletCohortTracker',
+});
 
-  useEffect(() => {
-    if (alreadyIdentified.current || !wallets || isEmpty(wallets)) return;
-    alreadyIdentified.current = true;
+export function useWalletCohort(): void {
+  useListen(useWalletsStore, state => state.wallets, identifyWalletCohort);
+}
 
-    requestIdleCallback(() => {
-      InteractionManager.runAfterInteractions(() => {
-        const identify = Object.values(wallets).reduce(
-          (result, wallet) => {
-            const addresses = wallet.addresses || [];
-            switch (wallet.type) {
-              case walletTypes.mnemonic:
-                result.ownedAccounts += addresses.length;
-                result.recoveryPhrases += 1;
-                if (wallet.imported) {
-                  result.importedRecoveryPhrases += 1;
-                  result.hasImported = true;
-                }
-                break;
-              case walletTypes.privateKey:
-                result.ownedAccounts += addresses.length;
-                result.privateKeys += 1;
-                if (wallet.imported) {
-                  result.importedPrivateKeys += 1;
-                  result.hasImported = true;
-                }
-                break;
-              case walletTypes.readOnly:
-                result.watchedAccounts += addresses.length;
-                break;
-              case walletTypes.bluetooth:
-                result.hardwareAccounts += addresses.length;
-                result.ledgerDevices += 1;
-                break;
+function identifyWalletCohort(wallets: WalletsState['wallets']): void {
+  if (!wallets || isEmpty(wallets)) return;
+
+  const now = Date.now();
+  const lastTracked = useLastTrackedAtStore.getState();
+
+  if (now - lastTracked < time.days(1)) return;
+  useLastTrackedAtStore.setState(now);
+
+  requestIdleCallback(() => {
+    const identify = Object.values(wallets).reduce(
+      (result, wallet) => {
+        const addresses = wallet.addresses;
+        if (!addresses) return result;
+
+        switch (wallet.type) {
+          case walletTypes.mnemonic:
+            result.ownedAccounts += addresses.length;
+            result.recoveryPhrases += 1;
+            if (wallet.imported) {
+              result.importedRecoveryPhrases += 1;
+              result.hasImported = true;
             }
-            return result;
-          },
-          {
-            ownedAccounts: 0,
-            watchedAccounts: 0,
-            recoveryPhrases: 0,
-            importedRecoveryPhrases: 0,
-            privateKeys: 0,
-            importedPrivateKeys: 0,
-            hasImported: false,
-            hardwareAccounts: 0,
-            ledgerDevices: 0,
-            trezorDevices: 0,
-          }
-        );
+            break;
 
-        analytics.identify({
-          ownedAccounts: identify.ownedAccounts,
-          hardwareAccounts: identify.hardwareAccounts,
-          watchedAccounts: identify.watchedAccounts,
-          recoveryPhrases: identify.recoveryPhrases,
-          importedRecoveryPhrases: identify.importedRecoveryPhrases,
-          privateKeys: identify.privateKeys,
-          importedPrivateKeys: identify.importedPrivateKeys,
-          ledgerDevices: identify.ledgerDevices,
-          trezorDevices: identify.trezorDevices,
-          hasImported: identify.hasImported,
-        });
-      });
+          case walletTypes.privateKey:
+            result.ownedAccounts += addresses.length;
+            result.privateKeys += 1;
+            if (wallet.imported) {
+              result.importedPrivateKeys += 1;
+              result.hasImported = true;
+            }
+            break;
+
+          case walletTypes.readOnly:
+            result.watchedAccounts += addresses.length;
+            break;
+
+          case walletTypes.bluetooth:
+            result.hardwareAccounts += addresses.length;
+            result.ledgerDevices += 1;
+            break;
+        }
+        return result;
+      },
+      {
+        hardwareAccounts: 0,
+        hasImported: false,
+        importedPrivateKeys: 0,
+        importedRecoveryPhrases: 0,
+        ledgerDevices: 0,
+        ownedAccounts: 0,
+        privateKeys: 0,
+        recoveryPhrases: 0,
+        trezorDevices: 0,
+        watchedAccounts: 0,
+      }
+    );
+
+    analytics.identify({
+      hardwareAccounts: identify.hardwareAccounts,
+      hasImported: identify.hasImported,
+      importedPrivateKeys: identify.importedPrivateKeys,
+      importedRecoveryPhrases: identify.importedRecoveryPhrases,
+      ledgerDevices: identify.ledgerDevices,
+      ownedAccounts: identify.ownedAccounts,
+      privateKeys: identify.privateKeys,
+      recoveryPhrases: identify.recoveryPhrases,
+      trezorDevices: identify.trezorDevices,
+      watchedAccounts: identify.watchedAccounts,
     });
-  }, [wallets]);
-};
+  });
+}

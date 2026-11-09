@@ -3,6 +3,7 @@ import { Keyboard, Platform, Share } from 'react-native';
 
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { normalizeAddress } from '@/features/address/core/address';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { setClipboard } from '@/hooks/useClipboard';
@@ -13,7 +14,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references/constants';
 import { switchWallet } from '@/state/wallets/switchWallet';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
@@ -29,7 +30,7 @@ const ACTIONS = {
 };
 
 export function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { contacts, onRemoveContact } = useContacts();
@@ -108,7 +109,8 @@ export function MoreButton({ address, ensName }: { address?: string; ensName?: s
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.OPEN_WALLET) {
         if (!isSelectedWallet) {
-          switchWallet(address!);
+          const accountAddress = address ? normalizeAddress(address) : null;
+          if (accountAddress) await switchWallet(accountAddress);
         }
         navigate(Routes.WALLET_SCREEN);
       }

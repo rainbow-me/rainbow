@@ -11,28 +11,28 @@ import { opacity } from '@/design-system/utils/opacity';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { formatLiquidityCappedBalance } from '@/features/token/ui/utils/formatLiquidityCappedBalance';
+import { useCoinEditingStore } from '@/features/wallet/data/walletScreen/base/coinEditingStore';
+import { selectedCoinsActions } from '@/features/wallet/data/walletScreen/base/selectedCoinsStore';
+import { type ExtendedStateData } from '@/features/wallet/data/walletScreen/composition/useExtendedState';
 import { memoizeLast } from '@/framework/core/utils/memoizeLast';
 import { toSignificantDigits } from '@/helpers/utilities';
 import useAccountAsset from '@/hooks/useAccountAsset';
-import { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { select24hChange } from '@/state/liveTokens/selectors';
 import { type TokenData } from '@/state/liveTokens/types';
 import { borders, colors, padding, shadow } from '@/styles';
 
-import { type ExtendedState } from '../core/RowRenderer';
-
 interface CoinCheckButtonProps {
   isHidden: boolean;
   isPinned: boolean;
   onPress: () => void;
   uniqueId: string;
-  theme: any;
+  theme: ExtendedStateData['theme'];
 }
 
 const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned, onPress, uniqueId, theme }: CoinCheckButtonProps) {
-  const { selectedItems } = useCoinListFinishEditingOptions();
+  const { selectedItems } = useCoinEditingStore();
   const selected = selectedItems.includes(uniqueId);
 
   const showOutline = !(isHidden || isPinned);
@@ -75,7 +75,7 @@ function formatPercentChange(percentChange: string | undefined) {
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
-  theme: any;
+  theme: ExtendedStateData['theme'];
   nativeCurrencySymbol: string;
   isHidden: boolean;
   maybeCallback: React.RefObject<null | (() => void)>;
@@ -177,20 +177,27 @@ const MemoizedBalanceCoinRow = React.memo(
 
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
-export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
+export default React.memo(function BalanceCoinRow({
+  uniqueId,
+  extendedState,
+  isPinned,
+  isHidden,
+}: {
+  uniqueId: string;
+  extendedState: ExtendedStateData;
+  isPinned: boolean;
+  isHidden: boolean;
+}) {
+  const { theme, nativeCurrencySymbol, nativeCurrency, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
-    toggleSelectedCoin(uniqueId);
-  }, [uniqueId, toggleSelectedCoin]);
+    selectedCoinsActions.toggleSelectedCoin(uniqueId);
+  }, [uniqueId]);
 
   // HACK to make sure we don't rerender MemoizedBalanceCoinRow
   // when isCoinListEdited === true and we need to change onPress callback
   const maybeCallback = useRef<null | (() => void)>(null);
   maybeCallback.current = isCoinListEdited ? onPress : null;
-
-  const isHidden = hiddenAssets.has(uniqueId);
-  const isPinned = pinnedCoins[uniqueId];
 
   return (
     <View style={[sx.rootContainer, !isCoinListEdited && sx.nonEditMode]}>

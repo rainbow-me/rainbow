@@ -1,7 +1,7 @@
 import { createMMKV } from 'react-native-mmkv';
 
 import { loadAddress } from '@/features/wallet/data/walletKeychain';
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { type BooleanMap } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import { MigrationName, type Migration } from '@/migrations/types';
 
 const storage = createMMKV();

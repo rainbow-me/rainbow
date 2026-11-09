@@ -21,7 +21,7 @@ const walletUsageStore = createBaseStore<{ usage: WalletUsage }>(() => ({ usage:
 export const useRecentWalletsStore = createDerivedStore(
   $ => {
     const wallets = $(useWalletsStore, s => s.wallets);
-    const selectedWalletId = $(useWalletsStore, s => s.selected?.id);
+    const selectedWalletId = $(useWalletsStore, s => s.selectedWalletId);
     const usage = $(walletUsageStore, s => s.usage);
 
     const accounts: Record<string, WalletAccount> = {};
@@ -48,22 +48,17 @@ export const useRecentWalletsStore = createDerivedStore(
  * Record wallet visits and reconcile the visible inventory.
  */
 export function updateWalletUsage(state: WalletsState, previous: WalletsState): void {
-  if (!state.walletReady) {
-    if (previous.walletReady) walletUsageStore.setState({ usage: {} });
-    return;
-  }
-
   const address = state.accountAddress.toLowerCase();
   const addressChanged = address !== previous.accountAddress.toLowerCase();
   const refreshInventory = state === previous || state.wallets !== previous.wallets;
 
-  if (!refreshInventory && state.walletReady === previous.walletReady && !addressChanged) return;
+  if (!refreshInventory && !addressChanged) return;
 
   const previousUsage = walletUsageStore.getState().usage;
   let usage = previousUsage;
   let isVisible = usage[address] !== undefined;
 
-  if (refreshInventory || !previous.walletReady || !isVisible) {
+  if (refreshInventory || !isVisible) {
     const visibleAddresses = new Set<string>();
     for (const wallet of Object.values(state.wallets)) {
       for (const account of wallet.addresses) {
@@ -79,7 +74,7 @@ export function updateWalletUsage(state: WalletsState, previous: WalletsState): 
     }
   }
 
-  const shouldRecordVisit = isVisible && ((previous.walletReady && addressChanged) || usage[address] === undefined);
+  const shouldRecordVisit = isVisible && (addressChanged || usage[address] === undefined);
   if (shouldRecordVisit) {
     usage = { ...usage };
     for (const key in usage) usage[key] *= PREVIOUS_USAGE_WEIGHT;

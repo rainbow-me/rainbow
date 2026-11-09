@@ -8,9 +8,9 @@ import { type AnyAction } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';
 
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
+import { normalizeAddress } from '@/features/address/core/address';
 import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import walletTypes from '@/helpers/walletTypes';
-import usePrevious from '@/hooks/usePrevious';
 import { logger } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import {
@@ -37,7 +37,7 @@ import {
 import { type AppState } from '@/redux/store';
 import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
-import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getSelectedWallet, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import Routes from '@rainbow-me/routes';
 
@@ -56,8 +56,7 @@ export const NotificationsHandler = () => {
   const notifeeForegroundEventListener = useRef<Callback>(undefined);
   const alreadyRanInitialization = useRef(false);
 
-  const walletReady = useWalletsStore(state => state.walletReady);
-  const prevWalletReady = usePrevious(walletReady);
+  const hasSelectedWallet = useWalletsStore(state => state.selectedWalletId !== null);
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
@@ -102,7 +101,7 @@ export const NotificationsHandler = () => {
     trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
-    if (!getWalletReady()) {
+    if (!getSelectedWallet()) {
       NotificationStorage.deferNotification(notification);
       return;
     }
@@ -126,7 +125,8 @@ export const NotificationsHandler = () => {
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
-        walletAddress = await switchWallet(data.address);
+        const address = normalizeAddress(data.address);
+        walletAddress = address ? await switchWallet(address) : null;
       }
       if (!walletAddress) {
         return;
@@ -210,10 +210,10 @@ export const NotificationsHandler = () => {
   }, []);
 
   useEffect(() => {
-    if (walletReady && prevWalletReady !== walletReady) {
+    if (hasSelectedWallet) {
       handleDeferredNotificationIfNeeded();
     }
-  }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
+  }, [handleDeferredNotificationIfNeeded, hasSelectedWallet]);
 
   /*
    * Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
@@ -221,7 +221,7 @@ export const NotificationsHandler = () => {
    */
   useEffect(() => {
     // It is run only once per app session, that means on every app cold start
-    if (walletReady && !alreadyRanInitialization.current) {
+    if (hasSelectedWallet && !alreadyRanInitialization.current) {
       const addresses: AddressWithRelationship[] = [];
 
       Object.values(wallets || {}).forEach(wallet =>
@@ -240,7 +240,7 @@ export const NotificationsHandler = () => {
       alreadyRanInitialization.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, walletReady]);
+  }, [dispatch, hasSelectedWallet]);
 
   return null;
 };

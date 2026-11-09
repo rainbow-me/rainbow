@@ -32,7 +32,7 @@ import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 
 type WithThemeProps = {
@@ -130,7 +130,7 @@ export function WalletConnectApprovalSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet | null }>(() => {
     const accountAddressAsAddress = accountAddress as Address;

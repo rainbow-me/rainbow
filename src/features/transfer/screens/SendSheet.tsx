@@ -28,11 +28,11 @@ import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
+import { useCurrentPinnedCoins } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransferTransaction, estimateGasLimit } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
-import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -159,7 +159,7 @@ export function SendSheet() {
   });
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const { pinnedCoinsObj } = useCoinListEditOptions();
+  const pinnedCoinsObj = useCurrentPinnedCoins();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,

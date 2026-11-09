@@ -4,14 +4,14 @@ export const MAX_PINNED_ADDRESSES = 6;
 
 type Address = string;
 
-interface PinnedWalletsStore {
+export interface PinnedWalletsStore {
   pinnedAddresses: Address[];
   unpinnedAddresses: Address[];
   hasShownEditHintTooltip: boolean;
   hasAutoPinnedAddresses: boolean;
   canPinAddresses: () => boolean;
-  addPinnedAddress: (address: Address) => void;
-  removePinnedAddress: (address: Address) => void;
+  pinWallet: (address: Address) => void;
+  unpinWallet: (address: Address) => void;
   setPinnedAddresses: (newOrder: Address[]) => void;
   setUnpinnedAddresses: (newOrder: Address[]) => void;
   isPinnedAddress: (address: Address) => boolean;
@@ -32,15 +32,18 @@ export const usePinnedWalletsStore = createBaseStore<PinnedWalletsStore>(
       return get().pinnedAddresses.some(pinnedAddress => pinnedAddress === address);
     },
 
-    addPinnedAddress: address => {
-      const { pinnedAddresses } = get();
+    pinWallet: address => {
+      const { pinnedAddresses, unpinnedAddresses } = get();
 
       if (pinnedAddresses.length >= MAX_PINNED_ADDRESSES) return;
 
-      set({ pinnedAddresses: [...pinnedAddresses, address] });
+      set({
+        pinnedAddresses: [...pinnedAddresses, address],
+        unpinnedAddresses: unpinnedAddresses.filter(addr => addr !== address),
+      });
     },
 
-    removePinnedAddress: address => {
+    unpinWallet: address => {
       const { pinnedAddresses, unpinnedAddresses } = get();
 
       const match = pinnedAddresses.find(pinnedAddress => pinnedAddress === address);
@@ -66,6 +69,12 @@ export const usePinnedWalletsStore = createBaseStore<PinnedWalletsStore>(
     },
   }),
   {
+    partialize: state => ({
+      hasAutoPinnedAddresses: state.hasAutoPinnedAddresses,
+      hasShownEditHintTooltip: state.hasShownEditHintTooltip,
+      pinnedAddresses: state.pinnedAddresses,
+      unpinnedAddresses: state.unpinnedAddresses,
+    }),
     storageKey: 'pinnedWallets',
     version: 1,
   }

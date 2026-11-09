@@ -27,6 +27,7 @@ import { Bleed, Box, Columns, globalColors, Inline, Inset, Stack, Text, useBackg
 import { opacity } from '@/design-system/utils/opacity';
 import { type ParsedAddressAsset } from '@/entities/tokens';
 import { TransactionStatus, type NewTransaction } from '@/entities/transactions';
+import { normalizeAddress } from '@/features/address/core/address';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { useCalculateGasLimit } from '@/features/gas/hooks/useCalculateGasLimit';
 import useGas from '@/features/gas/hooks/useGas';
@@ -425,9 +426,8 @@ export const SignTransactionSheet = () => {
       // we need to switch to that wallet before saving the tx
       InteractionManager.runAfterInteractions(async () => {
         if (!txSavedInCurrentWallet && !!txDetails) {
-          if (txDetails?.from) {
-            await switchWallet(txDetails?.from);
-          }
+          const address = txDetails.from ? normalizeAddress(txDetails.from) : null;
+          if (address) await switchWallet(address);
 
           addNewTransaction({
             transaction: txDetails,

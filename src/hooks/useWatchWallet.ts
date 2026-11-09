@@ -2,17 +2,13 @@ import { useCallback, useMemo } from 'react';
 
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
-import { cleanUpWalletKeys } from '@/features/wallet/data/walletKeychain';
 import { type RainbowWallet } from '@/features/wallet/types';
-import useDeleteWallet from '@/hooks/useDeleteWallet';
+import { ensureValidHex } from '@/handlers/web3';
 import useImportingWallet from '@/hooks/useImportingWallet';
-import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -24,7 +20,7 @@ export default function useWatchWallet({
   ensName?: string;
   avatarUrl?: string | null;
   showImportModal?: boolean;
-}) {
+}): { isImporting: boolean; isWatching: boolean; watchWallet: () => Promise<void> } {
   const { goBack, navigate } = useNavigation();
   const wallets = useWallets();
 
@@ -35,28 +31,6 @@ export default function useWatchWallet({
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
 
-  const deleteWallet = useDeleteWallet({ address: primaryAddress });
-
-  const changeAccount = useCallback(
-    async (walletId: string, address: string) => {
-      const wallet = (wallets || {})[walletId];
-      try {
-        await setSelectedWallet(wallet, address);
-        await initializeWallet({
-          shouldRunMigrations: false,
-          overwrite: false,
-          switching: true,
-        });
-      } catch (e) {
-        logger.error(new RainbowError(`[useWatchWallet]: error while switching account`, e), {
-          error: (e as Error)?.message || 'Unknown error',
-        });
-      }
-    },
-    [wallets]
-  );
-
-  const accountAddress = useAccountAddress();
   const { isImporting, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     showImportModal,
   });
@@ -75,51 +49,17 @@ export default function useWatchWallet({
         });
       }
     } else {
-      // If there's more than 1 account,
-      // it's deletable
-      const isLastAvailableWallet = Object.keys(wallets || {}).find(key => {
-        const someWallet = (wallets || {})[key];
-        const otherAccount = someWallet.addresses?.find(account => account.visible && account.address !== accountAddress);
-        if (otherAccount) {
-          return true;
-        }
-        return false;
-      });
-      await deleteWallet();
+      if (!watchingWallet || !primaryAddress) return;
+      const previous = useWalletsStore.getState();
+      await previous.removeAccount(watchingWallet.id, ensureValidHex(primaryAddress));
+      const current = useWalletsStore.getState();
       triggerHaptics('notificationSuccess');
-      if (!isLastAvailableWallet) {
-        await cleanUpWalletKeys();
+      if (!current.getSelectedWallet()) {
         goBack();
         navigate(Routes.WELCOME_SCREEN);
-      } else {
-        // If we're deleting the selected wallet,
-        // we need to switch to another one
-        if (primaryAddress && primaryAddress === accountAddress) {
-          const { wallet: foundWallet, key } =
-            doesWalletsContainAddress({
-              address: primaryAddress,
-              wallets: wallets || {},
-            }) || {};
-          if (foundWallet && key) {
-            await changeAccount(key, foundWallet.address);
-          }
-        }
       }
     }
-  }, [
-    isWatching,
-    handleSetSeedPhrase,
-    ensName,
-    handlePressImportButton,
-    avatarUrl,
-    deleteWallet,
-    wallets,
-    goBack,
-    navigate,
-    primaryAddress,
-    accountAddress,
-    changeAccount,
-  ]);
+  }, [isWatching, handleSetSeedPhrase, ensName, handlePressImportButton, avatarUrl, goBack, navigate, primaryAddress, watchingWallet]);
 
   return { isImporting, isWatching, watchWallet };
 }

@@ -1,8 +1,5 @@
 import React from 'react';
 
-import { type SetterOrUpdater } from 'recoil';
-
-import { type UniqueId } from '@/__swaps__/types/assets';
 import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
 import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
@@ -12,15 +9,13 @@ import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/
 import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
-import { type NativeCurrencyKey } from '@/features/currency/types';
 import { renderNftRow } from '@/features/nfts/ui/renderNftRow';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import { type ExtendedStateData } from '@/features/wallet/data/walletScreen/composition/useExtendedState';
 import { assertNever } from '@/helpers/assertNever';
-import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import Routes from '@/navigation/routesNames';
-import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 import { CoinDivider } from '../../../coin-divider';
 import AssetListItemSkeleton from '../../AssetListItemSkeleton';
@@ -44,18 +39,7 @@ import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { CellType, type CellTypes } from './ViewTypes';
 
-export type ExtendedState = {
-  theme: ThemeContextProps;
-  nativeCurrencySymbol: string;
-  nativeCurrency: NativeCurrencyKey;
-  isCoinListEdited: boolean;
-  hiddenAssets: Set<UniqueId>;
-  pinnedCoins: BooleanMap;
-  toggleSelectedCoin: (id: string) => void;
-  setIsCoinListEdited: SetterOrUpdater<boolean>;
-};
-
-export default function rowRenderer(data: CellTypes, extendedState: ExtendedState): React.ReactElement | null {
+export default function rowRenderer(data: CellTypes, extendedState: ExtendedStateData): React.ReactElement | null {
   switch (data.type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -78,10 +62,10 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
     case CellType.COIN_DIVIDER:
       return (
         <CoinDivider
-          // @ts-expect-error - untyped js file
           balancesSum={data.value}
           defaultToEditButton={data.defaultToEditButton}
-          extendedState={extendedState}
+          isCoinListEdited={extendedState.isCoinListEdited}
+          nativeCurrency={extendedState.nativeCurrency}
         />
       );
     case CellType.DISCOVER_MORE_BUTTON:
@@ -126,7 +110,9 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.COIN:
-      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={data.uniqueId} />;
+      return (
+        <FastBalanceCoinRow extendedState={extendedState} uniqueId={data.uniqueId} isPinned={data.isPinned} isHidden={data.isHidden} />
+      );
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -190,7 +176,13 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
       return <PerpsPositionRow position={position} />;
     }
     case CellType.POLYMARKET_HEADER: {
-      return <PolymarketHeader isDarkMode={extendedState.theme.isDarkMode} />;
+      return (
+        <PolymarketHeader
+          hasContent={data.hasContent}
+          totalValueNative={data.totalValueNative}
+          isDarkMode={extendedState.theme.isDarkMode}
+        />
+      );
     }
     case CellType.POLYMARKET_BALANCE: {
       const { balance } = data;

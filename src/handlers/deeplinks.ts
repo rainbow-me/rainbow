@@ -24,8 +24,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsActions } from '@/state/assets/userAssets';
-import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
-import { delay } from '@/utils/delay';
+import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
@@ -43,14 +42,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
   if (!url) {
     logger.warn(`[handleDeeplink]: No url provided`);
     return;
-  }
-
-  /**
-   * We need to wait till the wallet is ready to handle any deeplink
-   */
-  while (!getWalletReady()) {
-    logger.debug(`[handleDeeplink]: Waiting for wallet to be ready`);
-    await delay(50);
   }
 
   const { protocol, host, pathname, query } = new URL(url, true);
@@ -355,15 +346,8 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   return parseSearchAsset({ searchAsset, userAsset });
 };
 
-async function setFromWallet(address: string | undefined) {
-  if (!address || !isAddress(address)) return;
-
-  const userWallets = getWallets()!;
-  const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
-
-  if (!wallet) return;
-
-  setSelectedWallet(wallet, address);
+async function setFromWallet(address: string | undefined): Promise<void> {
+  if (address && isAddress(address)) await switchWallet(address);
 }
 
 function isNumericString(value: string | undefined): value is string {

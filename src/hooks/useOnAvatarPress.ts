@@ -49,8 +49,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { setNextEmoji } = useUpdateEmoji();
 
   const onAvatarRemovePhoto = useCallback(async () => {
-    const { selected: selectedWallet, wallets } = useWalletsStore.getState();
-    if (!selectedWallet || !wallets) return;
+    const selectedWallet = useWalletsStore.getState().getSelectedWallet();
+    if (!selectedWallet) return;
 
     updateAccountInfo({
       address: accountAddress,
@@ -61,8 +61,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const processPhoto = useCallback(
     (image: ImagePickerAsset) => {
-      const { selected: selectedWallet, wallets } = useWalletsStore.getState();
-      if (!selectedWallet || !wallets) return;
+      const selectedWallet = useWalletsStore.getState().getSelectedWallet();
+      if (!selectedWallet) return;
 
       updateAccountInfo({
         address: accountAddress,

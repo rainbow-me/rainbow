@@ -10,8 +10,8 @@ import { opacity } from '@/design-system/utils/opacity';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type BackendNetwork } from '@/features/network/types/backendNetworks';
+import { pinnedCoinsActions } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import { useCleanup } from '@/hooks/useCleanup';
-import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme/ThemeContext';
@@ -67,14 +67,13 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const infoInputScrollY = useRef(0);
 
   // Handle automatically pinning token when it is created
-  const { addPinnedCoin } = useCoinListEditOptions();
   useEffect(() => {
     // As soon as token is created, pin it
     if (launchedTokenAddress) {
       const launchedTokenUniqueId = getUniqueId(launchedTokenAddress, chainId);
-      addPinnedCoin(launchedTokenUniqueId);
+      pinnedCoinsActions.setPinnedCoin(launchedTokenUniqueId, true);
     }
-  }, [launchedTokenAddress, chainId, addPinnedCoin]);
+  }, [launchedTokenAddress, chainId]);
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);

@@ -14,15 +14,15 @@ import { abbreviateAddress, abbreviateName } from '@/features/address/core/forma
 import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import type { RainbowAccount, RainbowWallet } from '@/features/wallet/types';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
+import { ensureValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { navigate } from '@/navigation/Navigation';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { switchWallet } from '@/state/wallets/switchWallet';
 import {
   formatAccountLabel,
   getIsDamagedWallet,
   getIsReadOnlyWallet,
-  setSelectedWallet,
   useAccountProfileInfo,
   useWalletsStore,
 } from '@/state/wallets/walletsStore';
@@ -56,7 +56,7 @@ export function MainSideDrawer({ children }: { children: React.ReactElement }) {
     useWalletsStore,
     state => state,
     (state, previous) => {
-      if (!pendingWalletUsage.current || !state.walletReady) updateWalletUsage(state, previous);
+      if (!pendingWalletUsage.current || !state.accountAddress) updateWalletUsage(state, previous);
     },
     { fireImmediately: true }
   );
@@ -174,15 +174,15 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
   const recentWallets = useRecentWalletsStore();
   const selected = useStoreSharedValue(useWalletsStore, s => s.accountAddress.toLowerCase());
 
-  const switchWallet = useCallback(
-    (account: RainbowAccount, wallet: RainbowWallet) => {
+  const onSwitchWallet = useCallback(
+    async (account: RainbowAccount, wallet: RainbowWallet) => {
       const previousState = useWalletsStore.getState();
-      const alreadySelected = account.address.toLowerCase() === previousState.accountAddress.toLowerCase();
+      const alreadySelected =
+        wallet.id === previousState.selectedWalletId && account.address.toLowerCase() === previousState.accountAddress.toLowerCase();
       if (alreadySelected) closeDrawer();
       else {
         closeDrawer(() => updateWalletUsage(useWalletsStore.getState(), previousState));
-        void setSelectedWallet(wallet, account.address);
-        initializeWallet({ shouldRunMigrations: false, overwrite: false, switching: true });
+        await switchWallet(ensureValidHex(account.address), wallet.id);
       }
     },
     [closeDrawer]
@@ -201,7 +201,7 @@ function RecentWallets({ closeDrawer }: { closeDrawer: CloseDrawer }) {
             )
           }
           label={removeFirstEmojiFromString(account.label) || abbreviateAddress(account.address, 6, 4)}
-          onPress={() => switchWallet(account, wallet)}
+          onPress={() => onSwitchWallet(account, wallet)}
           selectedItemId={selected}
           uniqueId={account.address.toLowerCase()}
         />

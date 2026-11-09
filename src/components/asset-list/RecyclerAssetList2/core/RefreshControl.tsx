@@ -3,17 +3,17 @@ import { RefreshControl, type RefreshControlProps } from 'react-native';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { opacity } from '@/design-system/utils/opacity';
-import useRefreshAccountData from '@/hooks/useRefreshAccountData';
+import { accountRefreshActions, useAccountRefreshStore } from '@/features/wallet/data/walletRefreshStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 export function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
-  const { refresh, isRefreshing } = useRefreshAccountData();
+  const isRefreshing = useAccountRefreshStore(state => state.isRefreshing);
   const { colors } = useTheme();
 
   return (
     <RefreshControl
       {...props}
-      onRefresh={refresh}
+      onRefresh={accountRefreshActions.refreshAccountData}
       progressViewOffset={navbarHeight + 16}
       refreshing={isRefreshing}
       tintColor={opacity(colors.blueGreyDark, 0.4)}

@@ -15,11 +15,13 @@ import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Separator, Text } from '@/design-system';
 import { type EthereumAddress } from '@/entities/wallet';
 import styled from '@/framework/ui/styled-thing';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
 import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_HEADER_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
 import { type AddressItem, type AddressMenuAction, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 
 import { AddressRow } from './AddressRow';
@@ -45,6 +47,7 @@ interface Props {
 }
 
 export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAccount, editMode }: Props) {
+  const selectedWallet = useStableValue(getAccountAddress);
   const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
   const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
 
@@ -106,7 +109,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
         )}
         {hasPinnedWallets && unpinnedWalletItems.length > 0 && (
           <>
-            <Separator color="separatorSecondary" thickness={1} />
+            <Separator color="separatorTertiary" thickness={1} />
             <Box paddingVertical="28px">
               <Text color="label" size="17pt" weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.all_wallets)}
@@ -144,7 +147,8 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             <DraggableScrollView
               onOrderChange={onOrderChange}
               onOrderUpdateWorklet={onOrderUpdateWorklet}
-              scrollIndicatorInsets={{ bottom: FOOTER_HEIGHT - 24 }}
+              removeClippedSubviews
+              scrollIndicatorInsets={{ bottom: FOOTER_HEIGHT, top: PANEL_HEADER_HEIGHT + 16 }}
               style={{
                 maxHeight: LIST_MAX_HEIGHT,
                 marginHorizontal: -PANEL_INSET_HORIZONTAL,
@@ -154,6 +158,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
               autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
               contentContainerStyle={{
                 paddingBottom: FOOTER_HEIGHT - 24,
+                paddingTop: PANEL_HEADER_HEIGHT,
                 // required here also for Android
                 marginHorizontal: -PANEL_INSET_HORIZONTAL,
                 paddingHorizontal: PANEL_INSET_HORIZONTAL,
@@ -167,6 +172,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
                     onPressMenuItem={onPressMenuItem}
                     data={item}
                     editMode={editMode}
+                    isSelected={selectedWallet ? selectedWallet === item.address : item.isSelected}
                     onPress={() => onPressAccount(item.address)}
                   />
                 </Draggable>

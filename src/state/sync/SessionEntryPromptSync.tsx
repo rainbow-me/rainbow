@@ -15,7 +15,7 @@ import { useActiveRoute } from '@/hooks/useActiveRoute';
 import Navigation, { type Route } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { isSwipeRoute } from '@/state/navigation/navigationStore';
-import { getSelectedWallet, getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getSelectedWallet, getWallets } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { delay } from '@/utils/delay';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -130,12 +130,11 @@ async function waitForBackupPromptToOpenAndDismiss(): Promise<void> {
 
 const SessionEntryPromptSyncComponent = () => {
   const activeRoute = useActiveRoute();
-  const walletReady = useWalletsStore(state => state.walletReady);
   const startedRef = useRef(false);
 
   useEffect(() => {
     const isSwipeExperienceRoute = !!activeRoute && (activeRoute === Routes.SWIPE_LAYOUT || isSwipeRoute(activeRoute as Route));
-    if (startedRef.current || !walletReady || !activeRoute || !isSwipeExperienceRoute) {
+    if (startedRef.current || !activeRoute || !isSwipeExperienceRoute) {
       return;
     }
 
@@ -143,7 +142,7 @@ const SessionEntryPromptSyncComponent = () => {
     InteractionManager.runAfterInteractions(() => {
       void runSessionEntryPromptOnce();
     });
-  }, [activeRoute, walletReady]);
+  }, [activeRoute]);
 
   return null;
 };

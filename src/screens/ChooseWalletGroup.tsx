@@ -23,8 +23,7 @@ import { createWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { getIsDamagedWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import profileUtils from '@/utils/profileUtils';
 
@@ -46,9 +45,8 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         });
 
         try {
-          await createWallet({ name });
-          await loadWallets();
-          await initializeWallet();
+          const wallet = await createWallet({ name });
+          if (!wallet) throw new RainbowError('Wallet creation failed');
           navigate(Routes.WALLET_SCREEN);
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', error));
