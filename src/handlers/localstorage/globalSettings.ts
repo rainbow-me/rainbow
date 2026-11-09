@@ -12,7 +12,6 @@ const NATIVE_CURRENCY = 'nativeCurrency';
 const CHAIN_ID = 'chainId';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
-const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const TESTNETS_ENABLED = 'testnetsEnabled';
 
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
@@ -44,17 +43,6 @@ export const saveNativeCurrency = (nativeCurrency: any) => saveGlobal(NATIVE_CUR
 export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 
 export const saveImageMetadata = (imageMetadata: any) => saveGlobal(IMAGE_METADATA, imageMetadata);
-
-/**
- * @desc save transaction signatures
- * @param  {Object}   [transactionSignatures]
- */
-export const saveTransactionSignatures = (transactionSignatures: any) => saveGlobal(TRANSACTION_SIGNATURES, transactionSignatures);
-
-/**
- * @desc get transaction signatures
- */
-export const getTransactionSignatures = () => getGlobal(TRANSACTION_SIGNATURES, {});
 
 /**
  * @desc get testnets enabled preference
