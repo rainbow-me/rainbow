@@ -1,17 +1,20 @@
 import React, { memo, useCallback, useContext, useRef, useState } from 'react';
-import { Animated, LayoutAnimation, View } from 'react-native';
+import { LayoutAnimation, Animated as RNAnimated, StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { useCoinEditingStore } from '@/features/wallet/data/walletScreen/base/coinEditingStore';
+import { editTokensActions } from '@/features/wallet/data/walletScreen/base/editStateStore';
+import { selectedCoinsActions } from '@/features/wallet/data/walletScreen/base/selectedCoinsStore';
+import { useCurrentWalletToggles, walletListTogglesActions } from '@/features/wallet/data/walletScreen/base/walletListTogglesStore';
 import styled from '@/framework/ui/styled-thing';
 import { EditAction } from '@/helpers/EditAction';
-import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { padding } from '@/styles';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
@@ -28,12 +31,13 @@ const Container = styled(Row).attrs({
   justify: 'space-between',
 })({
   ...padding.object(4, 19, 5, 0),
-  backgroundColor: ({ isCoinListEdited, theme: { colors } }) => (isCoinListEdited ? colors.white : colors.transparent),
+  backgroundColor: ({ isCoinListEdited, theme: { colors } }: { isCoinListEdited: boolean; theme: ThemeContextProps }) =>
+    isCoinListEdited ? colors.white : colors.transparent,
   height: CoinDividerContainerHeight,
-  width: ({ deviceWidth }) => deviceWidth,
+  width: ({ deviceWidth }: { deviceWidth: number }) => deviceWidth,
 });
 
-const CoinDividerButtonRow = styled(RowWithMargins).attrs(({ isCoinListEdited }) => ({
+const CoinDividerButtonRow = styled(RowWithMargins).attrs(({ isCoinListEdited }: { isCoinListEdited: boolean }) => ({
   margin: 10,
   paddingHorizontal: 19,
   paddingVertical: 5,
@@ -49,28 +53,28 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0,
 });
 
-const useInterpolationRange = isCoinListEdited => {
+const useInterpolationRange = (isCoinListEdited: boolean) => {
   const position = useRecyclerAssetListPosition();
-  const ref = useRef(undefined);
+  const ref = useRef<View>(null);
   const { top: safeAreaInsetTop } = useSafeAreaInsets();
 
   const { scrollViewRef } = useContext(StickyHeaderContext) || {};
   const [range, setRanges] = useState([0, 0]);
   const onLayout = useCallback(() => {
-    const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
+    const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef?.();
     if (!nativeScrollRef) {
       return;
     }
     ref.current?.measureLayout?.(
       nativeScrollRef,
-      (_left, top) => {
+      (_left: number, top: number) => {
         setRanges([top - (navbarHeight + safeAreaInsetTop), top]);
       },
       () => {
         // empty (avoid formatter messing up)
       }
     );
-  }, [scrollViewRef]);
+  }, [scrollViewRef, safeAreaInsetTop]);
   return {
     onLayout,
     ref,
@@ -78,12 +82,12 @@ const useInterpolationRange = isCoinListEdited => {
       transform: [
         {
           translateY: isCoinListEdited
-            ? position?.interpolate({
+            ? (position?.interpolate({
                 extrapolateLeft: 'clamp',
                 extrapolateRight: 'extend',
                 inputRange: range,
                 outputRange: range.map(r => r - range[0]),
-              })
+              }) ?? 0)
             : 0,
         },
       ],
@@ -91,34 +95,39 @@ const useInterpolationRange = isCoinListEdited => {
   };
 };
 
-const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
-  const { isCoinListEdited, setIsCoinListEdited } = extendedState;
-  const interpolation = useInterpolationRange(isCoinListEdited);
-  const nativeCurrency = useAppSettingsStore(state => state.currency);
+type CoinDividerProps = {
+  balancesSum: number;
+  defaultToEditButton: boolean;
+  isCoinListEdited: boolean;
+  nativeCurrency: NativeCurrencyKey;
+};
+
+const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton, isCoinListEdited, nativeCurrency }: CoinDividerProps) {
+  const containerProps = useInterpolationRange(isCoinListEdited);
 
   const { width: deviceWidth } = useDimensions();
 
-  const { clearSelectedCoins } = useCoinListEditOptions();
+  const { clearSelectedCoins } = selectedCoinsActions;
 
-  const { currentAction, setHiddenCoins, setPinnedCoins } = useCoinListFinishEditingOptions();
+  const { currentAction, setHiddenCoins, setPinnedCoins } = useCoinEditingStore();
 
-  const { isSmallBalancesOpen, toggleOpenSmallBalances } = useOpenSmallBalances();
+  const isSmallBalancesOpen = useCurrentWalletToggles(state => state.smallBalances);
 
   const handlePressEdit = useCallback(() => {
-    setIsCoinListEdited(prev => !prev);
+    editTokensActions.setIsCoinListEdited(prev => !prev);
     clearSelectedCoins();
     LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
-  }, [clearSelectedCoins, setIsCoinListEdited]);
+  }, [clearSelectedCoins]);
 
   return (
-    <Animated.View {...interpolation}>
+    <RNAnimated.View onLayout={containerProps.onLayout} ref={containerProps.ref} style={containerProps.style}>
       <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
         <Row>
           <View
-            opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}
             pointerEvents={defaultToEditButton || isCoinListEdited ? 'none' : 'auto'}
+            style={defaultToEditButton || isCoinListEdited ? styles.transparent : styles.opaque}
           >
-            <CoinDividerOpenButton isSmallBalancesOpen={isSmallBalancesOpen} onPress={toggleOpenSmallBalances} />
+            <CoinDividerOpenButton isSmallBalancesOpen={isSmallBalancesOpen} onPress={toggleSmallBalances} />
           </View>
           <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
             <CoinDividerEditButton
@@ -154,8 +163,21 @@ const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton
           </EditButtonWrapper>
         </Row>
       </Container>
-    </Animated.View>
+    </RNAnimated.View>
   );
+});
+
+function toggleSmallBalances(): void {
+  walletListTogglesActions.toggle('smallBalances');
+}
+
+const styles = StyleSheet.create({
+  opaque: {
+    opacity: 1,
+  },
+  transparent: {
+    opacity: 0,
+  },
 });
 
 export default CoinDivider;

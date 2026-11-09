@@ -43,17 +43,18 @@ import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
+import { ensureValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { switchWallet } from '@/state/wallets/switchWallet';
+import { useWalletsWithBalancesAndNames } from '@/state/wallets/useWalletsWithBalancesAndNames';
+import { getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -164,7 +165,7 @@ export const ControlPanel = () => {
             selected: account.address === currentAddress,
           };
 
-          accountBalances[account.address] = account.balances?.totalBalanceAmount;
+          accountBalances[account.address] = account.balances?.totalBalanceAmount ?? '0';
 
           if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
             sortedWallets.push(item);
@@ -397,12 +398,7 @@ const HomePanel = memo(function HomePanel({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      await setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-      await initializeWallet({
-        shouldRunMigrations: false,
-        overwrite: false,
-        switching: true,
-      });
+      await switchWallet(ensureValidHex(selectedWallet.uniqueId), walletInPanel.id);
     }
     return true;
   }, [accountAddress, selectedWallet]);

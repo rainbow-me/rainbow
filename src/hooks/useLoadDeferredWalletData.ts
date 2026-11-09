@@ -1,24 +1,18 @@
 import { useEffect } from 'react';
-import { InteractionManager } from 'react-native';
 
 import { prefetchRnbwStakingPosition } from '@/features/rnbw-staking/utils/prefetchRnbwStakingPosition';
-import useLoadGlobalLateData from '@/hooks/useLoadGlobalLateData';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
-import { getIsReadOnlyWallet, useAccountAddress, useWalletsStore } from '../state/wallets/walletsStore';
-
-export const useLoadDeferredWalletData = () => {
-  const accountAddress = useAccountAddress();
-  const loadGlobalLateData = useLoadGlobalLateData();
-  const walletReady = useWalletsStore(state => state.walletReady);
+/** Warms account data for the mounted wallet, cancelling work that has not started when selection changes. */
+export function useLoadDeferredWalletData(): void {
+  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const isReadOnly = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   useEffect(() => {
-    if (walletReady) {
-      requestIdleCallback(() => {
-        InteractionManager.runAfterInteractions(() => {
-          if (!getIsReadOnlyWallet()) void prefetchRnbwStakingPosition();
-          loadGlobalLateData();
-        });
-      });
-    }
-  }, [accountAddress, loadGlobalLateData, walletReady]);
-};
+    if (!accountAddress || isReadOnly) return;
+    const callback = requestIdleCallback(() => {
+      void prefetchRnbwStakingPosition();
+    });
+    return () => cancelIdleCallback(callback);
+  }, [accountAddress, isReadOnly]);
+}

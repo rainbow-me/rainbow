@@ -28,7 +28,7 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
-import { loadWallets } from '@/state/wallets/walletsStore';
+import { getWallets } from '@/state/wallets/walletsStore';
 import { padding } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { cloudPlatform } from '@/utils/platform';
@@ -123,7 +123,7 @@ export function RestoreCloudStep() {
     const pwd = password.trim();
     let filename = selectedBackup?.name;
 
-    const prevWalletsState = await loadWallets();
+    const prevWalletsState = getWallets();
 
     try {
       if (!filename) {

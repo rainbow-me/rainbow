@@ -8,7 +8,7 @@ export type DraggableGridProps = Pick<ViewProps, 'style'> &
   Pick<UseDraggableGridOptions, 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'> & {
     direction?: FlexStyle['flexDirection'];
     size: number;
-    gap?: number;
+    gap?: number | { x: number; y: number };
   };
 
 export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridProps>> = ({
@@ -30,8 +30,9 @@ export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridPro
       Object.assign(
         {
           flexDirection: direction,
-          gap,
+          columnGap: typeof gap === 'number' ? gap : gap.x,
           flexWrap: 'wrap',
+          rowGap: typeof gap === 'number' ? gap : gap.y,
         },
         styleProp
       ),
@@ -40,7 +41,7 @@ export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridPro
 
   useDraggableGrid({
     direction: style.flexDirection,
-    gap: style.gap,
+    gap: { x: style.columnGap, y: style.rowGap },
     childrenIds,
     onOrderChange,
     onOrderUpdate,

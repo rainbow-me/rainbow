@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
-
+import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import delay from 'delay';
+import { type Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -20,12 +20,47 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 
-// minimum duration we want the "Pull to Refresh" animation to last
-const MIN_REFRESH_DURATION = 1_250;
+const MIN_PULL_TO_REFRESH_DURATION = time.seconds(1.25);
 
-export const refreshAccountData = async () => {
-  const accountAddress = getAccountAddress();
+type RefreshStore = {
+  isRefreshing: boolean;
+  refreshAccountData: () => Promise<void>;
+  setIsRefreshing: (isRefreshing: boolean) => void;
+};
 
+export const useAccountRefreshStore = createBaseStore<RefreshStore>((set, get) => {
+  let lastAddress: Address | undefined;
+
+  return {
+    isRefreshing: false,
+
+    refreshAccountData: async () => {
+      const address = getAccountAddress();
+      const state = get();
+
+      if (state.isRefreshing && lastAddress === address) return;
+
+      lastAddress = address;
+      state.setIsRefreshing(true);
+
+      try {
+        const start = performance.now();
+        await refreshAccountDataInternal(address);
+        analytics.track(analytics.event.refreshAccountData, { duration: performance.now() - start });
+      } catch (error) {
+        logger.error(new RainbowError(`[useRefreshAccountData]: Error calling fetchAccountData`, error));
+      } finally {
+        state.setIsRefreshing(false);
+      }
+    },
+
+    setIsRefreshing: isRefreshing => set(state => (isRefreshing === state.isRefreshing ? state : { isRefreshing })),
+  };
+});
+
+export const accountRefreshActions = createStoreActions(useAccountRefreshStore);
+
+async function refreshAccountDataInternal(accountAddress: Address): Promise<void> {
   // These queries can take too long to fetch, so we do not wait for them
   refetchWalletSummary();
   queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
@@ -33,7 +68,7 @@ export const refreshAccountData = async () => {
   void fetchHiddenTokens({ address: accountAddress }, { force: true });
 
   await Promise.allSettled([
-    delay(MIN_REFRESH_DURATION),
+    delay(MIN_PULL_TO_REFRESH_DURATION),
     refreshWalletInfo({ addresses: [accountAddress] }),
     hyperliquidAccountActions.fetch(undefined, { force: true }),
     useUserAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
@@ -44,31 +79,4 @@ export const refreshAccountData = async () => {
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) }),
   ]).then(() => refreshWalletInfo({ useCachedENS: true }));
-};
-
-export default function useRefreshAccountData() {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const refresh = useCallback(async () => {
-    if (isRefreshing) return;
-
-    setIsRefreshing(true);
-
-    try {
-      const start = performance.now();
-      await refreshAccountData();
-      analytics.track(analytics.event.refreshAccountData, {
-        duration: performance.now() - start,
-      });
-    } catch (error) {
-      logger.error(new RainbowError(`[useRefreshAccountData]: Error calling fetchAccountData`, error));
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [isRefreshing]);
-
-  return {
-    isRefreshing,
-    refresh,
-  };
 }

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import { Box, Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
+import { isEqual } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 
 type SectionAvailableBalanceProps = {
@@ -23,6 +24,7 @@ export const SectionAvailableBalance = memo(function SectionAvailableBalance({
   isDarkMode,
   onPress,
 }: SectionAvailableBalanceProps) {
+  const isZero = useMemo(() => isEqual(balance, '0'), [balance]);
   const backgroundColor = opacity(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.03);
   const borderColor = opacity(USDC_COLORS.primary, isDarkMode ? 0.06 : 0.02);
 
@@ -57,7 +59,7 @@ export const SectionAvailableBalance = memo(function SectionAvailableBalance({
 
             <Box flexDirection="row" gap={5} alignItems="center">
               <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={16} style={{ width: 16, height: 16 }} />
-              <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
+              <Text align="right" color={isZero ? 'labelTertiary' : 'labelSecondary'} size="17pt" weight="semibold">
                 {formatUsd(balance)}
               </Text>
             </Box>

@@ -10,9 +10,9 @@ import { useExperimentalConfigStore } from '@/features/config/stores/experimenta
 import { savePIN } from '@/features/local-auth/keychain';
 import { useSandboxDiagnosticsStore } from '@/features/sandbox/data/stores/sandboxDiagnosticsStore';
 import { logger } from '@/logger';
+import { createWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 /**
  * Handles E2E test commands. See e2e/README.md:31 for usage.
@@ -30,8 +30,8 @@ export function TestDeeplinkHandler() {
       switch (action) {
         case 'import':
           await savePIN('1111');
-          await initializeWallet({
-            seedPhrase: query.privateKey,
+          await createWallet({
+            seed: query.privateKey,
             name: query.name,
             userPin: '1111',
           });

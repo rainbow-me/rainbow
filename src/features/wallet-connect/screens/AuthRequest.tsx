@@ -14,7 +14,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { initials } from '@/utils/formatters';
 
@@ -30,7 +30,7 @@ export function AuthRequest({
   verifiedData?: Verify.Context['verified'];
 }) {
   const accountAddress = useAccountAddress();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
 
   const { navigate, goBack } = useNavigation();
   const { colors } = useTheme();

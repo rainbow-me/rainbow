@@ -7,7 +7,7 @@ import { Bleed, useColorMode } from '@/design-system';
 import { getDappHost } from '@/features/dapp/utils/dappUrls';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfoByAddress } from '@/state/wallets/walletsStore';
 
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../../constants/constants';
 import { useBrowserContext } from '../../context/BrowserContext';
@@ -37,7 +37,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
     [currentSession?.address, hostSessions?.activeSessionAddress, accountAddress]
   );
 
-  const accountInfo = useAccountProfileInfo(currentAddress);
+  const accountInfo = useAccountProfileInfoByAddress(currentAddress);
 
   const handleOnPress = useCallback(() => {
     Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {

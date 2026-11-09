@@ -138,7 +138,7 @@ export const getFlexLayoutPosition = ({
   index: number;
   width: number;
   height: number;
-  gap: number;
+  gap: number | { x: number; y: number };
   direction: FlexStyle['flexDirection'];
   size: number;
 }) => {
@@ -146,15 +146,18 @@ export const getFlexLayoutPosition = ({
   const row = Math.floor(index / size);
   const col = index % size;
 
+  const gapX = typeof gap === 'number' ? gap : gap.x;
+  const gapY = typeof gap === 'number' ? gap : gap.y;
+
   switch (direction) {
     case 'row':
-      return { x: col * (width + gap), y: row * (height + gap) };
+      return { x: col * (width + gapX), y: row * (height + gapY) };
     case 'row-reverse':
-      return { x: -1 * col * (width + gap), y: row * (height + gap) };
+      return { x: -1 * col * (width + gapX), y: row * (height + gapY) };
     case 'column':
-      return { x: row * (height + gap), y: col * (width + gap) };
+      return { x: row * (width + gapX), y: col * (height + gapY) };
     case 'column-reverse':
-      return { x: row * (height + gap), y: -1 * col * (width + gap) };
+      return { x: row * (width + gapX), y: -1 * col * (height + gapY) };
     default:
       return { x: 0, y: 0 };
   }

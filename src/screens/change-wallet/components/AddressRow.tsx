@@ -80,11 +80,12 @@ interface AddressRowProps {
   onPressMenuItem: (actionKey: AddressMenuAction, data: { address: string }) => void;
   data: AddressItem;
   editMode: boolean;
+  isSelected: boolean;
   onPress: () => void;
 }
 
-export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
+export function AddressRow({ data, editMode, isSelected, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
+  const { address, color, emoji, balance, isReadOnly, isLedger, label, image } = data;
 
   const delegationEnabled = useIsDelegationEnabled();
   const delegations = useDelegations(address as Address);
@@ -96,7 +97,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
   }, [label, address]);
 
-  const addPinnedAddress = usePinnedWalletsStore(state => state.addPinnedAddress);
+  const pinWallet = usePinnedWalletsStore(state => state.pinWallet);
 
   const { colors, isDarkMode } = useTheme();
 
@@ -106,7 +107,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
       style: {
         borderRadius: 22,
         justifyContent: 'center',
-        paddingHorizontal: 8,
+        paddingHorizontal: 7.5,
         paddingVertical: 6,
         borderWidth: 1,
         borderColor: opacity('#F5F8FF', 0.03),
@@ -155,7 +156,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
             emoji={emoji}
             label={label}
             shadow="12px"
-            background="surfaceSecondaryElevated"
+            style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
           />
           <Box style={{ flex: 1 }} paddingLeft="10px" paddingRight="8px">
             <Stack space="10px">
@@ -163,12 +164,12 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                 numberOfLines={1}
                 color={isSelected ? 'blue' : 'label'}
                 size="17pt"
-                weight="medium"
+                weight={isSelected ? 'semibold' : 'medium'}
                 testID={`change-wallet-address-row-label-${walletName}`}
               >
                 {walletName}
               </Text>
-              <Text numberOfLines={1} color="labelSecondary" size="13pt" weight="medium">
+              <Text numberOfLines={1} color="labelTertiary" size="13pt" weight="medium">
                 {balance}
               </Text>
             </Stack>
@@ -184,7 +185,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                     </Text>
                   </LinearGradient>
                 ) : (
-                  <TextIcon color="labelTertiary" size="11pt" weight="bold">
+                  <TextIcon color="labelTertiary" size="icon 11px" weight="bold">
                     􀋮
                   </TextIcon>
                 )}
@@ -196,7 +197,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <LinearGradient {...linearGradientProps}>
                     <Inline space="4px" alignVertical="center">
-                      <TextIcon color="labelTertiary" size="11pt" weight="bold">
+                      <TextIcon color="labelTertiary" size="icon 11px" weight="bold">
                         􀤃
                       </TextIcon>
                       <Text color="labelTertiary" size="13pt" weight="bold">
@@ -205,7 +206,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
                     </Inline>
                   </LinearGradient>
                 ) : (
-                  <TextIcon color="labelTertiary" size="11pt" weight="bold">
+                  <TextIcon color="labelTertiary" size="icon 11px" weight="bold">
                     􀤃
                   </TextIcon>
                 )}
@@ -237,7 +238,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
             {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
             {editMode && (
               <>
-                <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
+                <AddressRowButton onPress={() => pinWallet(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
                 <DropdownMenu<AddressMenuAction> menuConfig={menuConfig} onPressMenuItem={action => onPressMenuItem(action, { address })}>
                   <AddressRowButton icon="􀍠" size="icon 12px" />
                 </DropdownMenu>

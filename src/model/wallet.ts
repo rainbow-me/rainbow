@@ -8,7 +8,6 @@ import { signTypedData, type SignTypedDataVersion, type TypedMessage } from '@me
 import { generateMnemonic } from 'bip39';
 import { toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import type LibWallet from 'ethereumjs-wallet';
-import { findKey, isEmpty } from 'lodash';
 
 import { analytics } from '@/analytics';
 import type { EthereumAddress } from '@/entities/wallet';
@@ -17,35 +16,14 @@ import type { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner
 import * as kc from '@/features/local-auth/keychain';
 import { oldSeedPhraseMigratedKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import * as keychain from '@/features/local-auth/legacyKeychain';
-import {
-  type EthereumWallet,
-  type EthereumWalletFromSeed,
-  type EthereumWalletSeed,
-  type ReadOnlyWallet,
-} from '@/features/wallet/core/walletDerivation';
+import { type EthereumWallet, type EthereumWalletFromSeed, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { type WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { hasPreviousTransactions } from '@/features/wallet/data/hasPreviousTransactions';
 import { initializeWalletProfilePreference } from '@/features/wallet/data/initializeWalletProfilePreference';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
-import {
-  getAllWallets,
-  getSeedPhrase,
-  loadAddress,
-  migrateWalletSecrets,
-  saveAddress,
-  saveAllWallets,
-  saveKeyForWallet,
-  saveSeedPhrase,
-  setSelectedWallet,
-} from '@/features/wallet/data/walletKeychain';
-import {
-  DEFAULT_WALLET_NAME,
-  EncryptionType,
-  type AllRainbowWallets,
-  type RainbowAccount,
-  type RainbowWallet,
-} from '@/features/wallet/types';
-import { addHexPrefix, isHexString } from '@/handlers/web3';
+import { getSeedPhrase, migrateWalletSecrets, saveKeyForWallet, saveSeedPhrase } from '@/features/wallet/data/walletKeychain';
+import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
+import { addHexPrefix, ensureValidHex, isHexString } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { createSignature } from '@/helpers/signingWallet';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -55,16 +33,11 @@ import { DebugContext } from '@/logger/debugContext';
 import { WalletNotificationRelationship } from '@/notifications/settings/constants';
 import { initializeNotificationSettingsForAddresses } from '@/notifications/settings/initialization';
 import type { AddressWithRelationship } from '@/notifications/settings/types';
-import { getIsDamagedWallet, setWalletDamaged } from '@/state/wallets/walletsStore';
+import { addWallet, getIsDamagedWallet, getWallets } from '@/state/wallets/walletsStore';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { addressHashedColorIndex } from '../utils/profileUtils';
-
-interface WalletInitialized {
-  isNew: boolean;
-  walletAddress?: EthereumAddress;
-}
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
@@ -97,62 +70,6 @@ interface TypedData {
 function isLibWallet(wallet: EthereumWallet): wallet is LibWallet {
   return 'getPrivateKey' in wallet && typeof wallet.getPrivateKey === 'function';
 }
-
-export type InitializeWalletParams = CreateWalletParams & {
-  seedPhrase?: string;
-  shouldCreateFirstWallet?: boolean;
-  shouldRunMigrations?: boolean;
-  switching?: boolean;
-};
-
-export const walletInit = async (props: InitializeWalletParams): Promise<WalletInitialized> => {
-  const {
-    seedPhrase,
-    color = null,
-    name = null,
-    overwrite = false,
-    checkedWallet = null,
-    image = null,
-    // Import the wallet "silently" in the background (i.e. no "loading" prompts).
-    silent = false,
-    userPin,
-  } = props;
-
-  let walletAddress = null;
-
-  // When the `seedPhrase` is not defined in the args, then
-  // this means it's a new fresh wallet created by the user.
-  let isNew = typeof seedPhrase === 'undefined';
-
-  // Importing a seedphrase
-  if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet({
-      seed: seedPhrase,
-      color,
-      name,
-      overwrite,
-      checkedWallet,
-      image,
-      silent,
-      userPin,
-    });
-    if (!wallet) throw new RainbowError('Error creating wallet');
-    walletAddress = wallet.address;
-    return { isNew, walletAddress };
-  }
-
-  walletAddress = await loadAddress();
-
-  if (!walletAddress) {
-    const wallet = await createWallet();
-    if (!wallet) throw new RainbowError('Error creating wallet address');
-
-    walletAddress = wallet.address;
-    isNew = true;
-  }
-
-  return { isNew, walletAddress };
-};
 
 export const sendTransaction = async ({
   transaction,
@@ -374,7 +291,8 @@ export const signTypedDataMessage = async (
   }
 };
 
-type CreateWalletParams = {
+/** Inputs for creating, importing or restoring a wallet and its accounts. */
+export type CreateWalletParams = {
   seed?: null | EthereumWalletSeed;
   color?: null | number;
   name?: null | string;
@@ -382,11 +300,13 @@ type CreateWalletParams = {
   overwrite?: boolean;
   checkedWallet?: null | EthereumWalletFromSeed;
   image?: null | string;
+  /** Imports without changing the selected account. */
   silent?: boolean;
   clearCallbackOnStartCreation?: boolean;
   userPin?: string;
 };
 
+/** Creates or imports wallet keys, then publishes and persists the resulting inventory and selection. */
 export const createWallet = async ({
   seed = null,
   color = null,
@@ -398,7 +318,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams = {}): Promise<Wallet | ReadOnlyWallet | null> => {
+}: CreateWalletParams = {}): Promise<RainbowWallet | null> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -462,16 +382,13 @@ export const createWallet = async ({
     }
     logger.debug('[wallet]: getWallet from seed', {}, DebugContext.wallet);
 
-    // Get all wallets
-    const allWalletsResult = await getAllWallets();
-    logger.debug('[wallet]: getAllWallets', {}, DebugContext.wallet);
-    const allWallets: AllRainbowWallets = allWalletsResult?.wallets ?? {};
+    const replacedWalletIds: RainbowWallet['id'][] = [];
 
     let existingWalletId = null;
     if (isImported) {
       // Checking if the generated account already exists and is visible
       logger.debug('[wallet]: checking if account already exists', {}, DebugContext.wallet);
-      const alreadyExistingWallet = Object.values(allWallets).find((someWallet: RainbowWallet) => {
+      const alreadyExistingWallet = Object.values(getWallets()).find((someWallet: RainbowWallet) => {
         return !!someWallet.addresses?.find(
           account => toChecksumAddress(account.address) === toChecksumAddress(walletAddress) && account.visible
         );
@@ -482,7 +399,6 @@ export const createWallet = async ({
       // Don't allow adding a readOnly wallet that you have already visible
       // or a private key that you already have visible as a seed or mnemonic.
       // Exception: allow overwriting if the existing wallet is damaged (keychain data lost) so users can repair it.
-      // Note: damaged status is read from the walletsStore since getAllWallets() reads from keychain where it's not persisted.
       const isPrivateKeyOverwritingSeedMnemonic =
         type === EthereumWalletType.privateKey &&
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
@@ -520,10 +436,6 @@ export const createWallet = async ({
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
     logger.debug('[wallet]: saved seed phrase', {}, DebugContext.wallet);
-
-    // Save address
-    await saveAddress(walletAddress);
-    logger.debug('[wallet]: saved address', {}, DebugContext.wallet);
 
     // Save private key
     await saveKeyForWallet(walletAddress, pkey, isHardwareWallet, {
@@ -594,7 +506,7 @@ export const createWallet = async ({
         let discoveredAccount: RainbowAccount | undefined;
         let discoveredWalletId: RainbowWallet['id'] | undefined;
 
-        Object.values(allWallets).forEach(someWallet => {
+        Object.values(getWallets()).forEach(someWallet => {
           const existingAccount = someWallet.addresses?.find(
             account => toChecksumAddress(account.address) === toChecksumAddress(nextWallet.address)
           );
@@ -616,11 +528,11 @@ export const createWallet = async ({
             colorIndexForWallet = discoveredAccount.color;
             label = discoveredAccount.label ?? '';
           }
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-          delete allWallets[discoveredWalletId];
         }
 
         if (hasTxHistory) {
+          if (discoveredWalletId) replacedWalletIds.push(discoveredWalletId);
+
           // Save private key
           await saveKeyForWallet(nextWallet.address, nextWallet.privateKey, isHardwareWallet, { androidEncryptionPin });
           logger.debug(`[wallet]: saved private key for wallet index: ${index}`, {}, DebugContext.wallet);
@@ -650,30 +562,19 @@ export const createWallet = async ({
       }
     }
 
-    // if imported and we have only one account, we name the wallet too.
-    let walletName = DEFAULT_WALLET_NAME;
-    if (name) {
-      walletName = name;
-    } else if (!isImported && type === EthereumWalletType.mnemonic) {
-      // For new wallet groups (mnemonics), generate "Wallet Group X" name
-      const mnemonicWalletCount = Object.values(allWallets).filter(w => w.type === EthereumWalletType.mnemonic).length;
-      walletName = `Wallet Group ${mnemonicWalletCount + 1}`;
+    let mnemonicWalletCount = 0;
+    let hasPrimaryWallet = false;
+    for (const wallet of Object.values(getWallets())) {
+      if (replacedWalletIds.includes(wallet.id)) continue;
+      if (wallet.type === EthereumWalletType.mnemonic) mnemonicWalletCount += 1;
+      hasPrimaryWallet ||= wallet.primary;
     }
 
-    let primary = false;
-    // If it's not imported or it's the first one with a seed phrase
-    // it's the primary wallet
-    if (!isImported || (!findKey(allWallets, ['type', EthereumWalletType.mnemonic]) && type === EthereumWalletType.mnemonic)) {
-      primary = true;
-      // Or there's no other primary wallet and this one has a seed phrase
-    } else {
-      const primaryWallet = findKey(allWallets, ['primary', true]);
-      if (!primaryWallet && type === EthereumWalletType.mnemonic) {
-        primary = true;
-      }
-    }
+    const walletName =
+      name || (!isImported && type === EthereumWalletType.mnemonic ? `Wallet Group ${mnemonicWalletCount + 1}` : DEFAULT_WALLET_NAME);
+    const primary = !isImported || (type === EthereumWalletType.mnemonic && (!mnemonicWalletCount || !hasPrimaryWallet));
 
-    allWallets[id] = {
+    const createdWallet: RainbowWallet = {
       addresses,
       backedUp: false,
       color: color || 0,
@@ -701,27 +602,13 @@ export const createWallet = async ({
 
     // add the device id (seed) to the wallet object for hardware wallets
     if (type === walletTypes.bluetooth && seed) {
-      allWallets[id].deviceId = seed;
+      createdWallet.deviceId = seed;
     }
 
-    if (!silent) {
-      logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWallet(allWallets[id]);
-    }
+    await addWallet(createdWallet, silent ? undefined : ensureValidHex(walletAddress), replacedWalletIds);
 
-    logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
-    await saveAllWallets(allWallets);
-
-    logger.debug('[wallet]: setting wallet damaged status to false', {}, DebugContext.wallet);
-    setWalletDamaged(id, false);
-
-    if (walletResult && walletAddress) {
-      if (analyticsParams) {
-        analytics.track(analytics.event.walletCreateSucceeded, analyticsParams);
-      }
-      return isLibWallet(walletResult) ? new Wallet(pkey) : walletResult;
-    }
-    return null;
+    analytics.track(analytics.event.walletCreateSucceeded, analyticsParams);
+    return getWallets()[id];
   } catch (e) {
     const error = ensureError(e);
     if (error.name !== 'WalletAlreadyExistsError' && analyticsParams) {

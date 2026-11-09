@@ -7,7 +7,6 @@ import branch from 'react-native-branch';
 import handleDeeplink from '@/handlers/deeplinks';
 import { logger, RainbowError } from '@/logger';
 import { type InitialRoute } from '@/navigation/initialRoute';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { branchListener } from '@/utils/branch';
 
 type DeeplinkHandlerProps = {
@@ -17,7 +16,6 @@ type DeeplinkHandlerProps = {
 export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const { handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
-  const walletReady = useWalletsStore(state => state.walletReady);
 
   const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();
@@ -54,15 +52,13 @@ export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
   }, [handleRequestUrl, initialRoute, sendFailureToClient]);
 
   useEffect(() => {
-    if (!walletReady) return;
-
     setupDeeplinking();
     return () => {
       if (branchListenerRef.current) {
         branchListenerRef.current();
       }
     };
-  }, [setupDeeplinking, walletReady]);
+  }, [setupDeeplinking]);
 
   return null;
 }

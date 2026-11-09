@@ -13,7 +13,7 @@ export function useShouldRevokeDelegation() {
   const delegationEnabled = useIsDelegationEnabled();
   const { accountAddress, walletType } = useWalletsStore(state => ({
     accountAddress: state.accountAddress,
-    walletType: state.selected?.type,
+    walletType: state.getSelectedWallet()?.type,
   }));
 
   useEffect(() => {

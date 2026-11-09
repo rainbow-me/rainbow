@@ -44,7 +44,7 @@ type WalletSummaryState = {
   summary: WalletSummary | null;
 };
 
-const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs, WalletSummaryState>(
+export const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs, WalletSummaryState>(
   {
     fetcher: fetchWalletSummary,
     setData: ({ data, set }) => set({ summary: data }),

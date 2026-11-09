@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, type ViewStyle } from 'react-native';
 
 import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
 import { padding, shadow } from '@/styles';
+import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 
-import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import OpacityToggler from '../animations/OpacityToggler';
 import { Row } from '../layout';
@@ -14,7 +14,7 @@ import { Text } from '../text';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
-})(({ isActive, theme: { colors, isDarkMode } }) => ({
+})(({ isActive, theme: { colors, isDarkMode } }: { isActive: boolean; theme: ThemeContextProps }) => ({
   ...padding.object(5, 10, 6),
   ...(isActive ? shadow.buildAsObject(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4) : {}),
   backgroundColor: isActive ? colors.appleBlue : opacity(colors.blueGreyDark, 0.06),
@@ -22,7 +22,25 @@ const ButtonContent = styled(Row).attrs({
   height: 30,
 }));
 
-const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList, style, text, textOpacityAlwaysOn }) => {
+type CoinDividerEditButtonProps = {
+  isActive: boolean;
+  isVisible: boolean;
+  onPress: () => void | Promise<void>;
+  shouldReloadList?: boolean;
+  style?: ViewStyle;
+  text: string;
+  textOpacityAlwaysOn?: boolean;
+};
+
+const CoinDividerEditButton = ({
+  isActive,
+  isVisible,
+  onPress,
+  shouldReloadList,
+  style,
+  text,
+  textOpacityAlwaysOn,
+}: CoinDividerEditButtonProps) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(async () => {

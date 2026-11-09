@@ -13,20 +13,26 @@ import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
+import {
+  createListData,
+  useNftsEnabled,
+  useSelectableNftsListData,
+  useWalletSectionsData,
+} from '@/features/wallet/data/walletScreen/composition/useWalletSectionsData';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useStableValue } from '@/hooks/useStableValue';
-import type useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import * as i18n from '@/languages';
 import { type Language } from '@/languages/types';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import { RawMemoRecyclerAssetList, type ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
-import useMemoBriefSectionData from './core/useMemoBriefSectionData';
+import { CellType, type CellTypes } from './core/ViewTypes';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
@@ -39,7 +45,7 @@ export interface RecyclerAssetList2Props {
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
-  walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  walletBriefSectionsData?: CellTypes[];
   onEndReached?: () => void;
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
@@ -54,27 +60,19 @@ function RecyclerAssetList({
   onEndReached,
   onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
-  const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
-    briefSectionsData: walletBriefSectionsData,
-    externalAddress,
-    type,
-  });
-
+  const ListRows = type === 'ens-profile' ? ExternalListRows : WalletListRows;
   const insets = useSafeAreaInsets();
 
   const position = useStableValue(() => new RNAnimated.Value(0));
 
-  const extendedState = useMemo(
-    () => ({ additionalData, externalAddress, onPressUniqueToken }),
-    [additionalData, externalAddress, onPressUniqueToken]
-  );
+  const extendedState = useMemo(() => ({ externalAddress, onPressUniqueToken }), [externalAddress, onPressUniqueToken]);
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
       <StickyHeaderManager yOffset={navbarHeight + insets.top - 8}>
-        <RawMemoRecyclerAssetList
-          briefSectionsData={briefSectionsData}
+        <ListRows
+          walletBriefSectionsData={walletBriefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
           onEndReached={onEndReached}
@@ -88,6 +86,31 @@ function RecyclerAssetList({
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
   );
+}
+
+type ListRowsProps = Omit<React.ComponentProps<typeof RawMemoRecyclerAssetList>, 'listData'> & { walletBriefSectionsData?: CellTypes[] };
+
+function WalletListRows(props: ListRowsProps) {
+  const useListData = props.type === 'select-nft' ? useSelectableNftsListData : useWalletSectionsData;
+  const listData = useListData();
+  return <RawMemoRecyclerAssetList {...props} listData={listData} />;
+}
+
+function ExternalListRows(props: ListRowsProps) {
+  const openCollections = useOpenCollectionsStore(state => state.openCollections);
+  const rows = useMemo(() => {
+    let open = false;
+    return (props.walletBriefSectionsData ?? []).filter(row => {
+      if (row.type === CellType.LEGACY_FAMILY_HEADER) {
+        open = 'name' in row && (openCollections[row.name.toLowerCase()] ?? false);
+        return true;
+      }
+      return open && (row.type === CellType.LEGACY_NFT || row.type === CellType.NFT_SPACE_AFTER);
+    });
+  }, [props.walletBriefSectionsData, openCollections]);
+  const nftsEnabled = useNftsEnabled();
+  const listData = useMemo(() => createListData(rows, false, nftsEnabled), [rows, nftsEnabled]);
+  return <RawMemoRecyclerAssetList {...props} listData={listData} />;
 }
 
 export default React.memo(RecyclerAssetList);

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
 import { ImgixImage } from '@/components/images';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { colors } from '@/styles';
 import { addressHashedEmoji } from '@/utils/profileUtils';
@@ -9,7 +9,7 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 const DEFAULT_SIZE = 36;
 
 function AddressImageAvatar({ url, size = DEFAULT_SIZE }: { url: string; size?: number }) {
-  return <ImgixImage size={size} source={{ uri: url }} style={{ borderRadius: size / 2, height: size, width: size }} />;
+  return <ImgixImage enableFasterImage size={size} source={{ uri: url }} style={{ borderRadius: size / 2, height: size, width: size }} />;
 }
 
 function AddressEmojiAvatar({
@@ -25,14 +25,14 @@ function AddressEmojiAvatar({
   label: string;
   size?: number;
 }) {
-  const fillTertiary = useForegroundColor('fillTertiary');
+  const { isDarkMode } = useColorMode();
   const accountSymbol = emoji || returnStringFirstEmoji(returnStringFirstEmoji(label) || addressHashedEmoji(address)) || '';
 
   const backgroundColor =
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
         // otherwise there will be only shadows without the the placeholder "circle"
-        (colors.avatarBackgrounds[color] ?? fillTertiary)
+        (colors.avatarBackgrounds[color] ?? (isDarkMode ? '#191A1C' : globalColors.white100))
       : color;
 
   const textSize = useMemo(() => {

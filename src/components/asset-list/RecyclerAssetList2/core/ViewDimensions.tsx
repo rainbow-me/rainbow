@@ -10,7 +10,7 @@ import {
   ProfileAvatarRowHeight,
   ProfileAvatarRowTopInset,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { ProfileBalanceRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileBalanceRow';
+import { PROFILE_BALANCE_ROW_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileBalanceRow';
 import { ProfileNameRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
@@ -51,7 +51,7 @@ export const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
   [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },
   [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },
-  [CellType.PROFILE_BALANCE_ROW]: { height: ProfileBalanceRowHeight },
+  [CellType.PROFILE_BALANCE_ROW]: { height: PROFILE_BALANCE_ROW_HEIGHT },
   [CellType.PROFILE_BALANCE_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.NFTS_HEADER]: { height: SectionHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },

@@ -1,9 +1,10 @@
 import type { Address } from 'viem';
 
 import { securelyHashWalletAddress } from '@/analytics/utils';
+import { type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
+/** Wallet identity attached to telemetry, without exposing its address. */
 export type WalletContext = {
   walletType?: 'owned' | 'hardware' | 'watched';
   walletAddressHash?: string;
@@ -17,17 +18,15 @@ const walletContextTypes = {
   [EthereumWalletType.bluetooth]: 'hardware',
 } as const;
 
-export async function getWalletContext(address: Address): Promise<WalletContext> {
-  // currentAddressStore address is initialized to ''
-  if (!address || address === ('' as Address)) return {};
+const EMPTY_WALLET_CONTEXT: WalletContext = {};
 
-  // walletType maybe undefined after initial wallet creation
-  const wallet = getWalletWithAccount(address);
-  const walletType = walletContextTypes[wallet?.type!];
-  const walletAddressHash = securelyHashWalletAddress(address);
-
+/**
+ * Builds telemetry context from a wallet address and type (`owned`, `hardware`, `watched`).
+ */
+export function getWalletContext(address: Address, type: RainbowWallet['type'] | undefined): WalletContext {
+  if (!address) return EMPTY_WALLET_CONTEXT;
   return {
-    walletType,
-    walletAddressHash,
+    walletType: type === undefined ? undefined : walletContextTypes[type],
+    walletAddressHash: securelyHashWalletAddress(address),
   };
 }

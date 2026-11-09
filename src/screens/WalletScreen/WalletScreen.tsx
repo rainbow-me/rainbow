@@ -19,8 +19,8 @@ import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveWelcomeScreen } from '@/hooks/useRemoveWelcomeScreen';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -65,7 +65,7 @@ function WalletScreen() {
   const insets = useSafeAreaInsets();
   const setSubscribedTokens = useLiveTokenListSubscription();
 
-  const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
 
   const { highContrastAccentColor } = useAccountAccentColor();
 
@@ -88,7 +88,6 @@ function WalletScreen() {
         <RecyclerAssetList2
           accentColor={highContrastAccentColor}
           onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
-          walletBriefSectionsData={walletBriefSectionsData}
           onViewableItemsChanged={onViewableItemsChanged}
         />
         <ToastComponent />

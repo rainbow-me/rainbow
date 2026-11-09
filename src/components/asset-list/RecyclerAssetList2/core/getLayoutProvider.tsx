@@ -1,8 +1,5 @@
 import { LayoutProvider, type Dimension, type Layout, type LayoutManager } from 'recyclerlistview';
 
-import { NFTS_ENABLED } from '@/features/config/constants/experimental';
-import { type ExperimentalConfigState } from '@/features/config/stores/experimentalConfigStore';
-import { type RainbowConfig } from '@/features/config/stores/remoteConfig';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { ViewDimensions } from './ViewDimensions';
@@ -50,16 +47,12 @@ const NFTS = [
 export const getLayoutProvider = ({
   briefSectionsData,
   isCoinListEdited,
-  experimentalConfig,
-  remoteConfig,
+  nftsEnabled,
 }: {
   briefSectionsData: CellTypes[];
   isCoinListEdited: boolean;
-  experimentalConfig: ExperimentalConfigState['config'];
-  remoteConfig: RainbowConfig;
+  nftsEnabled: boolean;
 }) => {
-  const nftsEnabled = remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED];
-
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
     const val = briefSectionsData[i];

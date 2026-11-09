@@ -11,7 +11,7 @@ export type UseDraggableGridOptions = Pick<
   UseDraggableSortOptions,
   'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'
 > & {
-  gap?: number;
+  gap?: number | { x: number; y: number };
   size: number;
   direction: FlexStyle['flexDirection'];
 };

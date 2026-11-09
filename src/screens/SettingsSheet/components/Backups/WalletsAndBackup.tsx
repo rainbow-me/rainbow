@@ -32,8 +32,7 @@ import { createWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { formatAccountLabel, useWallets } from '@/state/wallets/walletsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
@@ -167,14 +166,12 @@ export const WalletsAndBackup = () => {
             loadingState: WalletLoadingStates.CREATING_WALLET,
           });
 
-          await createWallet({
+          const wallet = await createWallet({
             color: null,
             name: nameValue,
             clearCallbackOnStartCreation: true,
           });
-
-          await loadWallets();
-          await initializeWallet();
+          if (!wallet) throw new RainbowError('Wallet creation failed');
         } catch (err) {
           logger.error(new RainbowError(`[WalletsAndBackup]: Failed to create new secret phrase`), {
             error: err,

@@ -32,7 +32,7 @@ import { clearAllStorages } from '@/model/mmkv';
 import { createWallet } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
+import { refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 
@@ -250,7 +250,6 @@ export async function restoreBackup(data: string | { secrets: string }) {
   );
 
   if (restored) {
-    await loadWallets();
     void refreshWalletInfo();
   }
 

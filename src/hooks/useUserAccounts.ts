@@ -4,8 +4,7 @@ import { values } from 'lodash';
 
 import { type RainbowAccount } from '@/features/wallet/types';
 import walletTypes from '@/helpers/walletTypes';
-
-import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { useWalletsWithBalancesAndNames } from '@/state/wallets/useWalletsWithBalancesAndNames';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();

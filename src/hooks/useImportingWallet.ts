@@ -21,7 +21,8 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
+import { createWallet } from '@/model/wallet';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import Routes from '@/navigation/routesNames';
@@ -31,7 +32,6 @@ import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
-import { initializeWallet } from '../state/wallets/initializeWallet';
 import usePrevious from './usePrevious';
 
 export default function useImportingWallet({
@@ -358,8 +358,8 @@ export default function useImportingWallet({
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
 
-        const success = await initializeWallet({
-          seedPhrase: input,
+        const success = await createWallet({
+          seed: input,
           color,
           name: name ? name : '',
           checkedWallet,
@@ -373,6 +373,7 @@ export default function useImportingWallet({
         } else {
           // Import failed
           logger.error(new RainbowError('[useImportingWallet]: Import failed'));
+          Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
           resetOnFailure();
 
           // Refocus input for retry
@@ -382,6 +383,11 @@ export default function useImportingWallet({
         }
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error importing wallet', error));
+        if (ensureError(error).name === 'WalletAlreadyExistsError') {
+          Alert.alert(i18n.t(i18n.l.wallet.new.alert.oops), i18n.t(i18n.l.wallet.new.alert.looks_like_already_imported));
+        } else {
+          Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
+        }
         resetOnFailure();
 
         // Refocus input for retry

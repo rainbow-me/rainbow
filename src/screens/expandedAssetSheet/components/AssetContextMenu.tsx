@@ -6,9 +6,11 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { Box, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { useCoinEditingStore } from '@/features/wallet/data/walletScreen/base/coinEditingStore';
+import { pinnedCoinsActions } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
+import { selectedCoinsActions } from '@/features/wallet/data/walletScreen/base/selectedCoinsStore';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { EditAction } from '@/helpers/EditAction';
-import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
@@ -36,10 +38,10 @@ type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuAct
 export function AssetContextMenu() {
   const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
 
-  const { clearSelectedCoins, pushSelectedCoin, removePinnedCoin, addPinnedCoin } = useCoinListEditOptions();
+  const { clearSelectedCoins, pushSelectedCoin } = selectedCoinsActions;
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
-  const { currentAction } = useCoinListFinishEditingOptions();
+  const { currentAction } = useCoinEditingStore();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   useEffect(() => {
@@ -160,10 +162,10 @@ export function AssetContextMenu() {
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
       case ContextMenuActions.Pin:
-        addPinnedCoin(asset.uniqueId);
+        pinnedCoinsActions.setPinnedCoin(asset.uniqueId, true);
         break;
       case ContextMenuActions.Unpin:
-        removePinnedCoin(asset.uniqueId);
+        pinnedCoinsActions.setPinnedCoin(asset.uniqueId, false);
         break;
       case ContextMenuActions.Hide:
         setHiddenAssets([asset.uniqueId]);

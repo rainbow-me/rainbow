@@ -42,6 +42,7 @@ import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { type ExtendedState } from './RawRecyclerList';
 import {
   CellType,
+  type CellTypes,
   type ClaimableExtraData,
   type ClaimablesHeaderExtraData,
   type CoinDividerExtraData,
@@ -53,13 +54,13 @@ import {
   type PerpsBalanceExtraData,
   type PerpsPositionExtraData,
   type PolymarketBalanceExtraData,
+  type PolymarketHeaderExtraData,
   type PolymarketPositionExtraData,
   type PositionExtraData,
   type PositionHeaderExtraData,
 } from './ViewTypes';
 
-function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
-  const data = extendedState.additionalData[uid];
+function rowRenderer(type: CellType, data: CellTypes, _: unknown, extendedState: ExtendedState) {
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -82,10 +83,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.COIN_DIVIDER:
       return (
         <CoinDivider
-          // @ts-expect-error - untyped js file
           balancesSum={(data as CoinDividerExtraData).value}
           defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
-          extendedState={extendedState}
+          isCoinListEdited={extendedState.isCoinListEdited}
+          nativeCurrency={extendedState.nativeCurrency}
         />
       );
     case CellType.DISCOVER_MORE_BUTTON:
@@ -129,8 +130,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
-    case CellType.COIN:
-      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
+    case CellType.COIN: {
+      const { uniqueId, isPinned, isHidden } = data as CoinExtraData;
+      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={uniqueId} isPinned={isPinned} isHidden={isHidden} />;
+    }
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -242,7 +245,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <PerpsPositionRow position={position} />;
     }
     case CellType.POLYMARKET_HEADER: {
-      return <PolymarketHeader isDarkMode={extendedState.theme.isDarkMode} />;
+      const { hasContent, totalValueNative } = data as PolymarketHeaderExtraData;
+      return <PolymarketHeader hasContent={hasContent} totalValueNative={totalValueNative} isDarkMode={extendedState.theme.isDarkMode} />;
     }
     case CellType.POLYMARKET_BALANCE: {
       const { balance } = data as PolymarketBalanceExtraData;

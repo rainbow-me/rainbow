@@ -1,8 +1,10 @@
 import React, { memo, useMemo } from 'react';
 
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { isEqual } from '@/helpers/utilities';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 const HEIGHT = 48;
@@ -15,6 +17,7 @@ type SectionHeaderProps = {
 };
 
 export const SectionHeader = memo(function SectionHeader({ title, onPress, isDarkMode, value }: SectionHeaderProps) {
+  const isZero = useMemo(() => isEqual(stripNonDecimalNumbers(value), '0'), [value]);
   const { accentColor: accountColor } = useAccountAccentColor();
 
   const navigationButtonColors = useMemo(() => {
@@ -30,7 +33,7 @@ export const SectionHeader = memo(function SectionHeader({ title, onPress, isDar
       <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            <Text size="22pt" color="label" weight="heavy">
+            <Text size="22pt" color={isZero ? 'labelTertiary' : 'label'} weight="heavy">
               {title}
             </Text>
             <Box
@@ -50,7 +53,7 @@ export const SectionHeader = memo(function SectionHeader({ title, onPress, isDar
           </Inline>
 
           <Inline horizontalSpace="8px" alignVertical="center">
-            <Text align="right" color="label" size="20pt" weight="bold">
+            <Text align="right" color={isZero ? 'labelTertiary' : 'label'} size="20pt" weight="bold">
               {value}
             </Text>
           </Inline>

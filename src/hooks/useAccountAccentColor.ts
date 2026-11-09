@@ -1,36 +1,52 @@
-import { useMemo } from 'react';
+import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 
-import { globalColors, useColorMode } from '@/design-system';
+import { globalColors } from '@/design-system';
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { time } from '@/framework/core/utils/time';
+import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme/ThemeContext';
+import { useThemeStore } from '@/theme/themeStore';
+import { shallowEqual } from '@/worklets/comparisons';
 
-export function useAccountAccentColor() {
-  const { accountAddress, accountColor, accountImage, accountSymbol } = useAccountProfileInfo();
-  const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
+// ============ Helper Stores ================================================== //
 
-  const dominantColor = usePersistentDominantColorFromImage(accountImage);
-  const fallbackColor = isDarkMode ? globalColors.blue50 : globalColors.blue60;
+const useDominantColorStore = createQueryStore({
+  fetcher: getDominantColor,
+  params: {
+    accountImage: $ => $(useAccountProfileInfo, state => state.accountImage),
+  },
+  disableAutoRefetching: true,
+  staleTime: time.weeks(1),
+});
 
-  const accentColor = useMemo(() => {
-    if (accountImage) {
-      return dominantColor || fallbackColor;
-    } else if (typeof accountColor === 'number') {
-      return colors.avatarBackgrounds[accountColor];
-    } else {
-      return fallbackColor;
-    }
-  }, [accountImage, dominantColor, fallbackColor, accountColor, colors.avatarBackgrounds]);
+// ============ useAccountAccentColor ========================================== //
 
-  const hasLoaded = Boolean(accountAddress && (accountSymbol || accountImage));
+export const useAccountAccentColor = createDerivedStore(
+  $ => {
+    const { accountAddress, accountColor, accountColorHex, accountImage, accountSymbol } = $(useAccountProfileInfo, state => state);
+    const dominantColor = $(useDominantColorStore, state => state.getData());
+    const isDarkMode = $(useThemeStore).isDarkMode;
 
-  return useMemo(() => {
+    const hasLoaded = Boolean(accountAddress && (accountSymbol || accountImage));
+    const fallback = isDarkMode ? globalColors.blue50 : globalColors.blue60;
+
+    const accentColor = accountImage
+      ? dominantColor || fallback
+      : typeof accountColor === 'number' && accountColorHex
+        ? accountColorHex
+        : fallback;
+
     return {
-      accentColor: hasLoaded ? accentColor : fallbackColor,
-      highContrastAccentColor: hasLoaded ? (getHighContrastColor(accentColor, isDarkMode) ?? fallbackColor) : fallbackColor,
+      accentColor: hasLoaded ? accentColor : fallback,
+      highContrastAccentColor: hasLoaded ? (getHighContrastColor(accentColor, isDarkMode) ?? fallback) : fallback,
       loaded: hasLoaded,
     };
-  }, [accentColor, fallbackColor, hasLoaded, isDarkMode]);
+  },
+  { equalityFn: shallowEqual }
+);
+
+// ============ Helper Functions =============================================== //
+
+async function getDominantColor({ accountImage }: { accountImage: string | null | undefined }) {
+  return calculateAndCacheDominantColor(accountImage);
 }

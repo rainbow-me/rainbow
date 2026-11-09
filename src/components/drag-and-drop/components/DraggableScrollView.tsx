@@ -15,7 +15,6 @@ export type DraggableScrollViewProps = AnimatedScrollViewProps &
     children: React.ReactNode;
     gap?: number;
     horizontal?: boolean;
-    debug?: boolean;
     autoScrollInsets?: {
       top?: number;
       bottom?: number;
@@ -24,7 +23,6 @@ export type DraggableScrollViewProps = AnimatedScrollViewProps &
 
 export const DraggableScrollView = ({
   children,
-  debug = false,
   gap = 0,
   horizontal = false,
   onOrderChange,

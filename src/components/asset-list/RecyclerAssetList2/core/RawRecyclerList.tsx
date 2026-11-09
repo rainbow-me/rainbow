@@ -2,27 +2,18 @@ import React, { useCallback, useMemo, useRef, type LegacyRef } from 'react';
 
 import { useListen } from '@storesjs/stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { type SetterOrUpdater } from 'recoil';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
-import { useMemoOne } from 'use-memo-one';
+import { RecyclerListView } from 'recyclerlistview';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import type { NativeCurrencyKey } from '@/features/currency/types';
 import {
   ExternalENSProfileScrollViewWithRef,
   ExternalSelectNFTScrollViewWithRef,
 } from '@/features/ens/components/ExternalENSProfileScrollView';
-import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
-import useCoinListEdited from '@/hooks/useCoinListEdited';
-import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { useExtendedStateStore } from '@/features/wallet/data/walletScreen/composition/useExtendedState';
+import { type WalletListData } from '@/features/wallet/data/walletScreen/composition/useWalletSectionsData';
 import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useOnTabReselect } from '@/navigation/tabEvents';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { type AssetListType } from '..';
@@ -30,30 +21,16 @@ import { useWalletsStore } from '../../../../state/wallets/walletsStore';
 import { AssetListItemAnimator } from './assetListItemAnimator';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalScrollViewWithRef } from './ExternalScrollView';
-import { getLayoutProvider } from './getLayoutProvider';
 import { RefreshControlWrapped as RefreshControl } from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { type BaseCellType, type CellTypes, type RecyclerListViewRef } from './ViewTypes';
+import { type BaseCellType, type RecyclerListViewRef } from './ViewTypes';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
   width: deviceUtils.dimensions.width,
 };
 
-const dataProvider = new DataProvider((r1: CellTypes, r2: CellTypes) => {
-  return r1.uid !== r2.uid;
-});
-
-export type ExtendedState = {
-  theme: ThemeContextProps;
-  nativeCurrencySymbol: string;
-  nativeCurrency: NativeCurrencyKey;
-  isCoinListEdited: boolean;
-  hiddenAssets: Set<UniqueId>;
-  pinnedCoins: BooleanMap;
-  toggleSelectedCoin: (id: string) => void;
-  setIsCoinListEdited: SetterOrUpdater<boolean>;
-  additionalData: Record<string, CellTypes>;
+export type ExtendedState = ReturnType<typeof useExtendedStateStore.getState> & {
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
@@ -62,7 +39,7 @@ export type ExtendedState = {
 export type ViewableItemsChangedCallback = ({ viewableItems }: { viewableItems: BaseCellType[] }) => void;
 
 export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
-  briefSectionsData,
+  listData,
   disablePullDownToRefresh,
   scrollIndicatorInsets,
   extendedState,
@@ -70,32 +47,18 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
   type,
   onViewableItemsChanged,
 }: {
-  briefSectionsData: CellTypes[];
+  listData: WalletListData;
   disablePullDownToRefresh: boolean;
-  extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
+  extendedState: Pick<ExtendedState, 'externalAddress' | 'onPressUniqueToken'>;
   scrollIndicatorInsets?: object;
   onEndReached?: () => void;
   type?: AssetListType;
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }) {
-  const remoteConfig = useRemoteConfig();
-  const experimentalConfig = useExperimentalConfig();
-  const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
-  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
+  const { briefSectionsData, dataProvider, layoutProvider } = listData;
+  const sharedExtendedState = useExtendedStateStore();
   const y = useRecyclerAssetListPosition();
-  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const viewableIndicesRef = useRef<number[]>([]);
-
-  const layoutProvider = useMemo(
-    () =>
-      getLayoutProvider({
-        briefSectionsData,
-        isCoinListEdited,
-        remoteConfig,
-        experimentalConfig,
-      }),
-    [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
-  );
 
   const topInset = useSafeAreaInsets().top;
   const ref = useRef<RecyclerListViewRef>(undefined);
@@ -112,11 +75,6 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
 
   useOnTabReselect(() => ref.current?.scrollToOffset(0, -topInset, true));
 
-  const theme = useTheme();
-  const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
-  const nativeCurrency = useAppSettingsStore(state => state.currency);
-  const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
-
   const handleViewableIndicesChanged = useCallback(
     (viewableIndices: number[]) => {
       viewableIndicesRef.current = viewableIndices;
@@ -131,34 +89,15 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
     handleViewableIndicesChanged(viewableIndicesRef.current);
   }, [handleViewableIndicesChanged]);
 
-  const mergedExtendedState = useMemo<ExtendedState>(() => {
-    return {
-      ...extendedState,
-      isCoinListEdited,
-      nativeCurrency,
-      nativeCurrencySymbol,
-      hiddenAssets,
-      pinnedCoins,
-      setIsCoinListEdited,
-      theme,
-      toggleSelectedCoin,
-    };
-  }, [
-    extendedState,
-    isCoinListEdited,
-    nativeCurrency,
-    nativeCurrencySymbol,
-    hiddenAssets,
-    pinnedCoins,
-    setIsCoinListEdited,
-    theme,
-    toggleSelectedCoin,
-  ]);
+  const mergedExtendedState = useMemo<ExtendedState>(
+    () => ({ ...sharedExtendedState, ...extendedState }),
+    [sharedExtendedState, extendedState]
+  );
 
   return (
     <RecyclerListView
       automaticallyAdjustScrollIndicatorInsets={true}
-      dataProvider={currentDataProvider}
+      dataProvider={dataProvider}
       extendedState={mergedExtendedState}
       // @ts-expect-error - scrollview refs are typed differently
       externalScrollView={

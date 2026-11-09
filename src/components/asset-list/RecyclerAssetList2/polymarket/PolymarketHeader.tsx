@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Image } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
@@ -9,25 +9,29 @@ import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimati
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
-import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
+import { useCurrentWalletToggles, walletListTogglesActions } from '@/features/wallet/data/walletScreen/base/walletListTogglesStore';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useOpenPolymarket from '@/hooks/useOpenPolymarket';
 import * as i18n from '@/languages';
 
-const HEIGHT = 48;
+const HEIGHT = { custom: 48 } as const;
 
-export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: { isDarkMode: boolean }) {
-  const accountValueNative = usePolymarketAccountValueSummary(state => state.totalValueNative);
+type PolymarketHeaderProps = {
+  hasContent: boolean;
+  isDarkMode: boolean;
+  totalValueNative: string;
+};
+
+export const PolymarketHeader = memo(function PolymarketHeader({ hasContent, totalValueNative, isDarkMode }: PolymarketHeaderProps) {
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { isPolymarketOpen, toggleOpenPolymarket } = useOpenPolymarket();
+  const isOpen = useCurrentWalletToggles(state => state.predictions);
 
-  const animation = useDerivedValue(() => withSpring(isPolymarketOpen ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig));
+  const animation = useDerivedValue(() => withSpring(hasContent && isOpen ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig));
 
-  const navigationButtonColors = useMemo(() => {
+  const navButtonColors = useMemo(() => {
     return {
-      icon: accountColor,
-      border: opacity(accountColor, isDarkMode ? 0.08 : 0.015),
+      icon: { custom: accountColor },
+      border: { custom: opacity(accountColor, isDarkMode ? 0.08 : 0.015) },
       background: opacity(accountColor, isDarkMode ? 0.16 : 0.1),
     };
   }, [accountColor, isDarkMode]);
@@ -41,8 +45,42 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
     opacity: 1 - animation.value,
   }));
 
+  if (!hasContent) {
+    return (
+      <ButtonPressAnimation onPress={() => navigateToPolymarket()} scaleTo={1.05}>
+        <Box height={HEIGHT} paddingHorizontal="20px" justifyContent="center">
+          <Inline alignHorizontal="justify" alignVertical="center">
+            <Inline horizontalSpace={'8px'} alignVertical="center">
+              <Text size="22pt" color="label" weight="heavy">
+                {i18n.t(i18n.l.account.tab_polymarket)}
+              </Text>
+              <Box
+                borderWidth={5 / 3}
+                borderColor={navButtonColors.border}
+                backgroundColor={navButtonColors.background}
+                borderRadius={14}
+                height={28}
+                width={28}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <TextIcon color={navButtonColors.icon} size="icon 14px" weight="heavy">
+                  {'􀆊'}
+                </TextIcon>
+              </Box>
+            </Inline>
+
+            <Text align="right" color="labelTertiary" size="20pt" weight="bold">
+              {formatCurrency(totalValueNative)}
+            </Text>
+          </Inline>
+        </Box>
+      </ButtonPressAnimation>
+    );
+  }
+
   return (
-    <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
+    <Box height={HEIGHT} paddingHorizontal="20px" justifyContent="center">
       <Inline alignHorizontal="justify" alignVertical="center">
         <ButtonPressAnimation onPress={() => navigateToPolymarket()} scaleTo={1.05}>
           <Inline horizontalSpace={'8px'} alignVertical="center">
@@ -51,28 +89,28 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
             </Text>
             <Box
               borderWidth={5 / 3}
-              borderColor={{ custom: navigationButtonColors.border }}
-              backgroundColor={navigationButtonColors.background}
+              borderColor={navButtonColors.border}
+              backgroundColor={navButtonColors.background}
               borderRadius={14}
               height={28}
               width={28}
               justifyContent="center"
               alignItems="center"
             >
-              <TextIcon color={{ custom: navigationButtonColors.icon }} size="icon 14px" weight="heavy">
+              <TextIcon color={navButtonColors.icon} size="icon 14px" weight="heavy">
                 {'􀆊'}
               </TextIcon>
             </Box>
           </Inline>
         </ButtonPressAnimation>
 
-        <ButtonPressAnimation onPress={toggleOpenPolymarket} scaleTo={1.05}>
-          <Box alignItems="flex-end" justifyContent="center" style={{ minWidth: 100 }}>
+        <ButtonPressAnimation onPress={togglePredictions} scaleTo={1.05}>
+          <Box alignItems="flex-end" justifyContent="center" style={styles.toggleButton}>
             <Inline horizontalSpace="8px" alignVertical="center">
-              {!isPolymarketOpen && (
+              {!isOpen && (
                 <Animated.View style={valueAnimatedStyles}>
                   <Text align="right" color="label" size="20pt" weight="bold">
-                    {formatCurrency(accountValueNative)}
+                    {formatCurrency(totalValueNative)}
                   </Text>
                 </Animated.View>
               )}
@@ -85,4 +123,14 @@ export const PolymarketHeader = memo(function PolymarketHeader({ isDarkMode }: {
       </Inline>
     </Box>
   );
+});
+
+function togglePredictions(): void {
+  walletListTogglesActions.toggle('predictions');
+}
+
+const styles = StyleSheet.create({
+  toggleButton: {
+    minWidth: 100,
+  },
 });

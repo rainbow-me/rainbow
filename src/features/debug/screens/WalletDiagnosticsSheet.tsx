@@ -13,12 +13,12 @@ import { authenticateWithPINAndCreateIfNeeded } from '@/features/local-auth/keyc
 import { privateKeyKey, seedPhraseKey } from '@/features/local-auth/keychainConstants';
 import { loadAllKeys } from '@/features/local-auth/legacyKeychain';
 import AesEncryptor from '@/handlers/aesEncryption';
-import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useWalletsWithBalancesAndNames } from '@/state/wallets/useWalletsWithBalancesAndNames';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
 import { DiagnosticsContent } from '../components/diagnostics/DiagnosticsContent';

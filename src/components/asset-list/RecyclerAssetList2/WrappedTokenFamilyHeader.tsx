@@ -1,8 +1,5 @@
 import React from 'react';
 
-import { NFTS_ENABLED } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import useLatestCallback from '@/hooks/useLatestCallback';
 import { nftsStoreActions } from '@/state/nfts/nfts';
 import { openCollectionsActions, useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
@@ -20,9 +17,6 @@ type Props = {
 };
 
 export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID, uid }: Props) {
-  const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-
   const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(uid));
 
   const handleToggle = useLatestCallback(() => {
@@ -33,8 +27,6 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       nftsStoreActions.fetchNftCollection(uid.toLowerCase());
     }
   });
-
-  if (!nftsEnabled) return null;
 
   return (
     <TokenFamilyHeader

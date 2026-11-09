@@ -6,13 +6,13 @@ import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { BackupOptionRow } from './BackupOptionRow';
 
 export function ManualBackupOptionRow() {
   const { navigate, goBack } = useNavigation();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
 
   const onPress = useCallback(() => {
     if (!selectedWallet) return;

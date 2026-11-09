@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { buildNftRows } from '@/features/wallet/data/walletScreen/sections/buildNftRows';
 import { NftTokenType, type GetNftsByCollectionQuery } from '@/graphql/__generated__/arc';
-import { buildBriefUniqueTokenList } from '@/helpers/assets';
 
 import { createNftsStore } from './createNftsStore';
 
@@ -54,7 +54,15 @@ describe('NFT ownership publication', () => {
     await store.getState().fetchNftCollection('showcase', true);
     expect(store.getState().collections).toBe(collections);
     expect(store.getState().collections.get(collectionId)?.nfts?.ids).toEqual([first, second]);
-    const rows = buildBriefUniqueTokenList(collections, [], [first], [], 'wallet', false, false, true, true, false);
+    const rows = buildNftRows({
+      collections,
+      showcase: [first],
+      hidden: [],
+      openCollections: { [collectionId]: true },
+      loading: false,
+      hasMore: false,
+      readOnly: false,
+    });
     expect(rows).toContainEqual(expect.objectContaining({ type: 'FAMILY_HEADER', uid: collectionId, total: 1 }));
     expect(rows).toContainEqual(expect.objectContaining({ type: 'NFT', uniqueId: second }));
     expect(store.getState().getNft(collectionId, 1)).toBe(store.getState().getNftByUniqueId(second));

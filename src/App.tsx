@@ -84,9 +84,13 @@ function AppComponent() {
         <OfflineToast />
         <Toaster />
       </View>
-      <NotificationsHandler />
-      <DeeplinkHandler initialRoute={initialRoute} />
-      {IS_TEST && <TestDeeplinkHandler />}
+      {initialRoute ? (
+        <>
+          <NotificationsHandler />
+          <DeeplinkHandler initialRoute={initialRoute} />
+          {IS_TEST ? <TestDeeplinkHandler /> : null}
+        </>
+      ) : null}
       {(!IS_STORE_INSTALL || IS_TEST) && <SandboxDiagnosticsOverlay />}
       <BackupsSync />
       <AbsolutePortalRoot />

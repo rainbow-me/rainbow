@@ -7,7 +7,7 @@ import { type CustomColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 
 import { executeFnIfCloudBackupAvailable } from '../../backup';
@@ -17,7 +17,7 @@ import { BackupOptionRow } from './BackupOptionRow';
 
 export function CloudBackupOptionRow() {
   const { navigate, goBack } = useNavigation();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const createBackup = useCreateBackup();
   const status = backupsStore(state => state.status);
 

@@ -27,11 +27,11 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
+import { createWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { navigateAfterOnboarding } from '@/navigation/onboardingNavigation';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { useTheme } from '@/theme/ThemeContext';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@rainbow-me/routes';
@@ -171,12 +171,9 @@ export function WelcomeScreen() {
     });
 
     try {
-      const walletAddress = await initializeWallet({
-        shouldCreateFirstWallet: true,
-        shouldRunMigrations: true,
-      });
+      const wallet = await createWallet();
 
-      if (!walletAddress) {
+      if (!wallet) {
         throw new RainbowError('Error creating wallet address');
       }
 

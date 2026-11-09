@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, Image } from 'react-native';
 
 import { Box, Inline, Text } from '@/design-system';
-import useOpenPositionCards from '@/hooks/useOpenPositionCards';
+import { useCurrentWalletToggles, walletListTogglesActions } from '@/features/wallet/data/walletScreen/base/walletListTogglesStore';
 import * as i18n from '@/languages';
 
 import CaretImageSource from '../../../assets/family-dropdown-arrow.png';
@@ -16,7 +16,7 @@ const TokenFamilyHeaderHeight = 48;
 
 function PositionListHeader({ total, ...props }: { total: string }) {
   const { colors } = useTheme();
-  const { isPositionCardsOpen, toggleOpenPositionCards } = useOpenPositionCards();
+  const isPositionCardsOpen = useCurrentWalletToggles(state => state.positions);
 
   const toValue = Number(!!isPositionCardsOpen);
 
@@ -96,3 +96,7 @@ PositionListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
 PositionListHeader.height = TokenFamilyHeaderHeight;
 
 export default React.memo(PositionListHeader);
+
+function toggleOpenPositionCards(): void {
+  walletListTogglesActions.toggle('positions');
+}
