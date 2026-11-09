@@ -1,8 +1,10 @@
 import { RelayClient } from '@polymarket/builder-relayer-client';
+import { ClobClient } from '@polymarket/clob-client-v2';
 import { Wallet } from 'ethers';
 import { getAddress } from 'viem';
 import { describe, expect, it, vi } from 'vitest';
 
+import { POLYMARKET_BUILDER_CODE } from '@/features/polymarket/constants';
 import {
   getPolymarketWalletDescriptor,
   usePolymarketWalletStore,
@@ -26,6 +28,7 @@ vi.mock('@polymarket/clob-client-v2', () => ({
 
 vi.mock('@/features/polymarket/constants', () => ({
   BUILDER_CONFIG: {},
+  POLYMARKET_BUILDER_CODE: 'rainbow-builder-code',
   POLYMARKET_CLOB_PROXY_URL: 'https://clob.test',
   POLYMARKET_RELAYER_PROXY_URL: 'https://relayer.test',
 }));
@@ -70,7 +73,7 @@ const mockLoadWallet = vi.mocked(loadWallet);
 const mockRelayClient = vi.mocked(RelayClient);
 
 describe('usePolymarketClients', () => {
-  it('reuses the authenticated signer while rejecting other accounts before and after initialization', async () => {
+  it('initializes attributed clients with the authenticated signer and rejects other accounts', async () => {
     usePolymarketWalletStore.setState({ getData: () => activeDescriptor });
     mockCreatePolymarketWallet.mockResolvedValue(wallet);
     const otherSigner = new Wallet('0x0000000000000000000000000000000000000000000000000000000000000002');
@@ -83,6 +86,7 @@ describe('usePolymarketClients', () => {
 
     await expect(getWallet(signer)).resolves.toBe(wallet);
     await getClobClient();
+    expect(ClobClient).toHaveBeenLastCalledWith(expect.objectContaining({ builderConfig: { builderCode: POLYMARKET_BUILDER_CODE } }));
 
     await expect(getWallet(otherSigner)).rejects.toThrow('does not belong');
     await expect(getWallet(signer)).resolves.toBe(wallet);
