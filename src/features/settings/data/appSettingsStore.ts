@@ -4,25 +4,9 @@ import { changeIcon } from 'react-native-change-icon';
 
 import { type AppIconKey } from '@/features/app-icon/models/appIcons';
 import { supportedCurrencies, type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
+import { Language } from '@/languages/types';
 
 // ============ Types ========================================================== //
-
-/** Supported application languages. */
-export enum Language {
-  AR_AR = 'ar_AR',
-  EN_US = 'en_US',
-  ES_419 = 'es_419',
-  FR_FR = 'fr_FR',
-  HI_IN = 'hi_IN',
-  ID_ID = 'id_ID',
-  JA_JP = 'ja_JP',
-  KO_KR = 'ko_KR',
-  PT_BR = 'pt_BR',
-  RU_RU = 'ru_RU',
-  TH_TH = 'th_TH',
-  TR_TR = 'tr_TR',
-  ZH_CN = 'zh_CN',
-}
 
 /** Application preferences shared across all wallets. */
 export type AppSettingsState = {
@@ -63,4 +47,5 @@ export const useAppSettingsStore = createBaseStore<AppSettingsState>(
 
 export const appSettingsActions = createStoreActions(useAppSettingsStore, {
   getCurrency: () => useAppSettingsStore.getState().currency,
+  getLanguage: () => useAppSettingsStore.getState().language,
 });

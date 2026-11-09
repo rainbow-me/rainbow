@@ -17,6 +17,8 @@ import tr from 'date-fns/locale/tr';
 import zhCN from 'date-fns/locale/zh-CN';
 import lang from 'i18n-js';
 
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
+import { Language } from '@/languages/types';
 import { simpleObjectProxy } from '@/languages/utils';
 
 import ar_AR from './ar_AR.json';
@@ -41,84 +43,28 @@ import zh_CN from './zh_CN.json';
  */
 export type Translation = typeof en_US;
 
-export enum Language {
-  AR_AR = 'ar_AR',
-  EN_US = 'en_US',
-  ES_419 = 'es_419',
-  FR_FR = 'fr_FR',
-  HI_IN = 'hi_IN',
-  ID_ID = 'id_ID',
-  JA_JP = 'ja_JP',
-  KO_KR = 'ko_KR',
-  PT_BR = 'pt_BR',
-  RU_RU = 'ru_RU',
-  TH_TH = 'th_TH',
-  TR_TR = 'tr_TR',
-  ZH_CN = 'zh_CN',
-}
+/** Supported languages in their settings-menu order. */
+export const supportedLanguages = [
+  { code: Language.EN_US, label: 'English' },
+  { code: Language.ZH_CN, label: '中文' },
+  { code: Language.HI_IN, label: 'हिंदी' },
+  { code: Language.ES_419, label: 'Español' },
+  { code: Language.FR_FR, label: 'Français' },
+  { code: Language.AR_AR, label: 'العربية' },
+  { code: Language.PT_BR, label: 'Português brasileiro' },
+  { code: Language.RU_RU, label: 'Русский' },
+  { code: Language.ID_ID, label: 'Bahasa Indonesia' },
+  { code: Language.JA_JP, label: '日本語' },
+  { code: Language.TR_TR, label: 'Türkçe' },
+  { code: Language.KO_KR, label: '한국어' },
+  { code: Language.TH_TH, label: 'ภาษาไทย' },
+];
 
-export const resources: {
-  [key in Language]: any;
-} = {
-  ar_AR,
-  en_US,
-  es_419,
-  fr_FR,
-  hi_IN,
-  id_ID,
-  ja_JP,
-  ko_KR,
-  pt_BR,
-  ru_RU,
-  th_TH,
-  tr_TR,
-  zh_CN,
-};
-
-export const supportedLanguages = {
-  [Language.EN_US]: {
-    label: 'English',
-  },
-  [Language.ZH_CN]: {
-    label: '中文',
-  },
-  [Language.HI_IN]: {
-    label: 'हिंदी',
-  },
-  [Language.ES_419]: {
-    label: 'Español',
-  },
-  [Language.FR_FR]: {
-    label: 'Français',
-  },
-  [Language.AR_AR]: {
-    label: 'العربية',
-  },
-  [Language.PT_BR]: {
-    label: 'Português brasileiro',
-  },
-  [Language.RU_RU]: {
-    label: 'Русский',
-  },
-  [Language.ID_ID]: {
-    label: 'Bahasa Indonesia',
-  },
-  [Language.JA_JP]: {
-    label: '日本語',
-  },
-  [Language.TR_TR]: {
-    label: 'Türkçe',
-  },
-  [Language.KO_KR]: {
-    label: '한국어',
-  },
-  [Language.TH_TH]: {
-    label: 'ภาษาไทย',
-  },
-};
-
+/**
+ * Returns the date-fns locale for the current app language.
+ */
 export function getDateFnsLocale() {
-  switch (lang.locale) {
+  switch (appSettingsActions.getLanguage()) {
     case Language.AR_AR:
       return ar;
     case Language.EN_US:
@@ -152,22 +98,26 @@ export function getDateFnsLocale() {
 
 // Configure languages
 lang.defaultLocale = Language.EN_US;
-lang.locale = Language.EN_US;
 lang.fallbacks = true;
-lang.translations = Object.assign(
-  {},
-  ...Object.keys(resources).map(key => ({
-    [key]: resources[key as Language].translation,
-  }))
-);
-
-export const updateLanguageLocale = (code: Language) => {
-  lang.locale = code;
+lang.translations = {
+  ar_AR: ar_AR.translation,
+  en_US: en_US.translation,
+  es_419: es_419.translation,
+  fr_FR: fr_FR.translation,
+  hi_IN: hi_IN.translation,
+  id_ID: id_ID.translation,
+  ja_JP: ja_JP.translation,
+  ko_KR: ko_KR.translation,
+  pt_BR: pt_BR.translation,
+  ru_RU: ru_RU.translation,
+  th_TH: th_TH.translation,
+  tr_TR: tr_TR.translation,
+  zh_CN: zh_CN.translation,
 };
 
 /**
- * Returns a i18n string for a given object-keypath or string
- * and optional template literal args.
+ * Translates a keypath in the current app language, with optional interpolation
+ * values or an explicit locale.
  *   `import * as i18n from '@/languages'`
  *
  * Type-safe usage:
@@ -176,11 +126,11 @@ export const updateLanguageLocale = (code: Language) => {
  * Alternative standard usage:
  *   `i18n.t('account.hide', { accountName: 'myAccount' })`
  */
-export function t(keypath: string, args?: { [key: string]: string | number }) {
-  // if it's anything truthy, try __keypath__ or fall back to the value
-  // otherwise let falsy values fall through
-  // @ts-expect-error
-  return lang.t(keypath ? keypath.__keypath__ || keypath : keypath, args);
+export function t(keypath: string | { __keypath__: string }, args?: { [key: string]: string | number }) {
+  return lang.t(typeof keypath === 'string' ? keypath : keypath.__keypath__, {
+    locale: appSettingsActions.getLanguage(),
+    ...args,
+  });
 }
 
 /**

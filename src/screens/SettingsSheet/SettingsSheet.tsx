@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
 import { ViewWalletDelegations } from '@/features/delegation/screens/ViewWalletDelegations';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import * as i18n from '@/languages';
 import { settingsOptions } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
@@ -28,7 +28,7 @@ const Stack = createStackNavigator();
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(s => s.language);
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
     navigate(section);

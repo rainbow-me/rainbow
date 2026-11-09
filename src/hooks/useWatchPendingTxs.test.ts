@@ -62,7 +62,7 @@ vi.mock('@/features/settings/data/appSettingsStore', () => {
   const state = { currency: 'ETH' as const };
 
   return {
-    appSettingsActions: { getCurrency: () => state.currency },
+    appSettingsActions: { getCurrency: () => state.currency, getLanguage: () => 'en_US' },
     useAppSettingsStore: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
       getState: () => state,
       setState: (nextState: Partial<typeof state>) => Object.assign(state, nextState),

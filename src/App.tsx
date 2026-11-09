@@ -29,6 +29,7 @@ import { initializeRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { monitorNetwork } from '@/features/debug/utils/network';
 import { configureRainbowSdk } from '@/features/delegation/utils/configureClient';
 import { SandboxDiagnosticsOverlay } from '@/features/sandbox/ui/components/SandboxDiagnosticsOverlay';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { RainbowContextWrapper } from '@/helpers/RainbowContext';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { logger, RainbowError } from '@/logger';
@@ -38,8 +39,8 @@ import { setNavigationRef } from '@/navigation/Navigation';
 import Routes from '@/navigation/Routes';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { persistOptions, PersistQueryClientProvider, queryClient } from '@/react-query';
+import { settingsLoadState } from '@/redux/settings';
 import store from '@/redux/store';
-import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import * as ls from '@/storage';
 import { MainThemeProvider } from '@/theme/ThemeContext';
@@ -176,7 +177,8 @@ async function initializeApplication() {
   // user-property delivery in Amplitude. Remove after FEPLAT-67 wraps up.
   analytics.track(analytics.event.debugIdentifyProbe, { probe: 'installSource', value: installSource });
 
-  await Promise.all([initializeRemoteConfig(), migrate(), loadSettingsData()]);
+  await Promise.all([initializeRemoteConfig(), migrate(), store.dispatch(settingsLoadState())]);
+  analytics.identify({ language: appSettingsActions.getLanguage() });
 
   /**
    * We previously relied on the existence of a deviceId on keychain to

@@ -49,7 +49,9 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { language, network } = useAccountSettings();
+  const { network } = useAccountSettings();
+  // Keep callers that render translated text subscribed to language changes.
+  useAppSettingsStore(state => state.language);
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -130,7 +132,6 @@ export default function useWalletSectionsData({
       hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
-      language,
       nativeCurrency,
       network,
       pinnedCoins,
@@ -172,7 +173,6 @@ export default function useWalletSectionsData({
     hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
-    language,
     nativeCurrency,
     network,
     pinnedCoins,

@@ -10,11 +10,9 @@ import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import {
   getAppIcon,
   getChainId,
-  getLanguage,
   getTestnetsEnabled,
   saveAppIcon,
   saveChainId,
-  saveLanguage,
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { getProvider } from '@/handlers/web3';
@@ -23,11 +21,8 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { type AppState } from '@/redux/store';
 
-import { Language, updateLanguageLocale } from '../languages';
-
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_APP_ICON_SUCCESS = 'settings/SETTINGS_UPDATE_APP_ICON_SUCCESS';
-const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS = 'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS = 'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
 
@@ -39,7 +34,6 @@ const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS = 'settings/SETTINGS_UPDATE_TESTNET_P
 interface SettingsState {
   appIcon: string;
   chainId: number;
-  language: Language;
   network: Network;
   testnetsEnabled: boolean;
 }
@@ -50,8 +44,7 @@ interface SettingsState {
 type SettingsStateUpdateAction =
   | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
-  | SettingsStateUpdateTestnetPrefAction
-  | SettingsStateUpdateLanguageSuccessAction;
+  | SettingsStateUpdateTestnetPrefAction;
 
 interface SettingsStateUpdateAppIconSuccessAction {
   type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
@@ -68,11 +61,6 @@ interface SettingsStateUpdateNetworkSuccessAction {
   payload: {
     chainId: SettingsState['chainId'];
   };
-}
-
-interface SettingsStateUpdateLanguageSuccessAction {
-  type: typeof SETTINGS_UPDATE_LANGUAGE_SUCCESS;
-  payload: SettingsState['language'];
 }
 
 export const settingsLoadState =
@@ -114,22 +102,6 @@ export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsState
     });
   } catch (error) {
     logger.error(new RainbowError(`[redux/settings]: Error loading network settings: ${error}`));
-  }
-};
-
-export const settingsLoadLanguage = () => async (dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>) => {
-  try {
-    const language = await getLanguage();
-    updateLanguageLocale(language as Language);
-    dispatch({
-      payload: language,
-      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-    });
-    analytics.identify({
-      language,
-    });
-  } catch (error) {
-    logger.error(new RainbowError(`[redux/settings]: Error loading language settings: ${error}`));
   }
 };
 
@@ -187,25 +159,10 @@ export const settingsUpdateNetwork = (chainId: ChainId) => async (dispatch: Disp
   }
 };
 
-export const settingsChangeLanguage = (language: Language) => async (dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>) => {
-  updateLanguageLocale(language);
-  try {
-    dispatch({
-      payload: language,
-      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-    });
-    saveLanguage(language);
-    analytics.identify({ language });
-  } catch (error) {
-    logger.error(new RainbowError(`[redux/settings]: Error changing language: ${error}`));
-  }
-};
-
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
   appIcon: 'og',
   chainId: 1,
-  language: Language.EN_US,
   network: Network.mainnet,
   testnetsEnabled: false,
 };
@@ -221,11 +178,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         chainId: action.payload.chainId,
-      };
-    case SETTINGS_UPDATE_LANGUAGE_SUCCESS:
-      return {
-        ...state,
-        language: action.payload,
       };
     case SETTINGS_UPDATE_TESTNET_PREF_SUCCESS:
       return {

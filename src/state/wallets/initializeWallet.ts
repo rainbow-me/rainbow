@@ -19,8 +19,7 @@ import { ensureValidHex } from '../../handlers/web3';
 import runMigrations from '../../model/migrations';
 import { createWallet, walletInit, type InitializeWalletParams } from '../../model/wallet';
 import { PerformanceTracking } from '../../performance/tracking';
-import { settingsLoadNetwork } from '../../redux/settings';
-import { loadSettingsData } from '../settings/loadSettingsData';
+import { settingsLoadNetwork, settingsLoadState } from '../../redux/settings';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
 
@@ -157,7 +156,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     }
 
     if (!(isNew || isImporting)) {
-      await loadSettingsData();
+      await store.dispatch(settingsLoadState());
       if (shouldCancel()) return null;
       logger.debug('[initializeWallet]: loaded global data...');
     }

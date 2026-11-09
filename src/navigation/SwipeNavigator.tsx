@@ -57,11 +57,11 @@ import { DappBrowser } from '@/features/dapp-browser/screens/DappBrowser';
 import { useBrowserStore } from '@/features/dapp-browser/stores/browserStore';
 import { RnbwMembershipScreen } from '@/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen';
 import { RnbwRewardsScreen } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { SPORTS_BACKGROUND_COLOR_DARK, SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { SportsScreen } from '@/features/sports/ui/SportsScreen';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { tabReselectEvents } from '@/navigation/tabEvents';
@@ -637,7 +637,7 @@ function SwipeNavigatorScreens() {
   const showRnbwMembership = useExperimentalFlag(RNBW_MEMBERSHIP) || rnbw_membership_enabled || IS_TEST;
   const showRnbwRewardsOrMembershipTab = showRnbwRewardsTab || showRnbwMembership;
 
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(state => state.language);
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {

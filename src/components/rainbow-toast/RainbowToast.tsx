@@ -48,7 +48,7 @@ import {
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { TransactionStatus } from '@/entities/transactions';
 import { IS_TEST } from '@/env';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import useDimensions from '@/hooks/useDimensions';
 import { useStoreSharedValue, type ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -58,7 +58,7 @@ import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(state => state.language);
 
   if (!rainbowToastsEnabled) {
     return null;

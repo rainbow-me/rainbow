@@ -1,14 +1,14 @@
-import { type Language } from '@/languages';
+import { type Language } from '@/languages/types';
 
 /**
  * Converts a language locale to a country code.
  * @param languageLocale - The language locale to convert.
  * @returns The country code.
  */
-export const languageLocaleToCountry = (languageLocale: keyof typeof Language) => {
+export const languageLocaleToCountry = (languageLocale: Language) => {
   const [languageCode, countryCode] = languageLocale.split('_');
 
-  // e.g. - ES_419 we want to return ES instead of 419
+  // For es_419, use 'es' rather than the numeric region.
   if (Number(countryCode)) {
     return languageCode;
   }

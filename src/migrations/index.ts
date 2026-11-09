@@ -11,7 +11,6 @@ import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migra
 import { MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID, type Migration, type MigrationName } from '@/migrations/types';
 import { Storage } from '@/storage';
 
-import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
@@ -38,7 +37,6 @@ const migrations: (() => Migration)[] = [
   deleteImgixMMKVCache,
   prepareDefaultNotificationGroupSettingsState,
   migrateNotificationSettingsToV2,
-  changeLanguageKeys,
   fixHiddenUSDC,
   purgeWcConnectionsWithoutAccounts,
   migratePinnedAndHiddenTokenUniqueIds,
