@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "서명 지갑 주소 복사",
       "disconnect_to_anvil": "Anvil 연결 해제",
       "crash_app_render_error": "앱 충돌(렌더링 오류)",
-      "enable_testnets": "테스트넷 활성화",
       "installing_update": "업데이트 설치 중",
       "navigation_entry_point": "네비게이션 시작점",
       "no_update": "업데이트 없음",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "지갑을 한 개도 주시하고 있지 않습니다.",
         "no_owned_wallets": "Rainbow에 지갑이 없습니다. 지갑을 만들거나 비밀 문구로 하나를 가져오십시오.",
         "open_system_settings": "설정 열기",
-        "unsupported_network": "알림은 현재로서는 이더리움 메인넷 거래에만 사용할 수 있습니다.",
-        "change_network": "네트워크 변경하기",
         "no_first_time_permissions": "레인보우로부터 알림을 받을 수 있도록 허용해주세요.",
         "first_time_allow_notifications": "알림 허용",
         "error_alert_title": "구독 실패",
@@ -3270,8 +3267,7 @@
         "disconnect": "연결 해제",
         "connect": "연결",
         "switch_wallet": "지갑 전환",
-        "switch_network": "네트워크 전환",
-        "available_networks": "사용 가능한 네트워크"
+        "switch_network": "네트워크 전환"
       },
       "errors": {
         "go_back": "뒤로 가기",

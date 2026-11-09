@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "复制签名钱包地址",
       "disconnect_to_anvil": "断开与 Anvil 的连接",
       "crash_app_render_error": "崩溃应用（渲染错误）",
-      "enable_testnets": "启用Testnets",
       "installing_update": "正在安装更新",
       "navigation_entry_point": "导航入口点",
       "no_update": "无更新",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "您没有关注任何钱包。",
         "no_owned_wallets": "您在Rainbow中没有任何钱包。创建一个钱包或使用您的秘密短语导入一个。",
         "open_system_settings": "打开设置",
-        "unsupported_network": "此时通知只对以太坊主网事务可用。",
-        "change_network": "更改您的网络",
         "no_first_time_permissions": "请允许Rainbow发送通知给您。",
         "first_time_allow_notifications": "允许通知",
         "error_alert_title": "订阅失败",
@@ -3270,8 +3267,7 @@
         "disconnect": "断开连接",
         "connect": "连接",
         "switch_wallet": "切换钱包",
-        "switch_network": "切换网络",
-        "available_networks": "可用网络"
+        "switch_network": "切换网络"
       },
       "errors": {
         "go_back": "返回",

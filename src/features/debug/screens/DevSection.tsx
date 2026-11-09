@@ -265,24 +265,6 @@ export const DevSection = () => {
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={!IS_STORE_INSTALL ? i18n.t(i18n.l.developer_settings.headers.normie_settings) : ''}>
-        {/* <MenuItem
-          disabled
-          leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
-          rightComponent={
-            <Switch
-              onValueChange={toggleTestnetsEnabled}
-              value={testnetsEnabled}
-            />
-          }
-          size={52}
-          testID="testnet-switch"
-          titleComponent={
-            <MenuItem.Title
-              text={i18n.t(i18n.l.developer_settings.enable_testnets)}
-            />
-          }
-        />
-        {testnetsEnabled && <NetworkSection inDevSection />} */}
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}

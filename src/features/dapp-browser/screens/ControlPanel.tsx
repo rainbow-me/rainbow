@@ -52,7 +52,6 @@ import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNam
 import * as i18n from '@/languages';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import store from '@/redux/store';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
@@ -185,11 +184,9 @@ export const ControlPanel = () => {
     return sortedItems;
   }, [walletsWithBalancesAndNames, currentAddress]);
 
-  const { testnetsEnabled } = store.getState().settings;
-
   const allNetworkItems = useMemo(() => {
     return Object.values(useBackendNetworksStore.getState().getDefaultChains())
-      .filter(({ testnet }) => testnetsEnabled || !testnet)
+      .filter(({ testnet }) => !testnet)
       .map(chain => {
         return {
           IconComponent: <ChainImage chainId={chain.id} position="relative" size={36} />,
@@ -203,7 +200,7 @@ export const ControlPanel = () => {
           selected: chain.id === currentChainId,
         };
       });
-  }, [currentChainId, isConnected, testnetsEnabled]);
+  }, [currentChainId, isConnected]);
 
   const selectedWallet = allWalletItems.find(item => item.selected);
 

@@ -5,15 +5,12 @@ import { getDefaultSlippage, parseAssetAndExtend, slippageInBipsToString, trimTr
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { getRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
-import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
-import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -27,7 +24,6 @@ export type NavigateToSwapsParams<
 > = Partial<
   Pick<SwapsState, 'slippage'> & {
     focusedInput: InputKeys;
-    gasSpeed: GasSpeed;
     goBackOnSwapSubmit?: boolean;
     inputAsset: AssetType;
     outputAsset: AssetType;
@@ -36,9 +32,6 @@ export type NavigateToSwapsParams<
 
 export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
   if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) return watchingAlert();
-
-  const chainId = params.inputAsset?.chainId || params.outputAsset?.chainId || store.getState().settings.chainId;
-  if (params.gasSpeed && chainId) setSelectedGasSpeed(chainId, params.gasSpeed);
 
   const isAlreadyOpen = Navigation.getActiveRouteName() === Routes.SWAP;
   if (isAlreadyOpen && params.inputAsset === undefined && params.outputAsset === undefined) {
@@ -101,7 +94,7 @@ export function getSwapsNavigationParams(): SwapsParams {
 
 function getFallbackParams(): SwapsParams {
   const inputAsset = getInputAsset(null);
-  const chainId = inputAsset?.chainId ?? store.getState().settings.chainId;
+  const chainId = inputAsset?.chainId ?? ChainId.mainnet;
   return {
     focusedInput: 'inputAmount',
     goBackOnSwapSubmit: false,

@@ -67,7 +67,6 @@ export function SettingsSheet() {
                   onPressCurrency={sectionOnPressFactory(SettingsPages.currency.key)}
                   onPressDev={sectionOnPressFactory(SettingsPages.dev.key)}
                   onPressLanguage={sectionOnPressFactory(SettingsPages.language.key)}
-                  onPressNetwork={sectionOnPressFactory(SettingsPages.network.key)}
                   onPressNotifications={sectionOnPressFactory(SettingsPages.notifications.key)}
                   onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy.key)}
                   onPressSupport={sectionOnPressFactory(SettingsPages.support.key)}

@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "हस्ताक्षर वॉलेट पता कॉपी करें",
       "disconnect_to_anvil": "Anvil से डिस्कनेक्ट करें",
       "crash_app_render_error": "ऐप क्रैश करें (रेंडर त्रुटि)",
-      "enable_testnets": "टेस्टनेट्स सक्षम करें",
       "installing_update": "अपडेट इंस्टॉल कर रहा है",
       "navigation_entry_point": "नेविगेशन एंट्री पॉइंट",
       "no_update": "कोई अपडेट नहीं है",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "आप किसी भी वॉलेट को नहीं देख रहे हैं।",
         "no_owned_wallets": "आपके पास Rainbow में कोई वॉलेट नहीं है। एक वॉलेट बनाएं या अपने सीक्रेट फ़्रेज़ के साथ एक आयात करें।",
         "open_system_settings": "सेटिंग्स खोलें",
-        "unsupported_network": "अधिसूचनाएं इस समय केवल Ethereum Mainnet लेनदेन के लिए उपलब्ध हैं।",
-        "change_network": "अपना नेटवर्क बदलें",
         "no_first_time_permissions": "कृपया Rainbow को आपको अधिसूचनाएं भेजने की अनुमति दें।",
         "first_time_allow_notifications": "सूचनाएँ अनुमति दें",
         "error_alert_title": "सदस्यता विफल",
@@ -3270,8 +3267,7 @@
         "disconnect": "डिसकनेक्ट",
         "connect": "कनेक्ट करें",
         "switch_wallet": "वॉलेट स्विच करें",
-        "switch_network": "नेटवर्क स्विच करें",
-        "available_networks": "उपलब्ध नेटवर्क"
+        "switch_network": "नेटवर्क स्विच करें"
       },
       "errors": {
         "go_back": "वापस जाएँ",

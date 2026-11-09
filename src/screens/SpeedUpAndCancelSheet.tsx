@@ -3,7 +3,6 @@ import { ActivityIndicator, Platform, View } from 'react-native';
 
 import { type BigNumberish } from '@ethersproject/bignumber';
 import { type BytesLike } from '@ethersproject/bytes';
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { BigNumber } from 'bignumber.js';
 import { isEmpty } from 'lodash';
@@ -20,12 +19,10 @@ import { updateGasFeeForSpeed } from '@/features/gas/redux/gas';
 import { type LegacyTransactionGasParamAmounts, type TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import gasUtils from '@/features/gas/utils/gas';
 import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
-import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -129,7 +126,6 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
 
 export function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
-  const { chainId } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
   const dispatch = useDispatch();
@@ -143,6 +139,9 @@ export function SpeedUpAndCancelSheet() {
     params: { type, tx, accentColor },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SPEED_UP_AND_CANCEL_SHEET | typeof Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET>>();
 
+  const currentChainId = tx.chainId;
+  const currentProvider = useMemo(() => getProvider({ chainId: currentChainId }), [currentChainId]);
+
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState<GasFeeType>();
   const [minGasPrice, setMinGasPrice] = useState(tx?.gasPrice ? calcGasParamRetryValue(tx.gasPrice) : undefined);
@@ -151,13 +150,11 @@ export function SpeedUpAndCancelSheet() {
   );
   const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(tx?.maxFeePerGas ? calcGasParamRetryValue(tx.maxFeePerGas) : undefined);
   const fetchedTx = useRef(false);
-  const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>(getProvider({ chainId: ChainId.mainnet }));
   const [data, setData] = useState<BytesLike>();
   const [gasLimit, setGasLimit] = useState<BigNumberish>();
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);
   const [value, setValue] = useState<string>();
-  const isL2 = isL2Chain({ chainId: tx?.chainId });
+  const isL2 = isL2Chain({ chainId: currentChainId });
   const canReplaceTransaction = canReplacePendingTransaction({ accountAddress, transaction: tx });
   const hasTransactionNonce = tx?.nonce !== undefined && tx?.nonce !== null;
 
@@ -329,24 +326,13 @@ export function SpeedUpAndCancelSheet() {
     }
   }, [handleSpeedUp, hasTransactionNonce, isHardwareWallet, navigate]);
 
-  // Set the network
   useEffect(() => {
-    setCurrentChainId(tx?.chainId || chainId);
-  }, [chainId, tx.chainId]);
-
-  // Set the provider
-  useEffect(() => {
-    if (currentChainId) {
-      startPollingGasFees(currentChainId);
-      const provider = getProvider({ chainId: currentChainId });
-      logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
-      setCurrentProvider(provider);
-
-      return () => {
-        stopPollingGasFees();
-      };
-    }
-  }, [currentChainId, startPollingGasFees, stopPollingGasFees, tx?.chainId]);
+    startPollingGasFees(currentChainId);
+    logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${currentChainId}`);
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [currentChainId, startPollingGasFees, stopPollingGasFees]);
 
   // Update gas limit
   useEffect(() => {
@@ -360,7 +346,7 @@ export function SpeedUpAndCancelSheet() {
 
   useEffect(() => {
     const init = async () => {
-      if (currentChainId && currentProvider && !fetchedTx.current) {
+      if (!fetchedTx.current) {
         try {
           fetchedTx.current = true;
 
@@ -422,7 +408,7 @@ export function SpeedUpAndCancelSheet() {
     };
 
     init();
-  }, [currentChainId, currentProvider, goBack, isL2, tx, tx?.gasLimit, tx.hash, type, updateGasFeeOption]);
+  }, [goBack, isL2, tx, tx?.gasLimit, tx.hash, type, updateGasFeeOption]);
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {

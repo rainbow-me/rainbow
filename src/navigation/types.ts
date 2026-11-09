@@ -296,7 +296,6 @@ export type SettingsStackParams = {
   [Routes.SETTINGS_SECTION_CURRENCY]: undefined;
   [Routes.SETTINGS_SECTION_DEV]: undefined;
   [Routes.SETTINGS_SECTION_LANGUAGE]: undefined;
-  [Routes.SETTINGS_SECTION_NETWORK]: undefined;
   [Routes.SETTINGS_SECTION_NOTIFICATIONS]: undefined;
   [Routes.SETTINGS_SECTION_PRIVACY]: undefined;
   [Routes.SETTINGS_SECTION_SUPPORT]: undefined;

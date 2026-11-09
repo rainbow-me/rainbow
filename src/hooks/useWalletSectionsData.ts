@@ -31,7 +31,6 @@ import { isDataComplete } from '@/state/nfts/utils';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
-import useAccountSettings from './useAccountSettings';
 import useCoinListEdited from './useCoinListEdited';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
@@ -49,7 +48,6 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { network } = useAccountSettings();
   // Keep callers that render translated text subscribed to language changes.
   useAppSettingsStore(state => state.language);
   const nativeCurrency = useAppSettingsStore(state => state.currency);
@@ -133,7 +131,6 @@ export default function useWalletSectionsData({
       isCoinListEdited,
       isLoadingUserAssets,
       nativeCurrency,
-      network,
       pinnedCoins,
       sortedAssets,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
@@ -174,7 +171,6 @@ export default function useWalletSectionsData({
     isCoinListEdited,
     isLoadingUserAssets,
     nativeCurrency,
-    network,
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,

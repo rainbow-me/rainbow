@@ -11,7 +11,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
-import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
 import { checkKeychainIntegrity, loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 
@@ -19,7 +18,6 @@ import { ensureValidHex } from '../../handlers/web3';
 import runMigrations from '../../model/migrations';
 import { createWallet, walletInit, type InitializeWalletParams } from '../../model/wallet';
 import { PerformanceTracking } from '../../performance/tracking';
-import { settingsLoadNetwork, settingsLoadState } from '../../redux/settings';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
 
@@ -87,13 +85,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     setIsSmallBalancesOpen(false);
 
-    // Load the network first
-    let network = store.getState().settings.network;
-    if (!network) {
-      await store.dispatch(settingsLoadNetwork());
-      network = store.getState().settings.network;
-    }
-
     if (shouldCancel()) return null;
 
     const { isNew, walletAddress } = await walletInit({
@@ -102,7 +93,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       name,
       overwrite,
       checkedWallet,
-      network,
       image,
       silent,
       userPin,
@@ -153,12 +143,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
         setWalletReady();
       }
       return null;
-    }
-
-    if (!(isNew || isImporting)) {
-      await store.dispatch(settingsLoadState());
-      if (shouldCancel()) return null;
-      logger.debug('[initializeWallet]: loaded global data...');
     }
 
     setAccountAddress(ensureValidHex(walletAddress));

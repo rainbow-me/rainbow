@@ -77,7 +77,6 @@ export interface WalletconnectApprovalSheetRouteParams {
     dappUrl: WalletconnectRequestData['dappUrl']
   ) => Promise<unknown>;
   receivedTimestamp: number;
-  currentChainId?: ChainId;
   meta?: WalletconnectMeta;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;

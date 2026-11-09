@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "Copier l'Adresse du Portefeuille de Signature",
       "disconnect_to_anvil": "Se Déconnecter d'Anvil",
       "crash_app_render_error": "Appli en Crash (Erreur de Rendu)",
-      "enable_testnets": "Activer Testnets",
       "installing_update": "Installation de la Mise à jour",
       "navigation_entry_point": "Point d'Entrée de Navigation",
       "no_update": "Pas de Mise à jour",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "Vous ne surveillez aucun portefeuille.",
         "no_owned_wallets": "Vous n'avez aucun portefeuille dans Rainbow. Créez un portefeuille ou importez-en un avec votre phrase secrète.",
         "open_system_settings": "Ouvrir les paramètres",
-        "unsupported_network": "Les notifications ne sont disponibles que pour les transactions Ethereum Mainnet à l'heure actuelle.",
-        "change_network": "Changez votre réseau",
         "no_first_time_permissions": "Veuillez autoriser Rainbow à vous envoyer des notifications.",
         "first_time_allow_notifications": "Autoriser les notifications",
         "error_alert_title": "Échec de l'abonnement",
@@ -3270,8 +3267,7 @@
         "disconnect": "Déconnecter",
         "connect": "Connecter",
         "switch_wallet": "Changer de portefeuille",
-        "switch_network": "Changer de réseau",
-        "available_networks": "Réseaux disponibles"
+        "switch_network": "Changer de réseau"
       },
       "errors": {
         "go_back": "retourner",

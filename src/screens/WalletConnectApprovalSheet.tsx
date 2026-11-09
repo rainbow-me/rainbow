@@ -28,8 +28,6 @@ import styled from '@/framework/ui/styled-thing';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
-import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import Navigation, { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -130,7 +128,6 @@ export function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
-  const { chainId: settingsChainId } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const selectedWallet = useSelectedWallet();
@@ -167,8 +164,6 @@ export function WalletConnectApprovalSheet() {
   const timedOut = params?.timedOut;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
   const chainId = meta?.proposedChainId || chainIds?.[0] || ChainId.mainnet; // WC v1 only supports 1
-  const currentChainId = params?.currentChainId;
-  const [approvalChainId, setApprovalChainId] = useState<ChainId>(currentChainId || settingsChainId);
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
@@ -208,17 +203,15 @@ export function WalletConnectApprovalSheet() {
   }, [approvalAccount.wallet, approvalAccount.address]);
 
   /**
-   * In WC v1 this was the network the dapp was requesting, which was editable
-   * by the end-user on this approval screen. In v2, the dapp choses one or
-   * more networks and the user can't change. So this data isn't applicable in
-   * v2.
+   * Browser and mobile-wallet requests display a single proposed network.
+   * WalletConnect v2 displays the requested network list instead.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId];
-    const label = useBackendNetworksStore.getState().getChainsLabel()[approvalChainId];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[chainId];
+    const label = useBackendNetworksStore.getState().getChainsLabel()[chainId];
     if (!chain) {
       return {
-        chainId: approvalChainId,
+        chainId,
         color: opacity(colors.blueGreyDark, 0.3),
         name: label || 'Unknown Network',
       };
@@ -226,34 +219,20 @@ export function WalletConnectApprovalSheet() {
 
     const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chain.id];
     return {
-      chainId: chain.id || approvalChainId,
+      chainId,
       color: isDarkMode ? nativeAsset?.colors.primary : nativeAsset?.colors.fallback || nativeAsset?.colors.primary,
       name: label || chain.name,
     };
-  }, [approvalChainId, colors, isDarkMode]);
-
-  const handleOnPressNetworksMenuItem = useCallback(
-    (chainId: string) => setApprovalChainId(Number(chainId?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
-    [setApprovalChainId]
-  );
+  }, [chainId, colors, isDarkMode]);
 
   const handleSuccess = useCallback(
     (success = false) => {
       if (callback) {
-        setTimeout(
-          () => callback(success, approvalNetworkInfo.chainId, approvalAccount.address, peerId, dappScheme, dappName, dappUrl),
-          300
-        );
+        setTimeout(() => callback(success, chainId, approvalAccount.address, peerId, dappScheme, dappName, dappUrl), 300);
       }
     },
-    [approvalAccount.address, callback, approvalNetworkInfo, peerId, dappScheme, dappName, dappUrl]
+    [approvalAccount.address, callback, chainId, peerId, dappScheme, dappName, dappUrl]
   );
-
-  useEffect(() => {
-    if (chainId && type === WalletConnectApprovalSheetType.connect) {
-      setApprovalChainId(chainId);
-    }
-  }, [chainId, type]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -312,7 +291,6 @@ export function WalletConnectApprovalSheet() {
     return;
   }, [goBack, navigate, timedOut]);
 
-  const menuItems = useMemo(() => networksMenuItems(), []);
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
   const navigateToNetworkSwitcher = useCallback(() => {
@@ -365,21 +343,12 @@ export function WalletConnectApprovalSheet() {
               type === WalletConnectApprovalSheetType.connect
                 ? approvalNetworkInfo.name
                 : useBackendNetworksStore.getState().getChainsLabel()[chainId]
-            } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
+            } ${type === WalletConnectApprovalSheetType.connect && chainIds.length > 1 ? '􀁰' : ''}`}
           </LabelText>
         </ButtonPressAnimation>
       );
     }
-  }, [
-    approvalNetworkInfo.chainId,
-    approvalNetworkInfo.name,
-    chainId,
-    chainIds,
-    isWalletConnectV2,
-    menuItems.length,
-    navigateToNetworkSwitcher,
-    type,
-  ]);
+  }, [approvalNetworkInfo.chainId, approvalNetworkInfo.name, chainId, chainIds, isWalletConnectV2, navigateToNetworkSwitcher, type]);
 
   return (
     <Sheet>

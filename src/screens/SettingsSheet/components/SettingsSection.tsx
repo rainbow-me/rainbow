@@ -47,7 +47,6 @@ interface SettingsSectionProps {
   onPressCurrency: () => void;
   onPressDev: () => void;
   onPressLanguage: () => void;
-  onPressNetwork: () => void;
   onPressPrivacy: () => void;
   onPressNotifications: () => void;
   onPressSupport: () => void;
