@@ -11,7 +11,6 @@ export enum MigrationName {
   deleteImgixMMKVCache = 'migration_deleteImgixMMKVCache',
   migrateNotificationSettingsToVersion2 = 'migration_migrateNotificationSettingsToVersion2',
   prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
-  changeLanguageKeys = 'migration_changeLanguageKeys',
   fixHiddenUSDC = 'migration_fixHiddenUSDC',
   purgeWcConnectionsWithoutAccounts = 'migration_purgeWcConnectionsWithoutAccounts',
   migratePinnedAndHiddenTokenUniqueIds = 'migration_migratePinnedAndHiddenTokenUniqueIds',

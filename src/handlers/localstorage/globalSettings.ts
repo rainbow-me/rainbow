@@ -1,13 +1,11 @@
 import { NativeCurrencyKeys } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { Language } from '@/languages';
 
 import { getGlobal, saveGlobal } from './common';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const APP_ICON = 'appIcon';
-const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 const CHAIN_ID = 'chainId';
 const AUTH_TIMELOCK = 'authTimelock';
@@ -21,10 +19,6 @@ export const saveAuthTimelock = (ts: any) => saveGlobal(AUTH_TIMELOCK, ts);
 export const getPinAuthAttemptsLeft = () => getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
 
 export const savePinAuthAttemptsLeft = (amount: any) => saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
-
-export const getLanguage = () => getGlobal(LANGUAGE, Language.EN_US);
-
-export const saveLanguage = (language: any) => saveGlobal(LANGUAGE, language);
 
 export const getChainId = () => getGlobal(CHAIN_ID, ChainId.mainnet);
 
