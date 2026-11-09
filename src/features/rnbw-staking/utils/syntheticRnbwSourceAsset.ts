@@ -12,9 +12,9 @@ import {
   RNBW_TOKEN_ICON_URL,
   RNBW_TOKEN_UNIQUE_ID,
 } from '@/features/rnbw-staking/constants';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type SyntheticRnbwSourceStaticConfig = Pick<
   ParsedSearchAsset,
@@ -77,7 +77,7 @@ export function buildSyntheticRnbwSourceAsset({
   const claimableRnbwRaw = rewardsData?.claimableRnbw ?? '0';
   const hasPendingClaim = rewardsData?.hasPendingClaim ?? false;
 
-  const currency = userAssetsStoreManager.getState().currency;
+  const currency = appSettingsActions.getCurrency();
   const chainName = walletAsset?.chainName ?? useBackendNetworksStore.getState().getChainsName()[RNBW_CHAIN_ID] ?? String(RNBW_CHAIN_ID);
   const symbol = walletAsset?.symbol ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.symbol;
   const name = walletAsset?.name ?? RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG.name;

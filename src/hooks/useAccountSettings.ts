@@ -4,17 +4,13 @@ import lang from 'i18n-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
-import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type AppState } from '@/redux/store';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 import { updateLanguageLocale, type Language } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
   settingsChangeLanguage as changeLanguage,
-  settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
 
@@ -33,15 +29,12 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
 
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const testnetsEnabled = useConnectedToAnvilStore(state => state.connectedToAnvil);
 
   const settingsData = useSelector(({ settings: { appIcon, chainId, network } }: AppState) => ({
     appIcon,
     chainId,
     language,
-    nativeCurrency,
-    nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
     network,
     testnetsEnabled,
   }));
@@ -49,8 +42,6 @@ export default function useAccountSettings() {
   const settingsChangeLanguage = useCallback((language: string) => dispatch(changeLanguage(language as Language)), [dispatch]);
 
   const settingsChangeAppIcon = useCallback((appIcon: string) => dispatch(changeAppIcon(appIcon)), [dispatch]);
-
-  const settingsChangeNativeCurrency = useCallback((currency: NativeCurrencyKey) => dispatch(changeNativeCurrency(currency)), [dispatch]);
 
   const settingsChangeTestnetsEnabled = useCallback(
     (testnetsEnabled: boolean) => dispatch(changeTestnetsEnabled(testnetsEnabled)),
@@ -60,7 +51,6 @@ export default function useAccountSettings() {
   return {
     settingsChangeAppIcon,
     settingsChangeLanguage,
-    settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,
     ...settingsData,
   };

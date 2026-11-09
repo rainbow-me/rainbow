@@ -3,9 +3,9 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 import { RnbwRewardsScenes, type RnbwRewardsScene } from '@/features/rnbw-rewards/screens/rnbw-rewards-screen/constants/rewardsScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
 import { submitRewardsClaim, type PreparedRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { ensureError } from '@/logger';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { delay } from '@/utils/delay';
 
 type TaskIdle = { status: 'idle'; runId: number };
@@ -69,7 +69,7 @@ export const useRewardsFlowStore = createBaseStore<RewardsFlowStore>((set, get) 
     set(state => ({ airdropClaimRequest: { status: 'running', runId: state.airdropClaimRequest.runId + 1 } }));
     const runId = get().airdropClaimRequest.runId;
     try {
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const data = await submitAirdropClaim({ preparedClaim, currency });
       set(state => {
         if (state.airdropClaimRequest.runId !== runId) return state;
@@ -88,7 +88,7 @@ export const useRewardsFlowStore = createBaseStore<RewardsFlowStore>((set, get) 
     set(state => ({ rewardsClaimRequest: { status: 'running', runId: state.rewardsClaimRequest.runId + 1 } }));
     const runId = get().rewardsClaimRequest.runId;
     try {
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const data = await submitRewardsClaim({ preparedClaim, currency });
       set(state => {
         if (state.rewardsClaimRequest.runId !== runId) return state;

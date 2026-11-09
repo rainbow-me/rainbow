@@ -19,6 +19,7 @@ import { getUniqueId } from '@/entities/assetId';
 import { IS_TEST } from '@/env';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, type RainbowConfig } from '@/features/config/stores/remoteConfig';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import {
   divWorklet,
   equalWorklet,
@@ -33,7 +34,6 @@ import {
 import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { type ResponseByTheme } from '@/theme/types';
@@ -583,7 +583,7 @@ export const buildQuoteParams = ({
     slippage: Number(slippage),
     refuel: false,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
-    currency: store.getState().settings.nativeCurrency,
+    currency: appSettingsActions.getCurrency(),
   };
 
   return quoteParams;

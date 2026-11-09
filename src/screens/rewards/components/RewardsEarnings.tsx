@@ -2,17 +2,16 @@ import React, { useMemo } from 'react';
 import { ImageBackground } from 'react-native';
 
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
-import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { type RewardsAmount } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type AppState } from '@/redux/store';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
@@ -40,7 +39,7 @@ export const RewardsEarnings: React.FC<Props> = ({
 }) => {
   const { navigate } = useNavigation();
   const infoIconColor = useInfoIconColor();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const { formattedPendingEarnings, formattedTotalEarningsToken, formattedTotalEarningsNative, airdropTitle, airdropTime } = useMemo(() => {
     const formattedPendingEarnings = formatTokenDisplayValue(pendingEarningsToken, tokenSymbol);

@@ -5,7 +5,6 @@ import { Platform } from 'react-native';
 
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
-import { useSelector } from 'react-redux';
 import { getAddress, type Address } from 'viem';
 
 import rainbowIcon from '@/assets/rainbow-icon-circle.png';
@@ -26,6 +25,7 @@ import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { checkForPendingSwap } from '@/helpers/transactions';
@@ -35,7 +35,6 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import usePrevious from '@/hooks/usePrevious';
 import useUserAccounts from '@/hooks/useUserAccounts';
 import * as i18n from '@/languages';
-import { type AppState } from '@/redux/store';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -290,7 +289,7 @@ const DoubleChevron = () => (
 );
 
 export function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const isPendingSwap = checkForPendingSwap(transaction);
 

@@ -6,13 +6,13 @@ import { parse } from 'eth-url-parser';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { convertRawAmountToDecimalFormat, fromWei, isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers/accounts';
-import store from '@/redux/store';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export async function startSendFromEthereumUrl(data: string) {
@@ -30,7 +30,7 @@ export async function startSendFromEthereumUrl(data: string) {
   const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   let address: any = null;
   let nativeAmount: any = null;
-  const { nativeCurrency } = store.getState().settings;
+  const nativeCurrency = appSettingsActions.getCurrency();
 
   if (!functionName) {
     // Send native asset

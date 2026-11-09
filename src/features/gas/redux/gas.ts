@@ -6,6 +6,7 @@ import { analytics } from '@/analytics';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { getProvider } from '@/handlers/web3';
 import { addBuffer } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
@@ -189,7 +190,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (dispa
     l1GasFeeOptimism,
   } = getState().gas;
 
-  const { nativeCurrency } = getState().settings;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const _gasLimit = gasLimit || getDefaultGasLimit(chainId, defaultGasLimit);
 
   let nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
@@ -320,7 +321,7 @@ export const gasPricesStartPolling =
                 type: GAS_UPDATE_TRANSACTION_NETWORK,
               });
 
-              const { nativeCurrency } = getState().settings;
+              const nativeCurrency = appSettingsActions.getCurrency();
 
               let dataIsReady = true;
               const meteorologySupportsChainId = useBackendNetworksStore.getState().getMeteorologySupportedChainIds().includes(chainId);
@@ -504,7 +505,7 @@ export const gasUpdateTxFee =
     withRunExclusive(async () => {
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
-      const { nativeCurrency } = getState().settings;
+      const nativeCurrency = appSettingsActions.getCurrency();
       if (
         isEmpty(gasFeeParamsBySpeed) ||
         (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId) && l1GasFeeOptimism === null)

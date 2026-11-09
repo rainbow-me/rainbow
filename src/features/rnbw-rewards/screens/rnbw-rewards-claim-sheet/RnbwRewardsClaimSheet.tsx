@@ -8,12 +8,12 @@ import { RnbwHoldToActivateButton } from '@/features/rnbw-membership/components/
 import { RNBW_SYMBOL } from '@/features/rnbw-rewards/constants';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim } from '@/features/rnbw-rewards/utils/claimRewards';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress, useIsHardwareWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
@@ -28,7 +28,7 @@ export const RnbwRewardsClaimSheet = memo(function RnbwRewardsClaimSheet() {
     setIsProcessing(true);
     try {
       const preparedClaim = await prepareRewardsClaim({ address: accountAddress });
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       await submitRewardsClaim({ preparedClaim, currency });
       goBack();
     } catch {

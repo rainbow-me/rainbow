@@ -6,9 +6,9 @@ import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { formatCandlestickPrice } from '@/features/charts/candlestick/utils';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import * as i18n from '@/languages';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 const translations = {
@@ -22,7 +22,7 @@ type ChartPriceLabelProps = {
 };
 
 export function ChartPriceLabel({ price, backgroundColor, isLineChartGestureActive }: ChartPriceLabelProps) {
-  const currency = useStoreSharedValue(userAssetsStoreManager, state => state.currency);
+  const currency = useStoreSharedValue(useAppSettingsStore, state => state.currency);
   const isHyperliquidChart = useStoreSharedValue(useChartsStore, state => isHyperliquidToken(state.token));
 
   const formattedPrice = useDerivedValue(() => {

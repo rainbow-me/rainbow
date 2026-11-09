@@ -1,9 +1,9 @@
 import { createBaseStore, createQueryStore, type QueryStore } from '@storesjs/stores';
 
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import Routes, { type Route } from '@/navigation/routesNames';
 import { useAppStateStore } from '@/state/appState/appStateStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
 import { useUserAssetsStore } from '../assets/userAssets';
@@ -80,7 +80,7 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
       disableCache: true,
       paramChangeThrottle: time.ms(250),
       params: {
-        currency: $ => $(userAssetsStoreManager, s => s.currency),
+        currency: $ => $(useAppSettingsStore, s => s.currency),
         tokenIds: $ => {
           const route = $(useNavigationStore, s => s.activeRoute);
           const idsByRoute = $(tokenIdsByRoute, s => s);

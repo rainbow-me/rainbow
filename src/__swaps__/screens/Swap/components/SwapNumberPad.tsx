@@ -24,8 +24,8 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { equalWorklet } from '@/framework/core/safeMath';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { colors } from '@/styles';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 
@@ -47,7 +47,7 @@ const getFormattedInputKey = (inputKey: InputKeys) => {
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const {
     SwapInputController,
     configProgress,

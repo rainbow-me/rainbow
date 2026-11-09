@@ -12,6 +12,7 @@ import { useCurrencyConversionStore } from '@/features/currency/stores/currencyC
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
 import { formatNativeAmount, formatPerTokenFigure, formatPnlAmount, formatPnlPercentage, pnlSign } from '@/features/spot-pnl/ui/pnlFormat';
@@ -22,7 +23,6 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
@@ -124,7 +124,7 @@ function TabButton({ label, onSelect, selectedTab, tab }: { label: string; onSel
 
 function HolderList({ tab, token }: { tab: Tab; token: { address: string; chainId: ChainId } }) {
   const topHolders = useTopHoldersStore(state => state.getData());
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const usdToNativeRate = useCurrencyConversionStore(state => state.getConversionRate());
   if (!topHolders) return null;
 

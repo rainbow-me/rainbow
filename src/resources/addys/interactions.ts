@@ -3,8 +3,8 @@ import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, type QueryConfigWithSelect } from '@/react-query';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -157,7 +157,7 @@ export function useInteractionsCount(
   { fromAddress: inputFromAddress, toAddress, chainId }: Omit<InteractionsCountArgs, 'currency'>,
   config: QueryConfigWithSelect<InteractionsCountResult, Error, SelectedInteractionsCount, InteractionsCountQueryKey> = {}
 ) {
-  const { nativeCurrency: currency } = useAccountSettings();
+  const currency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const fromAddress = (inputFromAddress || accountAddress)?.toLowerCase() as Address;
 

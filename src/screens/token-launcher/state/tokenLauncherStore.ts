@@ -13,13 +13,13 @@ import { formatCurrency } from '@/features/currency/utils/formatCurrency';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type Network } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { trimTrailingZeros, truncateToDecimals } from '@/framework/core/safeMath';
 import { abbreviateNumber, convertNumberToString } from '@/helpers/utilities';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import store from '@/redux/store';
 import { type ParsedAsset } from '@/resources/assets/types';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { Protocol, TokenLauncherSDKError, type LaunchTokenResponse } from '@rainbow-me/token-launcher';
@@ -190,7 +190,7 @@ export const useTokenLauncherStore = createBaseStore<TokenLauncherStore>((set, g
         {} as Record<LinkType, string>
       ),
   tokenPrice: () => {
-    const { nativeCurrency } = store.getState().settings;
+    const nativeCurrency = appSettingsActions.getCurrency();
     const tokenomics = get().tokenomics();
 
     const actualPriceEth = tokenomics?.price.actualEth;
@@ -203,7 +203,7 @@ export const useTokenLauncherStore = createBaseStore<TokenLauncherStore>((set, g
     });
   },
   tokenMarketCap: () => {
-    const { nativeCurrency } = store.getState().settings;
+    const nativeCurrency = appSettingsActions.getCurrency();
     const tokenomics = get().tokenomics();
 
     const actualMarketCapEth = tokenomics?.marketCap.actualEth;

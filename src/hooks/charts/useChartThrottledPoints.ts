@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { debounce } from 'lodash';
 
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { usePriceChart, type ChartData, type ChartTime } from './useChartInfo';
 
@@ -36,7 +36,7 @@ export default function useChartThrottledPoints({
   // TODO: update type
   timespan: ChartTime;
 }) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const { data: chart = [], isLoading: fetchingCharts } = usePriceChart({
     address: asset.address,

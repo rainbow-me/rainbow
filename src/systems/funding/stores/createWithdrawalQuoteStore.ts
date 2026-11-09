@@ -2,11 +2,11 @@ import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 import { getAddress } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ETH_ADDRESS, Source, type CrosschainQuote, type Quote, type QuoteParams } from '@rainbow-me/swaps';
 
@@ -96,7 +96,7 @@ function createQuoteFetcher(route: RouteConfig) {
     const quoteParams: QuoteParams = {
       buyTokenAddress,
       chainId: route.from.chainId,
-      currency: userAssetsStoreManager.getState().currency,
+      currency: appSettingsActions.getCurrency(),
       destReceiver,
       feePercentageBasisPoints,
       fromAddress: sourceAddress,

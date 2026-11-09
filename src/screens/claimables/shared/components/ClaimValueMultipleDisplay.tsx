@@ -6,12 +6,12 @@ import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { type Claimable } from '@/resources/addys/claimables/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 export function ClaimValueMultipleDisplay({ totalCurrencyValue, assets }: { totalCurrencyValue: string; assets: Claimable['assets'] }) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { isDarkMode } = useColorMode();
 
   const color = !isDarkMode ? '#09111F' : globalColors.white100;

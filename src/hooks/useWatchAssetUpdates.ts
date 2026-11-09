@@ -8,13 +8,13 @@ import { getUniqueId } from '@/entities/assetId';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { filterZeroBalanceAssets } from '@/state/assets/utils';
 import { useAssetUpdatesStore, type AssetUpdateTransaction, type WatchedAssetUpdateTransaction } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
@@ -24,7 +24,7 @@ const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 const EMPTY_ASSETS: Record<string, UserAsset> = {};
 
 export const useWatchAssetUpdates = ({ address }: { address: Address }) => {
-  const currency = userAssetsStoreManager(state => state.currency);
+  const currency = useAppSettingsStore(state => state.currency);
   const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
 
   return useCallback(

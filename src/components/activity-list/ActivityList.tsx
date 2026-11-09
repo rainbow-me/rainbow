@@ -9,11 +9,11 @@ import { Skeleton } from '@/components/Skeleton';
 import { opacity } from '@/design-system/utils/opacity';
 import { type RainbowTransaction } from '@/entities/transactions';
 import { TOP_INSET } from '@/features/dapp-browser/constants/Dimensions';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { type TransactionSection } from '@/helpers/buildTransactionsSections';
 import useAccountTransactions from '@/hooks/useAccountTransactions';
 import { useOnTabReselect } from '@/navigation/tabEvents';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -93,7 +93,7 @@ interface Props {
 
 export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   const accountAddress = useAccountAddress();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { sections, nextPage, transactionsCount, remainingItemsLabel, isLoadingTransactions } = useAccountTransactions();
 
   const theme = useTheme();

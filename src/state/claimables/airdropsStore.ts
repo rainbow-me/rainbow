@@ -4,6 +4,7 @@ import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
@@ -12,7 +13,6 @@ import { type AddysClaimable, type RainbowClaimable } from '@/resources/addys/cl
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { type AddysConsolidatedError } from '@/resources/addys/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -88,7 +88,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     cacheTime: time.days(1),
     params: {
       address: $ => $(useWalletsStore).accountAddress,
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
       page: 1,
       pageSize: INITIAL_PAGE_SIZE,
     },
@@ -100,7 +100,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     recentlyClaimed: null,
 
     async fetchNextPage() {
-      const { currency } = userAssetsStoreManager.getState();
+      const currency = appSettingsActions.getCurrency();
       const address = useWalletsStore.getState().accountAddress;
       if (paginationPromise && paginationPromise.address === address && paginationPromise.currency === currency) {
         return paginationPromise.promise;
@@ -168,7 +168,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getAirdrops: () => {
       const { airdrops, getData } = get();
-      const { currency } = userAssetsStoreManager.getState();
+      const currency = appSettingsActions.getCurrency();
       const address = useWalletsStore.getState().accountAddress;
       if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.claimables || null;
@@ -201,7 +201,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getPaginationInfo: () => {
       const { airdrops, getData } = get();
-      const { currency } = userAssetsStoreManager.getState();
+      const currency = appSettingsActions.getCurrency();
       const address = useWalletsStore.getState().accountAddress;
       if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.pagination ?? null;

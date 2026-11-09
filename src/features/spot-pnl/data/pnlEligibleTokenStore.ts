@@ -4,6 +4,7 @@ import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { queryClient } from '@/react-query/queryClient';
@@ -15,7 +16,6 @@ import {
   type ExternalTokenQueryFunctionResult,
 } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type ViewedTokenTypeParams = {
   /** `null` when no token is viewed, or it is a perps market or a native asset, which never qualify. */
@@ -39,7 +39,7 @@ const useViewedTokenTypeStore = createQueryStore<string | null, ViewedTokenTypeP
             : null,
         shallowEqual
       ),
-    currency: $ => $(userAssetsStoreManager, state => state.currency),
+    currency: $ => $(useAppSettingsStore, state => state.currency),
   },
   staleTime: time.hours(1),
   cacheTime: time.hours(1),

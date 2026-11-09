@@ -7,6 +7,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { createMockPool, createMockPositionsData, createMockRainbowPosition } from '@/features/positions/__fixtures__/mocks/positions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { type TokenData } from '@/state/liveTokens/types';
@@ -45,7 +46,8 @@ const SMALL_ID = getUniqueId(SMALL, ChainId.mainnet);
 beforeEach(() => {
   vi.useFakeTimers();
   requests.assets.mockClear();
-  userAssetsStoreManager.setState({ currency: 'USD', hiddenAssetBalances: {} });
+  appSettingsActions.setCurrency('USD');
+  userAssetsStoreManager.setState({ hiddenAssetBalances: {} });
   userAssetsSearchActions.reset();
   usePositionsStore.setState({ enabled: false, queryCache: {}, queryKey: '' });
   useWalletsStore.setState({ accountAddress: ACCOUNT_A });
@@ -285,7 +287,7 @@ describe('user assets', () => {
 
     publishPositions(ACCOUNT_B, [LP]);
     expect(useWalletAssetsStore.getState().assets.size).toBe(0);
-    userAssetsStoreManager.setState({ currency: 'EUR' });
+    appSettingsActions.setCurrency('EUR');
     publishAssets([asset(LP, '90')]);
     expect(useWalletAssetsStore.getState().balance).toBe(90);
 
@@ -368,7 +370,7 @@ function publishPositions(address: string, poolAddresses: string[]): void {
   });
   const queryKey = getQueryKey({
     address,
-    currency: userAssetsStoreManager.getState().currency,
+    currency: appSettingsActions.getCurrency(),
     chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
   });
   usePositionsStore.setState(state => ({

@@ -58,12 +58,12 @@ vi.mock('@/state/swaps/swapsStore', () => ({
   },
 }));
 
-vi.mock('@/state/assets/userAssetsStoreManager', () => {
-  const cachedStore = { getState: () => ({ userAssets: new Map() }) };
-  const state = { address: '0x123', cachedStore, currency: 'ETH' as const };
+vi.mock('@/features/settings/data/appSettingsStore', () => {
+  const state = { currency: 'ETH' as const };
 
   return {
-    userAssetsStoreManager: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
+    appSettingsActions: { getCurrency: () => state.currency },
+    useAppSettingsStore: Object.assign((selector: (storeState: typeof state) => unknown) => selector(state), {
       getState: () => state,
       setState: (nextState: Partial<typeof state>) => Object.assign(state, nextState),
       subscribe: vi.fn(),

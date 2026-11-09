@@ -9,11 +9,11 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
 import { AnimatedText, Box, Text, TextIcon, TextShadow, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { formatDate } from '@/utils/formatDate';
 
 import { Row } from '../../shared/Row';
@@ -98,7 +98,7 @@ const CreatedBySection = memo(function CreatedBySection() {
 });
 
 export function AssetInfoList() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { accentColors, assetMetadata: metadata, basicAsset: asset, isLoadingMetadata } = useExpandedAssetSheetContext();
 
   const isExpanded = useSharedValue(true);

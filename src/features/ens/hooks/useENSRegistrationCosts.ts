@@ -6,11 +6,11 @@ import { useListen } from '@storesjs/stores';
 import useGas from '@/features/gas/hooks/useGas';
 import gasUtils from '@/features/gas/utils/gas';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useRoute } from '@/navigation/RouteContext';
 import timeUnits from '@/references/time-units.json';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
@@ -33,7 +33,7 @@ export function useENSRegistrationCosts({
   yearsDuration: number;
 }) {
   const accountAddress = useAccountAddress();
-  const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const nativeCurrency = useAppSettingsStore(s => s.currency);
   const { registrationParameters, changedRecords } = useENSRegistration();
   const route = useRoute().name;
   const gas = useGas({ enableTracking: true });

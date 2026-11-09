@@ -2,8 +2,8 @@ import { createBaseStore, createStoreActions } from '@storesjs/stores';
 
 import { RnbwAirdropScenes, type RnbwAirdropScene } from '@/features/rnbw-airdrop/screens/rnbw-airdrop-screen/constants/airdropScenes';
 import { submitAirdropClaim, type PreparedAirdropClaim } from '@/features/rnbw-rewards/utils/claimAirdrop';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { ensureError } from '@/logger';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type TaskIdle = { status: 'idle'; runId: number };
 type TaskRunning = { status: 'running'; runId: number };
@@ -36,7 +36,7 @@ export const useAirdropFlowStore = createBaseStore<AirdropFlowStore>((set, get) 
     set(state => ({ airdropClaimRequest: { status: 'running', runId: state.airdropClaimRequest.runId + 1 } }));
     const runId = get().airdropClaimRequest.runId;
     try {
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const data = await submitAirdropClaim({ preparedClaim, currency });
       set(state => {
         if (state.airdropClaimRequest.runId !== runId) return state;

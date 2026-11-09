@@ -3,18 +3,12 @@ import { parseAssetNative } from '@/parsers/accounts';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
-import useAccountSettings from './useAccountSettings';
-
-// this is meant to be used for assets contained in the current wallet
-export default function useAccountAsset(uniqueId: string, nativeCurrency: NativeCurrencyKey | undefined = undefined) {
+/**
+ * Returns the current wallet's asset formatted in the supplied currency, or undefined if absent.
+ */
+export default function useAccountAsset(uniqueId: string, nativeCurrency: NativeCurrencyKey) {
   const accountAsset = useUserAssetsStore(state => state.getLegacyUserAsset(uniqueId));
   const rainbowSuperToken = useSuperTokenStore(state => state.getSuperToken(accountAsset?.address, accountAsset?.chainId));
-  // this is temporary for FastBalanceCoinRow to make a tiny bit faster
-  // we pass nativeCurrency only in that case
-  // for all the other cases it will work as expected
-  const nativeCurrencyToUse =
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    nativeCurrency ?? useAccountSettings().nativeCurrency;
 
   if (accountAsset) {
     let asset = accountAsset;
@@ -30,6 +24,6 @@ export default function useAccountAsset(uniqueId: string, nativeCurrency: Native
         },
       };
     }
-    return parseAssetNative(asset, nativeCurrencyToUse);
+    return parseAssetNative(asset, nativeCurrency);
   }
 }

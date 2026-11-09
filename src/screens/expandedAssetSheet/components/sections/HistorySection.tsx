@@ -20,12 +20,12 @@ import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, 
 import { opacity } from '@/design-system/utils/opacity';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertRawAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/framework/core/safeMath';
 import { TokenInteractionDirection, TokenInteractionType, type TokenInteraction } from '@/graphql/__generated__/metadata';
 import { convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -294,7 +294,7 @@ interface ListDataProps {
 }
 
 export const ListData = memo(function ListData({ data, buys, sells, isLoading }: ListDataProps) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { activeTabIndex, isExpanded } = useTabContext();
 
   const filteredTokenInteractions = useMemo(() => {
@@ -424,7 +424,7 @@ const HistoryContent = memo(function HistoryContent({
 });
 
 export const HistorySection = memo(function HistorySection() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const { basicAsset: asset } = useExpandedAssetSheetContext();
 

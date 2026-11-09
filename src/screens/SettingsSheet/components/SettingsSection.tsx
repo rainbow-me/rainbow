@@ -24,6 +24,7 @@ import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
@@ -66,7 +67,8 @@ export const SettingsSection = ({
 }: SettingsSectionProps) => {
   const { dev_section_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { language, nativeCurrency } = useAccountSettings();
+  const { language } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 

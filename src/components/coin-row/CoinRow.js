@@ -1,7 +1,7 @@
 import React, { createElement } from 'react';
 
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { padding } from '@/styles';
 
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
@@ -49,7 +49,8 @@ export default function CoinRow({
   network,
   ...props
 }) {
-  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
+  const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
   return (
     <Container style={containerStyles}>
       {createElement(coinIconRender, {

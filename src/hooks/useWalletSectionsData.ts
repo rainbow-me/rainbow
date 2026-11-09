@@ -19,6 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
@@ -48,7 +49,8 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { language, network, nativeCurrency } = useAccountSettings();
+  const { language, network } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const selectedWallet = useSelectedWallet();

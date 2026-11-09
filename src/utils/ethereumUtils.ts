@@ -16,6 +16,7 @@ import { type EthereumAddress } from '@/entities/wallet';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId, type Network } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { add, fromWei, greaterThan, subtract } from '@/helpers/utilities';
@@ -31,7 +32,6 @@ import {
   type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -97,7 +97,7 @@ export const getNativeAssetForNetwork = async ({
 }): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset({ chainId });
   const accountAddress = getAccountAddress();
-  const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
@@ -154,7 +154,7 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
   return accountAssets[loweredUniqueId];
 };
 const getExternalAssetFromCache = (uniqueId: string) => {
-  const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
 
   try {
@@ -203,7 +203,7 @@ const getAssetPrice = (
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const address = (useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
 
   const { data: nativeAsset } = useExternalToken({

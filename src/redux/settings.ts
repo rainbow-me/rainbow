@@ -5,18 +5,16 @@ import { type Dispatch } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';
 
 import { analytics } from '@/analytics';
-import { NativeCurrencyKeys, type NativeCurrencyKey } from '@/features/currency/types';
 import { Network, type ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import {
   getAppIcon,
   getChainId,
   getLanguage,
-  getNativeCurrency,
   getTestnetsEnabled,
   saveAppIcon,
   saveChainId,
   saveLanguage,
-  saveNativeCurrency,
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { getProvider } from '@/handlers/web3';
@@ -28,12 +26,10 @@ import { type AppState } from '@/redux/store';
 import { Language, updateLanguageLocale } from '../languages';
 
 // -- Constants ------------------------------------------------------------- //
-const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS = 'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
 const SETTINGS_UPDATE_APP_ICON_SUCCESS = 'settings/SETTINGS_UPDATE_APP_ICON_SUCCESS';
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS = 'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS = 'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
-const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS = 'settings/SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
 
@@ -44,7 +40,6 @@ interface SettingsState {
   appIcon: string;
   chainId: number;
   language: Language;
-  nativeCurrency: NativeCurrencyKey;
   network: Network;
   testnetsEnabled: boolean;
 }
@@ -53,28 +48,14 @@ interface SettingsState {
  * A `settings` Redux action.
  */
 type SettingsStateUpdateAction =
-  | SettingsStateUpdateNativeCurrencySuccessAction
   | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
-  | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
 
-interface SettingsStateUpdateNativeCurrencySuccessAction {
-  type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS;
-  payload: SettingsState['nativeCurrency'];
-}
 interface SettingsStateUpdateAppIconSuccessAction {
   type: typeof SETTINGS_UPDATE_APP_ICON_SUCCESS;
   payload: SettingsState['appIcon'];
-}
-
-interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
-  type: typeof SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS;
-  payload: {
-    nativeCurrency: SettingsState['nativeCurrency'];
-    testnetsEnabled: SettingsState['testnetsEnabled'];
-  };
 }
 
 interface SettingsStateUpdateTestnetPrefAction {
@@ -96,15 +77,9 @@ interface SettingsStateUpdateLanguageSuccessAction {
 
 export const settingsLoadState =
   () =>
-  async (
-    dispatch: ThunkDispatch<
-      AppState,
-      unknown,
-      SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction | SettingsStateUpdateAppIconSuccessAction
-    >
-  ) => {
+  async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateTestnetPrefAction | SettingsStateUpdateAppIconSuccessAction>) => {
     try {
-      const nativeCurrency = await getNativeCurrency();
+      const nativeCurrency = appSettingsActions.getCurrency();
       const testnetsEnabled = await getTestnetsEnabled();
       const appIcon = (await getAppIcon()) as string;
       dispatch({
@@ -121,11 +96,11 @@ export const settingsLoadState =
       analytics.track(analytics.event.debugIdentifyProbe, { probe: 'currency', value: String(nativeCurrency) });
 
       dispatch({
-        payload: { nativeCurrency, testnetsEnabled },
-        type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
+        payload: testnetsEnabled,
+        type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
       });
     } catch (error) {
-      logger.error(new RainbowError(`[redux/settings]: Error loading native currency and testnets pref: ${error}`));
+      logger.error(new RainbowError(`[redux/settings]: Error loading app icon and testnets pref: ${error}`));
     }
   };
 
@@ -226,27 +201,11 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
   }
 };
 
-export const settingsChangeNativeCurrency =
-  (nativeCurrency: NativeCurrencyKey) =>
-  async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>) => {
-    try {
-      dispatch({
-        payload: nativeCurrency,
-        type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
-      });
-      saveNativeCurrency(nativeCurrency);
-      analytics.identify({ currency: nativeCurrency });
-    } catch (error) {
-      logger.error(new RainbowError(`[redux/settings]: Error changing native currency: ${error}`));
-    }
-  };
-
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
   appIcon: 'og',
   chainId: 1,
   language: Language.EN_US,
-  nativeCurrency: NativeCurrencyKeys.USD,
   network: Network.mainnet,
   testnetsEnabled: false,
 };
@@ -258,11 +217,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
         ...state,
         appIcon: action.payload,
       };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
-      return {
-        ...state,
-        nativeCurrency: action.payload,
-      };
     case SETTINGS_UPDATE_NETWORK_SUCCESS:
       return {
         ...state,
@@ -272,12 +226,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         language: action.payload,
-      };
-    case SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS:
-      return {
-        ...state,
-        nativeCurrency: action.payload.nativeCurrency,
-        testnetsEnabled: action.payload.testnetsEnabled,
       };
     case SETTINGS_UPDATE_TESTNET_PREF_SUCCESS:
       return {

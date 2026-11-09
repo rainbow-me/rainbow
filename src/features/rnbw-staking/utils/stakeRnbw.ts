@@ -6,12 +6,12 @@ import { analytics } from '@/analytics';
 import type { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/features/gas/types/gas';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { prepareRewardsClaim, submitRewardsClaim, type ClaimToDestination } from '@/features/rnbw-rewards/utils/claimRewards';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { greaterThanOrEqualToWorklet, isPositive, subWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { type TransactionAssetSource } from '@/raps/transactionAsset';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { RNBW_DECIMALS, RNBW_TOKEN_ADDRESS, STAKING_CHAIN_ID } from '../constants';
 import { useStakingPositionStore } from '../stores/rnbwStakingPositionStore';
@@ -234,7 +234,7 @@ async function claimRnbwRewards({
 
   if (!hasClaimable || hasPendingClaim) return undefined;
 
-  const currency = userAssetsStoreManager.getState().currency;
+  const currency = appSettingsActions.getCurrency();
   const preparedClaim = await prepareRewardsClaim({ address, signer });
   await submitRewardsClaim({ preparedClaim, currency, claimToDestination });
 }

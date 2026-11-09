@@ -3,11 +3,11 @@ import { getAddress, type Address } from 'viem';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { equalWorklet, greaterThanWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import {
   ETH_ADDRESS,
@@ -84,7 +84,7 @@ function createQuoteFetcher(config: DepositConfig) {
     const quoteParams: QuoteParams = {
       buyTokenAddress: config.to.token.address,
       chainId: assetChainId,
-      currency: userAssetsStoreManager.getState().currency,
+      currency: appSettingsActions.getCurrency(),
       destReceiver: recipient ?? undefined,
       feePercentageBasisPoints: config.quote?.feeBps ?? 0,
       fromAddress: accountAddress,

@@ -16,6 +16,7 @@ import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee'
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
@@ -34,7 +35,6 @@ import { queryClient } from '@/react-query';
 import { ClaimableType, type Claimable, type TransactionClaimable } from '@/resources/addys/claimables/types';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsActions } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { getNextNonce } from '@/state/nonces';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -105,7 +105,7 @@ export function TransactionClaimableContextProvider({
   claimable: TransactionClaimable;
   children: React.ReactNode;
 }) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('notReady');

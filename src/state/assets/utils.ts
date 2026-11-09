@@ -4,6 +4,7 @@ import type { ParsedAddressAsset } from '@/entities/tokens';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan } from '@/helpers/utilities';
@@ -146,7 +147,7 @@ export function getChainBalances(userAssets: UserAssetsState['userAssets']): Use
 }
 
 function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSearchAsset {
-  const currency = userAssetsStoreManager.getState().currency;
+  const currency = appSettingsActions.getCurrency();
   const asset = userAsset.asset;
   const uniqueId = getUniqueId(asset.address, asset.chainId);
 

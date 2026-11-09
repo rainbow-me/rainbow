@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { buildEstimateRewardPayload, fetchEstimateReward } from '@/features/rnbw-rewards/utils/estimateReward';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { logger, RainbowError } from '@/logger';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export function SyncSwapRewardsEstimate() {
   const quote = useSwapsStore(state => state.quote);
-  const currency = userAssetsStoreManager(state => state.currency);
+  const currency = useAppSettingsStore(state => state.currency);
   const walletAddress = useAccountAddress();
 
   const requestKeyRef = useRef<string | null>(null);

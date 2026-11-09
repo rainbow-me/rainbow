@@ -15,6 +15,7 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import useGas from '@/features/gas/hooks/useGas';
 import { type GasFee, type LegacySelectedGasFee, type SelectedGasFee } from '@/features/gas/types/gas';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getProvider } from '@/handlers/web3';
 import * as i18n from '@/languages';
@@ -23,7 +24,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import reduxStore from '@/redux/store';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getNextNonce } from '@/state/nonces';
 import { delegation } from '@rainbow-me/sdk';
 
@@ -201,7 +201,7 @@ export const RevokeDelegationPanel = () => {
 
   // Gas management
   const { startPollingGasFees, stopPollingGasFees, selectedGasFee } = useGas();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   useEffect(() => {
     if (chainId) {

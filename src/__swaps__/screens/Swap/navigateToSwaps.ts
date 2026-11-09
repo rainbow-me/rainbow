@@ -8,13 +8,13 @@ import { trimCurrencyZeros } from '@/features/currency/utils/nativeDisplay';
 import { setSelectedGasSpeed } from '@/features/gas/hooks/useSelectedGas';
 import { type GasSpeed } from '@/features/gas/types/gasSpeed';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMath';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
@@ -186,7 +186,7 @@ function getInputAmounts(params: NavigateToSwapsParams<ExtendedAnimatedAssetWith
 
   if (params.inputNativeValue) {
     const inputAmount = toFixedWorklet(divWorklet(params.inputNativeValue, nativePrice), params.inputAsset?.decimals ?? 18);
-    const currency = userAssetsStoreManager.getState().currency;
+    const currency = appSettingsActions.getCurrency();
     return {
       inputAmount,
       inputNativeValue: trimCurrencyZeros(params.inputNativeValue, currency),

@@ -6,6 +6,7 @@ import { getUniqueId } from '@/entities/assetId';
 import { TransactionDirection } from '@/entities/transactions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { type UserAsset } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -595,10 +596,8 @@ function resetStores() {
   useAssetUpdatesStore.setState({ watchedTransactions: {} });
   staleBalancesStore.setState({ staleBalances: {} });
   useWalletsStore.setState({ accountAddress: TEST_ADDRESS });
-  userAssetsStoreManager.setState({
-    currency: 'ETH',
-    hiddenAssetBalances: {},
-  });
+  appSettingsActions.setCurrency('ETH');
+  userAssetsStoreManager.setState({ hiddenAssetBalances: {} });
 }
 
 function seedUserAssets(assets: ParsedSearchAsset[]) {

@@ -11,8 +11,8 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { ETH_ADDRESS } from '@/references/constants';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/styles/constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -25,7 +25,7 @@ export const ExchangeRateBubble = () => {
     internalSelectedOutputAsset,
     isFetching,
   } = useSwapContext();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const rotatingIndex = useSharedValue(0);
   const fromAssetText = useSharedValue('');

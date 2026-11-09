@@ -7,10 +7,10 @@ import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValu
 import { Box, Text } from '@/design-system';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -50,7 +50,7 @@ function SpotPnlPillContent({
   onShown,
 }: SpotPnlPillProps) {
   const { colors } = useTheme();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const fetchedTrades = useTokenTradesStore(state => state.getData());
   const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
   const walletAddress = useWalletsStore(state => state.accountAddress);

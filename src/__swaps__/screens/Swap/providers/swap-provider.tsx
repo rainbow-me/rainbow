@@ -45,6 +45,7 @@ import { buildGasParams } from '@/features/gas/utils/parseGas';
 import { LedgerSigner } from '@/features/hardware-wallet/utils/LedgerSigner';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet } from '@/framework/core/safeMath';
 import { getProvider } from '@/handlers/web3';
@@ -57,7 +58,6 @@ import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, startTimeToSignTracking, TimeToSignOperation } from '@/state/performance/performance';
@@ -173,7 +173,7 @@ const SLIPPAGE_CONFIG = getRemoteConfig().default_slippage_bips_chainId;
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const [{ currentCurrency, initialValues, nativeChainAssets }] = useState(() => ({
-    currentCurrency: userAssetsStoreManager.getState().currency,
+    currentCurrency: appSettingsActions.getCurrency(),
     initialValues: getSwapsNavigationParams(),
     nativeChainAssets: useBackendNetworksStore.getState().getChainsNativeAsset(),
   }));

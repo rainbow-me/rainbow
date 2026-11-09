@@ -19,6 +19,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { MobileWalletProtocolUserErrors } from '@/features/dapp-request/utils/mobileWalletProtocolErrors';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { handleSessionRequestResponse } from '@/features/wallet-connect/handlers/handleSessionRequestResponse';
 import { removeWalletConnectRequest } from '@/features/wallet-connect/stores/walletConnectRequestsStore';
 import {
@@ -32,7 +33,6 @@ import walletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { RequestSource, type RequestData } from '../types';
@@ -193,7 +193,7 @@ export const handleMobileWalletProtocolRequest = async ({
         return true;
       }
 
-      const nativeCurrency = store.getState().settings.nativeCurrency;
+      const nativeCurrency = appSettingsActions.getCurrency();
 
       // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
       if ((action as PersonalSignAction).params.message && (action as PersonalSignAction).params.message.type === 'Buffer') {
@@ -354,7 +354,7 @@ const findWalletForAddress = async (address: string) => {
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
   await findWalletForAddress(request.address);
 
-  const nativeCurrency = store.getState().settings.nativeCurrency;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const displayDetails = await getRequestDisplayDetails(request.payload, nativeCurrency, request.chainId);
 
   const requestWithDetails: RequestData = {

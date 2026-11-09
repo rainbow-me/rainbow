@@ -10,11 +10,11 @@ import {
 import { chartsActions, useChartsStore, type ChartsState } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type Exact } from '@/types/objects';
 
 import {
@@ -70,7 +70,7 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
     staleTime: $ => $(useChartsStore, getStaleTime),
     params: {
       candleResolution: $ => $(useChartsStore).candleResolution,
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
       token: $ => $(useChartsStore).token,
     },
     cacheTime: CACHE_TIME,
@@ -485,7 +485,7 @@ function getMostRecentCandleVolume(candles: Bar[]): number {
 function buildBaseParams({ candleResolution, currency, token }: BaseParams): CandlestickParams {
   return {
     candleResolution,
-    currency: currency ?? userAssetsStoreManager.getState().currency,
+    currency: currency ?? appSettingsActions.getCurrency(),
     token,
   } satisfies Required<BaseParams>;
 }

@@ -15,7 +15,7 @@ import {
   ExternalENSProfileScrollViewWithRef,
   ExternalSelectNFTScrollViewWithRef,
 } from '@/features/ens/components/ExternalENSProfileScrollView';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import useCoinListEdited from '@/hooks/useCoinListEdited';
 import useCoinListEditOptions, { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useOnChange } from '@/hooks/useOnChange';
@@ -113,7 +113,8 @@ export const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList
   useOnTabReselect(() => ref.current?.scrollToOffset(0, -topInset, true));
 
   const theme = useTheme();
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
   const handleViewableIndicesChanged = useCallback(

@@ -3,10 +3,10 @@ import { createBaseStore, createDerivedStore, createStoreActions } from '@stores
 import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { supportedCurrencies, type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import type { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 
 import { type UserAssetsState } from './types';
 import { useUserAssetsStore } from './userAssets';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 // ============ Types ========================================================== //
 
@@ -58,7 +58,7 @@ export const useUserAssetsSearchStore = createBaseStore<UserAssetsSearchState>(s
 export const useUserAssetSearch = createDerivedStore(
   $ =>
     createUserAssetSearch(
-      $(userAssetsStoreManager, s => s.currency),
+      $(useAppSettingsStore, s => s.currency),
       $(useUserAssetsStore, s => s.hiddenAssets),
       $(useUserAssetsStore, s => s.userAssets)
     ),

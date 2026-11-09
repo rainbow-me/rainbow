@@ -1,17 +1,16 @@
 import React from 'react';
 
 import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
-import { useSelector } from 'react-redux';
 
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Column, Columns, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { getNumberFormatter } from '@/helpers/intl';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type AppState } from '@/redux/store';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
@@ -35,7 +34,7 @@ export const RewardsClaimed: React.FC<Props> = ({
   totalAvailableRewardsInToken,
 }) => {
   const infoIconColor = useInfoIconColor();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
