@@ -5,7 +5,12 @@ import { createDerivedStore } from '@storesjs/stores';
 import { Wallet } from 'ethers';
 import { getAddress, isAddressEqual, type Address } from 'viem';
 
-import { BUILDER_CONFIG, POLYMARKET_CLOB_PROXY_URL, POLYMARKET_RELAYER_PROXY_URL } from '@/features/polymarket/constants';
+import {
+  BUILDER_CONFIG,
+  POLYMARKET_BUILDER_CODE,
+  POLYMARKET_CLOB_PROXY_URL,
+  POLYMARKET_RELAYER_PROXY_URL,
+} from '@/features/polymarket/constants';
 import {
   getPolymarketWalletDescriptor,
   usePolymarketWalletStore,
@@ -140,6 +145,7 @@ async function createClobClient(signingWallet: Wallet, descriptor: PolymarketWal
     signatureType: descriptor.signatureType,
     funderAddress: descriptor.address,
     useServerTime: false,
+    builderConfig: { builderCode: POLYMARKET_BUILDER_CODE },
   });
 }
 
