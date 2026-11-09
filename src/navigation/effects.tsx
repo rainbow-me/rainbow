@@ -10,7 +10,7 @@ import AvatarCircle from '@/components/profile/AvatarCircle';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/features/hardware-wallet/navigation/constants';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
-import { currentColors as colors } from '@/theme/currentColors';
+import { useThemeStore } from '@/theme/themeStore';
 import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
@@ -76,7 +76,7 @@ export const speedUpAndCancelStyleInterpolator = ({ current: { progress: current
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors?.shadowBlack,
+      shadowColor: useThemeStore.getState().colors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -101,7 +101,7 @@ const exchangeStyleInterpolator = ({ current: { progress: current }, layouts: { 
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors?.shadowBlack,
+      shadowColor: useThemeStore.getState().colors.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -128,7 +128,7 @@ export const expandStyleInterpolator =
 
     return {
       cardStyle: {
-        shadowColor: colors.themedColors?.shadow,
+        shadowColor: useThemeStore.getState().colors.shadow,
         shadowOffset: { height: 10, width: 0 },
         shadowOpacity: 0.5,
         shadowRadius: 25,
@@ -142,6 +142,8 @@ export const expandStyleInterpolator =
   };
 
 const savingsStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
+  const colors = useThemeStore.getState().colors;
+
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.4, 0.4],
@@ -155,14 +157,14 @@ const savingsStyleInterpolator = ({ current: { progress: current }, layouts: { s
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors?.shadow,
+      shadowColor: colors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.themedColors?.shadow,
+      backgroundColor: colors.shadow,
       opacity: backgroundOpacity,
     },
   };
@@ -184,7 +186,7 @@ const sheetStyleInterpolator =
 
     return {
       cardStyle: {
-        shadowColor: colors.themedColors?.shadowBlack,
+        shadowColor: useThemeStore.getState().colors.shadowBlack,
         shadowOffset: { height: 10, width: 0 },
         shadowOpacity: 0.6,
         shadowRadius: 25,
@@ -210,7 +212,7 @@ const swapDetailInterpolator = ({ current: { progress: current }, layouts: { scr
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors?.shadow,
+      shadowColor: useThemeStore.getState().colors.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -273,6 +275,8 @@ export const backgroundPreset = {
 
 export const emojiPreset: StackNavigationOptions = {
   cardOverlay: ({ style }: any) => {
+    const theme = useThemeStore.getState();
+
     const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
@@ -282,7 +286,7 @@ export const emojiPreset: StackNavigationOptions = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor: colors.theme === 'dark' ? colors.themedColors?.offWhite : 'rgb(51, 54, 59)',
+          backgroundColor: theme.isDarkMode ? theme.colors.offWhite : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',
@@ -314,6 +318,8 @@ export const emojiPreset: StackNavigationOptions = {
 export const emojiPresetWallet: StackNavigationOptions = {
   ...emojiPreset,
   cardOverlay: ({ style }: any) => {
+    const theme = useThemeStore.getState();
+
     const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
@@ -323,7 +329,7 @@ export const emojiPresetWallet: StackNavigationOptions = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor: colors.theme === 'dark' ? colors.themedColors?.offWhite : 'rgb(51, 54, 59)',
+          backgroundColor: theme.isDarkMode ? theme.colors.offWhite : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',

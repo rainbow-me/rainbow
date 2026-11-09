@@ -1,9 +1,11 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { LayoutAnimation } from 'react-native';
 
 import { useSharedValue } from 'react-native-reanimated';
 
 import { IS_DEV, IS_TEST } from '@/env';
 import { DevButton } from '@/features/debug/components/DevButton';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { Emoji } from '@/framework/ui/components/Emoji';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -29,6 +31,7 @@ export function RainbowContextWrapper({ children }: PropsWithChildren) {
   // on unmounting all shared values.
   useSharedValue(0);
   const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
+  const { isDarkMode, colors } = useTheme();
   const [globalState, updateGlobalState] = useState({});
 
   useEffect(() => {
@@ -49,8 +52,6 @@ export function RainbowContextWrapper({ children }: PropsWithChildren) {
     }),
     [globalState, setGlobalState]
   );
-
-  const { isDarkMode, setTheme, colors } = useTheme();
 
   const connectToAnvil = useCallback(async () => {
     try {
@@ -76,7 +77,13 @@ export function RainbowContextWrapper({ children }: PropsWithChildren) {
         </DevButton>
       )}
       {showSwitchModeButton && IS_DEV && (
-        <DevButton color={colors.dark} onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}>
+        <DevButton
+          color={colors.dark}
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity'));
+            appSettingsActions.setTheme(isDarkMode ? 'light' : 'dark');
+          }}
+        >
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}

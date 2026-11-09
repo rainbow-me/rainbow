@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import font from '@/styles/fonts';
-import { isDarkTheme } from '@/theme/ThemeContext';
+import { useThemeStore } from '@/theme/themeStore';
 
 const WALLETCONNECT_TOAST_ID = 'walletConnect';
 const HIDE_BUFFER_MS = 750;
@@ -22,13 +22,13 @@ export const hideWalletConnectToast = () => {
   toast.dismiss(WALLETCONNECT_TOAST_ID);
 };
 
-export const showWalletConnectToast = async ({ isTransactionRequest = false }: { isTransactionRequest?: boolean } = {}) => {
+export const showWalletConnectToast = ({ isTransactionRequest = false }: { isTransactionRequest?: boolean } = {}) => {
   if (Date.now() - lastHideTime <= HIDE_BUFFER_MS) {
     // If the transaction request loads and hide is called before the toast is shown, skip showing it
     return;
   }
 
-  const isDarkMode = await isDarkTheme();
+  const isDarkMode = useThemeStore.getState().isDarkMode;
 
   toast(i18n.t(i18n.l.walletconnect[isTransactionRequest ? 'loading' : 'connecting']), {
     dismissible: false,

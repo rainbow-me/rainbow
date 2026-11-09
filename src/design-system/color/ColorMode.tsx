@@ -7,6 +7,7 @@ export type { ColorMode };
 function contextValueForColorMode(colorMode: ColorMode): ColorModeContextValue {
   return {
     colorMode,
+    isDarkMode: colorMode === 'dark' || colorMode === 'darkTinted',
     ...palettes[colorMode],
   };
 }
@@ -15,6 +16,7 @@ export const ColorModeContext = createContext<ColorModeContextValue>(contextValu
 
 interface ColorModeContextValue extends Palette {
   colorMode: ColorMode;
+  isDarkMode: boolean;
 }
 
 /**
@@ -32,8 +34,4 @@ export function ColorModeProvider({ value: colorMode, children }: { value: Color
   );
 }
 
-export const useColorMode = () => {
-  const context = useContext(ColorModeContext);
-  const isDarkMode = useMemo(() => ['dark', 'darkTinted'].includes(context.colorMode), [context.colorMode]);
-  return { ...context, isDarkMode };
-};
+export const useColorMode = () => useContext(ColorModeContext);

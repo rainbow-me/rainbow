@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { globalColors } from '@/design-system/color/palettes';
 import { opacity } from '@/design-system/utils/opacity';
 
-import { currentColors } from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
@@ -350,10 +349,8 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
 
 export const darkModeThemeColors = getColorsByTheme(true);
 export const lightModeThemeColors = getColorsByTheme(false);
-const colors = currentColors.themedColors ?? lightModeThemeColors;
+const colors = lightModeThemeColors;
 export const getRandomColor = () => Math.floor(Math.random() * colors.avatarColor.length);
-
-currentColors.themedColors = lightModeThemeColors;
 
 export default {
   ...colors,
