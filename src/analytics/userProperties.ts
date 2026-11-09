@@ -37,7 +37,6 @@ export interface UserProperties {
   currentAddressHash?: string;
   currency?: NativeCurrencyKey;
   language?: Language;
-  enabledTestnets?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
   appIcon?: AppIconKey;

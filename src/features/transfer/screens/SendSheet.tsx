@@ -27,12 +27,10 @@ import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { ChainId } from '@/features/network/types/backendNetworks';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransferTransaction, estimateGasLimit } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -152,7 +150,6 @@ export function SendSheet() {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { chainId } = useAccountSettings();
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
@@ -191,18 +188,23 @@ export function SendSheet() {
     () => address === null && input === debouncedRecipient.trim() && isValidAddressOrDomainFormat(input),
     [address, debouncedRecipient, input]
   );
-  const destinationChainId = selected?.chainId ?? chainId;
+  const { currentChainId, currentProvider, isL2 } = useSendChainState({
+    selectedAssetChainId: selected?.chainId,
+    startPollingGasFees,
+    stopPollingGasFees,
+  });
+
   const recipientStore = useMemo(
     () =>
       createQueryStore({
-        fetcher: (_params, controller) => resolveNameOrAddress(input, destinationChainId, controller?.signal),
+        fetcher: (_params, controller) => resolveNameOrAddress(input, currentChainId, controller?.signal),
         enabled: shouldResolveName,
         staleTime: Infinity,
         cacheTime: Infinity,
         retry: false,
         disableAutoRefetching: true,
       }),
-    [input, destinationChainId, shouldResolveName]
+    [input, currentChainId, shouldResolveName]
   );
   useCleanup(() => recipientStore.getState().reset(), [recipientStore]);
   const resolvedAddress = recipientStore(s => s.getData());
@@ -230,13 +232,6 @@ export function SendSheet() {
   const isUniqueAsset = assetIsUniqueAsset(selected);
   const selectedAddressAsset = selected && assetIsParsedAddressAsset(selected) ? selected : undefined;
   const isENS = selected?.type === AssetType.ens;
-
-  const { currentChainId, currentProvider, isL2 } = useSendChainState({
-    accountChainId: chainId,
-    selectedAssetChainId: selected?.chainId,
-    startPollingGasFees,
-    stopPollingGasFees,
-  });
 
   const {
     canUseSponsoredSend,
@@ -452,7 +447,7 @@ export function SendSheet() {
       return { buttonDisabled: true, buttonLabel: recipientErrorMessage };
     }
 
-    if (!toAddress || currentChainId !== destinationChainId || currentProvider?._network?.chainId !== destinationChainId) {
+    if (!toAddress || currentProvider._network?.chainId !== currentChainId) {
       return { buttonDisabled: true, buttonLabel: i18n.t(i18n.l.button.confirm_exchange.loading) };
     }
     const isGasFeeReady =
@@ -473,12 +468,11 @@ export function SendSheet() {
       isSufficientBalance: amountDetails.isSufficientBalance,
       isSufficientGas,
       isValidGas,
-      nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet]?.symbol,
+      nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId]?.symbol,
       sponsoredAmountIsStale: debouncedAssetAmount !== amountDetails.assetAmount,
     });
   }, [
     currentProvider,
-    destinationChainId,
     recipientErrorMessage,
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
@@ -526,7 +520,7 @@ export function SendSheet() {
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
       isENS,
-      chainId,
+      chainId: currentChainId,
       toAddress,
     });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
@@ -554,7 +548,6 @@ export function SendSheet() {
     nativeCurrencyInputRef,
     ensProfile,
     isENS,
-    chainId,
     navigate,
     amountDetails,
     submitTransaction,
@@ -598,7 +591,6 @@ export function SendSheet() {
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
 
-    const assetChainId = selected?.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
     if (
@@ -606,7 +598,6 @@ export function SendSheet() {
       !!accountAddress &&
       !isSponsoredSend &&
       greaterThan(amountDetails.assetAmount, 0) &&
-      assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
       toAddress &&
       !isEmpty(selected)
@@ -644,7 +635,6 @@ export function SendSheet() {
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
-    chainId,
     currentChainId,
     isUniqueAsset,
   ]);

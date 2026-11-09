@@ -46,16 +46,6 @@ vi.mock('@/resources/nfts', () => ({
   invalidateAddressNftsQueries: vi.fn(),
 }));
 
-vi.mock('@/redux/store', () => ({
-  default: {
-    getState: () => ({
-      settings: {
-        nativeCurrency: 'ETH',
-      },
-    }),
-  },
-}));
-
 vi.mock('@/state/wallets/walletsStore', async () => {
   const { createBaseStore } = await import('@storesjs/stores');
   const useWalletsStore = createBaseStore(() => ({ accountAddress: '0x123' }));

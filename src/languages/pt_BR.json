@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "Copiar Endereço da Carteira de Assinatura",
       "disconnect_to_anvil": "Desconectar do Anvil",
       "crash_app_render_error": "App de Falha (Erro de Renderização)",
-      "enable_testnets": "Ativar Testnets",
       "installing_update": "Instalando Atualização",
       "navigation_entry_point": "Ponto de Entrada de Navegação",
       "no_update": "Sem Atualização",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "Você não está monitorando nenhuma carteira.",
         "no_owned_wallets": "Você não possui nenhuma carteira no Rainbow. Crie uma carteira ou importe uma com sua frase secreta.",
         "open_system_settings": "Abrir Configurações",
-        "unsupported_network": "As notificações estão disponíveis apenas para transações na Ethereum Mainnet no momento.",
-        "change_network": "Alterar sua Rede",
         "no_first_time_permissions": "Por favor, permita que o Rainbow envie notificações para você.",
         "first_time_allow_notifications": "Permitir Notificações",
         "error_alert_title": "Falha na Assinatura",
@@ -3270,8 +3267,7 @@
         "disconnect": "Desconectar",
         "connect": "Conectar",
         "switch_wallet": "Trocar Carteira",
-        "switch_network": "Trocar Rede",
-        "available_networks": "Redes Disponíveis"
+        "switch_network": "Trocar Rede"
       },
       "errors": {
         "go_back": "voltar",

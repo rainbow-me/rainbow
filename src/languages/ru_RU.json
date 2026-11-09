@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "Скопировать адрес подписания кошелька",
       "disconnect_to_anvil": "Отключиться от Anvil",
       "crash_app_render_error": "Сбой приложения (Ошибка рендеринга)",
-      "enable_testnets": "Включить тестовые сети",
       "installing_update": "Установка обновления",
       "navigation_entry_point": "Точка входа навигации",
       "no_update": "Нет обновлений",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "Вы не следите за ни одним кошельком.",
         "no_owned_wallets": "У вас нет кошельков в Rainbow. Создайте кошелек или импортируйте один с помощью секретной фразы.",
         "open_system_settings": "Открыть настройки",
-        "unsupported_network": "Уведомления доступны только для транзакций Ethereum Mainnet на данный момент.",
-        "change_network": "Изменить сеть",
         "no_first_time_permissions": "Пожалуйста, разрешите Rainbow отправлять вам уведомления.",
         "first_time_allow_notifications": "Разрешить уведомления",
         "error_alert_title": "Подписка не удалась",
@@ -3270,8 +3267,7 @@
         "disconnect": "Отключить",
         "connect": "Подключиться",
         "switch_wallet": "Переключить кошелек",
-        "switch_network": "Переключить сеть",
-        "available_networks": "Доступные сети"
+        "switch_network": "Переключить сеть"
       },
       "errors": {
         "go_back": "назад",

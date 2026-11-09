@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "คัดลอกที่อยู่กระเป๋าเงินในการลงนาม",
       "disconnect_to_anvil": "ยกเลิกการเชื่อมต่อจาก Anvil",
       "crash_app_render_error": "แอปล้มเหลว (Render Error)",
-      "enable_testnets": "เปิดใช้งาน Testnets",
       "installing_update": "กำลังติดตั้งอัปเดต",
       "navigation_entry_point": "จุดเริ่มต้นการนำทาง",
       "no_update": "ไม่มีการอัปเดต",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "คุณไม่ได้ติดตามวอลเล็ตใด ๆ",
         "no_owned_wallets": "คุณไม่มีวอลเล็ตใด ๆ ใน Rainbow สร้างวอลเล็ตหรือนำเข้าวอลเล็ตด้วยวลีลับของคุณ",
         "open_system_settings": "เปิดการตั้งค่า",
-        "unsupported_network": "การแจ้งเตือนใช้ได้เฉพาะกับธุรกรรม Ethereum Mainnet ในเวลานี้",
-        "change_network": "เปลี่ยนเครือข่ายของคุณ",
         "no_first_time_permissions": "โปรดให้ Rainbow ส่งการแจ้งเตือนไปยังคุณ.",
         "first_time_allow_notifications": "อนุญาตการแจ้งเตือน",
         "error_alert_title": "การสมัครสมาชิกล้มเหลว",
@@ -3270,8 +3267,7 @@
         "disconnect": "ยกเลิกการเชื่อมต่อ",
         "connect": "เชื่อมต่อ",
         "switch_wallet": "เปลี่ยน Wallet",
-        "switch_network": "เปลี่ยนเครือข่าย",
-        "available_networks": "เครือข่ายที่ใช้ได้"
+        "switch_network": "เปลี่ยนเครือข่าย"
       },
       "errors": {
         "go_back": "กลับ",

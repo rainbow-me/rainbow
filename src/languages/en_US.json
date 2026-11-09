@@ -495,7 +495,6 @@
       "copy_signing_wallet_address": "Copy Signing Wallet Address",
       "disconnect_to_anvil": "Disconnect from Anvil",
       "crash_app_render_error": "Crash App (Render Error)",
-      "enable_testnets": "Enable Testnets",
       "installing_update": "Installing Update",
       "navigation_entry_point": "Navigation Entry Point",
       "no_update": "No Update",
@@ -2146,8 +2145,6 @@
         "no_watched_wallets": "You are not watching any wallets.",
         "no_owned_wallets": "You do not have any wallets in Rainbow. Create a wallet or import one with your secret phrase.",
         "open_system_settings": "Open Settings",
-        "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time.",
-        "change_network": "Change your Network",
         "no_first_time_permissions": "Please allow Rainbow to send you notifications.",
         "first_time_allow_notifications": "Allow Notifications",
         "error_alert_title": "Subscription Failed",
@@ -3018,8 +3015,7 @@
         "disconnect": "Disconnect",
         "connect": "Connect",
         "switch_wallet": "Switch Wallet",
-        "switch_network": "Switch Network",
-        "available_networks": "Available Networks"
+        "switch_network": "Switch Network"
       },
       "errors": {
         "go_back": "Go back",
