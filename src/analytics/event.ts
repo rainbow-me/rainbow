@@ -3,7 +3,7 @@ import { type SwapAssetType } from '@/__swaps__/types/swap';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
-import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type AppIconKey, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
 import { type CashAuthIntent } from '@/features/cash/stores/cashAuthGateStore';
@@ -1146,7 +1146,7 @@ export type EventProperties = {
   [event.tappedEdit]: undefined;
   [event.tappedDeleteWallet]: undefined;
   [event.setAppIcon]: {
-    appIcon: string;
+    appIcon: AppIconKey;
   };
   [event.tappedImportButton]: undefined;
   [event.appStoreReviewPrompted]: {
