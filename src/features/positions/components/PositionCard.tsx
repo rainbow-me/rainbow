@@ -12,9 +12,9 @@ import { Box, Column, Columns, globalColors, Inline, Stack, Text } from '@/desig
 import { opacity } from '@/design-system/utils/opacity';
 import { NativeCurrencyKeys } from '@/features/currency/types';
 import { type PositionAsset, type RainbowPosition } from '@/features/positions/types';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
 type PositionCardProps = {
@@ -74,7 +74,7 @@ export const PositionCard = memo(function PositionCard({ position }: PositionCar
   );
 
   const onPressHandler = useCallback(() => {
-    const nativeCurrency = userAssetsStoreManager.getState().currency;
+    const nativeCurrency = appSettingsActions.getCurrency();
     analytics.track(analytics.event.positionsOpenedSheet, {
       dapp: position.type,
       protocol: position.protocol,

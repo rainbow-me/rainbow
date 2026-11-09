@@ -7,13 +7,13 @@ import { analytics } from '@/analytics';
 import { handleWalletConnectRequest } from '@/features/dapp-request/utils/requestNavigationHandlers';
 import { getRequestDisplayDetails } from '@/features/dapp-request/utils/requests';
 import { fetchDappMetadata } from '@/features/dapp/resources/dapp';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { maybeSignUri } from '@/handlers/imgix';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
 import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 import { showErrorSheet } from '../components/showErrorSheet';
@@ -154,7 +154,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       return;
     }
 
-    const { nativeCurrency } = store.getState().settings;
+    const nativeCurrency = appSettingsActions.getCurrency();
     const chainId = Number(event.params.chainId.split(':')[1]);
 
     logger.debug(`[walletConnect]: getting session for topic`, { session });

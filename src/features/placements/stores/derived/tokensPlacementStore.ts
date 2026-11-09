@@ -9,10 +9,10 @@ import { usePlacementsStore } from '@/features/placements/stores/placementsStore
 import { createDiscoverPlacementRefsStore } from '@/features/placements/surfaces/stores/discoverSurfaceStore';
 import { type PlacementId, type PlacementItem } from '@/features/placements/types';
 import { arePlacementItemsEqual } from '@/features/placements/utils/arePlacementItemsEqual';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
 import { fetchExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 // ============ Types ========================================================== //
 
@@ -66,7 +66,7 @@ export const useTokenRefsStore = createQueryStore<TokenAssetsByRef, TokenRefsPar
   fetcher: fetchTokenRefs,
   enabled: $ => $(discoverTokenRefsStore, s => s.length > 0),
   params: {
-    currency: $ => $(userAssetsStoreManager, s => s.currency),
+    currency: $ => $(useAppSettingsStore, s => s.currency),
     tokenRefs: $ => $(discoverTokenRefsStore, s => s),
   },
   keepPreviousData: true,

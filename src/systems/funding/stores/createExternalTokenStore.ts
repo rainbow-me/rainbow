@@ -4,13 +4,13 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { metadataClient } from '@/graphql';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { ETH_ADDRESS } from '@/references/constants';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { type DepositStoreType } from '../types';
 
@@ -44,7 +44,7 @@ export function createExternalTokenStore(useDepositStore: DepositStoreType) {
     fetcher: externalTokenQueryFunction,
     params: {
       chainId: $ => $(useDepositStore, state => state.getAssetChainId()),
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
     },
     cacheTime: time.hours(1),
     staleTime: time.minutes(1),

@@ -14,12 +14,12 @@ import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, 
 import { opacity } from '@/design-system/utils/opacity';
 import { NativeCurrencyKeys } from '@/features/currency/types';
 import type { PositionAsset, RainbowPosition } from '@/features/positions/types';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 import { openInBrowser } from '@/utils/openInBrowser';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -57,7 +57,7 @@ export const PositionSheet: React.FC = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.POSITION_SHEET>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-  const nativeCurrency = userAssetsStoreManager.getState().currency;
+  const nativeCurrency = appSettingsActions.getCurrency();
   const { height } = useDimensions();
   const insets = useSafeAreaInsets();
 

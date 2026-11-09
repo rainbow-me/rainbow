@@ -16,13 +16,13 @@ import { isValidAddressOrDomain } from '@/features/address/data/resolveAddress';
 import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { startSendFromEthereumUrl } from '@/features/transfer/utils/startSendFromEthereumUrl';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/features/wallet-connect/services/pair';
 import { logger } from '@/logger';
 import { type InitialRoute } from '@/navigation/initialRoute';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsActions } from '@/state/assets/userAssets';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
@@ -112,7 +112,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         const uniqueId = getUniqueId(address, chainId);
 
         if (address && chainId && uniqueId) {
-          const currency = store.getState().settings.nativeCurrency;
+          const currency = appSettingsActions.getCurrency();
           const asset = await fetchExternalToken({ address, chainId, currency });
 
           // First go back to home to dismiss any open shit

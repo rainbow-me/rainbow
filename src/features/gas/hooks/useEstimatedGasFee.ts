@@ -4,8 +4,8 @@ import { formatUnits } from 'viem';
 
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { formatNumber, multiply } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 
 import { calculateEstimatedGasFeeWorklet } from '../utils/calculateGasFee';
@@ -31,7 +31,7 @@ export function useEstimatedGasFee({
   gasSettings: GasSettings | undefined;
 }) {
   const nativeNetworkAsset = useNativeAsset({ chainId });
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { data: currentBaseFee } = useBaseFee({ chainId });
 
   return useMemo(() => {

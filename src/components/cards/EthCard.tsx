@@ -12,6 +12,7 @@ import { useAddCashRoute } from '@/features/cash/navigation/useAddCashRoute';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import useChartThrottledPoints from '@/hooks/charts/useChartThrottledPoints';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import useColorForAsset from '@/hooks/useColorForAsset';
@@ -21,7 +22,6 @@ import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { ETH_ADDRESS } from '@/references/constants';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
@@ -34,7 +34,7 @@ import { GenericCard } from './GenericCard';
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { data: externalEthAsset } = useExternalToken({

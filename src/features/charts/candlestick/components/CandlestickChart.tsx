@@ -59,11 +59,11 @@ import {
   type PerpsIndicatorData,
 } from '@/features/perps/charts-plugin/PerpsIndicatorBuilder';
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { setSkiaPicture, SkiaPictureView, useSkiaRenderer, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { type DeepPartial } from '@/types/objects';
 import { deepFreeze } from '@/utils/deepFreeze';
@@ -2173,7 +2173,7 @@ function prepareCandlestickData(): {
 
 function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } {
   const isHyperliquidChart = isHyperliquidToken(useChartsStore.getState().token);
-  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : userAssetsStoreManager.getState().currency;
+  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : appSettingsActions.getCurrency();
   return {
     currency,
     decimals: supportedNativeCurrencies[currency].decimals,

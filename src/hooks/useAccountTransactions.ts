@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { type RainbowTransaction } from '@/entities/transactions';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
@@ -14,7 +14,7 @@ export const NOE_PAGE = 30;
 const EMPTY_TRANSACTIONS: RainbowTransaction[] = [];
 
 export default function useAccountTransactions() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const transactionOverlaysMostRecentFirst = usePendingTransactionsStore(state => state.getTransactionsInReverseOrder(accountAddress));

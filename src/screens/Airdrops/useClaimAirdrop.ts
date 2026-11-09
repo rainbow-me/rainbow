@@ -7,9 +7,9 @@ import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { type GasSettings } from '@/features/gas/types/gas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { type MeteorologyGasSuggestions } from '@/features/gas/utils/meteorology';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { logger, RainbowError } from '@/logger';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -46,7 +46,7 @@ const INITIAL_GAS_INFO: AirdropGasInfo = {
 
 export function useClaimAirdrop(claimable: RainbowClaimable) {
   const accountAddress = useAccountAddress();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const gasSettingsRef = useRef<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
   const claimStatus = useSharedValue<ClaimStatus>(ClaimStatus.NOT_READY);
   const gasInfo = useSharedValue<AirdropGasInfo>(INITIAL_GAS_INFO);

@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import timeUnits from '@/references/time-units.json';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { useEnsSearchStore } from '../data/stores/searchStore';
@@ -17,7 +17,7 @@ export default function useENSSearch({ yearsDuration = 1, name: inputName }: { y
   const duration = yearsDuration * timeUnits.secs.year;
   const input = name.length > 2 ? { name, duration } : undefined;
 
-  const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const nativeCurrency = useAppSettingsStore(s => s.currency);
   const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({
     name: name + ENS_DOMAIN,
   });

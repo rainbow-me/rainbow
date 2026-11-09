@@ -1,15 +1,13 @@
 import React, { useMemo } from 'react';
 
-import { useSelector } from 'react-redux';
-
 import { analytics } from '@/analytics';
 import { Box, Stack, Text } from '@/design-system';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { RewardStatsActionType, type RewardStatsAction } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type AppState } from '@/redux/store';
 
 import { RewardsStatsCard } from './RewardsStatsCard';
 
@@ -21,7 +19,7 @@ type Props = {
 
 export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) => {
   const { navigate } = useNavigation();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const swapsData = actions.find(action => action.type === RewardStatsActionType.Swap);
 

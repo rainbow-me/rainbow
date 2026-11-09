@@ -61,4 +61,6 @@ export const useAppSettingsStore = createBaseStore<AppSettingsState>(
 
 // ============ Store Actions ================================================== //
 
-export const appSettingsActions = createStoreActions(useAppSettingsStore);
+export const appSettingsActions = createStoreActions(useAppSettingsStore, {
+  getCurrency: () => useAppSettingsStore.getState().currency,
+});

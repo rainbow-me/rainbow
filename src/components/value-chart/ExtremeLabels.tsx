@@ -4,8 +4,8 @@ import { View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 're
 import { Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { opacity } from '@/design-system/utils/opacity';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import useDimensions from '@/hooks/useDimensions';
 import { useChartData } from '@/react-native-animated-charts/src';
 
@@ -65,7 +65,7 @@ const CenteredLabel = ({
 };
 
 export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { color: string; isCard: boolean }) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const {
     greatestX: rightmostPoint,
     greatestY: highestPoint,

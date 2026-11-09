@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 
 import { type RainbowTransaction } from '@/entities/transactions';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
@@ -14,7 +14,7 @@ import { useEnsRegistrationStore } from '../data/stores/registrationStore';
  * */
 export default function useENSLocalTransactions({ name }: { name: string }) {
   const accountAddress = useAccountAddress();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { data } = useConsolidatedTransactions({
     address: accountAddress,

@@ -7,18 +7,18 @@ import { useGasSettings } from '@/features/gas/hooks/useSelectedGas';
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 // Handles syncing price and gas data without triggering high level re-renders
 function _PriceAndGasSync() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainNativeAssetRequiredForTransactionGas = useTokenLauncherStore(state => state.setChainNativeAssetRequiredForTransactionGas);

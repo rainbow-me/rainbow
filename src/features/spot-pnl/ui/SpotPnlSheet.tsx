@@ -18,6 +18,7 @@ import type { NativeCurrencyKey } from '@/features/currency/types';
 import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { useStableValue } from '@/hooks/useStableValue';
@@ -28,7 +29,6 @@ import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
@@ -133,7 +133,7 @@ function SpotPnlSheetContent({
   isSuccess: boolean;
   isSettled: boolean;
 }) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const uniqueId = getUniqueId(tokenAddress, chainId);
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
