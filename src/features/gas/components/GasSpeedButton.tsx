@@ -18,6 +18,7 @@ import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/n
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
@@ -26,7 +27,6 @@ import usePrevious from '@/hooks/usePrevious';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme, type ThemeContextProps } from '@/theme/ThemeContext';
@@ -175,7 +175,7 @@ export const GasSpeedButton = ({
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
 
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();

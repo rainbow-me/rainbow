@@ -1,11 +1,11 @@
 import { createQueryStore, type CacheEntry } from '@storesjs/stores';
 
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { sumWorklet } from '@/framework/core/safeMath';
 import { time } from '@/framework/core/utils/time';
 import { getClaimables, type ClaimablesArgs } from '@/resources/addys/claimables/query';
 import { type Claimable } from '@/resources/addys/claimables/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type ClaimablesStore = {
@@ -26,7 +26,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
     },
     params: {
       address: $ => $(useWalletsStore).accountAddress,
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
     },
     keepPreviousData: true,
     enabled: $ => $(useWalletsStore, state => !!state.accountAddress),
@@ -45,7 +45,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
 
         const claimables = getData()?.claimables;
         if (claimables?.length) {
-          const { currency } = userAssetsStoreManager.getState();
+          const currency = appSettingsActions.getCurrency();
           newClaimables = claimables.filter(c => c.uniqueId !== uniqueId);
           newTotalValueAmount = newClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.totalCurrencyValue.amount || '0'), '0');
           newTotalValue = convertAmountToNativeDisplayWorklet(newTotalValueAmount, currency);

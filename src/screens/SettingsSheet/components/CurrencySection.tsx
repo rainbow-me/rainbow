@@ -8,44 +8,40 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { resolveCurrencyFlagEmoji } from '@/framework/core/emoji/currencyFlagEmoji';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS, WBTC_ADDRESS } from '@/references/constants';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { Menu } from './Menu';
 import { MenuContainer } from './MenuContainer';
 import { MenuItem } from './MenuItem';
 
-const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
-  ...item,
-  currency,
+const currencyListItems = Object.values(supportedNativeCurrencies).map(item => ({
+  currency: item.currency,
+  emojiName: 'emojiName' in item ? item.emojiName : undefined,
 }));
 
 export const CurrencySection = () => {
-  const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
   const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
 
-  const onSelectCurrency = useCallback(
-    (currency: NativeCurrencyKey) => {
-      userAssetsStoreManager.setState({ currency });
-      settingsChangeNativeCurrency(currency);
-      // reload widget timelines only if on ios version 14 or above
-      if (Platform.OS === 'ios' && parseInt(Platform.Version as string) >= 14) {
-        reloadTimelines('PriceWidget');
-      }
-      analytics.track(analytics.event.changedNativeCurrency, { currency });
-    },
-    [settingsChangeNativeCurrency]
-  );
+  const onSelectCurrency = useCallback((currency: NativeCurrencyKey) => {
+    appSettingsActions.setCurrency(currency);
+    analytics.identify({ currency });
+    // reload widget timelines only if on ios version 14 or above
+    if (Platform.OS === 'ios' && parseInt(Platform.Version) >= 14) {
+      reloadTimelines('PriceWidget');
+    }
+    analytics.track(analytics.event.changedNativeCurrency, { currency });
+  }, []);
 
   return (
     <MenuContainer>
       <Menu>
-        {currencyListItems.map(({ emojiName, currency }: any) => (
+        {currencyListItems.map(({ emojiName, currency }) => (
           <MenuItem
             key={currency}
             leftComponent={
@@ -65,11 +61,7 @@ export const CurrencySection = () => {
             onPress={() => onSelectCurrency(currency)}
             rightComponent={currency === nativeCurrency && <MenuItem.StatusIcon status="selected" />}
             size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={i18n.t(i18n.l.settings.currency[currency as Exclude<keyof typeof i18n.l.settings.currency, 'title'>].label)}
-              />
-            }
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.currency[currency].label)} />}
           />
         ))}
       </Menu>

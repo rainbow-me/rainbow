@@ -13,6 +13,7 @@ import { useEnsOwnerStore } from '@/features/ens/data/stores/ownershipStores';
 import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -36,7 +37,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const accountAsset = useAccountAsset(ETH_ADDRESS);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
+  const accountAsset = useAccountAsset(ETH_ADDRESS, nativeCurrency);
 
   const profileName = profilesEnabled && accountENS ? accountENS : undefined;
   const isENSProfile = useEnsOwnerStore(s => s.get(profileName)?.toLowerCase() === accountAddress.toLowerCase());

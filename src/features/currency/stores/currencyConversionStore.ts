@@ -1,11 +1,11 @@
 import { createQueryStore } from '@storesjs/stores';
 
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { multiply } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { NativeCurrencyKeys, type NativeCurrencyKey } from '../types';
 
@@ -33,7 +33,7 @@ export const useCurrencyConversionStore = createQueryStore<CurrencyConversionDat
     fetcher: fetchCurrencyConversion,
     cacheTime: time.days(1),
     params: {
-      toCurrency: $ => $(userAssetsStoreManager).currency,
+      toCurrency: $ => $(useAppSettingsStore, state => state.currency),
     },
     staleTime: time.minutes(10),
   },

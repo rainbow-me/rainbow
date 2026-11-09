@@ -9,9 +9,9 @@ import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
 import { TransactionStatus, type RainbowTransaction } from '@/entities/transactions';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
@@ -90,7 +90,7 @@ function ToastExpandedContentDisplay({
   isLoading?: boolean;
 }) {
   const colors = useToastColors();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const [topValueIn, bottomValueIn] = activityValues(transaction, nativeCurrency) ?? [];
 
   const bottomValueWithoutSymbol = useMemo(() => {

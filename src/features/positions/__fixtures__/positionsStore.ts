@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { usePositionsStore } from '../stores/positionsStore';
@@ -11,7 +11,7 @@ import { setPositionValueFilter } from './positionFilters';
 export function preparePositionsStore(): void {
   setPositionValueFilter(false);
   useWalletsStore.setState({ accountAddress: FIXTURE_WALLET_ADDRESS });
-  userAssetsStoreManager.setState({ currency: FIXTURE_PARAMS.currency });
+  appSettingsActions.setCurrency(FIXTURE_PARAMS.currency);
   usePositionsStore.setState({ queryCache: {}, queryKey: '' });
 }
 

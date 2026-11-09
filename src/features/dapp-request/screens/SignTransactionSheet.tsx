@@ -33,6 +33,7 @@ import useGas from '@/features/gas/hooks/useGas';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId, type Network } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -46,7 +47,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, TimeToSignOperation } from '@/state/performance/performance';
 import { switchWallet } from '@/state/wallets/switchWallet';
@@ -135,7 +135,7 @@ const useOptimisticNativeAssetBalance = (chainId: ChainId, address: string): Par
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();

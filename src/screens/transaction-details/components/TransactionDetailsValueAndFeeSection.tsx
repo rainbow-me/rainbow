@@ -5,13 +5,13 @@ import { Box, Stack } from '@/design-system';
 import { type RainbowTransaction } from '@/entities/transactions/transaction';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { fee } = transaction;
   const assetData = transaction?.asset;
   const change = transaction?.changes?.[0];

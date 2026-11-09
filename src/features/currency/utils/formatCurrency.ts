@@ -1,5 +1,5 @@
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { formatFractionWorklet, formatNumber, toDecimalString } from '@/helpers/strings';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { supportedCurrencies as supportedNativeCurrencies } from '../supportedCurrencies';
 import { type NativeCurrencyKey } from '../types';
@@ -13,7 +13,7 @@ type CurrencyFormatterOptions = {
 
 export function formatCurrency(
   value: string | number,
-  { valueIfNaN = '', currency = userAssetsStoreManager.getState().currency }: CurrencyFormatterOptions = {}
+  { valueIfNaN = '', currency = appSettingsActions.getCurrency() }: CurrencyFormatterOptions = {}
 ): string {
   const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
   if (isNaN(+numericString)) return valueIfNaN;

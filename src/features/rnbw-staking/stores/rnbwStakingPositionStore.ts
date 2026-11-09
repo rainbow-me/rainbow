@@ -5,9 +5,9 @@ import { type NativeCurrencyKey } from '@/features/currency/types';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { rnbwMembershipAnalyticsActions } from '@/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore';
 import type { Tier } from '@/features/rnbw-membership/types';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type StakingPnl = {
@@ -58,7 +58,7 @@ export const useStakingPositionStore = createQueryStore<StakingPositionData, Sta
       });
     },
     params: {
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, s => s.currency),
       address: $ => $(useWalletsStore).accountAddress,
     },
   },

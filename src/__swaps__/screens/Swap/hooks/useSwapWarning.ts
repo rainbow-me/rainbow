@@ -8,9 +8,9 @@ import { type InputValues } from '@/__swaps__/types/swap';
 import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/__swaps__/utils/swaps';
 import { useForegroundColor } from '@/design-system';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { divWorklet, greaterThanOrEqualToWorklet, mulWorklet, subWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { type CrosschainQuote, type Quote, type QuoteError } from '@rainbow-me/swaps';
 
 export enum SwapWarningType {
@@ -116,7 +116,7 @@ export const useSwapWarning = ({
   quote,
   swapInfo,
 }: UsePriceImpactWarningProps) => {
-  const currentCurrency = userAssetsStoreManager(state => state.currency);
+  const currentCurrency = useAppSettingsStore(state => state.currency);
   const red = useForegroundColor('red');
   const orange = useForegroundColor('orange');
   const label = useForegroundColor('labelTertiary');

@@ -8,6 +8,7 @@ import { type AnyAction } from 'redux';
 import { type ThunkDispatch } from 'redux-thunk';
 
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import walletTypes from '@/helpers/walletTypes';
 import usePrevious from '@/hooks/usePrevious';
 import { logger } from '@/logger';
@@ -33,7 +34,7 @@ import {
   type MinimalNotification,
   type TransactionNotificationData,
 } from '@/notifications/types';
-import store, { type AppState } from '@/redux/store';
+import { type AppState } from '@/redux/store';
 import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
@@ -120,7 +121,7 @@ export const NotificationsHandler = () => {
       // casting data payload to type that was agreed on with backend
       const data = notification.data as unknown as TransactionNotificationData;
 
-      const { nativeCurrency } = store.getState().settings;
+      const nativeCurrency = appSettingsActions.getCurrency();
       const accountAddress = getAccountAddress();
 
       let walletAddress: string | null | undefined = accountAddress;

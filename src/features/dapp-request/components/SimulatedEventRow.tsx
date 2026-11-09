@@ -9,12 +9,12 @@ import { Bleed, Box, Inline, Text } from '@/design-system';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type Network } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { TransactionAssetType, type TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
 import { maybeSignUri } from '@/handlers/imgix';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type SimulatedEventRowProps = {
   amount: string | 'unlimited';
@@ -24,7 +24,7 @@ type SimulatedEventRowProps = {
 };
 
 export const SimulatedEventRow = ({ amount, asset, eventType, price }: SimulatedEventRowProps) => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset?.network as Network];
 

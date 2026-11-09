@@ -28,6 +28,7 @@ import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransferTransaction, estimateGasLimit } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
@@ -151,7 +152,8 @@ export function SendSheet() {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { nativeCurrency, chainId } = useAccountSettings();
+  const { chainId } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
 

@@ -4,6 +4,7 @@ import mapValues from 'lodash/mapValues';
 import { type Address } from 'viem';
 
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWallets } from '@/state/wallets/walletsStore';
@@ -11,7 +12,7 @@ import { useWallets } from '@/state/wallets/walletsStore';
 import { useWalletBalances } from './useWalletBalances';
 
 export default function useWalletsWithBalancesAndNames() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const wallets = useWallets();
   const { balances } = useWalletBalances(wallets);
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
