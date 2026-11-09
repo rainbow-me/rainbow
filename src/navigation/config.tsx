@@ -28,8 +28,9 @@ import { type NativeStackOptions } from '@/react-native-cool-modals/types';
 import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { fonts } from '@/styles';
-import { currentColors as colors } from '@/theme/currentColors';
+import { lightModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme/ThemeContext';
+import { useThemeStore } from '@/theme/themeStore';
 import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
@@ -63,7 +64,7 @@ export type CoolModalConfigParams = {
 const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOptions => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
-  backgroundColor: params.backgroundColor || colors.themedColors?.shadowBlack,
+  backgroundColor: params.backgroundColor || useThemeStore.getState().colors.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   cornerRadius:
     params.cornerRadius === 'device'
@@ -703,7 +704,7 @@ export const closeKeyboardOnClose = {
 
 export const nativeStackDefaultConfig: CoolModalConfigOptions = {
   allowsDragToDismiss: true,
-  backgroundColor: colors.themedColors?.stackBackground,
+  backgroundColor: lightModeThemeColors.stackBackground,
   backgroundOpacity: 1,
   customStack: true,
   headerHeight: 0,
@@ -714,7 +715,7 @@ export const nativeStackDefaultConfig: CoolModalConfigOptions = {
 };
 
 const BackArrow = styled(Icon).attrs({
-  color: colors.themedColors?.appleBlue,
+  color: lightModeThemeColors.appleBlue,
   direction: 'left',
   name: 'caret',
 })({
@@ -745,7 +746,7 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors.themedColors?.dark ?? 'black',
+    color: lightModeThemeColors.dark,
     fontFamily: fonts.family.SFProRounded,
     fontSize: Number(fonts.size.large),
     fontWeight: fonts.weight.heavy as any,

@@ -5,7 +5,7 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
-import { currentColors } from '@/theme/currentColors';
+import { useThemeStore } from '@/theme/themeStore';
 
 import Navigation from './Navigation';
 import Routes from './routesNames';
@@ -25,7 +25,7 @@ export function onHandleStatusBar(currentState, prevState) {
   if (!splashScreenHidden) return;
 
   const routeName = Navigation.getActiveRouteName();
-  if (currentColors.theme === 'dark') {
+  if (useThemeStore.getState().isDarkMode) {
     SystemBars.setStyle('light');
     return;
   }
