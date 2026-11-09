@@ -1,32 +1,13 @@
 import { useCallback } from 'react';
 
-import lang from 'i18n-js';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 
 import { type AppState } from '@/redux/store';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
-import { updateLanguageLocale, type Language } from '../languages';
-import {
-  settingsChangeAppIcon as changeAppIcon,
-  settingsChangeLanguage as changeLanguage,
-  settingsChangeTestnetsEnabled as changeTestnetsEnabled,
-} from '../redux/settings';
-
-const languageSelector = (state: AppState) => state.settings.language;
-
-const withLanguage = (language: Language) => {
-  if (language !== lang.locale) {
-    updateLanguageLocale(language);
-  }
-  return { language };
-};
-
-const createLanguageSelector = createSelector([languageSelector], withLanguage);
+import { settingsChangeAppIcon as changeAppIcon, settingsChangeTestnetsEnabled as changeTestnetsEnabled } from '../redux/settings';
 
 export default function useAccountSettings() {
-  const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
 
   const testnetsEnabled = useConnectedToAnvilStore(state => state.connectedToAnvil);
@@ -34,12 +15,9 @@ export default function useAccountSettings() {
   const settingsData = useSelector(({ settings: { appIcon, chainId, network } }: AppState) => ({
     appIcon,
     chainId,
-    language,
     network,
     testnetsEnabled,
   }));
-
-  const settingsChangeLanguage = useCallback((language: string) => dispatch(changeLanguage(language as Language)), [dispatch]);
 
   const settingsChangeAppIcon = useCallback((appIcon: string) => dispatch(changeAppIcon(appIcon)), [dispatch]);
 
@@ -50,7 +28,6 @@ export default function useAccountSettings() {
 
   return {
     settingsChangeAppIcon,
-    settingsChangeLanguage,
     settingsChangeTestnetsEnabled,
     ...settingsData,
   };

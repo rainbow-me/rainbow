@@ -26,7 +26,6 @@ import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -67,7 +66,7 @@ export const SettingsSection = ({
 }: SettingsSectionProps) => {
   const { dev_section_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(state => state.language);
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
@@ -221,7 +220,9 @@ export const SettingsSection = ({
             hasRightArrow
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? LanguageIconDark : LanguageIcon} />}
             onPress={onPressLanguage}
-            rightComponent={<MenuItem.Selection>{(i18n.supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
+            rightComponent={
+              <MenuItem.Selection>{i18n.supportedLanguages.find(item => item.code === language)?.label ?? ''}</MenuItem.Selection>
+            }
             size={60}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.language)} />}
           />
