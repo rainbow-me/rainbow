@@ -93,7 +93,7 @@ export type AssetsHeaderExtraData = {
   value: string;
   isLoadingBalance: boolean;
 };
-export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
+export type CoinExtraData = { type: CellType.COIN; uniqueId: string; isPinned: boolean; isHidden: boolean };
 export type NFTExtraData = {
   type: CellType.NFT;
   index: number;
@@ -145,6 +145,11 @@ export type PolymarketPositionExtraData = {
   type: CellType.POLYMARKET_POSITION;
   position: PolymarketPosition;
   index: number;
+};
+export type PolymarketHeaderExtraData = {
+  type: CellType.POLYMARKET_HEADER;
+  hasContent: boolean;
+  totalValueNative: string;
 };
 export type PolymarketFeatureCardExtraData = {
   type: CellType.POLYMARKET_FEATURE_CARD;
@@ -206,6 +211,7 @@ export type CellExtraData =
   | PerpsHeaderExtraData
   | PolymarketBalanceExtraData
   | PolymarketPositionExtraData
+  | PolymarketHeaderExtraData
   | PolymarketFeatureCardExtraData
   | RnbwFeatureCardExtraData
   | TokensHeaderExtraData

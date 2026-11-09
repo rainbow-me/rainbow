@@ -1,10 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Box, type BoxProps } from '@/design-system';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { NFTS_ENABLED } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { IS_TEST } from '@/env';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -24,9 +22,6 @@ export const WrappedNFT = React.memo(function WrappedNFT({
   index: number;
   uniqueId?: string;
 }) {
-  const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-
   const asset = useNftsStore(state => (uniqueId ? state.getNftByUniqueId(uniqueId) : state.getNft(collectionId, index)));
 
   const handleItemPress = useCallback(
@@ -43,22 +38,34 @@ export const WrappedNFT = React.memo(function WrappedNFT({
     []
   );
 
-  const placementProps: BoxProps =
-    placement === 'left'
-      ? {
-          alignItems: 'flex-start',
-          paddingLeft: '19px (Deprecated)',
-        }
-      : {
-          alignItems: 'flex-end',
-          paddingRight: '19px (Deprecated)',
-        };
+  const placementProps: BoxProps = useMemo(
+    () =>
+      placement === 'left'
+        ? {
+            alignItems: 'flex-start',
+            paddingLeft: '19px (Deprecated)',
+          }
+        : {
+            alignItems: 'flex-end',
+            paddingRight: '19px (Deprecated)',
+          },
+    [placement]
+  );
 
-  if (!nftsEnabled || !asset) return null;
+  if (!asset) return null;
 
   return (
-    <Box flexGrow={1} justifyContent="center" testID={`wrapped-nft-${asset.name}`} {...placementProps}>
+    <Box
+      flexGrow={1}
+      justifyContent="center"
+      testID={IS_TEST ? `wrapped-nft-${asset.name}` : undefined}
+      alignItems={placementProps.alignItems}
+      paddingRight={placementProps.paddingRight}
+      paddingLeft={placementProps.paddingLeft}
+    >
       <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );
 });
+
+export default WrappedNFT;

@@ -4,7 +4,7 @@ import { Animated, Easing, Image } from 'react-native';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Box, Inline, Text } from '@/design-system';
-import useOpenClaimables from '@/hooks/useOpenClaimables';
+import { useCurrentWalletToggles, walletListTogglesActions } from '@/features/wallet/data/walletScreen/base/walletListTogglesStore';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
@@ -15,7 +15,7 @@ const TokenFamilyHeaderHeight = 48;
 
 export const ClaimablesListHeader = React.memo(function ClaimablesListHeader({ total }: { total: string }) {
   const { colors } = useTheme();
-  const { isClaimablesOpen, toggleOpenClaimables } = useOpenClaimables();
+  const isClaimablesOpen = useCurrentWalletToggles(state => state.claimables);
 
   const toValue = Number(!!isClaimablesOpen);
 
@@ -86,3 +86,7 @@ export const ClaimablesListHeader = React.memo(function ClaimablesListHeader({ t
     </ButtonPressAnimation>
   );
 });
+
+function toggleOpenClaimables(): void {
+  walletListTogglesActions.toggle('claimables');
+}

@@ -1,15 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, {
-  useCallback,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type MutableRefObject,
-  type ReactElement,
-} from 'react';
-import { Animated as RNAnimated } from 'react-native';
+import React, { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactElement, type RefObject } from 'react';
+import { Animated as RNAnimated, type NativeMethods } from 'react-native';
 
 import { sortBy } from 'lodash';
 import type Animated from 'react-native-reanimated';
@@ -21,7 +12,7 @@ import { useRecyclerAssetListPosition } from './Contexts';
 
 const Context = React.createContext<
   | {
-      scrollViewRef: MutableRefObject<BaseScrollView | undefined>;
+      scrollViewRef: RefObject<(BaseScrollView & { getNativeScrollRef?: () => NativeMethods }) | null>;
       interpolationsRanges: Record<string, { range: number[]; last: boolean }>;
       setMeasures: (position: number | undefined, height: number | undefined, name: string) => void;
       yOffset: number;
@@ -74,10 +65,9 @@ function StickyHeaderInternal({
     }),
     [colors.white, visibleAtYPosition, position, range, last]
   );
-  const ref = useRef<Animated.View>(undefined) as MutableRefObject<Animated.View>;
+  const ref = useRef<Animated.View | null>(null);
   const onLayout = useCallback(() => {
-    // @ts-expect-error - getNativeScrollRef is not defined on BaseScrollView
-    const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
+    const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef?.();
     if (!nativeScrollRef) {
       return;
     }
@@ -138,7 +128,7 @@ export const StickyHeaderManager = React.memo(function StickyHeaderManager({
 
     return rangesKeyed;
   }, [positions]);
-  const scrollViewRef = useRef<BaseScrollView>(undefined);
+  const scrollViewRef = useRef<(BaseScrollView & { getNativeScrollRef?: () => NativeMethods }) | null>(null);
   const setMeasures = useCallback((position: number | undefined, height: number | undefined, name: string) => {
     setPositions(prev => {
       if (position === undefined || height === undefined) {

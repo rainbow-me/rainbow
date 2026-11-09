@@ -29,7 +29,7 @@ import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountProfileInfoByAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
@@ -138,7 +138,7 @@ function SpotPnlSheetContent({
   const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
-  const profile = useAccountProfileInfo(walletAddress as Address);
+  const profile = useAccountProfileInfoByAddress(walletAddress as Address);
   const displayEns = profile.accountENS ?? ensName;
 
   // Codex lists only a token's traders, so a wallet that never bought it may have no record at all
@@ -282,7 +282,7 @@ function WalletChip({
   ensName: string | undefined;
   /** The wallet's own ENS name, else `ensName`. */
   displayEns: string | undefined;
-  profile: ReturnType<typeof useAccountProfileInfo>;
+  profile: ReturnType<typeof useAccountProfileInfoByAddress>;
 }) {
   const shouldLoadEnsAvatar = !accountImage && !!ensName;
   const ensAvatar = useEnsImageStore(s => s.get(shouldLoadEnsAvatar ? { name: ensName, field: 'avatar' } : undefined));

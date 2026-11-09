@@ -9,26 +9,22 @@ import type { Address } from 'viem';
 
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
+import { BlurGradient } from '@/components/blur/BlurGradient';
 import { type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
-import { Panel } from '@/components/SmoothPager/ListPanel';
+import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { TapToDismiss } from '@/components/TapToDismiss';
 import { FeatureHintTooltip, type TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
-import { opacity } from '@/design-system/utils/opacity';
 import type { EthereumAddress } from '@/entities/wallet';
 import { NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { cleanUpWalletKeys } from '@/features/wallet/data/walletKeychain';
 import { type RainbowWallet } from '@/features/wallet/types';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
-import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { isValidHex } from '@/handlers/web3';
+import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { updateWebProfile } from '@/helpers/webData';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
-import useWalletsWithBalancesAndNames from '@/hooks/useWalletsWithBalancesAndNames';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -37,22 +33,14 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
-import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
+import { FOOTER_HEIGHT, MAX_PANEL_HEIGHT, PANEL_HEADER_HEIGHT, PANEL_INSET_HORIZONTAL } from '@/screens/change-wallet/layout';
 import { AddressMenuAction, type AddressItem, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import {
-  getAccountProfileInfo,
-  getWallets,
-  setSelectedWallet,
-  updateAccountInfo,
-  updateWallets,
-  useAccountAddress,
-  useWallets,
-} from '@/state/wallets/walletsStore';
+import { switchWallet } from '@/state/wallets/switchWallet';
+import { useWalletsWithBalancesAndNames } from '@/state/wallets/useWalletsWithBalancesAndNames';
+import { getAccountProfileInfo, updateAccountInfo, useAccountAddress, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
-import doesWalletsContainAddress from '@/utils/doesWalletsContainAddress';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, Platform.OS === 'ios' ? 8 : 30);
@@ -178,18 +166,13 @@ export function ChangeWalletSheet() {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
       if (watchOnly && onChangeWallet) {
-        setSelectedWallet(wallet, address);
+        await switchWallet(address, wallet.id);
         onChangeWallet(address, wallet);
         return;
       }
-      if (address === accountAddress) return;
+      if (walletId === useWalletsStore.getState().selectedWalletId && address === accountAddress) return;
       try {
-        setSelectedWallet(wallet, address);
-        initializeWallet({
-          shouldRunMigrations: false,
-          overwrite: false,
-          switching: true,
-        });
+        await switchWallet(address, wallet.id);
         if (!fromDeletion) {
           goBack();
         }
@@ -200,37 +183,6 @@ export function ChangeWalletSheet() {
       }
     },
     [accountAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
-  );
-
-  const deleteWallet = useCallback(
-    async (walletId: string, address: string) => {
-      const currentWallet = wallets?.[walletId];
-      // There's nothing to delete if there's no wallet
-      if (!currentWallet) return;
-
-      const newWallets = {
-        ...wallets,
-        [walletId]: {
-          ...currentWallet,
-          addresses: (currentWallet.addresses || []).map(account =>
-            account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
-          ),
-        },
-      };
-
-      // If there are no visible wallets
-      // then delete the wallet
-      const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
-      if (visibleAddresses.length === 0) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete newWallets[walletId];
-        updateWallets(newWallets);
-      } else {
-        updateWallets(newWallets);
-      }
-      removeWalletData(address);
-    },
-    [wallets]
   );
 
   const renameWallet = useCallback(
@@ -276,7 +228,7 @@ export function ChangeWalletSheet() {
   const onPressEdit = useCallback(
     (walletId: string, address: string) => {
       analytics.track(analytics.event.tappedEditWallet);
-      setSelectedWallet(getWallets()[walletId], address);
+      void switchWallet(ensureValidHex(address), walletId);
       renameWallet(walletId, address);
     },
     [renameWallet]
@@ -307,19 +259,6 @@ export function ChangeWalletSheet() {
   const onPressRemove = useCallback(
     (walletId: string, address: string) => {
       analytics.track(analytics.event.tappedDeleteWallet);
-      // If there's more than 1 account
-      // it's deletable
-      let isLastAvailableWallet = false;
-      // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let i = 0; i < Object.keys(wallets).length; i++) {
-        const key = Object.keys(wallets)[i];
-        const someWallet = wallets?.[key];
-        const otherAccount = someWallet?.addresses.find(account => account.visible && account.address !== address);
-        if (otherAccount) {
-          isLastAvailableWallet = true;
-          break;
-        }
-      }
       // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
@@ -331,31 +270,19 @@ export function ChangeWalletSheet() {
         async buttonIndex => {
           if (buttonIndex === 0) {
             analytics.track(analytics.event.tappedDeleteWalletConfirm);
-            await deleteWallet(walletId, address);
+            const previous = useWalletsStore.getState();
+            await previous.removeAccount(walletId, ensureValidHex(address));
+            const current = useWalletsStore.getState();
             triggerHaptics('notificationSuccess');
-            if (!isLastAvailableWallet) {
-              await cleanUpWalletKeys();
+            if (!current.getSelectedWallet()) {
               goBack();
               navigate(Routes.WELCOME_SCREEN);
-            } else {
-              // If we're deleting the selected wallet
-              // we need to switch to another one
-              if (wallets && address === accountAddress) {
-                const { wallet: foundWallet, key } =
-                  doesWalletsContainAddress({
-                    address: address,
-                    wallets,
-                  }) || {};
-                if (foundWallet && key) {
-                  await onChangeAccount(key, foundWallet.address as Address, true);
-                }
-              }
             }
           }
         }
       );
     },
-    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+    [goBack, navigate]
   );
 
   const onPressCopyAddress = useCallback((address: string) => {
@@ -539,21 +466,24 @@ export function ChangeWalletSheet() {
       >
         <Panel>
           <Box onLayout={handleLayout} style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
-            <SheetHandleFixedToTop />
-            <Box
-              style={{ position: 'relative' }}
-              zIndex={30001}
-              paddingTop="32px"
-              paddingBottom="12px"
-              width="full"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text align="center" color="label" size="20pt" weight="heavy">
+            <Box justifyContent="center" position="absolute" style={{ pointerEvents: 'none', zIndex: 100 }} width={{ custom: PANEL_WIDTH }}>
+              <BlurGradient
+                color={{ dark: '#191A1C', light: globalColors.white100 }}
+                fadeTo="top"
+                feather={isDarkMode ? undefined : 5}
+                gradientOpacity={{ dark: 1, light: 0.92 }}
+                height={PANEL_HEADER_HEIGHT + 16}
+                intensity={5}
+                style={{ position: 'absolute', top: 0 }}
+                width={PANEL_WIDTH}
+              />
+              <SheetHandleFixedToTop top={8} />
+              <Text align="center" color="label" size="20pt" style={{ paddingTop: 30 }} weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.wallets)}
               </Text>
-              {/* +3 to account for font size difference */}
-              <Box position="absolute" style={{ right: 4, top: 32 + 3 }}>
+            </Box>
+            <Box style={{ position: 'relative' }} zIndex={30001} width="full" justifyContent="center" alignItems="center">
+              <Box position="absolute" style={{ right: 4, top: 30 + 3 }}>
                 <ConditionalWrap
                   condition={!initialHasShownEditHintTooltip}
                   wrap={children => (
@@ -584,7 +514,7 @@ export function ChangeWalletSheet() {
                 >
                   <ButtonPressAnimation onPress={onPressEditMode}>
                     <HitSlop horizontal={'32px'} vertical={'12px'}>
-                      <Text color="blue" size="17pt" weight="medium">
+                      <Text color="blue" size="17pt" weight="semibold">
                         {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
                       </Text>
                     </HitSlop>
@@ -600,62 +530,34 @@ export function ChangeWalletSheet() {
               onPressAccount={onPressAccount}
             />
           </Box>
-          <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" width="full">
-            {/* TODO: progressive blurview on iOS */}
-            {/* {IS_IOS ? (
-              <BlurView
-                style={{ height: '100%', position: 'absolute', width: '100%' }}
-                blurType="dark"
-                blurAmount={10}
-                reducedTransparencyFallbackColor="white"
-              />
-            ) : (
-              <EasingGradient
-                endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-                endOpacity={1}
-                startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-                startOpacity={0}
-                style={{ height: '100%', position: 'absolute', width: '100%' }}
-              />
-            )} */}
-            <EasingGradient
-              endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-              endOpacity={1}
-              startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-              startOpacity={0}
-              style={{ height: '100%', position: 'absolute', width: '100%' }}
+          <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" style={{ pointerEvents: 'box-none' }} width="full">
+            <BlurGradient
+              color={{ dark: '#191A1C', light: globalColors.white100 }}
+              fadeTo="bottom"
+              feather={isDarkMode ? undefined : 5}
+              gradientOpacity={{ dark: 1, light: 0.92 }}
+              height={FOOTER_HEIGHT}
+              intensity={5}
+              style={{ position: 'absolute' }}
+              width={PANEL_WIDTH}
             />
             <Box
               flexDirection="row"
-              justifyContent="space-between"
+              justifyContent="flex-end"
               alignItems="center"
               paddingHorizontal={{ custom: PANEL_INSET_HORIZONTAL }}
-              paddingTop="24px"
+              style={{ bottom: 20, right: 0, pointerEvents: 'box-none', position: 'absolute' }}
             >
-              {/* TODO: enable when blurview is implemented */}
-              {/* {!editMode && ownedWalletsTotalBalance ? (
-                <Stack space="10px">
-                  <Text color="labelSecondary" size="13pt" weight="bold">
-                    {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
-                  </Text>
-                  <Text color="label" size="17pt" weight="bold">
-                    {ownedWalletsTotalBalance}
-                  </Text>
-                </Stack>
-              ) : (
-                <Box />
-              )} */}
-              <Box />
               <ButtonPressAnimation onPress={onPressAddAnotherWallet} testID="add-another-wallet-button">
                 <Box
                   background="blue"
                   justifyContent="center"
                   alignItems="center"
                   height={{ custom: 44 }}
-                  paddingHorizontal="16px"
+                  paddingLeft={{ custom: 14 }}
+                  paddingRight="16px"
                   borderRadius={22}
-                  borderWidth={1}
-                  borderColor={{ custom: opacity(colors.appleBlue, 0.06) }}
+                  shadow={isDarkMode ? undefined : '30px blue'}
                 >
                   <Text color="label" size="17pt" weight="heavy">
                     {`􀅼 ${i18n.t(i18n.l.button.add)}`}

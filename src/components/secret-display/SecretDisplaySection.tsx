@@ -22,7 +22,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { ActivityIndicator } from '../ActivityIndicator';
@@ -57,7 +57,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const wallets = useWallets();
   const backupProvider = backupsStore(state => state.backupProvider);
   const { onManuallyBackupWalletId } = useWalletManualBackup();

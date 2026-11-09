@@ -10,7 +10,7 @@ import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-syst
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 
 import { executeFnIfCloudBackupAvailable } from '../backup';
@@ -22,7 +22,7 @@ const imageSize = 72;
 export function CloudBackupPrompt() {
   const { navigate, goBack } = useNavigation();
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
-  const selectedWallet = useSelectedWallet();
+  const selectedWallet = useWalletsStore(state => state.getSelectedWallet());
   const createBackup = useCreateBackup();
 
   const onCloudBackup = useCallback(() => {

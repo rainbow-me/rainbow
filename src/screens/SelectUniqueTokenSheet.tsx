@@ -5,7 +5,6 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 
 import { Box } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -23,9 +22,6 @@ export function SelectUniqueTokenSheet() {
     },
     [goBack, params]
   );
-  const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
-    type: 'select-nft',
-  });
 
   return (
     <Box
@@ -41,7 +37,6 @@ export function SelectUniqueTokenSheet() {
         disablePullDownToRefresh
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
-        walletBriefSectionsData={walletBriefSectionsData}
         onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
       />
     </Box>

@@ -19,11 +19,11 @@ import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -51,7 +51,7 @@ export function ENSAssignRecordsSheet() {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name, mode, accountAddress } = useENSRegistration();
-  const { hasNFTs } = useWalletSectionsData();
+  const hasNFTs = useNftsStore(state => state.collections.size > 0);
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
   const profile = useEnsRecordsStore(s => s.get(name ? { name } : undefined));

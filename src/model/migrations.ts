@@ -32,9 +32,11 @@ import {
 import { hasKey, loadString, publicAccessControlOptions, saveString } from '@/features/local-auth/legacyKeychain';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { getAllWallets, loadAddress, saveAddress } from '@/features/wallet/data/walletKeychain';
+import { type BooleanMap } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import { DEFAULT_WALLET_NAME, EncryptionType, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
+import { ensureValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
@@ -42,7 +44,7 @@ import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getSelectedWallet, getWalletAddresses, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { addWallet, getSelectedWallet, getWalletAddresses, getWallets, updateWallets } from '@/state/wallets/walletsStore';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
@@ -50,7 +52,6 @@ import { getGlobal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import { type BooleanMap } from '../hooks/useCoinListEditOptions';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import { removeLegacyAsyncStorageValue } from '../storage/legacyAsyncStorage';
 import colors, { getRandomColor } from '../styles/colors';
@@ -111,11 +112,8 @@ export default async function runMigrations() {
           encryptionType: EncryptionType.keychain,
         };
 
-        const wallets = { [id]: currentWallet };
-
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
-        await updateWallets(wallets);
-        setSelectedWallet(currentWallet);
+        await addWallet(currentWallet, ensureValidHex(address));
       }
     }
   };
@@ -129,7 +127,6 @@ export default async function runMigrations() {
    */
   const v2 = async () => {
     const wallets = getWallets();
-    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v2 early');
@@ -175,12 +172,6 @@ export default async function runMigrations() {
         };
         logger.debug('[runMigrations]: v2 migration - update wallets');
         await updateWallets(updatedWallets);
-        // Additionally, we need to check if it's the selected wallet
-        // and if that's the case, update it too
-        if (selected?.id === primaryWalletKey) {
-          const updatedSelectedWallet = updatedWallets[primaryWalletKey];
-          await setSelectedWallet(updatedSelectedWallet);
-        }
       }
     }
   };
@@ -218,7 +209,6 @@ export default async function runMigrations() {
    */
   const v5 = async () => {
     const wallets = getWallets();
-    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v5 early');
@@ -231,26 +221,18 @@ export default async function runMigrations() {
       const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
       if (hasOldSeedphraseKey) {
         logger.debug('[runMigrations]: Old seedphrase is still there');
-        let incorrectDamagedWalletId = null;
         const updatedWallets = { ...wallets };
         keys(updatedWallets).forEach(walletId => {
           if (updatedWallets[walletId].damaged && !updatedWallets[walletId].imported) {
             logger.debug(`[runMigrations]: found incorrect damaged wallet ${walletId}`);
-            delete updatedWallets[walletId].damaged;
-            incorrectDamagedWalletId = walletId;
+            const wallet = { ...updatedWallets[walletId] };
+            delete wallet.damaged;
+            updatedWallets[walletId] = wallet;
           }
         });
         logger.debug('[runMigrations]: updating all wallets');
         await updateWallets(updatedWallets);
         logger.debug('[runMigrations]: done updating all wallets');
-        // Additionally, we need to check if it's the selected wallet
-        // and if that's the case, update it too
-        if (selected!.id === incorrectDamagedWalletId) {
-          logger.debug('[runMigrations]: need to update the selected wallet');
-          const updatedSelectedWallet = updatedWallets[incorrectDamagedWalletId];
-          await setSelectedWallet(updatedSelectedWallet);
-          logger.debug('[runMigrations]: selected wallet updated');
-        }
       }
     }
   };
@@ -321,7 +303,6 @@ export default async function runMigrations() {
     const newColorIndexes = [0, 4, 12, 21, 1, 20, 4, 9, 10];
     try {
       const wallets = getWallets();
-      const selected = getSelectedWallet();
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
       const updatedWallets = { ...wallets };
@@ -343,12 +324,6 @@ export default async function runMigrations() {
       }
       logger.debug('[runMigrations]: update wallets in store to index new colors');
       await updateWallets(updatedWallets);
-
-      const selectedWalletId = selected?.id;
-      if (selectedWalletId) {
-        logger.debug('[runMigrations]: update selected wallet to index new color');
-        await setSelectedWallet(updatedWallets[selectedWalletId]);
-      }
 
       // migrate contacts to new color index
       const contacts = await getContacts();
@@ -824,7 +799,7 @@ export default async function runMigrations() {
    * Set the encryptionType field.
    */
   const v30 = async () => {
-    const wallets = getWallets();
+    const wallets = { ...getWallets() };
     if (!wallets) {
       logger.debug('[runMigrations]: v30 migration - no wallets found');
       return;
@@ -834,7 +809,7 @@ export default async function runMigrations() {
       for (const wallet of Object.values(wallets)) {
         if (!wallet.encryptionType) {
           // On iOS only keychain is supported.
-          wallet.encryptionType = EncryptionType.keychain;
+          wallets[wallet.id] = { ...wallet, encryptionType: EncryptionType.keychain };
         }
       }
     } else {
@@ -843,12 +818,13 @@ export default async function runMigrations() {
       const hasPasscode = await kc.isPasscodeAuthAvailable();
       for (const wallet of Object.values(wallets)) {
         if (!wallet.encryptionType) {
-          wallet.encryptionType =
+          const encryptionType =
             wallet.type === WalletTypes.readOnly || wallet.type === WalletTypes.bluetooth
               ? EncryptionType.none
               : hasPasscode
                 ? EncryptionType.keychain
                 : EncryptionType.rainbowPin;
+          wallets[wallet.id] = { ...wallet, encryptionType };
         }
       }
     }
