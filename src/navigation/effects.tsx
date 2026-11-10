@@ -474,16 +474,6 @@ export const sheetPreset = ({ route }: any): StackNavigationOptions & BottomShee
   };
 };
 
-export const fiatOnRampSheet: StackNavigationOptions = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: sheetStyleInterpolator(1),
-  gestureDirection: 'vertical',
-  gestureResponseDistance: gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
-
 export const selectUniquePreset = () => {
   return {
     cardOverlayEnabled: true,

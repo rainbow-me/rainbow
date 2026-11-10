@@ -118,7 +118,6 @@ import {
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
-  fiatOnRampSheet,
   hardwareWalletTxNavigatorPreset,
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
@@ -157,7 +156,6 @@ function MainNavigator() {
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
-      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
@@ -277,6 +275,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
+      <BSStack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={{ backdropOpacity: 1 }} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />

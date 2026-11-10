@@ -1,11 +1,13 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import wait from 'w2t';
 
-import { SheetHandle } from '@/components/sheet';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { SheetHandle } from '@/components/sheet/SheetHandle';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Box, Separator, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { FiatProviderName } from '@/entities/f2c';
@@ -17,19 +19,22 @@ import Navigation from '@/navigation/Navigation';
 import { getProviders, getWidgetURL } from '@/resources/f2c';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { borders } from '@/styles';
-import { deviceUtils } from '@/utils/deviceUtils';
 
 import { ProviderListItem } from './ProviderListItem';
 
-const deviceHeight = deviceUtils.dimensions.height;
+const SheetScrollView = Platform.OS === 'android' ? BottomSheetScrollView : ScrollView;
 
+/**
+ * Displays the available fiat providers in a full-screen sheet.
+ */
 export function FiatOnRampSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
   const accountAddress = useAccountAddress();
+  const backgroundColor = useBackgroundColor('surfaceSecondary');
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
-  const sheetHeight = deviceHeight - insets.top;
+  const handleBottom = insets.top + (Platform.OS === 'android' ? 24 : 12);
 
   const {
     isLoading,
@@ -71,35 +76,22 @@ export function FiatOnRampSheet() {
   return (
     <Box
       background="surfaceSecondary"
-      height={{ custom: sheetHeight }}
-      top={{ custom: insets.top }}
+      height="full"
       width="full"
-      alignItems="center"
       overflow="hidden"
-      style={{
-        ...borders.buildRadiusAsObject('top', 30),
-      }}
+      style={Platform.OS === 'android' ? borders.buildRadiusAsObject('top', 30) : undefined}
     >
-      <Box
-        position="absolute"
-        flexDirection="row"
-        justifyContent="center"
-        left={{ custom: 0 }}
-        right={{ custom: 0 }}
-        top={{ custom: 9 }}
-        height={{ custom: 80 }}
-        style={{ zIndex: 1 }}
+      <SheetScrollView
+        contentInsetAdjustmentBehavior="never"
+        scrollIndicatorInsets={{ top: insets.top + 32, bottom: insets.bottom }}
+        style={{ flex: 1 }}
       >
-        <SheetHandle showBlur={undefined} />
-      </Box>
-
-      <ScrollView
-        style={{
-          width: '100%',
-          ...borders.buildRadiusAsObject('top', 30),
-        }}
-      >
-        <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}>
+        <Box
+          width="full"
+          paddingTop={{ custom: handleBottom + 40 }}
+          paddingHorizontal="20px"
+          paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
+        >
           <Box paddingHorizontal="20px">
             <Text size="26pt" weight="heavy" color="label" align="center">
               {i18n.t(i18n.l.wallet.add_cash_v2.sheet_title)}
@@ -159,7 +151,19 @@ export function FiatOnRampSheet() {
             </Box>
           </Box>
         </Box>
-      </ScrollView>
+      </SheetScrollView>
+      <Box position="absolute" top="0px" left="0px" right="0px" pointerEvents="none">
+        <Box background="surfaceSecondary" height={handleBottom} alignItems="center" justifyContent="flex-end">
+          <SheetHandle />
+        </Box>
+        <EasingGradient
+          endColor={backgroundColor}
+          startColor={backgroundColor}
+          endOpacity={0}
+          startOpacity={1}
+          style={{ height: 32, width: '100%' }}
+        />
+      </Box>
     </Box>
   );
 }

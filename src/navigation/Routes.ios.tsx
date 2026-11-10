@@ -147,7 +147,7 @@ import {
   walletDiagnosticsSheetConfig,
   walletErrorSheetConfig,
 } from './config';
-import { emojiPreset, emojiPresetWallet, fiatOnRampSheet } from './effects';
+import { emojiPreset, emojiPresetWallet } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -167,7 +167,6 @@ function MainNavigator() {
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
-      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
     </Stack.Navigator>
   );
 }
@@ -304,6 +303,7 @@ function NativeStackNavigator() {
         name={Routes.POLYMARKET_WITHDRAWAL_SCREEN}
         {...perpsDepositWithdrawalConfig}
       />
+      <NativeStack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
