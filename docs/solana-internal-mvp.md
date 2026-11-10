@@ -48,7 +48,7 @@ The Cloudflare service supplies the SDK's v2 prepare/execute/status endpoints, s
 
 Mint references: [Circle USDC contract addresses](https://developers.circle.com/stablecoins/usdc-contract-addresses), [BONK mint and decimals](https://solscan.io/token/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263).
 
-Quote confirmation shows exact spend, quoted/minimum output, source, recipient and expiry. The Base route may authorize Rainbow EVM delegation; the confirmation discloses this. Execution checks the selected account and expiry again after unlocking. The exact opaque SDK prepared object is submitted, never reconstructed. An uncertain submission retains its execution ID across restart and blocks new swaps until status is terminal; use Check execution. A quote left indefinitely PREPARED after a failed submission needs backend investigation, not automatic resubmission or clearing the journal.
+Quote confirmation shows exact spend, quoted/minimum output, source, recipient and expiry. The Base route may authorize Rainbow EVM delegation; the confirmation discloses this. Execution checks the selected account and expiry again after unlocking. The exact opaque SDK prepared object is submitted, never reconstructed. SDK submission success records PENDING immediately, without a follow-up status request. Use Check execution to fetch confirmation separately; a failed status read preserves the pending state. A matching `ManagedExecutionFailedError` records FAILED and preserves the SDK error for display, allowing a fresh quote. An uncertain submission retains its execution ID across restart and blocks new swaps until status is terminal. Already submitted preparations cannot be reused, including after definite failure. A quote left indefinitely PREPARED after a failed submission needs backend investigation, not automatic resubmission or clearing the journal.
 
 ## Try it on a physical test device
 
@@ -60,7 +60,7 @@ Quote confirmation shows exact spend, quoted/minimum output, source, recipient a
 
 ## Verification and limits
 
-Verified on November 5, 2026: 68 focused tests pass; TypeScript passes; existing JS type baseline has no regressions; dependency rules and cycle baselines pass; changed-file ESLint has no errors (warnings in test assertions and the pre-existing DevSection `any`).
+Submission-result correction verified on November 10, 2026: 74 focused tests pass; TypeScript passes. The initial November 5 verification also passed the existing JS type baseline and dependency rules/cycle baselines; changed-file ESLint had no errors (warnings in test assertions and the pre-existing DevSection `any`).
 
 Focused tests cover indices 0/1/2, key formats and mismatches, protected storage/readback/cancellation, source ownership and selection changes, scoped signing and byte clearing, quote caps/sponsorship/expiry, both SDK adapter routes, and duplicate/uncertain submissions. Legacy wallet keychain tests are included.
 

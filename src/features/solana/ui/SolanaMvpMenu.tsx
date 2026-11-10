@@ -16,6 +16,7 @@ import { enableSolanaAccount } from '@/features/wallet/data/enableSolanaAccount'
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Menu } from '@/screens/SettingsSheet/components/Menu';
 import { MenuItem } from '@/screens/SettingsSheet/components/MenuItem';
+import { isTerminalStatus } from '@rainbow-me/solana-sdk';
 
 function confirm(message: string): Promise<boolean> {
   return new Promise(resolve => {
@@ -51,7 +52,7 @@ function SolanaMvpControls() {
       const pending = useSolanaMvpExecutionStore.getState().attempt;
       Alert.alert(
         'Solana test',
-        `${error instanceof Error ? error.message.slice(0, 500) : 'Operation failed.'}${pending ? '\n\nUse “Check execution” before trying another swap.' : ''}`
+        `${error instanceof Error ? error.message.slice(0, 500) : 'Operation failed.'}${pending && !isTerminalStatus(pending.status) ? '\n\nUse “Check execution” before trying another swap.' : ''}`
       );
     } finally {
       // eslint-disable-next-line require-atomic-updates -- only the operation holding this lock reaches finally

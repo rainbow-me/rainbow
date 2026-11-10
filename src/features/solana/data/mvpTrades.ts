@@ -25,6 +25,8 @@ import { getProvider } from '@/handlers/web3';
 import {
   execute,
   isTerminalStatus,
+  ManagedExecutionFailedError,
+  RelayExecutionStatus,
   type ExecutionStatus,
   type PreparedRouteExecution,
   type RelayExecutionId,
@@ -132,6 +134,13 @@ export async function executeMvpTrade(trade: MvpTrade): Promise<void> {
       },
     });
   };
+  const setSubmissionStatus = (status: RelayExecutionStatus) => {
+    useSolanaMvpExecutionStore.setState(state =>
+      state.attempt?.executionId === trade.prepared.executionId && !isTerminalStatus(state.attempt.status)
+        ? { attempt: { ...state.attempt, status } }
+        : state
+    );
+  };
   try {
     if (trade.route === 'buy') {
       const provider = getProvider({ chainId: ChainId.base });
@@ -147,7 +156,13 @@ export async function executeMvpTrade(trade: MvpTrade): Promise<void> {
         await execute.route(trade.prepared, { rpc, signer });
       });
     }
-    await checkMvpExecution();
+    // SDK resolution means submission was accepted; confirmation is checked separately.
+    setSubmissionStatus(RelayExecutionStatus.Pending);
+  } catch (error) {
+    if (error instanceof ManagedExecutionFailedError && error.executionId === trade.prepared.executionId) {
+      setSubmissionStatus(RelayExecutionStatus.Failed);
+    }
+    throw error;
   } finally {
     // Keep the execution ID after ambiguous failures; a new quote could spend twice.
     // eslint-disable-next-line require-atomic-updates -- only the operation holding this lock reaches finally

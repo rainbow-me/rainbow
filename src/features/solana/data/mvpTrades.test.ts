@@ -7,6 +7,7 @@ import { assertSolanaSource, requireEnabledSolanaAccount } from '@/features/wall
 import { withSolanaSigner } from '@/features/wallet/data/loadSolanaSigner';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getSolanaAccount } from '@/features/wallet/data/stores/accountMetadataStore';
+import { ManagedExecutionFailedError } from '@rainbow-me/solana-sdk';
 
 import { checkMvpExecution, executeMvpTrade, prepareMvpTrade, useSolanaMvpExecutionStore } from './mvpTrades';
 
@@ -41,6 +42,10 @@ beforeEach(() => {
   vi.mocked(requireEnabledSolanaAccount).mockReturnValue(account);
   vi.mocked(getSolanaAccount).mockReturnValue(account);
   vi.mocked(loadWallet).mockResolvedValue(wallet);
+  vi.mocked(withSolanaSigner).mockImplementation(async (_account, operation) =>
+    operation({ address: address(account.address), signTransactionMessage: vi.fn() })
+  );
+  mocks.execute.mockResolvedValue({ executionId });
   mocks.send.mockResolvedValue({
     value: [
       {
@@ -92,7 +97,7 @@ describe('MVP SDK entry points', () => {
     await executeMvpTrade(trade);
     expect(mocks.execute.mock.calls[0][0]).toBe(trade.prepared);
     expect(mocks.execute.mock.calls[0][1].signer).toBe(wallet);
-    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('CONFIRMED');
+    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
   });
 
   it('caps a Solana-source swap and loads only the Solana signer', async () => {
@@ -118,11 +123,56 @@ describe('MVP SDK entry points', () => {
     mocks.execute.mockRejectedValueOnce(new Error('network interrupted'));
     await expect(executeMvpTrade(trade)).rejects.toThrow('network interrupted');
     expect(useSolanaMvpExecutionStore.getState().attempt?.executionId).toBe(executionId);
+    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('SUBMISSION_UNCERTAIN');
     await expect(prepareMvpTrade('buy')).rejects.toThrow('previous execution');
     await expect(executeMvpTrade(trade)).rejects.toThrow('already submitted');
     await checkMvpExecution();
     await expect(prepareMvpTrade('buy')).resolves.toBeDefined();
     expect(mocks.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['buy', 'sell'] as const)('keeps an accepted %s pending when a separate status request fails', async route => {
+    const trade = await prepareMvpTrade(route);
+    mocks.status.mockRejectedValueOnce(new Error('status unavailable'));
+    await expect(executeMvpTrade(trade)).resolves.toBeUndefined();
+    expect(mocks.status).not.toHaveBeenCalled();
+    expect(useSolanaMvpExecutionStore.getState().attempt).toMatchObject({ executionId, status: 'PENDING' });
+    await expect(checkMvpExecution()).rejects.toThrow('status unavailable');
+    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
+    await expect(prepareMvpTrade(route)).rejects.toThrow('previous execution');
+    await expect(executeMvpTrade(trade)).rejects.toThrow('already submitted');
+    await checkMvpExecution();
+    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('CONFIRMED');
+    await expect(prepareMvpTrade(route)).resolves.toBeDefined();
+  });
+
+  it.each(['buy', 'sell'] as const)('records a definitive SDK failure for %s without requiring a status request', async route => {
+    const trade = await prepareMvpTrade(route);
+    const error = new ManagedExecutionFailedError(executionId, { code: 'INSUFFICIENT_SPONSOR_BALANCE', message: 'Sponsor unavailable' });
+    mocks.execute.mockRejectedValueOnce(error);
+    await expect(executeMvpTrade(trade)).rejects.toBe(error);
+    expect(useSolanaMvpExecutionStore.getState().attempt).toMatchObject({ executionId, status: 'FAILED' });
+    expect(mocks.status).not.toHaveBeenCalled();
+    await expect(prepareMvpTrade(route)).resolves.toBeDefined();
+    await expect(executeMvpTrade(trade)).rejects.toThrow('already submitted');
+  });
+
+  it('does not mark the current attempt failed for a different SDK execution', async () => {
+    const trade = await prepareMvpTrade('buy');
+    mocks.execute.mockRejectedValueOnce(new ManagedExecutionFailedError(`0x${'02'.repeat(32)}`, { code: 'FAILED' }));
+    await expect(executeMvpTrade(trade)).rejects.toThrow();
+    expect(useSolanaMvpExecutionStore.getState().attempt).toMatchObject({ executionId, status: 'SUBMISSION_UNCERTAIN' });
+    await expect(prepareMvpTrade('buy')).rejects.toThrow('previous execution');
+  });
+
+  it('preserves confirmation received while the SDK submission is still returning', async () => {
+    const trade = await prepareMvpTrade('buy');
+    mocks.execute.mockImplementationOnce(async () => {
+      await checkMvpExecution();
+      return { executionId };
+    });
+    await executeMvpTrade(trade);
+    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('CONFIRMED');
   });
 
   it('refuses changed selection after authentication, before submission', async () => {
