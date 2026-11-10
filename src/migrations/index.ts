@@ -4,6 +4,7 @@ import * as env from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { healEip55KeychainAddresses } from '@/migrations/migrations/healEip55KeychainAddresses';
+import { migrateAppSettings } from '@/migrations/migrations/migrateAppSettings';
 import { migrateExperimentalFlags } from '@/migrations/migrations/migrateExperimentalFlags';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
@@ -48,6 +49,7 @@ const migrations: (() => Migration)[] = [
   healEip55KeychainAddresses,
   migrateExperimentalFlags,
   repairBrowserTabUrls,
+  migrateAppSettings,
 ];
 
 /**
