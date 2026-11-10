@@ -1,10 +1,7 @@
-import { NativeCurrencyKeys } from '@/features/currency/types';
-
 import { getGlobal, saveGlobal } from './common';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
-const NATIVE_CURRENCY = 'nativeCurrency';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
 
@@ -19,8 +16,6 @@ export const savePinAuthAttemptsLeft = (amount: any) => saveGlobal(PIN_AUTH_ATTE
 export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 
 export const setKeyboardHeight = (height: any) => saveGlobal(KEYBOARD_HEIGHT, height);
-
-export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
 
 export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 

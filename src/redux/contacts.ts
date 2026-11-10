@@ -9,7 +9,6 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 // -- Constants --------------------------------------- //
 const CONTACTS_UPDATE = 'contacts/CONTACTS_UPDATE';
 const CONTACTS_LOAD = 'contacts/CONTACTS_LOAD';
-const CONTACTS_CLEAR_STATE = 'contacts/CONTACTS_CLEAR_STATE';
 
 // -- Types ------------------------------------------ //
 
@@ -51,7 +50,7 @@ interface ContactsState {
 /**
  * An action for the `contacts` reducer.
  */
-type ContactsAction = ContactsUpdateAction | ContactsLoadAction | ContactsClearStateAction;
+type ContactsAction = ContactsUpdateAction | ContactsLoadAction;
 
 interface ContactsUpdateAction {
   type: typeof CONTACTS_UPDATE;
@@ -61,10 +60,6 @@ interface ContactsUpdateAction {
 interface ContactsLoadAction {
   type: typeof CONTACTS_LOAD;
   payload: ContactsState['contacts'];
-}
-
-interface ContactsClearStateAction {
-  type: typeof CONTACTS_CLEAR_STATE;
 }
 
 // -- Actions ---------------------------------------- //
@@ -126,11 +121,6 @@ export default (state = INITIAL_STATE, action: ContactsAction) => {
       return {
         ...state,
         contacts: action.payload,
-      };
-    case CONTACTS_CLEAR_STATE:
-      return {
-        ...state,
-        ...INITIAL_STATE,
       };
     default:
       return state;

@@ -18,7 +18,6 @@ export enum MigrationName {
   migratePersistedQueriesToMMKV = 'migration_migratePersistedQueriesToMMKV',
   migrateFavoritesV2 = 'migration_migrateFavoritesV2',
   migrateFavoritesV3 = 'migration_migrateFavoritesV3',
-  removeDuplicateRecentSwaps = 'migration_removeDuplicateRecentSwaps',
   migrateNotificationSettingsToVersion3 = 'migration_migrateNotificationSettingsToVersion3',
   healEip55KeychainAddresses = 'migration_healEip55KeychainAddresses',
   migrateExperimentalFlags = 'migration_migrateExperimentalFlags',
