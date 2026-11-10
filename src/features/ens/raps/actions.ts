@@ -10,16 +10,14 @@ import { ChainId, Network } from '@/features/network/types/backendNetworks';
 import { toHex } from '@/handlers/web3';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import store from '@/redux/store';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { getAccountAddress } from '@/state/wallets/walletsStore';
 
-import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '../redux/registration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import { type ENSRegistrationRecords } from '../types/registration';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '../utils/handlers';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '../utils/helpers';
-import { ENSRapActionType, type ENSActionParameters, type ENSRap, type RapENSAction, type RapENSActionParameters } from './common';
+import { ENSRapActionType, type ENSActionParameters, type RapENSAction, type RapENSActionParameters } from './common';
 import {
   createCommitENSRap,
   createRegisterENSRap,
@@ -29,7 +27,7 @@ import {
   createTransferENSRap,
 } from './registerENS';
 
-export interface ENSRapActionResponse {
+interface ENSRapActionResponse {
   baseNonce?: number | null;
   errorMessage: string | null;
 }
@@ -311,8 +309,7 @@ const ensAction = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.debug(`[raps/ens]: [${actionName}] base nonce ${baseNonce} index: ${index}`);
-  const { dispatch } = store;
-  const ownerAddress = getAccountAddress();
+  const ownerAddress = await wallet.getAddress();
 
   const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 
@@ -380,17 +377,15 @@ const ensAction = async (
           wallet,
           nonce
         );
-        dispatch(
-          saveCommitRegistrationParameters({
-            commitTransactionHash: tx?.hash,
-            duration,
-            name,
-            ownerAddress,
-            records,
-            rentPrice,
-            salt,
-          })
-        );
+        useEnsRegistrationStore.getState().update(ownerAddress, name, {
+          commitTransactionHash: tx?.hash,
+          duration,
+          name,
+          ownerAddress,
+          records,
+          rentPrice,
+          salt,
+        });
         analytics.track(analytics.event.ensInitiatedRegistration, {
           category: 'profiles',
         });
@@ -414,11 +409,9 @@ const ensAction = async (
           wallet,
           nonce
         );
-        dispatch(
-          updateTransactionRegistrationParameters({
-            registerTransactionHash: tx?.hash,
-          })
-        );
+        useEnsRegistrationStore.getState().update(ownerAddress, name, {
+          registerTransactionHash: tx?.hash,
+        });
         analytics.track(analytics.event.ensCompletedRegistration, {
           category: 'profiles',
         });
@@ -499,7 +492,6 @@ const ensAction = async (
 
 const commitENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -509,7 +501,6 @@ const commitENS = async (
 
 const multicallENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -519,7 +510,6 @@ const multicallENS = async (
 
 const registerWithConfig = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -536,7 +526,6 @@ const registerWithConfig = async (
 
 const renewENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -546,7 +535,6 @@ const renewENS = async (
 
 const setNameENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -556,7 +544,6 @@ const setNameENS = async (
 
 const setAddrENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -566,7 +553,6 @@ const setAddrENS = async (
 
 const reclaimENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -576,7 +562,6 @@ const reclaimENS = async (
 
 const setTextENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -586,7 +571,6 @@ const setTextENS = async (
 
 const setContenthashENS = async (
   wallet: Signer,
-  currentRap: ENSRap,
   index: number,
   parameters: RapENSActionParameters,
   baseNonce?: number
@@ -668,7 +652,6 @@ const parseError = (error: EthersError): string => {
 const executeAction = async (
   action: RapENSAction,
   wallet: Signer,
-  rap: ENSRap,
   index: number,
   rapName: string,
   baseNonce?: number
@@ -682,7 +665,7 @@ const executeAction = async (
     nonce = await executeFn(actionPromise, {
       screen: Screens.SEND_ENS,
       operation: TimeToSignOperation.SignTransaction,
-    })(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
+    })(wallet, index, parameters as RapENSActionParameters, baseNonce);
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
     logger.error(new RainbowError(`[raps/ens]: [${rapName}] Error executing action: ${action} ${error}`));
@@ -724,12 +707,12 @@ export const executeENSRap = async (
   logger.debug(`[raps/ens]: [${rapName}] actions`, { actions });
   if (actions.length) {
     const firstAction = actions[0];
-    const { baseNonce, errorMessage } = await executeAction(firstAction, wallet, rap, 0, rapName, nonce);
+    const { baseNonce, errorMessage } = await executeAction(firstAction, wallet, 0, rapName, nonce);
 
     if (typeof baseNonce === 'number') {
       for (let index = 1; index < actions.length; index++) {
         const action = actions[index];
-        await executeAction(action, wallet, rap, index, rapName, baseNonce);
+        await executeAction(action, wallet, index, rapName, baseNonce);
       }
       nonce = baseNonce + actions.length - 1;
       callback(true);
@@ -747,16 +730,4 @@ export const executeENSRap = async (
   logger.debug(`[raps/ens]: [${rapName}] finished execute rap function`);
 
   return { nonce };
-};
-
-export default {
-  commitENS,
-  multicallENS,
-  reclaimENS,
-  registerWithConfig,
-  renewENS,
-  setAddrENS,
-  setContenthashENS,
-  setNameENS,
-  setTextENS,
 };

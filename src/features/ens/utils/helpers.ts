@@ -17,6 +17,7 @@ import { colors } from '@/styles';
 import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 import labelhash from '@/utils/labelhash';
 
+import { ENS_RECORDS } from '../core/records';
 import {
   ENSBaseRegistrarImplementationABI,
   ensBaseRegistrarImplementationAddress,
@@ -46,34 +47,6 @@ export enum ENSRegistrationTransactionType {
   SET_TEXT = 'setText',
   SET_NAME = 'setName',
   MULTICALL = 'multicall',
-}
-
-export enum ENS_RECORDS {
-  ETH = 'ETH',
-  BTC = 'BTC',
-  LTC = 'LTC',
-  DOGE = 'DOGE',
-  name = 'name',
-  displayName = 'me.rainbow.displayName',
-  header = 'header',
-  content = 'content',
-  contenthash = 'contenthash',
-  url = 'url',
-  email = 'email',
-  website = 'website',
-  avatar = 'avatar',
-  description = 'description',
-  notice = 'notice',
-  keywords = 'keywords',
-  discord = 'com.discord',
-  github = 'com.github',
-  reddit = 'com.reddit',
-  instagram = 'com.instagram',
-  snapchat = 'com.snapchat',
-  twitter = 'com.twitter', // correct as of 2025
-  telegram = 'org.telegram',
-  ensDelegate = 'eth.ens.delegate',
-  pronouns = 'pronouns',
 }
 
 export enum REGISTRATION_STEPS {
@@ -354,19 +327,6 @@ export const textRecordFields = {
       validator: value => /^([\w#.])*$/.test(value),
     },
   },
-  [ENS_RECORDS.pronouns]: {
-    id: 'pronouns',
-    inputProps: {
-      maxLength: 42,
-    },
-    key: ENS_RECORDS.pronouns,
-    get label() {
-      return i18n.t(i18n.l.profiles.create.pronouns);
-    },
-    get placeholder() {
-      return i18n.t(i18n.l.profiles.create.pronouns_placeholder);
-    },
-  },
   [ENS_RECORDS.notice]: {
     id: 'notice',
     inputProps: {
@@ -458,13 +418,6 @@ export const textRecordFields = {
   },
 } as {
   [key in ENS_RECORDS]?: TextRecordField;
-};
-
-export const deprecatedTextRecordFields = {
-  [ENS_RECORDS.displayName]: ENS_RECORDS.name,
-  [ENS_RECORDS.content]: ENS_RECORDS.contenthash,
-} as {
-  [key in ENS_RECORDS]: ENS_RECORDS;
 };
 
 export const ENS_DOMAIN = '.eth';
@@ -772,11 +725,7 @@ const accentColorAtom = atom({
 
 export {
   generateSalt,
-  getENSRegistryContract,
   getENSRegistrarControllerContract,
-  getENSBaseRegistrarImplementationContract,
-  getENSPublicResolverContract,
-  getENSReverseRegistrarContract,
   getAvailable,
   getNameExpires,
   getNameOwner,

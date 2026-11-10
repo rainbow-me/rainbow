@@ -1,8 +1,8 @@
 import { type EthereumAddress } from '@/entities/wallet';
 
-import { type ENS_RECORDS, type REGISTRATION_MODES } from '../utils/helpers';
+import { type REGISTRATION_MODES } from '../utils/helpers';
 
-export type Records = { [key in ENS_RECORDS]?: string };
+export type Records = Partial<Record<string, string>>;
 
 export interface ENSRegistrationRecords {
   coinAddress: { key: string; address: string }[] | null;
@@ -11,22 +11,21 @@ export interface ENSRegistrationRecords {
   text: { key: string; value: string }[] | null;
 }
 
-export interface TransactionRegistrationParameters {
+interface TransactionRegistrationParameters {
   commitTransactionHash?: string;
   commitTransactionConfirmedAt?: number;
-  registerTransactionHash?: number;
+  registerTransactionHash?: string;
 }
 
 export interface RegistrationParameters extends TransactionRegistrationParameters {
-  duration: number;
+  duration?: number;
   mode?: keyof typeof REGISTRATION_MODES;
   name: string;
-  ownerAddress: EthereumAddress;
-  rentPrice: string;
+  ownerAddress?: EthereumAddress;
+  rentPrice?: string;
   records?: Records;
   initialRecords?: Records;
-  changedRecords?: Records;
-  salt: string;
+  salt?: string;
   setReverseRecord?: boolean;
 }
 
@@ -34,9 +33,4 @@ export interface ENSRegistrations {
   [key: EthereumAddress]: {
     [ensName: string]: RegistrationParameters;
   };
-}
-
-export interface ENSRegistrationState {
-  currentRegistrationName: string;
-  registrations: ENSRegistrations;
 }

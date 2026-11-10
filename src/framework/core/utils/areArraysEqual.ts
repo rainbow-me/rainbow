@@ -1,7 +1,7 @@
 /**
  * Shallow-compares arrays in order using strict equality.
  */
-export function areArraysEqual(first: readonly unknown[], second: readonly unknown[]): boolean {
+export function areArraysEqual(first: ArrayLike<unknown>, second: ArrayLike<unknown>): boolean {
   'worklet';
   if (first === second) return true;
   if (first.length !== second.length) return false;

@@ -7,63 +7,48 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import Skeleton from '@/components/skeleton/Skeleton';
-import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/features/ens/core/records';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme/ThemeContext';
 
-import useENSRecordDisplayProperties from '../../hooks/useENSRecordDisplayProperties';
-import type { Records } from '../../types/registration';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '../../utils/helpers';
+import type { ProfileRecords } from '../../data/stores/recordsStore';
+import { useENSRecordDisplayProperties } from '../../hooks/useENSRecordDisplayProperties';
 
-const getRecordType = (recordKey: string) => {
-  switch (recordKey) {
-    case ENS_RECORDS.BTC:
-    case ENS_RECORDS.LTC:
-    case ENS_RECORDS.DOGE:
-    case ENS_RECORDS.ETH:
-      return 'address';
-    default:
-      return 'record';
-  }
-};
-export function RecordTags({
-  firstTransactionTimestamp,
-  records,
-  show,
-}: {
-  firstTransactionTimestamp?: number | null;
-  records: Partial<Records>;
-  show: ENS_RECORDS[];
-}) {
-  const recordsToShow = useMemo(
-    () =>
-      show
-        .map(key => {
-          // If a deprecated record exists with it's updated counterpart
-          // (e.g. `me.rainbow.displayName` & `name` exists) then omit
-          // the deprecated record.
-          if (deprecatedTextRecordFields[key] && records[deprecatedTextRecordFields[key]]) return null;
-          return {
-            key,
-            type: getRecordType(key),
-            value: records[key],
-          };
-        })
-        .filter(Boolean) as {
-        key: string;
-        value: string;
-        type: 'address' | 'record';
-      }[],
-    [records, show]
-  );
+const PROFILE_TAGS = [
+  ENS_RECORDS.name,
+  ENS_RECORDS.displayName,
+  ENS_RECORDS.url,
+  ENS_RECORDS.twitter,
+  ENS_RECORDS.email,
+  ENS_RECORDS.instagram,
+  ENS_RECORDS.discord,
+  ENS_RECORDS.github,
+  ENS_RECORDS.BTC,
+  ENS_RECORDS.snapchat,
+  ENS_RECORDS.telegram,
+  ENS_RECORDS.reddit,
+  ENS_RECORDS.notice,
+  ENS_RECORDS.keywords,
+  ENS_RECORDS.LTC,
+  ENS_RECORDS.DOGE,
+];
+
+export function RecordTags({ firstTransactionTimestamp, profile }: { firstTransactionTimestamp?: number | null; profile: ProfileRecords }) {
+  const tags = useMemo(() => {
+    return PROFILE_TAGS.map(key => {
+      const value = profile.coinAddresses[key] ?? profile.records[key];
+      const replacement = deprecatedTextRecordFields[key];
+      if (!value || (replacement && profile.records[replacement])) return null;
+      return <RecordTag key={key} recordKey={key} recordValue={value} type={getRecordType(key)} />;
+    });
+  }, [profile]);
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <Inset horizontal="19px (Deprecated)">
         <Inline space="10px">
-          {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
-            recordValue ? <RecordTag key={recordKey} recordKey={recordKey} recordValue={recordValue} type={type} /> : null
-          )}
+          {tags}
           {firstTransactionTimestamp && (
             <Tag color="grey" symbol="􀉉">
               {`${i18n.t(i18n.l.profiles.records.since)} ${format(firstTransactionTimestamp, 'MMM yyyy')}`}
@@ -75,48 +60,30 @@ export function RecordTags({
   );
 }
 
-const tagSizes = selectTextSizes('14px / 19px (Deprecated)', '16px / 22px (Deprecated)');
+function getRecordType(recordKey: ENS_RECORDS) {
+  switch (recordKey) {
+    case ENS_RECORDS.BTC:
+    case ENS_RECORDS.LTC:
+    case ENS_RECORDS.DOGE:
+    case ENS_RECORDS.ETH:
+      return 'address';
+    default:
+      return 'record';
+  }
+}
 
-type TagSize = (typeof tagSizes)[number];
-
-function Tag({
-  children,
-  color,
-  icon,
-  size = '14px / 19px (Deprecated)',
-  symbol,
-}: {
-  children: React.ReactNode;
-  color: 'appleBlue' | 'grey';
-  icon?: string;
-  size?: TagSize;
-  symbol?: string;
-}) {
+function Tag({ children, color, icon, symbol }: { children: string; color: 'appleBlue' | 'grey'; icon?: string; symbol?: string }) {
   const { colors } = useTheme();
-
-  const gradients = {
-    appleBlue: colors.gradients.transparentToAppleBlue,
-    grey: colors.gradients.lightGreyTransparent,
-  };
-
-  const action = useForegroundColor('action (Deprecated)');
-  const secondary80 = useForegroundColor('secondary80 (Deprecated)');
-  const iconColors = {
-    appleBlue: action,
-    grey: secondary80,
-  } as const;
-
-  const textColors = {
-    appleBlue: 'action (Deprecated)',
-    grey: 'secondary80 (Deprecated)',
-  } as const;
+  const textColor = color === 'appleBlue' ? 'action (Deprecated)' : 'secondary80 (Deprecated)';
+  const iconColor = useForegroundColor(textColor);
+  const gradient = color === 'appleBlue' ? colors.gradients.transparentToAppleBlue : colors.gradients.lightGreyTransparent;
 
   return (
     <Box
       alignItems="center"
       as={LinearGradient}
       borderRadius={46}
-      colors={gradients[color]}
+      colors={gradient}
       end={{ x: 1, y: 0 }}
       height="30px"
       justifyContent="center"
@@ -126,12 +93,12 @@ function Tag({
         <Inline alignVertical="center" space="6px">
           {icon && (
             <Bleed vertical="2px">
-              <Icon color={iconColors[color]} height="17" name={icon} width="17" />
+              <Icon color={iconColor} height="17" name={icon} width="17" />
             </Bleed>
           )}
-          <Text align="center" color={textColors[color]} containsEmoji size={size} weight="bold">
+          <Text align="center" color={textColor} containsEmoji size="14px / 19px (Deprecated)" weight="bold">
             {symbol ? `${symbol} ` : ''}
-            {children as string}
+            {children}
           </Text>
         </Inline>
       </Inset>
@@ -173,6 +140,6 @@ export function Placeholder() {
   );
 }
 
-export function PlaceholderItem() {
+function PlaceholderItem() {
   return <Box background="body (Deprecated)" borderRadius={30} height={{ custom: 30 }} width={{ custom: 140 }} />;
 }

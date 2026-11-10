@@ -1,84 +1,28 @@
-import { useMemo } from 'react';
-
 import { useQuery } from '@tanstack/react-query';
-import { uniqBy } from 'lodash';
 
-import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
-import { queryClient } from '@/react-query';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { ensClient } from '@/graphql';
 
-import { fetchAccountDomains } from '../utils/handlers';
-import { getENSDomains, setENSDomains } from '../utils/localStorage';
-import { prefetchENSAvatar } from './useENSAvatar';
-
-const queryKey = ({ accountAddress }: { accountAddress: string }) => ['domains', accountAddress];
-
-const STALE_TIME = 10000;
-
-async function fetchAccountENSDomains({ accountAddress }: { accountAddress: string }) {
-  const result = await fetchAccountDomains(accountAddress);
-  if (!result?.account) return [];
-
-  const { domains: controlledDomains, registrations } = result.account;
-  const registarDomains = registrations?.map(({ domain }) => domain);
-
-  const domains = uniqBy([...(controlledDomains || []), ...(registarDomains || [])], 'name');
-  return domains
-    .map(domain => {
-      if (!domain) return;
-      domain.name && prefetchENSAvatar(domain.name, { cacheFirst: true });
-      return domain;
-    })
-    .filter(<TDomain>(domain: TDomain | null | undefined): domain is TDomain => !!domain);
-}
-
-async function fetchENSDomainsWithCache({ accountAddress }: { accountAddress: string }) {
-  const cachedDomains = await getENSDomains(accountAddress);
-  if (cachedDomains) queryClient.setQueryData(queryKey({ accountAddress }), cachedDomains);
-  const ensDomains = await fetchAccountENSDomains({ accountAddress });
-  setENSDomains(accountAddress, ensDomains);
-  return ensDomains;
-}
-
-export async function prefetchAccountENSDomains({ accountAddress }: { accountAddress: string }) {
-  queryClient.prefetchQuery(queryKey({ accountAddress }), async () => await fetchENSDomainsWithCache({ accountAddress }), {
-    staleTime: STALE_TIME,
+/**
+ * Loads the account's indexed names for profile setup.
+ */
+export function useAccountENSDomains(accountAddress: string) {
+  const address = accountAddress.toLowerCase();
+  return useQuery(['domains', address], () => fetchAccountNames(address), {
+    enabled: !!address,
   });
 }
 
-export default function useAccountENSDomains() {
-  const { accountAddress, accountENS } = useAccountProfileInfo();
+async function fetchAccountNames(address: string): Promise<readonly string[]> {
+  const response = await ensClient.getDomainsByAddress({ address });
+  if (!response.account) return [];
 
-  const {
-    data: domains,
-    isLoading,
-    isFetched,
-    isSuccess,
-  } = useQuery<BaseEnsDomainFragment[]>(queryKey({ accountAddress }), async () => fetchENSDomainsWithCache({ accountAddress }), {
-    enabled: Boolean(accountAddress),
-  });
-
-  const { controlledDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
-    const controlledDomains = domains?.filter(({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase());
-    return {
-      controlledDomains,
-      nonPrimaryDomains: controlledDomains?.filter(({ name }) => accountENS !== name) || [],
-      primaryDomain: controlledDomains?.find(({ name }) => accountENS === name),
-    };
-  }, [accountAddress, accountENS, domains]);
-
-  const uniqueDomain = useMemo(() => {
-    return primaryDomain ? primaryDomain : nonPrimaryDomains?.length === 1 ? nonPrimaryDomains?.[0] : null;
-  }, [nonPrimaryDomains, primaryDomain]);
-
-  return {
-    controlledDomains,
-    domains,
-    isFetched,
-    isLoading,
-    isSuccess,
-    nonPrimaryDomains,
-    primaryDomain,
-    uniqueDomain,
-  };
+  const names = new Set<string>();
+  for (const domain of response.account.domains) {
+    if (domain.name) names.add(domain.name);
+  }
+  for (const registration of response.account.registrations ?? []) {
+    const domain = registration.domain;
+    if (domain.name && domain.owner.id.toLowerCase() === address) names.add(domain.name);
+  }
+  return [...names];
 }

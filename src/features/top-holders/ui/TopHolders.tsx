@@ -10,7 +10,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type SpotPnlSheetEntryPoint, type WalletTokenTrades } from '@/features/spot-pnl/core/spotPnl';
 import { PnlArrow, pnlColor } from '@/features/spot-pnl/ui/pnlDisplay';
@@ -399,10 +399,8 @@ function HolderRow({
 }
 
 function HolderAvatar({ address, ensName }: { address: string; ensName: string | undefined }) {
-  const { data: avatar } = useENSAvatar(ensName ?? '', { enabled: !!ensName });
-  return (
-    <AddressAvatar address={address} color={addressHashedColorIndex(address) ?? 0} label="" size={AVATAR_SIZE} url={avatar?.imageUrl} />
-  );
+  const avatar = useEnsImageStore(s => s.get(ensName ? { name: ensName, field: 'avatar' } : undefined));
+  return <AddressAvatar address={address} color={addressHashedColorIndex(address) ?? 0} label="" size={AVATAR_SIZE} url={avatar} />;
 }
 
 function RowSeparator() {

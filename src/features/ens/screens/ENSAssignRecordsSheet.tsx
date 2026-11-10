@@ -14,6 +14,7 @@ import { TintButton } from '@/components/buttons/TintButton';
 import { SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { abbreviateName } from '@/features/address/core/formatAddress';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -31,16 +32,14 @@ import RegistrationAvatar from '../components/registration/RegistrationAvatar';
 import RegistrationCover from '../components/registration/RegistrationCover';
 import { SelectableButton } from '../components/registration/SelectableButton';
 import { TextRecordsForm } from '../components/registration/TextRecordsForm';
-import useENSModifiedRegistration from '../hooks/useENSModifiedRegistration';
-import useENSRecords from '../hooks/useENSRecords';
-import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../data/profilePreferences';
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
+import { useENSRegistration } from '../hooks/useENSRegistration';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
-import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
-import useENSSearch from '../hooks/useENSSearch';
+import { useENSRegistrationImage } from '../hooks/useENSRegistrationImage';
 import { type ENSRoutes } from '../navigation/RegisterENSNavigator';
-import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
-import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '../utils/localStorage';
+import { accentColorAtom, REGISTRATION_MODES, textRecordFields, type TextRecordField } from '../utils/helpers';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
 const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
@@ -51,21 +50,12 @@ export function ENSAssignRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
-  const { name } = useENSRegistration();
+  const { name, mode, accountAddress } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
-  const {
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration({
-    modifyChangedRecords: true,
-    setInitialRecordsWhenInEditMode: true,
-  });
-
-  const { data: registrationData } = useENSSearch({
-    name,
-  });
-  const { step } = useENSRegistrationStepHandler();
+  const profile = useEnsRecordsStore(s => s.get(name ? { name } : undefined));
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
 
   const defaultFields = useMemo(
     () =>
@@ -80,17 +70,18 @@ export function ENSAssignRecordsSheet() {
     initializeForm: true,
   });
 
-  const { data: { records } = {} } = useENSRecords(name);
-  const isEmptyProfile = isEmpty(records);
+  const isEmptyProfile = isEmpty(profile?.records);
+
+  useEffect(() => {
+    if (mode !== REGISTRATION_MODES.EDIT || !profile) return;
+    useEnsRegistrationStore.getState().initializeRecords(accountAddress, name, {
+      contenthash: profile.contenthash,
+      ...profile.records,
+      ...profile.coinAddresses,
+    });
+  }, [accountAddress, name, mode, profile]);
 
   const displayTitleLabel = params?.mode !== REGISTRATION_MODES.EDIT || !isLoading;
-
-  useENSRegistrationCosts({
-    name,
-    rentPrice: registrationData?.rentPrice,
-    step,
-    yearsDuration: 1,
-  });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
@@ -214,21 +205,13 @@ export function ENSAssignRecordsBottomActions({
   const { accountENS } = useAccountProfileInfo();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const { mode, name } = useENSRegistration();
   const insets = useSafeAreaInsets();
+  const { mode, name } = useENSRegistration();
+  const shouldLoadRecords = mode === REGISTRATION_MODES.EDIT && !!name;
+  const hasRecords = useEnsRecordsStore(s => s.get(shouldLoadRecords ? { name } : undefined) !== undefined);
+  const { disabled, errors, isEmpty: isEmptyForm, selectedFields, toggleField, submit, values } = useENSRegistrationForm();
+
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
-  const {
-    disabled,
-    errors,
-    isValidating,
-    isEmpty: isEmptyForm,
-    selectedFields,
-    onAddField,
-    onRemoveField,
-    submit,
-    values,
-  } = useENSRegistrationForm();
-  const { isSuccess } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
     if (fromRoute) {
@@ -267,11 +250,11 @@ export function ENSAssignRecordsBottomActions({
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {
-      setTimeout(() => setVisible(isSuccess), 200);
+      setTimeout(() => setVisible(hasRecords), 200);
     } else {
       setVisible(defaultVisible);
     }
-  }, [defaultVisible, mode, isSuccess]);
+  }, [defaultVisible, mode, hasRecords]);
 
   const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
 
@@ -310,8 +293,7 @@ export function ENSAssignRecordsBottomActions({
                 <Inset horizontal="19px (Deprecated)" top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
-                    onAddField={onAddField}
-                    onRemoveField={onRemoveField}
+                    toggleField={toggleField}
                     selectedFields={selectedFields}
                   />
                 </Inset>
@@ -338,7 +320,7 @@ export function ENSAssignRecordsBottomActions({
                       {!disabled ? (
                         <SheetActionButton
                           color={accentColor}
-                          disabled={isValidating || !isEmpty(errors)}
+                          disabled={!isEmpty(errors)}
                           label={i18n.t(i18n.l.profiles.create.review)}
                           onPress={handlePressContinue}
                           size="big"
@@ -446,13 +428,11 @@ const MAX_DISPLAY_BUTTONS = 9;
 
 function SelectableAttributesButtons({
   selectedFields,
-  onAddField,
-  onRemoveField,
+  toggleField,
   navigateToAdditionalRecords,
 }: {
   selectedFields: TextRecordField[];
-  onAddField: (fieldsToAdd: TextRecordField, selectedFields: TextRecordField[]) => void;
-  onRemoveField: (fieldsToRemove: TextRecordField, selectedFields: TextRecordField[]) => void;
+  toggleField: (field: TextRecordField) => void;
   navigateToAdditionalRecords: () => void;
 }) {
   const dotsButtonIsSelected = useMemo(() => {
@@ -473,20 +453,7 @@ function SelectableAttributesButtons({
             <SelectableButton
               isSelected={isSelected}
               key={i}
-              onSelect={() => {
-                if (isSelected) {
-                  const index = selectedFields.findIndex(({ id }) => textRecordField.id === id);
-                  const fieldToRemove = selectedFields[index];
-                  const newFields = [...selectedFields];
-                  newFields.splice(index, 1);
-                  onRemoveField(fieldToRemove, newFields);
-                } else {
-                  const fieldToAdd = textRecordField;
-                  const newSelectedFields = [...selectedFields];
-                  newSelectedFields.splice(i, 0, fieldToAdd);
-                  onAddField(fieldToAdd, newSelectedFields);
-                }
-              }}
+              onSelect={() => toggleField(textRecordField)}
               testID={`ens-selectable-attribute-${textRecordField.id}`}
             >
               {textRecordField.label}

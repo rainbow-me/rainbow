@@ -6,27 +6,16 @@ import URL from 'url-parse';
 
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 
-import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
-import useENSRegistration from './useENSRegistration';
-
-type ImageSource = { imageUrl?: string | null };
-type ENSImages = {
-  avatar?: ImageSource;
-  cover?: ImageSource;
-};
-
-const imageKeyMap = {
-  [ENS_RECORDS.avatar]: 'avatarUrl',
-  [ENS_RECORDS.header]: 'coverUrl',
-} as {
-  [key: string]: 'avatarUrl' | 'coverUrl';
-};
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
+import { REGISTRATION_MODES, textRecordFields } from '../utils/helpers';
 
 const icons = {
   [ENS_RECORDS.twitter]: 'x',
@@ -49,29 +38,29 @@ const links = {
   [ENS_RECORDS.telegram]: 'https://t.me/',
 } as { [key: string]: string };
 
-export default function useENSRecordDisplayProperties({
+export function useENSRecordDisplayProperties({
   allowEdit,
   ensName,
-  images,
+  imageUrl,
   key: recordKey,
   value: recordValue,
   type,
 }: {
   allowEdit?: boolean;
   ensName?: string;
-  images?: ENSImages;
+  imageUrl?: string | null;
   key: string;
   value: string;
   type: 'address' | 'record';
 }) {
-  const isImageValue = useMemo(() => Object.keys(imageKeyMap).includes(recordKey), [recordKey]);
+  const isImageValue = recordKey === ENS_RECORDS.avatar || recordKey === ENS_RECORDS.header;
 
   const isUrlRecord = useMemo(() => [ENS_RECORDS.url, ENS_RECORDS.website].includes(recordKey as ENS_RECORDS), [recordKey]);
   const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
     if (isImageValue) {
-      return images?.[recordKey as 'avatar' | 'cover']?.imageUrl || undefined;
+      return imageUrl || undefined;
     }
     if (isUrlValue || isUrlRecord) {
       return recordValue.match(/^http/) ? recordValue : `https://${recordValue}`;
@@ -79,7 +68,7 @@ export default function useENSRecordDisplayProperties({
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
     }
-  }, [images, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
+  }, [imageUrl, isImageValue, isUrlRecord, isUrlValue, recordKey, recordValue]);
 
   const { displayUrl, displayUrlUsername } = useMemo(() => {
     const urlObj = url ? new URL(url) : { hostname: '', pathname: '' };
@@ -165,7 +154,6 @@ export default function useENSRecordDisplayProperties({
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
 
   const handlePressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -177,7 +165,7 @@ export default function useENSRecordDisplayProperties({
         setClipboard(recordValue);
       }
       if (actionKey === 'edit' && ensName) {
-        startRegistration(ensName, REGISTRATION_MODES.EDIT);
+        useEnsRegistrationStore.getState().start(useWalletsStore.getState().accountAddress, ensName, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
@@ -185,7 +173,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, startRegistration, url]
+    [ensName, navigate, recordKey, recordValue, url]
   );
 
   const Button = useCallback(
@@ -208,7 +196,6 @@ export default function useENSRecordDisplayProperties({
     ContextMenuButton: Button,
     icon,
     isImageValue,
-    isUrlValue,
     label,
     url,
     value,

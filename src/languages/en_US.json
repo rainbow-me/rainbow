@@ -343,14 +343,6 @@
       "claim": "Claim"
     },
     "cards": {
-      "ens_create_profile": {
-        "title": "Create your ENS profile",
-        "body": "Replace your wallet address with a profile owned entirely by you."
-      },
-      "ens_search": {
-        "mini_title": "ENS",
-        "title": "Register a .eth name"
-      },
       "eth": {
         "today": "today"
       },
@@ -1854,8 +1846,6 @@
         "name_placeholder": "Add a display name",
         "notice": "Notice",
         "notice_placeholder": "Add a notice",
-        "pronouns": "Pronouns",
-        "pronouns_placeholder": "Add pronouns",
         "reddit": "Reddit",
         "remove": "Remove",
         "review": "Review",

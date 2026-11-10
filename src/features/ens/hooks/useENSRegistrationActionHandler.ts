@@ -5,7 +5,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type ImagePickerAsset } from 'expo-image-picker';
 import { noop } from 'lodash';
 import { useRecoilValue } from 'recoil';
-import { type Hex } from 'viem';
+import { getAddress } from 'viem';
 
 import { type PendingTransaction } from '@/entities/transactions';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -21,17 +21,14 @@ import timeUnits from '@/references/time-units.json';
 import { getNextNonce } from '@/state/nonces';
 import { executeFn, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
-import labelhash from '@/utils/labelhash';
 
 import { avatarMetadataAtom } from '../components/registration/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/registration/RegistrationCover';
 import { executeENSRap } from '../raps/actions';
 import { ENSRapActionType, type ENSActionParameters } from '../raps/common';
 import { type Records, type RegistrationParameters } from '../types/registration';
-import { fetchResolver } from '../utils/handlers';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '../utils/helpers';
-import { saveNameFromLabelhash } from '../utils/localStorage';
-import useENSRegistration from './useENSRegistration';
+import { useENSRegistration } from './useENSRegistration';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
@@ -105,7 +102,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
   const accountAddress = useAccountAddress();
-  const { registrationParameters } = useENSRegistration();
+  const { registrationParameters, changedRecords } = useENSRegistration();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -135,6 +132,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
   // actions
   const commitAction: ActionTypes[typeof REGISTRATION_STEPS.COMMIT] = useCallback(
     async (callback = noop) => {
+      if (!registrationParameters) throw new Error('No active ENS registration');
       updateAvatarsOnNextBlock.current = true;
 
       const provider = getProvider({ chainId: ChainId.mainnet });
@@ -151,15 +149,12 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
       ]);
 
-      const hash = labelhash(registrationParameters.name.replace(ENS_DOMAIN, ''));
-      await saveNameFromLabelhash(hash, registrationParameters.name);
-
       const commitEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         duration,
         nonce,
         ownerAddress: accountAddress,
-        records: registrationParameters.changedRecords,
+        records: changedRecords,
         rentPrice: rentPrice.toString(),
         salt,
       };
@@ -171,7 +166,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         callback();
       });
     },
-    [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
+    [registrationParameters, changedRecords, duration, accountAddress, isHardwareWallet, goBack]
   );
 
   const speedUpCommitAction: ActionTypes[typeof REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION] = useCallback(
@@ -200,7 +195,9 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
   const registerAction: ActionTypes[typeof REGISTRATION_STEPS.REGISTER] = useCallback(
     async (callback = noop) => {
-      const { name, duration } = registrationParameters as RegistrationParameters;
+      if (!registrationParameters) throw new Error('No active ENS registration');
+      const { name, duration, salt } = registrationParameters;
+      if (!duration || !salt) throw new Error('Registration requires a saved commitment');
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
@@ -210,10 +207,10 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, rentPrice, changedRecords] = await Promise.all([
+      const [nonce, rentPrice, uploadedRecords] = await Promise.all([
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
-        uploadRecordImages(registrationParameters.changedRecords, {
+        uploadRecordImages(changedRecords, {
           avatar: avatarMetadata,
           header: coverMetadata,
         }),
@@ -224,7 +221,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         duration,
         nonce,
         ownerAddress: accountAddress,
-        records: changedRecords,
+        records: uploadedRecords,
         rentPrice: rentPrice.toString(),
         setReverseRecord: sendReverseRecord,
       };
@@ -233,12 +230,13 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
+    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, changedRecords, sendReverseRecord]
   );
 
   const renewAction: ActionTypes[typeof REGISTRATION_STEPS.RENEW] = useCallback(
     async (callback = noop) => {
-      const { name } = registrationParameters as RegistrationParameters;
+      if (!registrationParameters) throw new Error('No active ENS registration');
+      const { name } = registrationParameters;
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
@@ -265,7 +263,8 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
   const setNameAction: ActionTypes[typeof REGISTRATION_STEPS.SET_NAME] = useCallback(
     async (callback = noop) => {
-      const { name } = registrationParameters as RegistrationParameters;
+      if (!registrationParameters) throw new Error('No active ENS registration');
+      const { name } = registrationParameters;
 
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
@@ -291,6 +290,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
   const setRecordsAction: ActionTypes[typeof REGISTRATION_STEPS.EDIT] = useCallback(
     async (callback = noop) => {
+      if (!registrationParameters) throw new Error('No active ENS registration');
       const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         provider,
@@ -299,21 +299,23 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
         return;
       }
 
-      const [nonce, changedRecords, resolver] = await Promise.all([
+      const [nonce, uploadedRecords, resolver] = await Promise.all([
         getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
-        uploadRecordImages(registrationParameters.changedRecords, {
+        uploadRecordImages(changedRecords, {
           avatar: avatarMetadata,
           header: coverMetadata,
         }),
-        fetchResolver(registrationParameters.name),
+        getProvider({ chainId: ChainId.mainnet }).getResolver(registrationParameters.name),
       ]);
+
+      if (!resolver) throw new Error('ENS name has no resolver');
 
       const setRecordsEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
         nonce,
         ownerAddress: accountAddress,
-        records: changedRecords,
-        resolverAddress: resolver?.address as Hex,
+        records: uploadedRecords,
+        resolverAddress: getAddress(resolver.address),
         setReverseRecord: sendReverseRecord,
       };
 
@@ -321,7 +323,7 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
+    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, changedRecords, sendReverseRecord]
   );
 
   const transferAction: ActionTypes[typeof REGISTRATION_STEPS.TRANSFER] = useCallback(
@@ -342,7 +344,8 @@ export const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = 
       const transferEnsParameters: ENSActionParameters = {
         ...formatENSActionParams({
           ...registrationParameters,
-          records: records ?? registrationParameters.records,
+          name,
+          records: records ?? registrationParameters?.records,
         }),
         clearRecords,
         name,

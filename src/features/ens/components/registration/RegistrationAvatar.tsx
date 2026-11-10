@@ -11,14 +11,14 @@ import { AvatarCoverPhotoMaskSvg } from '@/components/svg/AvatarCoverPhotoMaskSv
 import { AccentColorProvider, BackgroundProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { IS_TEST } from '@/env';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import { type UploadImageReturnData } from '@/handlers/pinata';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import magicMemo from '@/utils/magicMemo';
 
-import useENSModifiedRegistration from '../../hooks/useENSModifiedRegistration';
-import useENSRegistration from '../../hooks/useENSRegistration';
+import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import { ENS_RECORDS } from '../../utils/helpers';
+import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
@@ -39,10 +39,8 @@ const RegistrationAvatar = ({
   onShowExplainSheet: () => void;
   enableNFTs: boolean;
 }) => {
-  const {
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration();
-  const { isLoading, values, onBlurField, onRemoveField, setDisabled } = useENSRegistrationForm();
+  const initialAvatarUrl = useENSRegistrationImage('avatar');
+  const { isLoading, values, onChangeField, onRemoveField, setUploading } = useENSRegistrationForm();
   const { name } = useENSRegistration();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
@@ -71,7 +69,7 @@ const RegistrationAvatar = ({
         const standard = asset.standard || '';
         const contractAddress = asset.contractAddress || '';
         const tokenId = asset.tokenId;
-        onBlurField({
+        onChangeField({
           key: 'avatar',
           value: stringifyENSNFTRecord({
             contractAddress,
@@ -83,13 +81,13 @@ const RegistrationAvatar = ({
         // We want to disallow future avatar state changes (i.e. when upload successful)
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setAvatarUpdateAllowed(false);
-        onBlurField({
+        onChangeField({
           key: 'avatar',
           value: image.uri,
         });
       }
     },
-    [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
+    [onChangeField, onChangeAvatarUrl, setAvatarMetadata]
   );
 
   const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({
@@ -106,19 +104,17 @@ const RegistrationAvatar = ({
       onRemoveField({ key: ENS_RECORDS.avatar });
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
-      setDisabled(false);
       setTimeout(() => {
         setAvatarUrl('');
       }, 100);
     },
     onUploadError: () => {
-      onBlurField({ key: 'avatar', value: '' });
+      onChangeField({ key: 'avatar', value: '' });
       setAvatarUrl('');
     },
-    onUploading: () => setDisabled(true),
+    onUploading: uploading => setUploading('avatar', uploading),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'avatar', value: data.url });
-      setDisabled(false);
+      onChangeField({ key: 'avatar', value: data.url });
     },
     showRemove: Boolean(avatarUrl),
     uploadToIPFS: true,

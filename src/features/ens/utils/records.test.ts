@@ -37,6 +37,12 @@ describe('valid names', () => {
 });
 
 describe('invalid names', () => {
+  it('validates every label and counts Unicode code points for the registration minimum', () => {
+    expect(validateENS('bad .sub.valid.eth')).toMatchObject({ valid: false, code: 'invalid-subdomain-name' });
+    expect(validateENS('😊😊.eth')).toMatchObject({ valid: false, code: 'invalid-length' });
+    expect(validateENS('😊😊😊.eth')).toEqual({ valid: true });
+  });
+
   it('invalid domain', () => {
     expect(validateENS('wat')).toMatchInlineSnapshot(`
       {
@@ -48,7 +54,7 @@ describe('invalid names', () => {
   });
 
   it('domain with special characters', () => {
-    expect(validateENS('omg$.eth')).toMatchInlineSnapshot(`
+    expect(validateENS('omg .eth')).toMatchInlineSnapshot(`
       {
         "code": "invalid-subdomain-name",
         "hint": "Your name cannot include special characters",
@@ -98,7 +104,7 @@ describe('invalid names', () => {
   });
 
   it('subdomain with special characters', () => {
-    expect(validateENS('haha$.rofl.eth')).toMatchInlineSnapshot(`
+    expect(validateENS('haha .rofl.eth')).toMatchInlineSnapshot(`
       {
         "code": "invalid-subdomain-name",
         "hint": "Your name cannot include special characters",

@@ -8,6 +8,7 @@ import {
   type SetDataParams,
 } from '@storesjs/stores';
 
+import { areArraysEqual } from '@/framework/core/utils/areArraysEqual';
 import { time } from '@/framework/core/utils/time';
 import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { type Route } from '@/navigation/routesNames';
@@ -154,7 +155,7 @@ export function createLineChartDataStore(
     });
   }
 
-  return chartReadTracker.install(store, updateSubscribedChartIds);
+  return chartReadTracker.install(store, () => updateSubscribedChartIds(chartReadTracker.getKeys()));
 }
 
 // ============ Store Options ================================================== //
@@ -252,15 +253,5 @@ function getOldestChartFetchTime(
 // ============ Comparisons ==================================================== //
 
 function isLineChartDataEqual(current: CompactLineChartData, next: CompactLineChartData): boolean {
-  return areNumberArraysEqual(current.prices, next.prices) && areNumberArraysEqual(current.timestamps, next.timestamps);
-}
-
-function areNumberArraysEqual(current: ArrayLike<number>, next: ArrayLike<number>): boolean {
-  if (current.length !== next.length) return false;
-
-  for (let i = 0; i < current.length; i++) {
-    if (current[i] !== next[i]) return false;
-  }
-
-  return true;
+  return areArraysEqual(current.prices, next.prices) && areArraysEqual(current.timestamps, next.timestamps);
 }

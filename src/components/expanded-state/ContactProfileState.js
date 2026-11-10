@@ -3,7 +3,7 @@ import { Keyboard } from 'react-native';
 
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import useContacts from '@/hooks/useContacts';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -42,8 +42,8 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     goBack();
   }, [goBack]);
 
-  const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
-  const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
+  const avatar = useEnsImageStore(s => s.get(ens ? { name: ens, field: 'avatar' } : undefined));
+  const avatarUrl = profilesEnabled ? avatar : undefined;
 
   const dominantColor = usePersistentDominantColorFromImage(avatarUrl);
 

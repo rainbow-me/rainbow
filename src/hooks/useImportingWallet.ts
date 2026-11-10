@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, Platform, type TextInput } from 'react-native';
 
 import { useDispatch } from 'react-redux';
+import { getAddress } from 'viem';
 
 import { analytics } from '@/analytics';
 import { IS_TEST } from '@/env';
@@ -10,8 +11,8 @@ import { resolveNameOrAddress } from '@/features/address/data/resolveAddress';
 import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { isValidBluetoothDeviceId } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -146,7 +147,12 @@ export default function useImportingWallet({
         try {
           const [address, avatar] = await Promise.all([
             resolveNameOrAddress(input, ChainId.mainnet),
-            !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
+            !avatarUrl &&
+              profilesEnabled &&
+              useEnsImageStore
+                .getState()
+                .load({ name: input, field: 'avatar' })
+                .catch(() => null),
           ]);
           if (!address) {
             setBusy(false);
@@ -156,7 +162,7 @@ export default function useImportingWallet({
           setResolvedAddress(address);
           name = input;
 
-          const finalAvatarUrl = avatarUrl || (avatar && avatar?.imageUrl);
+          const finalAvatarUrl = avatarUrl || avatar;
           setBusy(false);
 
           if (type === 'watch') {
@@ -207,19 +213,28 @@ export default function useImportingWallet({
         }
       } else if (isValidAddress(input)) {
         let finalAvatarUrl: string | null | undefined = avatarUrl;
-        let ens: string = input;
+        let ens: string | null = input;
         try {
-          ens = await fetchReverseRecord(input);
+          ens = await useEnsNameStore
+            .getState()
+            .load(getAddress(input))
+            .then(
+              name => name ?? null,
+              () => null
+            );
           if (ens && ens !== input) {
             name = ens;
             if (!avatarUrl && profilesEnabled) {
-              const avatar = await fetchENSAvatar(name, { swallowError: true });
-              finalAvatarUrl = avatar?.imageUrl;
+              const avatar = await useEnsImageStore
+                .getState()
+                .load({ name, field: 'avatar' })
+                .catch(() => null);
+              finalAvatarUrl = avatar;
             }
           }
 
           analytics.track(analytics.event.showWalletProfileModalForReadOnlyWallet, {
-            ens,
+            ens: ens ?? input,
             input,
           });
         } catch (e) {
@@ -230,7 +245,7 @@ export default function useImportingWallet({
 
         if (type === 'watch') {
           analytics.track(analytics.event.watchWallet, {
-            addressOrEnsName: ens,
+            addressOrEnsName: ens ?? input,
             address: input,
           });
         }
@@ -252,15 +267,19 @@ export default function useImportingWallet({
             return null;
           }
 
-          const ens = await fetchReverseRecord(walletResult.address);
+          const ens = await useEnsNameStore
+            .getState()
+            .load(getAddress(walletResult.address))
+            .catch(() => null);
           let finalAvatarUrl: string | null | undefined = avatarUrl;
           if (ens && ens !== input) {
             name = ens;
             if (!finalAvatarUrl && profilesEnabled) {
-              const avatar = await fetchENSAvatar(name, {
-                swallowError: true,
-              });
-              finalAvatarUrl = avatar?.imageUrl;
+              const avatar = await useEnsImageStore
+                .getState()
+                .load({ name, field: 'avatar' })
+                .catch(() => null);
+              finalAvatarUrl = avatar;
             }
           }
 
@@ -268,7 +287,7 @@ export default function useImportingWallet({
 
           if (type === 'watch') {
             analytics.track(analytics.event.watchWallet, {
-              addressOrEnsName: ens,
+              addressOrEnsName: ens ?? input,
               address: input,
             });
           }

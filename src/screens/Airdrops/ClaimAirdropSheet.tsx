@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
-import { type Address } from 'viem';
+import { getAddress, type Address } from 'viem';
 
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
@@ -40,8 +40,8 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
@@ -610,21 +610,27 @@ export async function fetchAndSetEnsData({
 
   try {
     await Promise.race([
-      fetchReverseRecord(address).then(async name => {
-        if (!name) {
-          avatarUrl.value = null;
-          ensOrAddress.value = getFallbackAddress(address);
+      useEnsNameStore
+        .getState()
+        .load(getAddress(address))
+        .then(async name => {
+          if (!name) {
+            avatarUrl.value = null;
+            ensOrAddress.value = getFallbackAddress(address);
+            if (timeoutId) clearTimeout(timeoutId);
+            return;
+          }
+          resolved = true;
+          ensOrAddress.value = name;
+
+          const images = useEnsImageStore.getState();
+          const input = { name, field: 'avatar' } as const;
+          let avatar = images.get(input);
+          if (avatar === undefined) avatar = await images.load(input).catch(() => null);
+
+          avatarUrl.value = getSizedImageUrl(avatar, 16) || null;
           if (timeoutId) clearTimeout(timeoutId);
-          return;
-        }
-        resolved = true;
-        ensOrAddress.value = name;
-        const avatar = (await fetchENSAvatar(name, { cacheFirst: true }))?.imageUrl;
-        const sizedImageUrl = avatar ? getSizedImageUrl(avatar, 16) : null;
-        avatarUrl.value = sizedImageUrl || null;
-        if (timeoutId) clearTimeout(timeoutId);
-        return;
-      }),
+        }),
       timeoutPromise.then(() => {
         if (resolved) return;
         avatarUrl.value = null;

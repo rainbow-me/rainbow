@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import ensRegistration from '@/features/ens/redux/registration';
 import gas from '@/features/gas/redux/gas';
 
 import charts from './charts';
@@ -15,7 +14,6 @@ export default combineReducers({
   charts,
   contacts,
   editOptions,
-  ensRegistration,
   gas,
   imageMetadata,
   keyboardHeight,

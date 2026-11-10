@@ -12,18 +12,20 @@ import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActi
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { IS_TEST } from '@/env';
 import { abbreviateName } from '@/features/address/core/formatAddress';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { IntroMarquee } from '../components/registration/IntroMarquee';
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import useENSAvatar from '../hooks/useENSAvatar';
-import useENSRecords from '../hooks/useENSRecords';
-import useENSRegistration from '../hooks/useENSRegistration';
+import { useEnsRecordsStore } from '../data/stores/recordsStore';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
+import { useAccountENSDomains } from '../hooks/useAccountENSDomains';
 import { REGISTRATION_MODES } from '../utils/helpers';
 
 enum AnotherENSEnum {
@@ -95,14 +97,21 @@ export function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
+  const { navigate } = useNavigation();
 
-  const { controlledDomains, isLoading, isFetched, nonPrimaryDomains, uniqueDomain } = useAccountENSDomains();
-  const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {
-    enabled: Boolean(uniqueDomain?.name),
-  });
-  const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
-    enabled: Boolean(uniqueDomain?.name),
-  });
+  const accountAddress = useAccountAddress();
+  const { data: names, isFetched: hasSettled } = useAccountENSDomains(accountAddress);
+  const primaryName = useEnsNameStore(s => s.get(accountAddress));
+  const ownsPrimaryName = !!primaryName && !!names?.includes(primaryName);
+  const suggestedName = ownsPrimaryName ? primaryName : names?.length === 1 ? names[0] : undefined;
+  const ensRecords = useEnsRecordsStore(s => s.get(suggestedName ? { name: suggestedName } : undefined));
+  const ensAvatar = useEnsImageStore(s => s.get(suggestedName ? { name: suggestedName, field: 'avatar' } : undefined));
+
+  const profileExists = useMemo(() => {
+    if (ensAvatar) return true;
+    if (!ensRecords) return false;
+    return !!ensRecords.contenthash || Object.keys(ensRecords.coinAddresses).length > 1 || Object.keys(ensRecords.records).length > 0;
+  }, [ensAvatar, ensRecords]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -111,42 +120,30 @@ export function ENSIntroSheet() {
   const contentHeight = params?.contentHeight;
   const contentWidth = Math.min(deviceWidth - 72, 300);
 
-  const profileExists = useMemo(
-    () =>
-      ensRecords?.contenthash ||
-      Object.keys(ensRecords?.coinAddresses || {}).length > 1 ||
-      ensAvatar?.imageUrl ||
-      Object.keys(ensRecords?.records || {}).length > 0,
-    [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.contenthash, ensRecords?.records]
-  );
-
-  const { navigate } = useNavigation();
-  const { startRegistration } = useENSRegistration();
-
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();
     InteractionManager.runAfterInteractions(() => {
-      startRegistration('', REGISTRATION_MODES.CREATE);
+      useEnsRegistrationStore.getState().start(accountAddress, '', REGISTRATION_MODES.CREATE);
       navigate(Routes.ENS_SEARCH_SHEET);
     });
-  }, [navigate, params, startRegistration]);
+  }, [navigate, params, accountAddress]);
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
-      startRegistration(ensName, REGISTRATION_MODES.EDIT);
+      useEnsRegistrationStore.getState().start(accountAddress, ensName, REGISTRATION_MODES.EDIT);
       InteractionManager.runAfterInteractions(() => {
         params?.onSelectExistingName?.();
         navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
       });
     },
-    [navigate, params, startRegistration]
+    [navigate, params, accountAddress]
   );
 
-  const handleSelectUniqueDomain = useCallback(() => {
-    if (uniqueDomain?.name) {
-      navigateToAssignRecords(uniqueDomain?.name);
+  const handleSelectSuggestedName = useCallback(() => {
+    if (suggestedName) {
+      navigateToAssignRecords(suggestedName);
     }
-  }, [navigateToAssignRecords, uniqueDomain]);
+  }, [navigateToAssignRecords, suggestedName]);
 
   const handleSelectExistingName = useCallback(() => {
     navigate(Routes.SELECT_ENS_SHEET, {
@@ -207,14 +204,14 @@ export function ENSIntroSheet() {
             <Row height="content">
               <Box paddingBottom="4px">
                 <Inset bottom={{ custom: insets.bottom + 8 }} space="19px (Deprecated)">
-                  {isLoading && (
+                  {!!accountAddress && !hasSettled && (
                     <Box alignItems="center" paddingBottom="15px (Deprecated)">
                       <ActivityIndicator />
                     </Box>
                   )}
-                  {isFetched && (
+                  {hasSettled && (
                     <>
-                      {controlledDomains?.length === 0 ? (
+                      {names?.length === 0 ? (
                         <Inset bottom={Platform.OS === 'android' ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
@@ -228,14 +225,14 @@ export function ENSIntroSheet() {
                         </Inset>
                       ) : (
                         <Stack space="12px">
-                          {uniqueDomain?.name ? (
+                          {suggestedName ? (
                             <SheetActionButton
                               color={colors.appleBlue}
                               label={i18n.t(profileExists ? i18n.l.profiles.intro.edit_name : i18n.l.profiles.intro.use_name, {
-                                name: abbreviateName(uniqueDomain?.name, 15) as string,
+                                name: abbreviateName(suggestedName, 15) as string,
                               })}
                               lightShadows
-                              onPress={handleSelectUniqueDomain}
+                              onPress={handleSelectSuggestedName}
                               weight="heavy"
                             />
                           ) : (
@@ -247,7 +244,7 @@ export function ENSIntroSheet() {
                               weight="heavy"
                             />
                           )}
-                          {nonPrimaryDomains?.length > 0 ? (
+                          {(names?.length ?? 0) > (ownsPrimaryName ? 1 : 0) ? (
                             <ChooseAnotherNameButton
                               handleNavigateToSearch={handleNavigateToSearch}
                               handleSelectExistingName={handleSelectExistingName}

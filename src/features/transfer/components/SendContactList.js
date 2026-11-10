@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Platform, SectionList } from 'react-native';
 
-import { toChecksumAddress } from 'ethereumjs-util';
 import { LinearGradient } from 'expo-linear-gradient';
 import { sortBy } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
@@ -69,16 +68,7 @@ const SendContactFlatList = styled(SectionList).attrs({
   flex: 1,
 });
 
-export function SendContactList({
-  contacts,
-  currentInput,
-  ensSuggestions,
-  loadingEnsSuggestions,
-  onPressContact,
-  removeContact,
-  userAccounts,
-  watchedAccounts,
-}) {
+export function SendContactList({ contacts, currentInput, onPressContact, removeContact, userAccounts, watchedAccounts }) {
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
@@ -153,13 +143,6 @@ export function SendContactList({
     );
   }, [accountAddress, currentInput, watchedAccounts]);
 
-  const filteredEnsSuggestions = useMemo(() => {
-    const ownedAddresses = filteredAddresses.map(account => account.address);
-    const watchedAddresses = filteredWatchedAddresses.map(account => account.address);
-    const allAddresses = [...ownedAddresses, ...watchedAddresses];
-    return ensSuggestions.filter(account => !allAddresses?.includes(toChecksumAddress(account?.address)));
-  }, [filteredAddresses, filteredWatchedAddresses, ensSuggestions]);
-
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
@@ -180,21 +163,12 @@ export function SendContactList({
         id: 'watching',
         title: `${isDarkMode ? '􀨭' : '􀦧'} ${i18n.t(i18n.l.contacts.watching)}`,
       });
-    currentInput?.length >= 3 &&
-      filteredEnsSuggestions.length &&
-      tmp.push({
-        data: filteredEnsSuggestions,
-        id: 'suggestions',
-        title: `􀊫 ${i18n.t(i18n.l.contacts.suggestions)}`,
-      });
     return tmp;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts, isDarkMode]);
+  }, [filteredAddresses, filteredContacts, filteredWatchedAddresses, isDarkMode]);
 
   const flyInKey = useDeepCompareMemo(() => String(Date.now()), [sections]);
 
-  const shouldShowEmptyState =
-    filteredContacts.length === 0 && filteredAddresses.length === 0 && ensSuggestions.length === 0 && !loadingEnsSuggestions;
+  const shouldShowEmptyState = sections.length === 0;
 
   return (
     <FlyInAnimation key={flyInKey}>

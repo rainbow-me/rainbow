@@ -16,8 +16,10 @@ import { useStableValue } from '@/hooks/useStableValue';
 type ObservedKeys<Key extends string | number> = Key | Key[] | null;
 
 type SelectorReadTracker<Key extends string | number> = {
-  install<State>(store: BaseStore<State>, onChange: (keys: Key[]) => void): BaseStore<State>;
+  install<State>(store: BaseStore<State>, onChange: () => void): BaseStore<State>;
   track(key: Key): boolean;
+  /** Reads the current key set when the consumer is ready to process a change. */
+  getKeys(): Key[];
 };
 
 // ============ Constants ====================================================== //
@@ -59,7 +61,7 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     return true;
   }
 
-  function install<S>(store: BaseStore<S>, onChange: (keys: Key[]) => void): BaseStore<S> {
+  function install<S>(store: BaseStore<S>, onChange: () => void): BaseStore<S> {
     if (didInstall) throw new Error('[createSelectorReadTracker] Tracker is already installed');
     didInstall = true;
 
@@ -97,7 +99,7 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     return Object.assign(useStore, store);
   }
 
-  function createTrackedSelector<S, Selected>(initialSelector: Selector<S, Selected>, onChange: (keys: Key[]) => void) {
+  function createTrackedSelector<S, Selected>(initialSelector: Selector<S, Selected>, onChange: () => void) {
     let observedKeys: ObservedKeys<Key> = null;
     let selector: Selector<S, Selected> = initialSelector;
 
@@ -148,16 +150,16 @@ export function createSelectorReadTracker<Key extends string | number>(): Select
     return isLastSubscription;
   }
 
-  function updateObservedKeys(previousKeys: ObservedKeys<Key>, nextKeys: ObservedKeys<Key>, onChange: (keys: Key[]) => void): void {
+  function updateObservedKeys(previousKeys: ObservedKeys<Key>, nextKeys: ObservedKeys<Key>, onChange: () => void): void {
     if (previousKeys === nextKeys) return;
 
     const keyWasUnobserved = applyObservedKeyDiff(previousKeys, nextKeys, unobserveKey);
     const keyWasObserved = applyObservedKeyDiff(nextKeys, previousKeys, observeKey);
 
-    if (keyWasUnobserved || keyWasObserved) onChange([...subscriptionCounts.keys()]);
+    if (keyWasUnobserved || keyWasObserved) onChange();
   }
 
-  return { install, track };
+  return { install, track, getKeys: () => [...subscriptionCounts.keys()] };
 }
 
 // ============ Utilities ====================================================== //

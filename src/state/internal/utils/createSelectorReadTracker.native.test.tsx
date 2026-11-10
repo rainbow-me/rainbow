@@ -20,8 +20,8 @@ it.each(['store hook', 'useListen'])('tracks reads for the lifetime of a %s cons
     },
   }));
 
-  const useStore = reads.install(store, keys => {
-    observedKeys = keys;
+  const useStore = reads.install(store, () => {
+    observedKeys = reads.getKeys();
   });
 
   function StoreConsumer() {

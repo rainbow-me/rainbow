@@ -11,15 +11,15 @@ import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { ENS_RECORDS } from '@/features/ens/core/records';
 import { type UploadImageReturnData } from '@/handlers/pinata';
 import useSelectImageMenu from '@/hooks/useSelectImageMenu';
 import * as i18n from '@/languages';
 import magicMemo from '@/utils/magicMemo';
 
-import useENSModifiedRegistration from '../../hooks/useENSModifiedRegistration';
-import useENSRegistration from '../../hooks/useENSRegistration';
+import { useENSRegistration } from '../../hooks/useENSRegistration';
 import useENSRegistrationForm from '../../hooks/useENSRegistrationForm';
-import { ENS_RECORDS } from '../../utils/helpers';
+import { useENSRegistrationImage } from '../../hooks/useENSRegistrationImage';
 import { stringifyENSNFTRecord } from '../../utils/records';
 
 export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
@@ -36,10 +36,8 @@ const RegistrationCover = ({
   onShowExplainSheet: () => void;
   enableNFTs: boolean;
 }) => {
-  const {
-    images: { coverUrl: initialCoverUrl },
-  } = useENSModifiedRegistration();
-  const { isLoading, onBlurField, onRemoveField, setDisabled, values } = useENSRegistrationForm();
+  const initialCoverUrl = useENSRegistrationImage('header');
+  const { isLoading, onChangeField, onRemoveField, setUploading, uploading, values } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
@@ -65,7 +63,7 @@ const RegistrationCover = ({
         const standard = asset.standard || '';
         const contractAddress = asset.contractAddress || '';
         const tokenId = asset.tokenId;
-        onBlurField({
+        onChangeField({
           key: 'header',
           value: stringifyENSNFTRecord({
             contractAddress,
@@ -77,15 +75,15 @@ const RegistrationCover = ({
         // We want to disallow future avatar state changes (i.e. when upload successful)
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setCoverUpdateAllowed(false);
-        onBlurField({
+        onChangeField({
           key: 'header',
           value: image.uri,
         });
       }
     },
-    [onBlurField, setCoverMetadata]
+    [onChangeField, setCoverMetadata]
   );
-  const [isUploading, setIsUploading] = useState(false);
+  const isUploading = uploading.header;
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const { ContextMenu, handleSelectImage } = useSelectImageMenu({
@@ -101,24 +99,17 @@ const RegistrationCover = ({
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
       setCoverMetadata(undefined);
-      setDisabled(false);
       setTimeout(() => {
         setCoverUrl('');
       }, 100);
     },
     onUploadError: () => {
-      onBlurField({ key: 'header', value: '' });
+      onChangeField({ key: 'header', value: '' });
       setCoverUrl('');
-      setIsUploading(false);
     },
-    onUploading: () => {
-      setIsUploading(true);
-      setDisabled(true);
-    },
+    onUploading: uploading => setUploading('header', uploading),
     onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'header', value: data.url });
-      setDisabled(false);
-      setIsUploading(false);
+      onChangeField({ key: 'header', value: data.url });
       setIsLoadingImage(true);
     },
     showRemove: Boolean(coverUrl),

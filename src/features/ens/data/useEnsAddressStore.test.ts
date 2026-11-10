@@ -30,7 +30,7 @@ afterAll(() => {
 });
 
 it.each([ADDRESS, ADDRESS.toLowerCase()])('preserves the raw profile address %s without an ENS request', async addressOrName => {
-  await expect(useEnsAddressStore.getState().refresh({ addressOrName, chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(useEnsAddressStore.getState().load({ addressOrName, chainId: ChainId.mainnet }, { force: true })).resolves.toBe(ADDRESS);
 
   expect(fetchMock).not.toHaveBeenCalled();
 });
@@ -52,10 +52,12 @@ it('resolves profile names and shares the result with imperative prefetchers', a
     );
   });
 
-  await expect(useEnsAddressStore.getState().refresh({ addressOrName: 'alice.eth', chainId: ChainId.mainnet })).resolves.toBe(ADDRESS);
+  await expect(useEnsAddressStore.getState().load({ addressOrName: 'alice.eth', chainId: ChainId.mainnet }, { force: true })).resolves.toBe(
+    ADDRESS
+  );
 
   const input = { addressOrName: 'alice.eth', chainId: ChainId.mainnet };
-  await useEnsAddressStore.getState().fetch({ inputs: [input] }, { skipStoreUpdates: 'withCache', throwOnError: true });
+  await useEnsAddressStore.getState().load(input);
   expect(useEnsAddressStore.getState().get(input)).toBe(ADDRESS);
 
   expect(fetchMock).toHaveBeenCalledTimes(1);
