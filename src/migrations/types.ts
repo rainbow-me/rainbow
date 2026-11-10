@@ -22,6 +22,7 @@ export enum MigrationName {
   healEip55KeychainAddresses = 'migration_healEip55KeychainAddresses',
   migrateExperimentalFlags = 'migration_migrateExperimentalFlags',
   repairBrowserTabUrls = 'migration_repairBrowserTabUrls',
+  migrateAppSettings = 'migration_migrateAppSettings',
 }
 
 export type Migration = {
