@@ -40,6 +40,12 @@ export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
   const chainId = params.inputAsset?.chainId || params.outputAsset?.chainId || store.getState().settings.chainId;
   if (params.gasSpeed && chainId) setSelectedGasSpeed(chainId, params.gasSpeed);
 
+  const isAlreadyOpen = Navigation.getActiveRouteName() === Routes.SWAP;
+  if (isAlreadyOpen && params.inputAsset === undefined && params.outputAsset === undefined) {
+    Navigation.handleAction(Routes.SWAP, getSwapsNavigationParams());
+    return;
+  }
+
   const inputAsset = getInputAsset(params.inputAsset);
   const outputAsset = getOutputAsset(params.outputAsset);
   const inputMethod = getInputMethod({ ...params, inputAsset, outputAsset });
@@ -52,14 +58,16 @@ export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
       ? slippageInBipsToString(+params.slippage)
       : getDefaultSlippage(inputChainId, getRemoteConfig().default_slippage_bips_chainId);
 
-  useSwapsStore.setState(state => ({
-    inputAsset,
-    isSwapsOpen: true,
-    outputAsset,
-    percentageToSell: inputAmounts.percentageToSell,
-    selectedOutputChainId: inputAsset?.chainId ?? state.preferredNetwork ?? state.selectedOutputChainId ?? ChainId.mainnet,
-    slippage,
-  }));
+  if (!isAlreadyOpen) {
+    useSwapsStore.setState(state => ({
+      inputAsset,
+      isSwapsOpen: true,
+      outputAsset,
+      percentageToSell: inputAmounts.percentageToSell,
+      selectedOutputChainId: inputAsset?.chainId ?? state.preferredNetwork ?? state.selectedOutputChainId ?? ChainId.mainnet,
+      slippage,
+    }));
+  }
 
   Navigation.handleAction(Routes.SWAP, {
     ...inputAmounts,

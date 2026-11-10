@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
@@ -27,8 +27,8 @@ import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
-import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { ReviewButton } from './components/ReviewButton';
+import { SwapRouteParamsObserver } from './components/SwapRouteParamsObserver';
 import { SwapWarning } from './components/SwapWarning';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { SyncSwapStateAndSharedValues } from './providers/SyncSwapStateAndSharedValues';
@@ -71,28 +71,31 @@ import { useSwapsSearchStore } from './resources/search/searchV2';
  * tldr, ⚡️ it's fast ⚡️
  */
 
-export function SwapScreen() {
-  useCleanupOnUnmount();
-  return (
-    <SwapProvider>
-      <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-        <SwapBackground />
-        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
-          <SwapInputAsset />
-          <FlipButton />
-          <SwapOutputAsset />
-          <SliderAndKeyboardAndBottomControls />
-          <ExchangeRateBubbleAndWarning />
+export const SwapScreen = memo(
+  function SwapScreen() {
+    useCleanupOnUnmount();
+    return (
+      <SwapProvider>
+        <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
+          <SwapBackground />
+          <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+            <SwapInputAsset />
+            <FlipButton />
+            <SwapOutputAsset />
+            <SliderAndKeyboardAndBottomControls />
+            <ExchangeRateBubbleAndWarning />
+          </Box>
+          <SwapNavbar />
         </Box>
-        <SwapNavbar />
-      </Box>
-      <AbsolutePortalRoot />
-      <NavigateToSwapSettingsTrigger />
-      <WalletAddressObserver />
-      <SyncSwapStateAndSharedValues />
-    </SwapProvider>
-  );
-}
+        <AbsolutePortalRoot />
+        <SwapRouteParamsObserver />
+        <WalletAddressObserver />
+        <SyncSwapStateAndSharedValues />
+      </SwapProvider>
+    );
+  },
+  () => true
+);
 
 const useCleanupOnUnmount = () => {
   useEffect(() => {
