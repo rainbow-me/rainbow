@@ -3,7 +3,7 @@ import path from 'path';
 import { Platform } from 'react-native';
 
 import { captureException } from '@sentry/react-native';
-import { findKey, isEmpty, isNumber, keys } from 'lodash';
+import { findKey, isEmpty, isNumber, keys, noop } from 'lodash';
 import uniq from 'lodash/uniq';
 import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
@@ -41,14 +41,13 @@ import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWalletAddresses, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
 import { getGlobal } from '../handlers/localstorage/common';
-import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
+import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { type BooleanMap } from '../hooks/useCoinListEditOptions';
@@ -753,14 +752,9 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v26 ******************
-   * Migrate native currency setting to userAssetsStoreManager
+   * Currency transfer is now handled by migrateAppSettings. Preserve this numeric slot.
    */
-  const v26 = async () => {
-    const currency = await getNativeCurrency();
-    userAssetsStoreManager.setState({ currency });
-  };
-
-  migrations.push(v26);
+  migrations.push(noop);
 
   /**
    *************** Migration v27 ******************
