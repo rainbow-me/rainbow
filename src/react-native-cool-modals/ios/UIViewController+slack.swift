@@ -110,6 +110,8 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
 
   private func canScrollVertically(_ scrollView: UIScrollView) -> Bool {
     guard scrollView.isScrollEnabled, scrollView.panGestureRecognizer.isEnabled else { return false }
+    if scrollView.alwaysBounceHorizontal && !scrollView.alwaysBounceVertical { return false }
+
     let insets = scrollView.adjustedContentInset
     if scrollView.contentSize.height + insets.top + insets.bottom > scrollView.bounds.height {
       return true
