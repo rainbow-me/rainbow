@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 
 import { checkIdentifierOnLaunch } from '@/features/backup/backup';
@@ -14,7 +14,7 @@ import { PerformanceReports, PerformanceTracking } from '@/performance/tracking'
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 export function useApplicationSetup() {
-  const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
+  const [initialRoute, setInitialRoute] = useState<InitialRoute | null>(null);
 
   useEffect(() => {
     runSetup(setInitialRoute);
@@ -23,7 +23,7 @@ export function useApplicationSetup() {
   return initialRoute;
 }
 
-async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>): Promise<void> {
+async function runSetup(setInitialRoute: (route: InitialRoute) => void): Promise<void> {
   const address = await loadAddress();
 
   Promise.all([initWalletConnectListeners(), saveFCMToken()]).then(() => {

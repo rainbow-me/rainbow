@@ -3,7 +3,6 @@ import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 
-import CustomGasState from '@/features/gas/components/CustomGasState';
 import styled from '@/framework/ui/styled-thing';
 import useDimensions from '@/hooks/useDimensions';
 import { useNavigation } from '@/navigation/Navigation';
@@ -14,11 +13,6 @@ import { position } from '@/styles';
 import { UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-
-const ScreenTypes = {
-  custom_gas: CustomGasState,
-  unique_token: UniqueTokenExpandedState,
-};
 
 const Container = styled(Centered).attrs({
   alignItems: 'flex-end',
@@ -42,7 +36,7 @@ export function ExpandedAssetSheet(props: any) {
     <Container deviceHeight={deviceHeight} height={params.longFormHeight}>
       {Platform.OS === 'ios' && <TouchableBackdrop onPress={goBack} />}
 
-      {createElement(ScreenTypes[params.type], {
+      {createElement(UniqueTokenExpandedState, {
         ...params,
         ...props,
         asset: {

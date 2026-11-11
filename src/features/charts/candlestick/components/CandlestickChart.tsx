@@ -45,7 +45,7 @@ import { useSkiaText, type TextSegment } from '@/design-system/components/SkiaTe
 import { opacity } from '@/design-system/utils/opacity';
 import { IS_DEV } from '@/env';
 import { areCandlesEqual, firstIndexAtOrAfterTimestamp, formatCandlestickPrice } from '@/features/charts/candlestick/utils';
-import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
+import { candlestickActions, fetchHistoricalCandles, getTokenId, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { isHyperliquidToken } from '@/features/charts/utils';
 import { CANDLESTICK_DATA_MONITOR } from '@/features/config/constants/experimental';
@@ -61,7 +61,6 @@ import {
 import { usePerpsIndicatorData } from '@/features/perps/charts-plugin/usePerpsIndicatorData';
 import { time } from '@/framework/core/utils/time';
 import { setSkiaPicture, SkiaPictureView, useSkiaRenderer, type SkiaPictureOutput } from '@/framework/ui/components/SkiaPictureView';
-import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -330,6 +329,7 @@ class CandlestickChartManager {
   private candleStrokeColor: SkColor;
   private candleWidth: number;
   private candles: Bar[] = EMPTY_CANDLES;
+  private tokenId: string | null = null;
   private chartHeight: number;
   private chartWidth: number;
   private config: CandlestickConfig;
@@ -341,7 +341,6 @@ class CandlestickChartManager {
   private isHyperliquidToken: boolean;
   private nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
   private output: SkiaPictureOutput;
-  private volumeBarColor: SkColor;
   private yAxis: YAxisLayout;
 
   private activeCandle: SharedValue<Bar | undefined>;
@@ -456,7 +455,6 @@ class CandlestickChartManager {
     this.isHyperliquidToken = isHyperliquidToken(token);
     this.nativeCurrency = nativeCurrency;
     this.output = output;
-    this.volumeBarColor = Skia.Color(config.volume.color);
 
     // ========== Shared Values ==========
     this.activeCandle = activeCandle;
@@ -496,7 +494,7 @@ class CandlestickChartManager {
     this.paints.candleWick.setAntiAlias(true);
     this.paints.candleWick.setDither(true);
 
-    this.paints.volume.setColor(this.volumeBarColor);
+    this.paints.volume.setColor(Skia.Color(config.volume.color));
     this.paints.volume.setAntiAlias(true);
     this.paints.volume.setDither(true);
     this.paints.volume.setBlendMode(BlendMode.Src);
@@ -586,13 +584,15 @@ class CandlestickChartManager {
 
   private getPriceBounds(): { min: number; max: number; startIndex: number; endIndex: number } {
     const { startIndex, endIndex } = this.getVisibleIndices();
+    const candles = this.candles;
+
     let min = Infinity;
     let max = -Infinity;
 
     for (let i = startIndex; i <= endIndex; i++) {
-      const { l, h } = this.candles[i];
-      if (l < min) min = l;
-      if (h > max) max = h;
+      const candle = candles[i];
+      if (candle.l < min) min = candle.l;
+      if (candle.h > max) max = candle.h;
     }
 
     const indicatorRange = this.indicatorBuilder.getMinMaxForRange(startIndex, endIndex);
@@ -607,19 +607,19 @@ class CandlestickChartManager {
       if (perpsIndicatorRange.max > max) max = perpsIndicatorRange.max;
     }
 
-    if (min === Infinity || max === -Infinity) {
-      return { min: 0, max: 1, startIndex, endIndex };
-    }
+    if (min === Infinity || max === -Infinity) return { min: 0, max: 1, startIndex, endIndex };
 
     const range = max - min || 1;
     const verticalPadding = range * this.config.chart.candlesPaddingRatioVertical;
     const newBounds = { min: min - verticalPadding, max: max + verticalPadding, startIndex, endIndex };
     const lastPrice = this.candles[this.candles.length - 1]?.c;
     const buffer = (newBounds.max - newBounds.min) * 0.02;
+
     this.yAxis =
       this.currentPriceAxis && lastPrice >= newBounds.min - buffer && lastPrice <= newBounds.max + buffer
         ? this.currentPriceAxis
         : this.measureYAxis(newBounds.min, newBounds.max);
+
     return newBounds;
   }
 
@@ -926,9 +926,7 @@ class CandlestickChartManager {
     }
 
     // ========== Perps Indicator Bubbles ==========
-    if (this.perpsIndicatorBuilder) {
-      this.perpsIndicatorBuilder.drawBubbles(canvas, perpsIndicatorPositions);
-    }
+    this.perpsIndicatorBuilder?.drawBubbles(canvas, perpsIndicatorPositions);
 
     const oldPicture = this.chartPicture;
     this.chartPicture = this.pictureRecorder.finishRecordingAsPicture();
@@ -1282,23 +1280,19 @@ class CandlestickChartManager {
     return true;
   }
 
-  public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
-    this.buildParagraph = buildParagraph;
-    this.clearLabels();
-    this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
-
-    this.buildBaseCandlesPicture();
-    if (this.isChartGestureActive.value) {
-      this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
-    }
-
-    this.publishPicture();
-  }
-
   public setCandles(
-    newCandles: Bar[] | null,
-    { hasPreviousCandles, shouldResetOffset = false }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean }
+    candles: Bar[] | null,
+    {
+      hasPreviousCandles,
+      shouldResetOffset: resetOffset = false,
+      tokenId,
+    }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean; tokenId: string | null }
   ): void {
+    const didTokenChange = this.tokenId !== tokenId;
+    this.tokenId = tokenId;
+    const newCandles = candles ?? (didTokenChange ? EMPTY_CANDLES : null);
+    const shouldResetOffset = resetOffset || didTokenChange;
+
     if (newCandles === null) {
       if (!this.chartPicture) this.rebuildChart(false, true);
       return;
@@ -1321,6 +1315,13 @@ class CandlestickChartManager {
       this.pinchAnchor = undefined;
     } else if (wasDataPrepended) {
       this.firstCandleIndex -= firstIndexAtOrAfterTimestamp(newCandles, this.candles[0].t);
+    }
+
+    if (shouldResetOffset) {
+      this.isDecelerating.value = false;
+      this.chartScale.value = 1;
+      this.activeCandle.value = undefined;
+      this.buildCrosshairPicture(0, 0, false);
     }
 
     const lastCandle = newCandles[newCandles.length - 1];
@@ -1348,10 +1349,22 @@ class CandlestickChartManager {
     this.rebuildChart(false, true);
   }
 
-  public setColorMode(colorMode: 'dark' | 'light', backgroundColor: string, providedConfig: CandlestickChartProps['config']): void {
+  public updateAppearance({
+    backgroundColor,
+    buildParagraph,
+    isDarkMode,
+    providedConfig,
+  }: {
+    backgroundColor: string;
+    buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+    isDarkMode: boolean;
+    providedConfig: CandlestickChartProps['config'];
+  }): void {
+    this.buildParagraph = buildParagraph;
+    this.perpsIndicatorBuilder?.setBuildParagraph(buildParagraph);
     this.clearLabels();
 
-    const isDarkMode = colorMode === 'dark';
+    const colorMode = isDarkMode ? 'dark' : 'light';
     this.isDarkMode = isDarkMode;
     this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', colorMode));
     this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
@@ -1365,9 +1378,7 @@ class CandlestickChartManager {
     this.paints.topShadow.setAlphaf(0.48);
     this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
 
-    if (this.perpsIndicatorBuilder) {
-      this.perpsIndicatorBuilder.setColorMode(isDarkMode, this.backgroundColor);
-    }
+    this.perpsIndicatorBuilder?.setColorMode(isDarkMode, this.backgroundColor);
 
     if (providedConfig?.crosshair?.dotColor) {
       this.colors.crosshairDot = Skia.Color(providedConfig.crosshair.dotColor);
@@ -1405,13 +1416,11 @@ class CandlestickChartManager {
       this.paints.grid.setColor(Skia.Color(DEFAULT_CANDLESTICK_CONFIG.grid.color));
     }
 
-    if (providedConfig?.volume?.color) {
-      this.volumeBarColor = Skia.Color(providedConfig.volume.color);
-    } else {
-      this.volumeBarColor = Skia.Color(DEFAULT_CANDLESTICK_CONFIG.volume.color);
-    }
+    this.paints.volume.setColor(Skia.Color(providedConfig?.volume?.color ?? DEFAULT_CANDLESTICK_CONFIG.volume.color));
 
-    this.rebuildChart(false, false);
+    this.updateChartPictures(false, false);
+    if (this.isChartGestureActive.value) this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
+    this.publishPicture();
   }
 
   public dispose(): void {
@@ -1627,7 +1636,6 @@ function useCandlestickChart({
 }) {
   const { candles, isFetchingInitialData } = useStableValue(prepareCandlestickData);
   const config = useStableValue(() => buildChartConfig(backgroundColor, providedConfig));
-  const token = useStableValue(() => providedToken);
 
   const buildParagraph = useSkiaText({
     align: 'left',
@@ -1647,9 +1655,12 @@ function useCandlestickChart({
 
   const chartStatus = useSharedValue(isFetchingInitialData ? ChartStatus.Loading : candles.length ? ChartStatus.Loaded : ChartStatus.Empty);
   const fetchPromise = useRef<Promise<void> | null | undefined>(undefined);
+  const lastQueryKey = useRef<string | undefined>(undefined);
 
   const fetchAdditionalCandles = useCallback(
     (enableFailureHaptics = false) => {
+      const { candleResolution, token } = useChartsStore.getState();
+      if (!token) return;
       const currentFetchPromise = fetchPromise.current;
       if (currentFetchPromise) return;
 
@@ -1660,41 +1671,34 @@ function useCandlestickChart({
 
       isLoadingHistoricalCandles.value = true;
 
-      fetchPromise.current = fetchHistoricalCandles({
-        candleResolution: useChartsStore.getState().candleResolution,
+      const request = fetchHistoricalCandles({
+        candleResolution,
         token,
-      })
-        .then(data => {
-          if (!fetchPromise.current) return;
-          fetchPromise.current = !data || data?.hasPreviousCandles === true ? undefined : null;
-        })
-        .finally(() => {
-          isLoadingHistoricalCandles.value = false;
-        });
-    },
-    [isLoadingHistoricalCandles, token]
-  );
-
-  const renderer = useSkiaRenderer<CandlestickChartManager>({ deferred: true });
-
-  const resetHistoricalFetchState = useCallback(
-    (data: CandlestickResponse, previousData: CandlestickResponse) => {
-      const didResolutionChange = data?.candleResolution !== previousData?.candleResolution;
-      const hasExceededMaxCandles = (data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD;
-
-      if (!didResolutionChange && !hasExceededMaxCandles) return;
-
-      const shouldEnableFetching = data?.hasPreviousCandles !== false && !hasExceededMaxCandles;
-      fetchPromise.current = shouldEnableFetching ? undefined : null;
-      isLoadingHistoricalCandles.value = false;
+      }).then(data => {
+        if (fetchPromise.current !== request) return;
+        fetchPromise.current = !data || data.hasPreviousCandles ? undefined : null;
+        isLoadingHistoricalCandles.value = false;
+      });
+      fetchPromise.current = request;
     },
     [isLoadingHistoricalCandles]
   );
 
+  const renderer = useSkiaRenderer<CandlestickChartManager>({ deferred: true });
+
   const updateCandles = useCallback(
-    (data: CandlestickResponse, previousData: CandlestickResponse) => {
-      if (data !== null) resetHistoricalFetchState(data, previousData);
-      const shouldResetOffset = previousData === null || data?.candleResolution !== previousData?.candleResolution;
+    (data: CandlestickResponse, previousData: CandlestickResponse, queryKey: string) => {
+      const { token } = useChartsStore.getState();
+      const tokenId = token === null ? null : getTokenId(token);
+      const didQueryChange = queryKey !== lastQueryKey.current;
+      lastQueryKey.current = queryKey;
+      const hasExceededMaxCandles = (data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD;
+      if (didQueryChange || hasExceededMaxCandles) {
+        const shouldEnableFetching = data?.hasPreviousCandles !== false && !hasExceededMaxCandles;
+        fetchPromise.current = shouldEnableFetching ? undefined : null;
+        isLoadingHistoricalCandles.value = false;
+      }
+      const shouldResetOffset = didQueryChange || previousData === null;
 
       runOnUI(() => {
         chartStatus.value = data === null ? ChartStatus.Loading : data.candles.length ? ChartStatus.Loaded : ChartStatus.Empty;
@@ -1702,17 +1706,32 @@ function useCandlestickChart({
         renderer.manager?.setCandles(newCandles, {
           hasPreviousCandles: data?.hasPreviousCandles === true && (newCandles?.length ?? 0) < MAX_CANDLES_TO_LOAD,
           shouldResetOffset,
+          tokenId,
         });
       })();
     },
-    [renderer, chartStatus, resetHistoricalFetchState]
+    [chartStatus, isLoadingHistoricalCandles, renderer]
   );
 
-  const dataListener = useListen(useCandlestickStore, state => state.getData(), updateCandles, {
-    equalityFn: isCandlestickDataEqual,
-    fireImmediately: true,
-  });
+  const dataListener = useListen(
+    useCandlestickStore,
+    state => ({ data: state.getData(), queryKey: state.queryKey }),
+    (current, previous) => updateCandles(current.data, previous.data, current.queryKey),
+    {
+      equalityFn: (a, b) => a.queryKey === b.queryKey && isCandlestickDataEqual(a.data, b.data),
+      fireImmediately: true,
+    }
+  );
   useListenerRouteGuard(dataListener, { additionalRoutes: Routes.CLOSE_POSITION_BOTTOM_SHEET });
+
+  useListen(
+    useChartsStore,
+    state => state.token,
+    token => {
+      const tokenId = token === null ? null : getTokenId(token);
+      runOnUI(() => renderer.manager?.setCandles(null, { hasPreviousCandles: false, tokenId }))();
+    }
+  );
 
   useListen(
     useChartsStore,
@@ -1746,24 +1765,18 @@ function useCandlestickChart({
     []
   );
 
-  useOnChange(() => {
-    runOnUI(() => {
-      renderer.manager?.setColorMode(isDarkMode ? 'dark' : 'light', backgroundColor, providedConfig);
-    })();
-  }, [backgroundColor, renderer, isDarkMode, providedConfig]);
-
-  const updateParagraphBuilder = useCallback(
+  const updateAppearance = useCallback(
     (manager: CandlestickChartManager) => {
       'worklet';
-      manager.setBuildParagraph(buildParagraph);
+      manager.updateAppearance({ backgroundColor, buildParagraph, isDarkMode, providedConfig });
     },
-    [buildParagraph]
+    [backgroundColor, buildParagraph, isDarkMode, providedConfig]
   );
 
   const pictureView = useMemo(
     () => (
       <SkiaPictureView
-        onUpdate={updateParagraphBuilder}
+        onUpdate={updateAppearance}
         prepare={() => {
           const nativeCurrency = getNativeCurrency();
           const perpsIndicatorData = usePerpsIndicatorData.getState();
@@ -1789,7 +1802,7 @@ function useCandlestickChart({
               nativeCurrency,
               output,
               perpsIndicatorData,
-              token,
+              token: providedToken,
             });
           };
         }}
@@ -1814,9 +1827,9 @@ function useCandlestickChart({
       isDecelerating,
       isLoadingHistoricalCandles,
       maxDisplayedVolume,
+      providedToken,
       renderer,
-      token,
-      updateParagraphBuilder,
+      updateAppearance,
     ]
   );
 
@@ -1837,7 +1850,6 @@ function useCandlestickChart({
     [
       activeCandle,
       candleOrigin,
-      renderer,
       chartStatus,
       chartTransform,
       chartXOffset,
@@ -1846,6 +1858,7 @@ function useCandlestickChart({
       isChartLoading,
       isDecelerating,
       pictureView,
+      renderer,
     ]
   );
 }

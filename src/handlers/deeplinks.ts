@@ -31,7 +31,7 @@ import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
-  initialRoute: InitialRoute;
+  initialRoute: InitialRoute | null;
 }
 
 /*

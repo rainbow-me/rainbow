@@ -26,6 +26,7 @@ import { RegisterENSNavigator } from '@/features/ens/navigation/RegisterENSNavig
 import { ENSAdditionalRecordsSheet } from '@/features/ens/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheet } from '@/features/ens/screens/ENSConfirmRegisterSheet';
 import { SelectENSSheet } from '@/features/ens/screens/SelectENSSheet';
+import CustomGasState from '@/features/gas/components/CustomGasState';
 import { HardwareWalletTxNavigator } from '@/features/hardware-wallet/navigation/HardwareWalletTxNavigator';
 import { PairHardwareWalletNavigator } from '@/features/hardware-wallet/navigation/PairHardwareWalletNavigator';
 import { PinAuthenticationScreen } from '@/features/local-auth/screens/PinAuthenticationScreen';
@@ -117,7 +118,6 @@ import {
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
-  fiatOnRampSheet,
   hardwareWalletTxNavigatorPreset,
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
@@ -137,7 +137,7 @@ const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext) as unknown as string;
+  const initialRoute = useContext(InitialRouteContext);
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
@@ -156,7 +156,6 @@ function MainNavigator() {
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
-      <Stack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={fiatOnRampSheet} />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
@@ -182,7 +181,7 @@ function BSNavigator() {
           enableContentPanningGesture: false,
           enableHandlePanningGesture: false,
           enablePanDownToClose: false,
-          height: '100%',
+          screenContainerHeight: '100%',
         }}
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
@@ -222,7 +221,7 @@ function BSNavigator() {
           <BSStack.Screen
             component={SelectUniqueTokenSheet}
             name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-            options={{ ...bottomSheetPreset, height: '95%' }}
+            options={{ ...bottomSheetPreset, screenContainerHeight: '95%' }}
           />
           <BSStack.Screen component={SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
         </>
@@ -232,7 +231,7 @@ function BSNavigator() {
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
       <BSStack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
+        component={CustomGasState}
         name={Routes.CUSTOM_GAS_SHEET}
         options={{
           backdropOpacity: 1,
@@ -251,7 +250,7 @@ function BSNavigator() {
             heightForStep = backupSheetSizes.medium;
           }
 
-          return { ...bottomSheetPreset, height: heightForStep };
+          return { ...bottomSheetPreset, screenContainerHeight: heightForStep };
         }}
       />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
@@ -276,6 +275,7 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={PolymarketWithdrawalScreen} name={Routes.POLYMARKET_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
+      <BSStack.Screen component={FiatOnRampSheet} name={Routes.FIAT_ON_RAMP_SHEET} options={{ backdropOpacity: 1 }} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />

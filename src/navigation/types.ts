@@ -428,7 +428,6 @@ type ParamsByRoute = {
   };
   [Routes.TRANSACTION_DETAILS]: {
     transaction: RainbowTransaction;
-    longFormHeight?: number;
   };
   [Routes.REGISTER_ENS_NAVIGATOR]: {
     ensName?: string;
@@ -447,7 +446,6 @@ type ParamsByRoute = {
     onClose?: () => void;
   };
   [Routes.APP_ICON_UNLOCK_SHEET]: {
-    longFormHeight?: number;
     appIconKey: UnlockableAppIconKey;
   };
   [Routes.CUSTOM_GAS_SHEET]: {

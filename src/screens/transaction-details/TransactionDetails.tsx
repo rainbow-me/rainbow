@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Platform, type LayoutChangeEvent } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -23,7 +23,7 @@ export const TransactionDetails = () => {
   const {
     params: { transaction },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.TRANSACTION_DETAILS>>();
-  const { setParams } = useNavigation<typeof Routes.TRANSACTION_DETAILS>();
+  const { setOptions } = useNavigation<typeof Routes.TRANSACTION_DETAILS>();
 
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
@@ -38,8 +38,9 @@ export const TransactionDetails = () => {
     };
   }, []);
 
-  // Dynamic sheet height based on content height
-  useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
+  useLayoutEffect(() => {
+    if (Platform.OS === 'ios') setOptions({ longFormHeight: sheetHeight });
+  }, [setOptions, sheetHeight]);
 
   const onSheetContentLayout = useCallback(
     (event: LayoutChangeEvent) => {
