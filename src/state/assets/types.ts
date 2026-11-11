@@ -99,7 +99,7 @@ export type Asset = {
     changedAt: number;
     relativeChange24h: number;
   };
-  networks: Record<
+  networks?: Record<
     string,
     {
       address: string;
