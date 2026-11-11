@@ -246,6 +246,8 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
   const { asset } = userAsset;
   const uniqueId = getUniqueId(asset.address, asset.chainId);
   const { decimals, symbol, price } = asset;
+  // The API omits empty maps from its JSON.
+  const networks = (asset.networks ?? {}) as Record<ChainId, { address: Address; decimals: number }>;
   const amount = convertRawAmountToDecimalFormat(userAsset.quantity, decimals);
   const nativeBalance = convertAmountAndPriceToNativeDisplay(1, userAsset.value, currency);
 
@@ -259,9 +261,9 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
     icon_url: asset.iconUrl,
     isNativeAsset: isNativeAsset(asset.address, asset.chainId),
     isVerified: asset.verified,
-    mainnetAddress: asset.networks[ChainId.mainnet]?.address as AddressOrEth,
+    mainnetAddress: networks[ChainId.mainnet]?.address as AddressOrEth,
     name: asset.name,
-    networks: asset.networks as Record<ChainId, { address: Address; decimals: number }>,
+    networks,
     symbol: asset.symbol,
     price: {
       changed_at: asset.price.changedAt,
