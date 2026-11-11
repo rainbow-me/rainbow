@@ -1,20 +1,27 @@
 import { useRef } from 'react';
 
-import { useSwapsSearchStore, useSwapTokenSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import {
+  isSwapTokenSearchV2Active,
+  selectSwapTokenSearchChainId,
+  selectSwapTokenSearchQuery,
+  useSwapsSearchStore,
+  useSwapTokenSearchStore,
+} from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type SwapSearchResults } from '@/features/token-search/core/tokenSearch';
+import { useTokenSearchV2EnabledStore } from '@/features/token-search/data/tokenSearch';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 /**
- * What the swap list shows from the backend token search while `isActive`:
+ * What the swap list shows from the backend token search, while {@link isSwapTokenSearchV2Active}:
  * - `undefined` until it answers the first query after the field was empty, so the list keeps the default list;
- * - while a query loads, the previous query's results;
- * - after a request fails, the last results answered on the same output chain since the field was cleared, or `null`.
+ * - while a query loads, the last answer since the field was cleared;
+ * - after a request fails, that answer when it is for the same output chain, otherwise `null`.
  */
-export function useSwapTokenSearchV2Results(isActive: boolean): SwapSearchResults | null | undefined {
-  const query = useSwapsSearchStore(state => state.searchQuery.trim());
-  const chainId = useSwapsStore(state => state.selectedOutputChainId ?? ChainId.mainnet);
-  const shown = useSwapTokenSearchStore(state => state.getData());
+export function useSwapTokenSearchV2Results(): SwapSearchResults | null | undefined {
+  const query = useSwapsSearchStore(selectSwapTokenSearchQuery);
+  const chainId = useSwapsStore(selectSwapTokenSearchChainId);
+  const isActive = isSwapTokenSearchV2Active(useTokenSearchV2EnabledStore(), query);
   const answered = useSwapTokenSearchStore(state => state.getCacheEntry({ query, chainId })?.data);
   const failed = useSwapTokenSearchStore(state => state.getStatus('isError'));
   // A failed request moves the store to its query, which has no data, so the last answer is kept here. It includes
@@ -30,5 +37,5 @@ export function useSwapTokenSearchV2Results(isActive: boolean): SwapSearchResult
     return answered;
   }
   if (failed) return lastAnswered.current?.chainId === chainId ? lastAnswered.current.results : null;
-  return shown ?? undefined;
+  return lastAnswered.current?.results;
 }

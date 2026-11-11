@@ -168,7 +168,7 @@ function toSearchItems(result: TokenSearchResult): TokenSearchItem[] {
 }
 
 /** Maps every result in display order, each opened on `chainId` when deployed there. */
-export function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
+function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId: ChainId): SearchAsset[] {
   const assets: SearchAsset[] = [];
   for (const item of toSearchItems(result)) {
     const asset = toSearchAsset(item, nativeAssetByChain, chainId);

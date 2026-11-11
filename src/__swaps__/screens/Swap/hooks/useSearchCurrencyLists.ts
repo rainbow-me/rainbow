@@ -37,13 +37,9 @@ const MAX_POPULAR_RESULTS = 3;
 
 export function useSearchCurrencyLists() {
   const lastTrackedTimeRef = useRef<number | null>(null);
-  const isTokenSearchV2 = isSwapTokenSearchV2Active(
-    useTokenSearchV2EnabledStore(),
-    useSwapsSearchStore(state => state.searchQuery)
-  );
   const legacyVerifiedAssets = useTokenSearchStore(state => state.getData());
   const legacyUnverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
-  const tokenSearchV2Results = useSwapTokenSearchV2Results(isTokenSearchV2);
+  const tokenSearchV2Results = useSwapTokenSearchV2Results();
   // Until the new search answers, the legacy stores still hold the default list
   const showTokenSearchV2 = tokenSearchV2Results !== undefined;
   const verifiedAssets = showTokenSearchV2

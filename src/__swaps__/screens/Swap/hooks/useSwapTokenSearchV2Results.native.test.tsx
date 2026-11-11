@@ -3,7 +3,7 @@ import React, { act } from 'react';
 import { type ReactNativeType } from 'react-native/types_generated/Libraries/Renderer/shims/ReactNativeTypes.d';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-import { isSwapTokenSearchV2Active, useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useSwapsSearchStore, useSwapTokenSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { TOKEN_SEARCH_V2 } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -46,17 +46,17 @@ function token(symbol: string): TokenSearchItem {
 }
 
 function Probe() {
-  const isActive = isSwapTokenSearchV2Active(
-    useExperimentalConfigStore(state => state.getFlag(TOKEN_SEARCH_V2)),
-    useSwapsSearchStore(state => state.searchQuery)
-  );
-  const results = useSwapTokenSearchV2Results(isActive);
+  const results = useSwapTokenSearchV2Results();
   shown = results === undefined ? undefined : (results?.verified[0]?.symbol ?? null);
   return null;
 }
 
 async function type(searchQuery: string, expected: string | null | undefined) {
   await act(async () => useSwapsSearchStore.setState({ searchQuery }));
+  // While a query loads, the previous answer is shown too, so a failing query is checked only once it has failed
+  if (failingQueries.includes(searchQuery)) {
+    await vi.waitFor(() => expect(useSwapTokenSearchStore.getState().getStatus('isError')).toBe(true));
+  }
   await vi.waitFor(() => expect(shown).toBe(expected));
 }
 
@@ -97,5 +97,6 @@ it('shows no results from another output chain when a search fails after switchi
   await type('brett', 'BRETT');
   failingQueries = ['brett'];
   await act(async () => useSwapsStore.setState({ selectedOutputChainId: ChainId.arbitrum }));
+  await vi.waitFor(() => expect(useSwapTokenSearchStore.getState().getStatus('isError')).toBe(true));
   await vi.waitFor(() => expect(shown).toBeNull());
 });

@@ -86,6 +86,11 @@ export const useSwapsSearchStore = createBaseStore<{ searchQuery: string }>(() =
  * Whether the swap token search reads the backend token search: with the flag on and a query typed. The list shown
  * before typing stays on the legacy stores, as the token search returns nothing for an empty query.
  */
+/** The query and output chain the swap token search runs with, shared by the store and the list reading its cache. */
+export const selectSwapTokenSearchQuery = (state: { searchQuery: string }) => state.searchQuery.trim();
+export const selectSwapTokenSearchChainId = (state: { selectedOutputChainId: ChainId | undefined }) =>
+  state.selectedOutputChainId ?? ChainId.mainnet;
+
 export function isSwapTokenSearchV2Active(tokenSearchV2Enabled: boolean, searchQuery: string): boolean {
   return tokenSearchV2Enabled && searchQuery.trim() !== '';
 }
@@ -152,8 +157,8 @@ export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults | null
   enabled: $ => $(useTokenSearchV2EnabledStore),
   keepPreviousData: true,
   params: {
-    query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
-    chainId: $ => $(useSwapsStore, state => state.selectedOutputChainId ?? ChainId.mainnet),
+    query: $ => $(useSwapsSearchStore, selectSwapTokenSearchQuery),
+    chainId: $ => $(useSwapsStore, selectSwapTokenSearchChainId),
   },
   staleTime: time.minutes(2),
 });
