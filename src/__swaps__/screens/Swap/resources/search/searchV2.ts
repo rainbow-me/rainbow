@@ -141,38 +141,22 @@ type SwapTokenSearchParams = {
   chainId: ChainId;
 };
 
-type SwapTokenSearchState = {
-  lastResults: SwapSearchResults | null;
-  /** The current query's results, or after its request failed, the last results fetched. */
-  getResults: () => SwapSearchResults | null;
-};
-
 /**
  * The swap token search on the backend token search, read while {@link isSwapTokenSearchV2Active}. An empty query has
  * no results (`null`), so the list keeps the legacy default list until the first query is answered.
  */
-export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults | null, SwapTokenSearchParams, SwapTokenSearchState>(
-  {
-    // Clearing the query always runs the fetcher, which answers an empty query without a request, so that `lastResults`
-    // never carries results from before the field was cleared
-    cacheTime: ({ query }) => (query ? time.seconds(15) : 0),
-    fetcher: searchSwapTokens,
-    disableAutoRefetching: true,
-    enabled: $ => $(useTokenSearchV2EnabledStore),
-    keepPreviousData: true,
-    onFetched: ({ data, set }) => set({ lastResults: data }),
-    params: {
-      query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
-      chainId: $ => $(useSwapsStore, state => state.selectedOutputChainId ?? ChainId.mainnet),
-    },
-    staleTime: time.minutes(2),
+export const useSwapTokenSearchStore = createQueryStore<SwapSearchResults | null, SwapTokenSearchParams>({
+  cacheTime: time.seconds(15),
+  fetcher: searchSwapTokens,
+  disableAutoRefetching: true,
+  enabled: $ => $(useTokenSearchV2EnabledStore),
+  keepPreviousData: true,
+  params: {
+    query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
+    chainId: $ => $(useSwapsStore, state => state.selectedOutputChainId ?? ChainId.mainnet),
   },
-  (_, get) => ({
-    lastResults: null,
-    // A failed request moves the store to its query, which has no data
-    getResults: () => get().getData() ?? (get().getStatus('isError') ? get().lastResults : null),
-  })
-);
+  staleTime: time.minutes(2),
+});
 
 export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, DiscoverSearchParams>(
   {

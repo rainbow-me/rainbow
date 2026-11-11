@@ -30,6 +30,7 @@ import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 import { filterList } from '@/utils/search';
 
 import { usePopularTokensStore } from '../resources/search/discovery';
+import { useSwapTokenSearchV2Results } from './useSwapTokenSearchV2Results';
 
 const ANALYTICS_LOG_THROTTLE_MS = time.seconds(5);
 const MAX_POPULAR_RESULTS = 3;
@@ -42,11 +43,9 @@ export function useSearchCurrencyLists() {
   );
   const legacyVerifiedAssets = useTokenSearchStore(state => state.getData());
   const legacyUnverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
-  const tokenSearchV2Results = useSwapTokenSearchStore(state => state.getResults());
-  const tokenSearchV2Failed = useSwapTokenSearchStore(state => state.getStatus('isError'));
-  // While the new search answers its first query, the legacy stores still hold the default list. If it fails, the list
-  // shows the last results fetched, or none, rather than that unfiltered list.
-  const showTokenSearchV2 = isTokenSearchV2 && (!!tokenSearchV2Results || tokenSearchV2Failed);
+  const tokenSearchV2Results = useSwapTokenSearchV2Results(isTokenSearchV2);
+  // Until the new search answers, the legacy stores still hold the default list
+  const showTokenSearchV2 = tokenSearchV2Results !== undefined;
   const verifiedAssets = showTokenSearchV2
     ? { results: tokenSearchV2Results?.verified, crosschainResults: tokenSearchV2Results?.crosschain }
     : legacyVerifiedAssets;
