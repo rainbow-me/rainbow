@@ -121,12 +121,38 @@ describe('useSwapTokenSearchStore', () => {
     expect(results).toBeNull();
   });
 
-  it('lets a failed request reach the store', async () => {
-    searchTokens.mockRejectedValue(new Error('boom'));
-
+  it('lets a failed request reach the store and keeps the previous query results', async () => {
+    searchTokens.mockResolvedValueOnce({ sections: [{ type: 'SECTION_TYPE_TOP', items: [USDC] }] });
     await search('usdc', ChainId.base);
 
+    searchTokens.mockRejectedValueOnce(new Error('boom'));
+    await search('usdce', ChainId.base);
+
     expect(useSwapTokenSearchStore.getState().status).toBe('error');
+    expect(
+      useSwapTokenSearchStore
+        .getState()
+        .getResults()
+        ?.verified.map(asset => asset.address)
+    ).toEqual([USDC_BASE]);
+  });
+
+  it('shows no results from before the query was cleared when the next query fails', async () => {
+    const unsubscribe = useSwapTokenSearchStore.subscribe(() => undefined);
+    searchTokens.mockResolvedValueOnce({ sections: [{ type: 'SECTION_TYPE_TOP', items: [USDC] }] });
+    useSwapsSearchStore.setState({ searchQuery: 'usdc' });
+    await vi.waitFor(() => expect(useSwapTokenSearchStore.getState().getData()?.verified).toHaveLength(1));
+
+    // The empty query was answered before, so it may be served from the cache
+    useSwapsSearchStore.setState({ searchQuery: '' });
+    await vi.waitFor(() => expect(useSwapTokenSearchStore.getState().getData()).toBeNull());
+    searchTokens.mockRejectedValueOnce(new Error('boom'));
+    useSwapsSearchStore.setState({ searchQuery: 'pepe' });
+    await vi.waitFor(() => expect(useSwapTokenSearchStore.getState().getStatus('isError')).toBe(true));
+
+    expect(useSwapTokenSearchStore.getState().getResults()).toBeNull();
+    unsubscribe();
+    useSwapsSearchStore.setState({ searchQuery: '' });
   });
 
   it.each([

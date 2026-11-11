@@ -207,9 +207,13 @@ export function toChainSearchResults(
   return results;
 }
 
+// The backend reports unknown decimals as 0, and an amount can't be quoted in a token with no decimals. Native coins
+// take the app's decimals.
+const isQuotable = ({ decimals }: { decimals: number }) => decimals > 0;
+
 /**
  * Verified results not deployed on `chainId` that exactly match `query`: by symbol or name, or, for an address query,
- * by the address of any of their deployments.
+ * by the address of any of their deployments. Each one opens on its first deployment that can be quoted.
  */
 export function toCrosschainSearchResults(
   result: TokenSearchResult,
@@ -219,7 +223,14 @@ export function toCrosschainSearchResults(
 ): SearchAsset[] {
   // As the backend reads it: a `$TICKER` is the ticker
   const normalizedQuery = query.trim().replace(/^\$/, '').toLowerCase();
-  return toSearchAssets(result, nativeAssetByChain).filter(
+  const assets: SearchAsset[] = [];
+  for (const item of toSearchItems(result)) {
+    const parsed = parseToken(item, nativeAssetByChain);
+    if (!parsed) continue;
+    const selected = parsed.instances.find(isQuotable) ?? parsed.instances[0];
+    assets.push(toDeploymentAsset(parsed, selected, nativeAssetByChain));
+  }
+  return assets.filter(
     asset =>
       asset.isVerified &&
       asset.networks[chainId] === undefined &&
@@ -231,10 +242,6 @@ export function toCrosschainSearchResults(
 
 export const SWAP_MAX_VERIFIED_RESULTS = 24;
 export const SWAP_MAX_UNVERIFIED_RESULTS = 6;
-
-// The backend reports unknown decimals as 0, and an amount can't be quoted in a token with no decimals. Native coins
-// take the app's decimals.
-const isQuotable = (asset: SearchAsset) => asset.decimals > 0;
 
 export type SwapSearchResults = {
   verified: SearchAsset[];

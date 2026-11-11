@@ -313,6 +313,19 @@ describe('swap results', () => {
     expect(results.map(asset => [asset.symbol, asset.chainId, asset.address])).toEqual([['USDC', ChainId.base, USDC_BASE]]);
   });
 
+  it('opens a cross-chain result on its first deployment with decimals', () => {
+    const noDecimalsFirst = {
+      sections: [
+        {
+          type: 'SECTION_TYPE_TOKENS' as const,
+          items: [item({ instances: [erc20(ChainId.mainnet, USDC_MAINNET, 0), erc20(ChainId.base, USDC_BASE)] })],
+        },
+      ],
+    };
+    const results = toCrosschainSearchResults(noDecimalsFirst, 'usdc', ChainId.polygon, NATIVE_ASSET_BY_CHAIN);
+    expect(results.map(asset => [asset.chainId, asset.address, asset.decimals])).toEqual([[ChainId.base, USDC_BASE, 6]]);
+  });
+
   it('excludes cross-chain results deployed on the output chain', () => {
     expect(toCrosschainSearchResults(result, USDC_BSC, ChainId.bsc, NATIVE_ASSET_BY_CHAIN)).toEqual([]);
     expect(toCrosschainSearchResults(result, 'usdc', ChainId.bsc, NATIVE_ASSET_BY_CHAIN).map(asset => asset.address)).toEqual([
