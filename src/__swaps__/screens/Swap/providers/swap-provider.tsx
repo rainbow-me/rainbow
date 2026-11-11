@@ -641,6 +641,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const isSettingBothAssets = oppositeAsset !== undefined;
       const extendedOppositeAsset =
         oppositeAsset === undefined ? undefined : parseAssetAndExtend({ asset: oppositeAsset, insertUserAssetBalance: true });
+
       const inputAssetToSet = isSettingInputAsset ? extendedAsset : extendedOppositeAsset;
 
       let otherAssetBalance: ParsedUserAsset['balance'] | undefined = undefined;
