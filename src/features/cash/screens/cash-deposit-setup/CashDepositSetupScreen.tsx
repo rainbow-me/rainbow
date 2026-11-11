@@ -10,10 +10,10 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SmoothPager } from '@/components/SmoothPager/SmoothPager';
 import { Box, useBackgroundColor } from '@/design-system';
 import { useHardwareBackOnFocus } from '@/framework/ui/hooks/useHardwareBack';
-import { useCleanup } from '@/hooks/useCleanup';
 import { useStableValue } from '@/hooks/useStableValue';
 import Routes from '@/navigation/routesNames';
 import { type CashDepositSetupRoute } from '@/navigation/types';
+import { useRouteCleanup } from '@/navigation/useRouteCleanup';
 
 import { useCardLinkFlowStore } from '../../stores/cardLinkFlowStore';
 import { getIsCashHalfSheetOpen } from '../../stores/cashHalfSheetVisibilityStore';
@@ -78,7 +78,7 @@ export const CashDepositSetupScreen = memo(function CashDepositSetupScreen() {
   useListen(useCashSetupSessionStore, s => s.session.status === 'empty', restartSetupWithoutCredential);
   useListen(useAddPasskeyFlowStore, selectIsPasskeyCeremonyPending, restartSetupWithoutCredential);
 
-  useCleanup(() => {
+  useRouteCleanup(() => {
     CashDepositSetupNavigation.resetNavigationState();
     endSetupSession();
     useSubmitPhoneFlowStore.getState().reset();

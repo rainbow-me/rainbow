@@ -5225,9 +5225,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymarket/clob-client-v2@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@polymarket/clob-client-v2@npm:1.1.0"
+"@polymarket/clob-client-v2@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@polymarket/clob-client-v2@npm:1.2.0"
   dependencies:
     "@ethersproject/providers": "npm:^5.8.0"
     "@ethersproject/wallet": "npm:^5.8.0"
@@ -5235,7 +5235,7 @@ __metadata:
     browser-or-node: "npm:^3.0.0"
     tslib: "npm:^2.8.1"
     viem: "npm:^2.46.3"
-  checksum: 10c0/c570822bae202cabb56100621d3c4626763d092fe89dfcae882c24b9a78ffac1fd7564c9c567bfdd3867bdd1b716e3aeedb52a8ed535a1eb8a9d53220d3422e1
+  checksum: 10c0/13845ef68569abbbcaa5c4a5bbba010aaca737037963a8f67ca4bcf7abd22337d499f467897b4351896eb268b35b1de0eb926402012bf5c2220f17cc092c1789
   languageName: node
   linkType: hard
 
@@ -5820,9 +5820,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/sdk@npm:0.4.1":
-  version: 0.4.1
-  resolution: "@rainbow-me/sdk@npm:0.4.1"
+"@rainbow-me/sdk@npm:0.4.2":
+  version: 0.4.2
+  resolution: "@rainbow-me/sdk@npm:0.4.2"
   peerDependencies:
     "@storesjs/stores": ^0.8.6
     ethers: ^5.7.0
@@ -5833,7 +5833,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/5679084c3cb55e46bb00c678146aaff689213d707bec326a1a7f759b02b9fbf827587f2c68bcdc0abea7985bdeee73c42126e70372d3c8363143fa1af2ee9a84
+  checksum: 10c0/d7851dbccedf4a580f2dbfed9cdae5f279cb6e1220ae32f90a7becd2c0cc39993baa43b6d9a4d64375bce1a77dc92469b2ad64d36d8475fb823bb9354d6bd347
   languageName: node
   linkType: hard
 
@@ -9370,10 +9370,10 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@polymarket/builder-relayer-client": "npm:0.0.10"
     "@polymarket/builder-signing-sdk": "npm:0.0.8"
-    "@polymarket/clob-client-v2": "npm:1.1.0"
+    "@polymarket/clob-client-v2": "npm:1.2.0"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/sdk": "npm:0.4.1"
+    "@rainbow-me/sdk": "npm:0.4.2"
     "@rainbow-me/swaps": "npm:0.41.0"
     "@rainbow-me/token-launcher": "npm:0.3.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
@@ -9487,7 +9487,6 @@ __metadata:
     https-browserify: "npm:0.0.1"
     husky: "npm:8.0.1"
     i18n-js: "npm:3.8.0"
-    idna-uts46-hx: "npm:3.4.0"
     imgix-core-js: "npm:2.3.2"
     immer: "npm:9.0.6"
     inherits: "npm:2.0.4"
@@ -16262,15 +16261,6 @@ __metadata:
   version: 7.1.1
   resolution: "idb@npm:7.1.1"
   checksum: 10c0/72418e4397638797ee2089f97b45fc29f937b830bc0eb4126f4a9889ecf10320ceacf3a177fe5d7ffaf6b4fe38b20bbd210151549bfdc881db8081eed41c870d
-  languageName: node
-  linkType: hard
-
-"idna-uts46-hx@npm:3.4.0":
-  version: 3.4.0
-  resolution: "idna-uts46-hx@npm:3.4.0"
-  dependencies:
-    punycode: "npm:^2.1.1"
-  checksum: 10c0/ee72a3747b32d655d539e45cf9e8c9eb6b46068266f91787c5cdd1383e0cdc00e28f9c4a75944656e6a69c26653d75fd0414586b3739cb8f34bb4b0d333d14a9
   languageName: node
   linkType: hard
 

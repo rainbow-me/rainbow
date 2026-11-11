@@ -32,7 +32,7 @@ import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ENSCircleIcon } from '@/features/ens/components/ENSCircleIcon';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { type ENSProfile } from '@/features/ens/types/profile';
 import {
   estimateENSReclaimGasLimit,
@@ -210,6 +210,9 @@ export const SendConfirmationSheet = () => {
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const walletNames = useWalletsStore(state => state.walletNames);
+  const shouldLoadAvatar = getNameService(to) === 'ens';
+  const avatar = useEnsImageStore(s => s.get(shouldLoadAvatar ? { name: to, field: 'avatar' } : undefined));
+
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
@@ -420,11 +423,7 @@ export const SendConfirmationSheet = () => {
 
   const avatarColor = existingAccount?.color || contact?.color || addressHashedColorIndex(toAddress);
 
-  const { data: avatar } = useENSAvatar(to, {
-    enabled: getNameService(to) === 'ens',
-  });
-
-  const accountImage = profilesEnabled ? avatar?.imageUrl || existingAccount?.image : existingAccount?.image;
+  const accountImage = profilesEnabled ? avatar || existingAccount?.image : existingAccount?.image;
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {

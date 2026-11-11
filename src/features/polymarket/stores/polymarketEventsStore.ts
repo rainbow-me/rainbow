@@ -1,7 +1,8 @@
 import { createQueryStore, createStoreActions } from '@storesjs/stores';
 
-import { CATEGORIES, DEFAULT_CATEGORY_KEY, POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
+import { CATEGORIES, DEFAULT_CATEGORY_KEY } from '@/features/polymarket/constants';
 import { type PolymarketEvent, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { gammaMarketsUrl } from '@/features/polymarket/utils/marketProtocol';
 import { processRawPolymarketEvent } from '@/features/polymarket/utils/transforms';
 import { time } from '@/framework/core/utils/time';
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
@@ -179,7 +180,7 @@ export const usePolymarketEventsStore = createQueryStore<PolymarketEventsPage, P
       },
     };
   },
-  { storageKey: 'polymarketEventsStore', version: 1 }
+  { storageKey: 'polymarketEventsStore', version: 3 }
 );
 
 export const polymarketEventsActions = createStoreActions(usePolymarketEventsStore);
@@ -188,7 +189,7 @@ async function fetchPolymarketEventsPage(
   { categoryKey, offset }: PolymarketEventsParams,
   abortController: AbortController | null
 ): Promise<PolymarketEventsPage> {
-  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
+  const url = gammaMarketsUrl('events');
   url.searchParams.set('limit', String(PAGE_SIZE));
   url.searchParams.set('active', 'true');
   url.searchParams.set('archived', 'false');
@@ -229,7 +230,7 @@ export async function fetchPolymarketEventsByIds(
   abortController: AbortController | null
 ): Promise<RawPolymarketEvent[]> {
   if (eventIds.length === 0) return [];
-  const url = new URL(`${POLYMARKET_GAMMA_API_URL}/events`);
+  const url = gammaMarketsUrl('events');
   url.searchParams.set('limit', String(eventIds.length));
   for (const id of eventIds) url.searchParams.append('id', id);
   const { data } = await rainbowFetch<RawPolymarketEvent[]>(url.toString(), {

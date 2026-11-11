@@ -2,6 +2,7 @@ import { createQueryStore } from '@storesjs/stores';
 
 import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
+import { type GammaEvent, type GammaMarket } from '@/features/polymarket/types/polymarket-event';
 import { getOutcomeTeamColor } from '@/features/polymarket/utils/getOutcomeTeam';
 import { isThreeWayMoneyline } from '@/features/polymarket/utils/marketClassification';
 import { isDrawMarket } from '@/features/polymarket/utils/sports';
@@ -13,8 +14,6 @@ import { fetchGammaEvent } from '../api/gammaClient';
 import {
   FIDELITY_MAP,
   SERIES_COLORS,
-  type GammaEvent,
-  type GammaMarket,
   type MarketFilter,
   type OutcomeSeries,
   type PolymarketChartData,

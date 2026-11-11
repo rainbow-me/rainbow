@@ -1,26 +1,16 @@
 import { createQueryStore, queryParam } from '@storesjs/stores';
 
-import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
-import { type PolymarketEvent, type PolymarketMarket, type RawPolymarketEvent } from '@/features/polymarket/types/polymarket-event';
+import {
+  fetchOrderDetails,
+  type PolymarketOrderDetails,
+  type SportsOrderDetails,
+} from '@/features/polymarket/stores/polymarketOrderDetailsStore';
 import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
 import { time } from '@/framework/core/utils/time';
-import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 // ============ Types ========================================================== //
-
-/**
- * Details needed to open a Polymarket position.
- */
-export type PolymarketOrderDetails = {
-  event: Pick<PolymarketEvent, 'title' | 'slug'>;
-  market: Pick<
-    PolymarketMarket,
-    'conditionId' | 'negRisk' | 'slug' | 'icon' | 'groupItemTitle' | 'question' | 'line' | 'outcomes' | 'clobTokenIds'
-  >;
-  outcomeIndex: number;
-};
 
 type OrderState = {
   params: { tokenId: string; conditionId: string } | PolymarketOutcome | null;
@@ -37,12 +27,7 @@ type FetchParams = { outcome: PolymarketOutcome | null };
  * Stores the outcome for a Polymarket buy or sell order and loads missing order details.
  * Unavailable outcomes resolve to `null`.
  */
-export const usePolymarketOrderStore = createQueryStore<
-  PolymarketOrderDetails | null,
-  FetchParams,
-  OrderState,
-  PolymarketOrderDetails | null
->(
+export const usePolymarketOrderStore = createQueryStore<SportsOrderDetails | null, FetchParams, OrderState, SportsOrderDetails | null>(
   {
     fetcher: fetchOrderDetails,
     enabled: ($, store) => {
@@ -79,44 +64,6 @@ export const usePolymarketOrderStore = createQueryStore<
     setSellParams: position => set({ params: { tokenId: position.asset, conditionId: position.conditionId } }),
   })
 );
-
-// ============ Order Details Fetcher ========================================== //
-
-async function fetchOrderDetails(params: FetchParams, abortController: AbortController | null): Promise<PolymarketOrderDetails | null> {
-  const outcome = params.outcome;
-  if (!outcome) return null;
-
-  const { data: event } = await rainbowFetch<RawPolymarketEvent>(`${POLYMARKET_GAMMA_API_URL}/events/${outcome.eventId}`, {
-    signal: abortController?.signal,
-    timeout: time.seconds(15),
-  });
-
-  const rawMarket = event.markets.find(market => market.id === outcome.marketId);
-  if (!rawMarket || !rawMarket.active || rawMarket.closed || rawMarket.archived || !rawMarket.acceptingOrders) {
-    return null;
-  }
-
-  const clobTokenIds: string[] = JSON.parse(rawMarket.clobTokenIds);
-  if (clobTokenIds[outcome.outcomeIndex] !== outcome.tokenId) {
-    return null;
-  }
-
-  return {
-    event: { title: event.title, slug: event.slug },
-    market: {
-      conditionId: rawMarket.conditionId,
-      negRisk: rawMarket.negRisk,
-      slug: rawMarket.slug,
-      icon: rawMarket.icon,
-      groupItemTitle: rawMarket.groupItemTitle,
-      question: rawMarket.question,
-      line: rawMarket.line,
-      outcomes: JSON.parse(rawMarket.outcomes),
-      clobTokenIds,
-    },
-    outcomeIndex: outcome.outcomeIndex,
-  };
-}
 
 // ============ Utilities ====================================================== //
 

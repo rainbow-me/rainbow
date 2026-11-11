@@ -11,7 +11,6 @@ import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValu
 import { Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
-import { type UmaResolutionStatus } from '@/features/polymarket/types/polymarket-event';
 import { formatPrice } from '@/features/polymarket/utils/formatPrice';
 import { toPercentageWorklet } from '@/framework/core/safeMath';
 import { formatNumber } from '@/helpers/strings';
@@ -26,8 +25,9 @@ type MarketRowProps = {
   icon?: string | ReactNode;
   title: string;
   volume?: string;
-  umaResolutionStatus?: UmaResolutionStatus;
-  tokenId: string;
+  isResolutionInReview?: boolean;
+  tokenId: string | undefined;
+  disabled?: boolean;
   price: string;
   minTickSize: number;
   onPress: () => void;
@@ -43,8 +43,9 @@ export const MarketRow = memo(function MarketRow({
   icon,
   title,
   volume,
-  umaResolutionStatus,
+  isResolutionInReview,
   tokenId,
+  disabled,
   price,
   minTickSize,
   onPress,
@@ -54,14 +55,11 @@ export const MarketRow = memo(function MarketRow({
 
   const shouldShowPriceChange = priceChange !== undefined && Math.abs(priceChange) >= 0.01;
   const priceChangeIsPositive = priceChange !== undefined && priceChange > 0;
-  const isResolutionInReview = umaResolutionStatus && umaResolutionStatus !== 'resolved';
-
-  const liveTokenId = getPolymarketTokenId(tokenId, 'sell');
 
   const formatLivePrice = useCallback((price: string | number) => formatPrice(price, minTickSize), [minTickSize]);
 
   const livePrice = useLiveTokenValue({
-    tokenId: liveTokenId,
+    tokenId: tokenId ? getPolymarketTokenId(tokenId, 'sell') : undefined,
     fallback: price ? formatLivePrice(price) : '0',
     format: formatLivePrice,
   });
@@ -77,7 +75,7 @@ export const MarketRow = memo(function MarketRow({
   }, [accentColor]);
 
   return (
-    <ButtonPressAnimation scaleTo={0.95} onPress={onPress}>
+    <ButtonPressAnimation disabled={disabled} scaleTo={0.95} onPress={onPress}>
       <GradientBorderView
         borderGradientColors={
           isDarkMode ? [accentColors.opacity0, accentColors.opacity6] : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']

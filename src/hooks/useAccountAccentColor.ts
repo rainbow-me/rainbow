@@ -29,7 +29,7 @@ export function useAccountAccentColor() {
   return useMemo(() => {
     return {
       accentColor: hasLoaded ? accentColor : fallbackColor,
-      highContrastAccentColor: hasLoaded ? getHighContrastColor(accentColor, isDarkMode) : fallbackColor,
+      highContrastAccentColor: hasLoaded ? (getHighContrastColor(accentColor, isDarkMode) ?? fallbackColor) : fallbackColor,
       loaded: hasLoaded,
     };
   }, [accentColor, fallbackColor, hasLoaded, isDarkMode]);

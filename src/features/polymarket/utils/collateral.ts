@@ -9,8 +9,8 @@ import {
   POLYMARKET_PUSD_ADDRESS,
 } from '@/features/polymarket/constants';
 import { getMissingErc20ApprovalTransaction } from '@/features/polymarket/utils/erc20Approval';
-import { refetchPolymarketBalance } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
+import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { waitForRelayerTransaction } from '@/features/polymarket/utils/relayExecution';
 import { getErc20Balance } from '@/features/token/data/api/erc20Read';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@rainbow-me/swaps';
@@ -87,14 +87,8 @@ export async function buildEnsureUsdcBalanceTransactions({
   });
 }
 
-export async function wrapUsdcAmountToPusd({ amount, proxyAddress }: { amount: BigNumber; proxyAddress: Address }): Promise<void> {
-  if (amount.isZero()) return;
-
-  await wrapUsdcToPusd({ proxyAddress, amount });
-  await refetchPolymarketBalance();
-}
-
-export async function wrapUsdcToPusd({ proxyAddress, amount }: { proxyAddress: Address; amount: BigNumber }): Promise<void> {
+export async function wrapUsdcToPusd({ amount, wallet }: { amount: BigNumber; wallet: PolymarketWallet }): Promise<void> {
+  const proxyAddress = wallet.address;
   const transactions = [
     ...(await getMissingErc20ApprovalTransaction({
       amount: amount,
@@ -106,5 +100,6 @@ export async function wrapUsdcToPusd({ proxyAddress, amount }: { proxyAddress: A
     buildWrapUsdcToPusdTransaction(proxyAddress, amount),
   ];
 
-  await executeRelayTransaction(transactions, 'wrap USDC.e to pUSD');
+  const description = 'wrap USDC.e to pUSD';
+  await waitForRelayerTransaction(await wallet.execute(transactions, description), description);
 }

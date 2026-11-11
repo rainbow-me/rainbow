@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,15 +21,14 @@ import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { PolymarketNoLiquidityCard } from '@/features/polymarket/components/PolymarketNoLiquidityCard';
 import { POLYMARKET_OUTCOME_CARD_MIN_HEIGHT, PolymarketOutcomeCard } from '@/features/polymarket/components/PolymarketOutcomeCard';
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
-import { getPolymarketClobOrderErrorReason, PolymarketBuyPositionError } from '@/features/polymarket/errors';
 import { useNewPositionForm } from '@/features/polymarket/screens/polymarket-new-position-sheet/hooks/useNewPositionForm';
-import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
-import { usePolymarketOrderStore, type PolymarketOrderDetails } from '@/features/polymarket/stores/polymarketOrderStore';
-import { executePolymarketBuyPosition, type PolymarketBuyPositionStep } from '@/features/polymarket/utils/executePolymarketOrder';
+import { retryPolymarketBalance, useAvailablePolymarketBalance } from '@/features/polymarket/stores/derived/useAvailablePolymarketBalance';
+import { type PolymarketOrderDetails, type SportsOrderDetails } from '@/features/polymarket/stores/polymarketOrderDetailsStore';
+import { usePolymarketOrderStore } from '@/features/polymarket/stores/polymarketOrderStore';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
-import { type PolymarketOutcome } from '@/features/sports/core/generated/external/sports/payload';
-import { mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
+import { executePolymarketBuyPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
+import { presentPolymarketOrderAlert } from '@/features/polymarket/utils/presentPolymarketOrderAlert';
+import { isPositive, mulWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -66,79 +65,71 @@ export const PolymarketNewPositionSheet = memo(function PolymarketNewPositionShe
           <Text size="26pt" weight="heavy" color="label">
             {i18n.t(i18n.l.predictions.new_position.title)}
           </Text>
-          {'outcome' in params ? (
-            <OrderDetailsLoader outcome={params.outcome} accentColor={accentColor} fromRoute={params.fromRoute} />
-          ) : (
-            <NewPositionForm
-              event={params.event}
-              market={params.market}
-              outcomeIndex={params.outcomeIndex}
-              accentColor={accentColor}
-              fromRoute={params.fromRoute}
-            />
-          )}
+          <NewPositionContent params={params} accentColor={accentColor} />
         </Box>
       </Box>
     </PanelSheet>
   );
 });
 
-function OrderDetailsLoader({ outcome, accentColor, fromRoute }: { outcome: PolymarketOutcome; accentColor: string; fromRoute: Route }) {
-  const details = usePolymarketOrderStore(s => {
-    const data = s.getData({ outcome });
-    if (data) return data;
-    return s.getStatus('isInitialLoad') || s.getStatus('isLoading') ? undefined : null;
-  });
+function NewPositionContent({
+  params,
+  accentColor,
+}: {
+  params: RootStackParamList[typeof Routes.POLYMARKET_NEW_POSITION_SHEET];
+  accentColor: string;
+}) {
+  const outcome = 'outcome' in params ? params.outcome : null;
+  const routeDetails = 'market' in params ? params : null;
 
-  if (details === undefined) return <NewPositionSkeleton accentColor={accentColor} />;
+  const fetchedDetails = usePolymarketOrderStore(s => s.getData({ outcome }));
+  const loadingDetails = usePolymarketOrderStore(s => s.getStatus('isInitialLoad') || s.getStatus('isLoading'));
+  const { balance, isError } = useAvailablePolymarketBalance();
 
-  if (details === null) {
-    return (
-      <Box alignItems="center" gap={20} paddingVertical="28px">
-        <Text align="center" color="labelSecondary" size="17pt" weight="bold">
-          {i18n.t(i18n.l.sports.entry_error)}
-        </Text>
-        <ButtonPressAnimation onPress={() => usePolymarketOrderStore.getState().fetch({ outcome }, { force: true })}>
-          <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
-            <Text color="accent" size="17pt" weight="bold">
-              {i18n.t(i18n.l.sports.retry)}
-            </Text>
-          </Box>
-        </ButtonPressAnimation>
-      </Box>
-    );
+  const details = routeDetails ?? fetchedDetails;
+
+  if (!details) {
+    if (loadingDetails) return <NewPositionSkeleton accentColor={accentColor} />;
+
+    return <BetDetailsError onRetry={() => usePolymarketOrderStore.getState().fetch({ outcome }, { force: true })} />;
+  }
+
+  if (balance === null) {
+    return isError ? <BetDetailsError onRetry={retryPolymarketBalance} /> : <NewPositionSkeleton accentColor={accentColor} />;
   }
 
   return (
     <NewPositionForm
-      key={outcome.tokenId}
-      event={details.event}
-      market={details.market}
-      outcomeIndex={details.outcomeIndex}
+      key={details.market.clobTokenIds[details.outcomeIndex]}
       accentColor={accentColor}
-      fromRoute={fromRoute}
+      balance={balance}
+      details={details}
+      fromRoute={params.fromRoute}
     />
   );
 }
 
 function NewPositionForm({
-  market,
-  event,
-  outcomeIndex,
   accentColor,
+  balance,
+  details,
   fromRoute,
-}: PolymarketOrderDetails & { accentColor: string; fromRoute: Route }) {
+}: {
+  accentColor: string;
+  balance: string;
+  details: PolymarketOrderDetails | SportsOrderDetails;
+  fromRoute: Route;
+}) {
+  const { event, market, outcomeIndex } = details;
   const { isDarkMode } = useColorMode();
-
-  const hasBalance = usePolymarketBalanceStore(s => Number(s.getBalance()) > 0);
-  const [processingStep, setProcessingStep] = useState<PolymarketBuyPositionStep | null>(null);
+  const [submissionBalance, setSubmissionBalance] = useState<string | null>(null);
+  const availableBalance = submissionBalance ?? balance;
 
   const outcome = market.outcomes[outcomeIndex];
   const tokenId = market.clobTokenIds[outcomeIndex];
   const buttonColor = getButtonColor(accentColor);
 
   const {
-    availableBalance,
     bestPrice,
     worstPrice,
     validation,
@@ -154,7 +145,7 @@ function NewPositionForm({
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
     isQuoteReady,
-  } = useNewPositionForm();
+  } = useNewPositionForm(availableBalance);
 
   const hasBlockedLiquidity = hasNoLiquidityAtMarketPrice || hasInsufficientLiquidity;
   const canSubmit = isValidOrderAmount && isQuoteReady && !hasBlockedLiquidity;
@@ -176,32 +167,30 @@ function NewPositionForm({
   const handleMarketBuyPosition = useCallback(async () => {
     if (!canSubmit || checkIfReadOnlyWallet(getAccountAddress())) return;
 
-    setProcessingStep('preparing');
+    setSubmissionBalance(availableBalance);
 
     try {
-      await executePolymarketBuyPosition({
-        tokenId,
-        amount: orderSpendCap,
-        price: worstPrice,
-        negRisk: market.negRisk,
-        matchedOrderMetadata: {
-          eventSlug: event.slug,
-          marketSlug: market.slug,
-          outcome,
-          estimatedFeeAmountUsd: fee,
-          quotedTradeFeeUsd: rainbowFee,
+      const result = await executePolymarketBuyPosition({
+        ...details,
+        orderSpendCap,
+        orderQuote: {
+          expectedAmounts: {
+            tokens: amountToWin,
+            usd: mulWorklet(amountToWin, averagePrice),
+          },
+          quotedTotalFeeUsd: fee,
+          quotedRainbowFeeUsd: rainbowFee,
           spread,
           bestPriceUsd: bestPrice,
           orderPriceUsd: worstPrice,
         },
-        onStep: setProcessingStep,
       });
 
-      setProcessingStep('confirming_order');
-      await waitForPositionSizeUpdate(tokenId);
-
-      Navigation.goBack();
-      if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) Navigation.goBack();
+      if (result.status === 'delayed') {
+        presentPolymarketOrderAlert('unconfirmed', 'buy');
+        setSubmissionBalance(null);
+        return;
+      }
     } catch (e) {
       const error = ensureError(e);
 
@@ -218,21 +207,31 @@ function NewPositionForm({
         errorMessage: error.message,
       });
 
-      presentErrorAlert(error);
-    } finally {
-      setProcessingStep(null);
+      presentPolymarketOrderAlert(error, 'buy');
+      setSubmissionBalance(null);
+      return;
+    }
+
+    if (fromRoute === Routes.POLYMARKET_MARKET_SHEET) {
+      Navigation.goBack();
+      Navigation.goBack();
+    } else {
+      Navigation.goBack();
     }
   }, [
+    availableBalance,
     bestPrice,
     buyAmount,
     canSubmit,
-    event.slug,
+    amountToWin,
+    averagePrice,
+    event,
     fee,
     fromRoute,
-    market.negRisk,
-    market.slug,
+    market,
     orderSpendCap,
     outcome,
+    details,
     rainbowFee,
     spread,
     tokenId,
@@ -270,12 +269,12 @@ function NewPositionForm({
         amountToWin={isQuoteReady ? amountToWin : undefined}
       />
       {hasBlockedLiquidity ? <PolymarketNoLiquidityCard title={noLiquidityTitle} description={noLiquidityDescription} /> : null}
-      {hasBalance ? (
+      {isPositive(availableBalance) ? (
         <HoldToActivateButton
           onLongPress={handleMarketBuyPosition}
           label={i18n.t(i18n.l.predictions.new_position.hold_to_place_bet)}
-          processingLabel={processingStep === null ? '' : getBuyPositionProcessingLabel(processingStep)}
-          isProcessing={processingStep !== null}
+          processingLabel={i18n.t(i18n.l.predictions.new_position.placing_bet)}
+          isProcessing={submissionBalance !== null}
           showBiometryIcon={false}
           backgroundColor={buttonColor}
           disabledBackgroundColor={buttonColor}
@@ -346,6 +345,23 @@ function OrderSummary({ averagePrice, spread, amountToWin }: { averagePrice?: st
   );
 }
 
+function BetDetailsError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <Box alignItems="center" gap={20} paddingVertical="28px">
+      <Text align="center" color="labelSecondary" size="17pt" weight="bold">
+        {i18n.t(i18n.l.sports.entry_error)}
+      </Text>
+      <ButtonPressAnimation onPress={onRetry}>
+        <Box background="fillTertiary" borderRadius={22} height={44} paddingHorizontal="20px" justifyContent="center">
+          <Text color="accent" size="17pt" weight="bold">
+            {i18n.t(i18n.l.sports.retry)}
+          </Text>
+        </Box>
+      </ButtonPressAnimation>
+    </Box>
+  );
+}
+
 function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
   const { isDarkMode } = useColorMode();
   const cardColor = isDarkMode ? opacity(accentColor, 0.08) : white(0.9);
@@ -404,52 +420,6 @@ function NewPositionSkeleton({ accentColor }: { accentColor: string }) {
 
 function getButtonColor(accentColor: string): string {
   return getSolidColorEquivalent({ background: accentColor, foreground: '#000000', opacity: 0.4 });
-}
-
-function getBuyPositionProcessingLabel(step: PolymarketBuyPositionStep): string {
-  switch (step) {
-    case 'confirming_order':
-      return i18n.t(i18n.l.predictions.new_position.confirming_order);
-    case 'preparing':
-    case 'placing_order':
-      return i18n.t(i18n.l.predictions.new_position.placing_bet);
-  }
-}
-
-function presentErrorAlert(error: Error): void {
-  const clobOrderErrorReason = getPolymarketClobOrderErrorReason(error);
-
-  if (clobOrderErrorReason) {
-    if (clobOrderErrorReason === 'not_enough_liquidity') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.not_enough_liquidity),
-        i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
-      );
-    } else if (clobOrderErrorReason === 'no_liquidity_at_price') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.no_liquidity_at_price),
-        i18n.t(i18n.l.predictions.new_position.errors.please_lower_amount)
-      );
-    }
-    return;
-  }
-
-  if (error instanceof PolymarketBuyPositionError) {
-    if (error.reason === 'trading_approval_failed') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.trading_approval_failed_title),
-        i18n.t(i18n.l.predictions.new_position.errors.trading_approval_failed_message)
-      );
-    } else if (error.reason === 'collateral_conversion_failed') {
-      Alert.alert(
-        i18n.t(i18n.l.predictions.new_position.errors.collateral_conversion_failed_title),
-        i18n.t(i18n.l.predictions.new_position.errors.collateral_conversion_failed_message)
-      );
-    }
-    return;
-  }
-
-  Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_place_bet));
 }
 
 const styles = StyleSheet.create({

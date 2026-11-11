@@ -9,27 +9,19 @@ import {
   type RawPolymarketMarket,
   type RawPolymarketOptimizedEvent,
 } from '@/features/polymarket/types/polymarket-event';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { getImagePrimaryColor } from '@/features/polymarket/utils/getImageColors';
 import { getMarketColors } from '@/features/polymarket/utils/getMarketColor';
 import { resolvePolymarketCardColor } from '@/features/polymarket/utils/getPolymarketCardColor';
+import { parseGammaMarket } from '@/features/polymarket/utils/marketProtocol';
 import { type ResponseByTheme } from '@/theme/types';
 
-export function processRawPolymarketMarket(market: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
-  return {
-    ...market,
-    clobTokenIds: market.clobTokenIds ? JSON.parse(market.clobTokenIds) : [],
-    outcomes: market.outcomes ? JSON.parse(market.outcomes) : [],
-    outcomePrices: market.outcomePrices ? JSON.parse(market.outcomePrices) : [],
-    ...(market.events
-      ? {
-          events: market.events.map(event => ({
-            ...event,
-            color: eventColor,
-          })),
-        }
-      : {}),
-    ...getMarketColors(market, eventColor),
-  };
+export function processRawPolymarketMarket(raw: RawPolymarketMarket, eventColor: ResponseByTheme<string>): PolymarketMarket {
+  const market = parseGammaMarket(raw);
+
+  const events = market.events?.length ? market.events.map(event => ({ ...event, color: eventColor })) : null;
+
+  return Object.assign(market, { events }, getMarketColors(raw, eventColor));
 }
 
 export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams?: PolymarketTeamInfo[]): Promise<PolymarketEvent> {
@@ -48,7 +40,7 @@ export async function processRawPolymarketEvent(event: RawPolymarketEvent, teams
 
 export async function processRawPolymarketOptimizedEvent(event: RawPolymarketOptimizedEvent): Promise<PolymarketOptimizedEvent> {
   const rawColor = await getImagePrimaryColor(event.image);
-  const color = getHighContrastColor(rawColor);
+  const color = getHighContrastColor(rawColor) ?? getColorBySeed(event.id);
   return {
     ...event,
     color,

@@ -1,163 +1,49 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { time } from '@/framework/core/utils/time';
 import timeUnits from '@/references/time-units.json';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
 import ethereumUtils from '@/utils/ethereumUtils';
 
-import { fetchRegistrationDate } from '../utils/handlers';
-import {
-  ENS_DOMAIN,
-  formatRentPrice,
-  getAvailable,
-  getENSRegistrarControllerContract,
-  getNameExpires,
-  getRentPrice,
-} from '../utils/helpers';
-import { validateENS } from '../utils/records';
+import { useEnsSearchStore } from '../data/stores/searchStore';
+import { ENS_DOMAIN, formatRentPrice } from '../utils/helpers';
 import useENSLocalTransactions from './useENSLocalTransactions';
 
-const formatTime = (timestamp: string, abbreviated = true) => {
-  const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
-  return format(new Date(Number(timestamp) * 1000), style);
-};
-
 export default function useENSSearch({ yearsDuration = 1, name: inputName }: { yearsDuration?: number; name: string }) {
-  const [contract, setContract]: any = useState(null);
-
-  useEffect(() => {
-    const getContract = async () => {
-      const theContract = await getENSRegistrarControllerContract();
-      setContract(theContract);
-    };
-    if (!contract) {
-      getContract();
-    }
-  }, [contract, setContract]);
-
   const name = inputName.replace(ENS_DOMAIN, '');
-  const accountAddress = useAccountAddress();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
-  const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({
-    name: `${name}${ENS_DOMAIN}`,
-  });
-
-  const isValidLength = useMemo(() => name.length > 2, [name.length]);
-
   const duration = yearsDuration * timeUnits.secs.year;
+  const input = name.length > 2 ? { name, duration } : undefined;
 
-  const getRegistrationValues = useCallback(async () => {
-    const ensValidation = validateENS(`${name}${ENS_DOMAIN}`, {
-      includeSubdomains: false,
-    });
+  const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({
+    name: name + ENS_DOMAIN,
+  });
+  const result = useEnsSearchStore(s => s.get(input));
+  const settled = useEnsSearchStore(s => s.hasSettled(input));
 
-    if (!ensValidation.valid) {
-      return {
-        code: ensValidation.code,
-        hint: ensValidation.hint,
-        valid: false,
-      };
-    }
+  const pending = !!(commitTransactionHash || pendingRegistrationTransaction) && !confirmedRegistrationTransaction;
 
-    const [isAvailable, rentPrice] = await Promise.all([getAvailable(name, contract), getRentPrice(name, duration, contract)]);
+  const data = useMemo(() => {
+    if (!result?.valid) return result;
     const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
-    const formattedRentPrice = formatRentPrice(rentPrice, yearsDuration, nativeCurrency, nativeAssetPrice);
-
-    if (isAvailable) {
-      if (confirmedRegistrationTransaction) {
-        return {
-          available: false,
-          pending: false,
-          valid: true,
-        };
-      }
-
-      if (pendingRegistrationTransaction) {
-        return {
-          available: false,
-          pending: true,
-          rentPrice: formattedRentPrice,
-          valid: true,
-        };
-      }
-
-      if (commitTransactionHash) {
-        return {
-          pending: true,
-          rentPrice: formattedRentPrice,
-          valid: true,
-        };
-      }
-
-      return {
-        available: true,
-        rentPrice: formattedRentPrice,
-        valid: true,
-      };
-    } else {
-      const [registrationDate, nameExpires] = await Promise.all([fetchRegistrationDate(name + ENS_DOMAIN), getNameExpires(name)]);
-
-      const formattedRegistrarionDate = formatTime(registrationDate, false);
-      const formattedExpirationDate = formatTime(nameExpires);
-
-      return {
-        available: false,
-        expirationDate: formattedExpirationDate,
-        registrationDate: formattedRegistrarionDate,
-        rentPrice: formattedRentPrice,
-        valid: true,
-      };
-    }
-  }, [
-    name,
-    pendingRegistrationTransaction,
-    commitTransactionHash,
-    confirmedRegistrationTransaction,
-    contract,
-    duration,
-    yearsDuration,
-    nativeCurrency,
-  ]);
-
-  const { data, status, isLoading, fetchStatus } = useQuery(
-    [
-      'getRegistrationValues',
-      [
-        duration,
-        name,
-        nativeCurrency,
-        yearsDuration,
-        commitTransactionHash,
-        pendingRegistrationTransaction,
-        confirmedRegistrationTransaction,
-      ],
-    ],
-    getRegistrationValues,
-    {
-      enabled: isValidLength && Boolean(contract),
-      retry: 0,
-      staleTime: Infinity,
-    }
-  );
-
-  const isAvailable = status === 'success' && data?.available === true;
-  const isRegistered = status === 'success' && data?.available === false;
-  const isPending = status === 'success' && data?.pending === true;
-  const isInvalid = status === 'success' && !data?.valid;
-  const isIdle = isLoading && fetchStatus === 'idle';
+    return {
+      ...result,
+      rentPrice: formatRentPrice(result.rentPrice, yearsDuration, nativeCurrency, nativeAssetPrice),
+      registrationDate: result.registrationDate ? format(time.seconds(Number(result.registrationDate)), 'MMMM d, y') : undefined,
+      expirationDate: result.expirationDate ? format(time.seconds(Number(result.expirationDate)), 'MMM d, y') : undefined,
+    };
+  }, [result, yearsDuration, nativeCurrency]);
 
   return {
     data,
-    isAvailable,
-    isIdle,
-    isInvalid,
-    isLoading,
-    isPending,
-    isRegistered,
+    isAvailable: result?.available === true && !pending && !confirmedRegistrationTransaction,
+    isRegistered: result?.available === false || !!confirmedRegistrationTransaction,
+    isPending: result?.available === true && pending,
+    isInvalid: result?.valid === false,
+    isIdle: !input,
+    isLoading: !!input && !settled,
   };
 }

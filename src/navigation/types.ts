@@ -428,7 +428,6 @@ type ParamsByRoute = {
   };
   [Routes.TRANSACTION_DETAILS]: {
     transaction: RainbowTransaction;
-    longFormHeight?: number;
   };
   [Routes.REGISTER_ENS_NAVIGATOR]: {
     ensName?: string;
@@ -447,7 +446,6 @@ type ParamsByRoute = {
     onClose?: () => void;
   };
   [Routes.APP_ICON_UNLOCK_SHEET]: {
-    longFormHeight?: number;
     appIconKey: UnlockableAppIconKey;
   };
   [Routes.CUSTOM_GAS_SHEET]: {
@@ -687,7 +685,9 @@ type ParamsByRoute = {
   [Routes.PERPS_TRADE_DETAILS_SHEET]: {
     trade: HlTrade;
   };
-  [Routes.POLYMARKET_EVENT_SCREEN]: { gameId: string } | { eventId: string; event: PolymarketMarketEvent | PolymarketEvent };
+  [Routes.POLYMARKET_EVENT_SCREEN]:
+    | { gameId: string }
+    | { eventId: string; eventSlug: string; event?: PolymarketMarketEvent | PolymarketEvent };
   [Routes.POLYMARKET_MANAGE_POSITION_SHEET]: {
     position: PolymarketPosition;
   };

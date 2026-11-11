@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
 import { useSelector } from 'react-redux';
-import type { Address } from 'viem';
+import { getAddress, type Address } from 'viem';
 
 import rainbowIcon from '@/assets/rainbow-icon-circle.png';
 import smartWalletIcon from '@/assets/smartWalletIcon.png';
@@ -22,8 +22,8 @@ import { type RainbowTransaction } from '@/entities/transactions';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { getDelegationContractAddress, isRainbowDelegated } from '@/features/delegation/utils/status';
-import { fetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { fetchReverseRecord } from '@/features/ens/utils/handlers';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import styled from '@/framework/ui/styled-thing';
@@ -107,12 +107,15 @@ function CurrencyTile({
   }, [address, userAccounts, watchedAccounts]);
 
   const formattedAddress = formatAddressForDisplay(address, 4, 6);
-  const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
-  const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
   const [imageLoaded, setImageLoaded] = useState(!!addressAccount?.image);
 
   const accountEmoji = useMemo(() => returnStringFirstEmoji(addressAccount?.label), [addressAccount]);
   const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), [addressAccount?.label]);
+  const shouldResolveName = !!address && !addressContact?.nickname && !accountName;
+  const fetchedEnsName = useEnsNameStore(s => s.get(shouldResolveName ? getAddress(address) : undefined));
+  const imageName = fetchedEnsName ?? addressContact?.ens;
+  const shouldLoadImage = !addressAccount?.image && !!imageName;
+  const fetchedEnsImage = useEnsImageStore(s => s.get(shouldLoadImage ? { name: imageName, field: 'avatar' } : undefined));
   const avatarColor =
     addressAccount?.color ?? addressContact?.color ?? theme.colors.avatarBackgrounds[addressHashedColorIndex(address) || 1];
   const emoji = accountEmoji || addressHashedEmoji(address);
@@ -124,33 +127,10 @@ function CurrencyTile({
   }
 
   const shouldShowAddress = (!name.includes('...') || name === i18n.t(i18n.l.transaction_details.you)) && !showAsset;
-  const imageUrl = fetchedEnsImage ?? addressAccount?.image;
+  const imageUrl = fetchedEnsImage ?? addressAccount?.image ?? undefined;
   const ensAvatarSharedValue = useTiming(!!image || (!!imageUrl && imageLoaded), {
     duration: image || addressAccount?.image ? 0 : 420,
   });
-
-  useEffect(() => {
-    if (!addressContact?.nickname && !accountName) {
-      fetchReverseRecord(address).then(name => {
-        if (name) {
-          setFetchedEnsName(name);
-        }
-      });
-    }
-  }, [accountName, address, addressContact?.nickname]);
-
-  useEffect(() => {
-    if (!addressAccount?.image && (fetchedEnsName || addressContact?.ens)) {
-      const ens = fetchedEnsName ?? addressContact?.ens;
-      if (ens) {
-        fetchENSAvatar(ens, { cacheFirst: true }).then(avatar => {
-          if (avatar?.imageUrl) {
-            setFetchedEnsImage(avatar.imageUrl);
-          }
-        });
-      }
-    }
-  }, [addressAccount?.image, addressContact?.ens, fetchedEnsName]);
 
   const colorForAsset = usePersistentDominantColorFromImage(showAsset ? asset?.icon_url : imageUrl) || avatarColor;
 
@@ -225,7 +205,7 @@ function CurrencyTile({
                     weight="semibold"
                     align="center"
                     text={title || name}
-                    loadedText={title || fetchedEnsName}
+                    loadedText={title || fetchedEnsName || undefined}
                   />
                 </Box>
               </Row>

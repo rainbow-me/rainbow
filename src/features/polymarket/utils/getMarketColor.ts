@@ -17,19 +17,10 @@ export function getMarketColors(
   market: RawPolymarketMarket,
   eventColor: ResponseByTheme<string>
 ): { color: ResponseByTheme<string>; secondaryColor: ResponseByTheme<string> | undefined } {
-  if (market.seriesColor) {
-    const [primary, secondary] = market.seriesColor.split(',');
-    return {
-      color: primary ? getHighContrastColor(primary) : eventColor,
-      secondaryColor: secondary ? getHighContrastColor(secondary) : undefined,
-    };
-  }
-
-  if (isSingleMarketEvent(market)) return { color: eventColor, secondaryColor: undefined };
-
+  const [primary, secondary] = market.seriesColor?.split(',') ?? [];
   return {
-    color: getColorBySeed(market.conditionId),
-    secondaryColor: undefined,
+    color: getHighContrastColor(primary) ?? (isSingleMarketEvent(market) ? eventColor : getColorBySeed(market.conditionId)),
+    secondaryColor: getHighContrastColor(secondary),
   };
 }
 

@@ -1,12 +1,10 @@
 import { nullObject } from '@storesjs/stores';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
-import { buildGammaUrl } from '@/features/charts/polymarket/api/gammaClient';
-import { type GammaMarket } from '@/features/charts/polymarket/types';
 import { POLYMARKET_GAMMA_API_URL } from '@/features/polymarket/constants';
 import { getGammaLeagueId } from '@/features/polymarket/leagues';
 import { type PolymarketGameMetadata, type PolymarketTeamInfo, type RawPolymarketTeamInfo } from '@/features/polymarket/types';
-import { type PolymarketMarket, type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
+import { type RawPolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { mapWithConcurrency } from '@/framework/core/utils/mapWithConcurrency';
 import { time } from '@/framework/core/utils/time';
@@ -43,7 +41,7 @@ async function fetchTeamsByAbbreviations(
   abortController?: AbortController | null
 ): Promise<PolymarketTeamInfo[] | undefined> {
   try {
-    const url = new URL(buildGammaUrl('teams'));
+    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
     if (league) {
       url.searchParams.set('league', league);
     }
@@ -68,7 +66,7 @@ async function fetchTeamsByNames(
   abortController?: AbortController | null
 ): Promise<PolymarketTeamInfo[] | undefined> {
   try {
-    const url = new URL(buildGammaUrl('teams'));
+    const url = new URL(`${POLYMARKET_GAMMA_API_URL}/teams`);
     if (league) {
       url.searchParams.set('league', league);
     }
@@ -142,7 +140,7 @@ export async function fetchTeamsForGameMarkets(
   const teams: Partial<Record<string, PolymarketTeamInfo[]>> = nullObject();
 
   for (const market of markets) {
-    const event = market.events[0];
+    const event = market.events?.[0];
     if (event?.gameId && event.ticker) events[event.ticker] ??= event;
   }
 
@@ -212,7 +210,7 @@ function filterFetchedTeams(teams: PolymarketTeamInfo[], teamNames: string[]): P
 
 function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInfo[] {
   return teams.map(team => {
-    const color = team.color ? getHighContrastColor(team.color) : getColorBySeed(String(team.id));
+    const color = getHighContrastColor(team.color) ?? getColorBySeed(String(team.id));
     return {
       ...team,
       color,
@@ -220,6 +218,6 @@ function enrichTeamsWithColor(teams: RawPolymarketTeamInfo[]): PolymarketTeamInf
   });
 }
 
-export function isDrawMarket(market: PolymarketMarket | GammaMarket): boolean {
+export function isDrawMarket(market: Pick<RawPolymarketMarket, 'slug' | 'question'>): boolean {
   return market.slug.includes('-draw') || market.question.toLowerCase().includes('draw');
 }

@@ -11,7 +11,7 @@ import { resolveEnsAddress } from './ens';
 /**
  * Identifies a name lookup on a destination chain, or an address to use directly.
  */
-export type EnsAddressInput = { addressOrName: string; chainId: ChainId };
+type EnsAddressInput = { addressOrName: string; chainId: ChainId };
 
 // ============ Store ========================================================== //
 

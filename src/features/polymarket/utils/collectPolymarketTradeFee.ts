@@ -1,79 +1,67 @@
-import { type Address } from 'viem';
+import { ethers } from 'ethers';
 
-import { POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS } from '@/features/polymarket/constants';
+import { POLYMARKET_PUSD_DECIMALS, POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS } from '@/features/polymarket/constants';
+import { PolymarketTransactionFailedError } from '@/features/polymarket/errors';
+import { type PolymarketOrderAmounts } from '@/features/polymarket/types';
 import { buildUnwrapPusdToUsdcTransactions } from '@/features/polymarket/utils/collateral';
-import { awaitPolygonConfirmation } from '@/features/polymarket/utils/confirmation';
 import { calculateFeeToCollectUsd, getTradeFeeAmount } from '@/features/polymarket/utils/polymarketTradeFee';
-import { getPolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
-import { executeRelayTransaction } from '@/features/polymarket/utils/relayExecution';
+import { type PolymarketWallet } from '@/features/polymarket/utils/polymarketWallet';
+import { waitForRelayerTransaction } from '@/features/polymarket/utils/relayExecution';
 import { ensureError, logger, RainbowError } from '@/logger';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-
-/** Polygon transactions that settle a matched Polymarket order. */
-export type SettlementTransactionHashes = readonly [string, ...string[]];
 
 type CollectTradeFeeParams = {
-  matchedAmounts: {
-    tokens: string | number;
-    usd: string | number;
-  };
+  matchedAmounts: PolymarketOrderAmounts;
   orderId: string;
-  quotedFeeUsd: string | number;
+  quotedFeeUsd: string;
   side: 'buy' | 'sell';
-  settlementTransactionHashes: SettlementTransactionHashes;
   tokenId: string;
+  wallet: PolymarketWallet;
 };
 
 /**
- * Collects the matched order trade fee, capped by the quoted fee reservation.
+ * Collects a settled order's trade fee, capped by the quoted fee reservation.
+ * Returns undefined when collection remains uncertain so the fee stays reserved.
  */
 export async function collectPolymarketTradeFee({
   matchedAmounts,
   orderId,
   quotedFeeUsd,
   side,
-  settlementTransactionHashes,
   tokenId,
-}: CollectTradeFeeParams): Promise<void> {
+  wallet,
+}: CollectTradeFeeParams): Promise<string | undefined> {
   let feeAmountUsd = '0';
-  let proxyAddress: Address | undefined;
+  let submissionAttempted = false;
 
   try {
     feeAmountUsd = calculateFeeToCollectUsd({ matchedAmounts, quotedFeeUsd });
 
     const amount = getTradeFeeAmount(feeAmountUsd);
-    if (amount.isZero()) return;
-
-    const owner = useWalletsStore.getState().accountAddress;
-    if (!owner) throw new RainbowError('[polymarket] No active account address');
-
-    const wallet = await getPolymarketWallet(owner);
-    proxyAddress = wallet.address;
-
-    await waitForSettlementTransactions(settlementTransactionHashes);
+    if (amount.isZero()) return '0';
 
     const transactions = await buildUnwrapPusdToUsdcTransactions({
       amount,
-      proxyAddress,
+      proxyAddress: wallet.address,
       recipient: POLYMARKET_RAINBOW_FEE_RECIPIENT_ADDRESS,
     });
-    if (!transactions.length) return;
 
-    await executeRelayTransaction(transactions, 'collect Rainbow Polymarket fee');
+    const description = 'collect Rainbow Polymarket fee';
+    submissionAttempted = true;
+    await waitForRelayerTransaction(await wallet.execute(transactions, description), description);
+
+    return ethers.utils.formatUnits(amount, POLYMARKET_PUSD_DECIMALS);
   } catch (e) {
     const error = ensureError(e);
     logger.error(new RainbowError('[collectPolymarketTradeFee] Error collecting fee', error), {
       feeAmountUsd,
-      matchedTokens: String(matchedAmounts.tokens),
-      matchedUsd: String(matchedAmounts.usd),
+      matchedTokens: matchedAmounts.tokens,
+      matchedUsd: matchedAmounts.usd,
       orderId,
-      quotedFeeUsd: String(quotedFeeUsd),
+      quotedFeeUsd,
       side,
       tokenId,
     });
+    if (submissionAttempted && !(error instanceof PolymarketTransactionFailedError)) return undefined;
+    return '0';
   }
-}
-
-async function waitForSettlementTransactions(transactionHashes: SettlementTransactionHashes): Promise<void> {
-  await Promise.all(transactionHashes.map(hash => awaitPolygonConfirmation(hash)));
 }

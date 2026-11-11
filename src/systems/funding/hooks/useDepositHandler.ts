@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert } from 'react-native';
 
 import { Logger } from '@ethersproject/logger';
 import { type StoreActions } from '@storesjs/stores';
@@ -170,11 +170,7 @@ function dismissDepositFlow(depositRoute: Route): void {
     screen: Screens.FUNDING_DEPOSIT,
   })();
 
-  setTimeout(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (Navigation.getActiveRouteName() === depositRoute) Navigation.goBack();
-    });
-  }, time.ms(150));
+  if (Navigation.getActiveRouteName() === depositRoute) Navigation.goBack();
 }
 
 function formatThrownDepositExecutionError(error: unknown, labels: DepositExecutionErrorLabels): string {
@@ -185,23 +181,6 @@ function formatThrownDepositExecutionError(error: unknown, labels: DepositExecut
 function hasNestedErrorCode(error: unknown, code: string): boolean {
   if (!isRecordLike(error)) return false;
   return error.code === code || hasNestedErrorCode(error.error, code) || hasNestedErrorCode(error.cause, code);
-}
-
-async function runDepositPrerequisite(config: DepositConfig): Promise<DepositExecutionFailure | null> {
-  if (!config.prerequisite) return null;
-
-  try {
-    await config.prerequisite();
-    return null;
-  } catch (error) {
-    logger.error(new RainbowError(`[useDepositHandler]: ${config.id} prerequisite failed`, error));
-    return {
-      error: config.labels.unknownExecutionError,
-      sponsorshipAttempted: false,
-      stage: 'prerequisite',
-      success: false,
-    };
-  }
 }
 
 export function useDepositHandler({
@@ -286,9 +265,6 @@ export function useDepositHandler({
 
             if (!gasParams) return { error: config.labels.quoteError, stage: 'validation', success: false };
 
-            const prerequisiteFailure = await runDepositPrerequisite(config);
-            if (prerequisiteFailure) return prerequisiteFailure;
-
             const result = await executeCallback({
               accountAddress,
               amount,
@@ -338,20 +314,6 @@ export function useDepositHandler({
     }
     const validQuote = quote;
 
-    const gasState = gasStores.useMeteorologyStore.getState();
-    let gasParams: DepositGasParams | null;
-    try {
-      gasParams = await gasState.getGasParams();
-    } catch (error) {
-      logger.warn('[useDepositHandler]: deposit gas params unavailable', { error });
-      return;
-    }
-
-    const gasFeeParamsBySpeed = gasState.getGasSuggestions();
-    if (!gasFeeParamsBySpeed || !gasParams) {
-      return;
-    }
-
     if (isCrosschainQuote(validQuote) && recipient && !crosschainQuoteTargetsRecipient(validQuote, recipient)) {
       logger.error(new RainbowError('[useDepositHandler]: crosschain quote is not targeting recipient'), {
         recipient,
@@ -366,6 +328,21 @@ export function useDepositHandler({
         stage: 'validation',
       });
       Alert.alert(config.labels.quoteError, config.labels.invalidRouteRecipientError);
+      return;
+    }
+
+    const submission = config.createSubmission?.();
+    const gasState = gasStores.useMeteorologyStore.getState();
+    let gasParams: DepositGasParams | null;
+    try {
+      gasParams = await gasState.getGasParams();
+    } catch (error) {
+      logger.warn('[useDepositHandler]: deposit gas params unavailable', { error });
+      return;
+    }
+
+    const gasFeeParamsBySpeed = gasState.getGasSuggestions();
+    if (!gasFeeParamsBySpeed || !gasParams) {
       return;
     }
 
@@ -402,8 +379,19 @@ export function useDepositHandler({
           };
         }
 
-        const prerequisiteFailure = await runDepositPrerequisite(config);
-        if (prerequisiteFailure) return prerequisiteFailure;
+        if (submission) {
+          try {
+            await submission.prepare(wallet);
+          } catch (error) {
+            logger.error(new RainbowError(`[useDepositHandler]: ${config.id} preparation failed`, error));
+            return {
+              error: config.labels.unknownExecutionError,
+              sponsorshipAttempted: false,
+              stage: 'prerequisite',
+              success: false,
+            };
+          }
+        }
 
         const preparedCalls = await resolveSponsoredPreparedCalls({
           accountAddress: validQuote.from,
@@ -415,6 +403,7 @@ export function useDepositHandler({
 
         const nonce = await getNextNonce({ address: validQuote.from, chainId: assetChainId });
         const result = await executeDepositRap({
+          recipient: recipient ?? validQuote.from,
           asset,
           assetChainId,
           config,
@@ -435,16 +424,16 @@ export function useDepositHandler({
           };
         }
 
-        if (config.onSubmit) {
-          config
-            .onSubmit(wallet, {
+        if (submission) {
+          submission
+            .onSubmitted({
               confirmationChainId: assetChainId,
               expectedRawTargetAmount: validQuote.buyAmountDisplayMinimum?.toString() ?? validQuote.buyAmount?.toString() ?? '0',
               hash: result.hash,
               isConfirmed: result.isConfirmed,
             })
             .catch(error => {
-              logger.error(new RainbowError('[useDepositHandler]: onSubmit error', error));
+              logger.error(new RainbowError('[useDepositHandler]: onSubmitted error', error));
             });
         }
 

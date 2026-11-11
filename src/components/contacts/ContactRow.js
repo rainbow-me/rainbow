@@ -1,14 +1,12 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import { getAddress } from 'viem';
-
+import Text from '@/components/text/Text';
 import { opacity } from '@/design-system/utils/opacity';
-import { getNameService } from '@/features/address/core/address';
-import { abbreviateAddress } from '@/features/address/core/formatAddress';
-import { resolveEnsName } from '@/features/ens/data/ens';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import { getNameService, normalizeAddress } from '@/features/address/core/address';
+import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import styled from '@/framework/ui/styled-thing';
 import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
@@ -21,7 +19,7 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helper
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
-import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
+import { TruncatedAddress, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 
@@ -37,12 +35,14 @@ const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite
   width: '100%',
 });
 
-const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+const ContactENS = styled(Text).attrs(({ theme: { colors } }) => ({
+  adjustsFontSizeToFit: true,
   align: 'left',
   color: opacity(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
+  minimumFontScale: 0.5,
+  numberOfLines: 1,
   size: 'smedium',
-  truncationLength: 18,
   weight: 'medium',
 }))({
   width: '100%',
@@ -73,36 +73,21 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const { colors } = useTheme();
   const { accountType, balances, ens, image, label, onPress, showcaseItem, testID } = props;
 
+  const initialENSName = typeof ens === 'string' ? ens : '';
+  const contactAddress = useMemo(() => (accountType === 'contacts' ? normalizeAddress(address) : null), [accountType, address]);
+  const resolvedName = useEnsNameStore(s => s.get(contactAddress));
+  const ensName = resolvedName === undefined ? initialENSName : (resolvedName ?? '');
+  const ensAvatar = useEnsImageStore(s => s.get(ensName ? { name: ensName, field: 'avatar' } : undefined));
+
   const balanceText = balances ? balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
-  const initialENSName =
-    typeof ens === 'string' ? ens : accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : '';
-
-  const [ensName, setENSName] = useState(initialENSName);
-
-  const { data: ensAvatar } = useENSAvatar(ensName, {
-    enabled: Boolean(ensName),
-  });
-
   useEffect(() => {
-    if (accountType === 'contacts') {
-      const fetchENSName = async () => {
-        try {
-          const name = (await resolveEnsName(getAddress(address), ChainId.mainnet)) ?? '';
-          if (name !== ensName) {
-            setENSName(name);
-            onAddOrUpdateContacts(address, nickname === ensName ? name : nickname, color, name);
-          }
-        } catch {
-          // Keep the saved name and label when the lookup fails.
-        }
-      };
-      fetchENSName();
-    }
-  }, [accountType, onAddOrUpdateContacts, address, color, ensName, nickname, setENSName]);
+    if (resolvedName === undefined || ensName === initialENSName) return;
+    onAddOrUpdateContacts(address, nickname === initialENSName ? ensName : nickname, color, ensName);
+  }, [resolvedName, ensName, initialENSName, onAddOrUpdateContacts, address, nickname, color]);
 
   let cleanedUpLabel = null;
   if (label) {
@@ -113,12 +98,11 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient = accountType === 'suggestions' && getNameService(nickname) === 'ens' ? nickname : address;
-      onPress(recipient, nickname ?? recipient);
+      onPress(address, nickname ?? address);
     }
-  }, [accountType, address, nickname, onPress, showcaseItem]);
+  }, [address, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = ensAvatar?.imageUrl ?? image;
+  const imageAvatar = ensAvatar ?? image;
 
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [address]);
   const emojiAvatar = avatar || emoji || nickname || label;
@@ -161,7 +145,11 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {getNameService(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
+              {getNameService(address) ? (
+                <ContactENS>{abbreviateName(address, 18)}</ContactENS>
+              ) : (
+                <ContactAddress address={address} lite={!!showcaseItem} />
+              )}
             </Fragment>
           )}
         </Column>
@@ -170,4 +158,4 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   );
 };
 
-export default magicMemo(React.forwardRef(ContactRow), ['address', 'color', 'nickname']);
+export default magicMemo(React.forwardRef(ContactRow), ['address', 'color', 'ens', 'nickname']);

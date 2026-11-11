@@ -72,6 +72,10 @@ const MAX_DECIMALS = 255;
 
 const SECTION_TYPES = new Set<string>(['SECTION_TYPE_TOP', 'SECTION_TYPE_TOKENS'] satisfies SectionType[]);
 
+function isSupportedChain(chainId: number, nativeAssetByChain: NativeAssetByChain): chainId is ChainId {
+  return chainId in nativeAssetByChain;
+}
+
 /**
  * Parses an instance, keeping it only when it is a deployment the app can open: an ERC-20 contract, or the native coin
  * at the app's own native address for that chain.
@@ -80,7 +84,8 @@ function parseInstance(instance: TokenSearchInstance, nativeAssetByChain: Native
   const match = ASSET_ID_PATTERN.exec(instance.assetId);
   if (!match) return null;
 
-  const chainId = Number(match[1]) as ChainId;
+  const chainId = Number(match[1]);
+  if (!isSupportedChain(chainId, nativeAssetByChain)) return null;
   const nativeAsset = nativeAssetByChain[chainId];
   if (nativeAsset === undefined) return null;
   const nativeAddress = nativeAsset.address;
@@ -99,29 +104,33 @@ function parseInstance(instance: TokenSearchInstance, nativeAssetByChain: Native
   return isContract ? { address: address.toLowerCase() as Address, chainId, decimals } : null;
 }
 
+type ParsedToken = { token: TokenSearchToken; symbol: string; instances: ParsedInstance[] };
+
 /**
- * Maps a search item to a `SearchAsset` on `chainId` when the asset is deployed there, otherwise on its first instance,
- * the chain the backend opens. Returns `null` for anything the app must not show: an item that isn't a token, a scam or
- * high-risk token (such as a spoof of a protected symbol), a token with no symbol, or a token with no deployment the app
- * can open.
+ * Parses a search item, keeping one deployment per chain, the first listed. Returns `null` for anything the app must not
+ * show: an item that isn't a token, a scam or high-risk token (such as a spoof of a protected symbol), a token with no
+ * symbol, or a token with no deployment the app can open.
  */
-export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset | null {
+function parseToken(item: TokenSearchItem, nativeAssetByChain: NativeAssetByChain): ParsedToken | null {
   const { token } = item;
   if (!token?.symbol || token.verification === 'VERIFICATION_STATUS_SCAM' || token.risk?.level === 'RISK_LEVEL_HIGH') return null;
 
   const instances: ParsedInstance[] = [];
   for (const instance of token.instances ?? []) {
     const parsed = parseInstance(instance, nativeAssetByChain);
-    if (parsed) instances.push(parsed);
+    if (parsed && !instances.some(({ chainId }) => chainId === parsed.chainId)) instances.push(parsed);
   }
+  return instances.length ? { token, symbol: token.symbol, instances } : null;
+}
 
-  const selected = instances.find(instance => instance.chainId === chainId) ?? instances[0];
-  if (!selected) return null;
-
+function toDeploymentAsset(
+  { token, symbol, instances }: ParsedToken,
+  selected: ParsedInstance,
+  nativeAssetByChain: NativeAssetByChain
+): SearchAsset {
   const networks: SearchAsset['networks'] = {};
   for (const instance of instances) {
-    // The first instance on a chain is the one `selected` opens
-    networks[instance.chainId] ??= { address: instance.address as Address, decimals: instance.decimals };
+    networks[instance.chainId] = { address: instance.address as Address, decimals: instance.decimals };
   }
 
   return {
@@ -135,24 +144,53 @@ export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeA
     isRainbowCurated: false,
     isVerified: token.verification === 'VERIFICATION_STATUS_VERIFIED',
     mainnetAddress: networks[ChainId.mainnet]?.address ?? ('' as Address),
-    name: token.name || token.symbol,
+    name: token.name || symbol,
     networks,
-    symbol: token.symbol,
+    symbol,
     uniqueId: getUniqueId(selected.address, selected.chainId),
   };
 }
 
-/** Maps every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
-function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
+/**
+ * Maps a search item to a `SearchAsset` on `chainId` when the asset is deployed there, otherwise on its first instance,
+ * the chain the backend opens. Returns `null` for anything the app must not show (see `parseToken`).
+ */
+export function toSearchAsset(item: TokenSearchItem, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset | null {
+  const parsed = parseToken(item, nativeAssetByChain);
+  if (!parsed) return null;
+  const selected = parsed.instances.find(instance => instance.chainId === chainId) ?? parsed.instances[0];
+  return toDeploymentAsset(parsed, selected, nativeAssetByChain);
+}
+
+/** Every result in display order, `top` first. Unknown section types are skipped, as the contract requires. */
+function toSearchItems(result: TokenSearchResult): TokenSearchItem[] {
+  return (result.sections ?? []).flatMap(section => (SECTION_TYPES.has(section.type) ? (section.items ?? []) : []));
+}
+
+/** Maps every result in display order, each opened on `chainId` when deployed there. */
+export function toSearchAssets(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain, chainId?: ChainId): SearchAsset[] {
   const assets: SearchAsset[] = [];
-  for (const section of result.sections ?? []) {
-    if (!SECTION_TYPES.has(section.type)) continue;
-    for (const item of section.items ?? []) {
-      const asset = toSearchAsset(item, nativeAssetByChain, chainId);
-      if (asset) assets.push(asset);
-    }
+  for (const item of toSearchItems(result)) {
+    const asset = toSearchAsset(item, nativeAssetByChain, chainId);
+    if (asset) assets.push(asset);
   }
   return assets;
+}
+
+/**
+ * Maps every deployment of every result to its own `SearchAsset`, opened on that deployment's chain: one row per chain,
+ * like the legacy search. Results keep their display order, and each one's deployments the order the backend lists them.
+ */
+export function toSearchAssetDeployments(result: TokenSearchResult, nativeAssetByChain: NativeAssetByChain): SearchAsset[] {
+  const deployments: SearchAsset[] = [];
+  for (const item of toSearchItems(result)) {
+    const parsed = parseToken(item, nativeAssetByChain);
+    if (!parsed) continue;
+    for (const instance of parsed.instances) {
+      deployments.push(toDeploymentAsset(parsed, instance, nativeAssetByChain));
+    }
+  }
+  return deployments;
 }
 
 /** Results deployed on `chainId`, opened there and split by verification. */

@@ -9,11 +9,8 @@ import { MarqueeList } from '@/framework/ui/components/MarqueeList';
 import { type EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { queryClient } from '@/react-query';
 
-import type useENSRecords from '../../hooks/useENSRecords';
-import { ensRecordsQueryKey } from '../../hooks/useENSRecords';
-import ensIntroMarqueeNames from '../../references/ens-intro-marquee-names.json';
+import { useEnsRecordsStore } from '../../data/stores/recordsStore';
 import { useEnsMarquee } from '../../resources/marqueeQuery';
 
 type MarqueeItemType = {
@@ -21,16 +18,6 @@ type MarqueeItemType = {
   name: string;
   onPress: () => void;
   testID?: string;
-};
-
-export const ensAvatarUrl = (ensName: string) => `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
-
-export const getEnsMarqueeFallback = (): EnsMarqueeAccount[] => {
-  return ensIntroMarqueeNames.map(name => ({
-    name,
-    avatar: ensAvatarUrl(name),
-    address: '',
-  }));
 };
 
 const lineHeight = 30;
@@ -41,11 +28,11 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
 export function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
   const { navigate } = useNavigation();
 
-  const { data, isLoading } = useEnsMarquee();
+  const { data: accounts } = useEnsMarquee();
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      const data = queryClient.getQueryData<ReturnType<typeof useENSRecords>['data']>(ensRecordsQueryKey({ name: ensName }));
+      const data = useEnsRecordsStore.getState().get({ name: ensName });
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
@@ -63,18 +50,15 @@ export function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
     []
   );
 
-  const items = useMemo(() => {
-    if (isLoading) {
-      return [];
-    } else {
-      const accounts = data?.ensMarquee?.accounts;
-      return accounts?.map((account, index) => ({
+  const items = useMemo(
+    () =>
+      accounts.map((account, index) => ({
         account,
         onPress: () => handlePressENS(account.name),
         testID: `ens-names-marquee-item-${index}`,
-      }));
-    }
-  }, [data, handlePressENS, isLoading]);
+      })),
+    [accounts, handlePressENS]
+  );
 
   return (
     <Box height={{ custom: isSmallPhone ? 90 : 100 }}>

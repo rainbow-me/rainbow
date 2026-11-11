@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { differenceInSeconds } from 'date-fns';
-import { useDispatch } from 'react-redux';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { time } from '@/framework/core/utils/time';
 import { getProvider } from '@/handlers/web3';
 import useInterval from '@/hooks/useInterval';
 import usePrevious from '@/hooks/usePrevious';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-import { updateTransactionRegistrationParameters } from '../redux/registration';
+import { useEnsRegistrationStore } from '../data/stores/registrationStore';
 import type { RegistrationParameters } from '../types/registration';
 import {
   ENS_SECONDS_PADDING,
@@ -19,14 +20,14 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '../utils/helpers';
-import useENSRegistration from './useENSRegistration';
+import { useENSRegistration } from './useENSRegistration';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,
   secondsSinceCommitConfirmed,
   connectedToAnvil,
 }: {
-  registrationParameters: RegistrationParameters;
+  registrationParameters: RegistrationParameters | null;
   secondsSinceCommitConfirmed: number;
   connectedToAnvil: boolean;
 }) => {
@@ -49,10 +50,10 @@ const checkRegisterBlockTimestamp = async ({
   }
 };
 
-const getBlockMsTimestamp = (block: { timestamp: number }) => block.timestamp * 1000;
+const getBlockMsTimestamp = (block: { timestamp: number }) => time.seconds(block.timestamp);
 
 export default function useENSRegistrationStepHandler(observer = true) {
-  const dispatch = useDispatch();
+  const accountAddress = useAccountAddress();
   const { registrationParameters, mode } = useENSRegistration();
   const commitTransactionHash = registrationParameters?.commitTransactionHash;
   const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
@@ -78,17 +79,17 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (mode === REGISTRATION_MODES.RENEW) return REGISTRATION_STEPS.RENEW;
     if (mode === REGISTRATION_MODES.SET_NAME) return REGISTRATION_STEPS.SET_NAME;
     // still waiting for the COMMIT tx to be sent
-    if (!registrationParameters.commitTransactionHash) return REGISTRATION_STEPS.COMMIT;
+    if (!registrationParameters?.commitTransactionHash) return REGISTRATION_STEPS.COMMIT;
     // COMMIT tx sent, but not confirmed yet
-    if (!registrationParameters.commitTransactionConfirmedAt || secondsSinceCommitConfirmed <= ENS_SECONDS_PADDING)
+    if (!registrationParameters?.commitTransactionConfirmedAt || secondsSinceCommitConfirmed <= ENS_SECONDS_PADDING)
       return REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION;
     // COMMIT tx was confirmed but 60 secs haven't passed yet
     // or current block is not 60 secs ahead of COMMIT tx block
     if (secondsSinceCommitConfirmed < ENS_SECONDS_WAIT_WITH_PADDING || !readyToRegister) return REGISTRATION_STEPS.WAIT_ENS_COMMITMENT;
     return REGISTRATION_STEPS.REGISTER;
   }, [
-    registrationParameters.commitTransactionHash,
-    registrationParameters.commitTransactionConfirmedAt,
+    registrationParameters?.commitTransactionHash,
+    registrationParameters?.commitTransactionConfirmedAt,
     mode,
     secondsSinceCommitConfirmed,
     readyToRegister,
@@ -109,17 +110,15 @@ export default function useENSRegistrationStepHandler(observer = true) {
       const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
       const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
       setSecondsSinceCommitConfirmed(secondsSinceCommitConfirmed < 0 ? 0 : secs);
-      dispatch(
-        updateTransactionRegistrationParameters({
-          commitTransactionConfirmedAt,
-        })
-      );
+      if (registrationParameters) {
+        useEnsRegistrationStore.getState().update(accountAddress, registrationParameters.name, { commitTransactionConfirmedAt });
+      }
       confirmed = true;
     } else if (shouldLoopForConfirmation.current) {
       shouldLoopForConfirmation.current = false;
     }
     return confirmed;
-  }, [observer, commitTransactionHash, connectedToAnvil, secondsSinceCommitConfirmed, dispatch]);
+  }, [observer, commitTransactionHash, connectedToAnvil, secondsSinceCommitConfirmed, accountAddress, registrationParameters]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (observer) return;
@@ -129,7 +128,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (!confirmed) {
       timeout.current = setTimeout(() => {
         startPollingWatchCommitTransaction();
-      }, 2000);
+      }, time.seconds(2));
     }
   }, [observer, registrationStep, watchCommitTransaction]);
 
@@ -152,16 +151,16 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (
       !observer &&
       !timeoutRef.current &&
-      ((registrationParameters.commitTransactionConfirmedAt && registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) ||
+      ((registrationParameters?.commitTransactionConfirmedAt && registrationStep === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) ||
         registrationStep === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT)
     ) {
-      startInterval(() => setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1), 1000);
+      startInterval(() => setSecondsSinceCommitConfirmed((seconds: any) => seconds + 1), time.seconds(1));
     }
   }, [
     observer,
     readyToRegister,
-    registrationParameters.commitTransactionConfirmedAt,
-    registrationParameters.commitTransactionHash,
+    registrationParameters?.commitTransactionConfirmedAt,
+    registrationParameters?.commitTransactionHash,
     registrationStep,
     startInterval,
     timeoutRef,

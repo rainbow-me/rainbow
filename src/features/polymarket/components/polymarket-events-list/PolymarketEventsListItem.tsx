@@ -18,6 +18,7 @@ import { POLYMARKET_SPORTS_MARKET_TYPE } from '@/features/polymarket/constants';
 // } from '@/features/polymarket/stores/polymarketRecommendationsStore';
 import { type PolymarketEvent, type PolymarketMarket } from '@/features/polymarket/types/polymarket-event';
 import { formatOdds } from '@/features/polymarket/utils/formatOdds';
+import { isActivePolymarketMarket } from '@/features/polymarket/utils/marketProtocol';
 import { roundWorklet, toPercentageWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -219,7 +220,7 @@ type PolymarketEventsListOutcome = {
  * truth shared by the card render and the live-odds subscription so they can't drift.
  */
 export function getPolymarketEventsListOutcomes(event: PolymarketEvent): PolymarketEventsListOutcome[] {
-  const activeMarkets = event.markets.filter(m => m.active && !m.closed);
+  const activeMarkets = event.markets.filter(isActivePolymarketMarket);
   const firstMarket = activeMarkets[0];
   const isGame =
     firstMarket &&
@@ -264,7 +265,7 @@ export function getPolymarketEventsListOutcomes(event: PolymarketEvent): Polymar
 }
 
 function navigateToEvent(event: PolymarketEvent): void {
-  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { event, eventId: event.id });
+  Navigation.handleAction(Routes.POLYMARKET_EVENT_SCREEN, { eventId: event.id, eventSlug: event.slug, event });
 }
 
 function calculateOddsPrice(market: PolymarketMarket): number {

@@ -12,6 +12,7 @@ import { SingleMarketEventOutcomes } from '@/features/polymarket/screens/polymar
 import { MarketRow, MarketRowLoadingSkeleton } from '@/features/polymarket/screens/polymarket-event-screen/MarketRow';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarket, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { getMarketResolution } from '@/features/polymarket/utils/marketProtocol';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -89,7 +90,7 @@ const MultiMarketEvent = memo(function MultiMarketEvent({
                 icon={showMarketImages ? market.icon : undefined}
                 title={market.groupItemTitle}
                 volume={market.volume}
-                umaResolutionStatus={market.umaResolutionStatus}
+                isResolutionInReview={getMarketResolution(market) === 'in_review'}
                 tokenId={market.clobTokenIds[0]}
                 price={market.lastTradePrice ? String(market.lastTradePrice) : '0'}
                 minTickSize={market.orderPriceMinTickSize}

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager, Keyboard, Platform, StyleSheet, View, type TextInput } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
+import { createQueryStore } from '@storesjs/stores';
 import { isEmpty, isEqual, isString } from 'lodash';
 import { useDebounce } from 'use-debounce';
 import { getAddress, isAddress } from 'viem';
@@ -20,11 +20,9 @@ import { PROFILES } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { convertAmountAndPriceToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { SmartWalletActivationCallout } from '@/features/delegation/components/SmartWalletActivationCallout';
-import { prefetchENSAvatar } from '@/features/ens/hooks/useENSAvatar';
-import { prefetchENSCover } from '@/features/ens/hooks/useENSCover';
-import useENSProfile from '@/features/ens/hooks/useENSProfile';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useENSProfile } from '@/features/ens/hooks/useENSProfile';
 import { useENSRegistrationActionHandler } from '@/features/ens/hooks/useENSRegistrationActionHandler';
-import { debouncedFetchSuggestions } from '@/features/ens/utils/handlers';
 import { REGISTRATION_STEPS } from '@/features/ens/utils/helpers';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import useGas from '@/features/gas/hooks/useGas';
@@ -34,6 +32,7 @@ import styled from '@/framework/ui/styled-thing';
 import { assetIsParsedAddressAsset, assetIsUniqueAsset, buildTransferTransaction, estimateGasLimit } from '@/handlers/web3';
 import { convertAmountFromNativeValue, formatInputDecimals, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import useAccountSettings from '@/hooks/useAccountSettings';
+import { useCleanup } from '@/hooks/useCleanup';
 import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import useContacts from '@/hooks/useContacts';
@@ -45,7 +44,6 @@ import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { type Contact } from '@/redux/contacts';
 import { rainbowTokenList } from '@/references/rainbow-token-list';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
@@ -192,20 +190,26 @@ export function SendSheet() {
     [address, debouncedRecipient, input]
   );
   const destinationChainId = selected?.chainId ?? chainId;
-  const recipientQuery = useQuery({
-    queryKey: ['sendRecipient', input, destinationChainId],
-    queryFn: ({ signal }) => resolveNameOrAddress(input, destinationChainId, signal),
-    enabled: shouldResolveName,
-    cacheTime: 0,
-    staleTime: 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-  const toAddress = address ?? (shouldResolveName && recipientQuery.isSuccess ? (recipientQuery.data ?? '') : '');
+  const recipientStore = useMemo(
+    () =>
+      createQueryStore({
+        fetcher: (_params, controller) => resolveNameOrAddress(input, destinationChainId, controller?.signal),
+        enabled: shouldResolveName,
+        staleTime: Infinity,
+        cacheTime: Infinity,
+        retry: false,
+        disableAutoRefetching: true,
+      }),
+    [input, destinationChainId, shouldResolveName]
+  );
+  useCleanup(() => recipientStore.getState().reset(), [recipientStore]);
+  const resolvedAddress = recipientStore(s => s.getData());
+  const recipientPending = recipientStore(s => s.getStatus('isInitialLoad'));
+  const recipientError = recipientStore(s => s.error);
+  const toAddress = address ?? (shouldResolveName ? resolvedAddress : null) ?? '';
   const isValidAddress = Boolean(toAddress);
   const canSelectAsset = isValidAddress || validatedRecipient === input;
-  const isResolvingAddress = shouldResolveName && recipientQuery.isFetching;
+  const isResolvingAddress = shouldResolveName && recipientPending;
 
   // Keep asset selection available while resolving the same recipient on another chain.
   useEffect(() => {
@@ -261,10 +265,7 @@ export function SendSheet() {
   }
 
   const ensName = isENS ? selected?.name : '';
-  const ensProfile = useENSProfile(ensName, {
-    enabled: isENS,
-    supportedRecordsOnly: false,
-  });
+  const ensProfile = useENSProfile(ensName, { supportedRecordsOnly: false });
 
   const sendUpdateAssetAmount = useCallback(
     (newAssetAmount: string) => {
@@ -440,8 +441,8 @@ export function SendSheet() {
   });
 
   const recipientErrorMessage =
-    !toAddress && shouldResolveName && !recipientQuery.isLoading && !recipientQuery.isFetching
-      ? i18n.t(recipientQuery.isError ? i18n.l.error_boundary.something_went_wrong : i18n.l.modal.invalid_address)
+    !toAddress && shouldResolveName && !recipientPending
+      ? i18n.t(recipientError ? i18n.l.error_boundary.something_went_wrong : i18n.l.modal.invalid_address)
       : null;
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -463,7 +464,7 @@ export function SendSheet() {
       canUseSponsoredSend,
       hasResolvedSponsoredSend,
       isENS,
-      isENSProfileLoaded: ensProfile.isSuccess,
+      isENSProfileLoaded: ensProfile.hasTransferData,
       isGasFeeReady,
       isPreparingSponsoredSend,
       isSponsoredSend,
@@ -482,7 +483,7 @@ export function SendSheet() {
     canUseSponsoredSend,
     debouncedAssetAmount,
     isENS,
-    ensProfile.isSuccess,
+    ensProfile.hasTransferData,
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
@@ -573,8 +574,10 @@ export function SendSheet() {
       setRecipient(text);
       setNickname(text);
       if (profilesEnabled && getNameService(text) === 'ens') {
-        prefetchENSAvatar(text);
-        prefetchENSCover(text);
+        void Promise.allSettled([
+          useEnsImageStore.getState().load({ name: text, field: 'avatar' }),
+          useEnsImageStore.getState().load({ name: text, field: 'header' }),
+        ]);
       }
     },
     [profilesEnabled]
@@ -589,15 +592,6 @@ export function SendSheet() {
       Keyboard.dismiss();
     }
   }, [selected, showAssetForm, showAssetList]);
-
-  const [ensSuggestions, setEnsSuggestions] = useState<Contact[]>([]);
-  const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
-  useEffect(() => {
-    if (chainId === ChainId.mainnet && !recipientOverride && recipient?.length) {
-      setLoadingEnsSuggestions(true);
-      debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
-    }
-  }, [chainId, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -663,8 +657,6 @@ export function SendSheet() {
     analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
-  const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
-
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
   const filteredUserAccountsFromContacts = useMemo(() => {
@@ -698,9 +690,6 @@ export function SendSheet() {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
-            ensSuggestions={ensSuggestions}
-            key={sendContactListDataKey}
-            loadingEnsSuggestions={loadingEnsSuggestions}
             onPressContact={(recipient: string, nickname: string) => {
               setRecipient(recipient);
               setNickname(nickname);

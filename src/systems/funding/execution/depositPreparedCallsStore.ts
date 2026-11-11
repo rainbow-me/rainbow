@@ -18,6 +18,7 @@ type SponsoredDepositQueryParams = {
   accountAddress: Address;
   sourceChainId: ChainId;
   quoteKey: string;
+  recipient: Address;
 };
 
 type CreateDepositPreparedCallsStoreParams = {
@@ -34,7 +35,7 @@ export function createDepositPreparedCallsStore({
   readCurrentQuote,
 }: CreateDepositPreparedCallsStoreParams): DepositPreparedCallsStore {
   return createPreparedCallsStore<PreparedCallsExecution, SponsoredDepositQueryParams>(
-    async ({ accountAddress, sourceChainId, quoteKey }) => {
+    async ({ accountAddress, sourceChainId, quoteKey, recipient }) => {
       const quote = readCurrentQuote();
       if (!isValidQuote(quote)) return null;
       if (buildDepositQuoteKey(quote) !== quoteKey) return null;
@@ -46,7 +47,7 @@ export function createDepositPreparedCallsStore({
         chainId: sourceChainId,
         provider: getProvider({ chainId: sourceChainId }),
         quote,
-        strategy: determineStrategy(config, quote, accountAddress),
+        strategy: determineStrategy(config, quote, recipient),
       });
     },
     {
@@ -76,6 +77,7 @@ function toSponsoredDepositQueryParams(params: DepositGasHookParams): SponsoredD
   return {
     accountAddress: params.accountAddress,
     quoteKey: buildDepositQuoteKey(params.quote),
+    recipient: params.recipient ?? params.accountAddress,
     sourceChainId: params.asset.chainId,
   };
 }

@@ -58,7 +58,6 @@ export const SLIDER_EXPANDED_HEIGHT = 14;
 export const SLIDER_WIDTH = DEVICE_WIDTH - 80;
 
 export const DEFAULT_MAINTENANCE_MARGIN_RATE = 0.006;
-export const DEFAULT_INITIAL_AMOUNT = 0.5;
 
 // Note: These are the base rates. Accounts with more trading volume will have lower rates and we should get this from the API: https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees
 // Taker fees apply to market orders

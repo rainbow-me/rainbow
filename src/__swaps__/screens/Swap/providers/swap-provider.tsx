@@ -112,17 +112,16 @@ interface SwapContextType {
   handleProgressNavigation: ({ type }: { type: SwapAssetType }) => void;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  setAsset: ({
-    asset,
-    didWalletChange,
-    insertUserAssetBalance,
-    type,
-  }: {
-    asset: ParsedSearchAsset | null;
-    didWalletChange?: boolean;
-    insertUserAssetBalance?: boolean;
-    type: SwapAssetType;
-  }) => void;
+  setAsset: (
+    selection: {
+      asset: ParsedSearchAsset | null;
+      didWalletChange?: boolean;
+      insertUserAssetBalance?: boolean;
+      percentageToSell?: number;
+      type: SwapAssetType;
+    },
+    oppositeAsset?: ParsedSearchAsset | null
+  ) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
@@ -584,15 +583,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       didFlipAssets,
       didInputAssetChange,
       didOutputAssetChange,
+      percentageToSell,
     }: {
       didFlipAssets: boolean;
       didInputAssetChange: boolean;
       didOutputAssetChange: boolean;
+      percentageToSell?: number;
     }) => {
       'worklet';
-      if (didFlipAssets || (!didInputAssetChange && !didOutputAssetChange)) return;
+      if (percentageToSell === undefined && (didFlipAssets || (!didInputAssetChange && !didOutputAssetChange))) return;
 
       inputMethod.value = 'inputAmount';
+      lastTypedInput.value = 'inputAmount';
 
       const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
 
@@ -602,47 +604,50 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         return;
       }
 
-      if (didInputAssetChange) {
-        sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
+      const shouldResetSlider = didInputAssetChange || percentageToSell !== undefined;
+      const resetPercentage = percentageToSell ?? INITIAL_SLIDER_POSITION;
+
+      if (shouldResetSlider) {
+        sliderXPosition.value = withSpring(SLIDER_WIDTH * resetPercentage, snappySpringConfig);
       }
 
       const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
         inputNativePrice: inputNativePrice.value,
-        percentageToSwap: didInputAssetChange ? INITIAL_SLIDER_POSITION : percentageToSwap.value,
+        percentageToSwap: shouldResetSlider ? resetPercentage : percentageToSwap.value,
         selectedInputAsset: internalSelectedInputAsset.value,
-        sliderXPosition: didInputAssetChange ? SLIDER_WIDTH * INITIAL_SLIDER_POSITION : sliderXPosition.value,
+        sliderXPosition: shouldResetSlider ? SLIDER_WIDTH * resetPercentage : sliderXPosition.value,
       });
 
-      inputValues.modify(values => ({
-        ...values,
-        inputAmount,
-        inputNativeValue,
-      }));
+      inputValues.modify(values => ({ ...values, inputAmount, inputNativeValue }));
     },
-    [inputMethod, inputNativePrice, internalSelectedInputAsset, inputValues, percentageToSwap, resetValuesToZeroWorklet, sliderXPosition]
+    [
+      inputMethod,
+      inputNativePrice,
+      internalSelectedInputAsset,
+      inputValues,
+      lastTypedInput,
+      percentageToSwap,
+      resetValuesToZeroWorklet,
+      sliderXPosition,
+    ]
   );
 
   const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);
 
-  const setAsset = useCallback(
-    ({
-      asset,
-      didWalletChange = false,
-      insertUserAssetBalance = false,
-      type,
-    }: {
-      asset: ParsedSearchAsset | null;
-      didWalletChange?: boolean;
-      insertUserAssetBalance?: boolean;
-      type: SwapAssetType;
-    }) => {
+  const setAsset = useCallback<SwapContextType['setAsset']>(
+    ({ asset, didWalletChange = false, insertUserAssetBalance = false, percentageToSell, type }, oppositeAsset) => {
       const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance: insertUserAssetBalance || didWalletChange });
       const isSettingInputAsset = type === SwapAssetType.inputAsset;
+      const isSettingBothAssets = oppositeAsset !== undefined;
+      const extendedOppositeAsset =
+        oppositeAsset === undefined ? undefined : parseAssetAndExtend({ asset: oppositeAsset, insertUserAssetBalance: true });
+
+      const inputAssetToSet = isSettingInputAsset ? extendedAsset : extendedOppositeAsset;
 
       let otherAssetBalance: ParsedUserAsset['balance'] | undefined = undefined;
       let otherAssetUniqueId: ParsedUserAsset['uniqueId'] | undefined = undefined;
 
-      if (didWalletChange) {
+      if (didWalletChange && !isSettingBothAssets) {
         const oppositeAssetBalance = getOppositeAssetBalance(extendedAsset, type);
         otherAssetBalance = oppositeAssetBalance.otherAssetBalance;
         otherAssetUniqueId = oppositeAssetBalance.otherAssetUniqueId;
@@ -656,17 +661,27 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
             ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
             : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId);
 
-        const didInputAssetChange = didSelectedAssetChange && isSettingInputAsset;
-        const didOutputAssetChange = didSelectedAssetChange && !isSettingInputAsset;
+        const didOppositeAssetChange =
+          extendedOppositeAsset !== undefined && (didWalletChange || otherSelectedAsset?.uniqueId !== extendedOppositeAsset?.uniqueId);
+
+        const didInputAssetChange = isSettingInputAsset ? didSelectedAssetChange : didOppositeAssetChange;
+        const didOutputAssetChange = isSettingInputAsset ? didOppositeAssetChange : didSelectedAssetChange;
         const [currentInputChainId, previousInputChainId] = didInputAssetChange
-          ? [extendedAsset?.chainId, internalSelectedInputAsset.value?.chainId]
+          ? [inputAssetToSet?.chainId, internalSelectedInputAsset.value?.chainId]
           : [];
 
         let flippedAssetOrNull: ExtendedAnimatedAssetWithColors | null = null;
         let didFlipAssets = false;
 
+        if (didOppositeAssetChange) {
+          updateAssetValue({
+            asset: extendedOppositeAsset,
+            type: isSettingInputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
+          });
+        }
+
         if (didSelectedAssetChange) {
-          didFlipAssets = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
+          didFlipAssets = !isSettingBothAssets && !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
 
           if (didFlipAssets) {
             const inputPrice = outputNativePrice.value;
@@ -714,7 +729,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
               );
             }
           }
-        } else if (!swapInfo.value.areAllInputsZero && swapInfo.value.areBothAssetsSet) {
+        }
+
+        if (!didInputAssetChange && !didOutputAssetChange && !swapInfo.value.areAllInputsZero && swapInfo.value.areBothAssetsSet) {
           quoteFetchingInterval.start();
         }
 
@@ -729,16 +746,17 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           }
         }
 
-        updateInputValues({ didFlipAssets, didInputAssetChange, didOutputAssetChange });
+        updateInputValues({ didFlipAssets, didInputAssetChange, didOutputAssetChange, percentageToSell });
 
         const swapsStoreUpdate = {
           asset: extendedAsset,
           didFlipAssets,
+          didOppositeAssetChange,
           didSelectedAssetChange,
           insertUserAssetBalance: !isSettingInputAsset,
           flippedAssetOrNull,
           newSlippage,
-          otherSelectedAsset,
+          otherSelectedAsset: extendedOppositeAsset === undefined ? otherSelectedAsset : extendedOppositeAsset,
           type,
         };
 
@@ -749,12 +767,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         clearTimeout(chainSetTimeoutId.current);
       }
 
-      if (isSettingInputAsset) {
+      if (isSettingInputAsset || isSettingBothAssets) {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
           InteractionManager.runAfterInteractions(() => {
-            const chainIdToSet = extendedAsset?.chainId ?? ChainId.mainnet;
+            const chainIdToSet = inputAssetToSet?.chainId ?? ChainId.mainnet;
             const shouldUpdateSelectedOutputChainId = swapsStore.getState().selectedOutputChainId !== chainIdToSet;
             if (shouldUpdateSelectedOutputChainId) swapsStore.setState({ selectedOutputChainId: chainIdToSet });
 
@@ -985,6 +1003,7 @@ function getOppositeAssetBalance(
 function setStoreAssets({
   asset,
   didFlipAssets,
+  didOppositeAssetChange,
   didSelectedAssetChange,
   insertUserAssetBalance,
   flippedAssetOrNull,
@@ -994,6 +1013,7 @@ function setStoreAssets({
 }: {
   asset: ExtendedAnimatedAssetWithColors | null;
   didFlipAssets: boolean;
+  didOppositeAssetChange: boolean;
   didSelectedAssetChange: boolean;
   insertUserAssetBalance: boolean;
   flippedAssetOrNull: ExtendedAnimatedAssetWithColors | null;
@@ -1001,14 +1021,7 @@ function setStoreAssets({
   otherSelectedAsset: ExtendedAnimatedAssetWithColors | null;
   type: SwapAssetType;
 }) {
-  if (didSelectedAssetChange) {
-    const assetToSet = insertUserAssetBalance
-      ? {
-          ...asset,
-          balance: (asset && useUserAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
-        }
-      : asset;
-
+  if (didSelectedAssetChange || didOppositeAssetChange) {
     if (didFlipAssets) {
       swapsStore.setState({
         [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: flippedAssetOrNull,
@@ -1016,7 +1029,18 @@ function setStoreAssets({
         ...(newSlippage && { slippage: newSlippage }),
       });
     } else {
-      swapsStore.setState({ [type]: assetToSet, ...(newSlippage && { slippage: newSlippage }) });
+      const assetToSet =
+        didSelectedAssetChange && asset && insertUserAssetBalance
+          ? { ...asset, balance: useUserAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance || asset.balance }
+          : asset;
+
+      swapsStore.setState({
+        ...(didSelectedAssetChange && { [type]: assetToSet }),
+        ...(didOppositeAssetChange && {
+          [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: otherSelectedAsset,
+        }),
+        ...(newSlippage && { slippage: newSlippage }),
+      });
     }
   }
 

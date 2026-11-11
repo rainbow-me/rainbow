@@ -1,4 +1,4 @@
-import { OperationType, RelayerTransactionState, type SafeTransaction } from '@polymarket/builder-relayer-client';
+import { OperationType, type SafeTransaction } from '@polymarket/builder-relayer-client';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { getAddress, type Address } from 'viem';
@@ -7,19 +7,19 @@ import { analytics } from '@/analytics';
 import { USD_DECIMALS } from '@/features/currency/constants';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { encodeErc20Transfer } from '@/features/token/core/services/erc20Calldata';
-import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { USDC_ADDRESS } from '@/references/constants';
 import { createWithdrawalConfig } from '@/systems/funding/config';
 import { type WithdrawalExecutionResult, type WithdrawalExecutorParams, type WithdrawalSwapQuote } from '@/systems/funding/types';
 
 import { POLYGON_USDC_ADDRESS, POLYGON_USDC_DECIMALS } from './constants';
+import { getPolymarketWallet } from './stores/derived/usePolymarketClients';
 import { usePolymarketProxyAddress } from './stores/derived/usePolymarketProxyAddress';
 import { usePolymarketBalanceStore } from './stores/polymarketBalanceStore';
 import { buildEnsureUsdcBalanceTransactions } from './utils/collateral';
 import { buildErc20ApprovalTransaction } from './utils/erc20Approval';
 import { refetchPolymarketBalance } from './utils/refetchPolymarketStores';
-import { ensureTradingWalletDeployed, submitTradingWalletTransaction, waitForRelayerTransaction } from './utils/relayExecution';
+import { waitForRelayerTransaction } from './utils/relayExecution';
 
 // ============ Config ========================================================= //
 
@@ -28,9 +28,6 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
   amountDecimals: USD_DECIMALS,
   balanceStore: usePolymarketBalanceStore,
   executor: executePolymarketWithdrawal,
-  prerequisite: async () => {
-    await ensureTradingWalletDeployed();
-  },
 
   route: {
     from: {
@@ -52,11 +49,6 @@ export const POLYMARKET_WITHDRAWAL_CONFIG = createWithdrawalConfig({
       feeBps: 0,
       slippage: 1,
     },
-  },
-
-  refresh: {
-    delays: [time.seconds(1), time.seconds(3), time.seconds(6)],
-    handler: refetchPolymarketBalance,
   },
 
   trackFailure: metadata => analytics.track(analytics.event.predictionsWithdrawalFailed, metadata),
@@ -83,23 +75,21 @@ async function executePolymarketWithdrawal(params: WithdrawalExecutorParams): Pr
 
 async function executeSameChainWithdrawal(amount: string, recipient: Address): Promise<WithdrawalExecutionResult> {
   try {
-    const proxyAddress = await ensureTradingWalletDeployed();
+    const wallet = await getPolymarketWallet();
+    const proxyAddress = wallet.address;
 
     const rawAmount = parseUnits(amount, POLYGON_USDC_DECIMALS);
     const transactions: SafeTransaction[] = [
       ...(await buildEnsureUsdcBalanceTransactions({ amount: rawAmount, proxyAddress })),
       buildUsdcTransferTransaction({ amount: rawAmount, recipient }),
     ];
-    const response = await submitTradingWalletTransaction({ transactions, description: 'Withdraw USDC.e to wallet' });
-
-    if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
-      return { error: `Relayer rejected: ${response.state}`, success: false };
-    }
+    const response = await wallet.execute(transactions, 'Withdraw USDC.e to wallet');
 
     return {
       success: true,
       waitForConfirmation: async () => {
         await waitForRelayerTransaction(response, 'Withdraw USDC.e to wallet');
+        await refetchPolymarketBalance(proxyAddress);
       },
     };
   } catch (error) {
@@ -115,7 +105,8 @@ async function executeQuotedWithdrawal(quote: WithdrawalSwapQuote): Promise<With
   }
 
   try {
-    const proxyAddress = await ensureTradingWalletDeployed();
+    const wallet = await getPolymarketWallet(getAddress(quote.from));
+    const proxyAddress = wallet.address;
 
     const sellAmount = BigNumber.from(quote.sellAmount);
     const transactions: SafeTransaction[] = await buildEnsureUsdcBalanceTransactions({ amount: sellAmount, proxyAddress });
@@ -132,16 +123,13 @@ async function executeQuotedWithdrawal(quote: WithdrawalSwapQuote): Promise<With
       value: quote.value?.toString() ?? '0',
     });
 
-    const response = await submitTradingWalletTransaction({ transactions, description: 'Withdrawal via swaps' });
-
-    if (response.state === RelayerTransactionState.STATE_FAILED || response.state === RelayerTransactionState.STATE_INVALID) {
-      return { error: `Relayer rejected: ${response.state}`, success: false };
-    }
+    const response = await wallet.execute(transactions, 'Withdrawal via swaps');
 
     return {
       success: true,
       waitForConfirmation: async () => {
         await waitForRelayerTransaction(response, 'Withdrawal via swaps');
+        await refetchPolymarketBalance(proxyAddress);
       },
     };
   } catch (error) {

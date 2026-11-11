@@ -14,7 +14,7 @@ import { SelectableButton } from '../components/registration/SelectableButton';
 import useENSRegistrationForm from '../hooks/useENSRegistrationForm';
 import { accentColorAtom, textRecordFields } from '../utils/helpers';
 
-export const ENSAdditionalRecordsSheetHeight = 262;
+const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
 
 export const getENSAdditionalRecordsSheetHeight = () => {
@@ -27,7 +27,7 @@ export const getENSAdditionalRecordsSheetHeight = () => {
 export function ENSAdditionalRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
   const [accentColor] = useRecoilState(accentColorAtom);
-  const { selectedFields, onAddField, onRemoveField } = useENSRegistrationForm();
+  const { selectedFields, toggleField } = useENSRegistrationForm();
   const { height: deviceHeight } = useWindowDimensions();
 
   const boxStyle = useMemo(
@@ -56,20 +56,7 @@ export function ENSAdditionalRecordsSheet() {
                 <SelectableButton
                   isSelected={isSelected}
                   key={i}
-                  onSelect={() => {
-                    if (isSelected) {
-                      const index = selectedFields.findIndex(({ id }) => textRecordField.id === id);
-                      const fieldToRemove = selectedFields[index];
-                      const newFields = [...selectedFields];
-                      newFields.splice(index, 1);
-                      onRemoveField(fieldToRemove, newFields);
-                    } else {
-                      const fieldToAdd = textRecordField;
-                      const newSelectedFields = [...selectedFields];
-                      newSelectedFields.splice(i, 0, fieldToAdd);
-                      onAddField(fieldToAdd, newSelectedFields);
-                    }
-                  }}
+                  onSelect={() => toggleField(textRecordField)}
                   testID={`ens-selectable-attribute-${textRecordField.id}`}
                 >
                   {textRecordField.label}

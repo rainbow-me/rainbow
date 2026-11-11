@@ -16,6 +16,7 @@ import {
   SWAP_MAX_VERIFIED_RESULTS,
   toChainSearchResults,
   toCrosschainSearchResults,
+  toSearchAssetDeployments,
   toSwapSearchResults,
   type SwapSearchResults,
 } from '@/features/token-search/core/tokenSearch';
@@ -36,7 +37,7 @@ type SearchItemWithRelevance = SearchAsset & {
 // ============ Constants & Types ============================================== //
 
 // The backend's maximum page size
-const SWAP_SEARCH_LIMIT = 50;
+const TOKEN_SEARCH_LIMIT = 50;
 
 const NO_RESULTS: SearchAsset[] = [];
 const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
@@ -63,6 +64,7 @@ type DiscoverSearchParams = {
   list?: string;
   query: string;
   chainIds: string;
+  tokenSearchV2: boolean;
 };
 
 export type VerifiedResults = {
@@ -165,6 +167,7 @@ export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, Di
     params: {
       query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
       chainIds: $ => $(useBackendNetworksStore, state => state.getTokenSearchSupportedChainIds().join(',')),
+      tokenSearchV2: $ => $(useTokenSearchV2EnabledStore),
     },
     staleTime: time.minutes(2),
   },
@@ -483,10 +486,13 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
 };
 
 export async function discoverSearchQueryFunction(
-  { query, chainIds }: DiscoverSearchParams,
+  { query, chainIds, tokenSearchV2 }: DiscoverSearchParams,
   abortController: AbortController | null
 ): Promise<DiscoverSearchResults> {
-  const queryParams: Omit<DiscoverSearchParams, 'chainIds'> = {
+  // The new search returns nothing for an empty query, so the default list stays on the legacy search
+  if (tokenSearchV2 && query !== '') return searchDiscoverTokens(query, chainIds, abortController);
+
+  const queryParams: Omit<DiscoverSearchParams, 'chainIds' | 'tokenSearchV2'> = {
     query,
   };
 
@@ -535,14 +541,14 @@ async function searchSwapTokens(
   const isAddressQuery = isAddress(query);
 
   const onChain = toChainSearchResults(
-    await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', chainIds: [chainId], limit: SWAP_SEARCH_LIMIT }, abortController),
+    await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', chainIds: [chainId], limit: TOKEN_SEARCH_LIMIT }, abortController),
     chainId,
     nativeAssetByChain
   );
 
   const crosschain = needsCrosschainSwapSearch(onChain, query)
     ? toCrosschainSearchResults(
-        await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', limit: SWAP_SEARCH_LIMIT }, abortController),
+        await fetchTokenSearch({ query, category: 'CATEGORY_TOKENS', limit: TOKEN_SEARCH_LIMIT }, abortController),
         query,
         chainId,
         nativeAssetByChain
@@ -550,6 +556,33 @@ async function searchSwapTokens(
     : [];
 
   return toSwapSearchResults({ onChain, crosschain, query, isAddressQuery });
+}
+
+/**
+ * Discover search on the backend token search, which ranks results and looks addresses up itself, so its results are only
+ * split by verification. Each deployment is its own row, as in the legacy search.
+ */
+async function searchDiscoverTokens(
+  query: string,
+  chainIds: string,
+  abortController: AbortController | null
+): Promise<DiscoverSearchResults> {
+  try {
+    const result = await fetchTokenSearch(
+      { query, category: 'CATEGORY_TOKENS', chainIds: chainIds.split(',').map(Number) as ChainId[], limit: TOKEN_SEARCH_LIMIT },
+      abortController
+    );
+    const assets = toSearchAssetDeployments(result, useBackendNetworksStore.getState().getChainsNativeAsset());
+    return {
+      verifiedAssets: assets.filter(asset => asset.isVerified),
+      highLiquidityAssets: assets.filter(asset => !asset.isVerified),
+      lowLiquidityAssets: [],
+    };
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') return NO_DISCOVER_RESULTS;
+    logger.error(new RainbowError('[searchDiscoverTokens]: Discover search failed', e));
+    return NO_DISCOVER_RESULTS;
+  }
 }
 
 // ============ API Functions ================================================== //

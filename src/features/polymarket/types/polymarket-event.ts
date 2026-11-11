@@ -4,6 +4,8 @@ import { type PolymarketTeamInfo } from '@/features/polymarket/types/team-info';
 import { type ResponseByTheme } from '@/theme/types';
 
 export type SportsMarketType = (typeof POLYMARKET_SPORTS_MARKET_TYPE)[keyof typeof POLYMARKET_SPORTS_MARKET_TYPE];
+export type PolymarketVersion = 'v1' | 'v2';
+
 export type UmaResolutionStatus = 'pending' | 'proposed' | 'disputed' | 'resolved';
 
 type ImageOptimized = {
@@ -81,6 +83,9 @@ type Template = {
 };
 
 export type RawPolymarketMarket = {
+  version: PolymarketVersion;
+  positionIds?: string[];
+  resolutionStatus?: 'inactive' | 'active' | 'resolved';
   id: string;
   question: string;
   conditionId: string;
@@ -177,7 +182,7 @@ export type RawPolymarketMarket = {
   score: number;
   imageOptimized: ImageOptimized;
   iconOptimized: ImageOptimized;
-  events: PolymarketMarketEvent[];
+  events?: PolymarketMarketEvent[] | null;
   categories: Category[];
   tags: Tag[];
   creator: string;
@@ -203,7 +208,7 @@ export type RawPolymarketMarket = {
   automaticallyActive: boolean;
   clearBookOnStart: boolean;
   chartColor: string;
-  seriesColor: string;
+  seriesColor?: string | null;
   showGmpSeries: boolean;
   showGmpOutcome: boolean;
   manualActivation: boolean;
@@ -222,11 +227,15 @@ export type RawPolymarketMarket = {
   eventStartTime: string;
 };
 
-export type PolymarketMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'outcomes' | 'outcomePrices' | 'events'> & {
+export type GammaMarket = Omit<RawPolymarketMarket, 'clobTokenIds' | 'positionIds' | 'outcomes' | 'outcomePrices'> & {
+  /** Trading IDs in outcome order: CTF token IDs for v1, PositionManager IDs for v2. */
   clobTokenIds: string[];
   outcomes: string[];
   outcomePrices: string[];
-  events: PolymarketMarketEvent[];
+};
+
+export type PolymarketMarket = GammaMarket & {
+  events: PolymarketMarketEvent[] | null;
   color: ResponseByTheme<string>;
   secondaryColor: ResponseByTheme<string> | undefined;
 };
@@ -263,7 +272,7 @@ type Collection = {
   headerImageOptimized: ImageOptimized;
 };
 
-type Series = {
+type EventSeries = {
   id: string;
   ticker: string;
   slug: string;
@@ -297,7 +306,6 @@ type Series = {
   pythTokenID: string;
   cgAssetName: string;
   score: number;
-  events: Array<Record<string, any>>; // Circular reference to Event
   collections: Collection[];
   categories: Category[];
   tags: Tag[];
@@ -359,7 +367,7 @@ export type RawPolymarketEvent = {
   featuredImageOptimized: ImageOptimized;
   subEvents: string[];
   markets: RawPolymarketMarket[];
-  series: Series[];
+  series?: EventSeries[];
   categories: Category[];
   collections: Collection[];
   tags: Tag[];
@@ -404,6 +412,8 @@ export type RawPolymarketEvent = {
   homeTeamName?: string;
   awayTeamName?: string;
 };
+
+export type GammaEvent = Omit<RawPolymarketEvent, 'markets'> & { markets: GammaMarket[] };
 
 export type PolymarketEvent = Omit<RawPolymarketEvent, 'markets'> & {
   markets: PolymarketMarket[];

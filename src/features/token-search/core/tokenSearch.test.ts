@@ -9,6 +9,7 @@ import {
   toChainSearchResults,
   toCrosschainSearchResults,
   toSearchAsset,
+  toSearchAssetDeployments,
   toSwapSearchResults,
   type NativeAssetByChain,
   type TokenSearchInstance,
@@ -193,6 +194,45 @@ describe('toSearchAsset', () => {
     expect(toSearchAsset(item({ verification, instances: [erc20(ChainId.base, USDC_BASE)] }), NATIVE_ASSET_BY_CHAIN)?.isVerified).toBe(
       isVerified
     );
+  });
+});
+
+describe('toSearchAssetDeployments', () => {
+  it('maps each deployment to its own result on its chain, in the order the backend lists them', () => {
+    const result: TokenSearchResult = {
+      sections: [
+        { type: 'SECTION_TYPE_TOP', items: [USDC] },
+        { type: 'SECTION_TYPE_TOKENS', items: [item({ symbol: 'WETH', instances: [erc20(ChainId.base, WETH_BASE, 18)] })] },
+      ],
+    };
+
+    const deployments = toSearchAssetDeployments(result, NATIVE_ASSET_BY_CHAIN);
+
+    expect(deployments.map(asset => [asset.symbol, asset.chainId, asset.address, asset.decimals, asset.uniqueId])).toEqual([
+      ['USDC', ChainId.base, USDC_BASE, 6, `${USDC_BASE}_${ChainId.base}`],
+      ['USDC', ChainId.mainnet, USDC_MAINNET, 6, `${USDC_MAINNET}_${ChainId.mainnet}`],
+      ['USDC', ChainId.bsc, USDC_BSC, 18, `${USDC_BSC}_${ChainId.bsc}`],
+      ['WETH', ChainId.base, WETH_BASE, 18, `${WETH_BASE}_${ChainId.base}`],
+    ]);
+    expect(new Set(deployments.slice(0, 3).map(asset => Object.keys(asset.networks).length))).toEqual(new Set([3]));
+  });
+
+  it("lists a chain once and skips deployments the app can't open", () => {
+    const token = item({
+      instances: [
+        erc20(ChainId.base, USDC_BASE),
+        erc20(ChainId.base, WETH_BASE, 18),
+        { assetId: `eip155:999999/erc20:${USDC_BASE}`, decimals: 6 },
+        erc20(ChainId.mainnet, USDC_MAINNET),
+      ],
+    });
+
+    const deployments = toSearchAssetDeployments({ sections: [{ type: 'SECTION_TYPE_TOP', items: [token] }] }, NATIVE_ASSET_BY_CHAIN);
+
+    expect(deployments.map(asset => [asset.chainId, asset.address])).toEqual([
+      [ChainId.base, USDC_BASE],
+      [ChainId.mainnet, USDC_MAINNET],
+    ]);
   });
 });
 

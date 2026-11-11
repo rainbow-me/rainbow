@@ -42,5 +42,5 @@ function getColorFromSeed(seed: string): string {
 
 export function getColorBySeed(seed: string): ResponseByTheme<string> {
   const color = getColorFromSeed(seed);
-  return getHighContrastColor(color);
+  return getHighContrastColor(color) ?? { light: color, dark: color };
 }

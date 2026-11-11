@@ -25,6 +25,7 @@ function eventResponse(selected: PolymarketOutcome = outcome): Response {
     id: selected.marketId,
     conditionId: `condition-${selected.marketId}`,
     outcomes: '["Other","Chosen"]',
+    positionIds: ['700', '701'],
     clobTokenIds: JSON.stringify([otherTokenId, selected.tokenId]),
   });
   event.markets.unshift({ ...event.markets[0], id: 'unrelated', conditionId: 'unrelated', clobTokenIds: '["300","301"]' });
@@ -144,7 +145,7 @@ it('reuses order details when only the snapshot price changes', async () => {
   expect(fetchMock).not.toHaveBeenCalled();
 });
 
-it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }])(
+it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrders: false }, { id: 'other-market' }])(
   'rejects an unavailable market: %j',
   async flags => {
     const event = predictionEvent(outcome.eventId);
@@ -156,10 +157,24 @@ it.each([{ active: false }, { closed: true }, { archived: true }, { acceptingOrd
     );
     usePolymarketOrderStore.setState({ params: outcome });
     await settle();
+    expect(usePolymarketOrderStore.getState().getStatus('isSuccess')).toBe(true);
     expect(usePolymarketOrderStore.getState().getData()).toBeNull();
     expect(marketInfo).not.toHaveBeenCalled();
   }
 );
+
+it('uses the V2 position ID even when Gamma also supplies different CTF IDs', async () => {
+  const event = predictionEvent(outcome.eventId);
+  Object.assign(event.markets[0], { id: outcome.marketId, version: 'v2', positionIds: [otherTokenId, tokenId] });
+  fetchMock.mockImplementation(async url =>
+    String(url).includes('/events/')
+      ? new Response(JSON.stringify(event), { headers: { 'Content-Type': 'application/json' } })
+      : bookResponse(tokenId)
+  );
+  usePolymarketOrderStore.setState({ params: outcome });
+  await settle();
+  expect(usePolymarketOrderStore.getState().getData()?.market).toMatchObject({ version: 'v2', clobTokenIds: [otherTokenId, tokenId] });
+});
 
 it('rejects a token at a different outcome index', async () => {
   usePolymarketOrderStore.setState({ params: { ...outcome, outcomeIndex: 0 } });
@@ -174,7 +189,10 @@ it('reports a details timeout as an error and allows retrying', async () => {
   usePolymarketOrderStore.setState({ params: outcome });
   await settle();
 
-  await vi.advanceTimersByTimeAsync(15_000);
+  await vi.advanceTimersByTimeAsync(14_999);
+  expect(usePolymarketOrderStore.getState().getStatus('isLoading')).toBe(true);
+
+  await vi.advanceTimersByTimeAsync(1);
   expect(usePolymarketOrderStore.getState().getStatus()).toMatchObject({
     isError: true,
     isInitialLoad: false,

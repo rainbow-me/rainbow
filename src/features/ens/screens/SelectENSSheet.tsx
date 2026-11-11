@@ -9,20 +9,18 @@ import { ImgixImage } from '@/components/images';
 import { Sheet } from '@/components/sheet';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { abbreviateName } from '@/features/address/core/formatAddress';
-import { type BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
+import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
+import { useEnsNameStore } from '@/features/ens/data/useEnsNameStore';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
-import useAccountENSDomains from '../hooks/useAccountENSDomains';
-import useENSAvatar, { prefetchENSAvatar } from '../hooks/useENSAvatar';
-import { prefetchENSCover } from '../hooks/useENSCover';
-import { prefetchENSRecords } from '../hooks/useENSRecords';
-
-export const SelectENSSheetHeight = 400;
+import { useAccountENSDomains } from '../hooks/useAccountENSDomains';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const rowHeight = 40;
@@ -30,7 +28,9 @@ const rowPadding = 19;
 const maxListHeight = deviceHeight - 220;
 
 export function SelectENSSheet() {
-  const { isSuccess, nonPrimaryDomains, primaryDomain } = useAccountENSDomains();
+  const accountAddress = useAccountAddress();
+  const { data: names } = useAccountENSDomains(accountAddress);
+  const primaryName = useEnsNameStore(s => s.get(accountAddress));
 
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
@@ -39,37 +39,28 @@ export function SelectENSSheet() {
 
   const handleSelectENS = useCallback(
     (ensName: string) => {
-      prefetchENSAvatar(ensName);
-      prefetchENSCover(ensName);
-      prefetchENSRecords(ensName);
+      void Promise.allSettled([
+        useEnsImageStore.getState().load({ name: ensName, field: 'avatar' }),
+        useEnsImageStore.getState().load({ name: ensName, field: 'header' }),
+        useEnsRecordsStore.getState().load({ name: ensName }),
+      ]);
       goBack();
       params?.onSelectENS(ensName);
     },
     [goBack, params]
   );
 
-  const controlledDomains = useMemo(() => {
-    const sortedNonPrimaryDomains = nonPrimaryDomains?.sort((a, b) => {
-      if (a.name && b.name) return a.name > b.name ? 1 : -1;
-      return 1;
-    });
+  const sortedNames = useMemo(
+    () => names?.slice().sort((a, b) => (a === primaryName ? -1 : b === primaryName ? 1 : a.localeCompare(b))),
+    [names, primaryName]
+  );
+  const listHeight = (rowHeight + rowPadding) * (names?.length ?? 0) + 21;
+  const scrollEnabled = listHeight > maxListHeight;
 
-    if (primaryDomain) sortedNonPrimaryDomains.unshift(primaryDomain);
-
-    return sortedNonPrimaryDomains;
-  }, [primaryDomain, nonPrimaryDomains]);
-
-  let listHeight = (rowHeight + rowPadding) * (controlledDomains?.length || 0) + 21;
-  let scrollEnabled = false;
-  if (listHeight > maxListHeight) {
-    listHeight = maxListHeight;
-    scrollEnabled = true;
-  }
-
-  const renderItem: ListRenderItem<BaseEnsDomainFragment> = useCallback(
+  const renderItem: ListRenderItem<string> = useCallback(
     ({ item }) => {
       return (
-        <ButtonPressAnimation onPress={() => item.name && handleSelectENS(item.name)} scaleTo={0.95}>
+        <ButtonPressAnimation onPress={() => handleSelectENS(item)} scaleTo={0.95}>
           <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
             <Inline alignVertical="center" wrap={false}>
               <AccentColorProvider color={secondary06}>
@@ -81,11 +72,11 @@ export function SelectENSSheet() {
                   justifyContent="center"
                   width={{ custom: rowHeight }}
                 >
-                  <ENSAvatar name={item.name ?? ''} />
+                  <ENSAvatar name={item} />
                 </Box>
                 <Box paddingLeft="10px">
                   <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                    {abbreviateName(item.name ?? '', 25)}
+                    {abbreviateName(item, 25)}
                   </Text>
                 </Box>
               </AccentColorProvider>
@@ -104,18 +95,18 @@ export function SelectENSSheet() {
           <Heading align="center" color="primary (Deprecated)" size="18px / 21px (Deprecated)" weight="heavy">
             {i18n.t(i18n.l.profiles.select_ens_name)}
           </Heading>
-          {isSuccess && (
+          {names !== undefined && (
             <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
-              <View style={{ height: listHeight }}>
+              <View style={{ height: Math.min(listHeight, maxListHeight) }}>
                 <FlatList
                   ItemSeparatorComponent={() => <Box height={{ custom: rowPadding }} />}
-                  data={controlledDomains}
+                  data={sortedNames}
                   contentContainerStyle={{
                     paddingBottom: 50,
                     paddingHorizontal: 19,
                   }}
                   initialNumToRender={15}
-                  keyExtractor={(item, index) => item.name ?? index.toString()}
+                  keyExtractor={item => item}
                   maxToRenderPerBatch={10}
                   renderItem={renderItem}
                   scrollEnabled={scrollEnabled}
@@ -133,15 +124,15 @@ export function SelectENSSheet() {
 function ENSAvatar({ name }: { name: string }) {
   const { colors } = useTheme();
 
-  const { data: avatar } = useENSAvatar(name);
+  const avatar = useEnsImageStore(s => s.get(name ? { name, field: 'avatar' } : undefined));
 
-  if (avatar?.imageUrl) {
+  if (avatar) {
     return (
       <Box
         as={ImgixImage}
         borderRadius={rowHeight / 2}
         height={{ custom: rowHeight }}
-        source={{ uri: avatar?.imageUrl }}
+        source={{ uri: avatar }}
         width={{ custom: rowHeight }}
         size={100}
       />

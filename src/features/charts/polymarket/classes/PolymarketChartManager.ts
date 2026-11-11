@@ -28,7 +28,7 @@ import { TimeFormatter } from '../../candlestick/classes/TimeFormatter';
 import { LineSeriesBuilder, type SeriesDataInput } from '../../line/LineSeriesBuilder';
 import { type LineSmoothing } from '../../line/LineSmoothingAlgorithms';
 import { type DrawParams } from '../../line/types';
-import { EntranceAnimation, SERIES_COLORS, SERIES_PALETTES, type OutcomeSeries, type SeriesPaletteColors } from '../types';
+import { EntranceAnimation, SERIES_COLORS, type OutcomeSeries, type SeriesPaletteColors } from '../types';
 
 // ============ Types ========================================================== //
 
@@ -121,6 +121,7 @@ export class PolymarketChartManager {
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
   private isDarkMode: boolean;
   private readonly smoothingMode: LineSmoothing | undefined;
+  private chartId: string | null = null;
   private series: OutcomeSeries[] = [];
   private timeDomain: { endTs: number; startTs: number } | null = null;
   private readonly fallbackTimeDomain = { endTs: 1, startTs: 0 };
@@ -479,36 +480,21 @@ export class PolymarketChartManager {
     return minPrice + (priceRange * (chartRegionHeight - y)) / chartRegionHeight;
   }
 
-  public setSeriesData(series: OutcomeSeries[], isDarkMode: boolean): void {
-    const hadData = this.series.length > 0;
-
-    const currentKeys = this.lineSeriesBuilder.getSeriesKeys();
-    const newKeys = series.map(s => s.tokenId);
-    const isMarketSwitch = currentKeys.length !== newKeys.length || !currentKeys.every((k, i) => k === newKeys[i]);
-
-    this.series = series;
-    this.interactionTimestamps = this.buildInteractionTimestamps(series);
-    const nextTimeDomain = this.computeTimeDomain(series);
-    const shouldAnimate = hadData && !isMarketSwitch && !this.isEntranceAnimating;
-
-    // Capture current state before updating data
-    let capturedBounds: { min: number; max: number } | null = null;
-    if (shouldAnimate) {
-      const currentProgress = this.isAnimating ? this.animationProgress.value / MAX_PROGRESS : 1;
-      const currentParams = this.getCaptureParams();
-      capturedBounds = { min: currentParams.minPrice, max: currentParams.maxPrice };
-      this.lineSeriesBuilder.captureStartState(currentProgress, currentParams);
+  public setSeriesData(series: OutcomeSeries[] | null, chartId: string | null): void {
+    const didChartChange = this.chartId !== chartId;
+    this.chartId = chartId;
+    if (!series?.length) {
+      if (series !== null || didChartChange) this.clearData();
+      return;
     }
 
-    // Update data
-    const colorsConfig = this.config.line.colors;
-    const colors = colorsConfig ? (typeof colorsConfig === 'string' ? SERIES_PALETTES[colorsConfig] : colorsConfig) : null;
-    const overrideSeriesColors = this.config.line.overrideSeriesColors === true;
+    const animationStart =
+      this.series.length > 0 && !didChartChange && !this.isEntranceAnimating
+        ? { params: this.getCaptureParams(), progress: this.isAnimating ? this.animationProgress.value / MAX_PROGRESS : 1 }
+        : undefined;
+
     const seriesData: SeriesDataInput[] = series.map((s, i) => ({
-      // Allow config palette to override incoming series colors when requested
-      color: overrideSeriesColors
-        ? (colors?.[i] ?? s.color ?? SERIES_COLORS[i % SERIES_COLORS.length])
-        : (s.color ?? colors?.[i] ?? SERIES_COLORS[i % SERIES_COLORS.length]),
+      color: this.getSeriesColor(s, i),
       key: s.tokenId,
       label: s.label,
       prices: s.prices,
@@ -516,18 +502,26 @@ export class PolymarketChartManager {
       timestamps: s.timestamps,
     }));
 
+    const didSeriesChange = this.lineSeriesBuilder.setSeriesData(seriesData, this.isDarkMode, animationStart);
+    if (didChartChange || didSeriesChange) {
+      // Stop the previous animation from restoring the old chart bounds
+      this.animationProgress.value = MAX_PROGRESS;
+      this.isEntranceAnimating = false;
+    }
+
+    this.series = series;
+    this.interactionTimestamps = this.buildInteractionTimestamps(series);
     this.seriesMetadata = seriesData.map(s => ({ color: s.color, label: s.label, tokenId: s.key }));
-    this.lineSeriesBuilder.setSeriesData(seriesData, isDarkMode);
-    this.timeDomain = nextTimeDomain;
+    this.timeDomain = this.computeTimeDomain(series);
     const newBounds = this.getPriceBounds();
 
-    if (shouldAnimate && capturedBounds) {
+    if (animationStart && !didSeriesChange) {
       // Compute target path with final bounds (not interpolated)
       const targetParams = this.getTargetParams(newBounds);
       this.lineSeriesBuilder.setTargetState(targetParams);
 
       // Use captured bounds (interpolated if was animating) as animation start
-      this.previousBounds = capturedBounds;
+      this.previousBounds = { min: animationStart.params.minPrice, max: animationStart.params.maxPrice };
       this.targetBounds = { max: newBounds.max, min: newBounds.min };
       this.isAnimating = true;
       this.animationProgress.value = MIN_PROGRESS;
@@ -584,6 +578,13 @@ export class PolymarketChartManager {
     }
   }
 
+  private getSeriesColor(series: OutcomeSeries, index: number): ResponseByTheme<string> {
+    const colors = this.config.line.colors;
+    return this.config.line.overrideSeriesColors
+      ? (colors?.[index] ?? series.color ?? SERIES_COLORS[index % SERIES_COLORS.length])
+      : (series.color ?? colors?.[index] ?? SERIES_COLORS[index % SERIES_COLORS.length]);
+  }
+
   /**
    * Gets params for capturing current visual state (with interpolated bounds if animating).
    */
@@ -637,6 +638,7 @@ export class PolymarketChartManager {
   }
 
   public clearData(): void {
+    this.animationProgress.value = MAX_PROGRESS;
     this.series = [];
     this.seriesMetadata = [];
     this.lineSeriesBuilder.clearSeries();
@@ -984,18 +986,33 @@ export class PolymarketChartManager {
     );
   }
 
-  public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
-    this.buildParagraph = buildParagraph;
-    this.rebuildChart();
-  }
-
   public setHighlightedSeries(key: string | null): void {
     this.lineSeriesBuilder.setHighlightedSeries(key);
     this.rebuildChart();
   }
 
-  public setColorMode(isDarkMode: boolean): void {
+  public updateAppearance({
+    buildParagraph,
+    isDarkMode,
+    lineColors,
+    overrideSeriesColors,
+  }: {
+    buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+    isDarkMode: boolean;
+    lineColors: PolymarketChartConfig['line']['colors'];
+    overrideSeriesColors: boolean;
+  }): void {
+    this.buildParagraph = buildParagraph;
     this.isDarkMode = isDarkMode;
+    this.config.line.colors = lineColors;
+    this.config.line.overrideSeriesColors = overrideSeriesColors;
+
+    for (let i = 0; i < this.series.length; i++) {
+      const series = this.series[i];
+      const color = this.getSeriesColor(series, i);
+      this.seriesMetadata[i].color = color;
+      this.lineSeriesBuilder.getSeries(series.tokenId)?.setColor(color, isDarkMode);
+    }
 
     const colorMode = isDarkMode ? 'dark' : 'light';
     const labelQuinaryString = getColorForTheme('labelQuinary', colorMode);

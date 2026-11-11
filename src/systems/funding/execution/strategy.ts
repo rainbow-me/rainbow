@@ -20,13 +20,12 @@ type StrategyConfig = Pick<DepositConfig, 'directTransferEnabled' | 'to'>;
 
 // ============ Strategy Determination ======================================== //
 
-export function determineStrategy(config: StrategyConfig, quote: Quote, walletAddress: string): ExecutionStrategy {
+export function determineStrategy(config: StrategyConfig, quote: Quote, recipient: string): ExecutionStrategy {
   const isSameChain = Number(quote.chainId) === config.to.chainId;
   const isSameToken = quote.sellTokenAddress.toLowerCase() === config.to.token.address.toLowerCase();
   const isSameAsset = isSameChain && isSameToken;
 
   if (isSameAsset && config.directTransferEnabled) {
-    const recipient = config.to.recipient?.getState() ?? walletAddress;
     if (!recipient) {
       throw new Error('Recipient required for direct transfer');
     }

@@ -1,4 +1,4 @@
-import { getPredictionWidgetOutcomes } from '@/features/discover/components/markets/cards/PredictionMarketTileCard';
+import { getPredictionWidgetOutcomes } from '@/features/discover/utils/getPredictionWidgetOutcomes';
 import { type Display } from '@/features/placements/surfaces/types';
 import { getPolymarketEventsListOutcomes } from '@/features/polymarket/components/polymarket-events-list/PolymarketEventsListItem';
 import { type PolymarketEvent } from '@/features/polymarket/types/polymarket-event';

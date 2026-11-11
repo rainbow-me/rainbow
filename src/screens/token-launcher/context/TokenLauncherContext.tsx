@@ -105,9 +105,10 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       if (isDarkMode && colors.isColorDark(primaryColor)) {
         primaryColor = colors.brighten(primaryColor);
       } else if (!isDarkMode) {
-        primaryColor = getHighContrastColor(primaryColor, isDarkMode);
+        primaryColor = getHighContrastColor(primaryColor, isDarkMode) ?? DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR;
       }
     } catch (e: unknown) {
+      primaryColor = DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR;
       const error = e instanceof Error ? e : new Error(String(e));
       logger.error(new RainbowError('[TokenLauncher]: Error getting dominant color from image'), {
         message: error.message,

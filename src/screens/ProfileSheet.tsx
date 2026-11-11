@@ -8,8 +8,8 @@ import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
 import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
 import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
+import { useEnsProfileImage } from '@/features/ens/data/stores/imageStore';
 import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
@@ -28,39 +28,25 @@ import Skeleton from '../components/skeleton/Skeleton';
 export function ProfileSheet() {
   const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
   const { colors } = useTheme();
-  const accountAddress = useAccountAddress();
-
   const { height: deviceHeight } = useDimensions();
-  const contentHeight = deviceHeight - sharedCoolModalTopOffset;
-
   const ensName = params?.address;
+
+  const accountAddress = useAccountAddress();
   const profileAddress = useEnsAddressStore(s => s.get({ addressOrName: ensName, chainId: ChainId.mainnet }));
-  const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
-
-  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
-
-  // Prefetch first transaction timestamp unless already fetched for intro marquee
+  const avatar = useEnsProfileImage(ensName, 'avatar');
+  const dominantColor = usePersistentDominantColorFromImage(avatar.url);
   const { isSuccess: hasFirstTxTimestampFetched } = useFirstTransactionTimestamp({ addressOrName: ensName });
-
-  // Prefetch asset list
-  const { isSuccess: hasListFetched, briefSectionsData } = useExternalWalletSectionsData({
-    address: profileAddress || undefined,
-  });
+  const { isSuccess: hasListFetched, briefSectionsData } = useExternalWalletSectionsData({ address: profileAddress || undefined });
 
   const colorIndex = useMemo(() => (profileAddress ? addressHashedColorIndex(profileAddress) : 0), [profileAddress]);
-
-  const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
-
-  const wrapperStyle = useMemo(() => ({ height: contentHeight }), [contentHeight]);
-
   const accentColor =
-    // Set accent color when ENS images have fetched & dominant
-    // color is not loading.
-    isAvatarFetched && typeof colorIndex === 'number'
+    avatar.isSettled && typeof colorIndex === 'number'
       ? dominantColor || colors.avatarBackgrounds[colorIndex] || colors.appleBlue
       : colors.skeleton;
 
+  const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
   const enableZoomableImages = !isPreview;
+  const wrapperStyle = useMemo(() => ({ height: deviceHeight - sharedCoolModalTopOffset }), [deviceHeight]);
 
   useEffect(() => {
     if (profileAddress && accountAddress) {

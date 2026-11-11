@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 
 import { getHighContrastColor } from '@/design-system/color/getHighContrastColor';
+import { getColorBySeed } from '@/features/polymarket/utils/getColorBySeed';
 import { type SportsGamePress } from '@/features/sports/ui/GameCard';
 import Navigation from '@/navigation/Navigation';
 import { useRoute } from '@/navigation/RouteContext';
@@ -15,7 +16,7 @@ export function useSportsGamePress(): SportsGamePress {
       if (bet) {
         Navigation.handleAction(Routes.POLYMARKET_NEW_POSITION_SHEET, {
           outcome: bet.outcome,
-          accentColor: getHighContrastColor(bet.badgeColor),
+          accentColor: getHighContrastColor(bet.badgeColor) ?? getColorBySeed(bet.outcome.tokenId),
           fromRoute,
         });
       } else {

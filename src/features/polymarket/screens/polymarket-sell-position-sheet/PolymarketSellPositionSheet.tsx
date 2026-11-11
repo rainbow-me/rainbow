@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,10 +17,10 @@ import { PolymarketOutcomeCard } from '@/features/polymarket/components/Polymark
 import { POLYMARKET_BACKGROUND_LIGHT } from '@/features/polymarket/constants';
 import { createSellExecutionStore } from '@/features/polymarket/screens/polymarket-sell-position-sheet/stores/createSellExecutionStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
-import { executePolymarketSellPosition } from '@/features/polymarket/utils/executePolymarketOrder';
 import { getPositionColors } from '@/features/polymarket/utils/getMarketColor';
 import { getOutcomeDescriptions } from '@/features/polymarket/utils/getOutcomeDescriptions';
-import { waitForPositionSizeUpdate } from '@/features/polymarket/utils/refetchPolymarketStores';
+import { executePolymarketSellPosition } from '@/features/polymarket/utils/polymarketOrderExecution';
+import { presentPolymarketOrderAlert } from '@/features/polymarket/utils/presentPolymarketOrderAlert';
 import { mulWorklet, subWorklet, toFixedWorklet, trimTrailingZeros } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -40,14 +40,14 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const green = useForegroundColor('green');
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processingLabel, setProcessingLabel] = useState(i18n.t(i18n.l.predictions.manage_position.cashing_out));
-  const position = usePolymarketPositionsStore(s => s.getPosition(initialPosition.asset) ?? initialPosition);
-
+  const position = usePolymarketPositionsStore(
+    state => state.getPosition(initialPosition.asset, initialPosition.proxyWallet) ?? initialPosition
+  );
   const sellAmountTokens = String(position.size);
   const executionStore = useMemo(() => createSellExecutionStore(sellAmountTokens), [sellAmountTokens]);
 
   const { title: outcomeTitle, subtitle: outcomeSubtitle } = getOutcomeDescriptions({
-    eventTitle: position.market.events[0]?.title ?? '',
+    eventTitle: position.market.events?.[0].title ?? '',
     market: position.market,
     outcome: position.outcome,
     outcomeIndex: position.outcomeIndex,
@@ -68,9 +68,11 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
     worstPrice,
     bestPrice,
     expectedPayoutUsd,
+    grossProceedsUsd,
     averagePrice,
     fee,
     rainbowFee,
+    tokensSold,
     spread,
     hasNoLiquidityAtMarketPrice,
     hasInsufficientLiquidity,
@@ -98,31 +100,35 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
   const absPnl = Math.abs(Number(pnl));
 
   const handleCashOutPosition = useCallback(async () => {
+    if (!canSubmit) return;
+    if (checkIfReadOnlyWallet(getAccountAddress())) return;
+    setIsProcessing(true);
+
     try {
-      if (!canSubmit) return;
-      if (checkIfReadOnlyWallet(getAccountAddress())) return;
-      setIsProcessing(true);
-      setProcessingLabel(i18n.t(i18n.l.predictions.manage_position.confirming_order));
-      await executePolymarketSellPosition({
+      const result = await executePolymarketSellPosition({
         position,
-        price: worstPrice,
-        matchedOrderMetadata: {
-          eventSlug: position.eventSlug,
-          marketSlug: position.slug,
-          outcome: position.outcome,
-          estimatedFeeAmountUsd: fee,
-          quotedTradeFeeUsd: rainbowFee,
+        orderQuote: {
+          expectedAmounts: {
+            tokens: tokensSold,
+            usd: grossProceedsUsd,
+          },
+          quotedTotalFeeUsd: fee,
+          quotedRainbowFeeUsd: rainbowFee,
           spread,
           orderPriceUsd: worstPrice,
           bestPriceUsd: bestPrice,
         },
       });
-      await waitForPositionSizeUpdate(position.asset);
-      Navigation.goBack();
+
+      if (result.status === 'delayed') {
+        presentPolymarketOrderAlert('unconfirmed', 'sell');
+        return;
+      }
     } catch (e) {
       const error = ensureError(e);
-      logger.error(new RainbowError('[PolymarketManagePositionSheet] Error selling position', error));
-      Alert.alert(i18n.t(i18n.l.predictions.errors.title), i18n.t(i18n.l.predictions.errors.failed_to_cash_out));
+      logger.error(new RainbowError('[PolymarketSellPositionSheet] Error selling position', error));
+
+      presentPolymarketOrderAlert(error, 'sell');
 
       analytics.track(analytics.event.predictionsPlaceOrderFailed, {
         eventSlug: position.eventSlug,
@@ -134,10 +140,13 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
         feeAmountUsd: Number(fee),
         orderPriceUsd: Number(worstPrice),
       });
+      return;
     } finally {
       setIsProcessing(false);
     }
-  }, [bestPrice, canSubmit, fee, position, rainbowFee, spread, worstPrice]);
+
+    Navigation.goBack();
+  }, [bestPrice, canSubmit, fee, grossProceedsUsd, position, rainbowFee, spread, tokensSold, worstPrice]);
 
   return (
     <PanelSheet innerBorderWidth={1} panelStyle={{ backgroundColor: isDarkMode ? globalColors.grey100 : POLYMARKET_BACKGROUND_LIGHT }}>
@@ -231,7 +240,7 @@ export const PolymarketSellPositionSheet = memo(function PolymarketSellPositionS
             disabledBackgroundColor={opacity(buttonBackgroundColor, 0.02)}
             disabled={!canSubmit}
             label={i18n.t(i18n.l.predictions.cash_out.cash_out)}
-            processingLabel={processingLabel}
+            processingLabel={i18n.t(i18n.l.predictions.manage_position.confirming_order)}
             isProcessing={isProcessing}
             onLongPress={handleCashOutPosition}
             showBiometryIcon={false}

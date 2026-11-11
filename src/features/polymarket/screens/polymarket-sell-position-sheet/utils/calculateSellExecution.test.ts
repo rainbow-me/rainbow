@@ -26,8 +26,28 @@ describe('calculateSellExecution', () => {
     expect(execution.isQuoteReady).toBe(true);
     expect(execution.grossProceedsUsd).toBe('4');
     expect(execution.rainbowFee).toBe('0.112');
-    expect(Number(execution.fee)).toBeCloseTo(0.212, 12);
-    expect(Number(execution.expectedPayoutUsd)).toBeCloseTo(3.788, 12);
+    expect(execution.fee).toBe('0.212');
+    expect(execution.expectedPayoutUsd).toBe('3.788');
+  });
+
+  it('quotes platform fees at Polymarket settlement precision', () => {
+    const execution = calculateSellExecution({
+      feeInfo: {
+        minimumOrderSize: 1,
+        platformFeeExponent: 1,
+        platformFeeRate: 0.05,
+      },
+      orderBook: createOrderBook({
+        asks: [{ price: '0.77', size: '10' }],
+        bids: [{ price: '0.76', size: '10' }],
+      }),
+      sellAmountTokens: '1.27',
+    });
+
+    expect(execution.grossProceedsUsd).toBe('0.9652');
+    expect(execution.rainbowFee).toBe('0.028956');
+    expect(execution.fee).toBe('0.040536');
+    expect(execution.expectedPayoutUsd).toBe('0.924664');
   });
 
   it('does not quote a sell before market fee info is ready', () => {

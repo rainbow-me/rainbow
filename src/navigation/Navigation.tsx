@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
 
 import {
   CommonActions,
@@ -14,8 +15,10 @@ import { useCallbackOne } from 'use-memo-one';
 
 import { IS_DEV } from '@/env';
 import { prefetchRoute } from '@/navigation/prefetchRegistry';
+import { type NativeStackState } from '@/react-native-cool-modals/types';
 import { setActiveRoute } from '@/state/navigation/navigationStore';
 
+import { type BottomSheetNavigationOptions } from './bottom-sheet/types';
 import Routes, { NATIVE_ROUTES, type Route } from './routesNames';
 import { type RootStackParamList, type RoutesWithOptionalParams } from './types';
 import { VIRTUAL_NAVIGATORS } from './virtualNavigators';
@@ -43,8 +46,12 @@ type DispatchActionParam = NavigationAction | ((state: NavigationState) => Navig
  * Extended navigation options with custom sheet properties.
  */
 type ExtendedStackNavigationOptions = Partial<StackNavigationOptions> & {
+  /** Android screen container height, independent of snap points. */
+  screenContainerHeight?: BottomSheetNavigationOptions['screenContainerHeight'];
   limitActiveModals?: boolean;
+  /** iOS sheet height in its expanded state. */
   longFormHeight?: number;
+  /** iOS sheet height in its shorter open state. */
   shortFormHeight?: number;
   onWillDismiss?: () => void;
 };
@@ -157,7 +164,8 @@ export function setParams<RouteName extends Route>(params: RootStackParamList[Ro
 /**
  * Sets the top-level `navigationRef`.
  */
-export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList>): void {
+export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList> | null): void {
+  if (navigationRef !== ref) pendingRouteKey = null;
   navigationRef = ref;
 }
 
@@ -174,70 +182,70 @@ function assertRoute(route: Route | string): asserts route is Route {
 
 /**
  * Internal helper for dispatching navigation actions.
- * Handles sheet coordination.
  */
 function dispatchAction<RouteName extends Route>(
   action: DispatchActionParam,
   routeName: RouteName,
   params: RootStackParamList[RouteName]
 ): void {
-  function dispatch(): void {
-    if (navigationRef?.isReady()) {
-      cancelPendingRouteChange();
-      prefetchRoute(routeName, params);
-      setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
-      navigationRef.dispatch(action);
+  if (Platform.OS !== 'ios' && NATIVE_ROUTES.has(routeName)) {
+    const wasBlocked = blocked;
+    block();
+    if (wasBlocked) return;
+  }
+
+  const navigation = navigationRef;
+  if (!navigation?.isReady()) return;
+
+  const state = Platform.OS === 'ios' ? (navigation.getRootState() as NativeStackState) : undefined;
+  const source = state?.routes[state.index];
+  const requestsPresentation = state?.routeNames.includes(routeName) ?? false;
+  if (requestsPresentation && source) {
+    if (pendingRouteKey === source.key) return;
+    pendingRouteKey = source.key;
+  }
+
+  try {
+    pendingRouteChangeId += 1;
+    prefetchRoute(routeName, params);
+    setActiveRoute(VIRTUAL_NAVIGATORS[routeName]?.getActiveRoute() ?? routeName);
+    navigation.dispatch(action);
+  } finally {
+    if (requestsPresentation && navigationRef === navigation) {
+      const next = navigation.getRootState() as NativeStackState;
+      const destination = next.routes[next.index];
+      pendingRouteKey = destination.presentationRequest !== source?.presentationRequest ? destination.key : null;
     }
   }
-
-  if (!NATIVE_ROUTES.has(routeName)) {
-    dispatch();
-    return;
-  }
-
-  const wasBlocked = blocked;
-  block();
-  if (wasBlocked) return;
-
-  runAfterSheetDismissal(dispatch);
 }
 
 // ============ Sheet Handling ================================================= //
 
-type SheetCoordinator = {
-  isClosing: boolean;
-  pendingActions: (() => void)[];
-};
-
-const sheetCoordinator: SheetCoordinator = {
-  isClosing: false,
-  pendingActions: [],
-};
-
 let blocked = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let pendingRouteChangeId = 0;
+let pendingRouteKey: string | null = null;
 
-/**
- * Called when a sheet dismissal is triggered.
- */
-export function onWillPop(): void {
-  sheetCoordinator.isClosing = true;
+export function acknowledgePresentation(navigatorKey: string, routeKey: string, presentationRequest: number): void {
+  if (pendingRouteKey !== routeKey) return;
+  const state = navigationRef?.getRootState() as NativeStackState | undefined;
+  const route = state?.routes[state.index];
+  if (state?.key === navigatorKey && route?.key === routeKey && route.presentationRequest === presentationRequest) {
+    pendingRouteKey = null;
+  }
 }
 
 /**
  * Called after a sheet has finished closing.
- * Executes any pending actions scheduled during dismissal.
  */
 export function onDidPop(): void {
-  sheetCoordinator.isClosing = false;
-  if (sheetCoordinator.pendingActions.length) {
-    setImmediate(() => {
-      for (const action of sheetCoordinator.pendingActions) action();
-      sheetCoordinator.pendingActions = [];
-    });
-  }
-  scheduleRouteChange();
+  pendingRouteChangeId += 1;
+  const requestId = pendingRouteChangeId;
+  queueMicrotask(() => {
+    if (requestId !== pendingRouteChangeId) return;
+    const newActiveRoute = getActiveRouteName();
+    if (newActiveRoute) setActiveRoute(newActiveRoute);
+  });
 }
 
 /**
@@ -250,32 +258,6 @@ function block(): void {
     timeout = null;
   }
   timeout = setTimeout(() => (blocked = false), 200);
-}
-
-/**
- * Schedules an action to be executed after sheet dismissal,
- * or runs it immediately if no sheet is currently closing.
- */
-function runAfterSheetDismissal(action: () => void): void {
-  if (sheetCoordinator.isClosing) {
-    sheetCoordinator.pendingActions.push(action);
-  } else {
-    action();
-  }
-}
-
-function cancelPendingRouteChange(): void {
-  pendingRouteChangeId += 1;
-}
-
-function scheduleRouteChange(): void {
-  pendingRouteChangeId += 1;
-  const requestId = pendingRouteChangeId;
-  queueMicrotask(() => {
-    if (requestId !== pendingRouteChangeId) return;
-    const newActiveRoute = getActiveRouteName();
-    if (newActiveRoute) setActiveRoute(newActiveRoute);
-  });
 }
 
 // ============ Navigation Service ============================================= //

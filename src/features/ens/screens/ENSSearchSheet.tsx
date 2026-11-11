@@ -18,13 +18,13 @@ import { colors } from '@/styles';
 import { PendingRegistrations } from '../components/registration/PendingRegistrations';
 import { SearchInput } from '../components/registration/SearchInput';
 import { SearchResultGradientIndicator } from '../components/registration/SearchResultGradientIndicator';
+import { normalizeEnsName } from '../core/name';
 import useENSPendingRegistrations from '../hooks/useENSPendingRegistrations';
-import useENSRegistration from '../hooks/useENSRegistration';
-import useENSRegistrationCosts from '../hooks/useENSRegistrationCosts';
+import { useENSRegistration } from '../hooks/useENSRegistration';
+import { useENSRegistrationCosts } from '../hooks/useENSRegistrationCosts';
 import useENSRegistrationStepHandler from '../hooks/useENSRegistrationStepHandler';
 import useENSSearch from '../hooks/useENSSearch';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '../utils/helpers';
-import { normalizeENS } from '../utils/records';
 
 export function ENSSearchSheet() {
   const { navigate } = useNavigation();
@@ -51,8 +51,8 @@ export function ENSSearchSheet() {
   });
 
   const { step } = useENSRegistrationStepHandler();
-  const { data: registrationCostsData, isSuccess: registrationCostsDataIsAvailable } = useENSRegistrationCosts({
-    name: debouncedSearchQuery,
+  const registrationCostsData = useENSRegistrationCosts({
+    name: registrationData?.valid ? debouncedSearchQuery.replace(ENS_DOMAIN, '') + ENS_DOMAIN : '',
     rentPrice: registrationData?.rentPrice,
     step,
     yearsDuration: 1,
@@ -101,8 +101,12 @@ export function ENSSearchSheet() {
             <SearchInput
               isLoading={isLoading}
               onChangeText={value => {
-                setSearchQuery(normalizeENS(value));
                 setInputValue(value);
+                try {
+                  setSearchQuery(normalizeEnsName(value));
+                } catch {
+                  setSearchQuery(value);
+                }
               }}
               selectionColor={isAvailable ? colors.green : isRegistered ? colors.yellowOrange : colors.appleBlue}
               state={state}
@@ -176,7 +180,7 @@ export function ENSSearchSheet() {
                 ) : (
                   <Inset horizontal="15px (Deprecated)">
                     <Inline>
-                      {registrationCostsDataIsAvailable ? (
+                      {registrationCostsData.estimatedTotalRegistrationCost ? (
                         <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" testID="ens-registration-fees" weight="bold">
                           {i18n.t(i18n.l.profiles.search.estimated_total_cost_1)}
                           <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">

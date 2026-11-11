@@ -58,7 +58,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     [accentColor, accentColors.opacity70, isDarkMode]
   );
 
-  const eventTitle = position.market.events[0]?.title ?? '';
+  const event = position.market.events?.[0];
+  const eventTitle = event?.title ?? '';
   const redeemable = position.redeemable;
   const isWin = redeemable && position.size === position.currentValue;
 
@@ -87,14 +88,8 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
     [position]
   );
 
-  const outcomeTokenId = useMemo(() => {
-    const outcomeIndex = position.outcomes.indexOf(position.outcome);
-    const tokenId = position.market.clobTokenIds[outcomeIndex];
-    return tokenId;
-  }, [position.market.clobTokenIds, position.outcomes, position.outcome]);
-
-  const priceTokenId = getPolymarketTokenId(outcomeTokenId, 'buy');
-  const oddsTokenId = getPolymarketTokenId(outcomeTokenId, 'sell');
+  const priceTokenId = getPolymarketTokenId(position.asset, 'buy');
+  const oddsTokenId = getPolymarketTokenId(position.asset, 'sell');
 
   const outcomeTitle = useMemo(() => {
     const { subtitle } = getOutcomeDescriptions({
@@ -166,7 +161,7 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
             />
             <Box padding={'12px'}>
               <Box gap={14}>
-                {showEventTitle && (
+                {showEventTitle && event ? (
                   <GradientBorderView
                     borderGradientColors={isDarkMode ? [accentColors.opacity4, accentColors.opacity0] : ['#F0F2F5', opacity('#F0F2F5', 0)]}
                     borderRadius={12}
@@ -186,15 +181,15 @@ export const PolymarketPositionCard = memo(function PolymarketPositionCard({
                         enableFasterImage
                         resizeMode="cover"
                         size={16}
-                        source={{ uri: position.market.events[0].icon }}
+                        source={{ uri: event.icon }}
                         style={{ height: 16, width: 16, borderRadius: 4 }}
                       />
                       <Text size="15pt" weight="bold" color="labelSecondary" numberOfLines={1} style={styles.flex}>
-                        {position.market.events[0].title}
+                        {event.title}
                       </Text>
                     </Box>
                   </GradientBorderView>
-                )}
+                ) : null}
                 <Box paddingHorizontal={'4px'} gap={12}>
                   <Box gap={12}>
                     <Box flexDirection="row" alignItems="center" justifyContent="space-between">

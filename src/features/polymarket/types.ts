@@ -40,7 +40,6 @@ export type PolymarketPosition = {
   outcome: string;
   outcomeIndex: number;
   negativeRisk: boolean;
-  outcomes: string[];
   market: PolymarketMarket;
   /**
    * Some events have a unique image for each market, such as "Who will win the 2028 presidential election?"
@@ -49,6 +48,14 @@ export type PolymarketPosition = {
    */
   marketHasUniqueImage: boolean;
   teams?: PolymarketTeamInfo[];
+};
+
+export type PolymarketPositionsByAsset = Record<string, PolymarketPosition>;
+
+/** Token and USD amounts represented by one matched or expected order fill. */
+export type PolymarketOrderAmounts = {
+  tokens: string;
+  usd: string;
 };
 
 export type SuccessfulOrderResult = OrderResponse & {

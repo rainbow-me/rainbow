@@ -15,19 +15,18 @@ export type PolymarketAccountValueSummary = {
   totalValueNative: string;
 };
 
-export const usePolymarketAccountValueSummary = createDerivedStore<PolymarketAccountValueSummary>(
-  $ => {
-    const positionsValue = $(usePolymarketPositionsSummary, state => state.value);
-    const balance = $(usePolymarketBalanceStore, state => truncateToDecimals(state.getBalance(), USD_DECIMALS));
-    const totalValue = add(positionsValue, balance);
-    const nativeCurrencyAccountValue = $(useCurrencyConversionStore, state => state.convertToNativeCurrency(totalValue));
-    return {
-      balance,
-      positionsValue,
-      hasBalance: !isZero(balance),
-      totalValueUsd: totalValue,
-      totalValueNative: nativeCurrencyAccountValue,
-    };
-  },
-  { lockDependencies: true }
-);
+export const usePolymarketAccountValueSummary = createDerivedStore<PolymarketAccountValueSummary>($ => {
+  const positionsValue = $(usePolymarketPositionsSummary, s => s.value);
+  const balance = $(usePolymarketBalanceStore, s => truncateToDecimals(s.getBalance(), USD_DECIMALS));
+
+  const totalValue = add(positionsValue, balance);
+  const nativeCurrencyAccountValue = $(useCurrencyConversionStore, s => s.convertToNativeCurrency(totalValue));
+
+  return {
+    balance,
+    positionsValue,
+    hasBalance: !isZero(balance),
+    totalValueUsd: totalValue,
+    totalValueNative: nativeCurrencyAccountValue,
+  };
+});

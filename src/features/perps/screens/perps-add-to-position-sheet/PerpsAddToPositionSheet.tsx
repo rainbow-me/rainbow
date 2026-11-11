@@ -7,6 +7,7 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { analytics } from '@/analytics';
 import { AmountInputCard } from '@/components/amount-input-card/AmountInputCard';
+import { getInitialSliderAmount } from '@/components/amount-input-card/getInitialSliderAmount';
 import { PanelSheet } from '@/components/PanelSheet/PanelSheet';
 import { Box, Separator, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
@@ -20,8 +21,7 @@ import { type PerpMarket, type PerpsPosition } from '@/features/perps/types';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { buildLiquidationInfo } from '@/features/perps/utils/buildLiquidationInfo';
 import { buildOrderAmountValidation } from '@/features/perps/utils/buildOrderAmountValidation';
-import { divWorklet, greaterThanWorklet, mulWorklet, sumWorklet, toFixedWorklet } from '@/framework/core/safeMath';
-import { divide } from '@/helpers/utilities';
+import { divWorklet, mulWorklet, sumWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
@@ -70,11 +70,7 @@ const AddToPositionSheetContent = memo(function AddToPositionSheetContent({
 }) {
   const { accentColors } = usePerpsAccentColorContext();
   const availableBalance = useHyperliquidAccountStore(state => state.getBalance());
-  const [amountToAdd, setAmountToAdd] = useState(() => {
-    const halfBalance = divide(availableBalance, 2);
-    const initialAmount = greaterThanWorklet(availableBalance, '5') ? halfBalance : availableBalance;
-    return toFixedWorklet(initialAmount, 2);
-  });
+  const [amountToAdd, setAmountToAdd] = useState(() => getInitialSliderAmount(availableBalance));
 
   const leverageSharedValue = useDerivedValue(() => position.leverage);
 

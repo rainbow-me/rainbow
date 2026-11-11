@@ -15,7 +15,7 @@ import { getUniqueId } from '@/entities/assetId';
 import { abbreviateAddress, abbreviateName } from '@/features/address/core/formatAddress';
 import { useCurrencyConversionStore } from '@/features/currency/stores/currencyConversionStore';
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import useENSAvatar from '@/features/ens/hooks/useENSAvatar';
+import { useEnsImageStore } from '@/features/ens/data/stores/imageStore';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
@@ -284,7 +284,8 @@ function WalletChip({
   displayEns: string | undefined;
   profile: ReturnType<typeof useAccountProfileInfo>;
 }) {
-  const { data: ensAvatar } = useENSAvatar(ensName ?? '', { enabled: !accountImage && !!ensName });
+  const shouldLoadEnsAvatar = !accountImage && !!ensName;
+  const ensAvatar = useEnsImageStore(s => s.get(shouldLoadEnsAvatar ? { name: ensName, field: 'avatar' } : undefined));
 
   return (
     <Box
@@ -307,7 +308,7 @@ function WalletChip({
           emoji={accountSymbol || undefined}
           label={accountName ?? ''}
           size={18}
-          url={accountImage ?? ensAvatar?.imageUrl}
+          url={accountImage ?? ensAvatar}
         />
       </Box>
       <Text color="labelSecondary" size="13pt" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>

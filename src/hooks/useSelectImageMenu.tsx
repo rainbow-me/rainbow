@@ -64,7 +64,7 @@ export default function useSelectImageMenu({
   menuItems?: Action[];
   onChangeImage?: ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => void;
   onRemoveImage?: () => void;
-  onUploading?: ({ image }: { image: ImagePickerAsset }) => void;
+  onUploading?: (uploading: boolean) => void;
   onUploadSuccess?: ({ data, image }: { data: UploadImageReturnData; image: ImagePickerAsset }) => void;
   onUploadError?: ({ error, image }: { error: unknown; image: ImagePickerAsset }) => void;
   showRemove?: boolean;
@@ -74,9 +74,7 @@ export default function useSelectImageMenu({
   const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(['ensImageUpload'], uploadImage);
 
-  // If the image is removed while uploading, we don't want to
-  // call `onUploadSuccess` when the upload has finished.
-  const isRemoved = useRef<boolean>(false);
+  const uploadId = useRef(0);
 
   // When this hook is inside a nested navigator, the child
   // navigator will still think it is focused. Here, we are
@@ -109,7 +107,8 @@ export default function useSelectImageMenu({
     if (!image) return;
 
     if (uploadToIPFS) {
-      onUploading?.({ image });
+      const id = ++uploadId.current;
+      onUploading?.(true);
       try {
         const splitPath = image.uri.split('/');
         const filename = image.fileName || splitPath[splitPath.length - 1] || '';
@@ -118,40 +117,46 @@ export default function useSelectImageMenu({
           mime: image.mimeType || '',
           path: image.uri.replace('file://', ''),
         });
-        if (!isFocused.current || isRemoved.current) return;
+        if (!isFocused.current || id !== uploadId.current) return;
         onUploadSuccess?.({ data, image });
       } catch (err) {
-        if (!isFocused.current || isRemoved.current) return;
+        if (!isFocused.current || id !== uploadId.current) return;
         onUploadError?.({ error: err, image });
+      } finally {
+        if (id === uploadId.current) onUploading?.(false);
       }
     } else {
       onChangeImage?.({ image });
     }
-  }, [imagePickerOptions, isRemoved, onChangeImage, onUploadError, onUploadSuccess, onUploading, openPicker, upload, uploadToIPFS]);
+  }, [imagePickerOptions, onChangeImage, onUploadError, onUploadSuccess, onUploading, openPicker, upload, uploadToIPFS]);
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: asset => onChangeImage?.({ asset }),
+      onSelect: asset => {
+        uploadId.current++;
+        onUploading?.(false);
+        onChangeImage?.({ asset });
+      },
       springDamping: 1,
       topOffset: 0,
     });
-  }, [navigate, onChangeImage]);
+  }, [navigate, onChangeImage, onUploading]);
 
   const handleSelectAction = useCallback(
     (actionKey: string) => {
       if (actionKey === 'library') {
-        isRemoved.current = false;
         handleSelectImage();
       }
       if (actionKey === 'nft') {
         handleSelectNFT();
       }
       if (actionKey === 'remove') {
-        isRemoved.current = true;
+        uploadId.current++;
+        onUploading?.(false);
         onRemoveImage?.();
       }
     },
-    [handleSelectImage, handleSelectNFT, onRemoveImage]
+    [handleSelectImage, handleSelectNFT, onRemoveImage, onUploading]
   );
 
   const ContextMenu = useCallback(
