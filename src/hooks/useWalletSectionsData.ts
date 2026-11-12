@@ -19,6 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -65,13 +66,10 @@ export default function useWalletSectionsData({
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
-  const sortedAssets = useUserAssetsStore(state => state.listAssets);
+  const sortedAssets = useWalletAssetsStore(state => state.assets);
 
   const positionsData = usePositionsStore(state => state.getData());
-  const positions = useMemo(() => {
-    if (!positionsEnabled) return null;
-    return positionsData;
-  }, [positionsData, positionsEnabled]);
+  const positions = positionsEnabled ? positionsData : null;
 
   const claimablesData = useClaimablesStore(state => state.getData());
   const claimables = useMemo(() => {

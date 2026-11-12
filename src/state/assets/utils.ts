@@ -143,21 +143,18 @@ function isHigherValueAsset(asset: ParsedSearchAsset, selectedAsset: ParsedSearc
   return !selectedAsset || greaterThan(asset.native.balance.amount, selectedAsset.native.balance.amount);
 }
 
+/**
+ * Builds balance-sorted holdings and chain totals, preserving chains omitted from a partial update.
+ */
 export function setUserAssets({
-  address,
   state,
   userAssets,
-  positionTokenAddresses,
   chainIdsToUpdate,
 }: {
-  address: Address | string;
   state: UserAssetsState;
   userAssets: UserAsset[];
-  positionTokenAddresses: ReadonlySet<string>;
   chainIdsToUpdate?: ChainId[];
-}): UserAssetsState {
-  if (address !== state.address) return state;
-
+}): Pick<UserAssetsState, 'userAssets' | 'chainBalances'> {
   const allAssets: ParsedSearchAsset[] = [];
   if (chainIdsToUpdate) {
     const chains = new Set(chainIdsToUpdate);
@@ -172,29 +169,18 @@ export function setUserAssets({
   for (const asset of allAssets) parsedAssets.set(asset.uniqueId, asset);
 
   return {
-    ...state,
     userAssets: parsedAssets,
-    ...indexUserAssets(address, parsedAssets, state.hiddenAssets, positionTokenAddresses),
+    chainBalances: getChainBalances(parsedAssets),
   };
 }
 
-/** Builds list and balance indexes without discarding holdings represented by positions. */
-export function indexUserAssets(
-  address: UserAssetsState['address'],
-  userAssets: UserAssetsState['userAssets'],
-  hiddenAssets: UserAssetsState['hiddenAssets'],
-  positionTokenAddresses: ReadonlySet<string>
-): Pick<UserAssetsState, 'chainBalances' | 'hiddenAssetsBalance' | 'listAssets'> {
-  let listAssets = userAssets;
+/**
+ * Totals complete holdings by chain, ordered by balance and including empty supported chains.
+ */
+export function getChainBalances(userAssets: UserAssetsState['userAssets']): UserAssetsState['chainBalances'] {
   const chainBalances = new Map<ChainId, number>();
 
   for (const asset of userAssets.values()) {
-    if (positionTokenAddresses.has(asset.address.toLowerCase())) {
-      if (listAssets === userAssets) listAssets = new Map(userAssets);
-      listAssets.delete(asset.uniqueId);
-      continue;
-    }
-
     const balance = Number(asset.native.balance.amount) || 0;
     chainBalances.set(asset.chainId, (chainBalances.get(asset.chainId) ?? 0) + balance);
   }
@@ -203,11 +189,7 @@ export function indexUserAssets(
     if (!chainBalances.has(chainId)) chainBalances.set(chainId, 0);
   }
 
-  return {
-    chainBalances: new Map([...chainBalances].sort(([, a], [, b]) => b - a)),
-    hiddenAssetsBalance: calculateHiddenAssetsBalance({ address, hiddenAssets, listAssets }),
-    listAssets,
-  };
+  return new Map([...chainBalances].sort(([, a], [, b]) => b - a));
 }
 
 function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSearchAsset {
@@ -372,21 +354,22 @@ export function parsedSearchAssetToParsedAddressAsset(asset: ParsedSearchAsset):
   };
 }
 
-/** Publishes the hidden portion of the same balances used by the asset list. */
-export function calculateHiddenAssetsBalance({
+/**
+ * Updates the account's cached hidden balance from its complete holdings.
+ */
+export function updateHiddenAssetsBalance({
   address,
   hiddenAssets,
-  listAssets,
-}: Pick<UserAssetsState, 'address' | 'hiddenAssets' | 'listAssets'>): string {
+  userAssets,
+}: Pick<UserAssetsState, 'address' | 'hiddenAssets' | 'userAssets'>): void {
   let balance = '0';
   for (const id of hiddenAssets) {
-    const asset = listAssets.get(id);
+    const asset = userAssets.get(id);
     if (asset) balance = add(balance, asset.native.balance.amount);
   }
 
   const { hiddenAssetBalances, setHiddenAssetBalance } = userAssetsStoreManager.getState();
   if (balance !== hiddenAssetBalances[address]) setHiddenAssetBalance(address, balance);
-  return balance;
 }
 
 export function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {

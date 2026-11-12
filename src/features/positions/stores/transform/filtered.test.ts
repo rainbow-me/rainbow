@@ -126,7 +126,7 @@ describe('Position Filtering Integration', () => {
         store.queryCache[queryKey] = {
           data: transformedData,
           lastFetchedAt: Date.now(),
-          cacheTime: 0,
+          cacheTime: 60_000,
           errorInfo: null,
         };
         usePositionsStore.setState({ queryKey });
@@ -251,7 +251,7 @@ describe('Position Filtering Integration', () => {
         store.queryCache[queryKey] = {
           data: transformedData,
           lastFetchedAt: Date.now(),
-          cacheTime: 0,
+          cacheTime: 60_000,
           errorInfo: null,
         };
         usePositionsStore.setState({ queryKey });
@@ -400,7 +400,7 @@ describe('Position Filtering Integration', () => {
         store.queryCache[queryKey] = {
           data: transformedData,
           lastFetchedAt: Date.now(),
-          cacheTime: 0,
+          cacheTime: 60_000,
           errorInfo: null,
         };
         usePositionsStore.setState({ queryKey });
@@ -555,7 +555,7 @@ describe('Position Filtering Integration', () => {
         store.queryCache[queryKey] = {
           data: transformedData,
           lastFetchedAt: Date.now(),
-          cacheTime: 0,
+          cacheTime: 60_000,
           errorInfo: null,
         };
         usePositionsStore.setState({ queryKey });
@@ -748,7 +748,7 @@ describe('Position Filtering Integration', () => {
         store.queryCache[queryKey] = {
           data: transformedData,
           lastFetchedAt: Date.now(),
-          cacheTime: 0,
+          cacheTime: 60_000,
           errorInfo: null,
         };
         usePositionsStore.setState({ queryKey });
@@ -863,7 +863,7 @@ describe('Position Filtering Integration', () => {
       store.queryCache[queryKey] = {
         data: transformedData,
         lastFetchedAt: Date.now(),
-        cacheTime: 0,
+        cacheTime: 60_000,
         errorInfo: null,
       };
       usePositionsStore.setState({ queryKey });

@@ -6,6 +6,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { createMockPool, createMockPositionsData, createMockRainbowPosition } from '@/features/positions/__fixtures__/mocks/positions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -15,7 +16,6 @@ import { type UserAsset } from './types';
 import { userAssetsActions, useUserAssetsStore } from './userAssets';
 import { userAssetsSearchActions, useUserAssetSearchResults, useUserAssetsSearchStore } from './userAssetsSearch';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { setUserAssets } from './utils';
 
 const requests = vi.hoisted(() => ({
   assets: vi.fn<(path: string) => Promise<{ data: { result: Record<string, UserAsset> } }>>(async () => ({ data: { result: {} } })),
@@ -48,9 +48,7 @@ beforeEach(() => {
     enabled: false,
     hiddenAssets: new Set(),
     userAssets: new Map(),
-    listAssets: new Map(),
     chainBalances: new Map(),
-    hiddenAssetsBalance: null,
     queryCache: {},
     queryKey: '',
   });
@@ -62,34 +60,46 @@ afterEach(() => {
 });
 
 describe('user assets', () => {
-  it('uses canonical parsed holdings to exclude and restore a position token after a custom publication', async () => {
+  it('keeps position tokens spendable while excluding them from wallet rows and balance', async () => {
     requests.assets.mockResolvedValueOnce({ data: { result: { lp: asset(LP, '100'), token: asset(TOKEN, '20', ChainId.optimism) } } });
     const unsubscribe = useUserAssetsStore.subscribe(() => undefined);
     await userAssetsActions.fetch(undefined, { force: true });
     const source = useUserAssetsStore.getState().userAssets;
     const lp = source.get(LP_ID);
     expect(useUserAssetsStore.getState().getData()).toBeNull();
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(120);
-    expect(useUserAssetsStore.getState().listAssets).toBe(source);
+    expect(useWalletAssetsStore.getState().balance).toBe(120);
+    expect(useWalletAssetsStore.getState().assets).toBe(source);
 
     publishPositions(ACCOUNT_A, [LP]);
-    expect(Array.from(useUserAssetsStore.getState().listAssets.keys())).toEqual([TOKEN_ID]);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(20);
-    expect(useUserAssetsStore.getState().getHighestValueAsset()?.uniqueId).toBe(TOKEN_ID);
+    expect(Array.from(useWalletAssetsStore.getState().assets.keys())).toEqual([TOKEN_ID]);
+    expect(useWalletAssetsStore.getState().balance).toBe(20);
+    expect(useUserAssetsStore.getState().getHighestValueAsset()?.uniqueId).toBe(LP_ID);
+    expect(
+      useUserAssetsStore
+        .getState()
+        .getUserAssets()
+        .map(asset => asset.uniqueId)
+    ).toEqual([LP_ID, TOKEN_ID]);
     expect(useUserAssetsStore.getState().userAssets).toBe(source);
     expect(useUserAssetsStore.getState().getUserAsset(LP_ID)).toBe(lp);
     const unchanged = useUserAssetsStore.getState();
-    const reprocess = vi.spyOn(unchanged, 'reprocessAssetsData');
     publishPositions(ACCOUNT_A, [LP]);
     expect(useUserAssetsStore.getState()).toBe(unchanged);
-    expect(reprocess).not.toHaveBeenCalled();
-    reprocess.mockRestore();
 
     publishPositions(ACCOUNT_A, []);
-    expect(useUserAssetsStore.getState().listAssets.values().next().value).toBe(lp);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(120);
+    expect(useWalletAssetsStore.getState().assets.values().next().value).toBe(lp);
+    expect(useWalletAssetsStore.getState().balance).toBe(120);
     expect(requests.assets.mock.calls.filter(([path]) => path === '/assets/GetAssetUpdates')).toHaveLength(1);
     unsubscribe();
+  });
+
+  it('excludes a position token only on its own chain', () => {
+    publishAssets([asset(LP, '100'), asset(LP, '50', ChainId.optimism)]);
+    publishPositions(ACCOUNT_A, [LP]);
+
+    expect(Array.from(useWalletAssetsStore.getState().assets.keys())).toEqual([getUniqueId(LP, ChainId.optimism)]);
+    expect(useWalletAssetsStore.getState().balance).toBe(50);
+    expect(useUserAssetsStore.getState().userAssets.size).toBe(2);
   });
 
   it('keeps partial-chain updates in the canonical map while the position token is excluded', () => {
@@ -97,40 +107,46 @@ describe('user assets', () => {
     publishAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism)]);
     const untouched = useUserAssetsStore.getState().userAssets.get(TOKEN_ID);
     publishAssets([asset(LP, '150')], [ChainId.mainnet]);
-    expect(Array.from(useUserAssetsStore.getState().listAssets.keys())).toEqual([TOKEN_ID]);
+    expect(Array.from(useWalletAssetsStore.getState().assets.keys())).toEqual([TOKEN_ID]);
     expect(useUserAssetsStore.getState().userAssets.get(TOKEN_ID)).toBe(untouched);
 
     publishPositions(ACCOUNT_A, []);
-    expect(useUserAssetsStore.getState().listAssets.values().next().value?.native.balance.amount).toBe('150');
+    expect(useWalletAssetsStore.getState().assets.values().next().value?.native.balance.amount).toBe('150');
     publishAssets([], [ChainId.mainnet]);
     publishPositions(ACCOUNT_A, [LP]);
     publishPositions(ACCOUNT_A, []);
     expect(useUserAssetsStore.getState().userAssets.has(LP_ID)).toBe(false);
-    expect(useUserAssetsStore.getState().listAssets.get(TOKEN_ID)).toBe(untouched);
+    expect(useWalletAssetsStore.getState().assets.get(TOKEN_ID)).toBe(untouched);
   });
 
-  it('subtracts hidden assets once, using their admitted balance rather than uncapped price times quantity', () => {
+  it('subtracts hidden assets once, using their admitted balance rather than uncapped price times quantity', async () => {
     publishAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism)]);
     userAssetsActions.setHiddenAssets([LP_ID]);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(20);
+    expect(useWalletAssetsStore.getState().balance).toBe(20);
     expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
 
     publishPositions(ACCOUNT_A, [LP]);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('0');
+    expect(useWalletAssetsStore.getState().balance).toBe(20);
+    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
     publishPositions(ACCOUNT_A, []);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(20);
+    expect(useWalletAssetsStore.getState().balance).toBe(20);
     expect(
       useUserAssetsStore
         .getState()
         .getUserAssets()
         .map(value => value.uniqueId)
     ).toEqual([TOKEN_ID]);
+
+    requests.assets.mockResolvedValueOnce({ data: { result: { lp: asset(LP, '50'), token: asset(TOKEN, '20', ChainId.optimism) } } });
+    await userAssetsActions.fetch(undefined, { force: true });
+    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('50');
+    expect(useWalletAssetsStore.getState().balance).toBe(20);
   });
 
   it('derives search from current inputs without store writes and preserves results on unrelated status updates', () => {
     publishAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism), asset(SMALL, '0.001')]);
     const stop = useUserAssetSearchResults.subscribe(() => undefined);
+    const stopWalletAssets = useWalletAssetsStore.subscribe(() => undefined);
     expect(useUserAssetSearchResults.getState()).toEqual([LP_ID, TOKEN_ID]);
     const source = useUserAssetsStore.getState();
     const result = useUserAssetSearchResults.getState();
@@ -141,11 +157,13 @@ describe('user assets', () => {
 
     userAssetsActions.setHiddenAssets([LP_ID]);
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID]);
+    const walletAssets = useWalletAssetsStore.getState();
     const holdingsState = useUserAssetsStore.getState();
     const onHoldingsChange = vi.fn();
     const stopHoldings = useUserAssetsStore.subscribe(onHoldingsChange);
     userAssetsSearchActions.setSearchQuery('  token  ');
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID, SMALL_ID]);
+    expect(useWalletAssetsStore.getState()).toBe(walletAssets);
     expect(useUserAssetsStore.getState()).toBe(holdingsState);
     expect(onHoldingsChange).not.toHaveBeenCalled();
     const queryState = useUserAssetsSearchStore.getState();
@@ -163,43 +181,38 @@ describe('user assets', () => {
     publishPositions(ACCOUNT_A, [SMALL]);
     expect(useUserAssetSearchResults.getState()).toBe(results);
     expect(useUserAssetSearchResults.getState()).toEqual([SMALL_ID]);
+    expect(useWalletAssetsStore.getState().assets.has(SMALL_ID)).toBe(false);
     userAssetsSearchActions.reset();
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID]);
     expect(userAssetsSearchActions.getChainIdFilter()).toBeUndefined();
     expect(userAssetsSearchActions.getSearchQuery()).toBe('');
+    stopWalletAssets();
     stop();
   });
 
-  it('keeps explicit-address construction and A → B → A routing independent of the positions subscription', () => {
+  it('keeps complete holdings for explicit accounts and derives the selected account’s wallet view', () => {
     const stop = useUserAssetsStore.subscribe(() => undefined);
     userAssetsSearchActions.setSearchQuery('token');
     publishAssets([asset(LP, '100')]);
     publishPositions(ACCOUNT_B, [LP]);
     const active = useUserAssetsStore.getState();
     const other = createUserAssetsStore(ACCOUNT_B);
-    other.setState(state =>
-      setUserAssets({
-        address: ACCOUNT_B,
-        state,
-        userAssets: [asset(LP, '200')],
-        positionTokenAddresses: usePositionsStore.getState().getTokenAddresses(ACCOUNT_B),
-      })
-    );
-    expect(other.getState().listAssets.size).toBe(0);
+    other.getState().updateAssets([asset(LP, '200')]);
+    expect(other.getState().userAssets.size).toBe(1);
     expect(useUserAssetsStore.getState()).toBe(active);
 
     publishPositions(ACCOUNT_A, [LP]);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
     useWalletsStore.setState({ accountAddress: ACCOUNT_B });
     expect(userAssetsSearchActions.getSearchQuery()).toBe('token');
     publishAssets([asset(LP, '200')]);
     publishPositions(ACCOUNT_B, []);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(200);
+    expect(useWalletAssetsStore.getState().balance).toBe(200);
     useWalletsStore.setState({ accountAddress: ACCOUNT_A });
     publishAssets([asset(LP, '100')]);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
     publishPositions(ACCOUNT_A, []);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(100);
+    expect(useWalletAssetsStore.getState().balance).toBe(100);
     stop();
   });
 
@@ -207,28 +220,36 @@ describe('user assets', () => {
     const stop = useUserAssetsStore.subscribe(() => undefined);
     publishAssets([asset(LP, '100')]);
     publishPositions(ACCOUNT_A, [LP]);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
 
     useWalletsStore.setState({ accountAddress: ACCOUNT_B });
     publishAssets([asset(LP, '200')]);
     publishPositions(ACCOUNT_B, [LP]);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
     expect(useUserAssetsStore.getState().userAssets.get(LP_ID)?.native.balance.amount).toBe('200');
     stop();
   });
 
-  it('keeps retained same-account positions excluded while the new currency is loading', () => {
+  it('uses only the selected account and currency’s positions', () => {
     publishPositions(ACCOUNT_A, [LP]);
     publishAssets([asset(LP, '100')]);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
 
+    useWalletsStore.setState({ accountAddress: ACCOUNT_B });
+    publishAssets([asset(LP, '200')]);
+    expect(usePositionsStore.getState().getData()).toBeNull();
+    expect(useWalletAssetsStore.getState().balance).toBe(200);
+
+    publishPositions(ACCOUNT_B, [LP]);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
     userAssetsStoreManager.setState({ currency: 'EUR' });
     publishAssets([asset(LP, '90')]);
-    expect(usePositionsStore.getState().getData()?.positions.pool.pools[0].poolAddress).toBe(LP);
-    expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
+    expect(usePositionsStore.getState().getData()).toBeNull();
+    expect(useWalletAssetsStore.getState().balance).toBe(90);
 
-    publishPositions(ACCOUNT_A, []);
-    expect(useUserAssetsStore.getState().getTotalBalance()).toBe(90);
+    publishPositions(ACCOUNT_B, [LP]);
+    expect(useWalletAssetsStore.getState().assets.size).toBe(0);
+    expect(useWalletAssetsStore.getState().balance).toBe(0);
   });
 
   it('reuses cached search arrays when deleting characters and invalidates them when holdings change', () => {
@@ -277,8 +298,8 @@ describe('user assets', () => {
     expect(hydrated.version).toBe(2);
     expect(hydrated.state.userAssets?.size).toBe(2);
     expect(hydrated.state).not.toHaveProperty('filter');
-    expect(Array.from(hydrated.state.listAssets?.keys() ?? [])).toEqual([TOKEN_ID]);
-    expect(hydrated.state.hiddenAssetsBalance).toBe('20');
+    expect(Array.from(hydrated.state.userAssets?.keys() ?? [])).toEqual([LP_ID, TOKEN_ID]);
+    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('20');
 
     const previousFormat = JSON.stringify({
       state: {
@@ -311,8 +332,13 @@ describe('user assets', () => {
     rainbowStorage.set(key, previousFormat);
     const accountStore = createUserAssetsStore(ACCOUNT_B);
     expect(accountStore.getState().userAssets.size).toBe(2);
-    expect(Array.from(accountStore.getState().listAssets.keys())).toEqual([TOKEN_ID]);
-    expect(accountStore.getState().getTotalBalance()).toBe(0);
+    expect(Array.from(accountStore.getState().userAssets.keys())).toEqual([LP_ID, TOKEN_ID]);
+    expect(
+      accountStore
+        .getState()
+        .getUserAssets()
+        .map(asset => asset.uniqueId)
+    ).toEqual([LP_ID]);
     accountStore.getState().setHiddenAssets([TOKEN_ID]);
     vi.advanceTimersByTime(5000);
     const persisted = rainbowStorage.get(key);
@@ -329,15 +355,7 @@ describe('user assets', () => {
 });
 
 function publishAssets(assets: UserAsset[], chains?: ChainId[]): void {
-  useUserAssetsStore.setState(state =>
-    setUserAssets({
-      address: state.address,
-      state,
-      userAssets: assets,
-      positionTokenAddresses: usePositionsStore.getState().getTokenAddresses(state.address),
-      chainIdsToUpdate: chains,
-    })
-  );
+  userAssetsActions.updateAssets(assets, chains);
 }
 
 function publishPositions(address: string, poolAddresses: string[]): void {

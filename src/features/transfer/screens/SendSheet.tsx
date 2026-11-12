@@ -131,7 +131,7 @@ const hasSufficientAssetBalance = (assetAmount: string, maxSendableBalance: stri
 
 export function SendSheet() {
   const { navigate } = useNavigation();
-  const sortedAssets = useUserAssetsStore(state => state.listAssets);
+  const sortedAssets = useUserAssetsStore(state => state.userAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const {
     gasFeeParamsBySpeed,
