@@ -25,13 +25,13 @@ export type HighestValueAssetOptions = {
 };
 
 export type UserAssetsParams = {
-  address: Address | string;
+  address: Address;
   currency: SupportedCurrencyKey;
   testnetMode: boolean;
 };
 
 export interface UserAssetsState {
-  address: Address | string;
+  address: Address;
   chainBalances: Map<ChainId, number>;
   filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;

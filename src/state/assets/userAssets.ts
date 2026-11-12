@@ -15,8 +15,8 @@ export const useUserAssetsStore = createVirtualStore(
     return createUserAssetsStore(address);
   },
   getStore => ({
-    getState: (address?: Address | string) => getStoreForAddress(getStore, address).getState(),
-    setState: (...args: SetStateArgs<QueryEnabledUserAssetsState, [address?: Address | string]>) => {
+    getState: (address?: Address) => getStoreForAddress(getStore, address).getState(),
+    setState: (...args: SetStateArgs<QueryEnabledUserAssetsState, [address?: Address]>) => {
       const [update, replace, address] = args;
       const store = getStoreForAddress(getStore, address);
       return replace ? store.setState(update, replace) : store.setState(update);
@@ -59,7 +59,7 @@ export const useUserAssetSearchResults = createDerivedStore($ => {
   return search(filter, query);
 });
 
-function getStoreForAddress(getStore: () => ReturnType<typeof createUserAssetsStore>, address?: Address | string) {
+function getStoreForAddress(getStore: () => ReturnType<typeof createUserAssetsStore>, address?: Address) {
   const store = getStore();
   if (!address || store.getState().address === address) return store;
   return createUserAssetsStore(address);

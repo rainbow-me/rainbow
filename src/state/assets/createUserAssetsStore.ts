@@ -25,7 +25,7 @@ import {
 } from './utils';
 
 /** Creates the account-bound holdings store and its list/balance indexes. */
-export const createUserAssetsStore = (address: Address | string): UserAssetsStoreType => {
+export const createUserAssetsStore = (address: Address): UserAssetsStoreType => {
   return createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
