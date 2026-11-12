@@ -41,7 +41,7 @@ export async function unstakeRnbw({
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   preparedCalls: Promise<PreparedUnstakeRnbw | null>;
 }): Promise<UnstakeRnbwResult> {
-  const { positionData, exitFeePercentage } = await refreshAndValidatePosition();
+  const { positionData, exitFeePercentage } = await refreshAndValidateUnstakeInputs();
   const { receiveRaw, ...analyticsSnapshot } = snapshotUnstakeAnalytics(positionData, exitFeePercentage);
 
   let executionMode: RnbwStakingExecutionMode | undefined;
@@ -81,7 +81,7 @@ export async function unstakeRnbw({
   }
 }
 
-async function refreshAndValidatePosition(): Promise<{ positionData: StakingPositionData; exitFeePercentage: number }> {
+async function refreshAndValidateUnstakeInputs(): Promise<{ positionData: StakingPositionData; exitFeePercentage: number }> {
   const initialExitFeePercentage = useStakingExitFeeStore.getState().getData();
   await Promise.all([
     useStakingPositionStore.getState().fetch(undefined, { force: true }),
