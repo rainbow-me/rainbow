@@ -14,7 +14,7 @@ function setStoreData(data: RainbowPositions): void {
   store.queryCache[store.queryKey] = {
     data,
     lastFetchedAt: Date.now(),
-    cacheTime: 0,
+    cacheTime: 60_000,
     errorInfo: null,
   };
 }

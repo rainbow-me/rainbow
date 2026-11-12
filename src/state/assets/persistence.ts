@@ -1,13 +1,12 @@
 import { type StorageValue } from '@storesjs/stores';
 
 import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { logger, RainbowError } from '@/logger';
 
 import { type QueryEnabledUserAssetsState, type UserAssetsState } from './types';
-import { indexUserAssets } from './utils';
+import { getChainBalances, updateHiddenAssetsBalance } from './utils';
 
-/** Persisted holdings and preferences; list and balance indexes are rebuilt on hydration. */
+/** Persisted holdings and preferences; chain balances are rebuilt on hydration. */
 export type UserAssetsStateToPersist = Pick<Partial<UserAssetsState>, 'hiddenAssets' | 'userAssets'>;
 
 type PersistedUserAssetsState = Pick<
@@ -35,7 +34,9 @@ export function serializeUserAssetsState({ state, version }: StorageValue<UserAs
   }
 }
 
-/** Restores holdings and derives indexes from this account's current positions. */
+/**
+ * Restores complete holdings, preferences, and fetch metadata for the requested account.
+ */
 export function deserializeUserAssetsState(
   serializedState: unknown,
   address: UserAssetsState['address']
@@ -63,6 +64,8 @@ export function deserializeUserAssetsState(
     logger.error(new RainbowError('[userAssetsStore]: Failed to restore hidden assets'), { error });
   }
 
+  updateHiddenAssetsBalance({ address, userAssets, hiddenAssets });
+
   return {
     state: {
       hiddenAssets,
@@ -72,7 +75,7 @@ export function deserializeUserAssetsState(
       queryCache: state.queryCache ?? {},
       queryKey: state.queryKey ?? '',
       status: state.status ?? 'idle',
-      ...indexUserAssets(address, userAssets, hiddenAssets, usePositionsStore.getState().getTokenAddresses(address)),
+      chainBalances: getChainBalances(userAssets),
     },
     version,
   };

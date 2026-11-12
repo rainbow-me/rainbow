@@ -1,4 +1,4 @@
-import { createQueryStore, parseQueryKey } from '@storesjs/stores';
+import { createQueryStore } from '@storesjs/stores';
 import { throttle } from 'lodash';
 
 import { analytics } from '@/analytics';
@@ -16,7 +16,6 @@ import { transformPositions } from './transform';
 // ============ Core Types ===================================================== //
 
 type PositionsState = {
-  getTokenAddresses: (address: PositionsParams['address']) => Set<string>;
   getBalance: () => string;
 };
 
@@ -46,11 +45,10 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     fetcher: fetchPositions,
     transform: transformPositions,
     params: {
-      address: $ => $(useWalletsStore).accountAddress,
-      currency: $ => $(userAssetsStoreManager).currency,
+      address: $ => $(useWalletsStore, s => s.accountAddress),
+      currency: $ => $(userAssetsStoreManager, s => s.currency),
       chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
-    keepPreviousData: true,
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
     enabled: $ => $(useWalletsStore, state => !!state.accountAddress),
@@ -78,31 +76,6 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     },
   },
   (_, get) => ({
-    /** Returns pool tokens represented by positions for the requested account. */
-    getTokenAddresses: address => {
-      const addresses = new Set<string>();
-      const state = get();
-      const currentAddress = state.queryKey ? parseQueryKey<PositionsParams>(state.queryKey).address : undefined;
-      const data =
-        currentAddress === address
-          ? state.getData()
-          : state.getData({
-              address,
-              currency: userAssetsStoreManager.getState().currency,
-              chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
-            });
-      const positions = data?.positions;
-      if (!positions) return addresses;
-
-      for (const position of Object.values(positions)) {
-        for (const category of [position.deposits, position.pools, position.stakes, position.borrows, position.rewards]) {
-          for (const { poolAddress } of category) {
-            if (poolAddress) addresses.add(poolAddress.toLowerCase());
-          }
-        }
-      }
-      return addresses;
-    },
     /**
      * Used to calculate the live wallet balance
      */

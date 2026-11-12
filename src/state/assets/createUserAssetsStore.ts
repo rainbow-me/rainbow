@@ -6,7 +6,6 @@ import { getUniqueId } from '@/entities/assetId';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { type LiveTokensData } from '@/state/liveTokens/types';
@@ -16,25 +15,29 @@ import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsSt
 import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
-  calculateHiddenAssetsBalance,
   fetchUserAssets,
-  indexUserAssets,
   parsedSearchAssetToParsedAddressAsset,
   selectHighestValueAsset,
   setUserAssets,
+  updateHiddenAssetsBalance,
 } from './utils';
 
-/** Creates the account-bound holdings store and its list/balance indexes. */
 export const createUserAssetsStore = (address: Address): UserAssetsStoreType => {
-  return createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
+  const store: UserAssetsStoreType = createQueryStore<
+    FetchedUserAssetsData,
+    UserAssetsParams,
+    UserAssetsState,
+    FetchedUserAssetsData,
+    UserAssetsStateToPersist
+  >(
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
         const userAssets = data?.userAssets;
         if (!userAssets) return;
-        const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses(address);
-        set(state => setUserAssets({ address, state, userAssets, positionTokenAddresses }));
+        set(state => setUserAssets({ state, userAssets }));
       },
+      onFetched: () => updateHiddenAssetsBalance(store.getState()),
       enabled: address.length > 0,
       keepPreviousData: true,
       params: {
@@ -49,8 +52,6 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
       address,
       chainBalances: new Map(),
       hiddenAssets: new Set<UniqueId>(),
-      hiddenAssetsBalance: null,
-      listAssets: new Map(),
       userAssets: new Map(),
 
       getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
@@ -63,7 +64,7 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
         return chains;
       },
 
-      getHighestValueAsset: options => selectHighestValueAsset(get().listAssets.values(), get().hiddenAssets, options),
+      getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), get().hiddenAssets, options),
 
       getNativeAssetForChain: (chainId: ChainId) => {
         const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
@@ -81,24 +82,14 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
       },
 
       getUserAssets: () => {
-        const { listAssets, hiddenAssets } = get();
-        return Array.from(listAssets.values()).filter(asset => !hiddenAssets.has(asset.uniqueId));
+        const { userAssets, hiddenAssets } = get();
+        return Array.from(userAssets.values()).filter(asset => !hiddenAssets.has(asset.uniqueId));
       },
 
       isHidden: uniqueId => get().hiddenAssets.has(uniqueId),
       isInitialLoad: () => !get().userAssets.size && get().getStatus('isInitialLoad'),
 
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
-
-      getTotalBalance: () => {
-        const chainBalances = get().chainBalances;
-        if (!chainBalances.size) return 0;
-        let total = 0;
-        for (const balance of chainBalances.values()) {
-          total += balance;
-        }
-        return total - Number(get().hiddenAssetsBalance ?? 0);
-      },
 
       setHiddenAssets: (uniqueIds: UniqueId[]) => {
         set(state => {
@@ -111,14 +102,14 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
             }
           });
 
-          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
-            address,
-            hiddenAssets,
-            listAssets: state.listAssets,
-          });
-
-          return { hiddenAssets, hiddenAssetsBalance };
+          return { hiddenAssets };
         });
+        updateHiddenAssetsBalance(get());
+      },
+
+      updateAssets: (userAssets, chainIdsToUpdate) => {
+        set(state => setUserAssets({ state, userAssets, chainIdsToUpdate }));
+        updateHiddenAssetsBalance(get());
       },
 
       updateTokens: (tokens: LiveTokensData) => {
@@ -149,17 +140,6 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
           return state;
         });
       },
-
-      reprocessAssetsData: positions => {
-        set(state => {
-          const indexes = indexUserAssets(address, state.userAssets, state.hiddenAssets, positions);
-          if (state.listAssets.size !== indexes.listAssets.size) return indexes;
-          for (const [id, asset] of indexes.listAssets) {
-            if (state.listAssets.get(id) !== asset) return indexes;
-          }
-          return state;
-        });
-      },
     }),
 
     address.length
@@ -176,4 +156,6 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
         }
       : undefined
   );
+
+  return store;
 };

@@ -34,10 +34,7 @@ export interface UserAssetsState {
   address: Address;
   chainBalances: Map<ChainId, number>;
   hiddenAssets: Set<UniqueId>;
-  hiddenAssetsBalance: string | null;
-  /** Balance-ordered references to assets not represented by positions, including hidden assets. */
-  listAssets: Map<UniqueId, ParsedSearchAsset>;
-  /** Complete parsed holdings, including tokens represented by positions. */
+  /** Complete holdings in balance order, including tokens represented by positions. */
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
@@ -45,14 +42,14 @@ export interface UserAssetsState {
   getHighestValueAsset: (options?: Prettify<HighestValueAssetOptions>) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
-  getTotalBalance: () => number;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   isHidden: (uniqueId: UniqueId) => boolean;
   isInitialLoad: () => boolean;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
   updateTokens: (tokens: LiveTokensData) => void;
-  reprocessAssetsData: (positionTokenAddresses: ReadonlySet<string>) => void;
+  /** Replaces holdings on the specified chains, or all holdings when chains are omitted. */
+  updateAssets: (userAssets: UserAsset[], chainIdsToUpdate?: ChainId[]) => void;
 }
 
 export type Asset = {

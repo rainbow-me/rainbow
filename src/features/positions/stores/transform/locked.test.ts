@@ -580,7 +580,7 @@ describe('Locked Position Calculations', () => {
       store.queryCache[queryKey] = {
         data: result,
         lastFetchedAt: Date.now(),
-        cacheTime: 0,
+        cacheTime: 60_000,
         errorInfo: null,
       };
       usePositionsStore.setState({ queryKey });
@@ -683,7 +683,7 @@ describe('Locked Position Calculations', () => {
       store.queryCache[queryKey] = {
         data: result,
         lastFetchedAt: Date.now(),
-        cacheTime: 0,
+        cacheTime: 60_000,
         errorInfo: null,
       };
       usePositionsStore.setState({ queryKey });
