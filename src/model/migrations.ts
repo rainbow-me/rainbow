@@ -43,7 +43,7 @@ import { favoritesQueryKey } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { getSelectedWallet, getWalletAddresses, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import profileUtils from '@/utils/profileUtils';
 
@@ -677,24 +677,22 @@ export default async function runMigrations() {
     const wallets = getWallets();
     if (!wallets) return;
 
-    for (const wallet of Object.values(wallets)) {
-      for (const { address } of (wallet as RainbowWallet).addresses || []) {
-        const hiddenCoins = JSON.parse(mmkv.getString('hidden-coins-obj-' + address) ?? '{}');
-        if (isEmpty(hiddenCoins)) continue;
+    for (const address of getWalletAddresses(wallets)) {
+      const hiddenCoins = JSON.parse(mmkv.getString('hidden-coins-obj-' + address) ?? '{}');
+      if (isEmpty(hiddenCoins)) continue;
 
-        const hiddenAssets = Object.keys(hiddenCoins).reduce<UniqueId[]>((acc: UniqueId[], key) => {
-          // we need to run it through this funciton because users could have legacy coins when we had network-based uniqueId
-          const { address, chainId } = getAddressAndChainIdFromUniqueId(key);
-          const uniqueId = getUniqueId(address, chainId);
-          acc.push(uniqueId);
-          return acc;
-        }, []);
+      const hiddenAssets = Object.keys(hiddenCoins).reduce<UniqueId[]>((acc: UniqueId[], key) => {
+        // we need to run it through this funciton because users could have legacy coins when we had network-based uniqueId
+        const { address, chainId } = getAddressAndChainIdFromUniqueId(key);
+        const uniqueId = getUniqueId(address, chainId);
+        acc.push(uniqueId);
+        return acc;
+      }, []);
 
-        useUserAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
+      useUserAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
 
-        // remove the old hidden coins obj storage
-        mmkv.remove('hidden-coins-obj-' + address);
-      }
+      // remove the old hidden coins obj storage
+      mmkv.remove('hidden-coins-obj-' + address);
     }
   };
 

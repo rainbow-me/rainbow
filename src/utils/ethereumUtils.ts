@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
 import { cloneDeep, isEmpty, isString } from 'lodash';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import { isAddress } from 'viem';
 
 import { type AddressOrEth } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
@@ -184,6 +185,7 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
  * @param address - Optional wallet address (defaults to global selected wallet)
  */
 const getAccountAsset = (uniqueId: EthereumAddress, address?: EthereumAddress): ParsedAddressAsset | undefined => {
+  if (address !== undefined && !isAddress(address, { strict: false })) return undefined;
   const loweredUniqueId = uniqueId.toLowerCase();
   return useUserAssetsStore.getState(address).getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
