@@ -7,7 +7,7 @@ import type { RainbowToken } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { containsEmoji } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme } from '@/theme/ThemeContext';
 import ethereumUtils from '@/utils/ethereumUtils';
 
@@ -55,7 +55,7 @@ function SwapActionButton({
     const chainsName = useBackendNetworksStore.getState().getChainsName();
     const chainId = asset.chainId || chainsIdByName[asset.network];
     const uniqueId = `${asset.address}_${chainId}`;
-    const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+    const userAsset = useUserAssetsStore.getState().userAssets.get(uniqueId);
 
     const parsedAsset = parseSearchAsset({
       assetWithPrice: {
@@ -91,7 +91,7 @@ function SwapActionButton({
 
       const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-        const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
+        const userOutputAsset = useUserAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
         if (userOutputAsset) {
           params.outputAsset = userOutputAsset;
@@ -128,7 +128,7 @@ function SwapActionButton({
         }
       }
     } else {
-      const largestBalanceSameChainUserAsset = userAssetsStore
+      const largestBalanceSameChainUserAsset = useUserAssetsStore
         .getState()
         .getUserAssets()
         .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);

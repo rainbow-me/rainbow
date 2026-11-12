@@ -13,7 +13,7 @@ import { logger, RainbowError } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { useAssetUpdatesStore, type AssetUpdateTransaction, type WatchedAssetUpdateTransaction } from '@/state/assetUpdates/assetUpdates';
@@ -177,7 +177,7 @@ export async function watchAssetUpdates({
     }
 
     await Promise.all([
-      ...(timedOutHashes.length ? [userAssetsStore.getState(address).fetch(undefined, { force: true })] : []),
+      ...(timedOutHashes.length ? [useUserAssetsStore.getState(address).fetch(undefined, { force: true })] : []),
       refetchOtherAssets({ address }),
     ]);
   } catch (e) {
@@ -206,7 +206,7 @@ function updateUserAssets({
   const userAssets = filterZeroBalanceAssets(Object.values(newAssets));
   const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses(address);
 
-  userAssetsStore.setState(state =>
+  useUserAssetsStore.setState(state =>
     setUserAssets({
       address,
       state,

@@ -19,7 +19,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
@@ -69,7 +69,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         setSelectedOutputChainId(chainId);
       } else {
         inputListFilter.value = chainId;
-        userAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
+        useUserAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
       }
 
       analytics.track(analytics.event.swapsChangedChainId, {

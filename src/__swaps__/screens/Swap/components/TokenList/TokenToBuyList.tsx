@@ -22,7 +22,7 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { equalWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
@@ -153,7 +153,7 @@ export const TokenToBuyList = () => {
         }
       })();
 
-      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
+      const userAsset = useUserAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,

@@ -14,7 +14,7 @@ import { getGasSettingsBySpeed, useGasSettings } from '@/features/gas/hooks/useS
 import { GasSpeed } from '@/features/gas/types/gasSpeed';
 import { calculateMaxGasFeeWorklet } from '@/features/gas/utils/calculateGasFee';
 import { buildGasParams, weiToGwei } from '@/features/gas/utils/parseGas';
-import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { lessThanOrEqualToWorklet } from '@/framework/core/safeMath';
@@ -33,7 +33,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { ClaimableType, type Claimable, type TransactionClaimable } from '@/resources/addys/claimables/types';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { getNextNonce } from '@/state/nonces';
@@ -241,8 +241,8 @@ export function TransactionClaimableContextProvider({
 
       const gasFeeWei = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
 
-      const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[claimable.chainId];
-      const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(claimable.chainId);
+      const nativeAsset = backendNetworksActions.getChainsNativeAsset()[claimable.chainId];
+      const userNativeAsset = userAssetsActions.getNativeAssetForChain(claimable.chainId);
 
       const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
       const userBalance = userNativeAsset?.balance?.amount || '0';

@@ -21,7 +21,7 @@ import { Box } from '@/design-system';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -101,7 +101,7 @@ const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
       const preferredChainId = useSwapsStore.getState().preferredNetwork;
-      const defaultInputAsset = userAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
+      const defaultInputAsset = useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
         const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
@@ -117,7 +117,7 @@ const useCleanupOnUnmount = () => {
       });
 
       useSwapsSearchStore.setState(state => (state.searchQuery.length ? { searchQuery: '' } : state));
-      userAssetsStore.setState(state =>
+      useUserAssetsStore.setState(state =>
         state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
       );
       useSponsoredSwapStore.setState({ queryCache: {} });
@@ -133,10 +133,10 @@ const WalletAddressObserver = () => {
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueAsset } = userAssetsStore.getState();
+    const { filter, getHighestValueAsset } = useUserAssetsStore.getState();
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
-    if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
+    if (filter !== 'all') useUserAssetsStore.setState({ filter: 'all' });
 
     setAsset({
       asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
