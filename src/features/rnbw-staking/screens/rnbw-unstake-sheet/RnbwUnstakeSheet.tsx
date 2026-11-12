@@ -32,7 +32,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { STAKING_CHAIN_ID } from '../../constants';
 import { useRnbwStakingBalance } from '../../stores/derived/useRnbwStakingBalance';
 import { useRnbwStakingPositionPnl } from '../../stores/derived/useRnbwStakingPositionPnl';
-import { useStakingPositionStore } from '../../stores/rnbwStakingPositionStore';
+import { useStakingExitFeeStore } from '../../stores/rnbwStakingExitFeeStore';
 import { prepareUnstakeRnbw, type PreparedUnstakeRnbw, type UnstakeRnbwPreparationParams } from '../../utils/prepareUnstakeRnbw';
 import { unstakeRnbw } from '../../utils/unstakeRnbw';
 
@@ -47,8 +47,8 @@ const LAYOUT_ANIMATION = LinearTransition.springify()
 export const RnbwUnstakeSheet = memo(function RnbwUnstakeSheet() {
   const labelSecondaryColor = useForegroundColor('labelSecondary');
   const [step, setStep] = useState<'warning' | 'unstake'>('warning');
-  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
-  const showSkeleton = exitFeePercentage === undefined;
+  const exitFeePercentage = useStakingExitFeeStore(s => s.getData());
+  const showSkeleton = exitFeePercentage == null;
   const unstakePreparationStore = useStableValue(() => createPreparedCallsStore(prepareUnstakeRnbw));
 
   useCleanup(() => {

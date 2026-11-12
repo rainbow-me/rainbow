@@ -12,7 +12,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { ProgressMeter } from '@/features/rnbw-membership/components/ProgressMeter';
 import { RnbwButton } from '@/features/rnbw-membership/components/RnbwButton/RnbwButton';
 import { UnstakePenaltySign } from '@/features/rnbw-staking/components/UnstakePenaltySign';
-import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
+import { useStakingExitFeeStore } from '@/features/rnbw-staking/stores/rnbwStakingExitFeeStore';
 import { LoadingSpinner } from '@/framework/ui/components/LoadingSpinner';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -25,7 +25,7 @@ const PROGRESS_LABEL_HEIGHT = 24;
 const ARROW_SIZE = 7;
 
 export const RnbwStakingLearnScreen = memo(function RnbwStakingLearnScreen() {
-  const exitFeePercentage = useStakingPositionStore(s => s.getExitFeePercentage());
+  const exitFeePercentage = useStakingExitFeeStore(s => s.getData());
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
   const labelSecondaryColor = useForegroundColor('labelSecondary');
   const { isDarkMode } = useColorMode();
