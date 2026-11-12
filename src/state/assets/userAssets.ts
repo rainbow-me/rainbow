@@ -1,4 +1,4 @@
-import { createDerivedStore, createStoreActions, createVirtualStore, type SetStateArgs } from '@storesjs/stores';
+import { createStoreActions, createVirtualStore, type SetStateArgs } from '@storesjs/stores';
 import type { Address } from 'viem';
 
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
@@ -6,8 +6,6 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { createUserAssetsStore } from './createUserAssetsStore';
 import type { QueryEnabledUserAssetsState } from './types';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { createUserAssetSearch } from './utils';
 
 export const useUserAssetsStore = createVirtualStore(
   $ => {
@@ -42,22 +40,6 @@ usePositionsStore.subscribe(
     },
   }
 );
-
-const useUserAssetSearch = createDerivedStore($ =>
-  createUserAssetSearch({
-    listAssets: $(useUserAssetsStore, state => state.listAssets),
-    hiddenAssets: $(useUserAssetsStore, state => state.hiddenAssets),
-    currency: $(userAssetsStoreManager, state => state.currency),
-  })
-);
-
-/** The active account's cached search result for its current query and chain filter. */
-export const useUserAssetSearchResults = createDerivedStore($ => {
-  const search = $(useUserAssetSearch);
-  const filter = $(useUserAssetsStore, state => state.filter);
-  const query = $(useUserAssetsStore, state => state.inputSearchQuery);
-  return search(filter, query);
-});
 
 function getStoreForAddress(getStore: () => ReturnType<typeof createUserAssetsStore>, address?: Address) {
   const store = getStore();

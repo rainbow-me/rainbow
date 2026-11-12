@@ -22,6 +22,7 @@ import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsSearchActions } from '@/state/assets/userAssetsSearch';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -117,9 +118,7 @@ const useCleanupOnUnmount = () => {
       });
 
       useSwapsSearchStore.setState(state => (state.searchQuery.length ? { searchQuery: '' } : state));
-      useUserAssetsStore.setState(state =>
-        state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
-      );
+      userAssetsSearchActions.reset();
       useSponsoredSwapStore.setState({ queryCache: {} });
 
       clearCustomGasSettings();
@@ -133,13 +132,12 @@ const WalletAddressObserver = () => {
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueAsset } = useUserAssetsStore.getState();
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
-    if (filter !== 'all') useUserAssetsStore.setState({ filter: 'all' });
+    userAssetsSearchActions.setChainIdFilter(undefined);
 
     setAsset({
-      asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
+      asset: useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });

@@ -8,7 +8,7 @@ import { SearchInput as BaseSearchInput } from '@/components/token-search/Search
 import { getTokenSearchButtonWrapperStyle } from '@/components/token-search/styles';
 import { useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsSearchActions } from '@/state/assets/userAssetsSearch';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 import { NavigationSteps } from '../../constants';
@@ -19,8 +19,6 @@ export const SearchInput = ({ inputProgress }: { inputProgress: SharedValue<numb
   const searchInputRef = useAnimatedRef<TextInput>();
   const { minifiedAsset, useDepositStore } = useDepositContext();
   const isAssetSelected = useStoreSharedValue(useDepositStore, state => !!state.asset);
-
-  const onSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
 
   const onSearchFocusWorklet = useCallback(() => {
     'worklet';
@@ -53,7 +51,7 @@ export const SearchInput = ({ inputProgress }: { inputProgress: SharedValue<numb
     <BaseSearchInput
       onCancelOrClosePressWorklet={onCancelOrClosePressWorklet}
       onSearchFocusWorklet={onSearchFocusWorklet}
-      onSearchQueryChange={onSearchQueryChange}
+      onSearchQueryChange={userAssetsSearchActions.setSearchQuery}
       placeholder={i18n.t(i18n.l.swap.search_your_tokens)}
       enablePaste={false}
       showButtonWhenNoAsset={false}

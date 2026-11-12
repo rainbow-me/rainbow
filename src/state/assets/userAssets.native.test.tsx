@@ -12,7 +12,8 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
 import { type UserAsset } from './types';
-import { userAssetsActions, useUserAssetSearchResults, useUserAssetsStore } from './userAssets';
+import { userAssetsActions, useUserAssetsStore } from './userAssets';
+import { userAssetsSearchActions, useUserAssetSearchResults, useUserAssetsSearchStore } from './userAssetsSearch';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import { setUserAssets } from './utils';
 
@@ -40,6 +41,7 @@ beforeEach(() => {
   vi.useFakeTimers();
   requests.assets.mockClear();
   userAssetsStoreManager.setState({ currency: 'USD', hiddenAssetBalances: {} });
+  userAssetsSearchActions.reset();
   usePositionsStore.setState({ enabled: false, queryCache: {}, queryKey: '' });
   useWalletsStore.setState({ accountAddress: ACCOUNT_A });
   useUserAssetsStore.setState({
@@ -49,8 +51,6 @@ beforeEach(() => {
     listAssets: new Map(),
     chainBalances: new Map(),
     hiddenAssetsBalance: null,
-    filter: 'all',
-    inputSearchQuery: '',
     queryCache: {},
     queryKey: '',
   });
@@ -141,19 +141,38 @@ describe('user assets', () => {
 
     userAssetsActions.setHiddenAssets([LP_ID]);
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID]);
-    userAssetsActions.setSearchQuery('  token  ');
+    const holdingsState = useUserAssetsStore.getState();
+    const onHoldingsChange = vi.fn();
+    const stopHoldings = useUserAssetsStore.subscribe(onHoldingsChange);
+    userAssetsSearchActions.setSearchQuery('  token  ');
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID, SMALL_ID]);
-    useUserAssetsStore.setState({ filter: ChainId.mainnet });
+    expect(useUserAssetsStore.getState()).toBe(holdingsState);
+    expect(onHoldingsChange).not.toHaveBeenCalled();
+    const queryState = useUserAssetsSearchStore.getState();
+    expect(userAssetsSearchActions.getSearchQuery()).toBe('token');
+    userAssetsSearchActions.setSearchQuery('TOKEN');
+    expect(useUserAssetsSearchStore.getState()).toBe(queryState);
+    userAssetsSearchActions.setChainIdFilter(ChainId.mainnet);
     expect(useUserAssetSearchResults.getState()).toEqual([SMALL_ID]);
-    userAssetsActions.setSearchQuery(SMALL.toUpperCase());
+    expect(useUserAssetsStore.getState()).toBe(holdingsState);
+    expect(onHoldingsChange).not.toHaveBeenCalled();
+    stopHoldings();
+    userAssetsSearchActions.setSearchQuery(SMALL.toUpperCase());
     expect(useUserAssetSearchResults.getState()).toEqual([SMALL_ID]);
+    const results = useUserAssetSearchResults.getState();
     publishPositions(ACCOUNT_A, [SMALL]);
-    expect(useUserAssetSearchResults.getState()).toEqual([]);
+    expect(useUserAssetSearchResults.getState()).toBe(results);
+    expect(useUserAssetSearchResults.getState()).toEqual([SMALL_ID]);
+    userAssetsSearchActions.reset();
+    expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID]);
+    expect(userAssetsSearchActions.getChainIdFilter()).toBeUndefined();
+    expect(userAssetsSearchActions.getSearchQuery()).toBe('');
     stop();
   });
 
   it('keeps explicit-address construction and A → B → A routing independent of the positions subscription', () => {
     const stop = useUserAssetsStore.subscribe(() => undefined);
+    userAssetsSearchActions.setSearchQuery('token');
     publishAssets([asset(LP, '100')]);
     publishPositions(ACCOUNT_B, [LP]);
     const active = useUserAssetsStore.getState();
@@ -172,6 +191,7 @@ describe('user assets', () => {
     publishPositions(ACCOUNT_A, [LP]);
     expect(useUserAssetsStore.getState().listAssets.size).toBe(0);
     useWalletsStore.setState({ accountAddress: ACCOUNT_B });
+    expect(userAssetsSearchActions.getSearchQuery()).toBe('token');
     publishAssets([asset(LP, '200')]);
     publishPositions(ACCOUNT_B, []);
     expect(useUserAssetsStore.getState().getTotalBalance()).toBe(200);
@@ -215,22 +235,22 @@ describe('user assets', () => {
     publishAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism)]);
     const stop = useUserAssetSearchResults.subscribe(() => undefined);
     const emptyQuery = useUserAssetSearchResults.getState();
-    userAssetsActions.setSearchQuery('to');
+    userAssetsSearchActions.setSearchQuery('to');
     const shorter = useUserAssetSearchResults.getState();
-    userAssetsActions.setSearchQuery('toke');
+    userAssetsSearchActions.setSearchQuery('toke');
     const longer = useUserAssetSearchResults.getState();
-    userAssetsActions.setSearchQuery('to');
+    userAssetsSearchActions.setSearchQuery('to');
     expect(useUserAssetSearchResults.getState()).toBe(shorter);
-    userAssetsActions.setSearchQuery('toke');
+    userAssetsSearchActions.setSearchQuery('toke');
     expect(useUserAssetSearchResults.getState()).toBe(longer);
 
     for (let index = 0; index < 70; index++) {
-      userAssetsActions.setSearchQuery(`unused${index}`);
+      userAssetsSearchActions.setSearchQuery(`unused${index}`);
       useUserAssetSearchResults.getState();
     }
-    userAssetsActions.setSearchQuery('');
+    userAssetsSearchActions.setSearchQuery('');
     expect(useUserAssetSearchResults.getState()).toBe(emptyQuery);
-    userAssetsActions.setSearchQuery('to');
+    userAssetsSearchActions.setSearchQuery('to');
     expect(useUserAssetSearchResults.getState()).toEqual(shorter);
     expect(useUserAssetSearchResults.getState()).not.toBe(shorter);
 
@@ -247,7 +267,7 @@ describe('user assets', () => {
     userAssetsActions.setHiddenAssets([TOKEN_ID]);
     const state = useUserAssetsStore.getState();
     const serialized = serializeUserAssetsState({
-      state: { userAssets: state.userAssets, hiddenAssets: state.hiddenAssets, filter: ChainId.optimism },
+      state: { userAssets: state.userAssets, hiddenAssets: state.hiddenAssets },
       version: 2,
     });
     expect(serialized).not.toContain('listAssets');
@@ -256,7 +276,7 @@ describe('user assets', () => {
     const hydrated = deserializeUserAssetsState(serialized, ACCOUNT_A);
     expect(hydrated.version).toBe(2);
     expect(hydrated.state.userAssets?.size).toBe(2);
-    expect(hydrated.state.filter).toBe(ChainId.optimism);
+    expect(hydrated.state).not.toHaveProperty('filter');
     expect(Array.from(hydrated.state.listAssets?.keys() ?? [])).toEqual([TOKEN_ID]);
     expect(hydrated.state.hiddenAssetsBalance).toBe('20');
 
@@ -264,7 +284,7 @@ describe('user assets', () => {
       state: {
         userAssets: [...state.userAssets],
         hiddenAssets: [TOKEN_ID],
-        filter: 'all',
+        filter: ChainId.optimism,
         legacyUserAssets: ['obsolete'],
         idsByChain: [['all', ['wrong']]],
         chainBalances: [[1, 999]],
@@ -280,6 +300,8 @@ describe('user assets', () => {
     const restored = deserializeUserAssetsState(previousFormat, ACCOUNT_A);
     expect(restored.state).not.toHaveProperty('legacyUserAssets');
     expect(restored.state).not.toHaveProperty('idsByChain');
+    expect(restored.state).not.toHaveProperty('filter');
+    expect(userAssetsSearchActions.getChainIdFilter()).toBeUndefined();
     expect(restored.state.queryKey).toBe('existing-key');
     expect(restored.state.lastFetchedAt).toBe(123);
     expect(restored.state.chainBalances?.get(ChainId.optimism)).toBe(20);
@@ -291,7 +313,7 @@ describe('user assets', () => {
     expect(accountStore.getState().userAssets.size).toBe(2);
     expect(Array.from(accountStore.getState().listAssets.keys())).toEqual([TOKEN_ID]);
     expect(accountStore.getState().getTotalBalance()).toBe(0);
-    accountStore.setState({ filter: ChainId.mainnet });
+    accountStore.getState().setHiddenAssets([TOKEN_ID]);
     vi.advanceTimersByTime(5000);
     const persisted = rainbowStorage.get(key);
     expect(typeof persisted).toBe('string');
@@ -301,6 +323,7 @@ describe('user assets', () => {
     expect(persisted).not.toContain('"chainBalances"');
     expect(persisted).not.toContain('"legacyUserAssets"');
     expect(persisted).not.toContain('"idsByChain"');
+    expect(persisted).not.toContain('"filter"');
     accountStore.persist?.clearStorage();
   });
 });

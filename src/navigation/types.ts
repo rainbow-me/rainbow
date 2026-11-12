@@ -7,7 +7,6 @@ import { type SharedValue } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { type SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCardKey, type LearnCategory } from '@/components/cards/utils/types';
 import { type TextProps } from '@/design-system';
@@ -503,7 +502,7 @@ type ParamsByRoute = {
     position: RainbowPosition;
   };
   [Routes.NETWORK_SELECTOR]: {
-    selected: SharedValue<ChainId> | SharedValue<ChainId | undefined> | SharedValue<UserAssetFilter | undefined> | ChainId | undefined;
+    selected: SharedValue<ChainId> | SharedValue<ChainId | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
     onClose?: VoidFunction;
     fillPinnedSection?: boolean;

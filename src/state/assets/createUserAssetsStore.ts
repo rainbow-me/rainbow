@@ -48,10 +48,8 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
     (set, get) => ({
       address,
       chainBalances: new Map(),
-      filter: 'all',
       hiddenAssets: new Set<UniqueId>(),
       hiddenAssetsBalance: null,
-      inputSearchQuery: '',
       listAssets: new Map(),
       userAssets: new Map(),
 
@@ -89,11 +87,6 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
 
       isHidden: uniqueId => get().hiddenAssets.has(uniqueId),
       isInitialLoad: () => !get().userAssets.size && get().getStatus('isInitialLoad'),
-
-      setSearchQuery: query => {
-        const inputSearchQuery = query.trim().toLowerCase();
-        set(state => (state.inputSearchQuery === inputSearchQuery ? state : { inputSearchQuery }));
-      },
 
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
 
@@ -174,7 +167,6 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
           deserializer: value => deserializeUserAssetsState(value, address),
           partialize: state =>
             ({
-              filter: state.filter,
               hiddenAssets: state.hiddenAssets,
               userAssets: state.userAssets,
             }) satisfies Required<UserAssetsStateToPersist>,

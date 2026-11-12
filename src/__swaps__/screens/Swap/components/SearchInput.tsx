@@ -7,7 +7,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
 import * as i18n from '@/languages';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsSearchActions } from '@/state/assets/userAssetsSearch';
 
 const onOutputSearchQueryChange = (text: string) => useSwapsSearchStore.setState({ searchQuery: text });
 
@@ -30,8 +30,6 @@ export const SearchInput = ({
     AnimatedSwapStyles,
   } = useSwapContext();
 
-  const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
-
   const progress = output ? outputProgress : inputProgress;
   const isSearchFocused = useDerivedValue(() => progress.value === NavigationSteps.SEARCH_FOCUSED);
   const isTokenListFocused = useDerivedValue(() => progress.value === NavigationSteps.TOKEN_LIST_FOCUSED);
@@ -41,7 +39,7 @@ export const SearchInput = ({
     <BaseSearchInput
       onCancelOrClosePressWorklet={onCancelOrClosePressWorklet}
       onSearchFocusWorklet={onSearchFocusWorklet}
-      onSearchQueryChange={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
+      onSearchQueryChange={output ? onOutputSearchQueryChange : userAssetsSearchActions.setSearchQuery}
       placeholder={output ? i18n.t(i18n.l.swap.find_a_token_to_buy) : i18n.t(i18n.l.swap.search_your_tokens)}
       enablePaste={output}
       showButtonWhenNoAsset={output}

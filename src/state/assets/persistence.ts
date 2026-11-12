@@ -8,11 +8,11 @@ import { type QueryEnabledUserAssetsState, type UserAssetsState } from './types'
 import { indexUserAssets } from './utils';
 
 /** Persisted holdings and preferences; list and balance indexes are rebuilt on hydration. */
-export type UserAssetsStateToPersist = Pick<Partial<UserAssetsState>, 'filter' | 'hiddenAssets' | 'userAssets'>;
+export type UserAssetsStateToPersist = Pick<Partial<UserAssetsState>, 'hiddenAssets' | 'userAssets'>;
 
 type PersistedUserAssetsState = Pick<
   Partial<QueryEnabledUserAssetsState>,
-  'filter' | 'error' | 'lastFetchedAt' | 'queryCache' | 'queryKey' | 'status'
+  'error' | 'lastFetchedAt' | 'queryCache' | 'queryKey' | 'status'
 > & {
   hiddenAssets?: UniqueId[];
   userAssets?: Array<[UniqueId, ParsedSearchAsset]>;
@@ -65,7 +65,6 @@ export function deserializeUserAssetsState(
 
   return {
     state: {
-      filter: state.filter ?? 'all',
       hiddenAssets,
       userAssets,
       error: state.error ?? null,
