@@ -1,23 +1,16 @@
 import type { Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import { time } from '@/framework/core/utils/time';
-import { logger, RainbowError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 
 import type { ListPositionsResponse } from '../types/generated/positions/positions';
-import { trackPositionsResponseErrors } from './trackPositionsResponseErrors';
 
 // ============ Constants ====================================================== //
 
 const POSITIONS_ENDPOINT = '/positions/ListPositions';
-const DEFAULT_TIMEOUT = time.seconds(30);
 
 // ============ Types ========================================================== //
 
-/**
- * Parameters for positions store
- */
 export type PositionsParams = {
   address: Address | string | null;
   currency: NativeCurrencyKey;
@@ -27,41 +20,22 @@ export type PositionsParams = {
 // ============ Fetcher ======================================================== //
 
 /**
- * Fetches positions data from the platform API
+ * Fetches account positions. Returns null without requesting when the address is absent.
  */
-export async function fetchPositions(params: PositionsParams, abortController: AbortController | null): Promise<ListPositionsResponse> {
-  const { address, currency, chainIds } = params;
+export async function fetchPositions(
+  { address, currency, chainIds }: PositionsParams,
+  abortController: AbortController | null
+): Promise<ListPositionsResponse | null> {
+  if (!address) return null;
 
-  if (!address) {
-    throw new Error('No address provided');
-  }
+  const response = await getPlatformClient().get<ListPositionsResponse>(POSITIONS_ENDPOINT, {
+    abortController,
+    params: {
+      address: address.toLowerCase(),
+      currency: currency.toLowerCase(),
+      chainIds: chainIds.join(','),
+    },
+  });
 
-  try {
-    const response = await getPlatformClient().get<ListPositionsResponse>(POSITIONS_ENDPOINT, {
-      abortController,
-      timeout: DEFAULT_TIMEOUT,
-      params: {
-        address: address.toLowerCase(),
-        currency: currency.toLowerCase(),
-        chainIds: chainIds.join(','),
-      },
-    });
-
-    if (!response.data) {
-      throw new Error('Invalid response structure');
-    }
-
-    if (response.data.errors && response.data.errors.length > 0) {
-      trackPositionsResponseErrors(response.data.errors);
-    }
-
-    return response.data;
-  } catch (error) {
-    logger.error(new RainbowError('[Positions] Failed to fetch positions', error), {
-      currency,
-      chainIds,
-    });
-
-    throw error;
-  }
+  return response.data;
 }
