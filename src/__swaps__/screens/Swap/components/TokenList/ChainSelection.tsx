@@ -1,14 +1,13 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
 
-import c from 'chroma-js';
 import Animated, { useDerivedValue, useSharedValue, type AnimatedRef } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { analytics } from '@/analytics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
-import { AnimatedText, Bleed, Box, globalColors, Inline, Text, TextIcon, useColorMode } from '@/design-system';
+import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
@@ -30,20 +29,11 @@ type ChainSelectionProps = {
 
 export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
-  const { accentColor: accountColor } = useAccountAccentColor();
+  const { accentColor } = useAccountAccentColor();
   const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(s => s.getChainsLabel());
   const inputChainIdFilter = useSharedValue(userAssetsSearchActions.getChainIdFilter());
-
-  const accentColor = useMemo(() => {
-    if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
-      const shiftedColor = isDarkMode ? c(accountColor).brighten(1).saturate(0.5).css() : c(accountColor).darken(0.5).saturate(0.5).css();
-      return shiftedColor;
-    } else {
-      return accountColor;
-    }
-  }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
     return output
@@ -104,18 +94,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
             <Bleed vertical="4px">
               <Box alignItems="center" justifyContent="center" width={{ custom: 18 }}>
                 <Bleed space={isDarkMode ? '16px' : undefined}>
-                  <RNText
-                    style={
-                      isDarkMode
-                        ? [
-                            styles.textIconGlow,
-                            {
-                              textShadowColor: opacity(accentColor, 0.2),
-                            },
-                          ]
-                        : undefined
-                    }
-                  >
+                  <RNText style={isDarkMode ? [styles.textIconGlow, { textShadowColor: opacity(accentColor, 0.2) }] : undefined}>
                     <Text align="center" color={{ custom: accentColor }} size="icon 13px" weight="black">
                       􀣽
                     </Text>
