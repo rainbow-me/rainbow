@@ -1,11 +1,10 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
 
 import c from 'chroma-js';
 import Animated, { useDerivedValue, useSharedValue, type AnimatedRef } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type TokenToBuyListItem } from '@/__swaps__/types/search';
 import { analytics } from '@/analytics';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
@@ -13,13 +12,14 @@ import { AnimatedText, Bleed, Box, globalColors, Inline, Text, TextIcon, useColo
 import { opacity } from '@/design-system/utils/opacity';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { ChainId } from '@/features/network/types/backendNetworks';
+import { type ChainId } from '@/features/network/types/backendNetworks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
+import { userAssetsSearchActions, useUserAssetsSearchStore } from '@/state/assets/userAssetsSearch';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
@@ -33,16 +33,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const { accentColor: accountColor } = useAccountAccentColor();
   const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
-  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-
-  // chains sorted by balance on output, chains without balance hidden on input
-  const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
-
-  const [initialFilter] = useState(() => {
-    const filter = useUserAssetsStore.getState().filter;
-    return filter === 'all' ? undefined : filter;
-  });
-  const inputListFilter = useSharedValue<UserAssetFilter | undefined>(initialFilter);
+  const chainLabels = useBackendNetworksStore(s => s.getChainsLabel());
+  const inputChainIdFilter = useSharedValue(userAssetsSearchActions.getChainIdFilter());
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -56,9 +48,9 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const chainName = useDerivedValue(() => {
     return output
       ? chainLabels[selectedOutputChainId.value]
-      : !inputListFilter.value || inputListFilter.value === 'all'
+      : inputChainIdFilter.value === undefined
         ? allText
-        : chainLabels[inputListFilter.value];
+        : chainLabels[inputChainIdFilter.value];
   });
 
   const handleSelectChain = useCallback(
@@ -68,8 +60,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       if (output && chainId) {
         setSelectedOutputChainId(chainId);
       } else {
-        inputListFilter.value = chainId;
-        useUserAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
+        inputChainIdFilter.value = chainId;
+        userAssetsSearchActions.setChainIdFilter(chainId);
       }
 
       analytics.track(analytics.event.swapsChangedChainId, {
@@ -78,7 +70,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         chainId,
       });
     },
-    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
+    [animatedRef, inputChainIdFilter, output, setSelectedOutputChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
@@ -86,14 +78,14 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
     else inputSearchRef.current?.blur();
 
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      allowedNetworks: balanceSortedChainList,
+      allowedNetworks: output ? userAssetsActions.getBalanceSortedChainList() : userAssetsActions.getChainsWithBalance(),
       canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      selected: output ? selectedOutputChainId : inputListFilter,
+      selected: output ? selectedOutputChainId : inputChainIdFilter,
       setSelected: handleSelectChain,
     });
-  }, [balanceSortedChainList, handleSelectChain, inputListFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
+  }, [handleSelectChain, inputChainIdFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
@@ -156,21 +148,17 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
 const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
 
-  const userAssetsFilter = useUserAssetsStore(state => (output ? undefined : state.filter));
+  const chainIdFilter = useUserAssetsSearchStore(s => s.chainIdFilter);
   const selectedOutputChainId = useSharedValueState(animatedSelectedOutputChainId, { pauseSync: !output });
+
+  if (!output && chainIdFilter === undefined) return null;
 
   return (
     <Bleed vertical="6px">
       {output ? (
-        <ChainImage
-          chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet}
-          position="relative"
-          size={16}
-        />
-      ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
-        <ChainImage chainId={userAssetsFilter} size={16} position="relative" />
+        <ChainImage chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value} position="relative" size={16} />
       ) : (
-        <></>
+        <ChainImage chainId={chainIdFilter} size={16} position="relative" />
       )}
     </Bleed>
   );

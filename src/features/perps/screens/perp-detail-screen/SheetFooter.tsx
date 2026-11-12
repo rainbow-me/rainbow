@@ -14,7 +14,7 @@ import { type PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetSearchResults } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;

@@ -7,8 +7,6 @@ import { type ResponseByTheme } from '@/theme/types';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 
-export type UserAssetFilter = ChainId | 'all';
-
 export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
   // colors
   color: ResponseByTheme<string>;

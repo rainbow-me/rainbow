@@ -29,7 +29,7 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute } from '@/navigation/types';
-import { useUserAssetSearchResults } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';

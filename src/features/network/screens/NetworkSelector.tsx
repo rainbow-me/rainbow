@@ -29,7 +29,6 @@ import Svg, { Path } from 'react-native-svg';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { type Chain } from 'viem/chains';
 
-import { type UserAssetFilter } from '@/__swaps__/types/assets';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
@@ -72,7 +71,7 @@ import { ChainId } from '../types/backendNetworks';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
-type SelectedNetwork = SharedValue<ChainId | UserAssetFilter | undefined>;
+type SelectedNetwork = SharedValue<ChainId | undefined>;
 type NetworkSwitcherProps = RouteParams & {
   editing: SharedValue<boolean>;
   selected: SelectedNetwork;

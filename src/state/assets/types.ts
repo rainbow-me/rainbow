@@ -1,7 +1,7 @@
 import { type OptionallyPersistedStore, type QueryStoreState } from '@storesjs/stores';
 import { type Address, type Prettify } from 'viem';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -33,10 +33,8 @@ export type UserAssetsParams = {
 export interface UserAssetsState {
   address: Address;
   chainBalances: Map<ChainId, number>;
-  filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
   hiddenAssetsBalance: string | null;
-  inputSearchQuery: string;
   /** Balance-ordered references to assets not represented by positions, including hidden assets. */
   listAssets: Map<UniqueId, ParsedSearchAsset>;
   /** Complete parsed holdings, including tokens represented by positions. */
@@ -53,7 +51,6 @@ export interface UserAssetsState {
   isHidden: (uniqueId: UniqueId) => boolean;
   isInitialLoad: () => boolean;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
-  setSearchQuery: (query: string) => void;
   updateTokens: (tokens: LiveTokensData) => void;
   reprocessAssetsData: (positionTokenAddresses: ReadonlySet<string>) => void;
 }

@@ -13,7 +13,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetSearchResults } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
