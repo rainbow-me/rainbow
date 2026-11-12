@@ -21,6 +21,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.49](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.49)
+
+### Added
+
+- Restore builder attribution in Polymarket (https://github.com/rainbow-me/rainbow/pull/7937)
+- Search tokens to buy through token search v2 behind its flag in swap (https://github.com/rainbow-me/rainbow/pull/7931)
+
+### Changed
+
+- Consolidate ENS queries and registration state (https://github.com/rainbow-me/rainbow/pull/7912)
+- Use UIKit child containment for sheet screens on iOS (https://github.com/rainbow-me/rainbow/pull/7921)
+- Commit Info.plists in the format pod install writes (https://github.com/rainbow-me/rainbow/pull/7939)
+- Bump iOS and Android to v2.0.49 (https://github.com/rainbow-me/rainbow/pull/7936)
+
+### Fixed
+
+- Support native iOS interruptible sheet navigation and polish scroll tracking (https://github.com/rainbow-me/rainbow/pull/7920)
+- Handle user assets without a networks map (https://github.com/rainbow-me/rainbow/pull/7940)
+
 ## [2.0.48](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.48)
 
 ### Added
