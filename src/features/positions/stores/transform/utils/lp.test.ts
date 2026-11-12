@@ -6,48 +6,48 @@ import { calculateLiquidityAllocation, calculateLiquidityRangeStatus, isConcentr
 describe('LP Position Detection', () => {
   describe('isConcentratedLiquidityProtocol', () => {
     it('should identify Uniswap V3 as concentrated liquidity', () => {
-      expect(isConcentratedLiquidityProtocol('uniswap-v3', 'uniswap-v3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap', 'v3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap', 'V3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('uniswap-v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('uniswap', 'v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('uniswap', 'V3')).toBe(true);
     });
 
     it('should identify PancakeSwap V3 as concentrated liquidity', () => {
-      expect(isConcentratedLiquidityProtocol('pancakeswap-v3', 'pancakeswap-v3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('pancakeswap', 'pancakeswap', 'v3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('pancakeswap', 'pancakeswap', 'V3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('pancakeswap-v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('pancakeswap', 'v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('pancakeswap', 'V3')).toBe(true);
     });
 
     it('should identify other concentrated liquidity protocols', () => {
-      expect(isConcentratedLiquidityProtocol('algebra', 'algebra')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('kyberswap-elastic', 'kyberswap-elastic')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('algebra')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('kyberswap-elastic')).toBe(true);
     });
 
     it('should not identify V2 protocols as concentrated liquidity', () => {
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap', 'v2')).toBe(false);
-      expect(isConcentratedLiquidityProtocol('uniswap-v2', 'uniswap-v2')).toBe(false);
-      expect(isConcentratedLiquidityProtocol('pancakeswap', 'pancakeswap', 'v2')).toBe(false);
-      expect(isConcentratedLiquidityProtocol('sushiswap', 'sushiswap')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('uniswap', 'v2')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('uniswap-v2')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('pancakeswap', 'v2')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('sushiswap')).toBe(false);
     });
 
     it('should handle case variations', () => {
-      expect(isConcentratedLiquidityProtocol('Uniswap-V3', 'Uniswap-V3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('UNISWAP', 'UNISWAP', 'v3')).toBe(true);
-      expect(isConcentratedLiquidityProtocol('Algebra', 'Algebra')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('Uniswap-V3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('UNISWAP', 'v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('Algebra')).toBe(true);
     });
 
     it('should handle missing version', () => {
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap')).toBe(false);
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap', undefined)).toBe(false);
-      expect(isConcentratedLiquidityProtocol('uniswap', 'uniswap', '')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('uniswap')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('uniswap', undefined)).toBe(false);
+      expect(isConcentratedLiquidityProtocol('uniswap', '')).toBe(false);
     });
 
     it('should identify any V3 protocol as concentrated if in supported list', () => {
-      expect(isConcentratedLiquidityProtocol('sushiswap', 'sushiswap', 'v3')).toBe(true);
+      expect(isConcentratedLiquidityProtocol('sushiswap', 'v3')).toBe(true);
     });
 
     it('should not identify random protocols with V3 as concentrated', () => {
-      expect(isConcentratedLiquidityProtocol('random-protocol', 'random-protocol', 'v3')).toBe(false);
-      expect(isConcentratedLiquidityProtocol('unknown', 'unknown', 'v3')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('random-protocol', 'v3')).toBe(false);
+      expect(isConcentratedLiquidityProtocol('unknown', 'v3')).toBe(false);
     });
   });
 

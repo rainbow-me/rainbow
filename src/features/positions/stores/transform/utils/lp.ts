@@ -45,7 +45,7 @@ const CONCENTRATED_LIQUIDITY_PROTOCOLS = [
 /**
  * Determine if a protocol supports concentrated liquidity
  */
-export function isConcentratedLiquidityProtocol(protocolName: string, canonicalProtocolName: string, protocolVersion?: string): boolean {
+export function isConcentratedLiquidityProtocol(canonicalProtocolName: string, protocolVersion?: string): boolean {
   // Try canonical name with version first (most reliable)
   const normalizedCanonical = canonicalProtocolName.toLowerCase().trim();
   const normalizedVersion = protocolVersion?.toLowerCase();

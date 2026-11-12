@@ -153,7 +153,7 @@ function transformPools(tokens: PositionToken[], item: PortfolioItem, position: 
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
-  const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
+  const concentrated = isConcentratedLiquidityProtocol(position.canonicalProtocolName, position.protocolVersion);
 
   return [
     {
@@ -182,7 +182,7 @@ function transformLpStakes(
   const underlying = transformUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
-  const concentrated = isConcentratedLiquidityProtocol(position.protocolName, position.canonicalProtocolName, position.protocolVersion);
+  const concentrated = isConcentratedLiquidityProtocol(position.canonicalProtocolName, position.protocolVersion);
   const rangeStatus = calculateLiquidityRangeStatus(underlying, concentrated);
   const allocation = calculateLiquidityAllocation(underlying);
 
@@ -730,9 +730,7 @@ function groupByProtocol(
  * Groups by protocol, calculates totals, applies filters, and sorts by value
  * Adjusts grand totals to account for filtered items
  */
-export function transformPositions(response: ListPositionsResponse, params: PositionsParams): RainbowPositions {
-  const { currency } = params;
-
+export function transformPositions(response: ListPositionsResponse, { currency }: PositionsParams): RainbowPositions {
   if (!response?.result?.positions || response.result.positions.length === 0) {
     const zero = getNativeValue('0', currency);
     return {
