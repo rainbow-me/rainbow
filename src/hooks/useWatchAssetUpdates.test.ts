@@ -8,7 +8,7 @@ import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { type UserAsset } from '@/state/assets/types';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
@@ -91,8 +91,8 @@ describe('watchAssetUpdates', () => {
     vi.clearAllMocks();
     resetStores();
 
-    userAssetsStore.getState(TEST_ADDRESS);
-    userAssetsStore.setState(
+    useUserAssetsStore.getState(TEST_ADDRESS);
+    useUserAssetsStore.setState(
       state => ({
         ...state,
         fetch: async (params, options) => mockUserAssetsFetch(params, options),
@@ -235,7 +235,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).toHaveBeenCalledWith(undefined, { force: true });
     expect(invalidateAddressNftsQueries).toHaveBeenCalledWith(TEST_ADDRESS);
 
-    const userAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const userAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(userAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(MAINNET_TOKEN_ADDRESS, 1))?.balance.amount).toBe('7');
@@ -329,7 +329,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).not.toHaveBeenCalled();
     expect(invalidateAddressNftsQueries).not.toHaveBeenCalled();
 
-    const userAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const userAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(userAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('2');
 
@@ -346,7 +346,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).toHaveBeenCalledWith(undefined, { force: true });
     expect(invalidateAddressNftsQueries).toHaveBeenCalledWith(TEST_ADDRESS);
 
-    const finalUserAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const finalUserAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(finalUserAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(finalUserAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('1');
   });
@@ -604,8 +604,8 @@ function resetStores() {
 }
 
 function seedUserAssets(assets: ParsedSearchAsset[]) {
-  userAssetsStore.getState(TEST_ADDRESS);
-  userAssetsStore.setState(
+  useUserAssetsStore.getState(TEST_ADDRESS);
+  useUserAssetsStore.setState(
     state => ({
       ...state,
       address: TEST_ADDRESS,

@@ -25,7 +25,6 @@ export const useUserAssetsStore = createVirtualStore(
 );
 
 export const userAssetsActions = createStoreActions(useUserAssetsStore);
-export const userAssetsStore = useUserAssetsStore;
 
 usePositionsStore.subscribe(
   state => {

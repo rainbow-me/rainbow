@@ -24,7 +24,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
@@ -346,7 +346,7 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   if (!supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
   if (address !== 'eth' && address.length !== 42) return undefined;
 
-  const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
+  const userAsset = userAssetsActions.getUserAsset(uniqueId) || undefined;
 
   const searchResults = await searchVerifiedTokens({ query: address.toLowerCase(), chainId, list: TokenLists.Verified }, null);
 

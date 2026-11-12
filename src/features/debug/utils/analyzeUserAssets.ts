@@ -1,4 +1,4 @@
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { showLogSheet } from '../screens/LogSheet';
 
@@ -18,8 +18,8 @@ function getRelativeTime(date: string | number | Date): string {
 }
 
 export function analyzeUserAssets() {
-  const userAssetsLastFetchedAt = userAssetsStore.getState().lastFetchedAt;
-  const userAssetsQueryKey = userAssetsStore.getState().queryKey;
+  const userAssetsLastFetchedAt = useUserAssetsStore.getState().lastFetchedAt;
+  const userAssetsQueryKey = useUserAssetsStore.getState().queryKey;
 
   const lastFetchedData = {
     title: 'Last Fetched At',
@@ -32,7 +32,7 @@ export function analyzeUserAssets() {
     message: userAssetsQueryKey,
   };
 
-  const topAssets = userAssetsStore.getState().getUserAssets();
+  const topAssets = useUserAssetsStore.getState().getUserAssets();
   const topAssetsMessage = topAssets
     .map(asset => {
       const updatedAt = asset.updatedAt ? new Date(asset.updatedAt).toLocaleString() : 'N/A';

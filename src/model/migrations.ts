@@ -40,7 +40,7 @@ import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { favoritesQueryKey } from '@/resources/favorites';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
@@ -690,7 +690,7 @@ export default async function runMigrations() {
           return acc;
         }, []);
 
-        userAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
+        useUserAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
 
         // remove the old hidden coins obj storage
         mmkv.remove('hidden-coins-obj-' + address);
