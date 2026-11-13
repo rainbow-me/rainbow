@@ -11,6 +11,7 @@ import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { type TokenData } from '@/state/liveTokens/types';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createDepositConfig } from '@/systems/funding/config';
 import { resolveInitialDepositAsset } from '@/systems/funding/utils/sourceAsset';
@@ -19,7 +20,6 @@ import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAsset } from './types';
 import { userAssetsActions, useUserAssetsStore } from './userAssets';
 import { userAssetsSearchActions, useUserAssetSearch, useUserAssetSearchResults } from './userAssetsSearch';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 const requests = vi.hoisted(() => ({
   assets: vi.fn<(path: string) => Promise<{ data: { result?: Record<string, UserAsset> } }>>(async () => ({ data: { result: {} } })),
@@ -47,7 +47,7 @@ beforeEach(() => {
   vi.useFakeTimers();
   requests.assets.mockClear();
   appSettingsActions.setCurrency('USD');
-  userAssetsStoreManager.setState({ hiddenAssetBalances: {} });
+  useHiddenAssetBalancesStore.setState({ hiddenAssetBalances: {} });
   userAssetsSearchActions.reset();
   usePositionsStore.setState({ enabled: false, queryCache: {}, queryKey: '' });
   useWalletsStore.setState({ accountAddress: ACCOUNT_A });
@@ -211,11 +211,11 @@ describe('user assets', () => {
     publishAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism)]);
     userAssetsActions.setHiddenAssets([LP_ID]);
     expect(useWalletAssetsStore.getState().balance).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
 
     publishPositions(ACCOUNT_A, [LP]);
     expect(useWalletAssetsStore.getState().balance).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
     publishPositions(ACCOUNT_A, []);
     expect(useWalletAssetsStore.getState().balance).toBe(20);
     expect(
@@ -227,7 +227,7 @@ describe('user assets', () => {
 
     requests.assets.mockResolvedValueOnce({ data: { result: { lp: asset(LP, '50'), token: asset(TOKEN, '20', ChainId.optimism) } } });
     await userAssetsActions.fetch(undefined, { force: true });
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('50');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('50');
     expect(useWalletAssetsStore.getState().balance).toBe(20);
   });
 
@@ -351,7 +351,7 @@ describe('user assets', () => {
     expect(restored.status).toBe('success');
     expect(restored.chainBalances.get(ChainId.mainnet)).toBe(100);
     expect(restored.chainBalances.get(ChainId.optimism)).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_B]).toBe('20');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_B]).toBe('20');
     accountStore.persist?.clearStorage();
   });
 });

@@ -12,6 +12,7 @@ import { logger, RainbowError } from '@/logger';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilUserAssets } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { toUnixTime } from '@/worklets/dates';
 
 import {
@@ -21,7 +22,6 @@ import {
   type UserAssetsParams,
   type UserAssetsState,
 } from './types';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 // ============ Fetch Utils ==================================================== //
 
@@ -267,7 +267,7 @@ export function updateHiddenAssetsBalance({
     if (asset) balance = add(balance, asset.native.balance.amount);
   }
 
-  const { hiddenAssetBalances, setHiddenAssetBalance } = userAssetsStoreManager.getState();
+  const { hiddenAssetBalances, setHiddenAssetBalance } = useHiddenAssetBalancesStore.getState();
   if (balance === hiddenAssetBalances[address]) return;
 
   setHiddenAssetBalance(address, balance);

@@ -10,10 +10,10 @@ import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { type UserAsset } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { watchAssetUpdates } from './useWatchAssetUpdates';
@@ -587,7 +587,7 @@ function resetStores() {
   staleBalancesStore.setState({ staleBalances: {} });
   useWalletsStore.setState({ accountAddress: TEST_ADDRESS });
   appSettingsActions.setCurrency('ETH');
-  userAssetsStoreManager.setState({ hiddenAssetBalances: {} });
+  useHiddenAssetBalancesStore.setState({ hiddenAssetBalances: {} });
 }
 
 function seedUserAssets(assets: ParsedSearchAsset[]) {
