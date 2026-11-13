@@ -33,6 +33,7 @@ reviews:
     - Gas, fee, slippage, amount or price-impact calculations; the amounts, addresses or recipients shown on confirmation and signing screens; token approvals and allowances
     - WalletConnect, dapp browser provider injection, deep links and universal links
     - Money-movement and identity flows (such as Cash): authentication, passkeys, sessions and tokens, order submission, KYC, and compliance or eligibility decisions
+    - Token identity: which contract address and chain a token the user picks resolves to (search, lists, defaults, deep links); token decimals; verified, scam or spoof classification and filtering; any added or changed hardcoded token or contract address
 
     Security and data
     - Authentication or authorization anywhere; secrets, API keys, environment config
@@ -40,11 +41,13 @@ reviews:
     - Any dependency change: adding, removing or upgrading a dependency (package.json, yarn.lock)
 
     Platform and hard to reverse
-    - Native code: ios/, android/, and patches that change native code; permissions, entitlements, Info.plist, AndroidManifest; release version bumps
+    - Native code: ios/, android/, and patches that change native code; permissions, entitlements, Info.plist, AndroidManifest
     - Persisted-state migrations: store version or migrate changes, renamed or removed storage keys
     - Build, CI, release and code-signing config (babel and metro config, .github/workflows, bitrise, fastlane, signing, install and CI scripts), and review or approval config (cubic.yaml)
 
     Everything else is approvable, including new features, new screens, new stores and network calls to existing backends, changed calculations outside the list above, removed features, refactors and performance work. Touching business logic, size, or the theoretical chance of a bug are not reasons to decline; Cubic has already reviewed the implementation.
+
+    A release version bump is approvable when it changes only the app version and build number: `version` in package.json, `versionName` and `versionCode` in android/app/build.gradle, `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in ios/Rainbow.xcodeproj/project.pbxproj, plus CHANGELOG.md. Any other change to those files keeps its High item.
 
     When you require human review, name the High item and the file where the diff hits it. A generic reason doesn't count.
   auto_approve_rules:
@@ -57,9 +60,35 @@ reviews:
     # Amount, fee and slippage math in feature files is left to the prompt's High list: path-blocking
     # it would send most feature work to a human.
     exclude:
-      # Native, platform and patched dependencies
-      - 'ios/**'
-      - 'android/**'
+      # Native, platform and patched dependencies. The three files a release version bump changes
+      # (ios/Rainbow.xcodeproj/project.pbxproj, android/app/build.gradle, package.json) are left to the
+      # prompt, as an exclude can't be overridden; a new ios/ folder or android/app/ file needs a glob here.
+      - 'ios/*'
+      - 'ios/.*'
+      - 'ios/AppIcons/**'
+      - 'ios/Config/**'
+      - 'ios/fastlane/**'
+      - 'ios/Frameworks/**'
+      - 'ios/ImageNotification/**'
+      - 'ios/Images.xcassets/**'
+      - 'ios/Internals/**'
+      - 'ios/OpenInRainbow/**'
+      - 'ios/PriceWidget/**'
+      - 'ios/Rainbow/**'
+      - 'ios/Rainbow Stickers/**'
+      - 'ios/Rainbow.xcodeproj/xcshareddata/**'
+      - 'ios/Rainbow.xcworkspace/**'
+      - 'ios/RainbowTests/**'
+      - 'ios/SelectTokenIntent/**'
+      - 'ios/ShareWithRainbow/**'
+      - 'android/*'
+      - 'android/.*'
+      - 'android/.settings/**'
+      - 'android/gradle/**'
+      - 'android/keystores/**'
+      - 'android/app/src/**'
+      - 'android/app/debug.keystore'
+      - 'android/app/proguard-rules.pro'
       - 'patches/**'
       - 'app.json'
       - 'app.config.ts'
@@ -82,7 +111,6 @@ reviews:
       - 'audit-ci.jsonc'
       - '.yarnrc.yml'
       - '.yarn/**'
-      - 'package.json'
       - 'yarn.lock'
       - 'src/graphql/package.json'
       - 'src/graphql/yarn.lock'
