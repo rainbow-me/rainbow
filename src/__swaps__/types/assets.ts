@@ -53,7 +53,7 @@ export interface ParsedAsset {
   networks?: AssetApiResponse['networks'];
   bridging?: {
     isBridgeable: boolean;
-    networks: { [id in ChainId]?: { bridgeable: boolean } };
+    networks: { [id in ChainId]?: { bridgeable?: boolean } };
   };
   updatedAt?: string;
 }

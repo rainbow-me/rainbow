@@ -785,7 +785,7 @@ function buildUserAsset({
         },
       },
       price: {
-        changedAt: 0,
+        changedAt: '1970-01-01T00:00:00Z',
         relativeChange24h: 0,
         value: 1,
       },

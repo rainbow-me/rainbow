@@ -22,13 +22,13 @@ describe('setUserAssets', () => {
         verified: false,
         transferable: true,
         colors: { primary: '#000000' },
-        price: { value: 1, changedAt: 0, relativeChange24h: 0 },
+        price: { value: 1, changedAt: '1970-01-01T00:00:00Z', relativeChange24h: 0 },
         bridging: { bridgeable: false, networks: {} },
       },
       quantity: '1000000000000000000',
       value: '1',
       smallBalance: false,
-      updatedAt: '0',
+      updatedAt: '1970-01-01T00:00:00Z',
     };
     const state = createUserAssetsStore(ADDRESS).getState();
 

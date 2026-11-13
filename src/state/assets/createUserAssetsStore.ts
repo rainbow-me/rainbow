@@ -33,9 +33,8 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
-        const userAssets = data?.userAssets;
-        if (!userAssets) return;
-        set(state => setUserAssets({ state, userAssets }));
+        if (!data) return;
+        set(state => setUserAssets({ state, userAssets: data }));
       },
       onFetched: () => updateHiddenAssetsBalance(store.getState()),
       enabled: address.length > 0,

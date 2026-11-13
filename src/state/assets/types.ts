@@ -1,7 +1,7 @@
 import { type OptionallyPersistedStore, type QueryStoreState } from '@storesjs/stores';
 import { type Address, type Prettify } from 'viem';
 
-import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -12,10 +12,7 @@ import { type UserAssetsStateToPersist } from './persistence';
 export type QueryEnabledUserAssetsState = QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>;
 export type UserAssetsStoreType = OptionallyPersistedStore<QueryEnabledUserAssetsState, UserAssetsStateToPersist>;
 
-export type FetchedUserAssetsData = {
-  chainIdsWithErrors: ChainId[] | null;
-  userAssets: UserAsset[] | null;
-} | null;
+export type FetchedUserAssetsData = UserAsset[] | null;
 
 export type HighestValueAssetOptions = {
   /** Excludes the token with this ID before applying native asset and chain preferences. */
@@ -55,49 +52,44 @@ export interface UserAssetsState {
 }
 
 export type Asset = {
-  address: string;
-  chainId: number;
-  name: string;
-  symbol: string;
-  decimals: number;
-  type: string;
+  address: AddressOrEth;
+  chainId: ChainId;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  type?: string;
   iconUrl?: string;
-  network: string;
-  verified: boolean;
-  transferable: boolean;
-  probableSpam?: boolean;
+  network?: string;
+  mainnetAddress?: AddressOrEth;
+  verified?: boolean;
+  transferable?: boolean;
   creationDate?: string;
   colors: {
-    primary: string;
+    primary?: string;
     fallback?: string;
   };
   price: {
-    value: number;
-    changedAt: number;
-    relativeChange24h: number;
+    value?: number;
+    /** RFC3339 timestamp of the last price update, when known. */
+    changedAt?: string;
+    relativeChange24h?: number;
   };
-  networks?: Record<
-    string,
-    {
-      address: string;
-      decimals: number;
-    }
-  >;
-  bridging: {
-    bridgeable: boolean;
-    networks: Record<
-      string,
-      {
-        bridgeable: boolean;
-      }
-    >;
+  networks?: {
+    [chainId in ChainId]?: {
+      address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
+      decimals?: number;
+    };
+  };
+  bridging?: {
+    bridgeable?: boolean;
+    networks?: { [chainId in ChainId]?: { bridgeable?: boolean } };
   };
 };
 
 export type UserAsset = {
   asset: Asset;
   quantity: string;
-  updatedAt: string;
+  updatedAt?: string;
   value: string;
   smallBalance?: boolean;
 };
@@ -107,10 +99,9 @@ export type GetAssetsResponse = {
     requestTime: string;
     responseTime: string;
     requestId: string;
-    currency: string;
+    currency?: SupportedCurrencyKey;
     success: boolean;
-    chainIdsWithErrors?: ChainId[];
   };
   result?: Record<string, UserAsset>;
-  errors: { chainId: ChainId; error: string }[];
+  errors?: { code?: string; message?: string; details?: Record<string, string> }[];
 };
