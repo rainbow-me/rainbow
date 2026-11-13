@@ -64,6 +64,16 @@ afterEach(() => {
 });
 
 describe('user assets', () => {
+  it('excludes the opposite swap asset from highest-value selection', () => {
+    const nativeAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].address;
+    const nativeId = getUniqueId(nativeAddress, ChainId.mainnet);
+    publishAssets([asset(nativeAddress, '100'), asset(TOKEN, '20', ChainId.optimism)]);
+
+    expect(userAssetsActions.getHighestValueAsset({ excludeAssetId: nativeId, nativeAsset: 'preferred' })?.uniqueId).toBe(TOKEN_ID);
+    userAssetsActions.setHiddenAssets([TOKEN_ID]);
+    expect(userAssetsActions.getHighestValueAsset({ excludeAssetId: nativeId, nativeAsset: 'preferred' })).toBeNull();
+  });
+
   it('selects an initial deposit asset from the default list independently of search controls', () => {
     const config = createDepositConfig({
       id: 'deposit',

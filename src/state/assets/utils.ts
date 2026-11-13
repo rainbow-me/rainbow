@@ -108,11 +108,10 @@ const EMPTY_ASSET_SEARCH_OPTIONS = Object.freeze<HighestValueAssetOptions>({});
 export function selectHighestValueAsset(
   assets: Iterable<ParsedSearchAsset>,
   hiddenAssets: ReadonlySet<UniqueId>,
-  { nativeAsset, preferredChainId }: HighestValueAssetOptions = EMPTY_ASSET_SEARCH_OPTIONS
+  { excludeAssetId, nativeAsset, preferredChainId }: HighestValueAssetOptions = EMPTY_ASSET_SEARCH_OPTIONS
 ): ParsedSearchAsset | null {
-  const shouldRequireNativeAsset = nativeAsset === 'required';
-  const shouldTrackAnyAsset = !shouldRequireNativeAsset;
-  const shouldTrackNativeAsset = shouldRequireNativeAsset || nativeAsset === 'preferred';
+  const shouldTrackAnyAsset = nativeAsset !== 'required';
+  const shouldTrackNativeAsset = nativeAsset !== undefined;
 
   let highestValueAsset: ParsedSearchAsset | null = null;
   let highestValueNativeAsset: ParsedSearchAsset | null = null;
@@ -120,7 +119,7 @@ export function selectHighestValueAsset(
   let preferredNativeAsset: ParsedSearchAsset | null = null;
 
   for (const asset of assets) {
-    if (hiddenAssets.has(asset.uniqueId)) continue;
+    if (asset.uniqueId === excludeAssetId || hiddenAssets.has(asset.uniqueId)) continue;
     const isPreferredChain = preferredChainId === asset.chainId;
 
     if (shouldTrackAnyAsset) {
@@ -134,9 +133,7 @@ export function selectHighestValueAsset(
     }
   }
 
-  if (shouldRequireNativeAsset) return preferredNativeAsset ?? highestValueNativeAsset;
-  if (nativeAsset === 'preferred') return preferredNativeAsset ?? highestValueNativeAsset ?? preferredAsset ?? highestValueAsset;
-  return preferredAsset ?? highestValueAsset;
+  return preferredNativeAsset ?? highestValueNativeAsset ?? preferredAsset ?? highestValueAsset;
 }
 
 function isHigherValueAsset(asset: ParsedSearchAsset, selectedAsset: ParsedSearchAsset | null): boolean {

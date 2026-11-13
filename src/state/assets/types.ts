@@ -18,6 +18,8 @@ export type FetchedUserAssetsData = {
 } | null;
 
 export type HighestValueAssetOptions = {
+  /** Excludes the token with this ID before applying native asset and chain preferences. */
+  excludeAssetId?: UniqueId;
   /** Restricts search to native assets or prefers native assets when available. */
   nativeAsset?: 'preferred' | 'required';
   /** Chain to prioritize, if assets are available on the specified chain. */

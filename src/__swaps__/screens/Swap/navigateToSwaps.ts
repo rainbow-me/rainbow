@@ -1,4 +1,4 @@
-import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type ExtendedAnimatedAssetWithColors, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { type InputKeys, type InputMethods } from '@/__swaps__/types/swap';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
 import { getDefaultSlippage, parseAssetAndExtend, slippageInBipsToString, trimTrailingZeros } from '@/__swaps__/utils/swaps';
@@ -46,8 +46,8 @@ export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
     return;
   }
 
-  const inputAsset = getInputAsset(params.inputAsset);
   const outputAsset = getOutputAsset(params.outputAsset);
+  const inputAsset = getInputAsset(params.inputAsset, outputAsset?.uniqueId);
   const inputMethod = getInputMethod({ ...params, inputAsset, outputAsset });
   const focusedInput = params.focusedInput ?? (inputMethod === 'slider' ? 'inputAmount' : inputMethod);
 
@@ -148,11 +148,12 @@ function isExtendedAssetWithColors(
 }
 
 export function getInputAsset(
-  asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null | undefined
+  asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null | undefined,
+  excludeAssetId?: UniqueId
 ): ExtendedAnimatedAssetWithColors | null {
   if (!asset) {
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
-    const defaultAsset = useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
+    const defaultAsset = useUserAssetsStore.getState().getHighestValueAsset({ excludeAssetId, nativeAsset: 'preferred', preferredChainId });
     return parseAssetAndExtend({ asset: defaultAsset });
   }
   return isExtendedAssetWithColors(asset) ? asset : parseAssetAndExtend({ asset, insertUserAssetBalance: true });
