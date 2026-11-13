@@ -67,19 +67,21 @@ export const GameBoxScore = memo(function GameBoxScore({ gameId, isDarkMode }: {
         </Box>
       ) : null}
 
-      <Box
-        gap={12}
-        backgroundColor={SCORE_BACKGROUND_COLOR}
-        borderRadius={24}
-        borderWidth={THICKER_BORDER_WIDTH}
-        borderColor="separatorSecondary"
-        paddingHorizontal="16px"
-        paddingVertical="12px"
-      >
-        <ParticipantScore isDarkMode={isDarkMode} participant={game?.participants[0]} score={game?.scoreColumns} index={0} />
-        <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
-        <ParticipantScore isDarkMode={isDarkMode} participant={game?.participants[1]} score={game?.scoreColumns} index={1} />
-      </Box>
+      {game?.scoreColumns.length ? (
+        <Box
+          gap={12}
+          backgroundColor={SCORE_BACKGROUND_COLOR}
+          borderRadius={24}
+          borderWidth={THICKER_BORDER_WIDTH}
+          borderColor="separatorSecondary"
+          paddingHorizontal="16px"
+          paddingVertical="12px"
+        >
+          <ParticipantScore isDarkMode={isDarkMode} participant={game.participants[0]} score={game.scoreColumns} index={0} />
+          <Separator color="separatorSecondary" direction="horizontal" thickness={1} />
+          <ParticipantScore isDarkMode={isDarkMode} participant={game.participants[1]} score={game.scoreColumns} index={1} />
+        </Box>
+      ) : null}
     </Box>
   );
 });

@@ -23,6 +23,7 @@ import {
   type PolymarketOutcome,
   type Spread,
 } from '@/features/sports/core/generated/external/sports/payload';
+import { getParticipantDisplayName } from '@/features/sports/core/participants';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
 import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
@@ -410,11 +411,10 @@ const GameParticipant = memo(function GameParticipant({
   participant: Participant;
   sportId?: string;
 }) {
-  const { name, shortName } = participant;
+  const { name } = participant;
+  const { displayName, prefix } = getParticipantDisplayName(participant);
   const compact = sportId === 'tennis' || sportId === 'esports';
   const imageSize = sportId === 'tennis' ? 24 : sportId === 'esports' ? 32 : 36;
-  const hasPrefix = shortName && name.endsWith(` ${shortName}`);
-  const subtitle = hasPrefix ? name.slice(0, -shortName.length).trim() : undefined;
 
   return (
     <>
@@ -429,14 +429,14 @@ const GameParticipant = memo(function GameParticipant({
       </View>
 
       <View style={styles.name}>
-        {subtitle ? (
+        {prefix ? (
           <Text color="labelTertiary" size="13pt" weight="bold" numberOfLines={1}>
-            {subtitle}
+            {prefix}
           </Text>
         ) : null}
 
-        <Text color="label" size="17pt" weight="bold" numberOfLines={subtitle ? 1 : 2}>
-          {hasPrefix ? shortName : name}
+        <Text color="label" size="17pt" weight="bold" numberOfLines={prefix ? 1 : 2}>
+          {displayName}
         </Text>
       </View>
     </>
