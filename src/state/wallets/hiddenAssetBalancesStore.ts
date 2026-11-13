@@ -1,12 +1,12 @@
 import { createBaseStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
-export type StoreManagerState = {
+export type HiddenAssetBalancesState = {
   hiddenAssetBalances: Record<Address | string, string | undefined>;
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
 };
 
-export const userAssetsStoreManager = createBaseStore<StoreManagerState>(
+export const useHiddenAssetBalancesStore = createBaseStore<HiddenAssetBalancesState>(
   set => ({
     hiddenAssetBalances: {},
 
