@@ -4,6 +4,7 @@ import { divWorklet, isPositive, mulWorklet, subWorklet, toFixedWorklet, toPerce
 import { formatNumber } from '@/helpers/strings';
 import { convertRawAmountToDecimalFormatWorklet, isZero } from '@/helpers/utilities';
 
+import { useStakingExitFeeStore } from '../rnbwStakingExitFeeStore';
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 
 type StakingPositionPnl = {
@@ -27,10 +28,11 @@ const EMPTY_VALUE: StakingPositionPnl = {
 export const useRnbwStakingPositionPnl = createDerivedStore<StakingPositionPnl>(
   $ => {
     const data = $(useStakingPositionStore, state => state.getData());
+    const exitFeePercentage = $(useStakingExitFeeStore, state => state.getData());
 
-    if (!data || data?.stakedRnbw === '0') return EMPTY_VALUE;
+    if (!data || data?.stakedRnbw === '0' || exitFeePercentage == null) return EMPTY_VALUE;
 
-    const { stakedRnbw, sessionPnl, decimals, exitFeePercentage } = data;
+    const { stakedRnbw, sessionPnl, decimals } = data;
 
     const exchangeRateGain = sessionPnl?.exchangeRateGain ?? '0';
     const exitFee = mulWorklet(stakedRnbw, exitFeePercentage / 100);

@@ -11,6 +11,7 @@ import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 
 import { STAKING_CHAIN_ID } from '../constants';
+import { useStakingExitFeeStore } from '../stores/rnbwStakingExitFeeStore';
 import { useStakingPositionStore, type StakingPositionData } from '../stores/rnbwStakingPositionStore';
 import { type RnbwStakingExecution, type RnbwStakingExecutionMode } from './executeRnbwStakingCalls';
 import { executeUnstakeRnbw } from './executeUnstakeRnbw';
@@ -40,8 +41,8 @@ export async function unstakeRnbw({
   gasParams: LegacyTransactionGasParamAmounts | TransactionGasParamAmounts;
   preparedCalls: Promise<PreparedUnstakeRnbw | null>;
 }): Promise<UnstakeRnbwResult> {
-  const positionData = await refreshAndValidatePosition();
-  const { receiveRaw, ...analyticsSnapshot } = snapshotUnstakeAnalytics(positionData);
+  const { positionData, exitFeePercentage } = await refreshAndValidateUnstakeInputs();
+  const { receiveRaw, ...analyticsSnapshot } = snapshotUnstakeAnalytics(positionData, exitFeePercentage);
 
   let executionMode: RnbwStakingExecutionMode | undefined;
   try {
@@ -80,20 +81,28 @@ export async function unstakeRnbw({
   }
 }
 
-async function refreshAndValidatePosition(): Promise<StakingPositionData> {
-  const initialExitFeePercentage = useStakingPositionStore.getState().getData()?.exitFeePercentage;
-  await useStakingPositionStore.getState().fetch(undefined, { force: true });
+async function refreshAndValidateUnstakeInputs(): Promise<{ positionData: StakingPositionData; exitFeePercentage: number }> {
+  const initialExitFeePercentage = useStakingExitFeeStore.getState().getData();
+  await Promise.all([
+    useStakingPositionStore.getState().fetch(undefined, { force: true }),
+    useStakingExitFeeStore.getState().fetch(undefined, { force: true }),
+  ]);
   const positionData = useStakingPositionStore.getState().getData();
+  const exitFeePercentage = useStakingExitFeeStore.getState().getData();
 
-  if (!positionData || positionData.exitFeePercentage === undefined) {
+  if (!positionData) {
     throw new RainbowError('[unstakeRnbw]: Position data missing');
   }
 
-  if (initialExitFeePercentage !== positionData.exitFeePercentage) {
+  if (exitFeePercentage == null) {
+    throw new RainbowError('[unstakeRnbw]: Exit fee missing');
+  }
+
+  if (initialExitFeePercentage !== exitFeePercentage) {
     throw new RainbowError('[unstakeRnbw]: Exit fee percentage changed');
   }
 
-  return positionData;
+  return { positionData, exitFeePercentage };
 }
 
 async function finalizeSubmittedUnstake({
@@ -126,9 +135,9 @@ async function finalizeSubmittedUnstake({
   }
 }
 
-function snapshotUnstakeAnalytics(positionData: StakingPositionData): UnstakeAnalyticsSnapshot {
+function snapshotUnstakeAnalytics(positionData: StakingPositionData, exitFeePercentage: number): UnstakeAnalyticsSnapshot {
   const { stakedRnbw: stakedRnbwRaw, decimals, sessionPnl } = positionData;
-  const { receiveRaw, exitFeeRaw } = computeUnstakeAmounts(positionData);
+  const { receiveRaw, exitFeeRaw } = computeUnstakeAmounts(stakedRnbwRaw, exitFeePercentage);
 
   return {
     stakedAmount: convertRawAmountToDecimalFormat(stakedRnbwRaw, decimals),
@@ -139,8 +148,7 @@ function snapshotUnstakeAnalytics(positionData: StakingPositionData): UnstakeAna
   };
 }
 
-function computeUnstakeAmounts(positionData: StakingPositionData): { exitFeeRaw: string; receiveRaw: string } {
-  const { stakedRnbw, exitFeePercentage } = positionData;
+function computeUnstakeAmounts(stakedRnbw: string, exitFeePercentage: number): { exitFeeRaw: string; receiveRaw: string } {
   const exitFeeRaw = mulWorklet(stakedRnbw, exitFeePercentage / 100);
   return { exitFeeRaw, receiveRaw: subWorklet(stakedRnbw, exitFeeRaw) };
 }

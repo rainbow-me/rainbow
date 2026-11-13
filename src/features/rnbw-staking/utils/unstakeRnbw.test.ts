@@ -10,8 +10,10 @@ import { unstakeRnbw } from './unstakeRnbw';
 
 const mockGetProvider = vi.fn();
 const mockLoadWallet = vi.fn<(...args: [unknown]) => Promise<unknown>>();
-const mockFetch = vi.fn<(...args: [undefined, { force: boolean } | undefined]) => Promise<void>>();
-const mockGetData = vi.fn<(...args: []) => StakingPositionData | undefined>();
+const mockFetchPosition = vi.fn<(...args: [undefined, { force: boolean } | undefined]) => Promise<void>>();
+const mockGetPosition = vi.fn<(...args: []) => StakingPositionData | null>();
+const mockFetchExitFee = vi.fn<(...args: [undefined, { force: boolean } | undefined]) => Promise<void>>();
+const mockGetExitFee = vi.fn<(...args: []) => number | null>();
 const mockExecuteUnstakeRnbw = vi.fn<(...args: [unknown]) => Promise<RnbwStakingExecution>>();
 const mockPollForStakingUpdate = vi.fn<(...args: [string]) => Promise<boolean>>();
 const mockTrack = vi.fn();
@@ -37,8 +39,17 @@ vi.mock('@/features/wallet/data/loadWallet', () => ({
 vi.mock('../stores/rnbwStakingPositionStore', () => ({
   useStakingPositionStore: {
     getState: () => ({
-      fetch: (params: undefined, options?: { force: boolean }) => mockFetch(params, options),
-      getData: () => mockGetData(),
+      fetch: (params: undefined, options?: { force: boolean }) => mockFetchPosition(params, options),
+      getData: () => mockGetPosition(),
+    }),
+  },
+}));
+
+vi.mock('../stores/rnbwStakingExitFeeStore', () => ({
+  useStakingExitFeeStore: {
+    getState: () => ({
+      fetch: (params: undefined, options?: { force: boolean }) => mockFetchExitFee(params, options),
+      getData: () => mockGetExitFee(),
     }),
   },
 }));
@@ -68,10 +79,11 @@ const PREPARED_CALLS = {
   },
 } as unknown as PreparedUnstakeRnbw;
 
+const EXIT_FEE_PERCENTAGE = 5;
+
 const POSITION: StakingPositionData = {
   allTiers: [],
   decimals: 18,
-  exitFeePercentage: 5,
   hasPosition: true,
   lastUpdateTime: '0',
   pnl: {
@@ -128,25 +140,38 @@ describe('unstakeRnbw', () => {
     vi.clearAllMocks();
     mockGetProvider.mockReturnValue(PROVIDER);
     mockLoadWallet.mockResolvedValue(new Wallet(PRIVATE_KEY));
-    mockGetData.mockReturnValue(POSITION);
-    mockFetch.mockResolvedValue(undefined);
+    mockGetPosition.mockReturnValue(POSITION);
+    mockFetchPosition.mockResolvedValue(undefined);
+    mockGetExitFee.mockReturnValue(EXIT_FEE_PERCENTAGE);
+    mockFetchExitFee.mockResolvedValue(undefined);
     mockExecuteUnstakeRnbw.mockResolvedValue(manualExecution());
     mockPollForStakingUpdate.mockResolvedValue(true);
   });
 
-  it('refreshes the staking position before submission and delegates to executeUnstakeRnbw', async () => {
+  it('refreshes the staking position and exit fee together before submission and delegates to executeUnstakeRnbw', async () => {
     const { order, record } = recordCallOrder();
-    mockFetch.mockImplementation(async () => {
-      record('fetch');
+    let resolvePositionFetch: (() => void) | undefined;
+    mockFetchPosition.mockImplementation(() => {
+      record('fetch position');
+      return new Promise<void>(resolve => {
+        resolvePositionFetch = resolve;
+      });
+    });
+    mockFetchExitFee.mockImplementation(async () => {
+      record('fetch exit fee');
     });
     mockExecuteUnstakeRnbw.mockImplementation(async () => {
       record('execute');
       return manualExecution();
     });
 
-    await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) });
+    const unstakePromise = unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) });
+    await vi.waitFor(() => expect(order).toEqual(['fetch position', 'fetch exit fee']));
+    resolvePositionFetch?.();
+    await unstakePromise;
 
-    expect(mockFetch).toHaveBeenCalledWith(undefined, { force: true });
+    expect(mockFetchPosition).toHaveBeenCalledWith(undefined, { force: true });
+    expect(mockFetchExitFee).toHaveBeenCalledWith(undefined, { force: true });
     expect(mockGetProvider).toHaveBeenCalled();
     expect(mockLoadWallet).toHaveBeenCalledWith({ address: ACCOUNT, provider: PROVIDER });
     expect(mockExecuteUnstakeRnbw).toHaveBeenCalledWith(
@@ -158,7 +183,7 @@ describe('unstakeRnbw', () => {
         provider: PROVIDER,
       })
     );
-    expect(order).toEqual(['fetch', 'execute']);
+    expect(order).toEqual(['fetch position', 'fetch exit fee', 'execute']);
   });
 
   it('returns after submitting the unstake execution', async () => {
@@ -187,7 +212,7 @@ describe('unstakeRnbw', () => {
   });
 
   it('throws when refreshed position data is missing', async () => {
-    mockGetData.mockReturnValueOnce(POSITION).mockReturnValueOnce(undefined);
+    mockGetPosition.mockReturnValue(null);
 
     await expect(unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) })).rejects.toThrow(
       '[unstakeRnbw]: Position data missing'
@@ -195,8 +220,20 @@ describe('unstakeRnbw', () => {
     expect(mockExecuteUnstakeRnbw).not.toHaveBeenCalled();
   });
 
-  it('throws when the exit fee percentage changes between snapshot and refresh', async () => {
-    mockGetData.mockReturnValueOnce({ ...POSITION, exitFeePercentage: 5 }).mockReturnValueOnce({ ...POSITION, exitFeePercentage: 7 });
+  it('throws when the refreshed exit fee is missing', async () => {
+    mockGetExitFee.mockReturnValueOnce(EXIT_FEE_PERCENTAGE).mockReturnValueOnce(null);
+
+    await expect(unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) })).rejects.toThrow(
+      '[unstakeRnbw]: Exit fee missing'
+    );
+    expect(mockExecuteUnstakeRnbw).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { name: 'changes between snapshot and refresh', initial: 5, refreshed: 7 },
+    { name: 'was not loaded before the refresh', initial: null, refreshed: 5 },
+  ])('throws when the exit fee percentage $name', async ({ initial, refreshed }) => {
+    mockGetExitFee.mockReturnValueOnce(initial).mockReturnValueOnce(refreshed);
 
     await expect(unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) })).rejects.toThrow(
       '[unstakeRnbw]: Exit fee percentage changed'
@@ -298,7 +335,7 @@ describe('unstakeRnbw', () => {
   });
 
   it('allows a zero exit fee percentage', async () => {
-    mockGetData.mockReturnValue({ ...POSITION, exitFeePercentage: 0 });
+    mockGetExitFee.mockReturnValue(0);
 
     const result = await unstakeRnbw({ address: ACCOUNT, gasParams: GAS_PARAMS, preparedCalls: Promise.resolve(null) });
     await result.waitForConfirmation();
