@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
 
-import Animated, { useDerivedValue, useSharedValue, type AnimatedRef } from 'react-native-reanimated';
+import Animated, { useDerivedValue, type AnimatedRef } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { type TokenToBuyListItem } from '@/__swaps__/types/search';
@@ -19,6 +19,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsSearchActions, useUserAssetsSearchStore } from '@/state/assets/userAssetsSearch';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
@@ -33,7 +34,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(s => s.getChainsLabel());
-  const inputChainIdFilter = useSharedValue(userAssetsSearchActions.getChainIdFilter());
+  const inputChainIdFilter = useStoreSharedValue(useUserAssetsSearchStore, s => s.chainIdFilter);
 
   const chainName = useDerivedValue(() => {
     return output
@@ -50,7 +51,6 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       if (output && chainId) {
         setSelectedOutputChainId(chainId);
       } else {
-        inputChainIdFilter.value = chainId;
         userAssetsSearchActions.setChainIdFilter(chainId);
       }
 
@@ -60,7 +60,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         chainId,
       });
     },
-    [animatedRef, inputChainIdFilter, output, setSelectedOutputChainId]
+    [animatedRef, output, setSelectedOutputChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
@@ -72,10 +72,10 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      selected: output ? selectedOutputChainId : inputChainIdFilter,
+      selected: output ? selectedOutputChainId : userAssetsSearchActions.getChainIdFilter(),
       setSelected: handleSelectChain,
     });
-  }, [handleSelectChain, inputChainIdFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
+  }, [handleSelectChain, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">

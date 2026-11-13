@@ -6,7 +6,7 @@ import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } 
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import type { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import type { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { analytics } from '@/analytics';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
@@ -56,15 +56,6 @@ const TokenToSellListComponent = () => {
   const userAssetIds = useUserAssetSearchResults();
   const userAssets = useUserAssetsStore(state => state.userAssets);
 
-  const searchResultsMap = useMemo(() => {
-    const assets = new Map<UniqueId, ParsedSearchAsset>();
-    for (let i = 0; i < userAssetIds.length; i++) {
-      const asset = userAssets.get(userAssetIds[i]);
-      if (asset) assets.set(asset.uniqueId, asset);
-    }
-    return assets;
-  }, [userAssetIds, userAssets]);
-
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
       if (!token) return;
@@ -110,9 +101,9 @@ const TokenToSellListComponent = () => {
 
   const renderItem = useCallback(
     ({ item: uniqueId }: { item: string }) => {
-      return <MemoizedCoinRow onPress={handleSelectToken} output={false} uniqueIdOrAsset={searchResultsMap.get(uniqueId) || uniqueId} />;
+      return <MemoizedCoinRow onPress={handleSelectToken} output={false} uniqueIdOrAsset={userAssets.get(uniqueId) || uniqueId} />;
     },
-    [handleSelectToken, searchResultsMap]
+    [handleSelectToken, userAssets]
   );
 
   const listFooter = useMemo(() => {
