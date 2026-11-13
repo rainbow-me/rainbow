@@ -1,22 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { type AddressOrEth, type AssetType, type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
+import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
+import { Inline, Text, TextIcon } from '@/design-system';
 import type { RainbowToken } from '@/entities/tokens';
-import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { containsEmoji } from '@/helpers/strings';
 import * as i18n from '@/languages';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme } from '@/theme/ThemeContext';
-import ethereumUtils from '@/utils/ethereumUtils';
 
 import SheetActionButton from './SheetActionButton';
-
-import '@/__swaps__/utils/swaps';
-
-import { navigateToSwaps, type NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { Inline, Text, TextIcon } from '@/design-system';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -50,99 +43,9 @@ function SwapActionButton({
   const color = givenColor || colors.swapPurple;
   const symbolHasEmoji = useMemo(() => (label ? containsEmoji(label) : false), [label]);
 
-  const goToSwap = useCallback(async () => {
-    const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
-    const chainsName = useBackendNetworksStore.getState().getChainsName();
-    const chainId = asset.chainId || chainsIdByName[asset.network];
-    const uniqueId = `${asset.address}_${chainId}`;
-    const userAsset = useUserAssetsStore.getState().userAssets.get(uniqueId);
-
-    const parsedAsset = parseSearchAsset({
-      assetWithPrice: {
-        ...asset,
-        uniqueId,
-        address: asset.address as AddressOrEth,
-        type: asset.type as AssetType,
-        chainId,
-        chainName: chainsName[chainId],
-        isNativeAsset: false,
-        native: {},
-      },
-      searchAsset: {
-        ...asset,
-        uniqueId,
-        chainId,
-        chainName: chainsName[chainId],
-        address: asset.address as AddressOrEth,
-        highLiquidity: asset.highLiquidity ?? false,
-        isRainbowCurated: asset.isRainbowCurated ?? false,
-        isVerified: asset.isVerified ?? false,
-        mainnetAddress: (asset.mainnet_address ?? '') as AddressOrEth,
-        networks: asset.networks ?? [],
-        type: asset.type as AssetType,
-      },
-      userAsset,
-    });
-
-    const params: NavigateToSwapsParams = {};
-
-    if (inputType === SwapAssetType.inputAsset) {
-      params.inputAsset = userAsset || parsedAsset;
-
-      const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
-      if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-        const userOutputAsset = useUserAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
-
-        if (userOutputAsset) {
-          params.outputAsset = userOutputAsset;
-        } else {
-          const outputAsset = {
-            ...nativeAssetForChain,
-            uniqueId: `${nativeAssetForChain.address}_${chainId}`,
-            chainId,
-            chainName: chainsName[chainId],
-            address: nativeAssetForChain.address as AddressOrEth,
-            type: nativeAssetForChain.type as AssetType,
-            mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,
-            networks: nativeAssetForChain.networks,
-            colors: {
-              primary: nativeAssetForChain.colors?.primary,
-              fallback: nativeAssetForChain.colors?.fallback || undefined, // Ensure fallback is either string or undefined
-            },
-            highLiquidity: nativeAssetForChain.highLiquidity ?? false,
-            isRainbowCurated: nativeAssetForChain.isRainbowCurated ?? false,
-            isVerified: nativeAssetForChain.isVerified ?? false,
-            native: {} as ParsedSearchAsset['native'],
-            balance: {
-              amount: nativeAssetForChain.balance?.amount ?? '0',
-              display: nativeAssetForChain.balance?.display ?? '0',
-            },
-            isNativeAsset: true,
-            price: {
-              value: nativeAssetForChain.price?.value ?? 0,
-              relative_change_24h: nativeAssetForChain.price?.relative_change_24h ?? 0,
-            },
-          } satisfies ParsedSearchAsset;
-
-          params.outputAsset = outputAsset;
-        }
-      }
-    } else {
-      const largestBalanceSameChainUserAsset = useUserAssetsStore
-        .getState()
-        .getUserAssets()
-        .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
-
-      if (largestBalanceSameChainUserAsset) {
-        params.inputAsset = largestBalanceSameChainUserAsset;
-        params.outputAsset = parsedAsset;
-      } else {
-        params.inputAsset = null;
-        params.outputAsset = parsedAsset;
-      }
-    }
-
-    navigateToSwaps(params);
+  const goToSwap = useCallback(() => {
+    const parsedAsset = transformRainbowTokenToParsedSearchAsset(asset);
+    navigateToSwaps(inputType === SwapAssetType.inputAsset ? { inputAsset: parsedAsset } : { outputAsset: parsedAsset });
   }, [asset, inputType]);
 
   return (
