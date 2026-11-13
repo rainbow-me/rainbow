@@ -1,6 +1,7 @@
 import { createBaseStore, getQueryKey } from '@storesjs/stores';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -9,11 +10,13 @@ import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { createDepositConfig } from '@/systems/funding/config';
+import { resolveInitialDepositAsset } from '@/systems/funding/utils/sourceAsset';
 
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { type UserAsset } from './types';
 import { userAssetsActions, useUserAssetsStore } from './userAssets';
-import { userAssetsSearchActions, useUserAssetSearchResults } from './userAssetsSearch';
+import { userAssetsSearchActions, useUserAssetSearch, useUserAssetSearchResults } from './userAssetsSearch';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 const requests = vi.hoisted(() => ({
@@ -21,6 +24,8 @@ const requests = vi.hoisted(() => ({
 }));
 
 vi.mock('@/resources/platform/client', () => ({ getPlatformClient: () => ({ get: requests.assets }) }));
+vi.mock('@/__swaps__/utils/swaps', () => ({ parseAssetAndExtend: ({ asset }: { asset: ParsedSearchAsset | null }) => asset }));
+vi.mock('@/systems/funding/constants', () => ({ INITIAL_SLIDER_PROGRESS: 25 }));
 vi.mock('@/state/wallets/walletsStore', () => ({ useWalletsStore: createBaseStore(() => ({ accountAddress: '' })) }));
 vi.mock('@/resources/addys/client', () => ({ isStaging: () => false }));
 vi.mock('@/analytics', () => ({ analytics: { track: vi.fn() } }));
@@ -59,6 +64,30 @@ afterEach(() => {
 });
 
 describe('user assets', () => {
+  it('selects an initial deposit asset from the default list independently of search controls', () => {
+    const config = createDepositConfig({
+      id: 'deposit',
+      to: { chainId: ChainId.optimism, token: { address: TOKEN, decimals: 18, symbol: 'TKN' } },
+    });
+    const nativeAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].address;
+    const nativeId = getUniqueId(nativeAddress, ChainId.mainnet);
+    publishAssets([asset(nativeAddress, '0.01'), asset(TOKEN, '100', ChainId.optimism)]);
+
+    expect(useUserAssetSearch.getState().defaultAssetIds).toEqual([TOKEN_ID]);
+    expect(resolveInitialDepositAsset(config)?.uniqueId).toBe(TOKEN_ID);
+
+    userAssetsSearchActions.setSearchQuery('no matching token');
+    userAssetsSearchActions.setChainIdFilter(ChainId.mainnet);
+    expect(useUserAssetSearchResults.getState()).toEqual([]);
+    expect(resolveInitialDepositAsset(config)?.uniqueId).toBe(TOKEN_ID);
+
+    publishAssets([asset(nativeAddress, '1'), asset(TOKEN, '100', ChainId.optimism)]);
+    expect(resolveInitialDepositAsset(config)?.uniqueId).toBe(nativeId);
+
+    publishAssets([asset(nativeAddress, '0.01')]);
+    expect(resolveInitialDepositAsset(config)).toBeNull();
+  });
+
   it('keeps position tokens spendable while excluding them from wallet rows and balance', async () => {
     requests.assets.mockResolvedValueOnce({ data: { result: { lp: asset(LP, '100'), token: asset(TOKEN, '20', ChainId.optimism) } } });
     const unsubscribe = useUserAssetsStore.subscribe(() => undefined);

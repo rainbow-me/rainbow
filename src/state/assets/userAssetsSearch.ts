@@ -18,6 +18,11 @@ type UserAssetsSearchState = {
   setSearchQuery: (query: string) => void;
 };
 
+type UserAssetSearch = {
+  defaultAssetIds: UniqueId[];
+  search: (chainIdFilter: ChainId | undefined, query: string) => UniqueId[];
+};
+
 // ============ Constants ====================================================== //
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -46,7 +51,11 @@ export const useUserAssetsSearchStore = createBaseStore<UserAssetsSearchState>(s
   },
 }));
 
-const useUserAssetSearch = createDerivedStore(
+/**
+ * Default token IDs above the small-value threshold, plus cached search over all
+ * non-hidden holdings. Neither depends on the active query or chain filter.
+ */
+export const useUserAssetSearch = createDerivedStore(
   $ =>
     createUserAssetSearch(
       $(userAssetsStoreManager, s => s.currency),
@@ -61,7 +70,7 @@ const useUserAssetSearch = createDerivedStore(
  */
 export const useUserAssetSearchResults = createDerivedStore(
   $ => {
-    const search = $(useUserAssetSearch, s => s);
+    const search = $(useUserAssetSearch, s => s.search);
     const chainIdFilter = $(useUserAssetsSearchStore, s => s.chainIdFilter);
     const query = $(useUserAssetsSearchStore, s => s.searchQuery);
 
@@ -87,15 +96,15 @@ function createUserAssetSearch(
   currency: SupportedCurrencyKey,
   hiddenAssets: UserAssetsState['hiddenAssets'],
   userAssets: UserAssetsState['userAssets']
-): (chainIdFilter: ChainId | undefined, query: string) => UniqueId[] {
+): UserAssetSearch {
   const allAssets: ParsedSearchAsset[] = [];
-  const allIds: UniqueId[] = [];
+  const defaultAssetIds: UniqueId[] = [];
   const assetsByChain = new Map<ChainId | undefined, ParsedSearchAsset[]>();
   const cache = new Map<string, UniqueId[]>();
   const threshold = supportedCurrencies[currency].userAssetsSmallThreshold;
 
   assetsByChain.set(undefined, allAssets);
-  cache.set('undefined:', allIds);
+  cache.set('undefined:', defaultAssetIds);
 
   for (const asset of userAssets.values()) {
     if (hiddenAssets.has(asset.uniqueId)) continue;
@@ -107,41 +116,44 @@ function createUserAssetSearch(
 
     const chainKey = `${asset.chainId}:`;
     let chainIds = cache.get(chainKey);
-    cache.set(chainKey, (chainIds ??= []));
+    if (!chainIds) cache.set(chainKey, (chainIds = []));
 
     if (Number(asset.native.balance.amount) > threshold) {
-      allIds.push(asset.uniqueId);
+      defaultAssetIds.push(asset.uniqueId);
       chainIds.push(asset.uniqueId);
     }
   }
 
-  return (chainIdFilter, query) => {
-    const key = `${chainIdFilter}:${query}`;
-    const cached = cache.get(key);
-    if (cached) return cached;
+  return {
+    defaultAssetIds,
+    search: (chainIdFilter, query) => {
+      const key = `${chainIdFilter}:${query}`;
+      const cached = cache.get(key);
+      if (cached) return cached;
 
-    const search = query ? new RegExp(escapeRegExp(query), 'i') : null;
-    const minimum = query.length >= 2 ? 0 : threshold;
-    const ids: UniqueId[] = [];
+      const search = query ? new RegExp(escapeRegExp(query), 'i') : null;
+      const minimum = query.length >= 2 ? 0 : threshold;
+      const ids: UniqueId[] = [];
 
-    for (const asset of assetsByChain.get(chainIdFilter) ?? []) {
-      if (!(Number(asset.native.balance.amount) > minimum)) continue;
-      if (search && !search.test(asset.name) && !search.test(asset.symbol) && asset.address.toLowerCase() !== query) continue;
-      ids.push(asset.uniqueId);
-    }
+      for (const asset of assetsByChain.get(chainIdFilter) ?? []) {
+        if (!(Number(asset.native.balance.amount) > minimum)) continue;
+        if (search && !search.test(asset.name) && !search.test(asset.symbol) && asset.address.toLowerCase() !== query) continue;
+        ids.push(asset.uniqueId);
+      }
 
-    cache.set(key, ids);
+      cache.set(key, ids);
 
-    if (cache.size > SEARCH_CACHE_MAX_ENTRIES) {
-      for (const cachedKey of cache.keys()) {
-        if (cachedKey.indexOf(':') !== cachedKey.length - 1) {
-          cache.delete(cachedKey);
-          break;
+      if (cache.size > SEARCH_CACHE_MAX_ENTRIES) {
+        for (const cachedKey of cache.keys()) {
+          if (cachedKey.indexOf(':') !== cachedKey.length - 1) {
+            cache.delete(cachedKey);
+            break;
+          }
         }
       }
-    }
 
-    return ids;
+      return ids;
+    },
   };
 }
 
