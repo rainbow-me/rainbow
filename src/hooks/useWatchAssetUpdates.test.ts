@@ -25,7 +25,6 @@ const mockGetAssetUpdates = vi.fn<() => Promise<{ data: { result: Record<string,
   },
 }));
 
-const mockGetTokenAddresses = vi.fn(() => new Set<string>());
 const mockClaimablesFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
 const mockRewardsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
 const mockPositionsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
@@ -103,7 +102,6 @@ describe('watchAssetUpdates', () => {
     usePositionsStore.setState(state => ({
       ...state,
       fetch: async (params, options) => mockPositionsFetch(params, options),
-      getTokenAddresses: mockGetTokenAddresses,
     }));
     useClaimablesStore.setState(state => ({
       ...state,
