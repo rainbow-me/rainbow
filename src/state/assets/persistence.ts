@@ -7,7 +7,7 @@ import { type QueryEnabledUserAssetsState, type UserAssetsState } from './types'
 import { getChainBalances, updateHiddenAssetsBalance } from './utils';
 
 /** Persisted holdings and preferences; chain balances are rebuilt on hydration. */
-export type UserAssetsStateToPersist = Pick<Partial<UserAssetsState>, 'hiddenAssets' | 'userAssets'>;
+export type UserAssetsStateToPersist = Pick<UserAssetsState, 'hiddenAssets' | 'userAssets'>;
 
 type PersistedUserAssetsState = Pick<
   Partial<QueryEnabledUserAssetsState>,
@@ -17,14 +17,16 @@ type PersistedUserAssetsState = Pick<
   userAssets?: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
-/** Serializes canonical holdings while preserving the query store's fetch metadata. */
+/**
+ * Serializes canonical holdings while preserving the query store's fetch metadata.
+ */
 export function serializeUserAssetsState({ state, version }: StorageValue<UserAssetsStateToPersist>): string {
   try {
     return JSON.stringify({
       state: {
         ...state,
-        hiddenAssets: Array.from(state.hiddenAssets ?? []),
-        userAssets: Array.from(state.userAssets ?? []),
+        hiddenAssets: Array.from(state.hiddenAssets),
+        userAssets: Array.from(state.userAssets),
       },
       version,
     });
@@ -40,7 +42,7 @@ export function serializeUserAssetsState({ state, version }: StorageValue<UserAs
 export function deserializeUserAssetsState(
   serializedState: unknown,
   address: UserAssetsState['address']
-): StorageValue<Partial<QueryEnabledUserAssetsState>> {
+): StorageValue<UserAssetsStateToPersist & Partial<QueryEnabledUserAssetsState>> {
   let parsed: StorageValue<PersistedUserAssetsState>;
   try {
     if (typeof serializedState !== 'string') throw new Error('Expected string serialized state');
@@ -53,6 +55,7 @@ export function deserializeUserAssetsState(
   const { state, version } = parsed;
   let userAssets = new Map<UniqueId, ParsedSearchAsset>();
   let hiddenAssets = new Set<UniqueId>();
+
   try {
     userAssets = new Map(state.userAssets);
   } catch (error) {

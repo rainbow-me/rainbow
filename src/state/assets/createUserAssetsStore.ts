@@ -148,7 +148,7 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
             ({
               hiddenAssets: state.hiddenAssets,
               userAssets: state.userAssets,
-            }) satisfies Required<UserAssetsStateToPersist>,
+            }) satisfies UserAssetsStateToPersist,
           serializer: serializeUserAssetsState,
           storageKey: `userAssets_${address}`,
           version: 2,
