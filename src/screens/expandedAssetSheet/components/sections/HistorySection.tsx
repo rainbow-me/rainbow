@@ -258,7 +258,7 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
           </Text>
         </Box>
         <Box flexDirection="row" gap={12} justifyContent="space-between" alignItems="center">
-          <Box style={flexStyles} overflow="hidden">
+          <Box style={flexStyles}>
             <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
               <Text
                 size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'}
@@ -268,7 +268,7 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
                 {symbol}
               </Text>
               <Box flexDirection="row" alignItems="center" style={flexStyles}>
-                <Text size="17pt" color="labelSecondary" weight="medium">
+                <Text size="17pt" color="labelSecondary" weight="medium" numberOfLines={1} style={{ flexShrink: 1 }}>
                   {currencyAmount}
                 </Text>
                 <Text size="17pt" ellipsizeMode="tail" numberOfLines={1} color="labelQuaternary" weight="medium" style={flexStyles}>
