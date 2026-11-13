@@ -1,7 +1,7 @@
 import { createBaseStore, getQueryKey } from '@storesjs/stores';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
@@ -9,6 +9,7 @@ import { createMockPool, createMockPositionsData, createMockRainbowPosition } fr
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { rainbowStorage } from '@/state/internal/rainbowStorage';
+import { type TokenData } from '@/state/liveTokens/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createDepositConfig } from '@/systems/funding/config';
 import { resolveInitialDepositAsset } from '@/systems/funding/utils/sourceAsset';
@@ -20,7 +21,7 @@ import { userAssetsSearchActions, useUserAssetSearch, useUserAssetSearchResults 
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 const requests = vi.hoisted(() => ({
-  assets: vi.fn<(path: string) => Promise<{ data: { result: Record<string, UserAsset> } }>>(async () => ({ data: { result: {} } })),
+  assets: vi.fn<(path: string) => Promise<{ data: { result?: Record<string, UserAsset> } }>>(async () => ({ data: { result: {} } })),
 }));
 
 vi.mock('@/resources/platform/client', () => ({ getPlatformClient: () => ({ get: requests.assets }) }));
@@ -64,6 +65,57 @@ afterEach(() => {
 });
 
 describe('user assets', () => {
+  it('clears holdings when the API omits an empty result', async () => {
+    publishAssets([asset(LP, '100')]);
+    requests.assets.mockResolvedValueOnce({ data: {} });
+    await userAssetsActions.fetch(undefined, { force: true });
+
+    expect(useUserAssetsStore.getState().userAssets.size).toBe(0);
+  });
+
+  it('converts platform defaults and timestamps before exposing holdings', async () => {
+    const holding: UserAsset = {
+      asset: {
+        address: TOKEN,
+        chainId: ChainId.optimism,
+        mainnetAddress: LP,
+        colors: {},
+        price: { value: 10, changedAt: '2026-11-13T14:00:00Z' },
+        networks: { [ChainId.optimism]: { address: TOKEN } },
+        bridging: { networks: { [ChainId.mainnet]: {} } },
+      },
+      quantity: '2',
+      value: '20',
+    };
+    requests.assets.mockResolvedValueOnce({ data: { result: { token: holding, lp: asset(LP, '100') } } });
+    await userAssetsActions.fetch(undefined, { force: true });
+
+    expect(userAssetsActions.getUserAsset(TOKEN_ID)).toMatchObject({
+      address: TOKEN,
+      mainnetAddress: LP,
+      decimals: 0,
+      isVerified: false,
+      balance: { amount: '2' },
+      networks: { [ChainId.optimism]: { address: TOKEN, decimals: 0 } },
+      price: { value: 10, changed_at: 1794578400, relative_change_24h: 0 },
+      bridging: { isBridgeable: false, networks: { [ChainId.mainnet]: {} } },
+    });
+    expect(userAssetsActions.getUserAsset(LP_ID)?.mainnetAddress).toBeUndefined();
+
+    const token: TokenData = {
+      price: '12',
+      change: { change5mPct: '0', change1hPct: '0', change4hPct: '0', change12hPct: '0', change24hPct: '0' },
+      marketData: { circulatingMarketCap: '0' },
+      reliability: { metadata: { liquidityCap: '0' }, status: 'PRICE_RELIABILITY_STATUS_TRUSTED' },
+      updateTime: '2026-11-13T13:59:59Z',
+    };
+    userAssetsActions.updateTokens({ [TOKEN_ID]: token });
+    expect(userAssetsActions.getUserAsset(TOKEN_ID)?.price?.value).toBe(10);
+
+    userAssetsActions.updateTokens({ [TOKEN_ID]: { ...token, updateTime: '2026-11-13T14:00:01Z' } });
+    expect(userAssetsActions.getUserAsset(TOKEN_ID)?.price?.value).toBe(12);
+  });
+
   it('excludes the opposite swap asset from highest-value selection', () => {
     const nativeAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].address;
     const nativeId = getUniqueId(nativeAddress, ChainId.mainnet);
@@ -325,7 +377,7 @@ function publishPositions(address: string, poolAddresses: string[]): void {
   }));
 }
 
-function asset(address: string, value: string, chainId = ChainId.mainnet): UserAsset {
+function asset(address: AddressOrEth, value: string, chainId = ChainId.mainnet): UserAsset {
   return {
     asset: {
       address,
@@ -338,7 +390,7 @@ function asset(address: string, value: string, chainId = ChainId.mainnet): UserA
       verified: true,
       transferable: true,
       colors: { primary: '#000000' },
-      price: { value: 1000, changedAt: 0, relativeChange24h: 0 },
+      price: { value: 1000, changedAt: '1970-01-01T00:00:00Z', relativeChange24h: 0 },
       networks: {},
       bridging: { bridgeable: false, networks: {} },
     },
