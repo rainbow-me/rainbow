@@ -29,7 +29,7 @@ import { logger, RainbowError } from '@/logger';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type PerpsRoute } from '@/navigation/types';
-import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
+import { useUserAssetSearch } from '@/state/assets/userAssetsSearch';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { fontWithWidth } from '@/styles/buildTextStyles';
@@ -127,7 +127,7 @@ const PerpsAccountScreenFooter = () => {
   const safeAreaInsets = useSafeAreaInsets();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
-  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
+  const hasDefaultAssets = useUserAssetSearch(s => s.defaultAssetIds.length > 0);
   const { navigateToAddCash } = useAddCashRoute();
 
   return (
@@ -153,7 +153,7 @@ const PerpsAccountScreenFooter = () => {
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
-            if (hasNoAssets) {
+            if (!hasDefaultAssets) {
               navigateToAddCash();
             } else {
               Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
@@ -169,7 +169,7 @@ const PerpsAccountScreenFooter = () => {
         alignItems={'center'}
       >
         <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-          {hasNoAssets
+          {!hasDefaultAssets
             ? i18n.t(i18n.l.perps.actions.fund_wallet)
             : hasZeroBalance
               ? i18n.t(i18n.l.perps.deposit.title)

@@ -13,7 +13,7 @@ import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidA
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
+import { useUserAssetSearch } from '@/state/assets/userAssetsSearch';
 import { checkIfReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
@@ -21,7 +21,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const isBalanceZero = useHyperliquidAccountStore(state => Number(state.getBalance()) === 0);
-  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
+  const hasDefaultAssets = useUserAssetSearch(s => s.defaultAssetIds.length > 0);
   const accountAddress = useWalletsStore(state => state.accountAddress);
   const { navigateToAddCash } = useAddCashRoute();
 
@@ -96,7 +96,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
         {isBalanceZero && (
           <HyperliquidButton
             onPress={() => {
-              if (hasNoAssets) {
+              if (!hasDefaultAssets) {
                 navigateToAddCash();
                 return;
               }
@@ -108,8 +108,8 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             borderRadius={24}
             height={40}
           >
-            <Text color={isDarkMode ? 'black' : 'white'} size={hasNoAssets ? '17pt' : '20pt'} weight="black">
-              {hasNoAssets ? i18n.t(i18n.l.perps.actions.fund_wallet) : i18n.t(i18n.l.perps.deposit.title)}
+            <Text color={isDarkMode ? 'black' : 'white'} size={!hasDefaultAssets ? '17pt' : '20pt'} weight="black">
+              {!hasDefaultAssets ? i18n.t(i18n.l.perps.actions.fund_wallet) : i18n.t(i18n.l.perps.deposit.title)}
             </Text>
           </HyperliquidButton>
         )}

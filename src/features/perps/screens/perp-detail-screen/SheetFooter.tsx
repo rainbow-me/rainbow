@@ -14,7 +14,7 @@ import { type PerpMarket } from '@/features/perps/types';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
+import { useUserAssetSearch } from '@/state/assets/userAssetsSearch';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
@@ -32,11 +32,11 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
   const hasPosition = !!position;
   const hasPerpsBalance = useHyperliquidAccountStore(state => Number(state.getBalance()) !== 0);
-  const hasUserAssets = useUserAssetSearchResults(ids => ids.length > 0);
+  const hasDefaultAssets = useUserAssetSearch(s => s.defaultAssetIds.length > 0);
   const { navigateToAddCash } = useAddCashRoute();
 
   const noPositionButton = useMemo(() => {
-    if (!hasUserAssets) {
+    if (!hasDefaultAssets) {
       return {
         onPress: () => {
           navigateToAddCash();
@@ -63,7 +63,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       },
       text: i18n.t(i18n.l.perps.actions.open_position),
     };
-  }, [hasUserAssets, hasPerpsBalance, market, navigateToAddCash, navigation]);
+  }, [hasDefaultAssets, hasPerpsBalance, market, navigateToAddCash, navigation]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">

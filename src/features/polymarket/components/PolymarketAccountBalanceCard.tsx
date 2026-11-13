@@ -13,7 +13,7 @@ import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymark
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
+import { useUserAssetSearch } from '@/state/assets/userAssetsSearch';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 
@@ -21,7 +21,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
   const { isDarkMode } = useColorMode();
   const isBalanceZero = usePolymarketBalanceStore(state => state.isBalanceZero());
   const balance = usePolymarketBalanceStore(state => state.getBalance());
-  const hasNoAssets = useUserAssetSearchResults(ids => !ids.length);
+  const hasDefaultAssets = useUserAssetSearch(s => s.defaultAssetIds.length > 0);
   const { navigateToAddCash } = useAddCashRoute();
 
   return (
@@ -94,7 +94,7 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
         {isBalanceZero && (
           <PolymarketButton
             onPress={() => {
-              if (hasNoAssets) {
+              if (!hasDefaultAssets) {
                 navigateToAddCash();
                 return;
               }
@@ -106,8 +106,8 @@ export const PolymarketAccountBalanceCard = memo(function PolymarketAccountBalan
             borderRadius={24}
             height={40}
           >
-            <Text color={isDarkMode ? 'black' : 'white'} size={hasNoAssets ? '17pt' : '20pt'} weight="black">
-              {hasNoAssets ? i18n.t(i18n.l.perps.actions.fund_wallet) : i18n.t(i18n.l.perps.deposit.title)}
+            <Text color={isDarkMode ? 'black' : 'white'} size={!hasDefaultAssets ? '17pt' : '20pt'} weight="black">
+              {!hasDefaultAssets ? i18n.t(i18n.l.perps.actions.fund_wallet) : i18n.t(i18n.l.perps.deposit.title)}
             </Text>
           </PolymarketButton>
         )}
