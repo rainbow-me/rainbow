@@ -189,11 +189,9 @@ function SportsGameOverview({
             </Text>
           </Box>
           <Box gap={16}>
-            {title ? (
-              <Text color="label" size="26pt" weight="heavy">
-                {title}
-              </Text>
-            ) : null}
+            <Text color="label" size="26pt" weight="heavy">
+              {title}
+            </Text>
             <EventVolume volumeUsd={volumeUsd} />
           </Box>
         </Box>

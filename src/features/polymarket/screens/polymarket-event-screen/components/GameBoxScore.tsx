@@ -93,12 +93,10 @@ const ParticipantScore = memo(function ParticipantScore({
   index,
 }: {
   isDarkMode: boolean;
-  participant?: Participant;
-  score?: ScoreColumn[];
+  participant: Participant;
+  score: ScoreColumn[];
   index: 0 | 1;
 }) {
-  if (!participant) return null;
-
   return (
     <Box flexDirection="row" alignItems="center" gap={10} style={styles.participantScoreRow}>
       <SportsImage isDarkMode={isDarkMode} imageUrl={participant.imageUrl} name={participant.name} size={24} />
