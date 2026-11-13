@@ -26,6 +26,7 @@ import { OpenPositionsSection } from '@/features/polymarket/screens/polymarket-e
 import { SportsEventMarkets } from '@/features/polymarket/screens/polymarket-event-screen/SportsEventMarkets';
 import { usePolymarketEventStore } from '@/features/polymarket/stores/polymarketEventStore';
 import { type PolymarketEvent, type PolymarketMarketEvent } from '@/features/polymarket/types/polymarket-event';
+import { getParticipantDisplayName } from '@/features/sports/core/participants';
 import { getGameId, useSportsStore } from '@/features/sports/data/sportsStore';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsImage } from '@/features/sports/ui/SportsImage';
@@ -165,12 +166,18 @@ function SportsGameOverview({
   });
 
   const volumeUsd = useSportsStore(s => event?.volume ?? s.games[gameId]?.volumeUsd);
+  const title = useSportsStore(s => {
+    const participants = s.games[gameId]?.participants;
+    if (!participants) return undefined;
+    const [first, second] = participants.map(participant => getParticipantDisplayName(participant).displayName);
+    return `${first} ${i18n.t(i18n.l.predictions.sports.vs)} ${second}`;
+  });
   const icon = competition ? sportsIcons[competition.id] : undefined;
 
   return (
     <>
       {competition ? (
-        <Box gap={12}>
+        <Box gap={24}>
           <Box flexDirection="row" alignItems="center" gap={8}>
             {icon ? (
               <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={28} style={{ width: 28, height: 28 }} />
@@ -181,7 +188,12 @@ function SportsGameOverview({
               {competition.name}
             </Text>
           </Box>
-          <EventVolume volumeUsd={volumeUsd} />
+          <Box gap={16}>
+            <Text color="label" size="26pt" weight="heavy">
+              {title}
+            </Text>
+            <EventVolume volumeUsd={volumeUsd} />
+          </Box>
         </Box>
       ) : event ? (
         <EventHeaderSection event={event} />
