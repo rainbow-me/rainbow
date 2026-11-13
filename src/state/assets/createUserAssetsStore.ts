@@ -113,11 +113,12 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
 
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
+          const currency = userAssetsStoreManager.getState().currency;
+
           for (const [tokenId, token] of Object.entries(tokens)) {
             if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
 
             const asset = state.userAssets.get(tokenId);
-            const currency = userAssetsStoreManager.getState().currency;
 
             if (!asset || (asset?.price?.changed_at && asset?.price?.changed_at > toUnixTime(token.updateTime))) continue;
 

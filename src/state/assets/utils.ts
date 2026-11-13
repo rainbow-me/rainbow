@@ -37,7 +37,7 @@ export async function fetchUserAssets(params: UserAssetsParams, abortController:
     const res = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
       abortController,
       params: { currency: currency, chainIds: chainIds.join(','), address: address },
-      timeout: getUserAssetsTimeoutDuration(),
+      timeout: time.seconds(isStaging() ? 40 : 20),
     });
 
     if (res.data.errors?.length) {
@@ -50,15 +50,10 @@ export async function fetchUserAssets(params: UserAssetsParams, abortController:
 
     return filterZeroBalanceAssets(Object.values(res.data.result));
   } catch (e) {
-    console.log(e);
     logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets', e));
   }
 
   return null;
-}
-
-function getUserAssetsTimeoutDuration() {
-  return time.seconds(isStaging() ? 40 : 20);
 }
 
 // ============ Asset Utils ==================================================== //
@@ -117,22 +112,19 @@ export function setUserAssets({
   chainIdsToUpdate?: ChainId[];
 }): Pick<UserAssetsState, 'userAssets' | 'chainBalances'> {
   const allAssets: ParsedSearchAsset[] = [];
+
   if (chainIdsToUpdate) {
     const chains = new Set(chainIdsToUpdate);
-    for (const asset of state.userAssets.values()) {
-      if (!chains.has(asset.chainId)) allAssets.push(asset);
-    }
+    for (const asset of state.userAssets.values()) if (!chains.has(asset.chainId)) allAssets.push(asset);
   }
+
   for (const asset of userAssets) allAssets.push(transformUserAssetToParsedSearchAsset(asset));
   allAssets.sort((a, b) => (Number(b.native.balance.amount) || 0) - (Number(a.native.balance.amount) || 0));
 
   const parsedAssets = new Map<UniqueId, ParsedSearchAsset>();
   for (const asset of allAssets) parsedAssets.set(asset.uniqueId, asset);
 
-  return {
-    userAssets: parsedAssets,
-    chainBalances: getChainBalances(parsedAssets),
-  };
+  return { userAssets: parsedAssets, chainBalances: getChainBalances(parsedAssets) };
 }
 
 /**
@@ -275,7 +267,9 @@ export function updateHiddenAssetsBalance({
   }
 
   const { hiddenAssetBalances, setHiddenAssetBalance } = userAssetsStoreManager.getState();
-  if (balance !== hiddenAssetBalances[address]) setHiddenAssetBalance(address, balance);
+  if (balance === hiddenAssetBalances[address]) return;
+
+  setHiddenAssetBalance(address, balance);
 }
 
 export function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
