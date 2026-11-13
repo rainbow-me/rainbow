@@ -10,10 +10,14 @@
 #   or approximated corner geometry is added; earlier iOS retains the scalar path.
 #   Paper skips ending a refresh while the control is detached. End it when the
 #   control returns to the window so the indicator doesn't remain stuck.
-#   Paper needs ui-monospace to select the system SF Mono at the requested weight.
+#   Paper ignores the ui-monospace family that Fabric maps to the system monospaced
+#   design. The App Store rejects a bundled SF Mono (ITMS-91182), so Paper resolves
+#   ui-monospace to the system font at the requested weight with the monospaced design.
 # Upstream Issue (corners): none filed yet. Paper's unequal-radius raster paths use
 #   circular arcs; UIKit 26 native inner-border coverage differs with rendered subviews.
+# Upstream Issue (fonts): none; Fabric already supports ui-monospace and Paper is legacy.
 # Linear Issue (corners): FEPLAT-97
+# Linear Issue (fonts): APP-4193
 # Remove corner changes when: upstream Paper supports continuous unequal corners, or
 #   on migration to Fabric after verifying the equivalent rendering paths.
 # Remove refresh-control changes when: upstream applies refreshing=false after
