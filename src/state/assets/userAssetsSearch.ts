@@ -53,7 +53,7 @@ export const useUserAssetsSearchStore = createBaseStore<UserAssetsSearchState>(s
 
 /**
  * Default token IDs above the small-value threshold, plus cached search over all
- * non-hidden holdings. Neither depends on the active query or chain filter.
+ * non-hidden asset holdings. Neither depends on the active query or chain filter.
  */
 export const useUserAssetSearch = createDerivedStore(
   $ =>
@@ -89,7 +89,7 @@ export const userAssetsSearchActions = createStoreActions(useUserAssetsSearchSto
 // ============ Utilities ====================================================== //
 
 /**
- * Builds a search index for one holdings snapshot. Empty-query results stay cached;
+ * Builds a search index for one snapshot of asset holdings. Empty-query results stay cached;
  * recent searches reuse their result arrays, including while deleting characters.
  */
 function createUserAssetSearch(

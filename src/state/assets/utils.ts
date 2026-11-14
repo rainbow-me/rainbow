@@ -100,7 +100,7 @@ function isHigherValueAsset(asset: ParsedSearchAsset, selectedAsset: ParsedSearc
 }
 
 /**
- * Builds balance-sorted holdings and chain totals, preserving chains omitted from a partial update.
+ * Builds balance-sorted asset holdings and chain totals, preserving chains omitted from a partial update.
  */
 export function setUserAssets({
   state,
@@ -128,9 +128,9 @@ export function setUserAssets({
 }
 
 /**
- * Totals complete holdings by chain, ordered by balance and including empty supported chains.
+ * Totals complete asset holdings by chain, ordered by balance and including empty supported chains.
  */
-export function getChainBalances(userAssets: UserAssetsState['userAssets']): UserAssetsState['chainBalances'] {
+function getChainBalances(userAssets: UserAssetsState['userAssets']): UserAssetsState['chainBalances'] {
   const chainBalances = new Map<ChainId, number>();
 
   for (const asset of userAssets.values()) {
@@ -253,7 +253,7 @@ export function parsedSearchAssetToParsedAddressAsset(asset: ParsedSearchAsset):
 }
 
 /**
- * Updates the account's cached hidden balance from its complete holdings.
+ * Updates the account's cached hidden balance from its complete asset holdings.
  */
 export function updateHiddenAssetsBalance({
   address,

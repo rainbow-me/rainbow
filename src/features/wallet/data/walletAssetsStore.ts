@@ -9,8 +9,8 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 const POSITION_ASSET_CATEGORIES = ['deposits', 'pools', 'stakes', 'borrows'] as const;
 
 /**
- * Wallet token rows and their balance, excluding holdings already represented by positions.
- * Hidden tokens remain available to the wallet's hidden section but do not contribute to its balance.
+ * Wallet assets and their balance, excluding hidden tokens and
+ * holdings already represented by positions.
  */
 export const useWalletAssetsStore = createDerivedStore(
   $ => {
@@ -19,8 +19,8 @@ export const useWalletAssetsStore = createDerivedStore(
     const positions = $(usePositionsStore, s => s.getData()?.positions);
 
     const assets = excludePositionTokens(userAssets, positions);
-
     let balance = 0;
+
     for (const asset of assets.values()) {
       if (hiddenAssets.has(asset.uniqueId)) continue;
       balance += Number(asset.native.balance.amount) || 0;
@@ -32,8 +32,8 @@ export const useWalletAssetsStore = createDerivedStore(
 );
 
 /**
- * Excludes holdings whose address and chain match a position's pool.
- * Returns the original map when no holdings match.
+ * Excludes asset holdings whose address and chain match a
+ * position's pool. Returns the original map when no holdings match.
  */
 function excludePositionTokens(
   userAssets: UserAssetsState['userAssets'],
@@ -49,6 +49,7 @@ function excludePositionTokens(
     for (const category of POSITION_ASSET_CATEGORIES) {
       for (const item of position[category]) {
         if (!item.poolAddress) continue;
+
         const assetId = getUniqueId(item.poolAddress.toLowerCase(), item.asset.chainId);
         if (!assets.has(assetId)) continue;
 

@@ -74,7 +74,7 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
       },
       onFetched: context => {
         const data = context.data;
-        if (data) useUserAssetsStore.getState().updateTokens(data);
+        if (data) useUserAssetsStore.getState().mutatePrices(data);
       },
 
       disableCache: true,
