@@ -1,13 +1,15 @@
 import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
+import { type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { memoizeState } from '@/state/internal/utils/memoizeState';
 import { type LiveTokensData } from '@/state/liveTokens/types';
 import { toUnixTime } from '@/worklets/dates';
 
@@ -22,14 +24,8 @@ import {
   updateHiddenAssetsBalance,
 } from './utils';
 
-export const createUserAssetsStore = (address: Address): UserAssetsStoreType => {
-  const store: UserAssetsStoreType = createQueryStore<
-    FetchedUserAssetsData,
-    UserAssetsParams,
-    UserAssetsState,
-    FetchedUserAssetsData,
-    UserAssetsStateToPersist
-  >(
+export function createUserAssetsStore(address: Address): UserAssetsStoreType {
+  const store = createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
@@ -53,56 +49,58 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
       hiddenAssets: new Set<UniqueId>(),
       userAssets: new Map(),
 
-      getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
+      getBalanceSortedChainList: memoizeState(get, 'chainBalances', state => Array.from(state.chainBalances.keys())),
 
-      getChainsWithBalance: () => {
+      getChainsWithBalance: memoizeState(get, 'chainBalances', state => {
         const chains: ChainId[] = [];
-        for (const [chain, balance] of get().chainBalances) {
-          if (balance) chains.push(chain);
-        }
+        for (const [chain, balance] of state.chainBalances) if (balance) chains.push(chain);
         return chains;
+      }),
+
+      getHighestValueAsset: options => {
+        const state = get();
+        return selectHighestValueAsset(state.userAssets.values(), state.hiddenAssets, options);
       },
 
-      getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), get().hiddenAssets, options),
-
-      getNativeAssetForChain: (chainId: ChainId) => {
+      getNativeAssetForChain: chainId => {
         const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
         if (!nativeAsset) return null;
-        const nativeAssetUniqueId = getUniqueId(nativeAsset.address, chainId);
-        return get().userAssets.get(nativeAssetUniqueId) || null;
+        return get().userAssets.get(getUniqueId(nativeAsset.address, chainId)) || null;
       },
 
-      getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+      getUserAsset: uniqueId => get().userAssets.get(uniqueId) || null,
 
-      getLegacyUserAsset: (uniqueId: UniqueId) => {
+      getLegacyUserAsset: uniqueId => {
         const asset = get().userAssets.get(uniqueId);
         if (!asset) return null;
         return parsedSearchAssetToParsedAddressAsset(asset);
       },
 
-      getUserAssets: () => {
-        const { userAssets, hiddenAssets } = get();
-        return Array.from(userAssets.values()).filter(asset => !hiddenAssets.has(asset.uniqueId));
-      },
+      getUserAssets: memoizeState(get, 'hiddenAssets', 'userAssets', state => {
+        const assets: ParsedSearchAsset[] = [];
+        for (const asset of state.userAssets.values()) if (!state.hiddenAssets.has(asset.uniqueId)) assets.push(asset);
+        return assets;
+      }),
 
       isHidden: uniqueId => get().hiddenAssets.has(uniqueId),
-      isInitialLoad: () => !get().userAssets.size && get().getStatus('isInitialLoad'),
 
-      getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
+      isInitialLoad: () => {
+        const state = get();
+        return !state.userAssets.size && state.getStatus('isInitialLoad');
+      },
 
-      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+      getHiddenAssetsIds: memoizeState(get, 'hiddenAssets', state => Array.from(state.hiddenAssets)),
+
+      setHiddenAssets: uniqueIds => {
         set(state => {
           const hiddenAssets = new Set(state.hiddenAssets);
-          uniqueIds.forEach(uniqueId => {
-            if (hiddenAssets.has(uniqueId)) {
-              hiddenAssets.delete(uniqueId);
-            } else {
-              hiddenAssets.add(uniqueId);
-            }
-          });
-
+          for (const uniqueId of uniqueIds) {
+            if (hiddenAssets.has(uniqueId)) hiddenAssets.delete(uniqueId);
+            else hiddenAssets.add(uniqueId);
+          }
           return { hiddenAssets };
         });
+
         updateHiddenAssetsBalance(get());
       },
 
@@ -111,42 +109,19 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
         updateHiddenAssetsBalance(get());
       },
 
-      updateTokens: (tokens: LiveTokensData) => {
+      mutatePrices: tokens =>
         set(state => {
-          const currency = userAssetsStoreManager.getState().currency;
-
-          for (const [tokenId, token] of Object.entries(tokens)) {
-            if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
-
-            const asset = state.userAssets.get(tokenId);
-
-            if (!asset || (asset?.price?.changed_at && asset?.price?.changed_at > toUnixTime(token.updateTime))) continue;
-
-            if (asset?.price) {
-              asset.price = {
-                value: Number(token.price),
-                relative_change_24h: Number(token.change.change24hPct),
-              };
-            }
-            if (asset?.native?.price) {
-              asset.native.price = {
-                change: token.change.change24hPct,
-                amount: Number(token.price),
-                display: convertAmountToNativeDisplayWorklet(token.price, currency),
-              };
-            }
-          }
-          // We return the same state object to skip triggering selectors
+          mutateAssetPrices(state.userAssets, tokens, userAssetsStoreManager.getState().currency);
           return state;
-        });
-      },
+        }),
     }),
 
     address.length
       ? {
-          deserializer: value => deserializeUserAssetsState(value, address),
+          deserializer: deserializeUserAssetsState,
           partialize: state =>
             ({
+              chainBalances: state.chainBalances,
               hiddenAssets: state.hiddenAssets,
               userAssets: state.userAssets,
             }) satisfies UserAssetsStateToPersist,
@@ -158,4 +133,38 @@ export const createUserAssetsStore = (address: Address): UserAssetsStoreType => 
   );
 
   return store;
-};
+}
+
+/**
+ * Intentionally mutates held assets' fallback prices for subsequent reads.
+ *
+ * Live displays observe the live tokens store, so these updates need not
+ * notify holdings subscribers or replace their asset objects.
+ */
+function mutateAssetPrices(assets: UserAssetsState['userAssets'], tokens: LiveTokensData, currency: SupportedCurrencyKey): void {
+  for (const tokenId in tokens) {
+    const token = tokens[tokenId];
+    if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+
+    const asset = assets.get(tokenId);
+    if (!asset) continue;
+
+    const price = asset.price;
+    const updatedAt = toUnixTime(token.updateTime);
+    if (price?.changed_at && price.changed_at > updatedAt) continue;
+
+    const value = Number(token.price);
+    if (price) {
+      price.value = value;
+      price.relative_change_24h = Number(token.change.change24hPct);
+      price.changed_at = updatedAt;
+    }
+
+    const nativePrice = asset.native.price;
+    if (nativePrice) {
+      nativePrice.change = token.change.change24hPct;
+      nativePrice.amount = value;
+      nativePrice.display = convertAmountToNativeDisplayWorklet(token.price, currency);
+    }
+  }
+}

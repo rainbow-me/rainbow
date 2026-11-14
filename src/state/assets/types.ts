@@ -33,7 +33,7 @@ export interface UserAssetsState {
   address: Address;
   chainBalances: Map<ChainId, number>;
   hiddenAssets: Set<UniqueId>;
-  /** Complete holdings in balance order, including tokens represented by positions. */
+  /** Complete asset holdings in balance order, including tokens represented by positions. */
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
@@ -45,9 +45,10 @@ export interface UserAssetsState {
   getUserAssets: () => ParsedSearchAsset[];
   isHidden: (uniqueId: UniqueId) => boolean;
   isInitialLoad: () => boolean;
+  /** Lazily updates fallback prices without notifying store subscribers. */
+  mutatePrices: (tokens: LiveTokensData) => void;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
-  updateTokens: (tokens: LiveTokensData) => void;
-  /** Replaces holdings on the specified chains, or all holdings when chains are omitted. */
+  /** Replaces asset holdings on the specified chains, or all holdings when chains are omitted. */
   updateAssets: (userAssets: UserAsset[], chainIdsToUpdate?: ChainId[]) => void;
 }
 
