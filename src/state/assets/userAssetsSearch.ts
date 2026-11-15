@@ -11,16 +11,16 @@ import { userAssetsStoreManager } from './userAssetsStoreManager';
 // ============ Types ========================================================== //
 
 type UserAssetsSearchState = {
-  chainIdFilter: ChainId | undefined;
+  chainFilter: ChainId | undefined;
   searchQuery: string;
   reset: () => void;
-  setChainIdFilter: (chainIdFilter: ChainId | undefined) => void;
+  setChainFilter: (chainFilter: ChainId | undefined) => void;
   setSearchQuery: (query: string) => void;
 };
 
 type UserAssetSearch = {
   defaultAssetIds: UniqueId[];
-  search: (chainIdFilter: ChainId | undefined, query: string) => UniqueId[];
+  search: (chainFilter: ChainId | undefined, query: string) => UniqueId[];
 };
 
 // ============ Constants ====================================================== //
@@ -34,16 +34,16 @@ const REGEX_SPECIAL_CHARACTERS = /[.*+?^${}()|[\]\\]/g;
  * Transient query and chain filter for user-asset search.
  */
 export const useUserAssetsSearchStore = createBaseStore<UserAssetsSearchState>(set => ({
-  chainIdFilter: undefined,
+  chainFilter: undefined,
   searchQuery: '',
 
   reset: () =>
     set(state => {
-      if (state.chainIdFilter === undefined && !state.searchQuery) return state;
-      return { chainIdFilter: undefined, searchQuery: '' };
+      if (state.chainFilter === undefined && !state.searchQuery) return state;
+      return { chainFilter: undefined, searchQuery: '' };
     }),
 
-  setChainIdFilter: chainIdFilter => set(state => (state.chainIdFilter === chainIdFilter ? state : { chainIdFilter })),
+  setChainFilter: chainFilter => set(state => (state.chainFilter === chainFilter ? state : { chainFilter })),
 
   setSearchQuery: query => {
     const searchQuery = query.trim().toLowerCase();
@@ -71,10 +71,10 @@ export const useUserAssetSearch = createDerivedStore(
 export const useUserAssetSearchResults = createDerivedStore(
   $ => {
     const search = $(useUserAssetSearch, s => s.search);
-    const chainIdFilter = $(useUserAssetsSearchStore, s => s.chainIdFilter);
+    const chainFilter = $(useUserAssetsSearchStore, s => s.chainFilter);
     const query = $(useUserAssetsSearchStore, s => s.searchQuery);
 
-    return search(chainIdFilter, query);
+    return search(chainFilter, query);
   },
   { lockDependencies: true }
 );
@@ -82,7 +82,7 @@ export const useUserAssetSearchResults = createDerivedStore(
 // ============ Store Actions ================================================== //
 
 export const userAssetsSearchActions = createStoreActions(useUserAssetsSearchStore, {
-  getChainIdFilter: () => useUserAssetsSearchStore.getState().chainIdFilter,
+  getChainFilter: () => useUserAssetsSearchStore.getState().chainFilter,
   getSearchQuery: () => useUserAssetsSearchStore.getState().searchQuery,
 });
 
@@ -126,8 +126,8 @@ function createUserAssetSearch(
 
   return {
     defaultAssetIds,
-    search: (chainIdFilter, query) => {
-      const key = `${chainIdFilter}:${query}`;
+    search: (chainFilter, query) => {
+      const key = `${chainFilter}:${query}`;
       const cached = cache.get(key);
       if (cached) return cached;
 
@@ -135,7 +135,7 @@ function createUserAssetSearch(
       const minimum = query.length >= 2 ? 0 : threshold;
       const ids: UniqueId[] = [];
 
-      for (const asset of assetsByChain.get(chainIdFilter) ?? []) {
+      for (const asset of assetsByChain.get(chainFilter) ?? []) {
         if (!(Number(asset.native.balance.amount) > minimum)) continue;
         if (search && !search.test(asset.name) && !search.test(asset.symbol) && asset.address.toLowerCase() !== query) continue;
         ids.push(asset.uniqueId);

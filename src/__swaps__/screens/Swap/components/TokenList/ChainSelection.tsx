@@ -34,14 +34,14 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(s => s.getChainsLabel());
-  const inputChainIdFilter = useStoreSharedValue(useUserAssetsSearchStore, s => s.chainIdFilter);
+  const inputChainFilter = useStoreSharedValue(useUserAssetsSearchStore, s => s.chainFilter);
 
   const chainName = useDerivedValue(() => {
     return output
       ? chainLabels[selectedOutputChainId.value]
-      : inputChainIdFilter.value === undefined
+      : inputChainFilter.value === undefined
         ? allText
-        : chainLabels[inputChainIdFilter.value];
+        : chainLabels[inputChainFilter.value];
   });
 
   const handleSelectChain = useCallback(
@@ -51,7 +51,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       if (output && chainId) {
         setSelectedOutputChainId(chainId);
       } else {
-        userAssetsSearchActions.setChainIdFilter(chainId);
+        userAssetsSearchActions.setChainFilter(chainId);
       }
 
       analytics.track(analytics.event.swapsChangedChainId, {
@@ -72,7 +72,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      selected: output ? selectedOutputChainId : userAssetsSearchActions.getChainIdFilter(),
+      selected: output ? selectedOutputChainId : userAssetsSearchActions.getChainFilter(),
       setSelected: handleSelectChain,
     });
   }, [handleSelectChain, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
@@ -127,17 +127,17 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
 const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
 
-  const chainIdFilter = useUserAssetsSearchStore(s => s.chainIdFilter);
+  const chainFilter = useUserAssetsSearchStore(s => s.chainFilter);
   const selectedOutputChainId = useSharedValueState(animatedSelectedOutputChainId, { pauseSync: !output });
 
-  if (!output && chainIdFilter === undefined) return null;
+  if (!output && chainFilter === undefined) return null;
 
   return (
     <Bleed vertical="6px">
       {output ? (
         <ChainImage chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value} position="relative" size={16} />
       ) : (
-        <ChainImage chainId={chainIdFilter} size={16} position="relative" />
+        <ChainImage chainId={chainFilter} size={16} position="relative" />
       )}
     </Bleed>
   );

@@ -194,7 +194,7 @@ describe('user assets', () => {
     userAssetsSearchActions.setSearchQuery('  token  ');
     expect(useUserAssetSearchResults.getState()).toEqual([TOKEN_ID, SMALL_ID]);
 
-    userAssetsSearchActions.setChainIdFilter(ChainId.mainnet);
+    userAssetsSearchActions.setChainFilter(ChainId.mainnet);
     expect(useUserAssetSearchResults.getState()).toEqual([SMALL_ID]);
 
     userAssetsSearchActions.setSearchQuery(SMALL.toUpperCase());

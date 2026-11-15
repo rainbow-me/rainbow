@@ -134,7 +134,7 @@ const WalletAddressObserver = () => {
   const setNewInputAsset = useCallback(() => {
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
-    userAssetsSearchActions.setChainIdFilter(undefined);
+    userAssetsSearchActions.setChainFilter(undefined);
 
     setAsset({
       asset: useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
