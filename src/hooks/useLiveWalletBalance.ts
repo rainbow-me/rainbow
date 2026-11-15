@@ -20,7 +20,6 @@ export const useLiveWalletBalance = createDerivedStore(
     const initialBalance = $(useWalletAssetsStore, s => s.balance);
     const userAssets = $(useWalletAssetsStore, s => s.assets);
     const isInitialLoad = $(useUserAssetsStore, s => s.isInitialLoad());
-    const hiddenAssets = $(useUserAssetsStore, s => s.hiddenAssets);
     const nativeCurrency = $(useAppSettingsStore, s => s.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
@@ -30,7 +29,7 @@ export const useLiveWalletBalance = createDerivedStore(
 
     if (!initialBalance && isInitialLoad) return null;
 
-    const liveAssetBalance = initialBalance ? add(initialBalance, calculateDifference(liveTokens, userAssets, hiddenAssets)) : '0';
+    const liveAssetBalance = initialBalance ? add(initialBalance, calculateDifference(liveTokens, userAssets)) : '0';
     const otherBalances = add(add(add(positionsBalance, claimablesBalance), perpsBalanceNative), polymarketAccountValue);
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
 
@@ -40,16 +39,12 @@ export const useLiveWalletBalance = createDerivedStore(
   { debounce: 250, lockDependencies: true }
 );
 
-function calculateDifference(
-  liveTokens: LiveTokensData,
-  userAssets: UserAssetsState['userAssets'],
-  hiddenAssets: UserAssetsState['hiddenAssets']
-): string {
+function calculateDifference(liveTokens: LiveTokensData, userAssets: UserAssetsState['userAssets']): string {
   let valueDifference = '0';
 
   for (const tokenId in liveTokens) {
     const asset = userAssets.get(tokenId);
-    if (!asset || hiddenAssets.has(tokenId)) continue;
+    if (!asset) continue;
 
     const token = liveTokens[tokenId];
     if (!isTrustedLiveToken(token)) continue;

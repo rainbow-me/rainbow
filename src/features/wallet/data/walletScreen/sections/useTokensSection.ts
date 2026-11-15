@@ -18,7 +18,7 @@ const EMPTY_WITH_DISCOVER: CellTypes[] = [...EMPTY_WALLET_CONTENT, { type: CellT
 
 export const useTokensSection = createDerivedStore($ => {
   const assets = $(useWalletAssetsStore, state => state.assets);
-  const hiddenCoins = $(useUserAssetsStore, state => state.hiddenAssets);
+  const hiddenAssets = $(useWalletAssetsStore, state => state.hiddenAssets);
   const loading = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
   const currency = $(useAppSettingsStore, state => state.currency);
   const pinnedCoins = $(useCurrentPinnedCoins);
@@ -27,10 +27,11 @@ export const useTokensSection = createDerivedStore($ => {
   const hasNfts = $(useNftsStore, state => state.collections.size > 0);
   const discover = $(useRemoteConfigStore, state => state.getRemoteConfigKey('discover_enabled'));
 
-  if (!assets.size) {
+  if (!assets.size && !hiddenAssets.length) {
     if (loading) return CONTENT_PLACEHOLDER;
     if (hasNfts) return ONLY_NFTS;
     return discover ? EMPTY_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
   }
-  return buildTokenRows({ assets, currency, editing, pinnedCoins, hiddenCoins, expanded });
+
+  return buildTokenRows({ assets, currency, editing, pinnedCoins, hiddenAssets, expanded });
 });

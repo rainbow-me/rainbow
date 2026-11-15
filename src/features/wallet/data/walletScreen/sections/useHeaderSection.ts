@@ -61,7 +61,7 @@ export const useHeaderSection = createDerivedStore($ => {
   const accountAddress = $(useWalletsStore, state => state.accountAddress);
   const currency = $(useAppSettingsStore, state => state.currency);
   const hiddenAssetBalances = $(useHiddenAssetBalancesStore, state => state.hiddenAssetBalances);
-  const hasTokens = $(useWalletAssetsStore, state => state.assets.size > 0);
+  const hasTokens = $(useWalletAssetsStore, state => state.assets.size > 0 || state.hiddenAssets.length > 0);
   const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
   const hasNFTs = $(useNftsStore, state => (state.collections?.size ?? 0) > 0);
 

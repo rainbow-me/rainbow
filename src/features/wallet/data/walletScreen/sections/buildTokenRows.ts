@@ -11,26 +11,23 @@ export function buildTokenRows({
   currency,
   editing,
   pinnedCoins,
-  hiddenCoins,
+  hiddenAssets,
   expanded,
 }: {
   assets: Map<UniqueId, ParsedSearchAsset>;
   currency: NativeCurrencyKey;
   editing: boolean;
   pinnedCoins: Record<string, boolean>;
-  hiddenCoins: Set<UniqueId>;
+  hiddenAssets: readonly ParsedSearchAsset[];
   expanded: boolean;
 }): CellTypes[] {
-  if (!assets.size) return [];
+  if (!assets.size && !hiddenAssets.length) return [];
 
   const pinned: ParsedSearchAsset[] = [];
   const standard: ParsedSearchAsset[] = [];
   const small: ParsedSearchAsset[] = [];
-  const hidden: ParsedSearchAsset[] = [];
   for (const asset of assets.values()) {
-    if (hiddenCoins.has(asset.uniqueId)) {
-      if (editing) hidden.push(asset);
-    } else if (pinnedCoins[asset.uniqueId.toLowerCase()]) {
+    if (pinnedCoins[asset.uniqueId.toLowerCase()]) {
       pinned.push(asset);
     } else if (greaterThan(asset.native.balance.amount, supportedCurrencies[currency].smallThreshold)) {
       standard.push(asset);
@@ -44,19 +41,24 @@ export function buildTokenRows({
   const above = visible.length ? visible.slice(0, dividerIndex) : small.slice(0, COINS_TO_SHOW);
   const below = visible.length ? [...visible.slice(dividerIndex), ...small] : small.slice(COINS_TO_SHOW);
   const smallBalance = below.reduce((total, asset) => add(total, asset.native.balance.amount), '0');
-  const rows: CellTypes[] = above.map(row);
+  const rows: CellTypes[] = [];
+  for (const asset of above) rows.push(row(asset, false));
   rows.push({ type: CellType.COIN_DIVIDER, uid: 'coin-divider', defaultToEditButton: !below.length, value: Number(smallBalance) });
-  if (expanded || editing) rows.push(...below.map(row));
-  if (editing) rows.push(...hidden.map(row));
+  if (expanded || editing) {
+    for (const asset of below) rows.push(row(asset, false));
+  }
+  if (editing) {
+    for (const asset of hiddenAssets) rows.push(row(asset, true));
+  }
   return rows;
 
-  function row(asset: ParsedSearchAsset): CellTypes {
+  function row(asset: ParsedSearchAsset, isHidden: boolean): CellTypes {
     return {
       type: CellType.COIN,
       uid: `coin-${asset.uniqueId}`,
       uniqueId: asset.uniqueId,
       isPinned: Boolean(pinnedCoins[asset.uniqueId.toLowerCase()]),
-      isHidden: hiddenCoins.has(asset.uniqueId),
+      isHidden,
     };
   }
 }
