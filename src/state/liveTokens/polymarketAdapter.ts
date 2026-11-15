@@ -2,7 +2,7 @@ import { POLYMARKET_CLOB_URL, POLYMARKET_TOKEN_ID_SUFFIX } from '@/features/poly
 import { rainbowFetch } from '@/framework/data/http/rainbowFetch';
 import { logger, RainbowError } from '@/logger';
 
-import { type PriceReliabilityStatus, type TokenData } from './types';
+import { type TokenData } from './types';
 
 const SUFFIX_BASE = `:${POLYMARKET_TOKEN_ID_SUFFIX}:`;
 
@@ -108,7 +108,7 @@ export function transformPolymarketPriceToTokenData(
       metadata: {
         liquidityCap: '1000000000',
       },
-      status: 'PRICE_RELIABILITY_STATUS_TRUSTED' as PriceReliabilityStatus,
+      status: 'PRICE_RELIABILITY_STATUS_TRUSTED',
     },
     updateTime,
   };

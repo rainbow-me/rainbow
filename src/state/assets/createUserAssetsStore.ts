@@ -11,6 +11,7 @@ import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { memoizeState } from '@/state/internal/utils/memoizeState';
 import { type LiveTokensData } from '@/state/liveTokens/types';
+import { isTrustedLiveToken } from '@/state/liveTokens/utils';
 import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';
@@ -144,7 +145,7 @@ export function createUserAssetsStore(address: Address): UserAssetsStoreType {
 function mutateAssetPrices(assets: UserAssetsState['userAssets'], tokens: LiveTokensData, currency: SupportedCurrencyKey): void {
   for (const tokenId in tokens) {
     const token = tokens[tokenId];
-    if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+    if (!isTrustedLiveToken(token)) continue;
 
     const asset = assets.get(tokenId);
     if (!asset) continue;

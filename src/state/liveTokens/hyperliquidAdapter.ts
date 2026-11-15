@@ -1,7 +1,7 @@
 import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 import { type PerpMarket } from '@/features/perps/types';
 
-import { type PriceReliabilityStatus, type TokenData } from './types';
+import { type TokenData } from './types';
 
 // Arbitrary value, only set for type compatibility
 const DEFAULT_LIQUIDITY_CAP = '1000000000';
@@ -27,7 +27,7 @@ export function transformHyperliquidMarketToTokenData(market: PerpMarket, update
       metadata: {
         liquidityCap: DEFAULT_LIQUIDITY_CAP,
       },
-      status: 'PRICE_RELIABILITY_STATUS_TRUSTED' as PriceReliabilityStatus,
+      status: 'PRICE_RELIABILITY_STATUS_TRUSTED',
     },
     updateTime,
   };
