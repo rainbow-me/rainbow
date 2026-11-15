@@ -13,7 +13,7 @@ import { divWorklet, mulWorklet, toFixedWorklet } from '@/framework/core/safeMat
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useSwapsStore, type SwapsState } from '@/state/swaps/swapsStore';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -153,7 +153,7 @@ export function getInputAsset(
 ): ExtendedAnimatedAssetWithColors | null {
   if (!asset) {
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
-    const defaultAsset = useUserAssetsStore.getState().getHighestValueAsset({ excludeAssetId, nativeAsset: 'preferred', preferredChainId });
+    const defaultAsset = userAssetsActions.getHighestValueAsset({ excludeAssetId, nativeAsset: 'preferred', preferredChainId });
     return parseAssetAndExtend({ asset: defaultAsset });
   }
   return isExtendedAssetWithColors(asset) ? asset : parseAssetAndExtend({ asset, insertUserAssetBalance: true });

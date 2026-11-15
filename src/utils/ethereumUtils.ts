@@ -30,7 +30,7 @@ import {
   useExternalToken,
   type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -174,7 +174,7 @@ const getExternalAssetFromCache = (uniqueId: string) => {
 
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
-  const accountAsset = useUserAssetsStore.getState().getLegacyUserAsset(loweredUniqueId);
+  const accountAsset = userAssetsActions.getLegacyUserAsset(loweredUniqueId);
   const externalAsset = getExternalAssetFromCache(loweredUniqueId);
   return accountAsset ?? externalAsset;
 };
@@ -187,7 +187,7 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
 const getAccountAsset = (uniqueId: EthereumAddress, address?: EthereumAddress): ParsedAddressAsset | undefined => {
   if (address !== undefined && !isAddress(address, { strict: false })) return undefined;
   const loweredUniqueId = uniqueId.toLowerCase();
-  return useUserAssetsStore.getState(address).getLegacyUserAsset(loweredUniqueId) ?? undefined;
+  return userAssetsActions.getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
 const getAssetPrice = (
