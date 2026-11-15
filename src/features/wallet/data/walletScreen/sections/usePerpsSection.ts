@@ -31,22 +31,11 @@ export const usePerpsSection = createDerivedStore(
 
     if (isCoinListEdited || !perpsEnabledRemote || IS_TEST) return EMPTY_PERPS_DATA;
 
-    const perpsSectionItems: CellTypes[] = [];
-
-    perpsSectionItems.push({
-      type: CellType.PERPS_BALANCE,
-      balance: perpsInfo.balance,
-      uid: 'perps-balance',
-    });
+    const perpsSectionItems: CellTypes[] = [{ type: CellType.PERPS_BALANCE, balance: perpsInfo.balance, uid: 'perps-balance' }];
 
     if (perpsInfo.hasPositions) {
       perpsInfo.positions.forEach((position, index) => {
-        perpsSectionItems.push({
-          index,
-          position,
-          type: CellType.PERPS_POSITION,
-          uid: `perps-position-${position.symbol}-${index}`,
-        });
+        perpsSectionItems.push({ index, position, type: CellType.PERPS_POSITION, uid: `perps-position-${position.symbol}-${index}` });
       });
     }
 
