@@ -70,14 +70,17 @@ const useWalletListTogglesStore = createBaseStore<ListSectionTogglesState>(
   { storageKey: 'listSectionTogglesStore' }
 );
 
-export const useCurrentWalletToggles = createDerivedStore($ => {
-  const accountAddress = $(useWalletsStore, state => state.accountAddress);
-  const togglesByWallet = $(useWalletListTogglesStore, state => state.togglesByWallet);
+export const useCurrentWalletToggles = createDerivedStore(
+  $ => {
+    const accountAddress = $(useWalletsStore, state => state.accountAddress);
+    const togglesByWallet = $(useWalletListTogglesStore, state => state.togglesByWallet);
 
-  if (!accountAddress) return DEFAULT_TOGGLES;
+    if (!accountAddress) return DEFAULT_TOGGLES;
 
-  return togglesByWallet[accountAddress] ?? DEFAULT_TOGGLES;
-});
+    return togglesByWallet[accountAddress] ?? DEFAULT_TOGGLES;
+  },
+  { lockDependencies: true }
+);
 
 export const walletListTogglesActions = createStoreActions(useWalletListTogglesStore);
 

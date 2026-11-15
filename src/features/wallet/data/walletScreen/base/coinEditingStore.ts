@@ -6,21 +6,24 @@ import { userAssetsActions, useUserAssetsStore } from '@/state/assets/userAssets
 import { pinnedCoinsActions, useCurrentPinnedCoins } from './pinnedCoinsStore';
 import { selectedCoinsActions, useSelectedCoinsStore } from './selectedCoinsStore';
 
-export const useCoinEditingStore = createDerivedStore($ => {
-  const selectedItems = $(useSelectedCoinsStore, state => state.selectedItems);
-  const hiddenAssets = $(useUserAssetsStore, state => state.hiddenAssets);
-  const pinnedCoins = $(useCurrentPinnedCoins);
+export const useCoinEditingStore = createDerivedStore(
+  $ => {
+    const selectedItems = $(useSelectedCoinsStore, state => state.selectedItems);
+    const hiddenAssets = $(useUserAssetsStore, state => state.hiddenAssets);
+    const pinnedCoins = $(useCurrentPinnedCoins, s => s);
 
-  const currentAction = !selectedItems.length
-    ? EditAction.none
-    : selectedItems.every(id => hiddenAssets.has(id))
-      ? EditAction.unhide
-      : selectedItems.every(id => pinnedCoins[id])
-        ? EditAction.unpin
-        : EditAction.standard;
+    const currentAction = !selectedItems.length
+      ? EditAction.none
+      : selectedItems.every(id => hiddenAssets.has(id))
+        ? EditAction.unhide
+        : selectedItems.every(id => pinnedCoins[id])
+          ? EditAction.unpin
+          : EditAction.standard;
 
-  return { currentAction, selectedItems, setHiddenCoins, setPinnedCoins };
-});
+    return { currentAction, selectedItems, setHiddenCoins, setPinnedCoins };
+  },
+  { lockDependencies: true }
+);
 
 function setPinnedCoins(): void {
   const { currentAction, selectedItems } = useCoinEditingStore.getState();

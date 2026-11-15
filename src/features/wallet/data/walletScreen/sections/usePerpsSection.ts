@@ -45,5 +45,5 @@ export const usePerpsSection = createDerivedStore(
     return { hasContent, section };
   },
 
-  { equalityFn: shallowEqual }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

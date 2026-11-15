@@ -25,7 +25,7 @@ export const useAccountAccentColor = createDerivedStore(
   $ => {
     const { accountAddress, accountColor, accountColorHex, accountImage, accountSymbol } = $(useAccountProfileInfo, state => state);
     const dominantColor = $(useDominantColorStore, state => state.getData());
-    const isDarkMode = $(useThemeStore).isDarkMode;
+    const isDarkMode = $(useThemeStore, s => s.isDarkMode);
 
     const hasLoaded = Boolean(accountAddress && (accountSymbol || accountImage));
     const fallback = isDarkMode ? globalColors.blue50 : globalColors.blue60;
@@ -42,7 +42,7 @@ export const useAccountAccentColor = createDerivedStore(
       loaded: hasLoaded,
     };
   },
-  { equalityFn: shallowEqual }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );
 
 // ============ Helper Functions =============================================== //

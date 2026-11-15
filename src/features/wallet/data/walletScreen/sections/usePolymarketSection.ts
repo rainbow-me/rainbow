@@ -22,7 +22,9 @@ export const usePolymarketSection = createDerivedStore(
   $ => {
     const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
     const polymarketEnabledRemote = $(useRemoteConfigStore, s => s.getRemoteConfigKey('polymarket_enabled'));
-    const { balance, hasBalance, totalValueNative } = $(usePolymarketAccountValueSummary);
+    const balance = $(usePolymarketAccountValueSummary, s => s.balance);
+    const hasBalance = $(usePolymarketAccountValueSummary, s => s.hasBalance);
+    const totalValueNative = $(usePolymarketAccountValueSummary, s => s.totalValueNative);
     const activePositions = $(usePolymarketPositions, state => state.activePositions);
     const hasPositions = activePositions.length > 0;
     const isPolymarketOpen = $(useCurrentWalletToggles, s => s.predictions);
@@ -63,5 +65,5 @@ export const usePolymarketSection = createDerivedStore(
     return { hasContent, section };
   },
 
-  { equalityFn: shallowEqual }
+  { equalityFn: shallowEqual, lockDependencies: true }
 );

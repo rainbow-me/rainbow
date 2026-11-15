@@ -64,11 +64,14 @@ export const pinnedCoinsActions = createStoreActions(usePinnedCoinsStore);
 
 const EMPTY_BOOLEAN_MAP: BooleanMap = {};
 
-export const useCurrentPinnedCoins = createDerivedStore($ => {
-  const accountAddress = $(useWalletsStore, state => state.accountAddress);
-  const pinnedCoins = $(usePinnedCoinsStore, state => state.pinnedCoins[accountAddress]);
-  return pinnedCoins || EMPTY_BOOLEAN_MAP;
-});
+export const useCurrentPinnedCoins = createDerivedStore(
+  $ => {
+    const accountAddress = $(useWalletsStore, s => s.accountAddress);
+    const pinnedCoins = $(usePinnedCoinsStore, s => s.pinnedCoins);
+    return pinnedCoins[accountAddress] ?? EMPTY_BOOLEAN_MAP;
+  },
+  { lockDependencies: true }
+);
 
 function readPinnedCoins(): Record<string, BooleanMap> {
   const storage = createMMKV();

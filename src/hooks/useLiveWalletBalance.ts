@@ -22,7 +22,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const isInitialLoad = $(useUserAssetsStore, s => s.isInitialLoad());
     const nativeCurrency = $(useAppSettingsStore, s => s.currency);
 
-    const perpsBalanceNative = $(useHyperliquidBalance);
+    const perpsBalanceNative = $(useHyperliquidBalance, s => s);
     const claimablesBalance = $(useClaimablesStore, s => s.getBalance());
     const positionsBalance = $(usePositionsStore, s => s.getBalance());
     const polymarketAccountValue = $(usePolymarketAccountValueSummary, s => s.totalValueNative);

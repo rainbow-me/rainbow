@@ -745,7 +745,7 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = createDerivedStore(
   $ => {
-    const isDarkMode = $(useThemeStore).isDarkMode;
+    const isDarkMode = $(useThemeStore, s => s.isDarkMode);
     const profileInfo = $(useWalletsStore, state => state.getAccountProfileInfo(), shallowEqual);
     const name = $(useEnsNameStore, state => (profileInfo.accountAddress ? state.get(profileInfo.accountAddress) : undefined));
     const accountENS = name === undefined ? profileInfo.accountENS : (name ?? undefined);

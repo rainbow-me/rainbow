@@ -18,15 +18,18 @@ export type ExtendedStateData = {
 /**
  * Provides shared state for wallet screen list items.
  */
-export const useExtendedStateStore = createDerivedStore<ExtendedStateData>($ => {
-  const isCoinListEdited = $(useEditTokensStore, state => state.isCoinListEdited);
-  const nativeCurrency = $(useAppSettingsStore, state => state.currency);
-  const theme = $(useThemeStore);
+export const useExtendedStateStore = createDerivedStore<ExtendedStateData>(
+  $ => {
+    const isCoinListEdited = $(useEditTokensStore, state => state.isCoinListEdited);
+    const nativeCurrency = $(useAppSettingsStore, state => state.currency);
+    const theme = $(useThemeStore, s => s);
 
-  return {
-    isCoinListEdited,
-    nativeCurrency,
-    nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
-    theme,
-  };
-});
+    return {
+      isCoinListEdited,
+      nativeCurrency,
+      nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
+      theme,
+    };
+  },
+  { lockDependencies: true }
+);

@@ -23,39 +23,42 @@ const CLAIMABLES_SPACE_AFTER: CellTypes = {
   uid: 'claimables-spacer-after',
 };
 
-export const useClaimablesSection = createDerivedStore($ => {
-  const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
-  const remoteConfigEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('claimables'));
-  const experimentalConfigEnabled = $(useExperimentalConfigStore, s => s.getFlag(CLAIMABLES));
-  const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
-  const claimables = $(useClaimablesStore, s => s.getData());
-  const isClaimablesOpen = $(useCurrentWalletToggles, s => s.claimables);
+export const useClaimablesSection = createDerivedStore(
+  $ => {
+    const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
+    const remoteConfigEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('claimables'));
+    const experimentalConfigEnabled = $(useExperimentalConfigStore, s => s.getFlag(CLAIMABLES));
+    const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
+    const claimables = $(useClaimablesStore, s => s.getData());
+    const isClaimablesOpen = $(useCurrentWalletToggles, s => s.claimables);
 
-  const claimablesEnabled = (remoteConfigEnabled || experimentalConfigEnabled) && !IS_TEST;
+    const claimablesEnabled = (remoteConfigEnabled || experimentalConfigEnabled) && !IS_TEST;
 
-  if (isCoinListEdited || !claimablesEnabled || isLoadingUserAssets || !claimables?.claimables?.length) {
-    return EMPTY_CLAIMABLES_DATA;
-  }
-
-  const section: CellTypes[] = [
-    CLAIMABLES_SPACE_BEFORE,
-    {
-      type: CellType.CLAIMABLES_HEADER,
-      uid: 'claimables-header',
-      total: claimables.totalValue,
-    },
-    CLAIMABLES_SPACE_AFTER,
-  ];
-
-  if (isClaimablesOpen) {
-    for (const claimable of claimables.claimables) {
-      section.push({
-        type: CellType.CLAIMABLE,
-        claimable,
-        uid: `claimable-${claimable.uniqueId}`,
-      });
+    if (isCoinListEdited || !claimablesEnabled || isLoadingUserAssets || !claimables?.claimables?.length) {
+      return EMPTY_CLAIMABLES_DATA;
     }
-  }
 
-  return section;
-});
+    const section: CellTypes[] = [
+      CLAIMABLES_SPACE_BEFORE,
+      {
+        type: CellType.CLAIMABLES_HEADER,
+        uid: 'claimables-header',
+        total: claimables.totalValue,
+      },
+      CLAIMABLES_SPACE_AFTER,
+    ];
+
+    if (isClaimablesOpen) {
+      for (const claimable of claimables.claimables) {
+        section.push({
+          type: CellType.CLAIMABLE,
+          claimable,
+          uid: `claimable-${claimable.uniqueId}`,
+        });
+      }
+    }
+
+    return section;
+  },
+  { lockDependencies: true }
+);

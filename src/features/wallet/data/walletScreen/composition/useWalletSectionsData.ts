@@ -29,47 +29,53 @@ const FEATURE_CARD: CellTypes[] = [
   { type: CellType.SPACER, uid: 'rnbw-feature-card-after-spacer', height: 24 },
 ];
 const EMPTY_ROWS: CellTypes[] = [];
-export const useWalletSectionsData = createDerivedStore($ => {
-  const header = $(useHeaderSection);
-  const tokens = $(useTokensSection);
-  const perps = $(usePerpsSection);
-  const predictions = $(usePolymarketSection);
-  const claimables = $(useClaimablesSection);
-  const positions = $(usePositionsSection);
-  const nftsEnabled = $(useNftsEnabled);
-  const nfts = $(useWalletNftRows);
-  const editing = $(useEditTokensStore, state => state.isCoinListEdited);
-  const rewardsEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('rnbw_rewards_enabled'));
-  const rewardsExperimental = $(useExperimentalConfigStore, state => state.getFlag(RNBW_REWARDS));
-  const featureDismissed = $(useRnbwFeatureCard, state => state.isDismissed);
-  const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
 
-  const feature = !editing && !IS_TEST && (rewardsEnabled || rewardsExperimental) && !featureDismissed ? FEATURE_CARD : EMPTY_ROWS;
-  const tokenHeader =
-    perps.hasContent && tokens.some(row => row.type === CellType.COIN || row.type === CellType.LOADING_ASSETS) ? TOKENS_HEADER : EMPTY_ROWS;
-  const briefSectionsData = perps.hasContent
-    ? [
-        ...header.header,
-        ...feature,
-        ...perps.section,
-        ...(predictions.hasContent ? predictions.section : EMPTY_ROWS),
-        ...tokenHeader,
-        ...tokens,
-        ...(!predictions.hasContent ? predictions.section : EMPTY_ROWS),
-        ...claimables,
-        ...positions,
-        ...(editing ? EMPTY_ROWS : nfts),
-      ]
-    : [
-        ...header.header,
-        ...feature,
-        ...tokens,
-        ...perps.section,
-        ...predictions.section,
-        ...claimables,
-        ...positions,
-        ...(editing ? EMPTY_ROWS : nfts),
-      ];
+export const useWalletSectionsData = createDerivedStore(
+  $ => {
+    const header = $(useHeaderSection, s => s);
+    const tokens = $(useTokensSection, s => s);
+    const perps = $(usePerpsSection, s => s);
+    const predictions = $(usePolymarketSection, s => s);
+    const claimables = $(useClaimablesSection, s => s);
+    const positions = $(usePositionsSection, s => s);
+    const nftsEnabled = $(useNftsEnabled, s => s);
+    const nfts = $(useWalletNftRows, s => s);
+    const editing = $(useEditTokensStore, state => state.isCoinListEdited);
+    const rewardsEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('rnbw_rewards_enabled'));
+    const rewardsExperimental = $(useExperimentalConfigStore, state => state.getFlag(RNBW_REWARDS));
+    const featureDismissed = $(useRnbwFeatureCard, state => state.isDismissed);
+    const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
 
-  return { ...createListData(briefSectionsData, editing, nftsEnabled), isEmpty: header.isEmpty, isLoadingUserAssets };
-});
+    const feature = !editing && !IS_TEST && (rewardsEnabled || rewardsExperimental) && !featureDismissed ? FEATURE_CARD : EMPTY_ROWS;
+    const tokenHeader =
+      perps.hasContent && tokens.some(row => row.type === CellType.COIN || row.type === CellType.LOADING_ASSETS)
+        ? TOKENS_HEADER
+        : EMPTY_ROWS;
+    const briefSectionsData = perps.hasContent
+      ? [
+          ...header.header,
+          ...feature,
+          ...perps.section,
+          ...(predictions.hasContent ? predictions.section : EMPTY_ROWS),
+          ...tokenHeader,
+          ...tokens,
+          ...(!predictions.hasContent ? predictions.section : EMPTY_ROWS),
+          ...claimables,
+          ...positions,
+          ...(editing ? EMPTY_ROWS : nfts),
+        ]
+      : [
+          ...header.header,
+          ...feature,
+          ...tokens,
+          ...perps.section,
+          ...predictions.section,
+          ...claimables,
+          ...positions,
+          ...(editing ? EMPTY_ROWS : nfts),
+        ];
+
+    return { ...createListData(briefSectionsData, editing, nftsEnabled), isEmpty: header.isEmpty, isLoadingUserAssets };
+  },
+  { lockDependencies: true }
+);

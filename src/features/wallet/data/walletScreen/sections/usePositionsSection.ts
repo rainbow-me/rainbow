@@ -17,44 +17,47 @@ const POSITIONS_SPACE_BEFORE: CellTypes = {
   uid: 'positions-spacer-before',
 };
 
-export const usePositionsSection = createDerivedStore($ => {
-  const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
-  const positionsEnabled = $(useExperimentalConfigStore, s => !IS_TEST && s.getFlag(DEFI_POSITIONS));
-  const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
-  const positions = $(usePositionsStore, s => s.getData());
-  const isPositionCardsOpen = $(useCurrentWalletToggles, s => s.positions);
+export const usePositionsSection = createDerivedStore(
+  $ => {
+    const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
+    const positionsEnabled = $(useExperimentalConfigStore, s => !IS_TEST && s.getFlag(DEFI_POSITIONS));
+    const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
+    const positions = $(usePositionsStore, s => s.getData());
+    const isPositionCardsOpen = $(useCurrentWalletToggles, s => s.positions);
 
-  if (
-    isCoinListEdited ||
-    !positionsEnabled ||
-    isLoadingUserAssets ||
-    !positions?.positions ||
-    Object.keys(positions.positions).length === 0
-  ) {
-    return EMPTY_POSITIONS_DATA;
-  }
+    if (
+      isCoinListEdited ||
+      !positionsEnabled ||
+      isLoadingUserAssets ||
+      !positions?.positions ||
+      Object.keys(positions.positions).length === 0
+    ) {
+      return EMPTY_POSITIONS_DATA;
+    }
 
-  const section: CellTypes[] = [
-    POSITIONS_SPACE_BEFORE,
-    {
-      type: CellType.POSITIONS_HEADER,
-      uid: 'positions-header',
-      total: positions.totals?.total?.display,
-    },
-  ];
+    const section: CellTypes[] = [
+      POSITIONS_SPACE_BEFORE,
+      {
+        type: CellType.POSITIONS_HEADER,
+        uid: 'positions-header',
+        total: positions.totals?.total?.display,
+      },
+    ];
 
-  if (isPositionCardsOpen) {
-    const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
-      return {
-        type: CellType.POSITION,
-        position,
-        uid: `position-${position.type}`,
-        index,
-      };
-    });
+    if (isPositionCardsOpen) {
+      const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
+        return {
+          type: CellType.POSITION,
+          position,
+          uid: `position-${position.type}`,
+          index,
+        };
+      });
 
-    section.push(...positionSectionItems);
-  }
+      section.push(...positionSectionItems);
+    }
 
-  return section;
-});
+    return section;
+  },
+  { lockDependencies: true }
+);

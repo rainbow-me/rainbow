@@ -56,79 +56,82 @@ const BIG_EMPTY_WALLET_SPACER_CELL: CellTypes = {
 
 const BIG_EMPTY_WALLET_SPACER_SECTION: CellTypes[] = [BIG_EMPTY_WALLET_SPACER_CELL];
 
-export const useHeaderSection = createDerivedStore($ => {
-  const summaryData = $(useWalletSummaryQueryStore, state => state.summary?.data);
-  const accountAddress = $(useWalletsStore, state => state.accountAddress);
-  const currency = $(useAppSettingsStore, state => state.currency);
-  const hiddenAssetBalances = $(useHiddenAssetBalancesStore, state => state.hiddenAssetBalances);
-  const hasTokens = $(useWalletAssetsStore, state => state.assets.size > 0 || state.hiddenAssets.length > 0);
-  const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
-  const hasNFTs = $(useNftsStore, state => (state.collections?.size ?? 0) > 0);
+export const useHeaderSection = createDerivedStore(
+  $ => {
+    const summaryData = $(useWalletSummaryQueryStore, state => state.summary?.data);
+    const accountAddress = $(useWalletsStore, state => state.accountAddress);
+    const currency = $(useAppSettingsStore, state => state.currency);
+    const hiddenAssetBalances = $(useHiddenAssetBalancesStore, state => state.hiddenAssetBalances);
+    const hasTokens = $(useWalletAssetsStore, state => state.assets.size > 0 || state.hiddenAssets.length > 0);
+    const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
+    const hasNFTs = $(useNftsStore, state => (state.collections?.size ?? 0) > 0);
 
-  let accountBalanceDisplay: string | undefined = undefined;
-  let isLoadingBalance = true;
+    let accountBalanceDisplay: string | undefined = undefined;
+    let isLoadingBalance = true;
 
-  if (summaryData && accountAddress) {
-    const accountAddressLowercase = accountAddress.toLowerCase();
-    const addressData = summaryData.addresses[accountAddressLowercase as Address];
+    if (summaryData && accountAddress) {
+      const accountAddressLowercase = accountAddress.toLowerCase();
+      const addressData = summaryData.addresses[accountAddressLowercase as Address];
 
-    if (addressData?.summary) {
-      const summary = addressData.summary;
-      const assetBalance = summary.asset_value?.toString() || '0';
-      const positionsBalance = summary.positions_value?.toString() || '0';
-      const claimablesBalance = summary.claimables_value?.toString() || '0';
-      const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
+      if (addressData?.summary) {
+        const summary = addressData.summary;
+        const assetBalance = summary.asset_value?.toString() || '0';
+        const positionsBalance = summary.positions_value?.toString() || '0';
+        const claimablesBalance = summary.claimables_value?.toString() || '0';
+        const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
 
-      const hiddenBalance = hiddenAssetBalances[accountAddress] ?? '0';
-      const balanceMinusHidden = subtract(totalAccountBalance, hiddenBalance);
+        const hiddenBalance = hiddenAssetBalances[accountAddress] ?? '0';
+        const balanceMinusHidden = subtract(totalAccountBalance, hiddenBalance);
 
-      accountBalanceDisplay = convertAmountToNativeDisplay(balanceMinusHidden, currency);
-      isLoadingBalance = false;
+        accountBalanceDisplay = convertAmountToNativeDisplay(balanceMinusHidden, currency);
+        isLoadingBalance = false;
+      }
     }
-  }
 
-  const shouldHideBalanceRow = !isLoadingUserAssets && !isLoadingBalance && !hasTokens;
+    const shouldHideBalanceRow = !isLoadingUserAssets && !isLoadingBalance && !hasTokens;
 
-  const balanceSection: CellTypes[] = shouldHideBalanceRow
-    ? HIDDEN_BALANCE_ROW
-    : [
-        {
-          type: CellType.PROFILE_BALANCE_ROW,
-          uid: 'profile-balance',
-          value: accountBalanceDisplay,
-          isLoadingBalance,
-        },
-        PROFILE_BALANCE_ROW_SPACE_AFTER_CELL,
-      ];
+    const balanceSection: CellTypes[] = shouldHideBalanceRow
+      ? HIDDEN_BALANCE_ROW
+      : [
+          {
+            type: CellType.PROFILE_BALANCE_ROW,
+            uid: 'profile-balance',
+            value: accountBalanceDisplay,
+            isLoadingBalance,
+          },
+          PROFILE_BALANCE_ROW_SPACE_AFTER_CELL,
+        ];
 
-  const spacer: CellTypes[] = !hasTokens
-    ? BIG_EMPTY_WALLET_SPACER_SECTION
-    : [
-        {
-          type: CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER,
-          uid: 'profile-action-buttons-space-after',
-          value: accountBalanceDisplay,
-        },
-      ];
+    const spacer: CellTypes[] = !hasTokens
+      ? BIG_EMPTY_WALLET_SPACER_SECTION
+      : [
+          {
+            type: CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER,
+            uid: 'profile-action-buttons-space-after',
+            value: accountBalanceDisplay,
+          },
+        ];
 
-  const header: CellTypes[] = [
-    PROFILE_STICKY_HEADER_CELL,
-    PROFILE_AVATAR_ROW_SPACE_BEFORE_CELL,
-    PROFILE_AVATAR_ROW_CELL,
-    PROFILE_AVATAR_ROW_SPACE_AFTER_CELL,
-    PROFILE_NAME_ROW_CELL,
-    PROFILE_NAME_ROW_SPACE_AFTER_CELL,
-    ...balanceSection,
-    {
-      type: CellType.PROFILE_ACTION_BUTTONS_ROW,
-      uid: 'profile-action-buttons',
-      value: accountBalanceDisplay,
-    },
-    ...spacer,
-  ];
+    const header: CellTypes[] = [
+      PROFILE_STICKY_HEADER_CELL,
+      PROFILE_AVATAR_ROW_SPACE_BEFORE_CELL,
+      PROFILE_AVATAR_ROW_CELL,
+      PROFILE_AVATAR_ROW_SPACE_AFTER_CELL,
+      PROFILE_NAME_ROW_CELL,
+      PROFILE_NAME_ROW_SPACE_AFTER_CELL,
+      ...balanceSection,
+      {
+        type: CellType.PROFILE_ACTION_BUTTONS_ROW,
+        uid: 'profile-action-buttons',
+        value: accountBalanceDisplay,
+      },
+      ...spacer,
+    ];
 
-  return {
-    header,
-    isEmpty: !hasTokens && !hasNFTs,
-  };
-});
+    return {
+      header,
+      isEmpty: !hasTokens && !hasNFTs,
+    };
+  },
+  { lockDependencies: true }
+);
