@@ -21,7 +21,7 @@ import { Box } from '@/design-system';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsSearchActions } from '@/state/assets/userAssetsSearch';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -102,7 +102,7 @@ const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
       const preferredChainId = useSwapsStore.getState().preferredNetwork;
-      const defaultInputAsset = useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
+      const defaultInputAsset = userAssetsActions.getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
         const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
@@ -137,7 +137,7 @@ const WalletAddressObserver = () => {
     userAssetsSearchActions.setChainFilter(undefined);
 
     setAsset({
-      asset: useUserAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
+      asset: userAssetsActions.getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });

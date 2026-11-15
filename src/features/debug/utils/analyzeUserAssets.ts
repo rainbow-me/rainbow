@@ -1,4 +1,4 @@
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions, useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { showLogSheet } from '../screens/LogSheet';
 
@@ -32,7 +32,7 @@ export function analyzeUserAssets() {
     message: userAssetsQueryKey,
   };
 
-  const topAssets = useUserAssetsStore.getState().getUserAssets();
+  const topAssets = userAssetsActions.getUserAssets();
   const topAssetsMessage = topAssets
     .map(asset => {
       const updatedAt = asset.updatedAt ? new Date(asset.updatedAt).toLocaleString() : 'N/A';

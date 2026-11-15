@@ -56,7 +56,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { type RapSwapActionParameters } from '@/raps/references';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { getNextNonce } from '@/state/nonces';
@@ -992,7 +992,7 @@ function getOppositeAssetBalance(
   if (isFlipping) otherAssetUniqueId = (isSettingInputAsset ? inputAsset : outputAsset)?.uniqueId;
 
   const { balance: updatedAssetBalance, symbol: otherAssetSymbol }: Partial<ExtendedAnimatedAssetWithColors> =
-    (otherAssetUniqueId && useUserAssetsStore.getState().getUserAsset(otherAssetUniqueId)) || {};
+    (otherAssetUniqueId && userAssetsActions.getUserAsset(otherAssetUniqueId)) || {};
 
   if (updatedAssetBalance) otherAssetBalance = updatedAssetBalance;
   else otherAssetBalance = { amount: '0', display: `0 ${otherAssetSymbol}` };
@@ -1031,7 +1031,7 @@ function setStoreAssets({
     } else {
       const assetToSet =
         didSelectedAssetChange && asset && insertUserAssetBalance
-          ? { ...asset, balance: useUserAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance || asset.balance }
+          ? { ...asset, balance: userAssetsActions.getUserAsset(asset.uniqueId)?.balance || asset.balance }
           : asset;
 
       swapsStore.setState({

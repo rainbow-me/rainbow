@@ -1,7 +1,7 @@
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references/constants';
 import { getPlatformClient } from '@/resources/platform/client';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 
 import { parseHyperliquidTokenId } from './hyperliquidAdapter';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
@@ -99,6 +99,6 @@ export async function fetchLiveTokens({ tokenIds, currency }: LiveTokensParams):
 function isEthVariant(tokenId: string): boolean {
   if (tokenId === ETH_MAINNET_ASSET_ID) return true;
 
-  const mainnetAddress = useUserAssetsStore.getState().getUserAsset(tokenId)?.mainnetAddress;
+  const mainnetAddress = userAssetsActions.getUserAsset(tokenId)?.mainnetAddress;
   return mainnetAddress === ETH_ADDRESS || mainnetAddress === WETH_ADDRESS;
 }

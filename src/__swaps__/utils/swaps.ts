@@ -34,7 +34,7 @@ import { type TokenColors } from '@/graphql/__generated__/metadata';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import store from '@/redux/store';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { type ResponseByTheme } from '@/theme/types';
 import { ETH_ADDRESS, type CrosschainQuote, type Quote, type QuoteError, type QuoteParams, type Source } from '@rainbow-me/swaps';
@@ -496,7 +496,7 @@ export const parseAssetAndExtend = ({
   let bridging = asset.bridging;
 
   if (insertUserAssetBalance) {
-    const { balance: newBalance, bridging: newBridging } = useUserAssetsStore.getState().getUserAsset(uniqueId) || {};
+    const { balance: newBalance, bridging: newBridging } = userAssetsActions.getUserAsset(uniqueId) || {};
     if (newBalance) balance = newBalance;
     else balance = { amount: '0', display: `0 ${asset.symbol}` };
     bridging = newBridging;
