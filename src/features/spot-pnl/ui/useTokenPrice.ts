@@ -2,8 +2,8 @@ import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValu
 import { getUniqueId } from '@/entities/assetId';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import type { ChainId } from '@/features/network/types/backendNetworks';
-import useAccountAsset from '@/hooks/useAccountAsset';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 /** The token's live native price, until a quote arrives the selected wallet's or the fetched token's price; `''` without either. */
 export function useTokenPrice({
@@ -16,11 +16,11 @@ export function useTokenPrice({
   tokenAddress: string;
 }): string {
   const uniqueId = getUniqueId(tokenAddress, chainId);
-  const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
+  const accountAsset = useUserAssetsStore(s => s.getUserAsset(uniqueId));
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   return useLiveTokenValue({
     tokenId: uniqueId,
-    fallback: accountAsset?.native?.price?.amount ?? externalToken?.native?.price?.amount ?? '',
+    fallback: accountAsset?.native.price?.amount.toString() ?? externalToken?.native.price.amount ?? '',
     fallbackUpdatedAt: accountAsset?.price?.changed_at ?? 0,
   });
 }

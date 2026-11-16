@@ -43,10 +43,6 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
               <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
               <TopHoldersSection />
-              {/* BACKLOGGED */}
-              {/* {isOwnedAsset && (
-              <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
-            )} */}
               <HistorySection />
               <AboutSection placement={AboutPlacement.AFTER_HISTORY} />
               <DetailsSection />

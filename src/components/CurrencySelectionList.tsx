@@ -27,11 +27,10 @@ interface CurrencySelectionListProps {
   query: string;
   showList: boolean;
   testID: string;
-  isExchangeList?: boolean;
 }
 
 const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelectionListProps> = (
-  { keyboardDismissMode, footerSpacer, fromDiscover, itemProps, listItems, loading, onL2, query, showList, testID, isExchangeList = false },
+  { keyboardDismissMode, footerSpacer, fromDiscover, itemProps, listItems, loading, onL2, query, showList, testID },
   ref
 ) => {
   const noResults = !listItems?.[0]?.data?.length;
@@ -62,7 +61,6 @@ const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelec
             query={query}
             ref={ref}
             testID={testID}
-            isExchangeList={isExchangeList}
           />
         </Centered>
       )}

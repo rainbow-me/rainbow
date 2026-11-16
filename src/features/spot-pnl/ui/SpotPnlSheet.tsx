@@ -20,7 +20,6 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import type { ChainId } from '@/features/network/types/backendNetworks';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { greaterThanWorklet } from '@/framework/core/safeMath';
-import useAccountAsset from '@/hooks/useAccountAsset';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -29,6 +28,7 @@ import Routes from '@/navigation/routesNames';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountProfileInfoByAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
@@ -135,7 +135,7 @@ function SpotPnlSheetContent({
 }) {
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const uniqueId = getUniqueId(tokenAddress, chainId);
-  const accountAsset = useAccountAsset(uniqueId, nativeCurrency);
+  const accountAsset = useUserAssetsStore(s => s.getUserAsset(uniqueId));
   const { data: externalToken } = useExternalToken({ address: tokenAddress, chainId, currency: nativeCurrency });
   const symbol = accountAsset?.symbol ?? externalToken?.symbol ?? '';
   const profile = useAccountProfileInfoByAddress(walletAddress as Address);
@@ -153,7 +153,7 @@ function SpotPnlSheetContent({
           <RainbowCoinIcon
             size={30}
             chainId={chainId}
-            color={accountAsset?.color ?? externalToken?.colors?.primary}
+            color={accountAsset?.colors?.primary ?? accountAsset?.colors?.fallback ?? externalToken?.colors?.primary}
             icon={accountAsset?.icon_url ?? externalToken?.iconUrl ?? undefined}
             showBadge={false}
             symbol={symbol}

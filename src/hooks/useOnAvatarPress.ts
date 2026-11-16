@@ -13,18 +13,17 @@ import { useEnsOwnerStore } from '@/features/ens/data/stores/ownershipStores';
 import { useEnsRecordsStore } from '@/features/ens/data/stores/recordsStore';
 import { useENSRegistration } from '@/features/ens/hooks/useENSRegistration';
 import { REGISTRATION_MODES } from '@/features/ens/utils/helpers';
-import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { isZero } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { ETH_ADDRESS } from '@/references/constants';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getIsReadOnlyWallet, updateAccountInfo, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 import { useNavigation } from '../navigation/Navigation';
-import useAccountAsset from './useAccountAsset';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 
@@ -37,8 +36,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const nativeCurrency = useAppSettingsStore(state => state.currency);
-  const accountAsset = useAccountAsset(ETH_ADDRESS, nativeCurrency);
+  const ethBalance = useUserAssetsStore(s => s.getNativeAssetForChain(ChainId.mainnet)?.balance.amount);
 
   const profileName = profilesEnabled && accountENS ? accountENS : undefined;
   const isENSProfile = useEnsOwnerStore(s => s.get(profileName)?.toLowerCase() === accountAddress.toLowerCase());
@@ -123,7 +121,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const isReadOnly = getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet;
 
-  const isZeroETH = isZero(accountAsset?.balance?.amount || 0);
+  const isZeroETH = isZero(ethBalance ?? '0');
 
   const callback = useCallback(
     async (buttonIndex: number) => {

@@ -8,7 +8,6 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { BuyActionButton, SwapActionButton } from '@/components/sheet';
 import { Box, ColorModeProvider, Column, Columns, useColorMode } from '@/design-system';
 import { globalColors, type ColorMode } from '@/design-system/color/palettes';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { SendActionButton } from '@/features/transfer/components/SendActionButton';
@@ -39,7 +38,6 @@ export function SheetFooter() {
 
   // Owning the asset splits the single swap button into a buy/sell pair
   const isBuySellPairVisible = swapEnabled && isOwnedAsset && !isTestnet;
-  const isSendButtonVisible = isOwnedAsset && asset.transferable;
   const isBuyEthButtonVisible = !hasSwappableAssets && f2c_enabled;
   const isBuyAssetButtonVisible = !isOwnedAsset && swapEnabled && !isBuyEthButtonVisible;
 
@@ -82,15 +80,9 @@ export function SheetFooter() {
                 testID="sell"
               />
             )}
-            {isSendButtonVisible && (
+            {accountAsset && asset.transferable && (
               <Column width="content">
-                <SendActionButton
-                  asset={accountAsset as ParsedAddressAsset}
-                  color={accentColors.color}
-                  icon={SEND_ICON}
-                  isSquare
-                  size={BUTTON_SIZE}
-                />
+                <SendActionButton asset={accountAsset} color={accentColors.color} icon={SEND_ICON} isSquare size={BUTTON_SIZE} />
               </Column>
             )}
             {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} size={BUTTON_SIZE} />}

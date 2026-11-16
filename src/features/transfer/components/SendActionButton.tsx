@@ -1,17 +1,18 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 
+import type { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import SheetActionButton, { type SheetActionButtonProps } from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { Text, TextIcon } from '@/design-system';
-import type { ParsedAddressAsset, RainbowToken } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { parsedSearchAssetToParsedAddressAsset } from '@/state/assets/utils';
 import { colors } from '@/styles';
 
 type SendActionButtonProps = Omit<SheetActionButtonProps, 'icon'> & {
-  asset: RainbowToken | UniqueAsset | ParsedAddressAsset;
+  asset: ParsedSearchAsset | UniqueAsset;
   /** SF Symbol glyph rendered in place of the "Send" label, for icon-only buttons. */
   icon?: string;
 };
@@ -21,10 +22,12 @@ function SendActionButtonComponent({ asset, color: givenColor, icon, size, textC
   const navigate = useNavigationForNonReadOnlyWallets();
 
   const handlePress = useCallback(() => {
+    const sendAsset = 'contractAddress' in asset ? asset : parsedSearchAssetToParsedAddressAsset(asset);
+
     if (Platform.OS === 'ios') {
-      navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset } });
+      navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset: sendAsset } });
     } else {
-      navigate(Routes.SEND_FLOW, { asset });
+      navigate(Routes.SEND_FLOW, { asset: sendAsset });
     }
   }, [asset, navigate]);
 

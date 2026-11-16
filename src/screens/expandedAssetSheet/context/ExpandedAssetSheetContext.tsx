@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import chroma from 'chroma-js';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { type EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useColorMode } from '@/design-system';
@@ -16,17 +16,16 @@ import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
-import useAccountAsset from '@/hooks/useAccountAsset';
 import useAdditionalAssetData, { type TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme } from '@/theme/ThemeContext';
 
 export enum SectionId {
   PROFIT = 'profit',
   MARKET_STATS = 'marketStats',
-  BRIDGE = 'bridge',
   CLAIM = 'claim',
   HISTORY = 'history',
   HOLDERS = 'holders',
@@ -37,7 +36,6 @@ export enum SectionId {
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.PROFIT]: true,
   [SectionId.MARKET_STATS]: true,
-  [SectionId.BRIDGE]: true,
   [SectionId.CLAIM]: true,
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
@@ -65,7 +63,7 @@ export interface AssetAccentColors {
   surfaceSecondary: string;
 }
 // We can receive a variety of assets as param depending on where we navigated from
-export type ExpandedSheetParamAsset = ParsedAddressAsset | FormattedExternalAsset | EnrichedExchangeAsset | Token;
+export type ExpandedSheetParamAsset = ParsedSearchAsset | ParsedAddressAsset | FormattedExternalAsset | EnrichedExchangeAsset | Token;
 
 export type BasicAsset = Pick<
   Token,
@@ -83,7 +81,7 @@ export type ExpandedSheetAsset = BasicAsset | (BasicAsset & FormattedExternalAss
 type ExpandedAssetSheetContextType = {
   accentColors: AssetAccentColors;
   basicAsset: ExpandedSheetAsset;
-  accountAsset: ParsedAddressAsset | undefined;
+  accountAsset: ParsedSearchAsset | null;
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   hideClaimSection: boolean;
@@ -123,7 +121,7 @@ export function ExpandedAssetSheetContextProvider({
 
   const expandedSections = useSharedValue<Record<SectionId, boolean>>(DEFAULT_SECTIONS_STATE);
   const assetUniqueId = getUniqueId(address, chainId);
-  const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
+  const accountAsset = useUserAssetsStore(s => s.getUserAsset(assetUniqueId));
   const isOwnedAsset = !!accountAsset;
 
   // The asset is fetched regardless of the information in param so that we do not have to be concerned with the staleness of the data or missing fields
@@ -158,7 +156,7 @@ export function ExpandedAssetSheetContextProvider({
       decimals: asset.decimals,
       iconUrl: 'iconUrl' in asset ? asset.iconUrl : 'icon_url' in asset ? asset.icon_url : '',
       isNativeAsset: isNativeAsset(address, chainId),
-      colors: assetColors ?? { primary: colors.blueGreyDark },
+      colors: { ...assetColors, primary: assetColors?.primary ?? assetColors?.fallback ?? colors.blueGreyDark },
       transferable: 'transferable' in asset ? asset.transferable : true,
       networks: 'networks' in asset ? asset.networks : {},
       price: {

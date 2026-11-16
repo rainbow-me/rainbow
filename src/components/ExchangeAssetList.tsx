@@ -18,7 +18,6 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '@/components/contacts';
 import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
-import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
@@ -84,10 +83,6 @@ function renderItem({ item }: { item: EnrichedExchangeAsset }) {
   return <FastCurrencySelectionRow item={item} />;
 }
 
-function renderExchangeItem({ item }: { item: EnrichedExchangeAsset }) {
-  return <ExchangeTokenRow item={item} />;
-}
-
 interface ExchangeAssetListProps {
   footerSpacer: boolean;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
@@ -100,7 +95,6 @@ interface ExchangeAssetListProps {
   onLayout?: () => void;
   query: string;
   testID: string;
-  isExchangeList?: boolean;
 }
 
 const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHeader({
@@ -142,7 +136,7 @@ const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHea
 });
 
 const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetListProps> = (
-  { footerSpacer, keyboardDismissMode = 'none', itemProps, items, onLayout, query, testID, isExchangeList },
+  { footerSpacer, keyboardDismissMode = 'none', itemProps, items, onLayout, query, testID },
   ref
 ) => {
   const sectionListRef = ref as MutableRefObject<SectionList>;
@@ -280,7 +274,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
           onLayout={onLayout}
           onScroll={Platform.OS === 'android' ? onScroll : undefined}
           ref={sectionListRef}
-          renderItem={isExchangeList ? renderExchangeItem : renderItem}
+          renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}

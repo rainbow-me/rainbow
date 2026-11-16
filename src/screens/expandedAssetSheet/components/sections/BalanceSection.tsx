@@ -26,16 +26,16 @@ import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
-  const { accentColors, accountAsset: asset, basicAsset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, accountAsset: asset, basicAsset } = useExpandedAssetSheetContext();
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const chartType = useChartType();
 
-  const balanceAmount = asset?.balance?.amount ?? '0';
+  const balanceAmount = asset?.balance.amount ?? '0';
   const tokenId = asset?.uniqueId;
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId,
-    fallback: asset?.native?.price?.amount ?? '0',
+    fallback: asset?.native.price?.amount.toString() ?? '0',
     fallbackUpdatedAt: asset?.price?.changed_at ?? 0,
   });
 
@@ -99,7 +99,7 @@ export function BalanceSection() {
     return tokenBalanceData.value.displayValue;
   });
 
-  if (!isOwnedAsset) {
+  if (!asset) {
     return (
       <SpotPnlPill
         surfaceColor={accentColors.opacity6}
@@ -115,7 +115,6 @@ export function BalanceSection() {
       />
     );
   }
-  if (!asset?.balance || !asset?.native?.balance) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
@@ -140,7 +139,7 @@ export function BalanceSection() {
             <RainbowCoinIcon
               size={20}
               chainId={asset.chainId}
-              color={asset.color}
+              color={asset.colors?.primary ?? asset.colors?.fallback}
               icon={asset.icon_url}
               showBadge={false}
               symbol={asset.symbol}
@@ -182,7 +181,7 @@ export function BalanceSection() {
             address: asset.address,
             balance: balanceAmount,
             chainId: asset.chainId,
-            initialPrice: asset.native.price?.amount ?? '',
+            initialPrice: asset.native.price?.amount.toString() ?? '',
             initialPriceUpdatedAt: asset.price?.changed_at ?? 0,
             uniqueId: asset.uniqueId,
           }}
