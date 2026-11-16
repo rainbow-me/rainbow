@@ -80,13 +80,7 @@ it('subscribes visible outcomes, follows changed tokens, and releases demand', a
     )
   );
   act(() => setPrices(['game']));
-  await expectRequestedTokens(
-    '11:polymarket:midpoint',
-    '12:polymarket:midpoint',
-    '13:polymarket:midpoint',
-    '14:polymarket:midpoint',
-    '15:polymarket:midpoint'
-  );
+  await expectRequestedTokens('11:polymarket:midpoint', '12:polymarket:midpoint', '15:polymarket:midpoint');
 
   const replacement: Game = {
     id: 'next',

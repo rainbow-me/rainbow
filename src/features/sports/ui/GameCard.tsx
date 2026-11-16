@@ -3,6 +3,7 @@ import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
@@ -12,6 +13,7 @@ import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
 import { getSquirclePath } from '@/design-system/layout/shapes';
 import { BetButton } from '@/features/polymarket/components/BetButton';
+import { formatPayoutMultiple } from '@/features/polymarket/utils/formatPayoutMultiple';
 import { formatProbability } from '@/features/polymarket/utils/formatProbability';
 import { type SportsCatalog, type SportsScope } from '@/features/sports/core/catalog';
 import {
@@ -21,7 +23,6 @@ import {
   type Game,
   type Participant,
   type PolymarketOutcome,
-  type Spread,
 } from '@/features/sports/core/generated/external/sports/payload';
 import { getParticipantDisplayName } from '@/features/sports/core/participants';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
@@ -129,10 +130,8 @@ export const GameCard = memo(function GameCard({
                     <GameScore score={game.scoreColumns} participantIndex={index} />
                   </View>
 
-                  <ParticipantBetButtons
+                  <MoneylineBetButton
                     gameId={gameId}
-                    participantIndex={index}
-                    spread={game.spread}
                     moneylineOutcome={participant.moneylineOutcome}
                     color={participant.color ?? sportsIcons[competitionId]?.color ?? competition?.color}
                     isDarkMode={isDarkMode}
@@ -443,65 +442,33 @@ const GameParticipant = memo(function GameParticipant({
   );
 });
 
-const ParticipantBetButtons = memo(function ParticipantBetButtons({
+const MoneylineBetButton = memo(function MoneylineBetButton({
   isDarkMode,
   gameId,
-  participantIndex,
-  spread,
   moneylineOutcome,
   color,
   onPress,
 }: {
   gameId: string;
-  participantIndex: 0 | 1;
-  spread?: Spread;
   moneylineOutcome?: PolymarketOutcome;
   color?: string;
   isDarkMode: boolean;
   onPress: SportsGamePress;
 }) {
-  const outcome = spread?.outcomes[participantIndex];
-
-  return (
-    <View style={styles.betButtons}>
-      {spread && outcome ? (
-        <BetButton
-          isDarkMode={isDarkMode}
-          key={outcome.tokenId}
-          liveTokenId={getPolymarketTokenId(outcome.tokenId, 'midpoint')}
-          fallbackPrice={outcome.priceUsd}
-          color={color}
-          scoreAdjustment={Number(outcome.scoreAdjustment)}
-          onPress={badgeColor =>
-            onPress(gameId, {
-              outcome: {
-                eventId: spread.eventId,
-                marketId: spread.marketId,
-                tokenId: outcome.tokenId,
-                outcomeIndex: outcome.outcomeIndex,
-              },
-              badgeColor,
-            })
-          }
-        />
-      ) : null}
-
-      {moneylineOutcome ? (
-        <BetButton
-          isDarkMode={isDarkMode}
-          key={moneylineOutcome.tokenId}
-          liveTokenId={getPolymarketTokenId(moneylineOutcome.tokenId, 'midpoint')}
-          fallbackPrice={moneylineOutcome.priceUsd}
-          color={color}
-          onPress={badgeColor => onPress(gameId, { outcome: moneylineOutcome, badgeColor })}
-        />
-      ) : (
-        <View style={styles.unavailable}>
-          <Text color="labelQuaternary" size="17pt" weight="heavy">
-            —
-          </Text>
-        </View>
-      )}
+  return moneylineOutcome ? (
+    <BetButton
+      isDarkMode={isDarkMode}
+      key={moneylineOutcome.tokenId}
+      liveTokenId={getPolymarketTokenId(moneylineOutcome.tokenId, 'midpoint')}
+      fallbackPrice={moneylineOutcome.priceUsd}
+      color={color}
+      onPress={badgeColor => onPress(gameId, { outcome: moneylineOutcome, badgeColor })}
+    />
+  ) : (
+    <View style={styles.unavailable}>
+      <Text color="labelQuaternary" size="17pt" weight="heavy">
+        —
+      </Text>
     </View>
   );
 });
@@ -517,23 +484,32 @@ const GameDrawRow = memo(function GameDrawRow({
 }) {
   const liveTokenId = tokenId ? getPolymarketTokenId(tokenId, 'midpoint') : undefined;
   const price = useStoreSharedValue(useLiveTokensStore, s => (liveTokenId ? s.tokens[liveTokenId]?.price : undefined));
+  const multiple = useDerivedValue(() => formatPayoutMultiple(price.value ?? fallbackPrice));
+  const multipleStyle = useAnimatedStyle(() => ({ display: multiple.value ? 'flex' : 'none' }));
 
   return (
     <View style={styles.drawRow}>
       <View style={styles.drawLabel}>
         <GameBadge isDarkMode={isDarkMode}>
-          <AnimatedText
-            align="center"
-            color="labelTertiary"
-            size="13pt"
-            weight="bold"
-            selector={price => {
-              'worklet';
-              return formatProbability(price.value ?? fallbackPrice);
-            }}
-          >
-            {price}
-          </AnimatedText>
+          <View style={styles.drawOdds}>
+            <AnimatedText
+              align="center"
+              color="labelTertiary"
+              size="13pt"
+              weight="bold"
+              selector={price => {
+                'worklet';
+                return formatProbability(price.value ?? fallbackPrice);
+              }}
+            >
+              {price}
+            </AnimatedText>
+            <Animated.View style={[styles.drawMultiple, multipleStyle]}>
+              <AnimatedText align="center" color="labelQuaternary" size="11pt" weight="bold">
+                {multiple}
+              </AnimatedText>
+            </Animated.View>
+          </View>
         </GameBadge>
         <Text color="labelQuaternary" size="13pt" weight="bold">
           {i18n.t(i18n.l.sports.chance_of_draw)}
@@ -631,11 +607,6 @@ const styles = StyleSheet.create({
   },
   compactLogo: { width: 32, height: 28 },
   name: { flex: 1, gap: 8 },
-  betButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
   unavailable: {
     width: 60,
     height: 40,
@@ -653,6 +624,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   drawLabel: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  drawOdds: { flexDirection: 'row', alignItems: 'center' },
+  drawMultiple: { marginLeft: 4 },
   divider: { height: 2, paddingLeft: 2 },
   darkDivider: { flex: 1 },
   lightDivider: { marginRight: 8 },

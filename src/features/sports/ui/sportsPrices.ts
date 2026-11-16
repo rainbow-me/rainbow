@@ -23,8 +23,6 @@ const NO_IDS: readonly string[] = [];
 const OUTCOME_SELECTORS: readonly ((game: Game) => { tokenId: string } | undefined)[] = [
   game => game.participants[0]?.moneylineOutcome,
   game => game.participants[1]?.moneylineOutcome,
-  game => game.spread?.outcomes[0],
-  game => game.spread?.outcomes[1],
   game => game.moneyline?.draw,
 ];
 
