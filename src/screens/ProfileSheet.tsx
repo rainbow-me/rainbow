@@ -11,6 +11,7 @@ import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileShe
 import { useEnsProfileImage } from '@/features/ens/data/stores/imageStore';
 import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { NftAssetList } from '@/features/nfts/ui/NftAssetList';
 import useDimensions from '@/hooks/useDimensions';
 import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -22,7 +23,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 
-import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import Skeleton from '../components/skeleton/Skeleton';
 
 export function ProfileSheet() {
@@ -70,7 +70,7 @@ export function ProfileSheet() {
                   <PlaceholderList />
                 </Stack>
               ) : (
-                <RecyclerAssetList2 externalAddress={profileAddress || ''} type="ens-profile" walletBriefSectionsData={briefSectionsData} />
+                <NftAssetList externalAddress={profileAddress || ''} type="ens-profile" rows={briefSectionsData} />
               )}
             </Box>
           </Box>

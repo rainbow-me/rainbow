@@ -1,69 +1,32 @@
-# NFT Store Pagination
+# NFT data
 
-This document describes how the NFT store handles pagination with automatic pageKey expiration.
+`createNftsStore` persists each account's collection summaries and pagination cursor.
+A first page replaces the summaries; continuation pages append them. The store
+constructs the published map once, directly from the API response. Version 3 drops
+the obsolete fetched-data format without migrating it.
 
-## Overview
+`fetchNextNftCollectionPage()` refreshes an expired cursor from the first page before
+requesting the continuation. The query store shares concurrent requests and retains
+the displayed summaries during refresh and failure.
 
-The NFT store implements a pagination system that automatically handles expired pageKeys to ensure users can always continue browsing their NFT collections, even after returning to the app after some time.
+Collection contents use `useCollectionNftsStore`, the existing keyed-query collection
+with wallet address and collection ID as its key. `useNftCollectionAssets` observes
+open-collection preferences and subscribes to those collection reads. Closing a
+collection releases its fetch demand; its fetched assets remain cached. The backend
+returns a first page of owned NFTs, not necessarily the entire collection.
 
-## Key Features
+Showcase and hidden preferences contain specific NFT IDs. `useNftMetadataStore`
+reuses available collection assets and fetches only missing saved-token metadata for
+open preference groups. Preference metadata does not establish owned collection
+membership. Row construction prefers the collection's current asset when available.
 
-### 1. PageKey Tracking
+Wallet, avatar-picker and ENS-profile rows carry their asset references and header
+open state. Cells render that prepared data and toggle preferences; they do not
+subscribe to NFT stores or initiate fetching. Sending an NFT and completing ENS
+registration refresh the affected collection. Pull-to-refresh refreshes open
+collections alongside the account's other data.
 
-- Each fetched page is tracked with a timestamp in `fetchedPages`
-- The initial page is tracked as `fetchedPages.initial`
-- Subsequent pages are tracked with their pageKey as the key
-
-### 2. Automatic Staleness Detection
-
-- PageKeys are considered stale after 30 seconds (configurable via `PAGINATION_STALE_TIME`)
-- When attempting to fetch the next page, the system checks if the last fetch was more than 30 seconds ago
-- If stale, it automatically refetches from the beginning to get a fresh pageKey
-
-### 3. Error Recovery
-
-- If a pageKey is rejected by the server (expired or invalid), the system automatically refetches from the beginning
-- This ensures users never get stuck unable to paginate
-
-### 4. Memory Management
-
-- Old pageKey timestamps (older than 1 minute) are automatically cleaned up to prevent memory leaks
-- The cleanup happens during pagination to keep the store efficient
-
-### 5. Cache Support
-
-- When loading from cache, the system sets an initial timestamp to prevent immediate refetch
-- The timestamp is set to half the stale time ago, giving users 15 seconds to start paginating
-
-## Usage
-
-```typescript
-// Fetch next page of NFT collections
-onEndReached={nftStore.getState().fetchNextNftCollectionPage}
-
-// Check if there are more pages
-const hasMore = nftStore.getState().hasNextNftCollectionPage();
-```
-
-## Configuration
-
-- `PAGE_SIZE`: Number of collections per page (default: 12)
-- `PAGINATION_STALE_TIME`: Time before pageKey is considered stale (default: 30 seconds)
-- `STALE_TIME`: Time before collection data is considered stale (default: 10 minutes)
-
-## Testing
-
-Run the pagination tests:
-
-```bash
-npm test src/state/nfts/__tests__/createNftsStore.test.ts
-```
-
-The tests cover:
-
-- Basic pagination flow
-- Stale pageKey handling
-- Error recovery
-- Concurrent request prevention
-- Memory cleanup
-- Cache loading scenarios
+`features/nfts/data/walletNftRowsStore.ts` composes wallet NFT rows from these stores.
+Wallet editing controls whether the wallet includes that section; it does not
+change NFT data. The NFT picker uses `useSelectableNftRows`, and profiles prepare
+their existing query results with `buildProfileNftRows`.

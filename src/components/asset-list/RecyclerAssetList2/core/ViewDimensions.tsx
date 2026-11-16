@@ -56,8 +56,6 @@ export const ViewDimensions: Record<CellType, Dim> = {
   [CellType.NFTS_HEADER]: { height: SectionHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },
   [CellType.NFTS_HEADER_SPACE_AFTER]: { height: 6 },
-  [CellType.LEGACY_FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
-  [CellType.LEGACY_NFT]: { height: CardSize + UniqueTokenCardMargin, width: deviceUtils.dimensions.width / 2 - 0.1 },
   [CellType.FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
   [CellType.NFT]: {
     height: CardSize + UniqueTokenCardMargin,

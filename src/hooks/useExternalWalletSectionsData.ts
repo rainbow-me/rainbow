@@ -1,13 +1,19 @@
 import { useMemo } from 'react';
 
-import { legacyBuildBriefUniqueTokenList } from '@/helpers/assets';
+import { buildProfileNftRows } from '@/features/ens/data/buildProfileNftRows';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
-import { type AssetListType } from '../components/asset-list/RecyclerAssetList2';
-
-export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
+/**
+ * Prepares visible profile NFTs from the existing query and saved preferences.
+ */
+export default function useExternalWalletSectionsData({ address }: { address?: string }): {
+  briefSectionsData: ReturnType<typeof buildProfileNftRows>;
+  isLoading: boolean;
+  isSuccess: boolean;
+} {
   const {
     data: { nfts: uniqueTokens },
     isInitialLoading,
@@ -16,13 +22,11 @@ export default function useExternalWalletSectionsData({ address, type }: { addre
   });
   const { hiddenTokens } = useHiddenTokens(address);
   const { showcaseTokens } = useShowcaseTokens(address);
-
-  // TODO: Bring back selling tokens eventually
-  // const sellingTokens = useMemo(() => uniqueTokens?.filter(token => token.) || [], [uniqueTokens]);
+  const openCollections = useOpenCollectionsStore(s => s.openCollections);
 
   const briefSectionsData = useMemo(
-    () => (uniqueTokens ? legacyBuildBriefUniqueTokenList(uniqueTokens, showcaseTokens, [], hiddenTokens, type) : []),
-    [uniqueTokens, showcaseTokens, hiddenTokens, type]
+    () => (uniqueTokens ? buildProfileNftRows(uniqueTokens, showcaseTokens ?? [], hiddenTokens ?? [], openCollections) : []),
+    [uniqueTokens, showcaseTokens, hiddenTokens, openCollections]
   );
 
   return {

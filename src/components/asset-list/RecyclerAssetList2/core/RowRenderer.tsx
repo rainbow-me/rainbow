@@ -12,7 +12,6 @@ import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/
 import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
-import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { renderNftRow } from '@/features/nfts/ui/renderNftRow';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
@@ -31,8 +30,6 @@ import { RnbwFeatureCard } from '../cards/RnbwFeatureCard';
 import { Claimable } from '../Claimable';
 import { ClaimablesListHeader } from '../ClaimablesListHeader';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
-import LegacyWrappedNFT from '../LegacyWrappedNFT';
-import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
 import { NFTEmptyState } from '../NFTEmptyState';
 import { NFTLoadingSkeleton } from '../NFTLoadingSkeleton';
 import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';
@@ -56,8 +53,6 @@ export type ExtendedState = {
   pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   setIsCoinListEdited: SetterOrUpdater<boolean>;
-  externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
 export default function rowRenderer(data: CellTypes, extendedState: ExtendedState): React.ReactElement | null {
@@ -164,31 +159,7 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
       return <NFTEmptyState />;
     case CellType.FAMILY_HEADER:
     case CellType.NFT:
-      return renderNftRow(data, extendedState.theme, extendedState.onPressUniqueToken, extendedState.externalAddress);
-    case CellType.LEGACY_FAMILY_HEADER: {
-      const { name, image, total } = data;
-
-      return (
-        <LegacyWrappedTokenFamilyHeader
-          image={image}
-          name={name}
-          testID={`token-family-header-${name}`}
-          theme={extendedState.theme}
-          total={total}
-        />
-      );
-    }
-    case CellType.LEGACY_NFT: {
-      const { index, uniqueId } = data;
-      return (
-        <LegacyWrappedNFT
-          externalAddress={extendedState.externalAddress}
-          onPress={extendedState.onPressUniqueToken}
-          placement={index % 2 === 0 ? 'left' : 'right'}
-          uniqueId={uniqueId}
-        />
-      );
-    }
+      return renderNftRow(data, extendedState.theme);
     case CellType.POSITIONS_HEADER: {
       const { total } = data;
       return <WrappedPositionsListHeader total={total} />;

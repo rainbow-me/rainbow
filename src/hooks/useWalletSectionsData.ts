@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
 import { analytics } from '@/analytics';
-import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { IS_TEST } from '@/env';
 import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS } from '@/features/config/constants/experimental';
@@ -38,14 +37,9 @@ export interface WalletSectionsResult {
   isEmpty: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
-  hasNFTs: boolean;
 }
 
-export default function useWalletSectionsData({
-  type,
-}: {
-  type?: AssetListType;
-} = {}): WalletSectionsResult {
+export default function useWalletSectionsData(): WalletSectionsResult {
   // Keep callers that render translated text subscribed to language changes.
   useAppSettingsStore(state => state.language);
   const nativeCurrency = useAppSettingsStore(state => state.currency);
@@ -106,7 +100,7 @@ export default function useWalletSectionsData({
   const { isDismissed: isDismissedRnbwFeatureCard } = useRnbwFeatureCard();
 
   useEffect(() => {
-    if (isLoadingUserAssets || type !== 'wallet') return;
+    if (isLoadingUserAssets) return;
 
     const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.size };
     for (const asset of sortedAssets.values()) {
@@ -114,7 +108,7 @@ export default function useWalletSectionsData({
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
     analytics.track(analytics.event.tokenList, params);
-  }, [isLoadingUserAssets, sortedAssets, type]);
+  }, [isLoadingUserAssets, sortedAssets]);
 
   return useMemo(() => {
     const sections: WalletSectionsState = {
@@ -141,10 +135,8 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = (collections?.size ?? 0) > 0;
 
     return {
-      hasNFTs,
       isEmpty,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingUserAssets,

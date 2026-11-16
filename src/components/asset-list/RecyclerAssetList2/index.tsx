@@ -10,7 +10,6 @@ import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
-import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { useNftsEnabled } from '@/features/nfts/data/nftsEnabledStore';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
@@ -36,32 +35,17 @@ import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { type CellTypes } from './core/ViewTypes';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 
-export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
-
 type MenuItemRoute = typeof Routes.SETTINGS_SHEET | typeof Routes.RECEIVE_MODAL | typeof Routes.CONNECTED_DAPPS;
 
 export interface RecyclerAssetList2Props {
   accentColor?: string;
-  disablePullDownToRefresh?: boolean;
-  externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
-  type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
   onEndReached?: () => void;
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
-function RecyclerAssetList({
-  accentColor,
-  disablePullDownToRefresh,
-  externalAddress,
-  onPressUniqueToken,
-  type = 'wallet',
-  walletBriefSectionsData,
-  onEndReached,
-  onViewableItemsChanged,
-}: RecyclerAssetList2Props) {
-  const briefSectionsData = useMemoBriefSectionData({ briefSectionsData: walletBriefSectionsData, type });
+function RecyclerAssetList({ accentColor, walletBriefSectionsData, onEndReached, onViewableItemsChanged }: RecyclerAssetList2Props) {
+  const briefSectionsData = useMemoBriefSectionData(walletBriefSectionsData);
   const theme = useTheme();
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
@@ -80,8 +64,6 @@ function RecyclerAssetList({
   );
   const extendedState = useMemo<ExtendedState>(
     () => ({
-      externalAddress,
-      onPressUniqueToken,
       isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
@@ -91,27 +73,16 @@ function RecyclerAssetList({
       theme,
       toggleSelectedCoin,
     }),
-    [
-      externalAddress,
-      onPressUniqueToken,
-      isCoinListEdited,
-      nativeCurrency,
-      nativeCurrencySymbol,
-      hiddenAssets,
-      pinnedCoins,
-      setIsCoinListEdited,
-      theme,
-      toggleSelectedCoin,
-    ]
+    [isCoinListEdited, nativeCurrency, nativeCurrencySymbol, hiddenAssets, pinnedCoins, setIsCoinListEdited, theme, toggleSelectedCoin]
   );
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
+      <NavbarOverlay accentColor={accentColor} position={position} />
       <StickyHeaderManager yOffset={navbarHeight + insets.top - 8}>
         <RawMemoRecyclerAssetList
           listData={listData}
-          disablePullDownToRefresh={!!disablePullDownToRefresh}
+          disablePullDownToRefresh={false}
           extendedState={extendedState}
           rowRenderer={(_type, data: CellTypes) => rowRenderer(data, extendedState)}
           onEndReached={onEndReached}
@@ -119,7 +90,7 @@ function RecyclerAssetList({
             bottom: insets.bottom + 14,
             top: 132,
           }}
-          type={type}
+          type="wallet"
           onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>

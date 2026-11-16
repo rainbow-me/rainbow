@@ -63,7 +63,7 @@ function WalletScreen() {
   const insets = useSafeAreaInsets();
   const setSubscribedTokens = useLiveTokenListSubscription();
 
-  const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({ type: 'wallet' });
+  const { isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
 
   const { highContrastAccentColor } = useAccountAccentColor();
 
