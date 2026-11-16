@@ -3,6 +3,7 @@ import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import styled from '@/framework/ui/styled-thing';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { Column, Flex } from '../../components/layout';
 

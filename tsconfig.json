@@ -30,6 +30,6 @@
     },
     "resolveJsonModule": true
   },
-  "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
+  "globals": ["ios", "android", "web", "__DEV__", "IS_DEV"],
   "exclude": ["node_modules", "rainbow-scripts", "ios", "android", "src/browser", "patches", "InjectedJSBundle.js"]
 }

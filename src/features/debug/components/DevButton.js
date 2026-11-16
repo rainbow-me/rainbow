@@ -8,6 +8,7 @@ import RNRestart from 'react-native-restart';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Icon } from '@/components/icons';
 import styled from '@/framework/ui/styled-thing';
+import { useTheme } from '@/theme/ThemeContext';
 
 const Button = styled(ButtonPressAnimation)(({ size, color }) => ({
   alignItems: 'center',

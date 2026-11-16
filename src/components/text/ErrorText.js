@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useTheme } from '@/theme/ThemeContext';
+
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import Text from './Text';

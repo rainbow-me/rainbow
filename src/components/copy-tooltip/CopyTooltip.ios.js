@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import ToolTip from 'react-native-tooltip';
 
+import { useTheme } from '@/theme/ThemeContext';
+
 function CopyTooltip({ textToCopy, tooltipText, ...props }) {
   const handleCopy = useCallback(() => Clipboard.setString(textToCopy), [textToCopy]);
   const { colors } = useTheme();

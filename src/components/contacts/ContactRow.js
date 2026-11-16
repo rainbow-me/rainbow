@@ -12,6 +12,7 @@ import useContacts from '@/hooks/useContacts';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
 import { margin } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 

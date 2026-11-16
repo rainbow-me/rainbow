@@ -7,6 +7,7 @@ import styled from '@/framework/ui/styled-thing';
 import useClipboard from '@/hooks/useClipboard';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
 import addressUtils from '@/utils/address';
 
 import { isHexString } from '../../handlers/web3';

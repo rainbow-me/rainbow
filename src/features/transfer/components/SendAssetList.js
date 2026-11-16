@@ -11,6 +11,7 @@ import { Centered } from '@/components/layout';
 import TokenFamilyHeader from '@/components/token-family/TokenFamilyHeader';
 import styled from '@/framework/ui/styled-thing';
 import { buildCoinsList } from '@/helpers/assets';
+import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 

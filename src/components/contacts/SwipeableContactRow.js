@@ -7,6 +7,7 @@ import { ImgixImage } from '@/components/images';
 import { opacity } from '@/design-system/utils/opacity';
 import * as i18n from '@/languages';
 import { margin, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import EditIcon from '../../assets/swipeToEdit.png';

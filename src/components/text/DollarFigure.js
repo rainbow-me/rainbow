@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styled from '@/framework/ui/styled-thing';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { Row } from '../layout';
 import Text from './Text';

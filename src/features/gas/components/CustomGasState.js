@@ -16,6 +16,7 @@ import useDimensions from '@/hooks/useDimensions';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import { useNavigation } from '@/navigation/Navigation';
 import { margin, position } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import useGas from '../hooks/useGas';

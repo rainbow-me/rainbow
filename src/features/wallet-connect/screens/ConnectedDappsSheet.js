@@ -10,6 +10,7 @@ import { Box, Text } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { WALLET_CONNECT_LIST_ITEM_HEIGHT, WalletConnectV2ListItem } from '../components/WalletConnectV2ListItem';
 import { useWalletConnectV2Sessions } from '../hooks/useWalletConnectV2Sessions';
