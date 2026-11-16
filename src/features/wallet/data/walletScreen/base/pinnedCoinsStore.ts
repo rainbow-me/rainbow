@@ -1,5 +1,4 @@
 import { createBaseStore, createDerivedStore, createStoreActions } from '@storesjs/stores';
-import { createMMKV } from 'react-native-mmkv';
 
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -14,7 +13,7 @@ type PinnedCoinsState = {
 
 export const usePinnedCoinsStore = createBaseStore<PinnedCoinsState>(
   (set, get) => ({
-    pinnedCoins: readPinnedCoins(),
+    pinnedCoins: {},
 
     isPinned: uniqueId => {
       const accountAddress = useWalletsStore.getState().accountAddress;
@@ -57,7 +56,7 @@ export const usePinnedCoinsStore = createBaseStore<PinnedCoinsState>(
     },
   }),
 
-  { storageKey: 'pinnedCoinsStore' }
+  { persistThrottleMs: 0, storageKey: 'pinnedCoinsStore' }
 );
 
 export const pinnedCoinsActions = createStoreActions(usePinnedCoinsStore);
@@ -72,14 +71,3 @@ export const useCurrentPinnedCoins = createDerivedStore(
   },
   { lockDependencies: true }
 );
-
-function readPinnedCoins(): Record<string, BooleanMap> {
-  const storage = createMMKV();
-  const pinnedCoins: Record<string, BooleanMap> = {};
-  for (const key of storage.getAllKeys()) {
-    if (!key.startsWith('pinned-coins-obj-')) continue;
-    const value = storage.getString(key);
-    if (value) pinnedCoins[key.slice('pinned-coins-obj-'.length)] = JSON.parse(value);
-  }
-  return pinnedCoins;
-}

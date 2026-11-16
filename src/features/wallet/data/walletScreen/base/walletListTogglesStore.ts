@@ -1,5 +1,4 @@
 import { createBaseStore, createDerivedStore, createStoreActions } from '@storesjs/stores';
-import { createMMKV } from 'react-native-mmkv';
 
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -20,9 +19,9 @@ type ListSectionTogglesState = {
   toggle: (section: ListSectionKey) => void;
 };
 
-const useWalletListTogglesStore = createBaseStore<ListSectionTogglesState>(
+export const useWalletListTogglesStore = createBaseStore<ListSectionTogglesState>(
   (set, get) => ({
-    togglesByWallet: readListToggles(),
+    togglesByWallet: {},
 
     getCurrentToggles: accountAddress => {
       const address = accountAddress ?? useWalletsStore.getState().accountAddress;
@@ -67,7 +66,7 @@ const useWalletListTogglesStore = createBaseStore<ListSectionTogglesState>(
     },
   }),
 
-  { storageKey: 'listSectionTogglesStore' }
+  { persistThrottleMs: 0, storageKey: 'listSectionTogglesStore' }
 );
 
 export const useCurrentWalletToggles = createDerivedStore(
@@ -83,17 +82,3 @@ export const useCurrentWalletToggles = createDerivedStore(
 );
 
 export const walletListTogglesActions = createStoreActions(useWalletListTogglesStore);
-
-function readListToggles(): Partial<Record<string, ListSectionToggles>> {
-  const storage = createMMKV();
-  const toggles: Partial<Record<string, ListSectionToggles>> = {};
-  const sections = { 'claimables-open-': 'claimables', 'positions-open-': 'positions', 'polymarket-open-': 'predictions' } as const;
-  for (const key of storage.getAllKeys()) {
-    for (const [prefix, section] of Object.entries(sections)) {
-      if (!key.startsWith(prefix)) continue;
-      const address = key.slice(prefix.length);
-      toggles[address] = { ...(toggles[address] ?? DEFAULT_TOGGLES), [section]: storage.getBoolean(key) ?? false };
-    }
-  }
-  return toggles;
-}

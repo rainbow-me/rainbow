@@ -17,6 +17,7 @@ import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavo
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
+import { migrateWalletListPreferences } from './migrations/migrateWalletListPreferences';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
 import { repairBrowserTabUrls } from './migrations/repairBrowserTabUrls';
 
@@ -50,6 +51,7 @@ const migrations: (() => Migration)[] = [
   migrateExperimentalFlags,
   repairBrowserTabUrls,
   migrateAppSettings,
+  migrateWalletListPreferences,
 ];
 
 /**

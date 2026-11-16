@@ -23,6 +23,7 @@ export enum MigrationName {
   migrateExperimentalFlags = 'migration_migrateExperimentalFlags',
   repairBrowserTabUrls = 'migration_repairBrowserTabUrls',
   migrateAppSettings = 'migration_migrateAppSettings',
+  migrateWalletListPreferences = 'migration_migrateWalletListPreferences',
 }
 
 export type Migration = {
