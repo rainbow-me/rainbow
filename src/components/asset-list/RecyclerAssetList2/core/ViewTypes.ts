@@ -1,7 +1,8 @@
 import { type RecyclerListView, type RecyclerListViewProps } from 'recyclerlistview';
 import { type RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 
-import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { type ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type RainbowPosition } from '@/features/positions/types';
@@ -73,16 +74,7 @@ export type CoinDividerExtraData = {
   defaultToEditButton: boolean;
 };
 
-export type NFTsOtherData = {
-  type: CellType.NFTS_HEADER_SPACE_AFTER | CellType.NFT_SPACE_AFTER | CellType.NFTS_EMPTY | CellType.NFTS_LOADING;
-};
-
-export type AssetsHeaderExtraData = {
-  type: CellType.PROFILE_BALANCE_ROW;
-  value: string | undefined;
-  isLoadingBalance: boolean;
-};
-export type CoinExtraData = { type: CellType.COIN; uniqueId: string; isPinned: boolean; isHidden: boolean };
+export type CoinExtraData = { type: CellType.COIN; asset: ParsedSearchAsset; isPinned: boolean; isHidden: boolean };
 export type NFTExtraData = {
   type: CellType.NFT;
   asset: UniqueAsset | null;
@@ -152,11 +144,6 @@ export type NftCollectionHeaderData = {
   image?: string;
 };
 
-export type ProfileActionButtonsRowExtraData = {
-  type: CellType.PROFILE_ACTION_BUTTONS_ROW | CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER;
-  value: string | undefined;
-};
-
 export type LoadingAssetsSection = {
   type: CellType.LOADING_ASSETS;
 };
@@ -172,8 +159,6 @@ export type CellExtraData =
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
-  | NFTsOtherData
-  | AssetsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData
   | ClaimableExtraData
@@ -187,7 +172,6 @@ export type CellExtraData =
   | PolymarketFeatureCardExtraData
   | RnbwFeatureCardExtraData
   | TokensHeaderExtraData
-  | ProfileActionButtonsRowExtraData
   | SpacerExtraData;
 
 export type CellTypes = BaseCellType & (CellExtraData | { type: Exclude<CellType, CellExtraData['type']> });

@@ -8,7 +8,7 @@ import { useThemeStore } from '@/theme/themeStore';
 
 import { useEditTokensStore } from '../base/editStateStore';
 
-export type ExtendedStateData = {
+export type ExtendedState = {
   isCoinListEdited: boolean;
   nativeCurrency: NativeCurrencyKey;
   nativeCurrencySymbol: string;
@@ -18,7 +18,7 @@ export type ExtendedStateData = {
 /**
  * Provides shared state for wallet screen list items.
  */
-export const useExtendedStateStore = createDerivedStore<ExtendedStateData>(
+export const useExtendedStateStore = createDerivedStore<ExtendedState>(
   $ => {
     const isCoinListEdited = $(useEditTokensStore, state => state.isCoinListEdited);
     const nativeCurrency = $(useAppSettingsStore, state => state.currency);

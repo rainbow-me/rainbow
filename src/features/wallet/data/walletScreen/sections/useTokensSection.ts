@@ -10,17 +10,34 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useEditTokensStore } from '../base/editStateStore';
 import { useCurrentPinnedCoins } from '../base/pinnedCoinsStore';
 import { useCurrentWalletToggles } from '../base/walletListTogglesStore';
-import { CONTENT_PLACEHOLDER, EMPTY_WALLET_CONTENT } from '../utils/constants';
 import { buildTokenRows } from './buildTokenRows';
 
-const ONLY_NFTS: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
+// ============ Constants ====================================================== //
+
+const CONTENT_PLACEHOLDER: CellTypes[] = [
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-2' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-3' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-4' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-5' },
+];
+const EMPTY_WALLET_CONTENT: CellTypes[] = [
+  { type: CellType.RECEIVE_CARD, uid: 'receive_card' },
+  { type: CellType.EMPTY_WALLET_SPACER, uid: 'empty-wallet-spacer-1' },
+  { type: CellType.ETH_CARD, uid: 'eth-card' },
+  { type: CellType.EMPTY_WALLET_SPACER, uid: 'empty-wallet-spacer-2' },
+  { type: CellType.LEARN_CARD, uid: 'learn-card' },
+  { type: CellType.BIG_EMPTY_WALLET_SPACER, uid: 'big-empty-wallet-spacer-2' },
+];
 const EMPTY_WITH_DISCOVER: CellTypes[] = [...EMPTY_WALLET_CONTENT, { type: CellType.DISCOVER_MORE_BUTTON, uid: 'discover-home-button' }];
+const ONLY_NFTS: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
+
+// ============ Token Section ================================================== //
 
 export const useTokensSection = createDerivedStore(
   $ => {
-    const assets = $(useWalletAssetsStore, s => s.assets);
-    const hiddenAssets = $(useWalletAssetsStore, s => s.hiddenAssets);
-    const loading = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
+    const walletAssets = $(useWalletAssetsStore, s => s);
+    const loading = $(useUserAssetsStore, s => s.isInitialLoad());
     const currency = $(useAppSettingsStore, s => s.currency);
     const pinnedCoins = $(useCurrentPinnedCoins, s => s);
 
@@ -29,13 +46,13 @@ export const useTokensSection = createDerivedStore(
     const hasNfts = $(useNftsStore, s => s.collections.size > 0);
     const discoverEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('discover_enabled'));
 
-    if (!assets.size && !hiddenAssets.length) {
+    if (!walletAssets.assets.size && !walletAssets.hiddenAssets.length) {
       if (loading) return CONTENT_PLACEHOLDER;
       if (hasNfts) return ONLY_NFTS;
       return discoverEnabled ? EMPTY_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
     }
 
-    return buildTokenRows({ assets, currency, editing, pinnedCoins, hiddenAssets, expanded });
+    return buildTokenRows({ ...walletAssets, currency, editing, pinnedCoins, expanded });
   },
   { lockDependencies: true }
 );

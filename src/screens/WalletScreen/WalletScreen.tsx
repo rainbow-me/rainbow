@@ -1,11 +1,11 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
 
-import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -56,27 +56,26 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 });
 
 const VIEWABILITY_SELECTORS: ViewabilitySelectors<CellTypes> = {
-  getId: item => (item.type === 'COIN' ? item.uid.replace('coin-', '') : undefined),
+  getId: item => (item.type === CellType.COIN ? item.asset.uniqueId : undefined),
 };
+
+function handleWalletScreenMount(): void {
+  hideSplashScreen();
+  requestIdleCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      useNavigationStore.setState({ isWalletScreenMounted: true });
+    });
+  });
+}
 
 function WalletScreen() {
   const insets = useSafeAreaInsets();
   const setSubscribedTokens = useLiveTokenListSubscription();
 
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
-
+  const isLoadingUserAssets = useUserAssetsStore(s => s.isInitialLoad());
   const { highContrastAccentColor } = useAccountAccentColor();
 
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
-
-  const handleWalletScreenMount = useCallback(() => {
-    hideSplashScreen();
-    requestIdleCallback(() => {
-      InteractionManager.runAfterInteractions(() => {
-        useNavigationStore.setState({ isWalletScreenMounted: true });
-      });
-    });
-  }, []);
 
   const { onViewableItemsChanged } = useViewabilityTracker(VIEWABILITY_SELECTORS, setSubscribedTokens);
 

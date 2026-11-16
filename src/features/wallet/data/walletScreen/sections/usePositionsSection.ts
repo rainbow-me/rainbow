@@ -21,40 +21,36 @@ export const usePositionsSection = createDerivedStore(
   $ => {
     const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
     const positionsEnabled = $(useExperimentalConfigStore, s => !IS_TEST && s.getFlag(DEFI_POSITIONS));
-    const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
+    const isLoadingUserAssets = $(useUserAssetsStore, s => s.isInitialLoad());
     const positions = $(usePositionsStore, s => s.getData());
     const isPositionCardsOpen = $(useCurrentWalletToggles, s => s.positions);
 
-    if (
-      isCoinListEdited ||
-      !positionsEnabled ||
-      isLoadingUserAssets ||
-      !positions?.positions ||
-      Object.keys(positions.positions).length === 0
-    ) {
+    if (isCoinListEdited || !positionsEnabled || isLoadingUserAssets || !positions) {
       return EMPTY_POSITIONS_DATA;
     }
+
+    const positionItems = Object.values(positions.positions);
+    if (!positionItems.length) return EMPTY_POSITIONS_DATA;
 
     const section: CellTypes[] = [
       POSITIONS_SPACE_BEFORE,
       {
         type: CellType.POSITIONS_HEADER,
         uid: 'positions-header',
-        total: positions.totals?.total?.display,
+        total: positions.totals.total.display,
       },
     ];
 
     if (isPositionCardsOpen) {
-      const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
-        return {
+      for (let index = 0; index < positionItems.length; index++) {
+        const position = positionItems[index];
+        section.push({
           type: CellType.POSITION,
           position,
           uid: `position-${position.type}`,
           index,
-        };
-      });
-
-      section.push(...positionSectionItems);
+        });
+      }
     }
 
     return section;

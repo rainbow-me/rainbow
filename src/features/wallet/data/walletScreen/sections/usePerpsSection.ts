@@ -31,16 +31,14 @@ export const usePerpsSection = createDerivedStore(
 
     if (isCoinListEdited || !perpsEnabledRemote || IS_TEST) return EMPTY_PERPS_DATA;
 
-    const perpsSectionItems: CellTypes[] = [{ type: CellType.PERPS_BALANCE, balance: perpsInfo.balance, uid: 'perps-balance' }];
-
-    if (perpsInfo.hasPositions) {
-      perpsInfo.positions.forEach((position, index) => {
-        perpsSectionItems.push({ index, position, type: CellType.PERPS_POSITION, uid: `perps-position-${position.symbol}-${index}` });
-      });
-    }
-
     const hasContent = perpsInfo.hasBalance || perpsInfo.hasPositions;
-    const section: CellTypes[] = hasContent ? [PERPS_HEADER_CELL, ...perpsSectionItems] : PERPS_EMPTY_HEADER_SECTION;
+    if (!hasContent) return { hasContent, section: PERPS_EMPTY_HEADER_SECTION };
+
+    const section: CellTypes[] = [PERPS_HEADER_CELL, { type: CellType.PERPS_BALANCE, balance: perpsInfo.balance, uid: 'perps-balance' }];
+    for (let index = 0; index < perpsInfo.positions.length; index++) {
+      const position = perpsInfo.positions[index];
+      section.push({ index, position, type: CellType.PERPS_POSITION, uid: `perps-position-${position.symbol}-${index}` });
+    }
 
     return { hasContent, section };
   },

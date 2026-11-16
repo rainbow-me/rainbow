@@ -13,7 +13,7 @@ import { renderNftRow } from '@/features/nfts/ui/renderNftRow';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
-import { type ExtendedStateData } from '@/features/wallet/data/walletScreen/composition/useExtendedState';
+import { type ExtendedState } from '@/features/wallet/data/walletScreen/composition/useExtendedState';
 import { assertNever } from '@/helpers/assertNever';
 import Routes from '@/navigation/routesNames';
 
@@ -39,7 +39,10 @@ import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { CellType, type CellTypes } from './ViewTypes';
 
-export default function rowRenderer(data: CellTypes, extendedState: ExtendedStateData): React.ReactElement | null {
+/**
+ * Renders a prepared wallet row with the list's compiled display state.
+ */
+export default function renderWalletRow(data: CellTypes, extendedState: ExtendedState) {
   switch (data.type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -110,9 +113,7 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.COIN:
-      return (
-        <FastBalanceCoinRow extendedState={extendedState} uniqueId={data.uniqueId} isPinned={data.isPinned} isHidden={data.isHidden} />
-      );
+      return <FastBalanceCoinRow extendedState={extendedState} asset={data.asset} isPinned={data.isPinned} isHidden={data.isHidden} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -146,36 +147,22 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
     case CellType.FAMILY_HEADER:
     case CellType.NFT:
       return renderNftRow(data, extendedState.theme);
-    case CellType.POSITIONS_HEADER: {
-      const { total } = data;
-      return <WrappedPositionsListHeader total={total} />;
-    }
-    case CellType.POSITION: {
-      const { position, index } = data;
-
-      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} position={position} />;
-    }
-    case CellType.CLAIMABLES_HEADER: {
-      const { total } = data;
-      return <ClaimablesListHeader total={total} />;
-    }
-    case CellType.CLAIMABLE: {
-      const { claimable } = data;
-
-      return <Claimable claimable={claimable} />;
-    }
+    case CellType.POSITIONS_HEADER:
+      return <WrappedPositionsListHeader total={data.total} />;
+    case CellType.POSITION:
+      return <WrappedPosition placement={data.index % 2 === 0 ? 'left' : 'right'} position={data.position} />;
+    case CellType.CLAIMABLES_HEADER:
+      return <ClaimablesListHeader total={data.total} />;
+    case CellType.CLAIMABLE:
+      return <Claimable claimable={data.claimable} />;
     case CellType.PERPS_HEADER: {
       return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
     }
-    case CellType.PERPS_BALANCE: {
-      const { balance } = data;
-      return <SectionAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPerps} />;
-    }
-    case CellType.PERPS_POSITION: {
-      const { position } = data;
-      return <PerpsPositionRow position={position} />;
-    }
-    case CellType.POLYMARKET_HEADER: {
+    case CellType.PERPS_BALANCE:
+      return <SectionAvailableBalance balance={data.balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPerps} />;
+    case CellType.PERPS_POSITION:
+      return <PerpsPositionRow position={data.position} />;
+    case CellType.POLYMARKET_HEADER:
       return (
         <PolymarketHeader
           hasContent={data.hasContent}
@@ -183,12 +170,10 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
           isDarkMode={extendedState.theme.isDarkMode}
         />
       );
-    }
     case CellType.POLYMARKET_BALANCE: {
-      const { balance } = data;
       return (
         <SectionAvailableBalance
-          balance={balance}
+          balance={data.balance}
           isDarkMode={extendedState.theme.isDarkMode}
           onPress={() => {
             usePolymarketNavigationStore.getState().navigate(Routes.POLYMARKET_ACCOUNT_SCREEN);
@@ -197,10 +182,8 @@ export default function rowRenderer(data: CellTypes, extendedState: ExtendedStat
         />
       );
     }
-    case CellType.POLYMARKET_POSITION: {
-      const { position } = data;
-      return <PolymarketPositionRow position={position} />;
-    }
+    case CellType.POLYMARKET_POSITION:
+      return <PolymarketPositionRow position={data.position} />;
     case CellType.TOKENS_HEADER: {
       return <TokensHeader />;
     }

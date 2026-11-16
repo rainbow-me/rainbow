@@ -28,7 +28,7 @@ export const useClaimablesSection = createDerivedStore(
     const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
     const remoteConfigEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('claimables'));
     const experimentalConfigEnabled = $(useExperimentalConfigStore, s => s.getFlag(CLAIMABLES));
-    const isLoadingUserAssets = $(useUserAssetsStore, s => s.getStatus('isInitialLoad'));
+    const isLoadingUserAssets = $(useUserAssetsStore, s => s.isInitialLoad());
     const claimables = $(useClaimablesStore, s => s.getData());
     const isClaimablesOpen = $(useCurrentWalletToggles, s => s.claimables);
 

@@ -2,14 +2,8 @@ import { createDerivedStore } from '@storesjs/stores';
 
 import { createListData } from '@/components/asset-list/RecyclerAssetList2/core/createListData';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { IS_TEST } from '@/env';
-import { RNBW_REWARDS } from '@/features/config/constants/experimental';
-import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
-import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
 import { useNftsEnabled } from '@/features/nfts/data/nftsEnabledStore';
 import { useWalletNftRows } from '@/features/nfts/data/walletNftRowsStore';
-import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 import { useEditTokensStore } from '../base/editStateStore';
 import { useClaimablesSection } from '../sections/useClaimablesSection';
@@ -17,65 +11,95 @@ import { useHeaderSection } from '../sections/useHeaderSection';
 import { usePerpsSection } from '../sections/usePerpsSection';
 import { usePolymarketSection } from '../sections/usePolymarketSection';
 import { usePositionsSection } from '../sections/usePositionsSection';
+import { useRnbwFeatureCardSection } from '../sections/useRnbwFeatureCardSection';
 import { useTokensSection } from '../sections/useTokensSection';
 
-const TOKENS_HEADER: CellTypes[] = [
+const EMPTY_ROWS: CellTypes[] = [];
+
+const TOKENS_HEADER_SECTION: CellTypes[] = [
   { type: CellType.SPACER, uid: 'tokens-header-spacer-after', height: 10 },
   { type: CellType.TOKENS_HEADER, uid: 'tokens-header' },
 ];
-const FEATURE_CARD: CellTypes[] = [
-  { type: CellType.SPACER, uid: 'rnbw-feature-card-before-spacer', height: 16 },
-  { type: CellType.RNBW_FEATURE_CARD, uid: 'rnbw-feature-card' },
-  { type: CellType.SPACER, uid: 'rnbw-feature-card-after-spacer', height: 24 },
-];
-const EMPTY_ROWS: CellTypes[] = [];
 
 export const useWalletSectionsData = createDerivedStore(
   $ => {
-    const header = $(useHeaderSection, s => s);
-    const tokens = $(useTokensSection, s => s);
-    const perps = $(usePerpsSection, s => s);
-    const predictions = $(usePolymarketSection, s => s);
-    const claimables = $(useClaimablesSection, s => s);
-    const positions = $(usePositionsSection, s => s);
+    // ========== Section Data ==========
+    const headerSection = $(useHeaderSection, s => s);
+    const featureCardSection = $(useRnbwFeatureCardSection, s => s);
+    const perpsSection = $(usePerpsSection, s => s);
+    const polymarketSection = $(usePolymarketSection, s => s);
+    const tokensSection = $(useTokensSection, s => s);
+    const claimablesSection = $(useClaimablesSection, s => s);
+    const positionsSection = $(usePositionsSection, s => s);
+    const nftsSection = $(useWalletNftRows, s => s);
+
+    // ========== List State ==========
+    const isCoinListEdited = $(useEditTokensStore, s => s.isCoinListEdited);
     const nftsEnabled = $(useNftsEnabled, s => s);
-    const nfts = $(useWalletNftRows, s => s);
-    const editing = $(useEditTokensStore, state => state.isCoinListEdited);
-    const rewardsEnabled = $(useRemoteConfigStore, state => state.getRemoteConfigKey('rnbw_rewards_enabled'));
-    const rewardsExperimental = $(useExperimentalConfigStore, state => state.getFlag(RNBW_REWARDS));
-    const featureDismissed = $(useRnbwFeatureCard, state => state.isDismissed);
-    const isLoadingUserAssets = $(useUserAssetsStore, state => state.getStatus('isInitialLoad'));
 
-    const feature = !editing && !IS_TEST && (rewardsEnabled || rewardsExperimental) && !featureDismissed ? FEATURE_CARD : EMPTY_ROWS;
-    const tokenHeader =
-      perps.hasContent && tokens.some(row => row.type === CellType.COIN || row.type === CellType.LOADING_ASSETS)
-        ? TOKENS_HEADER
-        : EMPTY_ROWS;
-    const briefSectionsData = perps.hasContent
-      ? [
-          ...header.header,
-          ...feature,
-          ...perps.section,
-          ...(predictions.hasContent ? predictions.section : EMPTY_ROWS),
-          ...tokenHeader,
-          ...tokens,
-          ...(!predictions.hasContent ? predictions.section : EMPTY_ROWS),
-          ...claimables,
-          ...positions,
-          ...(editing ? EMPTY_ROWS : nfts),
-        ]
-      : [
-          ...header.header,
-          ...feature,
-          ...tokens,
-          ...perps.section,
-          ...predictions.section,
-          ...claimables,
-          ...positions,
-          ...(editing ? EMPTY_ROWS : nfts),
-        ];
+    const briefSectionsData = buildWalletSections({
+      headerSection,
+      featureCardSection,
+      perpsSection,
+      polymarketSection,
+      tokensSection,
+      claimablesSection,
+      positionsSection,
+      nftsSection: isCoinListEdited ? EMPTY_ROWS : nftsSection,
+    });
 
-    return { ...createListData(briefSectionsData, editing, nftsEnabled), isEmpty: header.isEmpty, isLoadingUserAssets };
+    return createListData(briefSectionsData, isCoinListEdited, nftsEnabled);
   },
   { lockDependencies: true }
 );
+
+function containsTokenContent(section: CellTypes[]): boolean {
+  return section.some(row => row.type === CellType.COIN || row.type === CellType.COIN_DIVIDER || row.type === CellType.LOADING_ASSETS);
+}
+
+function buildWalletSections({
+  headerSection,
+  featureCardSection,
+  perpsSection,
+  polymarketSection,
+  tokensSection,
+  claimablesSection,
+  positionsSection,
+  nftsSection,
+}: {
+  headerSection: CellTypes[];
+  featureCardSection: CellTypes[];
+  perpsSection: ReturnType<typeof usePerpsSection.getState>;
+  polymarketSection: ReturnType<typeof usePolymarketSection.getState>;
+  tokensSection: CellTypes[];
+  claimablesSection: CellTypes[];
+  positionsSection: CellTypes[];
+  nftsSection: CellTypes[];
+}): CellTypes[] {
+  const sections = [headerSection, featureCardSection];
+
+  if (perpsSection.hasContent) {
+    sections.push(perpsSection.section);
+    if (polymarketSection.hasContent) sections.push(polymarketSection.section);
+    if (containsTokenContent(tokensSection)) sections.push(TOKENS_HEADER_SECTION);
+    sections.push(tokensSection);
+    if (!polymarketSection.hasContent) sections.push(polymarketSection.section);
+  } else {
+    sections.push(tokensSection, perpsSection.section, polymarketSection.section);
+  }
+
+  sections.push(claimablesSection, positionsSection, nftsSection);
+
+  let rowCount = 0;
+  for (const section of sections) rowCount += section.length;
+
+  const rows = new Array<CellTypes>(rowCount);
+  let index = 0;
+  for (const section of sections) {
+    for (const row of section) {
+      rows[index] = row;
+      index += 1;
+    }
+  }
+  return rows;
+}
