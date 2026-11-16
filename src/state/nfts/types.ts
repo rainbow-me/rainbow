@@ -59,7 +59,6 @@ export type NftsStoreType = OptionallyPersistedStore<QueryStoreState<NftsQueryDa
 
 export interface OpenCollectionsState {
   openCollections: Record<CollectionId, boolean>;
-  insertionOrder: CollectionId[]; // Tracks the order in which collections were opened
   toggleCollection: (collectionIdOrLegacyName: CollectionId | CollectionName) => boolean;
   isCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName) => boolean;
   setCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName, isOpen: boolean) => void;

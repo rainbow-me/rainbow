@@ -7,130 +7,62 @@ import { type OpenCollectionsState, type OpenCollectionsStoreType } from './type
 
 const MAX_OPEN_COLLECTIONS = 20;
 
-export const createOpenCollectionsStore = (address: Address | string): OpenCollectionsStoreType =>
-  createBaseStore<OpenCollectionsState>(
+/**
+ * Persists open collections. Opening a twenty-first wallet collection closes the oldest.
+ */
+export function createOpenCollectionsStore(address: Address | string): OpenCollectionsStoreType {
+  return createBaseStore<OpenCollectionsState>(
     (set, get) => ({
       openCollections: { showcase: true },
-      insertionOrder: ['showcase'],
 
-      toggleCollection: collectionIdOrLegacyName => {
-        set(state => {
-          const normalizedKey = collectionIdOrLegacyName.toLowerCase();
-          const { network, contractAddress } = parseUniqueId(normalizedKey);
-          const isNewFormat = !!network && isAddress(contractAddress);
+      isCollectionOpen: key => !!get().openCollections[key.toLowerCase()],
 
-          // Skip all insertion order logic for legacy collections
-          if (!isNewFormat) {
-            return {
-              openCollections: {
-                ...state.openCollections,
-                [normalizedKey]: !state.openCollections[normalizedKey],
-              },
-            };
-          }
-
-          const isCurrentlyOpen = state.openCollections[normalizedKey];
-
-          if (isCurrentlyOpen) {
-            const newOpenCollections = { ...state.openCollections };
-            delete newOpenCollections[normalizedKey];
-
-            const newInsertionOrder = state.insertionOrder.filter(id => id !== normalizedKey);
-
-            return {
-              openCollections: newOpenCollections,
-              insertionOrder: newInsertionOrder,
-            };
-          } else {
-            const newOpenCollections = { ...state.openCollections };
-            let newInsertionOrder = [...state.insertionOrder];
-
-            const nonShowcaseOrder = newInsertionOrder.filter(id => id !== 'showcase');
-
-            if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && normalizedKey !== 'showcase') {
-              const oldestNonShowcase = nonShowcaseOrder[0];
-              delete newOpenCollections[oldestNonShowcase];
-              newInsertionOrder = newInsertionOrder.filter(id => id !== oldestNonShowcase);
-            }
-
-            newOpenCollections[normalizedKey] = true;
-            newInsertionOrder.push(normalizedKey);
-
-            return {
-              openCollections: newOpenCollections,
-              insertionOrder: newInsertionOrder,
-            };
-          }
-        });
-        return get().openCollections[collectionIdOrLegacyName.toLowerCase()] ?? false;
+      toggleCollection: key => {
+        const isOpen = !get().isCollectionOpen(key);
+        get().setCollectionOpen(key, isOpen);
+        return isOpen;
       },
 
-      setCollectionOpen: (collectionIdOrLegacyName, isOpen) => {
+      setCollectionOpen: (key, isOpen) =>
         set(state => {
-          const normalizedKey = collectionIdOrLegacyName.toLowerCase();
-          const { network, contractAddress } = parseUniqueId(normalizedKey);
-          const isNewFormat = !!network && isAddress(contractAddress);
+          const id = key.toLowerCase();
+          if (!!state.openCollections[id] === isOpen) return state;
 
-          // Skip all insertion order logic for legacy collections
-          if (!isNewFormat) {
-            return {
-              openCollections: {
-                ...state.openCollections,
-                [normalizedKey]: isOpen,
-              },
-            };
-          }
-
+          const openCollections = { ...state.openCollections };
           if (!isOpen) {
-            const newOpenCollections = { ...state.openCollections };
-            delete newOpenCollections[normalizedKey];
-
-            const newInsertionOrder = state.insertionOrder.filter(id => id !== normalizedKey);
-
-            return {
-              openCollections: newOpenCollections,
-              insertionOrder: newInsertionOrder,
-            };
+            delete openCollections[id];
+            return { openCollections };
           }
 
-          if (state.openCollections[normalizedKey]) {
-            return state;
+          openCollections[id] = true;
+          if (isWalletCollection(id)) {
+            let count = 0;
+            let oldest: string | undefined;
+            for (const key in openCollections) {
+              if (!openCollections[key] || !isWalletCollection(key)) continue;
+              oldest ??= key;
+              count += 1;
+              if (count > MAX_OPEN_COLLECTIONS) {
+                delete openCollections[oldest];
+                break;
+              }
+            }
           }
 
-          const newOpenCollections = { ...state.openCollections };
-          let newInsertionOrder = [...state.insertionOrder];
-
-          const nonShowcaseOrder = newInsertionOrder.filter(id => id !== 'showcase');
-
-          if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && normalizedKey !== 'showcase') {
-            const oldestNonShowcase = nonShowcaseOrder[0];
-            delete newOpenCollections[oldestNonShowcase];
-            newInsertionOrder = newInsertionOrder.filter(id => id !== oldestNonShowcase);
-          }
-
-          newOpenCollections[normalizedKey] = isOpen;
-          newInsertionOrder.push(normalizedKey);
-
-          return {
-            openCollections: newOpenCollections,
-            insertionOrder: newInsertionOrder,
-          };
-        });
-      },
-
-      isCollectionOpen: collectionIdOrLegacyName => {
-        return get().openCollections[collectionIdOrLegacyName.toLowerCase()] ?? false;
-      },
+          return { openCollections };
+        }),
     }),
-
     address
       ? {
           storageKey: `open-collections_${address.toLowerCase()}`,
           version: 1,
-          partialize: state => ({
-            openCollections: state.openCollections,
-            insertionOrder: state.insertionOrder,
-          }),
+          partialize: state => ({ openCollections: state.openCollections }),
         }
       : undefined
   );
+}
+
+function isWalletCollection(key: string): boolean {
+  const { network, contractAddress } = parseUniqueId(key);
+  return !!network && isAddress(contractAddress);
+}
