@@ -13,7 +13,6 @@ import { Box } from '@/design-system';
 import { useShouldRevokeDelegation } from '@/features/delegation/hooks/useShouldRevokeDelegation';
 import { useViewabilityTracker, type ViewabilitySelectors } from '@/framework/ui/hooks/useViewabilityTracker';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useFetchOpenCollectionsOnMount from '@/hooks/useFetchOpenCollectionsOnMount';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
@@ -52,7 +51,6 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useLoadDeferredWalletData();
   useWalletCohort();
   useAppIconIdentify();
-  useFetchOpenCollectionsOnMount();
   useShouldRevokeDelegation();
   return null;
 });

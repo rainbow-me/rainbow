@@ -21,7 +21,7 @@ import { select24hChange } from '@/state/liveTokens/selectors';
 import { type TokenData } from '@/state/liveTokens/types';
 import { borders, colors, padding, shadow } from '@/styles';
 
-import { type ExtendedState } from '../core/RawRecyclerList';
+import { type ExtendedState } from '../core/RowRenderer';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

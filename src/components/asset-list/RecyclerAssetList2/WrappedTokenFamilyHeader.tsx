@@ -1,40 +1,23 @@
 import React from 'react';
 
-import { NFTS_ENABLED } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import TokenFamilyHeader from '@/components/token-family/TokenFamilyHeader';
 import useLatestCallback from '@/hooks/useLatestCallback';
-import { nftsStoreActions } from '@/state/nfts/nfts';
-import { openCollectionsActions, useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { openCollectionsActions } from '@/state/nfts/openCollectionsStore';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
-import { TokenFamilyHeader } from '../../token-family';
+import { type NFTFamilyExtraData } from './core/ViewTypes';
 
-type Props = {
-  name: string;
-  total?: number;
-  image?: string;
-  theme: ThemeContextProps;
-  testID?: string;
-  uid: string;
-};
+type Props = Omit<NFTFamilyExtraData, 'type'> & { theme: ThemeContextProps };
 
-export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID, uid }: Props) {
-  const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-
-  const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(uid));
-
-  const handleToggle = useLatestCallback(() => {
-    const newIsOpen = openCollectionsActions.toggleCollection(uid);
-
-    // from closed -> open, let's fetch the inner nft metadata
-    if (newIsOpen) {
-      nftsStoreActions.fetchNftCollection(uid.toLowerCase());
-    }
-  });
-
-  if (!nftsEnabled) return null;
+export const WrappedTokenFamilyHeader = React.memo(function WrappedTokenFamilyHeader({
+  collectionKey,
+  isOpen,
+  name,
+  total,
+  image,
+  theme,
+}: Props) {
+  const handleToggle = useLatestCallback(() => openCollectionsActions.toggleCollection(collectionKey));
 
   return (
     <TokenFamilyHeader
@@ -42,7 +25,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       familyImage={image}
       isOpen={isOpen}
       onPress={handleToggle}
-      testID={testID}
+      testID={`token-family-header-${name}`}
       theme={theme}
       title={name}
     />

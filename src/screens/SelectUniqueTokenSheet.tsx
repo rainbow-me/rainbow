@@ -5,17 +5,18 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 
 import { Box } from '@/design-system';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import useWalletSectionsData from '@/hooks/useWalletSectionsData';
+import { useSelectableNftRows } from '@/features/nfts/data/selectableNftRowsStore';
+import { NftAssetList } from '@/features/nfts/ui/NftAssetList';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { useNftsStore } from '@/state/nfts/nfts';
 
-import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 
 export function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();
   const { goBack } = useNavigation();
+  const rows = useSelectableNftRows();
   const handlePressUniqueToken = useCallback(
     (asset: UniqueAsset) => {
       params.onSelect?.(asset);
@@ -23,9 +24,6 @@ export function SelectUniqueTokenSheet() {
     },
     [goBack, params]
   );
-  const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
-    type: 'select-nft',
-  });
 
   return (
     <Box
@@ -37,11 +35,10 @@ export function SelectUniqueTokenSheet() {
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
         <SheetHandle />
       </Box>
-      <RecyclerAssetList2
-        disablePullDownToRefresh
+      <NftAssetList
+        rows={rows}
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
-        walletBriefSectionsData={walletBriefSectionsData}
         onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
       />
     </Box>

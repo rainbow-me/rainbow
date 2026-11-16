@@ -7,7 +7,7 @@ import { IS_TEST } from '@/env';
 import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { isDataComplete } from '@/features/nfts/core/uniqueId';
+import { useWalletNftRows } from '@/features/nfts/data/walletNftRowsStore';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { usePerpsPositionsInfo, type PerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { type PerpsWalletListData } from '@/features/perps/types';
@@ -23,12 +23,10 @@ import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeature
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
 import useCoinListEdited from './useCoinListEdited';
@@ -52,10 +50,7 @@ export default function useWalletSectionsData({
   useAppSettingsStore(state => state.language);
   const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const selectedWallet = useSelectedWallet();
-  const { showcaseTokens } = useShowcaseTokens();
-  const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig('claimables', 'discover_enabled', 'perps_enabled', 'polymarket_enabled', 'rnbw_rewards_enabled');
   const experimentalConfig = useExperimentalConfig();
 
@@ -91,12 +86,8 @@ export default function useWalletSectionsData({
     });
   }, [polymarketPositions, polymarketAccountValueSummary, polymarketEnabled]);
 
-  const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
-  const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
-
-  const collections = useNftsStore(state => state.getNftCollections());
-  const hasMoreCollections = useNftsStore(state => state.hasNextNftCollectionPage());
-  const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
+  const nftRows = useWalletNftRows();
+  const collections = useNftsStore(state => state.collections);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -135,22 +126,15 @@ export default function useWalletSectionsData({
       sortedAssets,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
-      hiddenTokens,
-      isReadOnlyWallet,
-      listType: type,
-      showcaseTokens,
       collections,
+      nftRows,
       discoverEnabled,
-      isFetchingNfts,
       experimentalConfig,
       positions,
       claimables,
       perpsData,
       polymarketData,
       rnbwRewardsEnabled,
-      hasMoreCollections,
-      isShowcaseDataMigrated,
-      isHiddenDataMigrated,
       isDismissedPerpsFeatureCard,
       isDismissedPolymarketFeatureCard,
       isDismissedRnbwFeatureCard,
@@ -174,22 +158,15 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,
-    hiddenTokens,
-    isReadOnlyWallet,
-    type,
-    showcaseTokens,
     collections,
+    nftRows,
     discoverEnabled,
-    isFetchingNfts,
     experimentalConfig,
     positions,
     claimables,
     perpsData,
     polymarketData,
     rnbwRewardsEnabled,
-    hasMoreCollections,
-    isShowcaseDataMigrated,
-    isHiddenDataMigrated,
     isDismissedPerpsFeatureCard,
     isDismissedPolymarketFeatureCard,
     isDismissedRnbwFeatureCard,

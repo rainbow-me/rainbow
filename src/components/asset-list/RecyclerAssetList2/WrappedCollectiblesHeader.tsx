@@ -1,16 +1,13 @@
 import React from 'react';
 
 import { Box, Inline, Text } from '@/design-system';
-import { NFTS_ENABLED } from '@/features/config/constants/experimental';
-import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { useNftsEnabled } from '@/features/nfts/data/nftsEnabledStore';
 import * as i18n from '@/languages';
 
 const TokenFamilyHeaderHeight = 48;
 
 const CollectiblesHeader = () => {
-  const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const nftsEnabled = useNftsEnabled();
 
   if (!nftsEnabled) return null;
 

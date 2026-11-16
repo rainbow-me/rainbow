@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
+import { isEmpty, noop } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
@@ -13,6 +13,7 @@ import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
+import { useCollectionNftsStore } from '@/features/nfts/data/collectionNftsStore';
 import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -22,7 +23,7 @@ import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -152,7 +153,10 @@ export function ENSConfirmRegisterSheet() {
     InteractionManager.runAfterInteractions(() => {
       // revalidate nft data for ens collection
       const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
-      useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
+      void useCollectionNftsStore
+        .getState()
+        .load({ walletAddress: getAccountAddress(), collectionId: ensCollectionId }, { force: true })
+        .catch(noop);
       useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {

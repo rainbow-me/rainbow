@@ -1,9 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
-import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { type useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type PerpsWalletListData } from '@/features/perps/types';
@@ -11,9 +9,9 @@ import { type PolymarketWalletListData } from '@/features/polymarket/types';
 import { type RainbowPositions } from '@/features/positions/types';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
-import { type Collection, type CollectionId } from '@/state/nfts/types';
+import { type Collection } from '@/state/nfts/types';
 
-import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
+import { buildBriefCoinsList } from './assets';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -56,25 +54,17 @@ export type WalletSectionsState = {
   isCoinListEdited: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
-  isReadOnlyWallet: boolean;
-  hiddenTokens: string[];
-  listType?: AssetListType;
   nativeCurrency: NativeCurrencyKey;
   pinnedCoins: BooleanMap;
-  sellingTokens?: UniqueAsset[];
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
-  showcaseTokens: string[];
-  collections: Map<CollectionId, Collection> | null;
+  collections: Map<string, Collection> | null;
+  nftRows: CellTypes[];
   discoverEnabled: boolean;
-  isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
   perpsData: PerpsWalletListData;
   polymarketData: PolymarketWalletListData;
   rnbwRewardsEnabled: boolean;
-  hasMoreCollections: boolean;
-  isShowcaseDataMigrated: boolean;
-  isHiddenDataMigrated: boolean;
   isDismissedPerpsFeatureCard?: boolean;
   isDismissedPolymarketFeatureCard?: boolean;
   isDismissedRnbwFeatureCard?: boolean;
@@ -88,22 +78,14 @@ const isLoadingUserAssetsSelector = (state: WalletSectionsState) => state.isLoad
 const isLoadingBalanceSelector = (state: WalletSectionsState) => state.isLoadingBalance;
 const nativeCurrencySelector = (state: WalletSectionsState) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: WalletSectionsState) => state.pinnedCoins;
-const sellingTokensSelector = (state: WalletSectionsState) => state.sellingTokens;
-const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTokens;
-const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
+const nftRowsSelector = (state: WalletSectionsState) => state.nftRows;
 const collectionsSelector = (state: WalletSectionsState) => state.collections;
 const discoverEnabledSelector = (state: WalletSectionsState) => state.discoverEnabled;
-const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const polymarketDataSelector = (state: WalletSectionsState) => state.polymarketData;
 const rnbwRewardsEnabledSelector = (state: WalletSectionsState) => state.rnbwRewardsEnabled;
-const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
-const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
-const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
-const listTypeSelector = (state: WalletSectionsState) => state.listType;
-const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const isDismissedPerpsFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPerpsFeatureCard;
 const isDismissedPolymarketFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedPolymarketFeatureCard;
 const isDismissedRnbwFeatureCardSelector = (state: WalletSectionsState) => state.isDismissedRnbwFeatureCard;
@@ -413,7 +395,7 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collections: Map<CollectionId, Collection> | null,
+  collections: Map<string, Collection> | null,
   discoverEnabled: boolean
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
@@ -514,22 +496,6 @@ const withBriefBalanceSection = (
   return result;
 };
 
-const briefUniqueTokenDataSelector = createSelector(
-  [
-    collectionsSelector,
-    sellingTokensSelector,
-    showcaseTokensSelector,
-    hiddenTokensSelector,
-    listTypeSelector,
-    isFetchingNftsSelector,
-    hasMoreCollectionsSelector,
-    isShowcaseDataMigratedSelector,
-    isHiddenDataMigratedSelector,
-    isReadOnlyWalletSelector,
-  ],
-  buildBriefUniqueTokenList
-);
-
 const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
@@ -549,7 +515,7 @@ const briefBalanceSectionSelector = createSelector(
 export const buildBriefWalletSectionsSelector = createSelector(
   [
     briefBalanceSectionSelector,
-    briefUniqueTokenDataSelector,
+    nftRowsSelector,
     claimablesSelector,
     positionsSelector,
     perpsDataSelector,

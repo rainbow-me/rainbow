@@ -4,7 +4,7 @@ import { InteractionManager } from 'react-native';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { useQueryClient } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
+import { isEmpty, noop } from 'lodash';
 
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -19,6 +19,7 @@ import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useCollectionNftsStore } from '@/features/nfts/data/collectionNftsStore';
 import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { time } from '@/framework/core/utils/time';
@@ -27,6 +28,7 @@ import {
   assetIsParsedAddressAsset,
   assetIsUniqueAsset,
   createSignableTransaction,
+  ensureValidHex,
   estimateGasLimit,
   type NewTransactionNonNullable,
 } from '@/handlers/web3';
@@ -362,7 +364,10 @@ export function useSendSubmit({
       if (submitSuccessful) {
         if (assetIsUniqueAsset(selected)) {
           const collectionId = `${selected.network}_${selected.contractAddress}`;
-          useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
+          void useCollectionNftsStore
+            .getState()
+            .load({ walletAddress: ensureValidHex(accountAddress), collectionId }, { force: true })
+            .catch(noop);
           useNftsStore.getState(accountAddress).fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
         }
         executeFn(goBackAndNavigate, {

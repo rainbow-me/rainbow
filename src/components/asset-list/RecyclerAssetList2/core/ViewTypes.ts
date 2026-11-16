@@ -5,7 +5,6 @@ import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type RainbowPosition } from '@/features/positions/types';
-import { type NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { type Claimable } from '@/resources/addys/claimables/types';
 
 export enum CellType {
@@ -79,27 +78,20 @@ export type CoinDividerExtraData = {
   defaultToEditButton: boolean;
 };
 
-export type NFTsHeaderExtraData = {
-  type: CellType.NFTS_HEADER;
-  nftSort: NftCollectionSortCriterion;
-};
-
 export type NFTsOtherData = {
   type: CellType.NFTS_HEADER_SPACE_AFTER | CellType.NFT_SPACE_AFTER | CellType.NFTS_EMPTY | CellType.NFTS_LOADING;
 };
 
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_BALANCE_ROW;
-  value: string;
+  value: string | undefined;
   isLoadingBalance: boolean;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
   type: CellType.NFT;
+  asset: UniqueAsset | null;
   index: number;
-  uniqueId?: string;
-  collectionId: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
 export type LegacyNFTExtraData = {
@@ -115,6 +107,7 @@ export type PositionExtraData = {
   index: number;
 };
 export type PositionHeaderExtraData = {
+  type: CellType.POSITIONS_HEADER;
   total: string;
 };
 export type ClaimableExtraData = {
@@ -122,6 +115,7 @@ export type ClaimableExtraData = {
   claimable: Claimable;
 };
 export type ClaimablesHeaderExtraData = {
+  type: CellType.CLAIMABLES_HEADER;
   total: string;
 };
 
@@ -166,10 +160,11 @@ export type LegacyNFTFamilyExtraData = {
 
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
+  collectionKey: string;
+  isOpen: boolean;
   name: string;
   total?: number;
   image?: string;
-  uid: string;
 };
 
 export type ProfileActionButtonsRowExtraData = {
@@ -194,7 +189,6 @@ export type CellExtraData =
   | CoinExtraData
   | NFTExtraData
   | LegacyNFTExtraData
-  | NFTsHeaderExtraData
   | NFTsOtherData
   | AssetsHeaderExtraData
   | PositionExtraData
@@ -212,4 +206,7 @@ export type CellExtraData =
   | ProfileActionButtonsRowExtraData
   | SpacerExtraData;
 
-export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);
+export type CellTypes = BaseCellType & (CellExtraData | { type: Exclude<CellType, CellExtraData['type']> });
+
+/** Prepared collection headers, NFT cards and their spacing. */
+export type NftCell = BaseCellType & (NFTFamilyExtraData | NFTExtraData | { type: CellType.NFT_SPACE_AFTER });

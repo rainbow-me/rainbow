@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { type SetterOrUpdater } from 'recoil';
+
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
 import { PolymarketHeader } from '@/components/asset-list/RecyclerAssetList2/polymarket/PolymarketHeader';
@@ -9,11 +12,16 @@ import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/
 import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { type NativeCurrencyKey } from '@/features/currency/types';
+import { renderNftRow } from '@/features/nfts/ui/renderNftRow';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
 import { assertNever } from '@/helpers/assertNever';
+import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import Routes from '@/navigation/routesNames';
+import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 import { CoinDivider } from '../../../coin-divider';
 import AssetListItemSkeleton from '../../AssetListItemSkeleton';
@@ -34,33 +42,26 @@ import { ProfileNameRow } from '../profile-header/ProfileNameRow';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
 import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
-import { WrappedNFT } from '../WrappedNFT';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
-import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
-import { type ExtendedState } from './RawRecyclerList';
-import {
-  CellType,
-  type ClaimableExtraData,
-  type ClaimablesHeaderExtraData,
-  type CoinDividerExtraData,
-  type CoinExtraData,
-  type LegacyNFTExtraData,
-  type LegacyNFTFamilyExtraData,
-  type NFTExtraData,
-  type NFTFamilyExtraData,
-  type PerpsBalanceExtraData,
-  type PerpsPositionExtraData,
-  type PolymarketBalanceExtraData,
-  type PolymarketPositionExtraData,
-  type PositionExtraData,
-  type PositionHeaderExtraData,
-} from './ViewTypes';
+import { CellType, type CellTypes } from './ViewTypes';
 
-function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
-  const data = extendedState.additionalData[uid];
-  switch (type) {
+export type ExtendedState = {
+  theme: ThemeContextProps;
+  nativeCurrencySymbol: string;
+  nativeCurrency: NativeCurrencyKey;
+  isCoinListEdited: boolean;
+  hiddenAssets: Set<UniqueId>;
+  pinnedCoins: BooleanMap;
+  toggleSelectedCoin: (id: string) => void;
+  setIsCoinListEdited: SetterOrUpdater<boolean>;
+  externalAddress?: string;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
+};
+
+export default function rowRenderer(data: CellTypes, extendedState: ExtendedState): React.ReactElement | null {
+  switch (data.type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
     case CellType.NFTS_HEADER_SPACE_AFTER:
@@ -83,8 +84,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return (
         <CoinDivider
           // @ts-expect-error - untyped js file
-          balancesSum={(data as CoinDividerExtraData).value}
-          defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
+          balancesSum={data.value}
+          defaultToEditButton={data.defaultToEditButton}
           extendedState={extendedState}
         />
       );
@@ -130,7 +131,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.COIN:
-      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
+      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={data.uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -161,22 +162,11 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <NFTLoadingSkeleton />;
     case CellType.NFTS_EMPTY:
       return <NFTEmptyState />;
-    case CellType.FAMILY_HEADER: {
-      const { name, image, total, uid } = data as NFTFamilyExtraData;
-
-      return (
-        <WrappedTokenFamilyHeader
-          image={image}
-          name={name}
-          testID={`token-family-header-${name}`}
-          theme={extendedState.theme}
-          total={total}
-          uid={uid}
-        />
-      );
-    }
+    case CellType.FAMILY_HEADER:
+    case CellType.NFT:
+      return renderNftRow(data, extendedState.theme, extendedState.onPressUniqueToken, extendedState.externalAddress);
     case CellType.LEGACY_FAMILY_HEADER: {
-      const { name, image, total } = data as LegacyNFTFamilyExtraData;
+      const { name, image, total } = data;
 
       return (
         <LegacyWrappedTokenFamilyHeader
@@ -189,7 +179,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       );
     }
     case CellType.LEGACY_NFT: {
-      const { index, uniqueId } = data as LegacyNFTExtraData;
+      const { index, uniqueId } = data;
       return (
         <LegacyWrappedNFT
           externalAddress={extendedState.externalAddress}
@@ -199,34 +189,21 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
         />
       );
     }
-    case CellType.NFT: {
-      const { index, collectionId, uniqueId } = data as NFTExtraData;
-
-      return (
-        <WrappedNFT
-          onPress={extendedState.onPressUniqueToken}
-          placement={index % 2 === 0 ? 'left' : 'right'}
-          index={index}
-          uniqueId={uniqueId}
-          collectionId={collectionId}
-        />
-      );
-    }
     case CellType.POSITIONS_HEADER: {
-      const { total } = data as PositionHeaderExtraData;
+      const { total } = data;
       return <WrappedPositionsListHeader total={total} />;
     }
     case CellType.POSITION: {
-      const { position, index } = data as PositionExtraData;
+      const { position, index } = data;
 
       return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} position={position} />;
     }
     case CellType.CLAIMABLES_HEADER: {
-      const { total } = data as ClaimablesHeaderExtraData;
+      const { total } = data;
       return <ClaimablesListHeader total={total} />;
     }
     case CellType.CLAIMABLE: {
-      const { claimable } = data as ClaimableExtraData;
+      const { claimable } = data;
 
       return <Claimable claimable={claimable} />;
     }
@@ -234,18 +211,18 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
     }
     case CellType.PERPS_BALANCE: {
-      const { balance } = data as PerpsBalanceExtraData;
+      const { balance } = data;
       return <SectionAvailableBalance balance={balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPerps} />;
     }
     case CellType.PERPS_POSITION: {
-      const { position } = data as PerpsPositionExtraData;
+      const { position } = data;
       return <PerpsPositionRow position={position} />;
     }
     case CellType.POLYMARKET_HEADER: {
       return <PolymarketHeader isDarkMode={extendedState.theme.isDarkMode} />;
     }
     case CellType.POLYMARKET_BALANCE: {
-      const { balance } = data as PolymarketBalanceExtraData;
+      const { balance } = data;
       return (
         <SectionAvailableBalance
           balance={balance}
@@ -258,7 +235,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       );
     }
     case CellType.POLYMARKET_POSITION: {
-      const { position } = data as PolymarketPositionExtraData;
+      const { position } = data;
       return <PolymarketPositionRow position={position} />;
     }
     case CellType.TOKENS_HEADER: {
@@ -267,8 +244,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
     default:
-      assertNever(type);
+      assertNever(data);
   }
 }
-
-export default rowRenderer as (type: string | number, data: any) => React.ReactElement; // eslint-disable-line @typescript-eslint/no-explicit-any

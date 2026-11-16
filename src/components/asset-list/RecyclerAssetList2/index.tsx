@@ -11,9 +11,12 @@ import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/Navba
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { useNftsEnabled } from '@/features/nfts/data/nftsEnabledStore';
 import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import useCoinListEdited from '@/hooks/useCoinListEdited';
+import useCoinListEditOptions from '@/hooks/useCoinListEditOptions';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useStableValue } from '@/hooks/useStableValue';
 import type useWalletSectionsData from '@/hooks/useWalletSectionsData';
@@ -21,12 +24,16 @@ import * as i18n from '@/languages';
 import { type Language } from '@/languages/types';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
+import { createListData } from './core/createListData';
 import { RawMemoRecyclerAssetList, type ViewableItemsChangedCallback } from './core/RawRecyclerList';
+import rowRenderer, { type ExtendedState } from './core/RowRenderer';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
+import { type CellTypes } from './core/ViewTypes';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
@@ -54,19 +61,48 @@ function RecyclerAssetList({
   onEndReached,
   onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
-  const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
-    briefSectionsData: walletBriefSectionsData,
-    externalAddress,
-    type,
-  });
+  const briefSectionsData = useMemoBriefSectionData({ briefSectionsData: walletBriefSectionsData, type });
+  const theme = useTheme();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
+  const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
+  const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
+  const nftsEnabled = useNftsEnabled();
 
   const insets = useSafeAreaInsets();
 
   const position = useStableValue(() => new RNAnimated.Value(0));
 
-  const extendedState = useMemo(
-    () => ({ additionalData, externalAddress, onPressUniqueToken }),
-    [additionalData, externalAddress, onPressUniqueToken]
+  const listData = useMemo(
+    () => createListData(briefSectionsData, isCoinListEdited, nftsEnabled),
+    [briefSectionsData, isCoinListEdited, nftsEnabled]
+  );
+  const extendedState = useMemo<ExtendedState>(
+    () => ({
+      externalAddress,
+      onPressUniqueToken,
+      isCoinListEdited,
+      nativeCurrency,
+      nativeCurrencySymbol,
+      hiddenAssets,
+      pinnedCoins,
+      setIsCoinListEdited,
+      theme,
+      toggleSelectedCoin,
+    }),
+    [
+      externalAddress,
+      onPressUniqueToken,
+      isCoinListEdited,
+      nativeCurrency,
+      nativeCurrencySymbol,
+      hiddenAssets,
+      pinnedCoins,
+      setIsCoinListEdited,
+      theme,
+      toggleSelectedCoin,
+    ]
   );
 
   return (
@@ -74,9 +110,10 @@ function RecyclerAssetList({
       {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
       <StickyHeaderManager yOffset={navbarHeight + insets.top - 8}>
         <RawMemoRecyclerAssetList
-          briefSectionsData={briefSectionsData}
+          listData={listData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
+          rowRenderer={(_type, data: CellTypes) => rowRenderer(data, extendedState)}
           onEndReached={onEndReached}
           scrollIndicatorInsets={{
             bottom: insets.bottom + 14,
