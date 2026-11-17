@@ -1,0 +1,160 @@
+diff --git a/src/actions/internal/managedExecutionReview.ts b/src/actions/internal/managedExecutionReview.ts
+index 5d60326..4ba4ec8 100644
+--- a/src/actions/internal/managedExecutionReview.ts
++++ b/src/actions/internal/managedExecutionReview.ts
+@@ -30,7 +30,10 @@ export function buildManagedRouteReview(
+     inputAmount,
+     output: routeOutput,
+     sponsorship: quoteTerms.sponsorship,
+-    gasless: !requiresWalletSubmission(preparedExecution.walletProgram),
++    // Solana route validation currently enforces a wallet-paid transaction.
++    gasless:
++      preparedExecution.sourceExecution.kind !== 'instruction-batch' &&
++      !requiresWalletSubmission(preparedExecution.walletProgram),
+     feeEstimate,
+   });
+ }
+diff --git a/src/actions/internal/preflightRelay.test.ts b/src/actions/internal/preflightRelay.test.ts
+index 8a66868..e8d696f 100644
+--- a/src/actions/internal/preflightRelay.test.ts
++++ b/src/actions/internal/preflightRelay.test.ts
+@@ -61,6 +61,7 @@ import { SolanaCluster } from '../../solana/cluster';
+ import { compileV0Transaction } from '../../solana/transaction';
+ import { PreflightErrorCode } from './preflightError';
+ import { preflightRelay } from './preflightRelay';
++import { buildManagedRouteReview } from './managedExecutionReview';
+ 
+ const PREPARE_SIGNER = privateKeyToAccount(
+   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+@@ -346,6 +347,32 @@ describe('preflightRelay', () => {
+     ).resolves.toBeUndefined();
+   });
+ 
++  it('does not treat a wallet-paid Solana route as gasless, even with full provider sponsorship', async () => {
++    const request: RelaySolanaRoutePrepareRequest = {
++      ...SOLANA_ROUTE_REQUEST,
++      gasless: true,
++      providerFunding: 'sponsored',
++    };
++    const preparedExecution = await buildSignedSolanaRoute({
++      request,
++      sponsorship: 'full',
++    });
++
++    expect(buildManagedRouteReview(preparedExecution).gasless).toBe(false);
++    await expect(
++      preflightRelay({
++        request,
++        preparedExecution,
++        relayDomain: RELAY_DOMAIN,
++        nowSec: NOW_SEC,
++        sponsorship: 'required',
++      }),
++    ).rejects.toMatchObject({
++      code: PreflightErrorCode.PolicyDenied,
++      message: expect.stringContaining('Solana source transaction fees'),
++    });
++  });
++
+   it('rejects a Solana request paired with EVM source work', async () => {
+     const preparedExecution = await buildSignedRoute({
+       request: ROUTE_REQUEST,
+@@ -628,8 +655,10 @@ async function buildSignedRoute({
+ 
+ async function buildSignedSolanaRoute({
+   request,
++  sponsorship = 'none',
+ }: {
+   request: RelaySolanaRoutePrepareRequest;
++  sponsorship?: 'none' | 'full';
+ }): Promise<PreparedSolanaRouteExecution> {
+   const sourceExecution = {
+     kind: 'instruction-batch',
+@@ -654,7 +683,7 @@ async function buildSignedSolanaRoute({
+       issuedAt: NOW_SEC - 5n,
+       expiresAt: NOW_SEC + 60n,
+       maxClockSkewSec: 1,
+-      sponsorship: 'none',
++      sponsorship,
+     },
+     inputAmount: 100n,
+     routeOutput: {
+diff --git a/src/actions/internal/preflightRelay.ts b/src/actions/internal/preflightRelay.ts
+index 5d56eb3..312bc90 100644
+--- a/src/actions/internal/preflightRelay.ts
++++ b/src/actions/internal/preflightRelay.ts
+@@ -400,6 +400,14 @@ function verifyRoutePolicy({
+   preparedExecution: PreparedRelayExecution<'asset-route'>;
+   sponsorship: SponsorshipRequest | undefined;
+ }): void {
++  // Provider-backed Solana routes currently require the wallet as fee payer.
++  // Worker broadcasting and provider fee sponsorship do not pay source gas.
++  if (request.gasless && request.intent.source.asset.location === 'solana') {
++    throw policyError(
++      'Solana source transaction fees are wallet-paid; gasless Solana routes require a backend fee sponsor.',
++    );
++  }
++
+   if (
+     request.gasless &&
+     requiresWalletSubmission(preparedExecution.walletProgram)
+diff --git a/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts b/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
+index 5a710e9..d4569e3 100644
+--- a/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
++++ b/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
+@@ -16,6 +16,7 @@ import { omitUndefined } from '../../../../../../src/utils/omitUndefined';
+ import { DEFAULT_PROVIDER_MAX_CLOCK_SKEW_SEC } from '../../core/constants';
+ import {
+   invalidProviderResponse,
++  throwSponsorshipUnavailable,
+   RelayReferenceError,
+   RelayReferenceErrorCode,
+ } from '../../core/error';
+@@ -180,6 +181,12 @@ export function createRelayLinkAssetRoutePreparer({
+   async function prepare(
+     request: RelayAssetRoutePrepareRequest,
+   ): Promise<PreparedCallRoute | PreparedSolanaRoute> {
++    if (isRoutePrepareRequestFrom(request, 'solana') && request.gasless) {
++      throwSponsorshipUnavailable(
++        'Solana source transaction fees are wallet-paid; gasless Solana routes require a backend fee sponsor.',
++      );
++    }
++
+     const route = isRoutePrepareRequestFrom(request, 'solana')
+       ? { request, solanaRpc: requireSolanaMainnetRpc(solanaMainnetRpc) }
+       : { request };
+diff --git a/workers/relay-reference/gateway/test/relay-link-prepare.test.ts b/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
+index 3c868dd..5aca27c 100644
+--- a/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
++++ b/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
+@@ -534,6 +534,30 @@ describe('Relay preparation', () => {
+     expect(readPermitChain).not.toHaveBeenCalled();
+   });
+ 
++  test('rejects gasless Solana routes before quoting a wallet-paid source', async () => {
++    const requestQuote = vi.fn<RelayLinkHttpClient['quote']>();
++    const events: string[] = [];
++    const prepare = createRelayLinkAssetRoutePreparer({
++      relayHttp: quoteOnlyHttp(requestQuote),
++      quoteTtlSec: 60n,
++      readPermitChain: vi.fn(async () => PERMIT_CHAIN),
++      solanaMainnetRpc: createSolanaRpc(events),
++    });
++
++    await expect(
++      prepare({
++        ...SOLANA_ROUTE_REQUEST,
++        gasless: true,
++        providerFunding: 'sponsored',
++      }),
++    ).rejects.toMatchObject({
++      code: 'SPONSORSHIP_UNAVAILABLE',
++      message: expect.stringContaining('Solana source transaction fees'),
++    });
++    expect(requestQuote).not.toHaveBeenCalled();
++    expect(events).toEqual([]);
++  });
++
+   test('prepares a Solana source through Relay and RPC without Kora', async () => {
+     const events: string[] = [];
+     const requestQuote = vi.fn<RelayLinkHttpClient['quote']>(

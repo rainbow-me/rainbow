@@ -1,0 +1,202 @@
+diff --git a/workers/relay-reference/gateway/src/providers/relay-link/permitSupport.ts b/workers/relay-reference/gateway/src/providers/relay-link/permitSupport.ts
+index 1580ae0..64c2749 100644
+--- a/workers/relay-reference/gateway/src/providers/relay-link/permitSupport.ts
++++ b/workers/relay-reference/gateway/src/providers/relay-link/permitSupport.ts
+@@ -22,6 +22,7 @@ type PermitChains = ReadonlyMap<number, RelayPermitChain>;
+ export type ReadRelayLinkPermitChain = (input: {
+   chainId: number;
+   address: Address;
++  protocolVersion?: 'v2';
+ }) => Promise<RelayPermitChain | undefined>;
+ 
+ // ============ API ============================================================ //
+@@ -30,19 +31,27 @@ export type ReadRelayLinkPermitChain = (input: {
+ export function createRelayLinkPermitChainReader(
+   relayHttp: RelayLinkHttpClient,
+ ): ReadRelayLinkPermitChain {
+-  let permitChainsPromise: Promise<PermitChains> | undefined;
++  const permitChainsPromises = new Map<
++    'v2' | undefined,
++    Promise<PermitChains>
++  >();
+ 
+-  return async ({ chainId, address }) => {
++  return async ({ chainId, address, protocolVersion }) => {
+     try {
+-      const permitChains = await (permitChainsPromise ??= relayHttp
+-        .get(RELAY_LINK_PATHS.chains)
+-        .then(parseRelayPermitChains));
++      let pending = permitChainsPromises.get(protocolVersion);
++      if (pending === undefined) {
++        pending = relayHttp
++          .get(RELAY_LINK_PATHS.chains)
++          .then((payload) => parseRelayPermitChains(payload, protocolVersion));
++        permitChainsPromises.set(protocolVersion, pending);
++      }
++      const permitChains = await pending;
+ 
+       const permitChain = permitChains.get(chainId);
+ 
+       return permitChain?.permitTokens.has(address) ? permitChain : undefined;
+     } catch {
+-      permitChainsPromise = undefined;
++      permitChainsPromises.delete(protocolVersion);
+       return undefined;
+     }
+   };
+@@ -50,7 +59,10 @@ export function createRelayLinkPermitChainReader(
+ 
+ // ============ Metadata Decoding ============================================== //
+ 
+-function parseRelayPermitChains(payload: unknown): PermitChains {
++function parseRelayPermitChains(
++  payload: unknown,
++  protocolVersion?: 'v2',
++): PermitChains {
+   const response = read.object(payload, 'Relay chains response');
+   const chains = readJsonArray(response.chains, 'Relay chains response chains');
+   const permitChains = new Map<number, RelayPermitChain>();
+@@ -66,7 +78,7 @@ function parseRelayPermitChains(payload: unknown): PermitChains {
+       continue;
+     }
+ 
+-    const permitChain = matchRelayPermitChain(chain);
++    const permitChain = matchRelayPermitChain(chain, protocolVersion);
+     if (permitChain !== undefined) {
+       permitChains.set(chainId, permitChain);
+     }
+@@ -77,8 +89,12 @@ function parseRelayPermitChains(payload: unknown): PermitChains {
+ 
+ function matchRelayPermitChain(
+   chain: JsonObject,
++  protocolVersion?: 'v2',
+ ): RelayPermitChain | undefined {
+-  const contracts = matchJsonObject(chain.contracts);
++  const allContracts = matchJsonObject(chain.contracts);
++  // Relay protocol v2 quotes use v3 contracts; the unversioned defaults can advance independently.
++  const contracts =
++    protocolVersion === 'v2' ? matchJsonObject(allContracts?.v3) : allContracts;
+   const currencies = chain.erc20Currencies;
+   const solvers = chain.solverAddresses;
+ 
+diff --git a/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts b/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
+index 5a710e9..c1d7399 100644
+--- a/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
++++ b/workers/relay-reference/gateway/src/providers/relay-link/prepare.ts
+@@ -194,11 +194,18 @@ export function createRelayLinkAssetRoutePreparer({
+         ? { request, authority: request.sourceAuthority }
+         : undefined;
+ 
++    const sponsorshipRequest = mapRelayLinkSponsorshipRequest(
++      request.providerFunding,
++    );
++
+     const permitChain =
+       amount.kind === 'exact-input' && source.asset.kind === 'erc20'
+         ? await readPermitChain({
+             chainId: sourceCurrency.chainId,
+             address: source.asset.address,
++            ...('protocolVersion' in sponsorshipRequest
++              ? { protocolVersion: sponsorshipRequest.protocolVersion }
++              : {}),
+           })
+         : undefined;
+ 
+@@ -229,7 +236,7 @@ export function createRelayLinkAssetRoutePreparer({
+         source.asset.location === 'platform'
+           ? HYPERLIQUID_ASSET_MAPPING.quoteProtocolVersion
+           : undefined,
+-      ...mapRelayLinkSponsorshipRequest(request.providerFunding),
++      ...sponsorshipRequest,
+       referrer,
+       explicitDeposit:
+         source.asset.kind === 'erc20' && routeWithAuthority !== undefined
+diff --git a/workers/relay-reference/gateway/test/permit-support.test.ts b/workers/relay-reference/gateway/test/permit-support.test.ts
+index adedb92..0cfa80a 100644
+--- a/workers/relay-reference/gateway/test/permit-support.test.ts
++++ b/workers/relay-reference/gateway/test/permit-support.test.ts
+@@ -12,6 +12,58 @@ const ERC20_ROUTER = '0x2222222222222222222222222222222222222222';
+ const SOLVER = '0x3333333333333333333333333333333333333333';
+ 
+ describe('relay.link permit support reader', () => {
++  it('uses v3 contracts for protocol v2 without changing default quotes', async () => {
++    const chain = createPermitChain(base.id);
++    const v3 = {
++      approvalProxy: '0x6666666666666666666666666666666666666666',
++      erc20Router: '0x7777777777777777777777777777777777777777',
++    };
++    const get = vi.fn<RelayLinkHttpClient['get']>(async () => ({
++      chains: [{ ...chain, contracts: { ...chain.contracts, v3 } }],
++    }));
++    const readPermitChain = createRelayLinkPermitChainReader(
++      createRelayHttp(get),
++    );
++
++    await expect(
++      readPermitChain({
++        chainId: base.id,
++        address: TOKEN,
++        protocolVersion: 'v2',
++      }),
++    ).resolves.toMatchObject(v3);
++    await expect(
++      readPermitChain({ chainId: base.id, address: TOKEN }),
++    ).resolves.toMatchObject({
++      approvalProxy: APPROVAL_PROXY,
++      erc20Router: ERC20_ROUTER,
++    });
++  });
++
++  it.each([
++    undefined,
++    {},
++    { approvalProxy: APPROVAL_PROXY, erc20Router: 'invalid' },
++  ])(
++    'does not substitute default contracts when v2 metadata is unavailable: %j',
++    async (v3) => {
++      const chain = createPermitChain(base.id);
++      const get = vi.fn<RelayLinkHttpClient['get']>(async () => ({
++        chains: [{ ...chain, contracts: { ...chain.contracts, v3 } }],
++      }));
++      const readPermitChain = createRelayLinkPermitChainReader(
++        createRelayHttp(get),
++      );
++      await expect(
++        readPermitChain({
++          chainId: base.id,
++          address: TOKEN,
++          protocolVersion: 'v2',
++        }),
++      ).resolves.toBeUndefined();
++    },
++  );
++
+   it('returns normalized permit facts beside unrelated non-EVM metadata', async () => {
+     const get = vi.fn<RelayLinkHttpClient['get']>(async () => ({
+       chains: [
+diff --git a/workers/relay-reference/gateway/test/relay-link-prepare.test.ts b/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
+index 3c868dd..ee75e30 100644
+--- a/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
++++ b/workers/relay-reference/gateway/test/relay-link-prepare.test.ts
+@@ -220,14 +220,20 @@ describe('Relay preparation', () => {
+     const requestQuote = vi.fn<RelayLinkHttpClient['quote']>(async () => {
+       throw new Error('quote requested');
+     });
++    const readPermitChain = vi.fn(async () => PERMIT_CHAIN);
+     const prepare = createRelayLinkAssetRoutePreparer({
+       relayHttp: quoteOnlyHttp(requestQuote),
+       quoteTtlSec: 60n,
+-      readPermitChain: async () => PERMIT_CHAIN,
++      readPermitChain,
+     });
+ 
+     await expect(prepare(request)).rejects.toThrow('quote requested');
+ 
++    expect(readPermitChain).toHaveBeenCalledWith({
++      chainId: 8453,
++      address: SOURCE_TOKEN,
++      protocolVersion: 'v2',
++    });
+     expect(requestQuote.mock.calls[0]?.[0]).toMatchObject({
+       usePermit: true,
+       forceSolverExecution: true,
