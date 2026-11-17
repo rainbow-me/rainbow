@@ -24,6 +24,29 @@ beforeEach(() => {
 });
 
 describe('Solana keychain isolation', () => {
+  it('uses the shared policy unchanged when it returns simulator options', async () => {
+    vi.mocked(kc.getPrivateAccessControlOptions).mockResolvedValue({});
+    await saveSolanaKey(record);
+    expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
+      authenticationPrompt: { title: 'Authenticate to use Solana' },
+    });
+    const bytes = await readSolanaKey(record.address);
+    expect(bytes).toHaveLength(32);
+    bytes.fill(0);
+    expect(kc.getObject).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads through the shared keychain without requesting write access-control options', async () => {
+    vi.mocked(kc.getPrivateAccessControlOptions).mockRejectedValue(new Error('Write options must not be needed for reads'));
+    const bytes = await readSolanaKey(record.address);
+    expect(bytes).toHaveLength(32);
+    bytes.fill(0);
+    expect(kc.getPrivateAccessControlOptions).not.toHaveBeenCalled();
+    expect(kc.getObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, {
+      authenticationPrompt: { title: 'Authenticate to use Solana' },
+    });
+  });
+
   it('writes a protected, network-independent record outside the legacy backup suffix and verifies it', async () => {
     await saveSolanaKey(record);
     expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
@@ -34,13 +57,7 @@ describe('Solana keychain isolation', () => {
     expect(vi.mocked(kc.setObject).mock.calls[0][2]).not.toHaveProperty('androidEncryptionPin');
   });
 
-  it('refuses unprotected writes and treats failed readback as failed enablement', async () => {
-    vi.mocked(kc.getPrivateAccessControlOptions).mockResolvedValue({});
-    await expect(saveSolanaKey(record)).rejects.toThrow('physical device');
-    expect(kc.setObject).not.toHaveBeenCalled();
-    vi.mocked(kc.getPrivateAccessControlOptions).mockResolvedValue(
-      options as Awaited<ReturnType<typeof kc.getPrivateAccessControlOptions>>
-    );
+  it('treats failed readback as failed enablement', async () => {
     vi.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.Unavailable });
     await expect(saveSolanaKey(record)).rejects.toThrow('Unable to unlock');
   });

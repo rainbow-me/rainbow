@@ -12,15 +12,7 @@ export class SolanaAuthenticationCancelled extends Error {
   }
 }
 
-async function requirePrivateOptions() {
-  const options = await keychain.getPrivateAccessControlOptions();
-  // The legacy wrapper caches unprotected writes in MMKV, including on iOS simulators.
-  if (!options.accessControl) throw new Error('Protected Solana storage requires a physical device with authentication enabled.');
-  return options;
-}
-
 export async function readSolanaKey(address: string): Promise<Uint8Array> {
-  await requirePrivateOptions();
   const result = await keychain.getObject(keyForAddress(address), { authenticationPrompt }).catch(() => {
     // JSON parser errors can include pieces of the stored secret.
     throw new Error('Unable to read the Solana key record.');
@@ -33,7 +25,7 @@ export async function readSolanaKey(address: string): Promise<Uint8Array> {
 export async function saveSolanaKey(record: AccountPrivateKeyData): Promise<void> {
   const bytes = decodeSolanaKey(record, record.address);
   bytes.fill(0);
-  const options = await requirePrivateOptions();
+  const options = await keychain.getPrivateAccessControlOptions();
   const key = keyForAddress(record.address);
   if (await keychain.has(key)) {
     // A valid existing key for this address is already the desired record; never overwrite unreadable data.
