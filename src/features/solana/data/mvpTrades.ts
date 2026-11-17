@@ -9,8 +9,10 @@ import { ChainId } from '@/features/network/types/backendNetworks';
 import {
   BASE_USDC,
   BONK,
-  BUY_AMOUNT,
+  buyAmount,
   sellAmount,
+  SOL,
+  SOL_TO_BASE_AMOUNT,
   SOLANA_USDC,
   solanaToken,
   validateMvpReview,
@@ -22,6 +24,8 @@ import { withSolanaSigner } from '@/features/wallet/data/loadSolanaSigner';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getSolanaAccount, type EnabledSolanaAccount } from '@/features/wallet/data/stores/accountMetadataStore';
 import { getProvider } from '@/handlers/web3';
+import { ETH_ADDRESS } from '@/references/constants';
+import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import {
   execute,
   isTerminalStatus,
@@ -43,7 +47,7 @@ export const useSolanaMvpExecutionStore = createBaseStore<{ attempt: Attempt | n
 
 type ReviewContext = { account: EnabledSolanaAccount; input: bigint };
 export type MvpTrade = ReviewContext &
-  ({ route: 'buy'; prepared: PreparedRouteExecution<'evm'> } | { route: 'sell'; prepared: PreparedRouteExecution<'solana'> });
+  ({ route: 'buy'; prepared: PreparedRouteExecution<'evm'> } | { route: 'sell' | 'solToBase'; prepared: PreparedRouteExecution<'solana'> });
 
 function assertAccount(account: EnabledSolanaAccount): void {
   assertSolanaSource(account);
@@ -70,9 +74,13 @@ async function tokenBalance(owner: string, mint: Address): Promise<bigint> {
 
 export async function getMvpBalances() {
   const account = requireEnabledSolanaAccount();
-  const [bonk, usdc] = await Promise.all([tokenBalance(account.address, BONK), tokenBalance(account.address, SOLANA_USDC)]);
+  const [bonk, usdc, sol] = await Promise.all([
+    tokenBalance(account.address, BONK),
+    tokenBalance(account.address, SOLANA_USDC),
+    rpc.getBalance(address(account.address), { commitment: 'confirmed' }).send(),
+  ]);
   assertAccount(account);
-  return { address: account.address, bonk, usdc };
+  return { address: account.address, bonk, usdc, sol: sol.value };
 }
 
 export async function prepareMvpTrade(route: MvpRoute): Promise<MvpTrade> {
@@ -81,26 +89,34 @@ export async function prepareMvpTrade(route: MvpRoute): Promise<MvpTrade> {
   configureSolanaMvpSdk();
   let trade: MvpTrade;
   if (route === 'buy') {
+    const eth = await fetchExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: 'USD' });
+    const input = buyAmount(eth?.price?.value);
+    assertAccount(account);
     const prepared = await execute.prepare.route({
       account: getAddress(account.sourceEvmAddress),
       publicClient: createDelegationPublicClient(ChainId.base),
       source: {
-        asset: { location: 'evm', kind: 'erc20', chainId: ChainId.base, address: BASE_USDC },
-        amount: { kind: 'exact-input', input: BUY_AMOUNT },
+        asset: { location: 'evm', kind: 'native', chainId: ChainId.base },
+        amount: { kind: 'exact-input', input },
       },
-      destination: { asset: solanaToken(BONK), recipient: address(account.address) },
+      destination: { asset: SOL, recipient: address(account.address) },
       gasless: true,
       sponsorship: 'required',
     });
-    trade = { route, account, input: BUY_AMOUNT, prepared };
+    trade = { route, account, input, prepared };
   } else {
-    const input = sellAmount(await tokenBalance(account.address, BONK));
+    const input = route === 'solToBase' ? SOL_TO_BASE_AMOUNT : sellAmount(await tokenBalance(account.address, BONK));
+    const solBalance = (await rpc.getBalance(address(account.address), { commitment: 'confirmed' }).send()).value;
+    if (solBalance <= (route === 'solToBase' ? input : 0n))
+      throw new Error('This test requires SOL for network fees in addition to the swap amount.');
     assertAccount(account);
     const prepared = await execute.prepare.route({
       account: address(account.address),
-      source: { asset: solanaToken(BONK), amount: { kind: 'exact-input', input } },
-      destination: { asset: solanaToken(SOLANA_USDC), recipient: address(account.address) },
-      gasless: true,
+      source: { asset: route === 'solToBase' ? SOL : solanaToken(BONK), amount: { kind: 'exact-input', input } },
+      destination:
+        route === 'solToBase'
+          ? { asset: BASE_USDC, recipient: getAddress(account.sourceEvmAddress) }
+          : { asset: solanaToken(SOLANA_USDC), recipient: address(account.address) },
       sponsorship: 'required',
     });
     trade = { route, account, input, prepared };

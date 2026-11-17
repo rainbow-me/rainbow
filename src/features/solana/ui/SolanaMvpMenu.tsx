@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { formatUnits } from 'viem';
 
 import { IS_STORE_INSTALL } from '@/env';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { type MvpRoute } from '@/features/solana/core/mvpRoutes';
 import {
   checkMvpExecution,
@@ -65,16 +66,18 @@ function SolanaMvpControls() {
     const quote = await prepareMvpTrade(route);
     const { review } = quote.prepared;
     if (review.output.minimumAmount === undefined) throw new Error('The quote is missing its minimum received amount.');
-    const input = `${formatUnits(quote.input, route === 'buy' ? 6 : 5)} ${route === 'buy' ? 'Base USDC' : 'BONK'}`;
-    const symbol = route === 'buy' ? 'BONK' : 'Solana USDC';
+    const input = `${formatUnits(quote.input, route === 'buy' ? 18 : route === 'solToBase' ? 9 : 5)} ${route === 'buy' ? 'Base ETH (approximately $1 at quote time)' : route === 'solToBase' ? 'SOL' : 'BONK'}`;
+    const symbol = route === 'buy' ? 'SOL' : route === 'solToBase' ? 'Base USDC' : 'Solana USDC';
     const message = [
       `Spend: ${input}`,
       `Receive: ${formatUnits(review.output.amount, review.output.decimals)} ${symbol}`,
       `Minimum: ${formatUnits(review.output.minimumAmount, review.output.decimals)} ${symbol}`,
       `From: ${route === 'buy' ? quote.account.sourceEvmAddress : quote.account.address}`,
-      `Solana recipient: ${quote.account.address}`,
+      `Recipient (${route === 'solToBase' ? 'Base' : 'Solana'}): ${route === 'solToBase' ? quote.account.sourceEvmAddress : quote.account.address}`,
       ...(route === 'buy' ? ['The gasless Base route may authorize Rainbow EVM delegation.'] : []),
-      'Full sponsorship required. No user-paid gas fallback.',
+      route === 'buy'
+        ? 'Full sponsorship required. No user-paid gas fallback.'
+        : 'Your Solana wallet pays the source network fee in SOL, in addition to the swap amount. Provider fees remain fully sponsored.',
       `Quote expires: ${new Date(Number(review.expiresAt) * 1000).toLocaleTimeString()}`,
     ].join('\n\n');
     if (!(await confirm(message))) return;
@@ -104,7 +107,7 @@ function SolanaMvpControls() {
         disabled={busy}
         size={60}
         testID="solana-mvp-buy"
-        titleComponent={<MenuItem.Title text="Buy BONK with 1 Base USDC" />}
+        titleComponent={<MenuItem.Title text="Buy SOL with $1 of Base ETH" />}
         onPress={() => run(() => trade('buy'))}
       />
       <MenuItem
@@ -118,6 +121,14 @@ function SolanaMvpControls() {
       <MenuItem
         disabled={busy}
         size={60}
+        testID="solana-mvp-sol-to-base"
+        titleComponent={<MenuItem.Title text="Swap 0.01 SOL → Base USDC" />}
+        labelComponent={<MenuItem.Label text="Review before signing" />}
+        onPress={() => run(() => trade('solToBase'))}
+      />
+      <MenuItem
+        disabled={busy}
+        size={60}
         testID="solana-mvp-balances"
         titleComponent={<MenuItem.Title text="Refresh Solana balances" />}
         onPress={() =>
@@ -125,7 +136,7 @@ function SolanaMvpControls() {
             const balances = await getMvpBalances();
             Alert.alert(
               'Solana balances',
-              `${balances.address}\n\nBONK: ${formatUnits(balances.bonk, 5)}\nUSDC: ${formatUnits(balances.usdc, 6)}`
+              `${balances.address}\n\nSOL: ${formatUnits(balances.sol, 9)}\nBONK: ${formatUnits(balances.bonk, 5)}\nUSDC: ${formatUnits(balances.usdc, 6)}`
             );
           })
         }
@@ -139,9 +150,14 @@ function SolanaMvpControls() {
         onPress={() =>
           run(async () => {
             const result = await checkMvpExecution();
+            const source = result.onchain?.source;
+            const baseTransactions =
+              source?.kind === 'evm' && source.chainId === ChainId.base
+                ? `\n\nBase transactions:\n${source.hashes.map(hash => `https://basescan.org/tx/${hash}`).join('\n')}`
+                : '';
             Alert.alert(
               'Execution status',
-              `${result.status}\n\n${result.executionId}\n\nSource: ${attempt?.account.sourceEvmAddress}\nSolana: ${attempt?.account.address}${result.error ? `\n\n${result.error.message ?? result.error.code}` : ''}`
+              `${result.status}\n\nExecution ID: ${result.executionId}${baseTransactions}\n\nSource: ${attempt?.account.sourceEvmAddress}\nSolana: ${attempt?.account.address}${result.error ? `\n\n${result.error.message ?? result.error.code}` : ''}`
             );
           })
         }
