@@ -4,7 +4,7 @@ Branch: `jin/solana-internal-mvp`. Worktree: `rainbow-worktrees/solana-internal-
 
 Current as of November 17, 2026. This is an internal mainnet test harness for an existing mnemonic wallet. It enables a Solana address for the selected EVM subaccount, buys SOL with Base ETH, and supports wallet-paid Solana-source swaps. It requires the existing Solana feature flag and a non-store build. Each swap requires a fresh quote and explicit confirmation.
 
-The branch starts at `53bfded42`, before the broader keychain foundation. It carries forward the proposed wallet types but leaves `walletKeychain.ts`, `features/local-auth/keychain.ts`, `walletsStore.ts`, and `model/wallet.ts` unchanged. The prior foundation and local simulator work remain in their original branch/worktree. Backend balances integration has not started.
+The branch starts at `53bfded42`, before the broader keychain foundation. It carries forward the proposed wallet types but leaves `walletKeychain.ts`, `features/local-auth/keychain.ts`, `walletsStore.ts`, and `model/wallet.ts` unchanged. The prior foundation and local simulator work remain in their original branch/worktree. The stacked `jin/solana-balances-v2` branch adds [wallet-screen balances](solana-balances-v2.md); this guide describes the underlying swap MVP.
 
 ## Review order
 

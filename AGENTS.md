@@ -49,6 +49,8 @@ Key non-obvious directories:
 
 ## Incremental Solana integration
 
+- Reuse existing EVM behavior and presentation wherever possible. Keep changes minimal and as needed; agree explicitly with the user before introducing Solana-specific behavior. The current internal balances test may keep Solana rows above small balances as an explicitly approved testing exception.
+
 - Minimize disruption to existing production paths. Prefer additive modules and entry points; do not require deleting or refactoring existing implementations to enable Solana work.
 - Build new wallet and key-derivation abstractions that callers can opt into. Solana development can use them immediately while existing production callers retain their current paths.
 - Keep Solana development behind the existing Solana feature flag and independent of production callers adopting the new abstractions.
