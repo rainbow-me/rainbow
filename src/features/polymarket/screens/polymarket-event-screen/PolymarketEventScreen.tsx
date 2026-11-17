@@ -176,18 +176,20 @@ function SportsGameOverview({
 
   return (
     <>
-      {competition ? (
+      {title ? (
         <Box gap={24}>
-          <Box flexDirection="row" alignItems="center" gap={8}>
-            {icon ? (
-              <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={28} style={{ width: 28, height: 28 }} />
-            ) : (
-              <SportsImage isDarkMode={isDarkMode} imageUrl={competition.imageUrl} name={competition.name} size={28} />
-            )}
-            <Text color="label" size="20pt" weight="bold">
-              {competition.name}
-            </Text>
-          </Box>
+          {competition ? (
+            <Box flexDirection="row" alignItems="center" gap={8}>
+              {icon ? (
+                <ImgixImage enableFasterImage source={icon.source} resizeMode="contain" size={28} style={{ width: 28, height: 28 }} />
+              ) : (
+                <SportsImage isDarkMode={isDarkMode} imageUrl={competition.imageUrl} name={competition.name} size={28} />
+              )}
+              <Text color="label" size="20pt" weight="bold">
+                {competition.name}
+              </Text>
+            </Box>
+          ) : null}
           <Box gap={16}>
             <Text color="label" size="26pt" weight="heavy">
               {title}
