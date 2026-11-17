@@ -1,9 +1,11 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { AccountImage } from '@/components/AccountImage';
 import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { Text } from '@/design-system/components/Text/Text';
 import { TextIcon } from '@/design-system/components/TextIcon/TextIcon';
+import { PolymarketPortfolioButton } from '@/features/polymarket/components/PolymarketPortfolioButton';
 import { type SportsDestination, type SportsHost } from '@/features/sports/core/browse';
 import { type SportsScope } from '@/features/sports/core/catalog';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
@@ -16,7 +18,7 @@ const HEADER_HEIGHT = 44;
 const BACK_BUTTON_INSET = 4;
 
 /**
- * Title and back navigation for a Sports browse page.
+ * Title and back navigation for a Sports browse page, plus portfolio and wallet controls in the Sports tab.
  */
 export const SportsHeader = memo(function SportsHeader({
   host,
@@ -61,6 +63,13 @@ export const SportsHeader = memo(function SportsHeader({
           {title}
         </Text>
       </View>
+
+      {host === 'main' ? (
+        <View style={styles.controls}>
+          <PolymarketPortfolioButton isDarkMode={isDarkMode} />
+          <AccountImage />
+        </View>
+      ) : null}
     </View>
   );
 });
@@ -86,4 +95,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerText: { flex: 1, gap: 10 },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 0,
+    gap: 12,
+    // Cancels AccountImage's built-in trailing margin so the avatar sits at the header's edge padding.
+    marginRight: -10,
+  },
 });

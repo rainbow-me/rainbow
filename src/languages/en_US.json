@@ -3356,6 +3356,11 @@
       }
     },
     "predictions": {
+      "portfolio_button": {
+        "label": "Predictions portfolio, %{value}",
+        "label_positions_singular": "Predictions portfolio, %{value}, 1 open position",
+        "label_positions_plural": "Predictions portfolio, %{value}, %{count} open positions"
+      },
       "feature_card": {
         "title": "Predictions",
         "subtitle": "Bet on real-world events"

@@ -3,7 +3,7 @@ import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePoly
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { type RootStackParamList } from '@/navigation/types';
+import { type PolymarketRoute, type RootStackParamList } from '@/navigation/types';
 import { device } from '@/storage';
 
 export function navigateToPolymarket(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
@@ -20,29 +20,31 @@ export function navigateToPolymarketCategory(tagId: string): void {
 
   usePolymarketCategoryStore.getState().setTagId(tagId);
 
-  navigateToPolymarketBrowse();
+  navigateToPolymarketRoute(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
 }
 
 /** Opens a Sports scope in the Predictions browse tab. */
 export function navigateToPolymarketSportsLeague(scopeId: string): void {
   sportsNavigationStores.predictions.getState().select(scopeId);
   usePolymarketCategoryStore.getState().setTagId('sports');
-  navigateToPolymarketBrowse();
+  navigateToPolymarketRoute(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
+}
+
+/** Opens the Predictions navigator on the Portfolio tab. */
+export function navigateToPolymarketPortfolio(): void {
+  navigateToPolymarketRoute(Routes.POLYMARKET_ACCOUNT_SCREEN);
 }
 
 // Monotonic key so a repeated deep link to the same inner route still re-triggers the
 // navigator's route effect even when `initialRoute` is unchanged.
 let polymarketRouteRequestKey = 0;
 
-// Opens the Polymarket navigator on the browse tab. The inner-route intent is passed through
-// the outer navigation params and applied by PolymarketNavigator, so this util never imports
-// the navigator's component/store (avoiding a screen-tree dependency).
-function navigateToPolymarketBrowse(): void {
+// The inner-route intent is passed through the outer navigation params and applied by
+// PolymarketNavigator, so this util never imports the navigator's component/store
+// (avoiding a screen-tree dependency).
+function navigateToPolymarketRoute(route: PolymarketRoute): void {
   polymarketRouteRequestKey += 1;
-  navigateToPolymarket({
-    initialRoute: Routes.POLYMARKET_BROWSE_EVENTS_SCREEN,
-    routeRequestKey: polymarketRouteRequestKey,
-  });
+  navigateToPolymarket({ initialRoute: route, routeRequestKey: polymarketRouteRequestKey });
 }
 
 function isCategoryKey(tagId: string): tagId is CategoryKey {
