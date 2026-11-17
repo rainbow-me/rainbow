@@ -7,6 +7,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { Text } from '@/design-system/components/Text/Text';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatCurrency } from '@/features/currency/utils/formatCurrency';
+import { InnerShadow } from '@/features/polymarket/components/InnerShadow';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePolymarketPositions } from '@/features/polymarket/stores/derived/usePolymarketPositions';
 import { navigateToPolymarketPortfolio } from '@/features/polymarket/utils/navigateToPolymarket';
@@ -17,6 +18,8 @@ import { THICKER_BORDER_WIDTH } from '@/styles/constants';
 const HEIGHT = 40;
 const LOGO_SIZE = 20;
 const BADGE_SIZE = 20;
+const INNER_GLOW_COLOR = opacity(globalColors.white100, 0.15);
+const INNER_GLOW_BLUR = 19.5;
 
 /**
  * Polymarket cash plus active positions value, with the active-position count, opening the Predictions portfolio.
@@ -37,12 +40,16 @@ export const PolymarketPortfolioButton = memo(function PolymarketPortfolioButton
         accessibilityRole="button"
         style={[styles.container, surfaceStyle]}
       >
+        {isDarkMode ? <InnerShadow blur={INNER_GLOW_BLUR} borderRadius={HEIGHT / 2} color={INNER_GLOW_COLOR} dx={0} dy={0} /> : null}
         <Image source={polymarketLogo} style={[styles.logo, isEmpty && styles.logoEmpty]} />
         <Text color={isEmpty ? 'labelQuaternary' : 'label'} numberOfLines={1} size="15pt" weight="bold">
           {value}
         </Text>
         {showsPositions ? (
           <View style={[styles.badge, isDarkMode ? styles.badgeDark : styles.badgeLight]}>
+            {isDarkMode ? (
+              <InnerShadow blur={INNER_GLOW_BLUR} borderRadius={BADGE_SIZE / 2} color={INNER_GLOW_COLOR} dx={0} dy={0} />
+            ) : null}
             <Text color="labelSecondary" size="11pt" weight="heavy">
               {activePositionsCount}
             </Text>
@@ -92,6 +99,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeDark: { backgroundColor: opacity(globalColors.white100, 0.12) },
+  badgeDark: { backgroundColor: opacity(globalColors.grey100, 0.8) },
   badgeLight: { backgroundColor: opacity(globalColors.grey100, 0.06) },
 });
