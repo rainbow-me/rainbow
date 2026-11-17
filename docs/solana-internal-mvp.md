@@ -47,13 +47,14 @@ Metro resolves `.mjs` files so the preview SDK's lazy ESM chunks load. The previ
 
 ## Current test routes and fee policy
 
-| Button                      | Source             | Destination                                        | Input and fee policy                                                                                       |
-| --------------------------- | ------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Buy SOL with $1 of Base ETH | Base native ETH    | Mainnet native SOL, selected paired Solana address | $1 at a freshly fetched ETH/USD price, rounded down to wei; gasless and full provider sponsorship required |
-| Swap BONK → Solana USDC     | Mainnet BONK       | Mainnet USDC, same Solana address                  | Available BONK capped at 100,000; wallet pays source fee in SOL; full provider sponsorship required        |
-| Swap 0.01 SOL → Base USDC   | Mainnet native SOL | Base USDC, associated EVM address                  | Exactly 10,000,000 lamports plus wallet-paid source fee; full provider sponsorship required                |
+| Button                       | Source             | Destination                                        | Input and fee policy                                                                                       |
+| ---------------------------- | ------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Buy SOL with $1 of Base ETH  | Base native ETH    | Mainnet native SOL, selected paired Solana address | $1 at a freshly fetched ETH/USD price, rounded down to wei; gasless and full provider sponsorship required |
+| Buy BONK with $1 of Base ETH | Base native ETH    | Mainnet BONK, selected paired Solana address       | $1 at a freshly fetched ETH/USD price, rounded down to wei; gasless and full provider sponsorship required |
+| Swap BONK → Solana USDC      | Mainnet BONK       | Mainnet USDC, same Solana address                  | Available BONK capped at 100,000; wallet pays source fee in SOL; full provider sponsorship required        |
+| Swap 0.01 SOL → Base USDC    | Mainnet native SOL | Base USDC, associated EVM address                  | Exactly 10,000,000 lamports plus wallet-paid source fee; full provider sponsorship required                |
 
-The user authorized wallet-paid Solana source fees for internal testing. Both Solana-source requests omit `gasless` (the SDK accepts `true` or omission) and retain `sponsorship: 'required'`. The Base-source request retains `gasless: true`. Confirmation discloses the source fee in SOL. The balance guard requires SOL greater than the input for the SOL route, or greater than zero for BONK; it is not an exact fee estimate. There is no automatic fallback from a gasless request to wallet-paid fees.
+The user authorized wallet-paid Solana source fees for internal testing. Both Solana-source requests omit `gasless` (the SDK accepts `true` or omission) and retain `sponsorship: 'required'`. Both Base-source buy requests retain `gasless: true`. Confirmation discloses the source fee in SOL. The balance guard requires SOL greater than the input for the SOL route, or greater than zero for BONK; it is not an exact fee estimate. There is no automatic fallback from a gasless request to wallet-paid fees.
 
 The ETH/USD lookup uses Rainbow's mainnet ETH price; the spend remains on Base. Missing or invalid prices block preparation. Price movement can change the USD value after pricing. Base USDC is the ERC-20 at `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`. Mint constants and decimals are in `core/mvpRoutes.ts`; references: [Circle USDC addresses](https://developers.circle.com/stablecoins/usdc-contract-addresses), [BONK](https://solscan.io/token/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263).
 
@@ -65,7 +66,7 @@ Quote confirmation shows exact spend, quoted/minimum output, source, recipient a
 
 1. Use Node 22.23.2 and normal Rainbow dependency/native setup (`yarn install`, repository patches, Pods and environment setup as needed). Configure the reference relay above. The dedicated simulator is **Rainbow Solana MVP**, with Metro on **8093**. Environment and generated native configuration are local setup, not committed feature changes.
 2. In a non-store build, enable the Solana flag in Developer Settings. Select a mnemonic EVM account funded with at least $1 of Base ETH, then tap **Enable Solana for this account** and verify the displayed index/address.
-3. Tap **Buy SOL with $1 of Base ETH**, review, and confirm. Use **Check execution** until terminal and **Refresh Solana balances** to inspect native SOL, BONK and Solana USDC. Native ETH avoids the blocked USDC permit path.
+3. Tap **Buy SOL with $1 of Base ETH**, review, and confirm. Use **Check execution** until terminal and **Refresh Solana balances** to inspect native SOL, BONK and Solana USDC. Native ETH avoids the blocked USDC permit path. The separate **Buy BONK with $1 of Base ETH** button follows the same flow and receives BONK instead; the existing SOL buy remains available.
 4. With sufficient SOL for source fees, test **Swap 0.01 SOL → Base USDC** or **Swap BONK → Solana USDC** (requires BONK). Inspect both chains' receipts and balance changes; quote/status success alone does not establish amounts or fees.
 5. Check cancellation and account-selection changes. Use a physical device to verify protected storage and authentication/cancellation. EVM signing/backup regressions, flag-off behavior and store-build isolation still need explicit verification before merge.
 

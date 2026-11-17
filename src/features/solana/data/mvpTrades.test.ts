@@ -81,7 +81,7 @@ beforeEach(() => {
         asset: params.destination.asset,
         amount: 100n,
         minimumAmount: 95n,
-        decimals: params.source.asset.location === 'evm' ? 9 : 6,
+        decimals: params.destination.asset.kind === 'native' ? 9 : params.destination.asset.address === BONK ? 5 : 6,
       },
     },
   }));
@@ -89,30 +89,33 @@ beforeEach(() => {
 });
 
 describe('MVP SDK entry points', () => {
-  it('binds the EVM buy to the selected Solana recipient and submits the exact reviewed preparation', async () => {
-    const trade = await prepareMvpTrade('buy');
-    expect(fetchExternalToken).toHaveBeenCalledWith({ address: 'eth', chainId: 1, currency: 'USD' });
-    expect(mocks.prepare).toHaveBeenCalledWith(
-      expect.objectContaining({
-        account: wallet.address,
-        gasless: true,
-        sponsorship: 'required',
-        destination: { asset: SOL, recipient: account.address },
-        source: {
-          asset: { location: 'evm', kind: 'native', chainId: 8453 },
-          amount: { kind: 'exact-input', input: 500_000_000_000_000n },
-        },
-      })
-    );
-    await executeMvpTrade(trade);
-    expect(mocks.execute.mock.calls[0][0]).toBe(trade.prepared);
-    expect(mocks.execute.mock.calls[0][1].signer).toBe(wallet);
-    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
-  });
+  it.each(['buy', 'buyBonk'] as const)(
+    'binds %s to the selected Solana recipient and submits the exact reviewed preparation',
+    async route => {
+      const trade = await prepareMvpTrade(route);
+      expect(fetchExternalToken).toHaveBeenCalledWith({ address: 'eth', chainId: 1, currency: 'USD' });
+      expect(mocks.prepare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          account: wallet.address,
+          gasless: true,
+          sponsorship: 'required',
+          destination: { asset: route === 'buyBonk' ? solanaToken(BONK) : SOL, recipient: account.address },
+          source: {
+            asset: { location: 'evm', kind: 'native', chainId: 8453 },
+            amount: { kind: 'exact-input', input: 500_000_000_000_000n },
+          },
+        })
+      );
+      await executeMvpTrade(trade);
+      expect(mocks.execute.mock.calls[0][0]).toBe(trade.prepared);
+      expect(mocks.execute.mock.calls[0][1].signer).toBe(wallet);
+      expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
+    }
+  );
 
-  it('does not prepare or sign a buy when ETH pricing is unavailable', async () => {
+  it.each(['buy', 'buyBonk'] as const)('does not prepare or sign %s when ETH pricing is unavailable', async route => {
     vi.mocked(fetchExternalToken).mockResolvedValue(null);
-    await expect(prepareMvpTrade('buy')).rejects.toThrow('Unable to price');
+    await expect(prepareMvpTrade(route)).rejects.toThrow('Unable to price');
     expect(mocks.prepare).not.toHaveBeenCalled();
     expect(loadWallet).not.toHaveBeenCalled();
   });
@@ -182,22 +185,25 @@ describe('MVP SDK entry points', () => {
     expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
 
-  it.each(['buy', 'sell', 'solToBase'] as const)('keeps an accepted %s pending when a separate status request fails', async route => {
-    const trade = await prepareMvpTrade(route);
-    mocks.status.mockRejectedValueOnce(new Error('status unavailable'));
-    await expect(executeMvpTrade(trade)).resolves.toBeUndefined();
-    expect(mocks.status).not.toHaveBeenCalled();
-    expect(useSolanaMvpExecutionStore.getState().attempt).toMatchObject({ executionId, status: 'PENDING' });
-    await expect(checkMvpExecution()).rejects.toThrow('status unavailable');
-    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
-    await expect(prepareMvpTrade(route)).rejects.toThrow('previous execution');
-    await expect(executeMvpTrade(trade)).rejects.toThrow('already submitted');
-    await checkMvpExecution();
-    expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('CONFIRMED');
-    await expect(prepareMvpTrade(route)).resolves.toBeDefined();
-  });
+  it.each(['buy', 'buyBonk', 'sell', 'solToBase'] as const)(
+    'keeps an accepted %s pending when a separate status request fails',
+    async route => {
+      const trade = await prepareMvpTrade(route);
+      mocks.status.mockRejectedValueOnce(new Error('status unavailable'));
+      await expect(executeMvpTrade(trade)).resolves.toBeUndefined();
+      expect(mocks.status).not.toHaveBeenCalled();
+      expect(useSolanaMvpExecutionStore.getState().attempt).toMatchObject({ executionId, status: 'PENDING' });
+      await expect(checkMvpExecution()).rejects.toThrow('status unavailable');
+      expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('PENDING');
+      await expect(prepareMvpTrade(route)).rejects.toThrow('previous execution');
+      await expect(executeMvpTrade(trade)).rejects.toThrow('already submitted');
+      await checkMvpExecution();
+      expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('CONFIRMED');
+      await expect(prepareMvpTrade(route)).resolves.toBeDefined();
+    }
+  );
 
-  it.each(['buy', 'sell', 'solToBase'] as const)(
+  it.each(['buy', 'buyBonk', 'sell', 'solToBase'] as const)(
     'records a definitive SDK failure for %s without requiring a status request',
     async route => {
       const trade = await prepareMvpTrade(route);

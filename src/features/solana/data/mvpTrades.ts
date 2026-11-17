@@ -47,7 +47,11 @@ export const useSolanaMvpExecutionStore = createBaseStore<{ attempt: Attempt | n
 
 type ReviewContext = { account: EnabledSolanaAccount; input: bigint };
 export type MvpTrade = ReviewContext &
-  ({ route: 'buy'; prepared: PreparedRouteExecution<'evm'> } | { route: 'sell' | 'solToBase'; prepared: PreparedRouteExecution<'solana'> });
+  (
+    | { route: 'buy'; prepared: PreparedRouteExecution<'evm'> }
+    | { route: 'buyBonk'; prepared: PreparedRouteExecution<'evm'> }
+    | { route: 'sell' | 'solToBase'; prepared: PreparedRouteExecution<'solana'> }
+  );
 
 function assertAccount(account: EnabledSolanaAccount): void {
   assertSolanaSource(account);
@@ -88,7 +92,7 @@ export async function prepareMvpTrade(route: MvpRoute): Promise<MvpTrade> {
   assertNoPendingAttempt();
   configureSolanaMvpSdk();
   let trade: MvpTrade;
-  if (route === 'buy') {
+  if (route === 'buy' || route === 'buyBonk') {
     const eth = await fetchExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: 'USD' });
     const input = buyAmount(eth?.price?.value);
     assertAccount(account);
@@ -99,7 +103,7 @@ export async function prepareMvpTrade(route: MvpRoute): Promise<MvpTrade> {
         asset: { location: 'evm', kind: 'native', chainId: ChainId.base },
         amount: { kind: 'exact-input', input },
       },
-      destination: { asset: SOL, recipient: address(account.address) },
+      destination: { asset: route === 'buyBonk' ? solanaToken(BONK) : SOL, recipient: address(account.address) },
       gasless: true,
       sponsorship: 'required',
     });
@@ -158,7 +162,7 @@ export async function executeMvpTrade(trade: MvpTrade): Promise<void> {
     );
   };
   try {
-    if (trade.route === 'buy') {
+    if (trade.route === 'buy' || trade.route === 'buyBonk') {
       const provider = getProvider({ chainId: ChainId.base });
       const signer = await loadWallet({ address: trade.account.sourceEvmAddress, provider });
       if (!(signer instanceof Wallet) || signer.address.toLowerCase() !== trade.account.sourceEvmAddress.toLowerCase()) {

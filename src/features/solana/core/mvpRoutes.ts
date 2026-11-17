@@ -15,7 +15,7 @@ export const BASE_USDC = {
 } as const;
 export const SOL_TO_BASE_AMOUNT = 10_000_000n; // 0.01 SOL
 export const MAX_SELL_AMOUNT = 100_000n * 100_000n;
-export type MvpRoute = 'buy' | 'sell' | 'solToBase';
+export type MvpRoute = 'buy' | 'buyBonk' | 'sell' | 'solToBase';
 export const solanaToken = (mint: Address) =>
   ({ location: 'solana', kind: 'token', cluster: SolanaCluster.Mainnet, address: mint }) as const;
 
@@ -43,7 +43,7 @@ export function validateMvpReview(route: MvpRoute, input: bigint, prepared: Prep
   ) {
     throw new Error('The quote changed the bounded test amount.');
   }
-  if ((route === 'buy' && !review.gasless) || review.sponsorship !== 'full')
+  if (((route === 'buy' || route === 'buyBonk') && !review.gasless) || review.sponsorship !== 'full')
     throw new Error('Full provider sponsorship is required; only Solana source network fees may be wallet-paid.');
   const { output } = review;
   const expectedAsset =
@@ -54,10 +54,12 @@ export function validateMvpReview(route: MvpRoute, input: bigint, prepared: Prep
         output.asset.address.toLowerCase() === BASE_USDC.address.toLowerCase()
       : output.asset.location === 'solana' &&
         output.asset.cluster === SolanaCluster.Mainnet &&
-        (route === 'buy' ? output.asset.kind === 'native' : output.asset.kind === 'token' && output.asset.address === SOLANA_USDC);
+        (route === 'buy'
+          ? output.asset.kind === 'native'
+          : output.asset.kind === 'token' && output.asset.address === (route === 'buyBonk' ? BONK : SOLANA_USDC));
   if (
     !expectedAsset ||
-    output.decimals !== (route === 'buy' ? 9 : 6) ||
+    output.decimals !== (route === 'buy' ? 9 : route === 'buyBonk' ? 5 : 6) ||
     output.amount <= 0n ||
     output.minimumAmount === undefined ||
     output.minimumAmount <= 0n ||

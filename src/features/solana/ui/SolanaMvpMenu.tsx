@@ -66,16 +66,17 @@ function SolanaMvpControls() {
     const quote = await prepareMvpTrade(route);
     const { review } = quote.prepared;
     if (review.output.minimumAmount === undefined) throw new Error('The quote is missing its minimum received amount.');
-    const input = `${formatUnits(quote.input, route === 'buy' ? 18 : route === 'solToBase' ? 9 : 5)} ${route === 'buy' ? 'Base ETH (approximately $1 at quote time)' : route === 'solToBase' ? 'SOL' : 'BONK'}`;
-    const symbol = route === 'buy' ? 'SOL' : route === 'solToBase' ? 'Base USDC' : 'Solana USDC';
+    const evmSource = route === 'buy' || route === 'buyBonk';
+    const input = `${formatUnits(quote.input, evmSource ? 18 : route === 'solToBase' ? 9 : 5)} ${evmSource ? 'Base ETH (approximately $1 at quote time)' : route === 'solToBase' ? 'SOL' : 'BONK'}`;
+    const symbol = route === 'buyBonk' ? 'BONK' : route === 'buy' ? 'SOL' : route === 'solToBase' ? 'Base USDC' : 'Solana USDC';
     const message = [
       `Spend: ${input}`,
       `Receive: ${formatUnits(review.output.amount, review.output.decimals)} ${symbol}`,
       `Minimum: ${formatUnits(review.output.minimumAmount, review.output.decimals)} ${symbol}`,
-      `From: ${route === 'buy' ? quote.account.sourceEvmAddress : quote.account.address}`,
+      `From: ${evmSource ? quote.account.sourceEvmAddress : quote.account.address}`,
       `Recipient (${route === 'solToBase' ? 'Base' : 'Solana'}): ${route === 'solToBase' ? quote.account.sourceEvmAddress : quote.account.address}`,
-      ...(route === 'buy' ? ['The gasless Base route may authorize Rainbow EVM delegation.'] : []),
-      route === 'buy'
+      ...(evmSource ? ['The gasless Base route may authorize Rainbow EVM delegation.'] : []),
+      evmSource
         ? 'Full sponsorship required. No user-paid gas fallback.'
         : 'Your Solana wallet pays the source network fee in SOL, in addition to the swap amount. Provider fees remain fully sponsored.',
       `Quote expires: ${new Date(Number(review.expiresAt) * 1000).toLocaleTimeString()}`,
@@ -109,6 +110,13 @@ function SolanaMvpControls() {
         testID="solana-mvp-buy"
         titleComponent={<MenuItem.Title text="Buy SOL with $1 of Base ETH" />}
         onPress={() => run(() => trade('buy'))}
+      />
+      <MenuItem
+        disabled={busy}
+        size={60}
+        testID="solana-mvp-buy-bonk"
+        titleComponent={<MenuItem.Title text="Buy BONK with $1 of Base ETH" />}
+        onPress={() => run(() => trade('buyBonk'))}
       />
       <MenuItem
         disabled={busy}

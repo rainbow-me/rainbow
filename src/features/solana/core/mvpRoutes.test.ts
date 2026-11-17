@@ -59,6 +59,23 @@ describe('MVP spending and sponsorship limits', () => {
     expect(() => validateMvpReview('sell', MAX_SELL_AMOUNT + 1n, prepared())).toThrow();
   });
 
+  it('accepts the BONK buy only with the correct mint, decimals, and full gasless sponsorship', () => {
+    const output = { asset: solanaToken(BONK), decimals: 5, amount: 100n, minimumAmount: 95n };
+    expect(() => validateMvpReview('buyBonk', BUY_AMOUNT, prepared({ output }))).not.toThrow();
+    for (const change of [
+      { gasless: false },
+      { sponsorship: 'partial' },
+      { inputAmount: BUY_AMOUNT + 1n },
+      { expiresAt: 1n },
+      { output: { ...output, asset: SOL } },
+      { output: { ...output, asset: solanaToken(SOLANA_USDC) } },
+      { output: { ...output, asset: { ...output.asset, cluster: 'devnet' } } },
+      { output: { ...output, decimals: 6 } },
+      { output: { ...output, minimumAmount: 0n } },
+    ])
+      expect(() => validateMvpReview('buyBonk', BUY_AMOUNT, prepared({ output, ...change }))).toThrow();
+  });
+
   it('validates the new native SOL to Base USDC route without accepting other assets or amounts', () => {
     const output = { asset: BASE_USDC, decimals: 6, amount: 700_000n, minimumAmount: 650_000n };
     const quote = prepared({ inputAmount: SOL_TO_BASE_AMOUNT, output });
