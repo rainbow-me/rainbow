@@ -26,7 +26,6 @@ import {
 } from '@/features/sports/core/generated/external/sports/payload';
 import { getParticipantDisplayName } from '@/features/sports/core/participants';
 import { useSportsStore } from '@/features/sports/data/sportsStore';
-import { SPORTS_BACKGROUND_COLOR_LIGHT } from '@/features/sports/ui/colors';
 import { GameScore } from '@/features/sports/ui/GameScore';
 import { sportsIcons } from '@/features/sports/ui/sportsIcons';
 import { SportsBadge, SportsImage } from '@/features/sports/ui/SportsImage';
@@ -60,9 +59,6 @@ const STATUS_LABELS: Partial<
   [GameStatus.GAME_STATUS_CANCELLED]: i18n.l.sports.cancelled,
   [GameStatus.GAME_STATUS_POSTPONED]: i18n.l.sports.postponed,
 };
-
-const LIGHT_CARD_FILL = [white(0.68), white(0.96)] as const;
-const LIGHT_BADGE_FILL = [white(0.54), white(0.81)] as const;
 
 // ============ GameCard ======================================================= //
 
@@ -173,22 +169,25 @@ function GameCardSurface({
     2 * (styles.row.height + styles.divider.height) +
     (threeWay ? styles.divider.height + styles.drawRow.height : CARD_BOTTOM_PADDING);
 
-  const backgroundColor = isDarkMode ? globalColors.grey100 : undefined;
-  const backdropColor = backgroundColor ?? SPORTS_BACKGROUND_COLOR_LIGHT;
+  const backgroundColor = isDarkMode ? globalColors.grey100 : globalColors.white100;
 
   return (
     <View style={[styles.surface, { width, height, backgroundColor }]} testID={testID}>
       <SurfaceShadow
-        backdropColor={backdropColor}
+        backdropColor={backgroundColor}
         borderRadius={CARD_BORDER_RADIUS}
         color={globalColors.grey100}
         opacity={0.06}
         radius={12}
         y={isDarkMode ? 4 : 2}
       />
-      {isDarkMode ? null : (
+      {isDarkMode ? (
+        <View pointerEvents="none" style={styles.cardBackground}>
+          <CardInnerShadow width={width} height={height} />
+        </View>
+      ) : (
         <SurfaceShadow
-          backdropColor={backdropColor}
+          backdropColor={backgroundColor}
           borderRadius={CARD_BORDER_RADIUS}
           color={globalColors.grey100}
           opacity={0.02}
@@ -196,13 +195,6 @@ function GameCardSurface({
           y={2}
         />
       )}
-      <View pointerEvents="none" style={styles.cardBackground}>
-        {isDarkMode ? (
-          <CardInnerShadow width={width} height={height} />
-        ) : (
-          <LinearGradient colors={LIGHT_CARD_FILL} style={StyleSheet.absoluteFill} />
-        )}
-      </View>
       {children}
       <Border borderRadius={CARD_BORDER_RADIUS} borderWidth={2} borderColor={{ custom: white(isDarkMode ? 0.03 : 1) }} enableInLightMode />
     </View>
@@ -309,9 +301,6 @@ function GameBadge({ children, isDarkMode }: { children: ReactNode; isDarkMode: 
             radius={3}
             y={2}
           />
-          <View pointerEvents="none" style={styles.badgeBackground}>
-            <LinearGradient colors={LIGHT_BADGE_FILL} style={StyleSheet.absoluteFill} />
-          </View>
         </>
       )}
 
@@ -575,14 +564,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderCurve: 'continuous',
   },
-  badgeBackground: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 8,
-    borderCurve: 'continuous',
-    overflow: 'hidden',
-  },
   darkBadge: { backgroundColor: white(0.07) },
-  lightBadge: { elevation: 4 },
+  lightBadge: { backgroundColor: globalColors.white100, elevation: 4 },
   dot: { opacity: 0.7 },
   row: {
     height: 52,
