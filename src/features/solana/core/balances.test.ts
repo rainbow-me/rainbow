@@ -34,6 +34,62 @@ describe('balances v2 boundary', () => {
     ]);
     expect(data.total).toBe('0');
   });
+  it('uses backend metadata, direct token icons and priced balances', () => {
+    const iconUrl = 'https://token-media.defined.fi/bonk.png';
+    const data = parseSolanaBalances(
+      response([
+        {
+          ...sol,
+          value: '1.2699333673753511952',
+          asset: {
+            ...sol.asset,
+            name: 'Solana',
+            symbol: 'SOL',
+            decimals: 9,
+            iconUrl: 'https://token-media.defined.fi/sol.png',
+            price: { value: 73.7896106781, relativeChange24h: 2.2169296146002506 },
+          },
+        },
+        {
+          ...usdc,
+          quantity: '41560000000',
+          value: '0.975437580837364',
+          asset: {
+            ...usdc.asset,
+            assetId: `${chain}/token:DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263`,
+            name: 'Backend Bonk',
+            symbol: 'BONK',
+            decimals: 5,
+            iconUrl,
+            price: { value: 0.00000234705866419, relativeChange24h: -0.5812386644957772 },
+          },
+        },
+      ]),
+      address,
+      'USD'
+    );
+    expect(data.total).toBe('2.2453709482127151952');
+    expect(data.balances[0]).toMatchObject({ symbol: 'SOL', relativeChange24h: 2.2169296146002506 });
+    expect(data.balances[1]).toMatchObject({
+      name: 'Backend Bonk',
+      symbol: 'BONK',
+      amount: '415600',
+      iconUrl,
+      relativeChange24h: -0.5812386644957772,
+    });
+  });
+  it('keeps missing metadata optional and preserves a zero price change', () => {
+    const data = parseSolanaBalances(
+      response([
+        { ...sol, asset: { ...sol.asset, iconUrl: '', price: { value: 0, relativeChange24h: 0 } } },
+        { ...usdc, asset: { ...usdc.asset, price: null } },
+      ]),
+      address,
+      'USD'
+    );
+    expect(data.balances[0]).toMatchObject({ iconUrl: undefined, relativeChange24h: 0, value: null });
+    expect(data.balances[1]).toMatchObject({ iconUrl: undefined, relativeChange24h: undefined });
+  });
   it('uses exact quantities and sums only available valuations', () => {
     const data = parseSolanaBalances(
       response([

@@ -20,8 +20,14 @@ const balanceSchema = z.object({
     chainId: z.string(),
     name: z.string().optional(),
     symbol: z.string().optional(),
+    iconUrl: z.string().optional(),
     decimals: z.number().int().min(0).max(255).optional(),
-    price: z.object({ value: z.number().finite().nonnegative().optional() }).nullish(),
+    price: z
+      .object({
+        value: z.number().finite().nonnegative().optional(),
+        relativeChange24h: z.number().finite().optional(),
+      })
+      .nullish(),
   }),
 });
 
@@ -39,6 +45,8 @@ export type SolanaBalance = {
   assetId: string;
   name: string;
   symbol: string;
+  iconUrl?: string;
+  relativeChange24h?: number;
   amount: string;
   rawUnits: boolean;
   value: string | null;
@@ -92,6 +100,8 @@ export function parseSolanaBalances(response: unknown, address: string, currency
       assetId: asset.assetId,
       name: asset.name || fallback?.name || shortAddress,
       symbol: asset.symbol || fallback?.symbol || shortAddress,
+      iconUrl: asset.iconUrl || undefined,
+      relativeChange24h: asset.price?.relativeChange24h,
       amount: quantity.shiftedBy(-(decimals ?? 0)).toFixed(),
       rawUnits: decimals === undefined,
       value,
