@@ -33,7 +33,7 @@ export const PolymarketBrowseEventsScreen = memo(function PolymarketBrowseEvents
 
 const PolymarketBrowseEventsList = () => {
   const { isDarkMode } = useColorMode();
-  const { sportsGamesListRef, scrollBrowseToTop } = usePolymarketContext();
+  const { pagerGestureRefs, sportsGamesListRef, scrollBrowseToTop } = usePolymarketContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   const isSportsCategory = usePolymarketCategoryStore(s => s.tagId === CATEGORIES.sports.tagId);
@@ -51,6 +51,7 @@ const PolymarketBrowseEventsList = () => {
         <SportsGamesList
           ref={sportsGamesListRef}
           host="predictions"
+          horizontalScrollBlocks={pagerGestureRefs}
           backgroundColor={backgroundColor}
           bottomInset={safeAreaInsets.bottom + NAVIGATOR_FOOTER_HEIGHT}
           onGamePress={onGamePress}
