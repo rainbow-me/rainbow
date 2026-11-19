@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
-import { navigateToPolymarket, navigateToPolymarketPortfolio } from '@/features/polymarket/utils/navigateToPolymarket';
+import {
+  navigateToPolymarket,
+  navigateToPolymarketCategory,
+  navigateToPolymarketPortfolio,
+} from '@/features/polymarket/utils/navigateToPolymarket';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 
-vi.mock('@/features/polymarket/constants', () => ({ CATEGORIES: {} }));
+vi.mock('@/features/polymarket/constants', () => ({ CATEGORIES: { politics: {} } }));
 vi.mock('@/navigation/Navigation', () => ({ default: { handleAction: vi.fn() } }));
 vi.mock('@/navigation/RouteContext', () => ({ UseRouteProvider: ({ children }: { children: unknown }) => children }));
 vi.mock('@/state/navigation/navigationStore', () => ({ setActiveRoute: vi.fn() }));
@@ -36,6 +40,16 @@ describe('navigateToPolymarket', () => {
   it('selects the requested tab before opening the navigator', () => {
     navigateToPolymarketPortfolio();
     expect(openedOn()).toBe(Routes.POLYMARKET_ACCOUNT_SCREEN);
+  });
+
+  it('sends a new scroll key on every category request', () => {
+    usePolymarketNavigationStore.getState().navigate(Routes.POLYMARKET_ACCOUNT_SCREEN);
+    navigateToPolymarketCategory('politics');
+    navigateToPolymarketCategory('politics');
+
+    const [first, second] = handleAction.mock.calls.map(([, params]) => (params as { scrollBrowseToTopKey: number }).scrollBrowseToTopKey);
+    expect(openedOn()).toBe(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
+    expect(second).toBeGreaterThan(first);
   });
 
   it('selects the tab only once the first-run explain sheet closes', () => {
