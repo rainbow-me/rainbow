@@ -1,6 +1,6 @@
 import { useStakingPositionStore } from '@/features/rnbw-staking/stores/rnbwStakingPositionStore';
 import { time } from '@/framework/core/utils/time';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { delay } from '@/utils/delay';
 
 const POLL_INTERVAL_MS = time.seconds(1);
@@ -13,7 +13,7 @@ export async function pollForStakingUpdate(originalStakedRnbwShares: string): Pr
     const currentStakedRnbwShares = useStakingPositionStore.getState().getData()?.poolShares;
 
     if (currentStakedRnbwShares !== originalStakedRnbwShares) {
-      await useUserAssetsStore.getState().fetch(undefined, { force: true });
+      await userAssetsActions.fetch(undefined, { force: true });
       return true;
     }
 

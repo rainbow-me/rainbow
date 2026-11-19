@@ -17,7 +17,7 @@ import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references/constants';
 import { toggleFavorite } from '@/resources/favorites';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
@@ -83,7 +83,7 @@ export function CoinRow({
   const inputAsset = output
     ? undefined
     : typeof uniqueIdOrAsset === 'string'
-      ? useUserAssetsStore.getState().getUserAsset(uniqueIdOrAsset)
+      ? userAssetsActions.getUserAsset(uniqueIdOrAsset)
       : uniqueIdOrAsset;
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 

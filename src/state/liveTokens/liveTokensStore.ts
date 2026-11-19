@@ -6,7 +6,7 @@ import { useAppStateStore } from '@/state/appState/appStateStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useNavigationStore, type NavigationState } from '@/state/navigation/navigationStore';
 
-import { useUserAssetsStore } from '../assets/userAssets';
+import { userAssetsActions } from '../assets/userAssets';
 import { fetchLiveTokens, type LiveTokensParams } from './fetchLiveTokens';
 import { type LiveTokensData } from './types';
 
@@ -74,7 +74,7 @@ function createLiveTokensStore(): QueryStore<LiveTokensData | null, LiveTokensPa
       },
       onFetched: context => {
         const data = context.data;
-        if (data) useUserAssetsStore.getState().updateTokens(data);
+        if (data) userAssetsActions.mutatePrices(data);
       },
 
       disableCache: true,

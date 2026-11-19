@@ -1,3 +1,4 @@
+import { type Address } from 'viem';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -9,19 +10,20 @@ import { logger } from '@/logger';
 import { externalTokenQueryFunction } from '@/resources/assets/externalAssetsQuery';
 import { setExternalTokenType } from '@/resources/assets/testing/mockExternalTokenTypes';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { useTokenTradesStore, type TokenTradesParams } from './tokenTradesStore';
-
-const account = vi.hoisted(() => ({ address: '0xwallet' }));
 
 vi.mock('@/features/config/stores/remoteConfig');
 vi.mock('@/react-query/queryClient');
 vi.mock('@/resources/assets/externalAssetsQuery');
-vi.mock('@/state/wallets/walletsStore', () => ({ getAccountAddress: () => account.address, useAccountAddress: () => account.address }));
-vi.mock('@/state/assets/positionsSync', () => ({ setupPositionsAssetsSync: () => undefined }));
-vi.mock('@/state/assets/createUserAssetsStore', async () => {
+vi.mock('@/state/wallets/walletsStore', async () => {
   const { createBaseStore } = await import('@storesjs/stores');
-  return { createUserAssetsStore: () => createBaseStore(() => ({ userAssets: new Map<string, ParsedSearchAsset>() })) };
+  return { useWalletsStore: createBaseStore(() => ({ accountAddress: '0xwallet' })) };
+});
+vi.mock('@/state/assets/userAssets', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  return { useUserAssetsStore: createBaseStore(() => ({ userAssets: new Map<string, ParsedSearchAsset>() })) };
 });
 
 const PARAMS: TokenTradesParams = { walletAddress: '0xwallet', codexTokenId: '0xtoken:8453', heldBalance: '10' };
@@ -71,9 +73,8 @@ function hangUntilAborted(_url: RequestInfo | URL, init?: RequestInit) {
   });
 }
 
-async function switchWallet(address: string) {
-  account.address = address;
-  useUserAssetsStore.getState();
+async function switchWallet(address: Address) {
+  useWalletsStore.setState({ accountAddress: address });
   await settle();
 }
 

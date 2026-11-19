@@ -19,7 +19,7 @@ import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertAmountToBalanceDisplay, convertAmountToPercentageDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
@@ -263,7 +263,7 @@ export function transformRainbowTokenToParsedSearchAsset(asset: RainbowToken): P
   const chainsName = useBackendNetworksStore.getState().getChainsName();
   const chainId = asset.chainId || chainsIdByName[asset.network];
   const uniqueId = `${asset.address}_${chainId}`;
-  const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+  const userAsset = useUserAssetsStore.getState().userAssets.get(uniqueId);
 
   return parseSearchAsset({
     assetWithPrice: {

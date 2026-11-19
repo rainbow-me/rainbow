@@ -1,23 +1,19 @@
-import { type Address } from 'viem';
-
-import { type AddressOrEth, type ParsedSearchAsset, type UniqueId, type UserAssetFilter, type ZerionAsset } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
-import { AssetType } from '@/entities/assetTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
-import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { ChainId, ChainName } from '@/features/network/types/backendNetworks';
+import { ChainId } from '@/features/network/types/backendNetworks';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
-import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan, multiply } from '@/helpers/utilities';
+import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { isStaging } from '@/resources/addys/client';
-import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
+import { fetchAnvilUserAssets } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
+import { toUnixTime } from '@/worklets/dates';
 
 import {
-  type Asset,
   type GetAssetsResponse,
   type HighestValueAssetOptions,
   type UserAsset,
@@ -28,74 +24,36 @@ import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 // ============ Fetch Utils ==================================================== //
 
-async function fetchTestnetUserAssets(
-  params: UserAssetsParams
-): Promise<{ chainIdsWithErrors: ChainId[] | null; userAssets: UserAsset[] } | null> {
-  const { address } = params;
-  const { assets } = await fetchAnvilBalancesByChainId(address, ChainId.mainnet);
+const EMPTY_USER_ASSETS: UserAsset[] = [];
 
-  const userAssets: UserAsset[] = Object.values(assets).map(asset => ({
-    asset: transformZerionAssetToUserAsset(asset.asset),
-    quantity: asset.quantity,
-    smallBalance: false,
-    updatedAt: '0',
-    value: '0',
-  }));
-
-  return {
-    chainIdsWithErrors: null,
-    userAssets,
-  };
-}
-
-export async function fetchUserAssets(
-  params: UserAssetsParams,
-  abortController: AbortController | null
-): Promise<{ chainIdsWithErrors: ChainId[] | null; userAssets: UserAsset[] } | null> {
+export async function fetchUserAssets(params: UserAssetsParams, abortController: AbortController | null): Promise<UserAsset[] | null> {
   if (!params.address) return null;
-  const { address, currency, testnetMode } = params;
 
-  if (testnetMode) {
-    return fetchTestnetUserAssets(params);
-  }
+  const { address, currency, testnetMode } = params;
+  if (testnetMode) return fetchAnvilUserAssets(address);
 
   try {
     const chainIds = useBackendNetworksStore.getState().getSupportedChainIds();
     const res = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
       abortController,
-      params: {
-        currency: currency,
-        chainIds: chainIds.join(','),
-        address: address,
-      },
-      timeout: getUserAssetsTimeoutDuration(),
+      params: { currency: currency, chainIds: chainIds.join(','), address: address },
+      timeout: time.seconds(isStaging() ? 40 : 20),
     });
 
-    if (res.data.errors?.length > 0) {
+    if (res.data.errors?.length) {
       logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets'), {
         errors: res.data.errors,
       });
     }
 
-    if (!res.data.result) {
-      return null;
-    }
+    if (!res.data.result) return EMPTY_USER_ASSETS;
 
-    const userAssets = filterZeroBalanceAssets(Object.values(res.data.result)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-
-    return {
-      chainIdsWithErrors: null,
-      userAssets,
-    };
+    return filterZeroBalanceAssets(Object.values(res.data.result));
   } catch (e) {
-    console.log(e);
     logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets', e));
   }
-  return null;
-}
 
-function getUserAssetsTimeoutDuration() {
-  return time.seconds(isStaging() ? 40 : 20);
+  return null;
 }
 
 // ============ Asset Utils ==================================================== //
@@ -108,11 +66,11 @@ const EMPTY_ASSET_SEARCH_OPTIONS = Object.freeze<HighestValueAssetOptions>({});
  */
 export function selectHighestValueAsset(
   assets: Iterable<ParsedSearchAsset>,
-  { nativeAsset, preferredChainId }: HighestValueAssetOptions = EMPTY_ASSET_SEARCH_OPTIONS
+  hiddenAssets: ReadonlySet<UniqueId>,
+  { excludeAssetId, nativeAsset, preferredChainId }: HighestValueAssetOptions = EMPTY_ASSET_SEARCH_OPTIONS
 ): ParsedSearchAsset | null {
-  const shouldRequireNativeAsset = nativeAsset === 'required';
-  const shouldTrackAnyAsset = !shouldRequireNativeAsset;
-  const shouldTrackNativeAsset = shouldRequireNativeAsset || nativeAsset === 'preferred';
+  const shouldTrackAnyAsset = nativeAsset !== 'required';
+  const shouldTrackNativeAsset = nativeAsset !== undefined;
 
   let highestValueAsset: ParsedSearchAsset | null = null;
   let highestValueNativeAsset: ParsedSearchAsset | null = null;
@@ -120,6 +78,7 @@ export function selectHighestValueAsset(
   let preferredNativeAsset: ParsedSearchAsset | null = null;
 
   for (const asset of assets) {
+    if (asset.uniqueId === excludeAssetId || hiddenAssets.has(asset.uniqueId)) continue;
     const isPreferredChain = preferredChainId === asset.chainId;
 
     if (shouldTrackAnyAsset) {
@@ -133,147 +92,98 @@ export function selectHighestValueAsset(
     }
   }
 
-  if (shouldRequireNativeAsset) return preferredNativeAsset ?? highestValueNativeAsset;
-  if (nativeAsset === 'preferred') return preferredNativeAsset ?? highestValueNativeAsset ?? preferredAsset ?? highestValueAsset;
-  return preferredAsset ?? highestValueAsset;
+  return preferredNativeAsset ?? highestValueNativeAsset ?? preferredAsset ?? highestValueAsset;
 }
 
 function isHigherValueAsset(asset: ParsedSearchAsset, selectedAsset: ParsedSearchAsset | null): boolean {
   return !selectedAsset || greaterThan(asset.native.balance.amount, selectedAsset.native.balance.amount);
 }
 
+/**
+ * Builds balance-sorted asset holdings and chain totals, preserving chains omitted from a partial update.
+ */
 export function setUserAssets({
-  address,
   state,
   userAssets,
-  positionTokenAddresses,
   chainIdsToUpdate,
 }: {
-  address: Address | string;
   state: UserAssetsState;
-  userAssets: UserAsset[] | null;
-  positionTokenAddresses: Set<string>;
+  userAssets: UserAsset[];
   chainIdsToUpdate?: ChainId[];
-}): UserAssetsState {
-  if (!userAssets || address !== state.address) return state;
+}): Pick<UserAssetsState, 'userAssets' | 'chainBalances'> {
+  const allAssets: ParsedSearchAsset[] = [];
 
-  const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
-  const unsortedChainBalances = new Map<ChainId, number>();
-  let newUserAssetsMap: Map<UniqueId, ParsedSearchAsset> = new Map();
-
-  // Check if this asset's address matches any position pool_address
-  const filteredUserAssets = userAssets.filter(asset => {
-    return !positionTokenAddresses.has(asset.asset.address.toLowerCase());
-  });
-
-  const newAssets: ParsedSearchAsset[] = filteredUserAssets.map(asset => transformUserAssetToParsedSearchAsset(asset));
-  let allAssets: ParsedSearchAsset[];
-
-  // If we're only updating specific chains, merge with existing assets
   if (chainIdsToUpdate) {
-    const chainIdsSet = new Set(chainIdsToUpdate);
-    allAssets = Array.from(state.userAssets.values()).filter(asset => !chainIdsSet.has(asset.chainId));
-    allAssets.push(...newAssets);
-  } else {
-    allAssets = newAssets;
+    const chains = new Set(chainIdsToUpdate);
+    for (const asset of state.userAssets.values()) if (!chains.has(asset.chainId)) allAssets.push(asset);
   }
-  const allIds: UniqueId[] = [];
 
-  // Sort all assets by value, descending
+  for (const asset of userAssets) allAssets.push(transformUserAssetToParsedSearchAsset(asset));
   allAssets.sort((a, b) => (Number(b.native.balance.amount) || 0) - (Number(a.native.balance.amount) || 0));
 
-  // Process sorted assets in a single pass - build the map in sorted order
-  newUserAssetsMap = new Map<UniqueId, ParsedSearchAsset>();
-  for (const asset of allAssets) {
-    newUserAssetsMap.set(asset.uniqueId, asset);
-    allIds.push(asset.uniqueId);
+  const parsedAssets = new Map<UniqueId, ParsedSearchAsset>();
+  for (const asset of allAssets) parsedAssets.set(asset.uniqueId, asset);
 
+  return { userAssets: parsedAssets, chainBalances: getChainBalances(parsedAssets) };
+}
+
+/**
+ * Totals complete asset holdings by chain, ordered by balance and including empty supported chains.
+ */
+function getChainBalances(userAssets: UserAssetsState['userAssets']): UserAssetsState['chainBalances'] {
+  const chainBalances = new Map<ChainId, number>();
+
+  for (const asset of userAssets.values()) {
     const balance = Number(asset.native.balance.amount) || 0;
-    unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) ?? 0) + balance);
-    idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) ?? []).concat(asset.uniqueId));
+    chainBalances.set(asset.chainId, (chainBalances.get(asset.chainId) ?? 0) + balance);
   }
 
-  // Ensure all supported chains have entries
   for (const chainId of useBackendNetworksStore.getState().getSupportedChainIds()) {
-    if (!unsortedChainBalances.has(chainId)) {
-      unsortedChainBalances.set(chainId, 0);
-      idsByChain.set(chainId, []);
-    }
+    if (!chainBalances.has(chainId)) chainBalances.set(chainId, 0);
   }
 
-  // Sort chain balances
-  const sortedEntries = Array.from(unsortedChainBalances.entries()).sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
-  const chainBalances = new Map(sortedEntries);
-
-  // Set complete list of IDs
-  idsByChain.set('all', allIds);
-
-  const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
-  const filteredAllIdsArray = allIds.filter((id: UniqueId) => {
-    const asset = newUserAssetsMap.get(id);
-    return asset && Number(asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
-  });
-
-  // Build search cache
-  const searchCache = new Map<string, UniqueId[]>();
-  for (const userAssetFilter of chainBalances.keys()) {
-    const filteredIds = (idsByChain.get(userAssetFilter) ?? []).filter(id => filteredAllIdsArray.includes(id));
-    searchCache.set(`${userAssetFilter}`, filteredIds);
-  }
-  searchCache.set('all', filteredAllIdsArray);
-
-  const legacyUserAssets = Array.from(newUserAssetsMap.values()).map(parsedSearchAssetToParsedAddressAsset);
-
-  const hiddenAssetsBalance = calculateHiddenAssetsBalance({
-    address,
-    hiddenAssets: state.hiddenAssets,
-    userAssets: newUserAssetsMap,
-  });
-
-  return {
-    ...state,
-    chainBalances,
-    hiddenAssetsBalance,
-    idsByChain,
-    legacyUserAssets,
-    searchCache,
-    userAssets: newUserAssetsMap,
-  };
+  return new Map([...chainBalances].sort(([, a], [, b]) => b - a));
 }
 
 function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSearchAsset {
   const currency = userAssetsStoreManager.getState().currency;
-  const { asset } = userAsset;
+  const asset = userAsset.asset;
   const uniqueId = getUniqueId(asset.address, asset.chainId);
-  const { decimals, symbol, price } = asset;
-  // The API omits empty maps from its JSON.
-  const networks = (asset.networks ?? {}) as Record<ChainId, { address: Address; decimals: number }>;
+
+  const { decimals = 0, symbol = '', price } = asset;
   const amount = convertRawAmountToDecimalFormat(userAsset.quantity, decimals);
   const nativeBalance = convertAmountAndPriceToNativeDisplay(1, userAsset.value, currency);
+  const networks: ParsedSearchAsset['networks'] = {};
+
+  for (const chain in asset.networks) {
+    const chainId = Number(chain);
+    const network = asset.networks[chainId];
+    if (network) networks[chainId] = { address: network.address, decimals: network.decimals ?? 0 };
+  }
 
   return {
     uniqueId,
-    address: asset.address as AddressOrEth,
+    address: asset.address,
     chainId: asset.chainId,
-    chainName: asset.network,
+    chainName: asset.network ?? '',
     colors: asset.colors,
     decimals,
     icon_url: asset.iconUrl,
     isNativeAsset: isNativeAsset(asset.address, asset.chainId),
-    isVerified: asset.verified,
-    mainnetAddress: networks[ChainId.mainnet]?.address as AddressOrEth,
-    name: asset.name,
+    isVerified: asset.verified ?? false,
+    mainnetAddress: asset.mainnetAddress,
+    name: asset.name ?? '',
     networks,
-    symbol: asset.symbol,
+    symbol,
     price: {
-      changed_at: asset.price.changedAt,
-      relative_change_24h: asset.price?.relativeChange24h,
-      value: asset.price?.value,
+      changed_at: price.changedAt ? toUnixTime(price.changedAt) : undefined,
+      relative_change_24h: price.relativeChange24h ?? 0,
+      value: price.value ?? 0,
     },
     smallBalance: userAsset.smallBalance,
     bridging: {
-      isBridgeable: asset.bridging.bridgeable,
-      networks: asset.bridging.networks,
+      isBridgeable: asset.bridging?.bridgeable ?? false,
+      networks: asset.bridging?.networks ?? {},
     },
     balance: {
       amount,
@@ -282,76 +192,15 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
     native: {
       balance: nativeBalance,
       price: {
-        change: String(price?.relativeChange24h ?? 0),
-        amount: price?.value ?? 0,
-        display: convertAmountToNativeDisplayWorklet(price?.value ?? 0, currency),
+        change: String(price.relativeChange24h ?? 0),
+        amount: price.value ?? 0,
+        display: convertAmountToNativeDisplayWorklet(price.value ?? 0, currency),
       },
     },
     updatedAt: userAsset.updatedAt,
     // These are required in the type, but the new platform endpoint does not return them.
     highLiquidity: false,
     isRainbowCurated: false,
-  };
-}
-
-function transformZerionAssetToUserAsset(asset: ZerionAsset): Asset {
-  const chainName = asset.network ?? ChainName.mainnet;
-  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[chainName] || ChainId.mainnet;
-
-  // Transform implementations to networks format
-  const networks: Record<string, { address: string; decimals: number }> = {};
-  if (asset.implementations) {
-    Object.entries(asset.implementations).forEach(([chainIdStr, impl]) => {
-      if (impl.address) {
-        networks[chainIdStr] = {
-          address: impl.address,
-          decimals: impl.decimals,
-        };
-      }
-    });
-  }
-
-  if (!networks[chainId.toString()]) {
-    networks[chainId.toString()] = {
-      address: asset.asset_code,
-      decimals: asset.decimals,
-    };
-  }
-
-  const bridgingNetworks: Record<string, { bridgeable: boolean }> = {};
-  if (asset.bridging?.networks) {
-    Object.entries(asset.bridging.networks).forEach(([chainIdKey, value]) => {
-      if (value) {
-        bridgingNetworks[chainIdKey] = { bridgeable: value.bridgeable };
-      }
-    });
-  }
-
-  return {
-    address: asset.asset_code,
-    chainId: chainId,
-    name: asset.name,
-    symbol: asset.symbol,
-    decimals: asset.decimals,
-    type: asset.type ?? AssetType.token,
-    iconUrl: asset.icon_url,
-    network: chainName,
-    verified: asset.is_verified ?? false,
-    transferable: true,
-    colors: {
-      primary: asset.colors?.primary ?? '#FFFFFF',
-      fallback: asset.colors?.fallback,
-    },
-    price: {
-      value: asset.price?.value ?? 0,
-      relativeChange24h: asset.price?.relative_change_24h ?? 0,
-      changedAt: 0, // ZerionAsset price doesn't have changed_at
-    },
-    networks,
-    bridging: {
-      bridgeable: asset.bridging?.bridgeable || false,
-      networks: bridgingNetworks,
-    },
   };
 }
 
@@ -403,93 +252,26 @@ export function parsedSearchAssetToParsedAddressAsset(asset: ParsedSearchAsset):
   };
 }
 
-export function calculateHiddenAssetsBalance({
+/**
+ * Updates the account's cached hidden balance from its complete asset holdings.
+ */
+export function updateHiddenAssetsBalance({
   address,
   hiddenAssets,
   userAssets,
-}: {
-  address: Address | string;
-} & Pick<UserAssetsState, 'hiddenAssets' | 'userAssets'>): string {
+}: Pick<UserAssetsState, 'address' | 'hiddenAssets' | 'userAssets'>): void {
   let balance = '0';
-  const {
-    hiddenAssetBalances: { [address]: storedBalance },
-    setHiddenAssetBalance,
-  } = userAssetsStoreManager.getState();
+  for (const id of hiddenAssets) {
+    const asset = userAssets.get(id);
+    if (asset) balance = add(balance, asset.native.balance.amount);
+  }
 
-  hiddenAssets.forEach(uniqueId => {
-    const asset = userAssets.get(uniqueId);
-    if (asset) {
-      const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
-      balance = add(balance, assetNativeBalance);
-    }
-  });
+  const { hiddenAssetBalances, setHiddenAssetBalance } = userAssetsStoreManager.getState();
+  if (balance === hiddenAssetBalances[address]) return;
 
-  if (balance !== storedBalance) setHiddenAssetBalance(address, balance);
-  return balance;
+  setHiddenAssetBalance(address, balance);
 }
 
 export function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
   return assets.filter(asset => greaterThan(asset.quantity, 0));
-}
-
-// ============ Search Utils =================================================== //
-
-export function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-export function getDefaultCacheKeys(): Set<string> {
-  const queryKeysToPreserve = new Set<string>();
-  queryKeysToPreserve.add('all');
-
-  for (const chainId of useBackendNetworksStore.getState().getSupportedChainIds()) {
-    queryKeysToPreserve.add(`${chainId}`);
-  }
-  return queryKeysToPreserve;
-}
-
-export function getSearchQueryKey({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }): string {
-  return `${filter}${searchQuery}`;
-}
-
-export function getFilteredUserAssetIds({
-  filter,
-  searchCache,
-  selectUserAssetIds,
-  setSearchCache,
-  rawSearchQuery,
-}: {
-  rawSearchQuery: UserAssetsState['inputSearchQuery'];
-} & Pick<UserAssetsState, 'filter' | 'searchCache' | 'selectUserAssetIds' | 'setSearchCache'>) {
-  const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
-
-  const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
-  const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
-
-  const cachedData = searchCache.get(queryKey);
-
-  // Check if the search results are already cached
-  if (cachedData) {
-    return cachedData;
-  } else {
-    const chainIdFilter = filter === 'all' ? null : filter;
-    const searchRegex = inputSearchQuery.length > 0 ? new RegExp(escapeRegExp(inputSearchQuery), 'i') : null;
-
-    const filteredIds = Array.from(
-      selectUserAssetIds(
-        asset =>
-          Number(asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
-          (!chainIdFilter || asset.chainId === chainIdFilter) &&
-          (!searchRegex ||
-            searchRegex.test(asset.name) ||
-            searchRegex.test(asset.symbol) ||
-            asset.address.toLowerCase() === inputSearchQuery),
-        filter
-      )
-    );
-
-    setSearchCache(queryKey, filteredIds);
-
-    return filteredIds;
-  }
 }

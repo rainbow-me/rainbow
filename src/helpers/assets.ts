@@ -1,9 +1,8 @@
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { supportedCurrencies as supportedNativeCurrencies } from '@/features/currency/supportedCurrencies';
 import type { NativeCurrencyKey } from '@/features/currency/types';
@@ -12,6 +11,7 @@ import { assetIsUniqueAsset } from '@/handlers/web3';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import * as i18n from '@/languages';
 import { parseUniqueId } from '@/resources/nfts/utils';
+import { parsedSearchAssetToParsedAddressAsset } from '@/state/assets/utils';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 
 import { add, greaterThan } from './utilities';
@@ -34,13 +34,13 @@ const getTotal = (assets: any) =>
   }, 0);
 
 export const buildCoinsList = (
-  sortedAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
-  pinnedCoins: any,
+  sortedAssets: Map<UniqueId, ParsedSearchAsset>,
+  nativeCurrency: NativeCurrencyKey,
+  isCoinListEdited: boolean,
+  pinnedCoins: Record<string, boolean>,
   hiddenCoins: Set<UniqueId>
 ) => {
-  if (!sortedAssets.length) {
+  if (!sortedAssets.size) {
     return {
       assets: [],
       smallBalancesValue: 0,
@@ -54,7 +54,8 @@ export const buildCoinsList = (
     hiddenAssets: any = [];
 
   // separate into standard, pinned, small balances, hidden assets
-  sortedAssets?.forEach((asset: any) => {
+  sortedAssets.forEach(parsedAsset => {
+    const asset = parsedSearchAssetToParsedAddressAsset(parsedAsset);
     if (hiddenCoins.has(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
@@ -69,13 +70,7 @@ export const buildCoinsList = (
         isSmall: false,
         ...asset,
       });
-    } else if (
-      greaterThan(
-        asset.native?.balance?.amount,
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        supportedNativeCurrencies[nativeCurrency].smallThreshold
-      )
-    ) {
+    } else if (greaterThan(parsedAsset.native.balance.amount, supportedNativeCurrencies[nativeCurrency].smallThreshold)) {
       standardAssets.push({ isCoin: true, isSmall: false, ...asset });
     } else {
       smallAssets.push({ isCoin: true, isSmall: true, ...asset });
@@ -131,7 +126,7 @@ export const buildCoinsList = (
 };
 
 export const buildBriefCoinsList = (
-  sortedAssets: ParsedAddressAsset[],
+  sortedAssets: Map<UniqueId, ParsedSearchAsset>,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,

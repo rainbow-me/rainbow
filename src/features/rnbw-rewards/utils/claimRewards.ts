@@ -21,7 +21,7 @@ import { logger, RainbowError } from '@/logger';
 import { signTypedDataMessage } from '@/model/wallet';
 import Navigation from '@/navigation/Navigation';
 import { getPlatformClient } from '@/resources/platform/client';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { ChainId } from '@rainbow-me/swaps';
 
 type ClaimStatusPollResult = PollClaimStatusResult<ClaimRewardsResult, ClaimRewardsResponse>;
@@ -138,8 +138,8 @@ export async function submitRewardsClaim({
       },
     });
 
-    await useUserAssetsStore.getState().fetch(undefined, { force: true });
-    setTimeout(() => useUserAssetsStore.getState().fetch(undefined, { force: true }), time.seconds(5));
+    await userAssetsActions.fetch(undefined, { force: true });
+    setTimeout(() => userAssetsActions.fetch(undefined, { force: true }), time.seconds(5));
 
     await useRewardsBalanceStore.getState().fetch(undefined, { force: true });
 
