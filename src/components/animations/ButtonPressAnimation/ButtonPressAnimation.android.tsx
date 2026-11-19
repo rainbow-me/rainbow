@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useContext, useMemo } from 'react';
+import React, { forwardRef, useCallback, useContext } from 'react';
 import { processColor, requireNativeComponent, StyleSheet, View } from 'react-native';
 
 import { createNativeWrapper, type RawButtonProps } from 'react-native-gesture-handler';
@@ -155,7 +155,6 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
   const hasOwnAction = onPress !== undefined || onLongPress !== undefined;
   const content =
     defaultActions && hasOwnAction ? <ButtonPressContext.Provider value={null}>{children}</ButtonPressContext.Provider> : children;
-  const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
   return disabled ? (
     <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
@@ -179,7 +178,7 @@ export default forwardRef<ZoomableButtonRef, ButtonElementProps>(function Button
       shouldActivateOnStart={shouldActivateOnStart}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       testID={testID}
-      transformOrigin={normalizedTransformOrigin}
+      transformOrigin={normalizeTransformOrigin(transformOrigin)}
       wrapperStyle={wrapperStyle}
       disallowInterruption={disallowInterruption}
       ref={ref}

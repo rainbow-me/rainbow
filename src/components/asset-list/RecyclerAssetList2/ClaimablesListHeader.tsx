@@ -60,12 +60,7 @@ export const ClaimablesListHeader = React.memo(function ClaimablesListHeader({ t
   );
 
   return (
-    <ButtonPressAnimation
-      key={`claimables_${isClaimablesOpen}`}
-      onPress={toggleOpenClaimables}
-      scaleTo={1.05}
-      testID={`claimables-list-header`}
-    >
+    <ButtonPressAnimation onPress={toggleOpenClaimables} scaleTo={1.05} testID={`claimables-list-header`}>
       <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Text size="22pt" color={'label'} weight="heavy">
