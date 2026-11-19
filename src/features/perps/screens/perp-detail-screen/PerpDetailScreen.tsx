@@ -11,6 +11,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import SlackSheet from '@/components/sheet/SlackSheet';
 import { Chart } from '@/components/value-chart/Chart';
 import { Bleed, Box, Inline, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { type TextProps } from '@/design-system/components/Text/Text';
 import { opacity } from '@/design-system/utils/opacity';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpsNameRow } from '@/features/perps/components/PerpsNameRow';
@@ -28,6 +29,28 @@ import { type RootStackParamList } from '@/navigation/types';
 import { AboutSection } from './AboutSection';
 import { HistorySection } from './HistorySection';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
+
+const NeutralPill = memo(function NeutralPill({ textColor, label }: { textColor: TextProps['color']; label: string }) {
+  const { isDarkMode } = useColorMode();
+  const backgroundColor = isDarkMode ? opacity(ETH_COLOR_DARK, 0.16) : opacity('#09111F', 0.04);
+
+  return (
+    <Box
+      paddingHorizontal="6px"
+      height={24}
+      justifyContent="center"
+      alignItems="center"
+      borderRadius={10}
+      borderWidth={5 / 3}
+      backgroundColor={backgroundColor}
+      borderColor={{ custom: backgroundColor }}
+    >
+      <Text align="center" size="15pt" color={textColor} weight="heavy">
+        {label}
+      </Text>
+    </Box>
+  );
+});
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,
@@ -52,16 +75,11 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
     return opacity(sideColor, 0.16);
   }, [sideColor]);
 
-  const leverageColor = useMemo(() => {
-    if (isDarkMode) return opacity(ETH_COLOR_DARK, 0.16);
-    return opacity('#09111F', 0.04);
-  }, [isDarkMode]);
-
   return (
     <Box gap={20}>
       <HyperliquidTokenIcon size={44} symbol={symbol} />
 
-      <Box flexDirection="row" alignItems="flex-end" gap={8}>
+      <Box flexDirection="row" flexWrap="wrap" alignItems="flex-end" style={{ columnGap: 8, rowGap: 16 }}>
         <PerpsNameRow
           symbol={symbol}
           name={name}
@@ -73,21 +91,9 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
         />
         <Bleed vertical="8px">
           <Inline space="6px">
+            <NeutralPill textColor="labelTertiary" label={i18n.t(i18n.l.perps.about.perp)} />
             {leverage && (
-              <Box
-                paddingHorizontal="6px"
-                height={24}
-                justifyContent="center"
-                alignItems="center"
-                borderRadius={10}
-                borderWidth={5 / 3}
-                backgroundColor={leverageColor}
-                borderColor={{ custom: leverageColor }}
-              >
-                <Text align="center" size="15pt" color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'} weight="heavy">
-                  {`${leverage}x`}
-                </Text>
-              </Box>
+              <NeutralPill textColor={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'} label={`${leverage}x`} />
             )}
 
             {side && (

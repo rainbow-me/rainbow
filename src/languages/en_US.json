@@ -1464,6 +1464,10 @@
       "about": {
         "title": "About",
         "read_more": "Read more",
+        "asset_type": "Asset Type",
+        "perp": "Perp",
+        "platform": "Platform",
+        "market_deployer": "Market Deployer",
         "volume_24h": "24h Volume",
         "open_interest": "Open Interest",
         "funding": "Funding"
