@@ -34,19 +34,12 @@ const PolymarketNavigatorContent = () => {
 
   useCleanup(PolymarketNavigation.resetNavigationState);
 
-  // Apply a deep-link route intent passed through the outer navigation params: reset stale
-  // virtual history, then switch the virtual navigator to the requested inner tab. Keyed on
-  // routeRequestKey so a repeated request to the same route still re-applies.
-  const { params } = useRoute<typeof Routes.POLYMARKET_NAVIGATOR>();
-  const requestedRoute = params?.initialRoute;
-  const routeRequestKey = params?.routeRequestKey;
+  const scrollBrowseToTopKey = useRoute<typeof Routes.POLYMARKET_NAVIGATOR>().params?.scrollBrowseToTopKey;
 
   useEffect(() => {
-    if (!requestedRoute) return;
-    PolymarketNavigation.resetNavigationState();
-    PolymarketNavigation.navigate(requestedRoute);
+    if (scrollBrowseToTopKey === undefined) return;
     scrollBrowseToTop();
-  }, [requestedRoute, routeRequestKey, scrollBrowseToTop]);
+  }, [scrollBrowseToTopKey, scrollBrowseToTop]);
 
   return (
     <>

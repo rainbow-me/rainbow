@@ -716,10 +716,8 @@ type ParamsByRoute = {
     onDismiss?: () => void;
   };
   [Routes.POLYMARKET_NAVIGATOR]: {
-    // Deep-link intent: which inner tab to open, with a monotonic key so repeated
-    // requests to the same route still re-trigger the navigator's route effect.
-    initialRoute?: PolymarketRoute;
-    routeRequestKey?: number;
+    // Changes on every inner-tab request, so an already-open navigator scrolls Browse back to the top.
+    scrollBrowseToTopKey?: number;
   };
   [Routes.RNBW_REWARDS_CLAIM_SHEET]: undefined;
   [Routes.RNBW_REWARDS_ESTIMATE_SHEET]: {

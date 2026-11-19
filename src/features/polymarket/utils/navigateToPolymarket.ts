@@ -1,4 +1,5 @@
 import { CATEGORIES, type CategoryKey } from '@/features/polymarket/constants';
+import { PolymarketNavigation } from '@/features/polymarket/navigation/polymarketNavigation';
 import { usePolymarketCategoryStore } from '@/features/polymarket/stores/usePolymarketCategoryStore';
 import { sportsNavigationStores } from '@/features/sports/data/sportsNavigationStore';
 import Navigation from '@/navigation/Navigation';
@@ -6,8 +7,8 @@ import Routes from '@/navigation/routesNames';
 import { type PolymarketRoute, type RootStackParamList } from '@/navigation/types';
 import { device } from '@/storage';
 
-export function navigateToPolymarket(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
-  navigateToPolymarketSection(params);
+export function navigateToPolymarket() {
+  navigateToPolymarketSection();
 }
 
 export function navigateToPolymarketEvent(params: RootStackParamList[typeof Routes.POLYMARKET_EVENT_SCREEN]) {
@@ -20,48 +21,48 @@ export function navigateToPolymarketCategory(tagId: string): void {
 
   usePolymarketCategoryStore.getState().setTagId(tagId);
 
-  navigateToPolymarketRoute(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
+  navigateToPolymarketSection(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
 }
 
 /** Opens a Sports scope in the Predictions browse tab. */
 export function navigateToPolymarketSportsLeague(scopeId: string): void {
   sportsNavigationStores.predictions.getState().select(scopeId);
   usePolymarketCategoryStore.getState().setTagId('sports');
-  navigateToPolymarketRoute(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
+  navigateToPolymarketSection(Routes.POLYMARKET_BROWSE_EVENTS_SCREEN);
 }
 
 /** Opens the Predictions navigator on the Portfolio tab. */
 export function navigateToPolymarketPortfolio(): void {
-  navigateToPolymarketRoute(Routes.POLYMARKET_ACCOUNT_SCREEN);
-}
-
-// Monotonic key so a repeated deep link to the same inner route still re-triggers the
-// navigator's route effect even when `initialRoute` is unchanged.
-let polymarketRouteRequestKey = 0;
-
-// The inner-route intent is passed through the outer navigation params and applied by
-// PolymarketNavigator, so this util never imports the navigator's component/store
-// (avoiding a screen-tree dependency).
-function navigateToPolymarketRoute(route: PolymarketRoute): void {
-  polymarketRouteRequestKey += 1;
-  navigateToPolymarket({ initialRoute: route, routeRequestKey: polymarketRouteRequestKey });
+  navigateToPolymarketSection(Routes.POLYMARKET_ACCOUNT_SCREEN);
 }
 
 function isCategoryKey(tagId: string): tagId is CategoryKey {
   return Object.prototype.hasOwnProperty.call(CATEGORIES, tagId);
 }
 
-function navigateToPolymarketSection(params?: RootStackParamList[typeof Routes.POLYMARKET_NAVIGATOR]) {
+let scrollBrowseToTopKey = 0;
+
+function navigateToPolymarketSection(route?: PolymarketRoute) {
+  const openNavigator = () => {
+    if (!route) return Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR);
+
+    // Selecting the tab before the navigator mounts lets its pager start there instead of sliding over from Browse.
+    PolymarketNavigation.resetNavigationState();
+    PolymarketNavigation.navigate(route);
+    scrollBrowseToTopKey += 1;
+    Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR, { scrollBrowseToTopKey });
+  };
+
   const hasSeenExplainSheet = device.get(['hasSeenPolymarketExplainSheet']);
 
   if (!hasSeenExplainSheet) {
     Navigation.handleAction(Routes.POLYMARKET_EXPLAIN_SHEET, {
       onDismiss: () => {
         device.set(['hasSeenPolymarketExplainSheet'], true);
-        Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR, params);
+        openNavigator();
       },
     });
   } else {
-    Navigation.handleAction(Routes.POLYMARKET_NAVIGATOR, params);
+    openNavigator();
   }
 }
