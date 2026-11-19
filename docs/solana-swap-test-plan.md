@@ -2,7 +2,7 @@
 
 **Planning only: every case below is Not run for this checkpoint.** Historical tests are recorded in `docs/solana-internal-mvp.md` and `docs/solana-swap-ui.md`; this checklist does not upgrade those results to current passes. No transactions were signed or submitted to create this plan.
 
-Use [solana-swap-test-results.csv](solana-swap-test-results.csv) to record evidence. Test the current local `jin/solana-swap-ui` worktree, not GitHub's older MVP snapshot. The normal sheet supports **nine distinct pairs**: Base ETH plus three Solana assets as inputs, with SOL/USDC/BONK as outputs excluding identity swaps.
+Use [solana-swap-test-results.csv](solana-swap-test-results.csv) to record evidence. Test the published `jin/solana-swap-ui` branch, or `jin/solana-network-assets` for the same flow with network artwork. Record the exact tested commit. The normal sheet supports **nine distinct pairs**: Base ETH plus three Solana assets as inputs, with SOL/USDC/BONK as outputs excluding identity swaps.
 
 ## Setup (5 minutes)
 
@@ -63,4 +63,4 @@ Gas RPC estimates cover network fees, not arbitrary account-creation transfers. 
 
 ## Network assets branch
 
-`jin/solana-network-assets` starts from a committed copy of the November 19 swap UI checkpoint. The original `jin/solana-swap-ui` worktree remains unchanged except for these review documents. Review the network-assets changes separately from the snapshot commit.
+`jin/solana-network-assets` starts from a committed copy of the November 19 swap UI checkpoint. The swap UI snapshot is committed on `jin/solana-swap-ui`; review network assets separately above that branch. The running simulator was not restarted by publication.

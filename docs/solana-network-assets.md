@@ -1,6 +1,6 @@
 # Solana network assets — DES-190
 
-Branch: `jin/solana-network-assets`. Base: `6edcd50ed`, a snapshot of the existing swap UI. The original swap UI checkout and its running simulator remain in place.
+Branch: `jin/solana-network-assets`. Review base: `jin/solana-swap-ui` (product-code snapshot `6edcd50ed` plus review documents). The original swap UI checkout and its running simulator remain in place.
 
 ## Sources
 
@@ -35,3 +35,7 @@ Automated validation results are recorded with the branch handoff. These visual 
 - Both PNGs are byte-for-byte copies of the designer’s exports. All local links in the three review/test guides resolve.
 
 No simulator was restarted, no native visual test was run, and no transaction was submitted for this change.
+
+## GitHub review
+
+[Network-assets-only diff](https://github.com/rainbow-me/rainbow/compare/jin/solana-swap-ui...jin/solana-network-assets). All active mobile layers and the separate SDK fee-guard branch are published; see the [review plan](solana-review-plan.md). Publication does not deploy the worker or change the running simulator.
