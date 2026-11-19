@@ -178,6 +178,8 @@ export const useSimulation = (
 ) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
     enabled: !!args.address && !!args.chainId,
+    // A backend failure (scanner rejection, unsupported chain) mostly repeats on retry, and retrying keeps the sheet
+    // on "Simulating" for seconds, so only network failures are retried.
     retry: (failureCount, error) => !(error instanceof GraphQLResponseError) && failureCount < 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,

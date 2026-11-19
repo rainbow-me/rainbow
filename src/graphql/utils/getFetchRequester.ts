@@ -11,7 +11,7 @@ type Options = Pick<RainbowFetchRequestOpts, 'abortController' | 'timeout' | 'he
   throwOnErrorsWithoutData?: boolean;
 };
 
-/** The server answered, with GraphQL `errors` and no data. Retrying the same request gets the same answer. */
+/** The server answered with GraphQL `errors` and no data. */
 export class GraphQLResponseError extends Error {
   name = 'GraphQLResponseError';
 }

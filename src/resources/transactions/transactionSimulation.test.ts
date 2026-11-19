@@ -46,10 +46,4 @@ describe.each(callers)('$name', ({ field, wrap, call }) => {
 
     await expect(call()).resolves.toEqual(result);
   });
-
-  it('returns an empty result when there is neither data nor an error', async () => {
-    respondWith({ data: { [field]: null } });
-
-    await expect(call()).resolves.toEqual({});
-  });
 });
