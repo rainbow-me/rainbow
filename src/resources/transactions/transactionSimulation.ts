@@ -14,6 +14,7 @@ import type {
   TransactionScanResultType,
   TransactionSimulationResult,
 } from '@/graphql/__generated__/metadataPOST';
+import { GraphQLResponseError } from '@/graphql/utils/getFetchRequester';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, type QueryConfig, type QueryFunctionArgs } from '@/react-query';
 
@@ -40,12 +41,11 @@ type SimulationResult = {
 // ///////////////////////////////////////////////
 // Simulations
 
-export const simulateTransactions = async (
-  args: SimulateTransactionsQueryVariables,
-  options?: Parameters<typeof metadataPOSTClient.simulateTransactions>[1]
-) => {
+// The backend reports a failed simulation (e.g. its scanner rejecting the request) as GraphQL errors with a
+// null result, which must not read as an empty simulation, so both calls throw on it.
+export const simulateTransactions = async (args: SimulateTransactionsQueryVariables) => {
   if (!args.transactions) return [];
-  const response = await metadataPOSTClient.simulateTransactions(args, options);
+  const response = await metadataPOSTClient.simulateTransactions(args, { throwOnErrorsWithoutData: true });
   return response?.simulateTransactions ?? [];
 };
 
@@ -55,7 +55,7 @@ export const simulateTransaction = async (args: SimulateTransactionsQueryVariabl
 };
 
 export const simulateMessage = async (args: SimulateMessageQueryVariables): Promise<Partial<MessageResult>> => {
-  const response = await metadataPOSTClient.simulateMessage(args);
+  const response = await metadataPOSTClient.simulateMessage(args, { throwOnErrorsWithoutData: true });
   return response?.simulateMessage ?? {};
 };
 
@@ -178,7 +178,7 @@ export const useSimulation = (
 ) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
     enabled: !!args.address && !!args.chainId,
-    retry: 3,
+    retry: (failureCount, error) => !(error instanceof GraphQLResponseError) && failureCount < 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,
     ...config,

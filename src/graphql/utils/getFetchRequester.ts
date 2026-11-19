@@ -11,6 +11,11 @@ type Options = Pick<RainbowFetchRequestOpts, 'abortController' | 'timeout' | 'he
   throwOnErrorsWithoutData?: boolean;
 };
 
+/** The server answered, with GraphQL `errors` and no data. Retrying the same request gets the same answer. */
+export class GraphQLResponseError extends Error {
+  name = 'GraphQLResponseError';
+}
+
 type Config = {
   __name: string;
   schema: {
@@ -100,7 +105,7 @@ export function getFetchRequester(config: Config) {
     // A response with errors can still carry partial data (a failing nullable subfield nulls only itself),
     // which callers may use, so only a response where every root field is null counts as failed.
     if (throwOnErrorsWithoutData && data.errors?.length && Object.values(data.data ?? {}).every(value => value == null)) {
-      throw new Error(data.errors.map(error => error.message).join('; '));
+      throw new GraphQLResponseError(data.errors.map(error => error.message).join('; '));
     }
 
     return data.data;

@@ -257,7 +257,7 @@ export async function estimateTransactionsGasLimit({
 
   let results: Awaited<ReturnType<typeof simulateTransactions>>;
   try {
-    results = await simulateTransactions({ chainId, transactions }, { throwOnErrorsWithoutData: true });
+    results = await simulateTransactions({ chainId, transactions });
   } catch (e) {
     logger.warn('[estimateTransactionsGasLimit]: Simulation request failed', {
       chainId,
