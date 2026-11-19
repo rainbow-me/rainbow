@@ -79,7 +79,7 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
     <Box gap={20}>
       <HyperliquidTokenIcon size={44} symbol={symbol} />
 
-      <Box flexDirection="row" flexWrap="wrap" alignItems="flex-end" style={{ columnGap: 8, rowGap: 16 }}>
+      <Box flexDirection="row" flexWrap="wrap" alignItems="center" style={{ columnGap: 8, rowGap: 16 }}>
         <Box flexDirection="row" flexWrap="wrap" flexShrink={1} alignItems="flex-end" gap={8}>
           <PerpsNameRow
             symbol={symbol}
