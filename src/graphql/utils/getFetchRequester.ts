@@ -7,7 +7,9 @@ import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
 
 const allowedOperations = ['mutation', 'query'];
 
-type Options = Pick<RainbowFetchRequestOpts, 'abortController' | 'timeout' | 'headers'>;
+type Options = Pick<RainbowFetchRequestOpts, 'abortController' | 'timeout' | 'headers'> & {
+  throwOnErrorsWithoutData?: boolean;
+};
 
 type Config = {
   __name: string;
@@ -59,7 +61,7 @@ export function getFetchRequester(config: Config) {
   return async function requester<TResponse = unknown, TVariables = Record<string, unknown>>(
     node: DocumentNode,
     variables?: TVariables,
-    options?: Options
+    { throwOnErrorsWithoutData, ...options }: Options = {}
   ): Promise<TResponse> {
     const definitions = node.definitions.filter(
       definition => definition.kind === 'OperationDefinition' && allowedOperations.includes(definition.operation)
@@ -93,7 +95,13 @@ export function getFetchRequester(config: Config) {
         operationName,
       });
     }
-    const { data } = await rainbowFetch<{ data: TResponse }>(requestUrl, requestOptions);
+    const { data } = await rainbowFetch<{ data: TResponse; errors?: { message: string }[] }>(requestUrl, requestOptions);
+
+    // A response with errors can still carry partial data (a failing nullable subfield nulls only itself),
+    // which callers may use, so only a response where every root field is null counts as failed.
+    if (throwOnErrorsWithoutData && data.errors?.length && Object.values(data.data ?? {}).every(value => value == null)) {
+      throw new Error(data.errors.map(error => error.message).join('; '));
+    }
 
     return data.data;
   };

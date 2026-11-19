@@ -60,6 +60,7 @@ export interface BackendNetworksState {
   getSponsorshipEligibleChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
+  getChainSimulationSupport: (chainId: ChainId) => BackendNetworkServices['simulation'];
   getChainDefaultRpc: (chainId: ChainId) => string;
   disableSponsorshipUntilNextFetch: (chainId: ChainId) => void;
   isSponsorshipEligible: (chainId: ChainId) => boolean;
@@ -360,6 +361,9 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
       return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
     }),
+
+    getChainSimulationSupport: (chainId: ChainId) =>
+      get().backendNetworks.find(network => toChainId(network.id) === chainId)?.enabledServices.simulation,
 
     getChainDefaultRpc: createParameterizedSelector(() => chainId => {
       const defaultChains = get().getDefaultChains();

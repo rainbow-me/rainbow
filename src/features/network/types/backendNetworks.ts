@@ -171,6 +171,11 @@ export interface BackendNetworkServices {
   sponsorship?: {
     enabled: boolean;
   };
+  /** Missing from networks persisted by builds that didn't request it. */
+  simulation?: {
+    enabled: boolean;
+    bulk: boolean;
+  };
   launcher: {
     v1: {
       enabled: boolean;
