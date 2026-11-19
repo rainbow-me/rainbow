@@ -40,6 +40,37 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Support native iOS interruptible sheet navigation and polish scroll tracking (https://github.com/rainbow-me/rainbow/pull/7920)
 - Handle user assets without a networks map (https://github.com/rainbow-me/rainbow/pull/7940)
 
+## [2.0.49](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.49)
+
+### Added
+
+- Restore builder attribution in Polymarket (https://github.com/rainbow-me/rainbow/pull/7937)
+- Search tokens to buy through token search v2 behind its flag in swap (https://github.com/rainbow-me/rainbow/pull/7931)
+- Add matchup title and hide the empty scoreboard in game sheets for Sports (https://github.com/rainbow-me/rainbow/pull/7944)
+- Show the Polymarket value and wallet switcher in the Sports header (https://github.com/rainbow-me/rainbow/pull/7948)
+- Label perp markets and show platform and deployer in About (https://github.com/rainbow-me/rainbow/pull/7953)
+
+### Changed
+
+- Consolidate ENS queries and registration state (https://github.com/rainbow-me/rainbow/pull/7912)
+- Use UIKit child containment for sheet screens (https://github.com/rainbow-me/rainbow/pull/7921)
+- Commit Info.plists in the format pod install writes (https://github.com/rainbow-me/rainbow/pull/7939)
+- Bump iOS and Android to v2.0.49 (https://github.com/rainbow-me/rainbow/pull/7936)
+- Bump iOS and Android to v2.0.50 (https://github.com/rainbow-me/rainbow/pull/7942)
+- Require review for token identity changes and auto-approve version bumps in Cubic (https://github.com/rainbow-me/rainbow/pull/7943)
+- Drop spreads from game cards and show the payout multiple in Sports (https://github.com/rainbow-me/rainbow/pull/7945)
+
+### Fixed
+
+- Support native iOS interruptible sheet navigation and polish scroll tracking (https://github.com/rainbow-me/rainbow/pull/7920)
+- Handle user assets without a networks map (https://github.com/rainbow-me/rainbow/pull/7940)
+- Read the exit fee in its own store in RNBW staking (https://github.com/rainbow-me/rainbow/pull/7941)
+- Show the matchup title for games outside the sports catalog (https://github.com/rainbow-me/rainbow/pull/7949)
+- Remove the grey band inside light game cards on Android (https://github.com/rainbow-me/rainbow/pull/7950)
+- Open the Predictions sheet directly on the requested tab (https://github.com/rainbow-me/rainbow/pull/7952)
+- Skip swap gas simulation on chains where the backend can't simulate (https://github.com/rainbow-me/rainbow/pull/7954)
+- Show Simulation Unavailable when the backend simulation fails in dapp request (https://github.com/rainbow-me/rainbow/pull/7955)
+
 ## [2.0.48](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.48)
 
 ### Added
