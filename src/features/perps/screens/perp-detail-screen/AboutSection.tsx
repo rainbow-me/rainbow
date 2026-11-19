@@ -1,11 +1,15 @@
 import React, { memo, useCallback, useMemo } from 'react';
+import { Image } from 'react-native';
 
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatUsd } from '@/features/currency/utils/formatUsd';
+import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { useHyperliquidDexStore } from '@/features/perps/stores/hyperliquidDexStore';
 import { usePerpAnnotationsStore } from '@/features/perps/stores/perpAnnotationsStore';
 import { type PerpMarket } from '@/features/perps/types';
+import { HYPERLIQUID_NAME, resolveMarketDeployer, type MarketDeployer } from '@/features/perps/utils/marketDeployers';
 import { ExpandableDescriptionCard } from '@/framework/ui/components/ExpandableDescriptionCard';
 import { multiply } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -54,6 +58,27 @@ const StatRow = memo(function StatRow({ icon, label, highlighted, children }: St
   );
 });
 
+const LOGO_SIZE = 16;
+
+const LogoValue = memo(function LogoValue({ logo, name }: { logo: React.ReactNode; name: string }) {
+  return (
+    <Box flexDirection="row" alignItems="center" gap={6} flexShrink={1} paddingLeft="4px">
+      {logo}
+      <Box flexShrink={1}>
+        <Text color="label" size="17pt" weight="medium" numberOfLines={1}>
+          {name}
+        </Text>
+      </Box>
+    </Box>
+  );
+});
+
+function DeployerLogo({ deployer }: { deployer: MarketDeployer }) {
+  if (deployer.kind === 'hyperliquid') return <HyperliquidLogo size={LOGO_SIZE} />;
+  if (!deployer.logo) return null;
+  return <Image source={deployer.logo} style={{ width: LOGO_SIZE, height: LOGO_SIZE, borderRadius: 5 }} />;
+}
+
 type DescriptionBoxProps = {
   description: string;
 };
@@ -89,22 +114,35 @@ export const AboutSection = memo(function AboutSection({ market }: { market: Per
     [market.openInterest, market.price]
   );
   const funding = useMemo(() => `${multiply(market.fundingRate, 100)}%`, [market.fundingRate]);
+  const hyperliquidDexName = useHyperliquidDexStore(state => state.getDex(market.dex)?.fullName);
+  const deployer = useMemo(() => resolveMarketDeployer(market.dex, hyperliquidDexName), [market.dex, hyperliquidDexName]);
 
   return (
     <Box gap={16}>
       {description && <DescriptionBox description={description} />}
       <Box gap={4}>
-        <StatRow icon="􀣉" label={i18n.t(i18n.l.perps.about.volume_24h)} highlighted>
+        <StatRow icon="􀬎" label={i18n.t(i18n.l.perps.about.asset_type)} highlighted>
+          <Text color="label" size="17pt" weight="medium">
+            {i18n.t(i18n.l.perps.about.perp)}
+          </Text>
+        </StatRow>
+        <StatRow icon="􀐞" label={i18n.t(i18n.l.perps.about.platform)}>
+          <LogoValue logo={<HyperliquidLogo size={LOGO_SIZE} />} name={HYPERLIQUID_NAME} />
+        </StatRow>
+        <StatRow icon="􀉭" label={i18n.t(i18n.l.perps.about.market_deployer)} highlighted>
+          <LogoValue logo={<DeployerLogo deployer={deployer} />} name={deployer.name} />
+        </StatRow>
+        <StatRow icon="􀣉" label={i18n.t(i18n.l.perps.about.volume_24h)}>
           <Text color="label" size="17pt" weight="medium">
             {volume}
           </Text>
         </StatRow>
-        <StatRow icon="􀘾" label={i18n.t(i18n.l.perps.about.open_interest)}>
+        <StatRow icon="􀘾" label={i18n.t(i18n.l.perps.about.open_interest)} highlighted>
           <Text color="label" size="17pt" weight="medium">
             {openInterest}
           </Text>
         </StatRow>
-        <StatRow icon="􀓞" label={i18n.t(i18n.l.perps.about.funding)} highlighted>
+        <StatRow icon="􀓞" label={i18n.t(i18n.l.perps.about.funding)}>
           <Text color="label" size="17pt" weight="medium">
             {funding}
           </Text>
