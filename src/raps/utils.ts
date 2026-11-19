@@ -247,16 +247,30 @@ export async function estimateTransactionsGasLimit({
     return undefined;
   }
 
+  // Unknown support (networks persisted before the field existed) still tries the simulation.
+  const simulationSupport = useBackendNetworksStore.getState().getChainSimulationSupport(chainId);
+  if (simulationSupport && (!simulationSupport.enabled || (activeSteps.length > 1 && !simulationSupport.bulk))) {
+    return undefined;
+  }
+
   const transactions = activeSteps.map(step => step.transaction);
 
+  let results: Awaited<ReturnType<typeof simulateTransactions>>;
   try {
-    const results = await simulateTransactions({
+    results = await simulateTransactions({ chainId, transactions }, { throwOnErrorsWithoutData: true });
+  } catch (e) {
+    logger.warn('[estimateTransactionsGasLimit]: Simulation request failed', {
       chainId,
-      transactions,
+      transactionCount: transactions.length,
+      message: ensureError(e).message,
     });
+    return undefined;
+  }
 
+  try {
     if (results.length !== activeSteps.length) {
       logger.warn('[estimateTransactionsGasLimit]: Simulation result count mismatch', {
+        chainId,
         expected: activeSteps.length,
         received: results.length,
       });

@@ -40,9 +40,12 @@ type SimulationResult = {
 // ///////////////////////////////////////////////
 // Simulations
 
-export const simulateTransactions = async (args: SimulateTransactionsQueryVariables) => {
+export const simulateTransactions = async (
+  args: SimulateTransactionsQueryVariables,
+  options?: Parameters<typeof metadataPOSTClient.simulateTransactions>[1]
+) => {
   if (!args.transactions) return [];
-  const response = await metadataPOSTClient.simulateTransactions(args);
+  const response = await metadataPOSTClient.simulateTransactions(args, options);
   return response?.simulateTransactions ?? [];
 };
 

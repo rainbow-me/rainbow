@@ -91,6 +91,10 @@ const BACKEND_NETWORKS_QUERY = `
         sponsorship {
           enabled
         }
+        simulation {
+          enabled
+          bulk
+        }
         launcher {
           v1 {
             enabled
