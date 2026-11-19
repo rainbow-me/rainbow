@@ -14,6 +14,8 @@ vi.mock('react', () => ({
     },
   ],
 }));
+vi.mock('@/features/network/components/ChainImage', () => ({ ChainImage: 'ChainImage' }));
+vi.mock('@/features/solana/constants/networkAssets', () => ({ SOLANA_NETWORK_BADGE: 1 }));
 vi.mock('@candlefinance/faster-image', () => ({ FasterImageView: 'Image' }));
 vi.mock('@/components/images/ImgixImage', () => ({ DEFAULT_FASTER_IMAGE_CONFIG: { cachePolicy: 'discWithCacheControl' } }));
 vi.mock('@/design-system', () => ({ Box: 'Box', Text: 'Text' }));

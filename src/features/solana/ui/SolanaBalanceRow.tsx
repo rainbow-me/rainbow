@@ -6,6 +6,8 @@ import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { Box, Text } from '@/design-system';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import { SOLANA_NETWORK_BADGE } from '@/features/solana/constants/networkAssets';
 import { type SolanaBalance } from '@/features/solana/core/balances';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { useTheme } from '@/theme/ThemeContext';
@@ -29,27 +31,30 @@ export function SolanaBalanceRow({ balance, currency }: { balance: SolanaBalance
       accessibilityLabel={`${balance.name}, ${balance.amount} ${balance.rawUnits ? 'base units' : balance.symbol}, Solana`}
       testID={`solana-balance-${balance.assetId}`}
     >
-      {balance.iconUrl && failedIconUrl !== balance.iconUrl ? (
-        // Codex URLs must bypass the image proxy, which currently rejects this host.
-        <FasterImageView
-          source={{ ...DEFAULT_FASTER_IMAGE_CONFIG, url: balance.iconUrl, borderRadius: 20 }}
-          style={{ width: 40, height: 40, borderRadius: 20, overflow: 'hidden' }}
-          onError={() => setFailedIconUrl(balance.iconUrl)}
-        />
-      ) : (
-        <Box
-          width={{ custom: 40 }}
-          height={{ custom: 40 }}
-          borderRadius={20}
-          background="fillSecondary"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text color="labelSecondary" size="17pt" weight="bold">
-            {balance.symbol.slice(0, 1)}
-          </Text>
-        </Box>
-      )}
+      <Box width={{ custom: 40 }} height={{ custom: 40 }}>
+        {balance.iconUrl && failedIconUrl !== balance.iconUrl ? (
+          // Codex URLs must bypass the image proxy, which currently rejects this host.
+          <FasterImageView
+            source={{ ...DEFAULT_FASTER_IMAGE_CONFIG, url: balance.iconUrl, borderRadius: 20 }}
+            style={{ width: 40, height: 40, borderRadius: 20, overflow: 'hidden' }}
+            onError={() => setFailedIconUrl(balance.iconUrl)}
+          />
+        ) : (
+          <Box
+            width={{ custom: 40 }}
+            height={{ custom: 40 }}
+            borderRadius={20}
+            background="fillSecondary"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color="labelSecondary" size="17pt" weight="bold">
+              {balance.symbol.slice(0, 1)}
+            </Text>
+          </Box>
+        )}
+        <ChainImage chainId={null} badgeSource={SOLANA_NETWORK_BADGE} size={20} badgeXPosition={-10} />
+      </Box>
       <Box flexShrink={1} flexGrow={1} gap={8}>
         <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
           {balance.name}

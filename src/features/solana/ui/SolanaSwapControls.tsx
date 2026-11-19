@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { Image } from 'react-native';
 
 import MaskedView from '@react-native-masked-view/masked-view';
 import { runOnJS, useDerivedValue, useSharedValue } from 'react-native-reanimated';
@@ -17,6 +18,13 @@ import { type InputMethods, type InputValues } from '@/__swaps__/types/swap';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Box, Text, useColorMode } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
+import {
+  SOLANA_NETWORK_BADGE,
+  SOLANA_NETWORK_COLOR,
+  SOLANA_NETWORK_ICON,
+  SOLANA_NETWORK_SHADOW_COLOR,
+} from '@/features/solana/constants/networkAssets';
 import { editSwapAmount, SWAP_ASSETS, swapMaxAmount, swapPercentageAmount, type SwapAssetId } from '@/features/solana/core/swap';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { handleSignificantDecimals } from '@/helpers/utilities';
@@ -24,7 +32,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const COLORS = {
   'base-eth': { light: '#25292E', dark: '#677483' },
-  'sol': { light: '#7057E8', dark: '#A18AFF' },
+  'sol': SOLANA_NETWORK_COLOR,
   'usdc': { light: '#2775CA', dark: '#5496DF' },
   'bonk': { light: '#C26515', dark: '#EAA259' },
 };
@@ -34,7 +42,7 @@ export function appearance(id: SwapAssetId | null) {
   return {
     color,
     highContrastColor: color,
-    mixedShadowColor: color,
+    mixedShadowColor: id === 'sol' ? SOLANA_NETWORK_SHADOW_COLOR : color,
     textColor: { light: '#FFFFFF', dark: '#FFFFFF' },
     symbol: id ? SWAP_ASSETS[id].symbol : '',
   };
@@ -45,7 +53,16 @@ export function SolanaSwapIcon({ assetId, size = 36 }: { assetId: SwapAssetId | 
   const eth = useUserAssetsStore(state => state.getNativeAssetForChain(8453));
   if (assetId === 'base-eth')
     return <RainbowCoinIcon chainId={8453} icon={eth?.icon_url} symbol="ETH" size={size} chainSize={16} showBadge={size > 16} />;
-  return <SwapCoinIconTextFallback asset={asset} height={size} width={size} style={{ borderRadius: size / 2, overflow: 'hidden' }} />;
+  return (
+    <Box width={{ custom: size }} height={{ custom: size }}>
+      {assetId === 'sol' ? (
+        <Image source={SOLANA_NETWORK_ICON} style={{ width: size, height: size, borderRadius: size / 2 }} />
+      ) : (
+        <SwapCoinIconTextFallback asset={asset} height={size} width={size} style={{ borderRadius: size / 2, overflow: 'hidden' }} />
+      )}
+      <ChainImage chainId={null} badgeSource={SOLANA_NETWORK_BADGE} size={16} badgeXPosition={-8} showBadge={!!assetId && size > 16} />
+    </Box>
+  );
 }
 
 export function SolanaSwapCard({
