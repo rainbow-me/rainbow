@@ -90,7 +90,7 @@ describe('estimateTransactionsGasLimit', () => {
 
     await expect(estimateTransactionsGasLimit({ chainId: ChainId.linea, steps })).resolves.toBe(expected);
 
-    expect(simulateTransactions).toHaveBeenCalledWith({ chainId: ChainId.linea, transactions }, { throwOnErrorsWithoutData: true });
+    expect(simulateTransactions).toHaveBeenCalledWith({ chainId: ChainId.linea, transactions });
   });
 
   it('warns with the backend error when the simulation request fails', async () => {

@@ -196,9 +196,10 @@ export const RequestSimulationCard = ({
     if (isLoading || isPersonalSignRequest) {
       return false;
     }
-    const shouldExpandOnLoad = isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError;
+    const shouldExpandOnLoad =
+      isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError || !!txSimulationApiError;
     return shouldExpandOnLoad;
-  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError]);
+  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError, txSimulationApiError]);
 
   return (
     <FadedScrollCard
@@ -211,7 +212,10 @@ export const RequestSimulationCard = ({
       <Stack space={simulationError || isBalanceEnough === false ? '16px' : '24px'}>
         <Box alignItems="center" flexDirection="row" justifyContent="space-between" height={{ custom: CARD_ROW_HEIGHT }}>
           <Inline alignVertical="center" space="12px">
-            {!isLoading && (simulationError || isBalanceEnough === false || simulationScanResult !== TransactionScanResultType.Ok) ? (
+            {!isLoading &&
+            (simulationError ||
+              isBalanceEnough === false ||
+              (!txSimulationApiError && simulationScanResult !== TransactionScanResultType.Ok)) ? (
               <EventIcon
                 eventType={
                   simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
@@ -232,7 +236,7 @@ export const RequestSimulationCard = ({
                   <Animated.View style={spinnerStyle}>
                     <Text
                       align="center"
-                      color={isLoading ? 'label' : isPersonalSignRequest ? 'labelQuaternary' : 'label'}
+                      color={isLoading ? 'label' : isPersonalSignRequest || txSimulationApiError ? 'labelQuaternary' : 'label'}
                       size="icon 15px"
                       weight="bold"
                     >
