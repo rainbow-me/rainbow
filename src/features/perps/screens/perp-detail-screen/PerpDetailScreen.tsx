@@ -80,15 +80,17 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
       <HyperliquidTokenIcon size={44} symbol={symbol} />
 
       <Box flexDirection="row" flexWrap="wrap" alignItems="flex-end" style={{ columnGap: 8, rowGap: 16 }}>
-        <PerpsNameRow
-          symbol={symbol}
-          name={name}
-          isLoading={isNameLoading}
-          nameColor={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'}
-          nameSize="22pt"
-          nameShadow
-          suffixSize="17pt"
-        />
+        <Box flexDirection="row" flexWrap="wrap" flexShrink={1} alignItems="flex-end" gap={8}>
+          <PerpsNameRow
+            symbol={symbol}
+            name={name}
+            isLoading={isNameLoading}
+            nameColor={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'}
+            nameSize="22pt"
+            nameShadow
+            suffixSize="17pt"
+          />
+        </Box>
         <Bleed vertical="8px">
           <Inline space="6px">
             <NeutralPill textColor="labelTertiary" label={i18n.t(i18n.l.perps.about.perp)} />
