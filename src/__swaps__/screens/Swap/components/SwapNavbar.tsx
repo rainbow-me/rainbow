@@ -91,29 +91,30 @@ function SwapSettings() {
 }
 
 export function SwapNavbar() {
+  const { AnimatedSwapStyles, swapInfo } = useSwapContext();
+  const title = useDerivedValue(() => (swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL));
+  return <SwapNavbarView title={title} style={AnimatedSwapStyles.focusedSearchStyle} rightComponent={<SwapSettings />} />;
+}
+
+export function SwapNavbarView({
+  title,
+  style,
+  rightComponent,
+}: {
+  title: import('react-native-reanimated').DerivedValue<string>;
+  style?: import('react-native').StyleProp<import('react-native').ViewStyle>;
+  rightComponent?: React.ReactElement;
+}) {
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
-
-  const { AnimatedSwapStyles, swapInfo } = useSwapContext();
-
-  const swapOrBridgeLabel = useDerivedValue(() => {
-    return swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
-  });
 
   const onChangeWallet = React.useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
   return (
-    <Box
-      as={Animated.View}
-      pointerEvents="box-none"
-      position="absolute"
-      style={AnimatedSwapStyles.focusedSearchStyle}
-      top={{ custom: 0 }}
-      width="full"
-    >
+    <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={style} top={{ custom: 0 }} width="full">
       {Platform.OS === 'android' ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
       <Box
         borderRadius={5}
@@ -139,11 +140,11 @@ export function SwapNavbar() {
             </ButtonPressAnimation>
           </Bleed>
         }
-        rightComponent={<SwapSettings />}
+        rightComponent={rightComponent}
         titleComponent={
           <Inset bottom={{ custom: Platform.OS === 'ios' ? 5.5 : 14 }}>
             <AnimatedText align="center" color="label" size="20pt" weight="heavy">
-              {swapOrBridgeLabel}
+              {title}
             </AnimatedText>
           </Inset>
         }

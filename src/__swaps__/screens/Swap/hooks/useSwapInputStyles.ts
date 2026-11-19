@@ -24,7 +24,7 @@ export const useSwapInputStyles = ({
   otherInputProgress,
   progress,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'highContrastColor' | 'mixedShadowColor'> | null };
   bottomInput: boolean | undefined;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;

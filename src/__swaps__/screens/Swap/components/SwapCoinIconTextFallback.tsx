@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, type TextStyle, type ViewStyle } from 'react-native';
 
-import Animated, { useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { type ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
@@ -40,7 +40,7 @@ function formatSymbol(symbol: string | undefined, width: number) {
 }
 
 type SwapCoinIconTextFallbackProps = {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'color' | 'textColor' | 'symbol'> | null };
   height: number;
   width: number;
   style?: ViewStyle;

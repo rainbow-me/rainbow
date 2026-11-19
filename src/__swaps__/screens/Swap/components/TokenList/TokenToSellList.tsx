@@ -12,6 +12,8 @@ import { analytics } from '@/analytics';
 import { NAVBAR_HEIGHT_WITH_PADDING } from '@/components/navbar/constants';
 import { TOKEN_SEARCH_FOCUSED_INPUT_HEIGHT } from '@/components/token-search/constants';
 import { getUniqueId } from '@/entities/assetId';
+import { useSolanaBalancesAddress } from '@/features/solana/data/solanaBalancesStore';
+import { SolanaSwapOptions } from '@/features/solana/ui/SolanaSwapOptions';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
@@ -50,6 +52,7 @@ export const TokenToSellList = () => {
 const MemoizedCoinRow = memo(CoinRow);
 
 const TokenToSellListComponent = () => {
+  const solanaAddress = useSolanaBalancesAddress();
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
   const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
@@ -124,11 +127,12 @@ const TokenToSellListComponent = () => {
     <>
       <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} animatedRef={animatedRef} output={false} />
       <Animated.FlatList
+        ListHeaderComponent={<SolanaSwapOptions output={false} />}
         ListEmptyComponent={<ListEmpty />}
         ListFooterComponent={listFooter}
         contentContainerStyle={styles.contentContainer}
         data={userAssetIds}
-        getItemLayout={getItemLayout}
+        getItemLayout={solanaAddress ? undefined : getItemLayout}
         initialNumToRender={10}
         keyExtractor={uniqueId => uniqueId}
         keyboardShouldPersistTaps="always"

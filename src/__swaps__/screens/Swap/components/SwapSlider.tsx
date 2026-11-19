@@ -42,12 +42,47 @@ const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
 
-export const SwapSlider = ({
+type SwapContext = ReturnType<typeof useSwapContext>;
+export type SwapSliderState = Pick<SwapContext, 'isFetching' | 'isQuoteStale' | 'sliderPressProgress' | 'sliderXPosition'> & {
+  AnimatedSwapStyles: Pick<SwapContext['AnimatedSwapStyles'], 'hideWhileReviewingOrConfiguringGas'>;
+  SwapInputController: Pick<SwapContext['SwapInputController'], 'inputMethod' | 'inputValues' | 'setValueToMaxSwappableAmount'> & {
+    onChangedPercentage: (percentage: number) => void;
+    quoteFetchingInterval: Pick<SwapContext['SwapInputController']['quoteFetchingInterval'], 'start' | 'stop'>;
+  };
+  internalSelectedInputAsset: {
+    readonly value: Pick<
+      NonNullable<SwapContext['internalSelectedInputAsset']['value']>,
+      'highContrastColor' | 'maxSwappableAmount'
+    > | null;
+  };
+  internalSelectedOutputAsset: {
+    readonly value: Pick<NonNullable<SwapContext['internalSelectedOutputAsset']['value']>, 'highContrastColor'> | null;
+  };
+  swapInfo: { readonly value: { isBridging: boolean } };
+};
+
+export const SwapSlider = ({ dualColor, height, snapPoints, width }: SwapSliderProps) => {
+  const state = useSwapContext();
+  return (
+    <SwapSliderView
+      dualColor={dualColor}
+      height={height}
+      snapPoints={snapPoints}
+      width={width}
+      state={state}
+      icon={<AnimatedSwapCoinIcon showBadge={false} assetType="input" size={16} />}
+    />
+  );
+};
+
+export const SwapSliderView = ({
+  state,
+  icon,
   dualColor,
   height = SLIDER_HEIGHT,
   snapPoints = [0, 0.25, 0.5, 0.75, 1], // 0%, 25%, 50%, 75%, 100%
   width = SLIDER_WIDTH,
-}: SwapSliderProps) => {
+}: SwapSliderProps & { state: SwapSliderState; icon: React.ReactNode }) => {
   const { isDarkMode } = useColorMode();
   const {
     AnimatedSwapStyles,
@@ -59,7 +94,7 @@ export const SwapSlider = ({
     sliderPressProgress,
     sliderXPosition,
     swapInfo,
-  } = useSwapContext();
+  } = state;
 
   const maxButtonRef = useRef<TapGesture>(null!) as React.RefObject<TapGesture>;
 
@@ -435,9 +470,7 @@ export const SwapSlider = ({
           <View style={{ zIndex: 10 }}>
             <Columns alignHorizontal="justify" alignVertical="center">
               <Inline alignVertical="center" space="6px" wrap={false}>
-                <Bleed vertical="4px">
-                  <AnimatedSwapCoinIcon showBadge={false} assetType={'input'} size={16} />
-                </Bleed>
+                <Bleed vertical="4px">{icon}</Bleed>
                 <Inline alignVertical="bottom" wrap={false}>
                   <AnimatedText
                     color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}

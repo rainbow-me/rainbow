@@ -46,7 +46,6 @@ const getFormattedInputKey = (inputKey: InputKeys) => {
 };
 
 export const SwapNumberPad = () => {
-  const { isDarkMode } = useColorMode();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const {
     SwapInputController,
@@ -59,8 +58,6 @@ export const SwapNumberPad = () => {
   } = useSwapContext();
 
   const { inputMethod, inputNativePrice, inputValues, outputNativePrice, quoteFetchingInterval } = SwapInputController;
-
-  const longPressTimer = useSharedValue(0);
 
   const removeFormatting = (inputKey: InputKeys) => {
     'worklet';
@@ -220,8 +217,35 @@ export const SwapNumberPad = () => {
     };
   });
 
+  const canDelete = useDerivedValue(() => inputValues.value[focusedInput.value] !== 0);
   return (
-    <Box as={Animated.View} style={numpadContainerStyles} height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
+    <SwapNumberPadView
+      style={numpadContainerStyles}
+      canDelete={canDelete}
+      addNumber={addNumber}
+      addDecimalPoint={addDecimalPoint}
+      deleteLastCharacter={deleteLastCharacter}
+    />
+  );
+};
+
+export function SwapNumberPadView({
+  style,
+  canDelete,
+  addNumber,
+  addDecimalPoint,
+  deleteLastCharacter,
+}: {
+  style?: import('react-native').StyleProp<import('react-native').ViewStyle>;
+  canDelete: { readonly value: boolean };
+  addNumber: (number?: number) => void;
+  addDecimalPoint: () => void;
+  deleteLastCharacter: () => void;
+}) {
+  const { isDarkMode } = useColorMode();
+  const longPressTimer = useSharedValue(0);
+  return (
+    <Box as={Animated.View} style={style} height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
         <Bleed horizontal="6px">
           <Separator
@@ -232,47 +256,52 @@ export const SwapNumberPad = () => {
           />
         </Bleed>
         <Columns space="6px">
-          <NumberPadKey char={1} onPressWorklet={addNumber} />
-          <NumberPadKey char={2} onPressWorklet={addNumber} />
-          <NumberPadKey char={3} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={1} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={2} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={3} onPressWorklet={addNumber} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char={4} onPressWorklet={addNumber} />
-          <NumberPadKey char={5} onPressWorklet={addNumber} />
-          <NumberPadKey char={6} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={4} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={5} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={6} onPressWorklet={addNumber} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char={7} onPressWorklet={addNumber} />
-          <NumberPadKey char={8} onPressWorklet={addNumber} />
-          <NumberPadKey char={9} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={7} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={8} onPressWorklet={addNumber} />
+          <NumberPadKey canDelete={canDelete} char={9} onPressWorklet={addNumber} />
         </Columns>
         <Columns space="6px">
-          <NumberPadKey char="." onPressWorklet={addDecimalPoint} transparent />
-          <NumberPadKey char={0} onPressWorklet={addNumber} />
-          <NumberPadKey char="backspace" longPressTimer={longPressTimer} onPressWorklet={deleteLastCharacter} small transparent />
+          <NumberPadKey canDelete={canDelete} char="." onPressWorklet={addDecimalPoint} transparent />
+          <NumberPadKey canDelete={canDelete} char={0} onPressWorklet={addNumber} />
+          <NumberPadKey
+            canDelete={canDelete}
+            char="backspace"
+            longPressTimer={longPressTimer}
+            onPressWorklet={deleteLastCharacter}
+            small
+            transparent
+          />
         </Columns>
       </Box>
     </Box>
   );
-};
+}
 
 const NumberPadKey = ({
   char,
+  canDelete,
   longPressTimer,
   onPressWorklet,
   small,
   transparent,
 }: {
   char: numberPadCharacter;
+  canDelete: { readonly value: boolean };
   longPressTimer?: SharedValue<number>;
   onPressWorklet: (number?: number) => void;
   small?: boolean;
   transparent?: boolean;
 }) => {
-  const {
-    SwapInputController: { inputValues },
-    focusedInput,
-  } = useSwapContext();
   const { isDarkMode } = useColorMode();
 
   const pressProgress = useSharedValue(0);
@@ -304,9 +333,7 @@ const NumberPadKey = ({
         current > previous &&
         current > Math.floor(LONG_PRESS_DELAY_DURATION / LONG_PRESS_REPEAT_DURATION)
       ) {
-        const inputValue = inputValues.value[focusedInput.value];
-
-        if (inputValue !== 0) {
+        if (canDelete.value) {
           triggerHaptics('selection');
           onPressWorklet();
         }
