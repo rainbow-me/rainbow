@@ -102,26 +102,32 @@ const getTransactionDisplayDetails = async (transaction, nativeCurrency, timesta
     const contractAddress = transaction.to;
     const accountAssetUniqueId = getUniqueId(contractAddress, chainId);
     const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
-    const dataPayload = transaction.data.replace(tokenTransferHash, '');
-    const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
-    const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
-    const value = convertRawAmountToDecimalFormat(convertHexToString(amount), asset.decimals);
-    const priceUnit = asset?.price?.value ?? 0;
-    const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
-    return {
-      request: {
-        asset,
-        from: transaction.from,
-        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nativeAmount: native.amount,
-        nativeAmountDisplay: native.display,
-        ...(!isNil(transaction.nonce) ? { nonce: Number(convertHexToString(transaction.nonce)) } : {}),
-        to: toAddress,
-        value,
-      },
-      timestampInMs,
-    };
+    // the transfer selector isn't exclusive to erc-20s (routers, escrows,
+    // vesting contracts, ...) and the user may not hold the token either,
+    // so when `to` isn't a known asset fall through to the generic
+    // contract interaction display below instead of reading asset.decimals
+    if (asset) {
+      const dataPayload = transaction.data.replace(tokenTransferHash, '');
+      const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
+      const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
+      const value = convertRawAmountToDecimalFormat(convertHexToString(amount), asset.decimals);
+      const priceUnit = asset.price?.value ?? 0;
+      const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
+      return {
+        request: {
+          asset,
+          from: transaction.from,
+          gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+          gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+          nativeAmount: native.amount,
+          nativeAmountDisplay: native.display,
+          ...(!isNil(transaction.nonce) ? { nonce: Number(convertHexToString(transaction.nonce)) } : {}),
+          to: toAddress,
+          value,
+        },
+        timestampInMs,
+      };
+    }
   }
   if (transaction.data) {
     // If it's not a token transfer, let's assume it's an ETH transaction
